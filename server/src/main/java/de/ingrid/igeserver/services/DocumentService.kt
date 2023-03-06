@@ -239,7 +239,7 @@ class DocumentService @Autowired constructor(
     }
 
     fun getDocumentTypesOfProfile(profileId: String): List<EntityType> {
-        return checkNotNull(documentTypes.filter { it.usedInProfile(profileId)})
+        return checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
     }
 
     @Transactional
@@ -251,10 +251,6 @@ class DocumentService @Autowired constructor(
         address: Boolean = false,
         publish: Boolean = false
     ): DocumentData {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docTypeName = data.get(FIELD_DOCUMENT_TYPE).asText()
-        val docType = getDocumentType(docTypeName)
-        
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
         return createDocument(principal, catalogId, document, parentId, address, publish)
@@ -270,12 +266,12 @@ class DocumentService @Autowired constructor(
         parentId: Int?,
         address: Boolean = false,
         publish: Boolean = false
-    ): JsonNode {
+    ): DocumentData {
 
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
         val docTypeName = document.type
         val docType = getDocumentType(docTypeName)
-        
+
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
@@ -292,8 +288,11 @@ class DocumentService @Autowired constructor(
 
         if (publish) {
             preCreatePayload.document.state = DOCUMENT_STATE.PUBLISHED
+
+            val prePublishPayload = PrePublishPayload(docType, preCreatePayload.document, preCreatePayload.wrapper)
+            prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
-        
+
         // save document
         val newDocument = docRepo.save(preCreatePayload.document)
 
@@ -307,6 +306,9 @@ class DocumentService @Autowired constructor(
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
+        // run post-publish pipe(s)
+        val postPublishPayload = PostPublishPayload(docType, postCreatePayload.document, postCreatePayload.wrapper)
+        postPublishPipe.runFilters(postPublishPayload, filterContext)
 
         // also run update pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
@@ -495,8 +497,7 @@ class DocumentService @Autowired constructor(
 
 
         // run pre-publish pipe(s)
-        val prePublishPayload =
-            PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
+        val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
@@ -590,7 +591,7 @@ class DocumentService @Autowired constructor(
         try {
             // make sure database has current state
             docRepo.flush()
-            
+
             val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
             postUpdatePipe.runFilters(postUpdatePayload, filterContext)
             return if (publish) {
