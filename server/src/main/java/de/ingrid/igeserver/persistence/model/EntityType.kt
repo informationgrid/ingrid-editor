@@ -112,8 +112,8 @@ abstract class EntityType {
 
     fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val latestDocument = documentService.getLatestDocument(wrapper, options.onlyPublished, catalogId = catalogId)
-        val latestDocumentJson = documentService.convertToJsonNode(latestDocument)
+        val document = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
+        val latestDocumentJson = documentService.convertToJsonNode(document)
 
         if (options.forExport) {
             documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
@@ -151,7 +151,7 @@ abstract class EntityType {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalogIdentifier!!, uuid, options)
+                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid, options)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
@@ -164,5 +164,6 @@ abstract class EntityType {
 
 data class UpdateReferenceOptions(
     val onlyPublished: Boolean = false,
-    val forExport: Boolean = false
+    val forExport: Boolean = false,
+    val catalogId: String? = null
 )

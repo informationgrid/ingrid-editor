@@ -54,8 +54,11 @@ export class ErrorPanelComponent implements OnInit {
       }
     }
 
-    (<HTMLElement>(
-      element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
-    ))?.focus();
+    // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
+    setTimeout(() =>
+      (<HTMLElement>(
+        element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
+      ))?.focus()
+    );
   }
 }

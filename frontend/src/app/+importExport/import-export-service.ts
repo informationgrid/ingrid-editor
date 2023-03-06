@@ -7,7 +7,7 @@ import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Observable } from "rxjs";
 
 export interface ExportOptions {
-  id: string;
+  id: number;
   exportFormat: string;
   useDraft: boolean;
 }
@@ -39,7 +39,7 @@ export class ImportExportService {
   private catalogType: string;
 
   public static prepareExportInfo(
-    docId: string,
+    docId: number,
     options: ExportFormOptions
   ): ExportOptions {
     return {

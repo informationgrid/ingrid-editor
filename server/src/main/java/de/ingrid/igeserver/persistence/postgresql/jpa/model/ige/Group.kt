@@ -2,7 +2,6 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction

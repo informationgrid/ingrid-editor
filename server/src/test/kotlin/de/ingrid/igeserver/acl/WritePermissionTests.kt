@@ -106,7 +106,7 @@ class WritePermissionTests : IntegrationTest() {
     fun deleteAllowedToDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         docWrapperRepo.deleteById(doc.id!!)
-        groupService.removeDocFromGroups("test_catalog", rootUuid)
+//        groupService.removeDocFromGroups("test_catalog", rootUuid)
 
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
     }

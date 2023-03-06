@@ -49,7 +49,7 @@ export class GeoServiceDoctype extends IngridShared {
                   options: this.getCodelistForSelect(5100, "type"),
                   codelistId: 5100,
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
                 this.addCheckboxInline(
                   "isAtomDownload",
@@ -161,7 +161,7 @@ export class GeoServiceDoctype extends IngridShared {
                   { label: "tight", value: "tight" },
                 ],
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }),
             ],
             { contextHelpId: "shownData" }

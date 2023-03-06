@@ -125,7 +125,7 @@ export class ImportComponent implements OnInit {
   startImport() {
     // get path for destination for final page
     this.documentService
-      .getPath(this.locationDoc[0].toString())
+      .getPath(this.locationDoc[0])
       .subscribe((path) => (this.pathToDocument = path));
 
     this.hasImportError = false;

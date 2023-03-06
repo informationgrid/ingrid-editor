@@ -102,7 +102,7 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
-                "model" to mapper.convertValue(json, UVPModel::class.java),
+                "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },
                 "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl)
             )
         )

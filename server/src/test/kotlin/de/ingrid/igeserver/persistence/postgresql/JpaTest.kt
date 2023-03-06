@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -44,6 +45,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 
@@ -96,6 +98,7 @@ class JpaTest : IntegrationTest() {
             data = addressJson as ObjectNode
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 
@@ -150,6 +153,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
 

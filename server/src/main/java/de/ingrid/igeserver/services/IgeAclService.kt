@@ -93,6 +93,7 @@ class IgeAclService @Autowired constructor(
 
     fun getDatasetIdsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
+            .asSequence()
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
             .flatten().toSet().toList()
@@ -100,6 +101,7 @@ class IgeAclService @Autowired constructor(
 
     fun getAllDatasetIdsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
         return groups
+            .asSequence()
             .map { group ->
                 mutableListOf<JsonNode>().apply {
                     addAll(group.permissions?.addresses ?: emptyList())
@@ -160,8 +162,8 @@ class IgeAclService @Autowired constructor(
         (aclService as JdbcMutableAclService).updateAcl(acl)
     }
 
-    fun removeAclForDocument(uuid: String) {
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+    fun removeAclForDocument(id: Int) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
     }
 

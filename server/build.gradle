@@ -9,6 +9,7 @@ buildscript {
     ext.kotest_version = '5.5.5'
     ext.jte_version = '2.2.6'
     ext.elastic_version = '7.17.6'
+    ext.geotools_version = '28.2'
     repositories {
         mavenCentral()
     }
@@ -46,6 +47,10 @@ apply plugin: 'kotlin-allopen'
 repositories {
     maven {
         url = 'https://nexus.informationgrid.eu/repository/maven-public'
+    }
+    maven {
+        url "https://repo.osgeo.org/repository/release/"
+//            url "https://nexus.terrestris.de/repository/public/"
     }
     mavenCentral()
 }
@@ -152,6 +157,25 @@ dependencies {
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
+    
+    // GeoTools
+    implementation("org.geotools.xsd:gt-xsd-gml3:$geotools_version") {
+        exclude group: 'org.geotools', module: 'gt-coverage'
+        exclude group: 'org.geotools', module: 'gt-metadata'
+        exclude group: 'commons-pool', module: 'commons-pool'
+        exclude group: 'net.sf.geographiclib', module: 'GeographicLib-Java'
+        exclude group: 'javax.media', module: 'jai_core'
+        exclude group: 'org.ejml', module: 'ejml-ddense'
+        exclude group: 'jgridshift', module: 'jgridshift'
+        exclude group: 'org.jdom', module: 'jdom2'
+        exclude group: 'org.eclipse.emf', module: 'org.eclipse.emf.ecore.xmi'
+        exclude group: 'commons-jxpath', module: 'commons-jxpath'
+    }
+    implementation("org.geotools:gt-metadata:$geotools_version") {
+        exclude group: 'javax.media', module: 'jai_core'
+        exclude group: 'commons-pool', module: 'commons-pool'
+        exclude group: 'systems.uom', module: 'systems-common-java8'
+    }
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework

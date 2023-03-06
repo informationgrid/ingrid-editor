@@ -319,12 +319,12 @@ export class PublishPlugin extends SaveBase {
     });
   }
 
-  private unpublish(id: string) {
+  private unpublish(id: number) {
     this.documentService.unpublish(id, this.forAddress).subscribe();
   }
 
   private checkForAllParentsPublished() {
-    const id = this.getForm().value._id;
+    const id: number = this.getForm().value._id;
     return this.tree
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");

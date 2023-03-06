@@ -1,0 +1,45 @@
+<div fxLayout="column" [formGroup]="form">
+    <div class="dlg-field-label required space-bottom">Koordinaten*</div>
+    <div class="display-flex gap">
+        <mat-form-field appearance="outline">
+            <mat-label>Längengrad 1</mat-label>
+            <input
+                formControlName="lat1"
+                type="number"
+                matInput
+                igeFocus
+                data-cy="spatial-coord-1"
+            />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Breitengrad 1</mat-label>
+            <input
+                formControlName="lon1"
+                type="number"
+                matInput
+                data-cy="spatial-coord-2"
+            />
+        </mat-form-field>
+    </div>
+
+    <div class="display-flex gap">
+        <mat-form-field appearance="outline">
+            <mat-label>Längengrad 2</mat-label>
+            <input
+                formControlName="lat2"
+                type="number"
+                matInput
+                data-cy="spatial-coord-3"
+            />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Breitengrad 2</mat-label>
+            <input
+                formControlName="lon2"
+                type="number"
+                matInput
+                data-cy="spatial-coord-4"
+            />
+        </mat-form-field>
+    </div>
+</div>

@@ -37,13 +37,13 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
     return this.store.getValue().openedDocument;
   }
 
-  getChildren(parent: string): DocumentAbstract[] {
+  getChildren(parent: number): DocumentAbstract[] {
     return this.getAll()
       .filter((doc) => (parent === null ? doc.isRoot : doc._parent === parent))
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  getParents(id: string): DocumentAbstract[] {
+  getParents(id: number): DocumentAbstract[] {
     const parents = [];
     let entity = this.getEntity(id);
     let parent = this.getEntity(entity._parent);

@@ -48,11 +48,11 @@ interface ImportApi {
         @Parameter(
             description = "The document parent where the imported file will be added",
             required = true
-        ) @RequestParam parentDoc: String,
+        ) @RequestParam parentDoc: Int,
         @Parameter(
             description = "The address parent where the imported file will be added",
             required = true
-        ) @RequestParam parentAddress: String,
+        ) @RequestParam parentAddress: Int,
         @Parameter(description = "Import-Options", required = true) @RequestParam options: String,
     ): ResponseEntity<ImportAnalyzeInfo>
 

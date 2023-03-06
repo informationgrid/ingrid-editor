@@ -29,7 +29,6 @@ class PostMigrationTask(
     val catalogService: CatalogService,
     val groupService: GroupService,
     val documentService: DocumentService,
-    val mapperService: MapperService,
     val aclService: IgeAclService
 ) {
     val log = logger()
@@ -95,19 +94,19 @@ class PostMigrationTask(
             catalogIdentifier,
             null,
             isAddress = true
-        ).hits.filter { "UvpAddressDoc" == it.type!! }
+        ).hits.filter { "UvpAddressDoc" == it.wrapper.type }
 
-        if (freeAddresses.isEmpty()) return;
+        if (freeAddresses.isEmpty()) return
 
         val rootFolderId = createFreeAddressFolder(catalogIdentifier)
         freeAddresses.forEach {
-            val doc = documentService.getLatestDocument(it, resolveLinks = false)
+            val doc = it.document
             val organization = doc.data.get("organization").asText()
 
             if (organization.isNullOrEmpty() || organization == "null") {
                 // free address without organization. no action needed
-                it.path = listOf(rootFolderId.toString())
-                it.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
+                it.wrapper.path = listOf(rootFolderId.toString())
+                it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
                 return
             } else {
                 //{"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
@@ -124,13 +123,13 @@ class PostMigrationTask(
                     rootFolderId,
                     address = true
                 )
-                val parentId = organizationDoc.get("_id").asInt()
+                val parentId = organizationDoc.wrapper.id!!
 
-                it.path = listOf(parentId.toString())
-                it.parent = documentService.docWrapperRepo.findById(parentId).get()
+                it.wrapper.path = listOf(parentId.toString())
+                it.wrapper.parent = documentService.docWrapperRepo.findById(parentId).get()
                 // save
-                documentService.aclService.updateParent(it.id!!, parentId)
-                documentService.docWrapperRepo.save(it)
+                documentService.aclService.updateParent(it.wrapper.id!!, parentId)
+                documentService.docWrapperRepo.save(it.wrapper)
             }
         }
     }
@@ -144,7 +143,7 @@ class PostMigrationTask(
         val folderDoc =
             documentService.createDocument(auth as Principal, catalogIdentifier, folderData, null, true)
         documentService.docWrapperRepo.flush()
-        return folderDoc.get("_id").asInt()
+        return folderDoc.wrapper.id!!
     }
 
     private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
@@ -169,12 +168,12 @@ class PostMigrationTask(
             val oldldBaseFolder = documentService.findChildren(
                 catalogIdentifier,
                 null
-            ).hits.find { documentService.getLatestDocument(it, resolveLinks = false).title == title }
+            ).hits.find { it.document.title == title }
             val auth = SecurityContextHolder.getContext().authentication
             if (oldldBaseFolder != null) documentService.deleteDocument(
                 auth as Principal,
                 catalogIdentifier,
-                oldldBaseFolder.id!!.toString()
+                oldldBaseFolder.wrapper.id!!
             )
         }
     }
@@ -186,8 +185,7 @@ class PostMigrationTask(
         if (oldPath.isEmpty()) return
         val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
         val pathTitles = reducedPath.map {
-            val wrapper = documentService.getWrapperByDocumentId(it.toInt())
-            documentService.getLatestDocument(wrapper, resolveLinks = false).title!!
+            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it.toInt()).title!!
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
@@ -199,21 +197,18 @@ class PostMigrationTask(
                 doc.catalog!!.identifier,
                 newPath.lastOrNull(),
             ).hits.find {
-                documentService.getLatestDocument(
-                    it,
-                    resolveLinks = false
-                ).title == documentService.getLatestDocument(doc, resolveLinks = false).title
+                it.document.title == documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, doc.id!!).title
             }
 
             if (folderWithSameNameAndPath != null) {
-                if (doc == folderWithSameNameAndPath) {
+                if (doc == folderWithSameNameAndPath.wrapper) {
                     // already transferred via parent node. only adjust path
                     doc.path = newPath.map { it.toString() }
                     documentService.docWrapperRepo.saveAndFlush(doc)
                     return
                 } else {
                     // doc gets replaced by folderWithSameNameAndPath so adjust permission in groups
-                    transferRights(doc, folderWithSameNameAndPath)
+                    transferRights(doc, folderWithSameNameAndPath.wrapper)
                 }
                 return
             }
@@ -273,7 +268,7 @@ class PostMigrationTask(
             val foundChild = documentService.findChildren(
                 catalogIdentifier,
                 parentId
-            ).hits.filter { documentService.getLatestDocument(it, resolveLinks = false).title == title }
+            ).hits.filter { it.document.title == title }
             if (foundChild.isEmpty()) {
                 //create new folder
                 val folderData = jacksonObjectMapper().createObjectNode()
@@ -284,11 +279,11 @@ class PostMigrationTask(
                     documentService.createDocument(auth as Principal, catalogIdentifier, folderData, parentId)
                 documentService.docWrapperRepo.flush()
 
-                parentId = folderDoc.get("_id").asInt()
+                parentId = folderDoc.wrapper.id!!
 
             } else {
                 //found folder
-                parentId = foundChild.first().id!!
+                parentId = foundChild.first().wrapper.id!!
             }
             createdPathIds.add(parentId)
         }
@@ -357,9 +352,11 @@ class PostMigrationTask(
     private fun getAllReferencedDocumentIds(
         wrapper: DocumentWrapper,
         catalogIdentifier: String
-    ) = listOf(wrapper.published, wrapper.draft, wrapper.pending).flatMap {
-        getReferencedDocumentIds(it, catalogIdentifier)
-    }
+    ) = listOf(DOCUMENT_STATE.PUBLISHED, DOCUMENT_STATE.DRAFT, DOCUMENT_STATE.DRAFT_AND_PUBLISHED, DOCUMENT_STATE.PENDING)
+        .map {documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)}
+        .flatMap {
+            getReferencedDocumentIds(it, catalogIdentifier)
+        }
 
     private fun getReferencedDocumentIds(
         document: Document?,

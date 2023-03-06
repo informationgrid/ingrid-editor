@@ -30,24 +30,30 @@ class URLChecker @Autowired constructor(
 
     override fun execute(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
-
         val message = UrlMessage()
-        notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
+        
+        try {
 
-        val info = prepareJob(context, message)
+            notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
 
-        val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+            val info = prepareJob(context, message)
 
-        val urls = with(convertToUrlList(docs)) {
-            forEachIndexed { index, urlReport ->
-                notifier.sendMessage(message.apply { this.progress = calcProgress(index, size) })
-                checkAndReportUrl(urlReport)
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+
+            val urls = with(convertToUrlList(docs)) {
+                forEachIndexed { index, urlReport ->
+                    notifier.sendMessage(message.apply { this.progress = calcProgress(index, size) })
+                    checkAndReportUrl(urlReport)
+                }
+                this
             }
-            this
-        }
 
-        finishJob(message, urls, context)
-        log.debug("Task finished: URLChecker for '$info.catalogId'")
+            finishJob(message, urls, context)
+            log.debug("Task finished: URLChecker for '$info.catalogId'")
+        } catch (ex: Exception) {
+            notifier.endMessage(message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+            throw ex
+        }
     }
 
     private fun finishJob(

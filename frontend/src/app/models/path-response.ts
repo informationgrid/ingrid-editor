@@ -1,5 +1,5 @@
 export interface PathResponse {
-  id: string;
+  id: number;
   title: string;
   permission: NodePermission;
 }

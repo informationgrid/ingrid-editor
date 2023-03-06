@@ -56,12 +56,16 @@ For the client just run `npm start` in the frontend directory. When developing f
   - _If first project in IntelliJ_ Open or Import > Select `build.gradle` > Open as Project > OK
   - _Else_ File > New > Project from Existing Sources... > Select `build.gradle` > OK
 - Create **server run configuration**
-  - **NOTE** Java 11 SDK is required
-  - Right click file _server/src/main/java/de/ingrid/igeserver/IgeServer.kt_ > Run
-  - Run > Edit Configurations > Kotlin > IgeServerKt
+  - **Java 17 SDK** is required
+  - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
+    - Name: IgeServerKt
     - VM options: `-Dspring.profiles.active=dev,mcloud,elasticsearch`
-    - Shorten Commandline: JAR manifest
-    - JRE: _path/to/java-11-jdk_
+    - Use classpath of module: `IGE-NG.server.main`
+    - Main class: `de.ingrid.igeserver.IgeServerKt`  
+      (The file should automatically appear in the search dialog. When not, choose manually _server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
+    - JRE: `path/to/java-17-jdk`
+    - Shorten command line: `JAR manifest`
+
 - Install **frontend packages**
   - Open a shell in root directory of the project
   - Install _yarn_ if not installed yet: `npm -g i yarn`
