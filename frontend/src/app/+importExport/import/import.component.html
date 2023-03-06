@@ -23,18 +23,10 @@
             <div>Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Status: {{ log.stage }}</div>
             <br />
-            <div *ngIf="log.errors?.length > 0">
-                Fehler:
-                <span data-cy="count-errors">{{ log.errors.length }}</span>
-                <ul>
-                    <li *ngFor="let error of log.errors">{{ error }}</li>
-                </ul>
-            </div>
-
-            <ige-import-report
-                *ngIf="log.report"
-                [report]="log.report"
-            ></ige-import-report>
+            <ng-container
+                [ngTemplateOutlet]="report"
+                [ngTemplateOutletContext]="{ log: log }"
+            ></ng-container>
         </div>
     </div>
 
@@ -72,18 +64,16 @@
                             <div class="section-title">
                                 Analyse abgeschlossen
                             </div>
-                            <ige-import-report [report]="message.report">
-                            </ige-import-report>
+                            <ng-container
+                                [ngTemplateOutlet]="report"
+                                [ngTemplateOutletContext]="{ log: message }"
+                            ></ng-container>
                         </ng-container>
                         <!--<mat-icon class="big-icon success-color"
                             >check_circle_outline
                         </mat-icon>-->
                     </div>
                 </ng-template>
-
-                <span *ngIf="importFileErrorMessage">{{
-                    importFileErrorMessage
-                }}</span>
 
                 <div class="action-bar">
                     <button
@@ -110,7 +100,7 @@
                 <form class="content" [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
                     <div class="options">
-                        <div class="section-title space-top">Typ</div>
+                        <div class="section-title space-bottom">Typ</div>
                         <mat-form-field
                             appearance="outline"
                             style="width: 372px"
@@ -129,16 +119,19 @@
 
                         <div class="section-title">Optionen</div>
                         <div class="space-bottom display-flex flex-column">
+                            <mat-checkbox formControlName="overwriteDatasets"
+                                >Vorhandene Datensätze überschreiben
+                            </mat-checkbox>
                             <mat-checkbox formControlName="overwriteAddresses"
-                                >Vorhandene Adressen überschreiben</mat-checkbox
-                            >
+                                >Vorhandene Adressen überschreiben
+                            </mat-checkbox>
                             <mat-checkbox formControlName="publish"
-                                >Datensätze veröffentlichen</mat-checkbox
-                            >
+                                >Datensätze veröffentlichen
+                            </mat-checkbox>
                         </div>
 
                         <div class="section-title">Anlageort</div>
-                        <div class="space-bottom padding">
+                        <div class="wrapper-target padding">
                             <div>
                                 Datensätze: {{ parent.document }}
                                 <span class="link-text">
@@ -223,12 +216,12 @@
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">
-                    <div *ngIf="message && message.endTime === null">
+                    <ng-container *ngIf="message && message.endTime === null">
                         <div class="section-title">
                             Datensätze werden importiert
                         </div>
                         <mat-spinner diameter="50"></mat-spinner>
-                    </div>
+                    </ng-container>
 
                     <div
                         *ngIf="message?.endTime !== null"
@@ -278,3 +271,18 @@
         </mat-horizontal-stepper>
     </section>
 </page-template>
+
+<ng-template #report let-log="log">
+    <div *ngIf="log.errors?.length > 0">
+        Fehler:
+        <span data-cy="count-errors">{{ log.errors.length }}</span>
+        <ul>
+            <li *ngFor="let error of log.errors">{{ error }}</li>
+        </ul>
+    </div>
+
+    <ige-import-report
+        *ngIf="log.report"
+        [report]="log.report"
+    ></ige-import-report>
+</ng-template>

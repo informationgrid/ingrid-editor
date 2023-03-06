@@ -35,4 +35,6 @@ class ImportApiController @Autowired constructor(
 data class ImportOptions(
     val parentDocument: Int? = null,
     val parentAddress: Int? = null, 
-    val overwriteAddresses: Boolean = false)
+    val publish: Boolean = false, 
+    val overwriteAddresses: Boolean = false, 
+    val overwriteDatasets: Boolean = false)

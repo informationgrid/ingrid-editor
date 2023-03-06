@@ -58,8 +58,6 @@ class ImportService constructor(
                 .mapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    // TODO: remove artificial wait
-//                    Thread.sleep(300)
                     analyzeDoc(catalogId, fileContent[0])
                 }
                 .toList().let { prepareForImport(importers, it) }
@@ -231,21 +229,30 @@ class ImportService constructor(
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
             handleParent(ref, options)
-            if (!ref.exists) {
-                val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
-                documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress)
-                if (ref.isAddress) counter.addresses++ else counter.documents++
-            } else if (ref.isAddress && options.overwriteAddresses) {
-                setVersionInfo(ref.wrapperId!!, ref.document)
-                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
-                counter.overwritten++
-            } else {
-                counter.skipped++
-            }
+            importReference(principal, catalogId, ref, options, counter)
         }
         
         log.info("Import result: $counter")
+    }
 
+    private fun importReference(
+        principal: Authentication,
+        catalogId: String,
+        ref: DocumentAnalysis,
+        options: ImportOptions,
+        counter: ImportCounter
+    ) {
+        if (!ref.exists) {
+            val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
+            documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
+            if (ref.isAddress) counter.addresses++ else counter.documents++
+        } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
+            setVersionInfo(ref.wrapperId!!, ref.document)
+            documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document, options.publish)
+            counter.overwritten++
+        } else {
+            counter.skipped++
+        }
     }
 
     private fun setVersionInfo(wrapperId: Int, document: Document) {

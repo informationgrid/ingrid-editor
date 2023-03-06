@@ -11,7 +11,6 @@ import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.model.QueryField
-import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.QueryType
@@ -219,8 +218,11 @@ class DocumentService @Autowired constructor(
     }
 
     fun getDocumentType(docType: String): EntityType {
-
         return checkNotNull(documentTypes.find { it.className == docType })
+    }
+
+    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> {
+        return checkNotNull(documentTypes.filter { it.usedInProfile(profileId)})
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -9,6 +10,8 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -21,7 +24,9 @@ import java.util.*
 @PersistJobDataAfterExecution
 class ImportTask @Autowired constructor(
     val notifier: JobsNotifier,
-    val importService: ImportService
+    val importService: ImportService,
+    val documentService: DocumentService,
+    val catalogService: CatalogService,
 ) : IgeJob() {
 
     override val log = logger()
@@ -32,40 +37,69 @@ class ImportTask @Autowired constructor(
         log.info("Starting Task: Import")
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.IMPORT, info.catalogId)
-        val stage = if (info.importFile != null) Stage.ANALYZE else if (info.analysis != null) Stage.IMPORT else Stage.UNKNOWN
+        val stage =
+            if (info.importFile != null) Stage.ANALYZE else if (info.analysis != null) Stage.IMPORT else Stage.UNKNOWN
 
         // use start time from analysis phase if it already happened
         val message = if (stage == Stage.ANALYZE) Message() else Message(info.startTime ?: Date())
-        notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
+        try {
+            notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
 
-        val principal = runAsUser()
+            val principal = runAsUser()
 
-        val report = when (stage) {
-            Stage.ANALYZE -> {
-                clearPreviousAnalysis(context)
-                importService.analyzeFile(info.catalogId, info.importFile!!, message)
+            val report = when (stage) {
+                Stage.ANALYZE -> {
+                    clearPreviousAnalysis(context)
+                    importService.analyzeFile(info.catalogId, info.importFile!!, message)
+                        .also { checkForValidDocumentsInProfile(info.catalogId, it) }
+                }
+
+                Stage.IMPORT -> {
+                    importService.importAnalyzedDatasets(
+                        principal,
+                        info.catalogId,
+                        info.analysis!!,
+                        info.options!!,
+                        message
+                    )
+                    info.analysis
+                }
+
+                else -> null
             }
 
-            Stage.IMPORT -> {
-                importService.importAnalyzedDatasets(
-                    principal,
-                    info.catalogId,
-                    info.analysis!!,
-                    info.options!!,
-                    message
-                )
-                info.analysis
+            message.apply { this.report = report; this.endTime = Date(); this.stage = stage.name }.also {
+                finishJob(context, it)
+                notifier.sendMessage(notificationType, it)
             }
 
-            else -> null
-        }
-        
-        message.apply { this.report = report; this.endTime = Date(); this.stage = stage.name }.also {
-            finishJob(context, it)
-            notifier.sendMessage(notificationType, it)
+        } catch (ex: Exception) {
+            message.apply {
+                this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(ex.message ?: ex.toString())
+            }.also {
+                finishJob(context, it)
+                notifier.sendMessage(notificationType, it)
+            }
+            throw ex
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")
+    }
+
+    private fun checkForValidDocumentsInProfile(catalogId: String, report: OptimizedImportAnalysis) {
+        val documentTypesOfProfile = catalogService.getCatalogById(catalogId).type
+            .let { catalogService.getCatalogProfile(it) }
+            .let { documentService.getDocumentTypesOfProfile(it.identifier) }
+            .map { it.className }
+
+        report.references
+            .map { it.document.type }
+            .toSet()
+            .forEach {
+                if (it !in documentTypesOfProfile) {
+                    throw ServerException.withReason("DocumentType not known in this profile: $it")
+                }
+            }
     }
 
     private fun clearPreviousAnalysis(context: JobExecutionContext) {

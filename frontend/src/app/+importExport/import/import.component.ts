@@ -23,7 +23,6 @@ import {
   PasteDialogComponent,
   PasteDialogOptions,
 } from "../../+form/dialogs/copy-cut-paste/paste-dialog.component";
-import { TreeNode } from "../../store/tree/tree-node.model";
 
 @UntilDestroy()
 @Component({
@@ -47,11 +46,11 @@ export class ImportComponent implements OnInit {
       Validators.required
     ),
     overwriteAddresses: new FormControl<boolean>(false),
-    publish: new FormControl<boolean>({ value: false, disabled: true }),
+    overwriteDatasets: new FormControl<boolean>(false),
+    publish: new FormControl<boolean>(false),
     parentDocument: new FormControl<number>(null),
     parentAddress: new FormControl<number>(null),
   });
-  importFileErrorMessage: any;
 
   importers: ImportTypeInfo[];
   chosenFiles: TransfersWithErrorInfo[];
@@ -117,21 +116,6 @@ export class ImportComponent implements OnInit {
 
     this.exchangeService.fetchLastLog();
   }
-
-  /*
-  import(files: File[]) {
-    const file = files[0];
-    console.log(file);
-    this.exchangeService.analyze(file).subscribe(
-      (data) => {
-        console.log("Import result:", data);
-      },
-      (error) => (this.importFileErrorMessage = error)
-    );
-    // TODO: remove after testing
-    this.step1Complete = true;
-  }
-*/
 
   onUploadComplete() {
     this.step1Complete = true;
