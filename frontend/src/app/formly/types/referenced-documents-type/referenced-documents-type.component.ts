@@ -47,14 +47,11 @@ export class ReferencedDocumentsTypeComponent
 
   docs: DocumentAbstract[];
 
+  // TODO-dw: check sql
   private sql = `SELECT document1.*, document_wrapper.*
                  FROM document_wrapper
-                        JOIN document document1 ON
-                   CASE
-                     WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                     ELSE document_wrapper.draft = document1.id
-                     END
-                 WHERE document_wrapper.deleted = 0
+                        JOIN document document1 ON document_wrapper.uuid=document1.uuid
+                 WHERE document1.is_latest = true AND document_wrapper.deleted = 0
                    AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceFieldRaw>')
                    AND EXISTS(SELECT
                               FROM jsonb_array_elements(data -> '<referenceField>') as s

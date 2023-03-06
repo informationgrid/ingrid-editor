@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.utils
 
+import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.api.messaging.UrlReport
-import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import java.time.LocalDate
@@ -46,29 +46,59 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         return updatedDocs
     }
 
+    protected fun queryDocs(
+        sql: String,
+        jsonbField: String,
+        filterByDocId: Int?,
+        catalogId: String? = null
+    ): List<Array<Any>> {
+        var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
+        if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
+
+        @Suppress("UNCHECKED_CAST")
+        return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
+            .addScalar("uuid")
+            .addScalar("catalogId")
+            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
+            .addScalar("title")
+            .addScalar("type")
+            .resultList as List<Array<Any>>
+    }
+
     private val replaceUrlSql = """
         UPDATE document doc
         SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
         FROM document_wrapper dw, catalog cat
-        WHERE (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
+        WHERE dw.uuid = doc.uuid
+          AND doc.state != 'ARCHIVED'
+          AND dw.catalog_id = cat.id 
+          AND dw.deleted = 0
+          AND cat.identifier = :catalogId 
+          AND dw.uuid = :uuid
     """.trimIndent()
 
-    private val countReplaceUrlSql = """SELECT doc.id
+    private val countReplaceUrlSql = """
+        SELECT doc.id
         FROM document doc, document_wrapper dw, catalog cat
-        WHERE (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id) AND dw.catalog_id = cat.id AND cat.identifier = :catalogId AND dw.uuid = :uuid
-         AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
+        WHERE dw.uuid = doc.uuid 
+        AND doc.state != 'ARCHIVED' 
+        AND dw.catalog_id = cat.id
+        AND dw.deleted = 0
+        AND cat.identifier = :catalogId 
+        AND dw.uuid = :uuid
+        AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
      """.trimIndent()
 }
 
 data class DocumentLinks(
     val catalogId: String,
     val docUuid: String,
-    val docs: MutableList<UvpReferenceHandler.UploadInfo>,
+    val docs: MutableList<UploadInfo>,
     val title: String = "",
     val type: String = ""
 ) {
-    fun getDocsByLatestValidUntilDate(): List<UvpReferenceHandler.UploadInfo> {
-        val response = mutableListOf<UvpReferenceHandler.UploadInfo>()
+    fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
+        val response = mutableListOf<UploadInfo>()
         docs.forEach { doc ->
             val found = response.find { it.uri == doc.uri }
             if (found == null) response.add(doc)
@@ -89,3 +119,5 @@ data class DocumentLinks(
         return response
     }
 }
+
+data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)

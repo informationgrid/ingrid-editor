@@ -186,7 +186,7 @@ class GroupService @Autowired constructor(
         userRepo.findByGroups_Id(id).filterNot { ignoredRoles.contains(it.role?.name) }.map { it.userId }
 
 
-    fun removeDocFromGroups(catalogId: String, docId: String) {
+    fun removeDocFromGroups(catalogId: String, docId: Int) {
         var wasUpdated = false
 
         this.getAll(catalogId).forEach { group ->
@@ -194,9 +194,9 @@ class GroupService @Autowired constructor(
 
             group.permissions?.apply {
                 documents =
-                    group.permissions?.documents?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
+                    group.permissions?.documents?.filter { it.get("id").asInt() != docId } ?: emptyList()
                 addresses =
-                    group.permissions?.addresses?.filter { it.get("id").asInt() != docId.toInt() } ?: emptyList()
+                    group.permissions?.addresses?.filter { it.get("id").asInt() != docId } ?: emptyList()
             }
             val countDocsAfter = (group.permissions?.documents?.size ?: 0) + (group.permissions?.addresses?.size ?: 0)
 

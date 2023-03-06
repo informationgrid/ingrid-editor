@@ -1,8 +1,8 @@
-export type DocumentState = "P" | "W" | "PW";
+export type DocumentState = "P" | "W" | "PW" | "PENDING";
 
 export class IgeDocument {
   // the ID of the document, which can be undefined for new documents
-  _id?: string;
+  _id?: number;
 
   // the ID of the wrapper document, which contains this document
   _uuid?: string;
@@ -14,7 +14,7 @@ export class IgeDocument {
   _type: string;
 
   // the hierarchical parent of this document
-  _parent: string;
+  _parent: number;
 
   // the creation date
   _created?: string;
@@ -50,7 +50,7 @@ export class IgeDocument {
   // profile specific fields
   [x: string]: any;
 
-  constructor(type: string, parent?: string) {
+  constructor(type: string, parent?: number) {
     this._type = type;
     this._parent = parent ? parent : null;
   }

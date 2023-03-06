@@ -773,6 +773,18 @@ ige-context-help .mat-mdc-dialog-content {
       margin-top: 0;
     }
   }
+
+  table,
+  th,
+  td {
+    border: 1px solid;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 7px;
+  }
 }
 
 // Icons

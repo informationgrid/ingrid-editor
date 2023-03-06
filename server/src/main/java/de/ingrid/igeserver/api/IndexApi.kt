@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
-import de.ingrid.igeserver.model.LogResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse

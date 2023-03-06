@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
@@ -15,10 +22,9 @@ import { Subscription } from "rxjs";
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
 })
-export class FreeSpatialComponent implements OnInit {
+export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
   @Input() initial: SpatialBoundingBox;
-  @Input() hideTitle: boolean;
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
 
@@ -48,6 +54,10 @@ export class FreeSpatialComponent implements OnInit {
     }
 
     this.addDrawControls();
+  }
+
+  ngOnDestroy() {
+    this.removeDrawnBoundingBox();
   }
 
   searchLocation(query: string) {

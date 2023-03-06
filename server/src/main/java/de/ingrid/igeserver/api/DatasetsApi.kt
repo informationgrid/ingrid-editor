@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
-import de.ingrid.igeserver.model.SearchResult
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -18,35 +17,7 @@ import javax.validation.Valid
 
 @Tag(name = "Datasets", description = "the datasets API")
 interface DatasetsApi {
-
-    @GetMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @Operation(description = "Get all datasets or those which match a given query. The results can also be sorted.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
-    fun find(
-        principal: Principal,
-        @Parameter(description = "Find datasets by a search query.") @RequestParam(
-            value = "query",
-            required = false
-        ) query: String?,
-        @Parameter(
-            description = "Define the maximum number of returned documents.",
-            allowEmptyValue = true
-        ) @RequestParam(value = "size", required = false) size: Int = 10,
-        @Parameter(description = "Sort by a given field.") @RequestParam(
-            value = "sort",
-            required = false
-        ) sort: String?,
-        @Parameter(description = "Define the sort order.") @RequestParam(
-            value = "sortOrder",
-            required = false,
-            defaultValue = "ASC"
-        ) sortOrder: String?,
-        @Parameter(description = "Search in addresses.") @RequestParam(
-            value = "address",
-            required = false
-        ) forAddress: Boolean
-    ): ResponseEntity<SearchResult<JsonNode>>
-
+    
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Create a complete dataset")
     @ApiResponses(
@@ -77,7 +48,7 @@ interface DatasetsApi {
         principal: Principal,
         @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
-        @Parameter(description = "If we want to delay the publification set this date.") @RequestParam(
+        @Parameter(description = "If we want to delay the publication set this date.") @RequestParam(
             value = "publishDate",
             required = false
         ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
@@ -108,7 +79,7 @@ interface DatasetsApi {
     )
     fun copyDatasets(
         principal: Principal,
-        @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<String>,
+        @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
         @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions
     ): ResponseEntity<List<JsonNode>>
 
@@ -126,7 +97,7 @@ interface DatasetsApi {
     )
     fun deleteById(
         principal: Principal,
-        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: Array<String>
+        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: List<Int>
     ): ResponseEntity<Unit>
 
     @Operation(description = "Get child datasets of a given parent document/folder")
@@ -163,10 +134,10 @@ interface DatasetsApi {
     fun getByID(
         principal: Principal,
         @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
-        @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
+        /*@Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
             required = false
-        ) publish: Boolean?
+        ) publish: Boolean?*/
     ): ResponseEntity<JsonNode>
 
     @Operation(description = "Retrieve a dataset by a given UUID.")

@@ -19,6 +19,8 @@ export class ErrorPanelComponent implements OnInit {
 
   currentError = 0;
 
+  private specialElements = ["ige-add-button", "ige-formly-leaflet-type"];
+
   ngOnInit() {
     this.jumpToCurrentError();
   }
@@ -35,11 +37,28 @@ export class ErrorPanelComponent implements OnInit {
   }
 
   private jumpToCurrentError() {
-    document
+    let element = document
       .querySelectorAll(
         ".mat-form-field-invalid,.form-error,ige-add-button mat-error"
       )
-      .item(this.currentError)
-      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+      .item(this.currentError);
+    element?.scrollIntoView({ block: "center", behavior: "smooth" });
+
+    const specialDomElement = element?.parentElement?.parentElement;
+    if (this.specialElements.indexOf(specialDomElement?.localName) !== -1) {
+      element = specialDomElement;
+    } else {
+      const tableElement = element?.parentElement?.parentElement?.parentElement;
+      if (tableElement?.localName === "ige-table-type") {
+        element = tableElement;
+      }
+    }
+
+    // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
+    setTimeout(() =>
+      (<HTMLElement>(
+        element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
+      ))?.focus()
+    );
   }
 }

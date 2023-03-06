@@ -30,6 +30,8 @@ class URLChecker @Autowired constructor(
         log.info("Starting Task: URLChecker")
         val message = Message()
 
+        try {
+            
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.URL_CHECK, info.catalogId)
         
@@ -72,6 +74,10 @@ class URLChecker @Autowired constructor(
 
         }
         log.debug("Task finished: URLChecker for '$info.catalogId'")
+        } catch (ex: Exception) {
+            notifier.endMessage(message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+            throw ex
+        }
     }
     
     override fun interrupt() {

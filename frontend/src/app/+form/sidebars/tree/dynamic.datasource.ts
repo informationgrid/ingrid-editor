@@ -24,7 +24,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 @Injectable()
 export class DynamicDataSource extends DataSource<TreeNode> {
   dataChange = new BehaviorSubject<TreeNode[]>(null);
-  nodeExpanded$ = new Subject<string>();
+  nodeExpanded$ = new Subject<number>();
 
   private forAddress = false;
 
@@ -194,7 +194,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
    * @param node
    * @param dest
    */
-  insertNodeInTree(node: TreeNode, dest: string) {
+  insertNodeInTree(node: TreeNode, dest: number) {
     // in case the new parent was collapsed, the moved nodes are automatically
     // loaded from the backend when expanding the parent
     const alreadyPresent = this.data.find((item) => item._id === node._id);
@@ -274,7 +274,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
     this.dataChange.next(this.data);
   }
 
-  getNode(nodeId: string): TreeNode {
+  getNode(nodeId: number): TreeNode {
     return this.data.find((node) => node._id === nodeId);
   }
 

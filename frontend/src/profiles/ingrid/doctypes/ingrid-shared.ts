@@ -12,6 +12,7 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
 import { FormControl } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -45,12 +46,13 @@ export abstract class IngridShared extends BaseDoctype {
   private openDataMessage =
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
-  protected constructor(
+  constructor(
     codelistService: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
     private dialog: MatDialog,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private snack: MatSnackBar
   ) {
     super(codelistService, codelistQuery);
   }
@@ -75,6 +77,7 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
             this.addCheckboxInline("isAdVCompatible", "AdV kompatibel", {
               className: "flex-1",
+              click: (field) => this.handleAdvClick(field),
             }),
             options.openData
               ? this.addCheckboxInline("isOpenData", "Open Data", {
@@ -84,6 +87,23 @@ export abstract class IngridShared extends BaseDoctype {
               : null,
           ].filter(Boolean)
         ),
+        this.addRadioboxes("isInspireConform", "INSPIRE konform", {
+          expressions: {
+            hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
+          },
+          options: [
+            {
+              value: "Ja",
+              id: true,
+            },
+            {
+              value: "Nein",
+              id: false,
+            },
+          ],
+          click: (field) =>
+            setTimeout(() => this.handleIsInspireConformClick(field)),
+        }),
         options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addGroup(
@@ -157,23 +177,6 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
-          }),
-          this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-            expressions: {
-              hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
-            },
-            options: [
-              {
-                value: "Ja",
-                id: true,
-              },
-              {
-                value: "Nein",
-                id: false,
-              },
-            ],
-            click: (field) =>
-              setTimeout(() => this.handleIsInspireConformClick(field)),
           }),
         ]),
       ].filter(Boolean)
@@ -360,7 +363,7 @@ export abstract class IngridShared extends BaseDoctype {
                     codelistId: 102,
                     showSearch: true,
                     allowNoValue: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>
@@ -399,7 +402,7 @@ export abstract class IngridShared extends BaseDoctype {
                         isEmptyObject(field.form.value),
                     },
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                 ],
                 { wrappers: [], hasInlineContextHelp: true }
@@ -773,6 +776,7 @@ export abstract class IngridShared extends BaseDoctype {
           },
           fields: [
             this.addAutocomplete("title", null, {
+              required: true,
               options: this.getCodelistForSelect(6500, "license"),
               fieldLabel: "Lizenz",
               codelistId: 6500,
@@ -838,7 +842,6 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
-        className: "optional",
         fields: [this.urlRefFields()],
         validators: {
           downloadLinkWhenOpenData: {
@@ -864,27 +867,26 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             options: this.getCodelistForSelect(2000, "type"),
             codelistId: 2000,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
           }),
           this.addInputInline("title", "Titel", {
             required: true,
             className: "flex-2",
-            wrappers: ["form-field", "inline-help"],
-            hasInlineContextHelp: true,
-          }),
-          this.addInputInline("url", "URL", {
-            required: true,
-            className: "flex-2",
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
           }),
         ],
         { fieldGroupClassName: "display-flex" }
       ),
+      this.addInputInline("url", "URL", {
+        required: true,
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+      }),
       this.addGroupSimple(null, [
-        this.addInputInline("explanation", "Erläuterungen", {
-          wrappers: ["form-field", "inline-help"],
+        this.addTextAreaInline("explanation", "Erläuterungen", {
+          wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
         }),
       ]),
@@ -1004,7 +1006,7 @@ export abstract class IngridShared extends BaseDoctype {
       .afterClosed()
       .subscribe((decision) => {
         if (decision === "ok") executeAction();
-        else field.formControl.setValue(false);
+        else field.formControl.setValue(true);
       });
   }
 
@@ -1075,5 +1077,18 @@ export abstract class IngridShared extends BaseDoctype {
         if (decision === "ok") executeAction();
         else field.formControl.setValue(!isConform);
       });
+  }
+
+  /**
+   * Empty adv-product list when adv checkbox was deselected
+   */
+  private handleAdvClick(field) {
+    const isChecked = field.formControl.value;
+    const advProductGroups = field.model.advProductGroups;
+    if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
+
+    field.model.advProductGroups = [];
+    field.options.formState.updateModel();
+    this.snack.open("Die AdV-Produktgruppe wurde automatisch geleert");
   }
 }

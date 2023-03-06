@@ -48,7 +48,7 @@ export interface DatasetInfo {
 }
 
 export interface ExportOptions {
-  id: string;
+  id: number;
   exportFormat: string;
   useDraft: boolean;
 }
@@ -82,7 +82,7 @@ export class ExchangeService {
   lastLog$ = new BehaviorSubject<ImportLog<ImportLogInfo>>(null);
 
   public static prepareExportInfo(
-    docId: string,
+    docId: number,
     options: ExportFormOptions
   ): ExportOptions {
     return {

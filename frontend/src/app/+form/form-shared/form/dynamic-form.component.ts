@@ -314,6 +314,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateScrollPosition();
 
     this.showValidationErrors = false;
+    this.numberOfErrors = 0;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
@@ -341,10 +342,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc.hasWritePermission || doc._pendingDate != null;
+    this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
   }
 
-  private updateBreadcrumb(id: string) {
+  private updateBreadcrumb(id: number) {
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
@@ -527,6 +528,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     });
-    return [...new Set(invalidControlNames)];
+    return invalidControlNames;
   }
 }

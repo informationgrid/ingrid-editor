@@ -7,10 +7,6 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <div class="place-title small-bottom" *ngIf="types.length > 1">
-        Art des Raumbezugs
-    </div>
-
     <div
         fxLayout="row"
         fxLayoutGap="24px"
@@ -42,18 +38,21 @@
                 *ngSwitchCase="'free'"
                 [map]="leafletReference"
                 [initial]="data?.value"
-                [hideTitle]="types.length === 1"
                 (updateTitle)="titleInput.setValue($event)"
                 (result)="updateBoundingBox($event)"
             ></ige-free-spatial>
             <ige-wkt-spatial
                 *ngSwitchCase="'wkt'"
                 [map]="leafletReference"
-                [wktString]="data?.wkt"
+                [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
-            <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
-            <!--            <ige-name-spatial *ngSwitchCase="'geo-name'"></ige-name-spatial>-->
+            <ige-coordinates-spatial
+                *ngSwitchCase="'coordinates'"
+                [map]="leafletReference"
+                [coordinates]="data?.value"
+                (result)="updateBoundingBox($event)"
+            ></ige-coordinates-spatial>
         </div>
 
         <div fxLayout="column" fxFlex>
@@ -99,6 +98,7 @@
         [disabled]="
             (view === 'free' && !result.value) ||
             (view === 'wkt' && !result.wkt) ||
+            (view === 'coordinates' && !result.value) ||
             (view === 'geo-name' && !titleInput.value)
         "
         (click)="returnResult()"
