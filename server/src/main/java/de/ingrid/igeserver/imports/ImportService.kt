@@ -6,6 +6,7 @@ import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
@@ -138,6 +139,8 @@ class ImportService constructor(
 
     private fun analyzeDoc(catalogId: String, doc: JsonNode): DocumentAnalysis {
         val document = documentService.convertToDocument(doc)
+        document.state = DOCUMENT_STATE.DRAFT
+        document.isLatest = true
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
         val refType = documentService.getDocumentType(document.type)
@@ -145,6 +148,8 @@ class ImportService constructor(
         val references = refType.pullReferences(document)
             .map {
                 val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
+                it.state = DOCUMENT_STATE.DRAFT
+                document.isLatest = true
                 DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null)
             }
 
@@ -220,19 +225,20 @@ class ImportService constructor(
         analysis: OptimizedImportAnalysis,
         options: ImportOptions,
         message: Message
-    ) {
+    ): ImportCounter {
 
         val counter = ImportCounter()
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
-        
+
         analysis.references.forEachIndexed { index, ref ->
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
             handleParent(ref, options)
             importReference(principal, catalogId, ref, options, counter)
         }
-        
+
         log.info("Import result: $counter")
+        return counter
     }
 
     private fun importReference(
@@ -247,17 +253,21 @@ class ImportService constructor(
             documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            setVersionInfo(ref.wrapperId!!, ref.document)
-            documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document, options.publish)
+            setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
+            if (options.publish) {
+                documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
+            } else {
+                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
+            }
             counter.overwritten++
         } else {
             counter.skipped++
         }
     }
 
-    private fun setVersionInfo(wrapperId: Int, document: Document) {
-        val wrapper = documentService.getWrapperByDocumentId(wrapperId)
-        document.version = documentService.getLatestDocument(wrapper).version
+    private fun setVersionInfo(catalogId: String, wrapperId: Int, document: Document) {
+        document.version =
+            documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
     }
 
     private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions) {
@@ -284,8 +294,8 @@ data class OptimizedImportAnalysis(
     val numAddresses: Int,
     val existingDatasets: List<DatasetInfo>,
     val existingAddresses: List<DatasetInfo>,
+    var importResult: ImportCounter? = null
 )
-
 data class ExtractedZip(
     val importers: List<String>,
     val documents: List<JsonNode>

@@ -18,3 +18,23 @@
     Existierende Adressen:
     {{ report.existingAddresses.length }}
 </div>
+
+<ng-container *ngIf="report.importResult">
+    <h3>Import-Ergebnis</h3>
+    <div>
+        Anzahl angelegter Datensätze:
+        {{ report.importResult.documents }}
+    </div>
+    <div>
+        Anzahl angelegter Adressen:
+        {{ report.importResult.addresses }}
+    </div>
+    <div>
+        Anzahl überschriebener Datensätze/Adressen:
+        {{ report.importResult.overwritten }}
+    </div>
+    <div>
+        Anzahl übersprungener Datensätze/Adressen:
+        {{ report.importResult.skipped }}
+    </div>
+</ng-container>

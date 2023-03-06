@@ -55,14 +55,14 @@ class ImportTask @Autowired constructor(
                 }
 
                 Stage.IMPORT -> {
-                    importService.importAnalyzedDatasets(
+                    val counter = importService.importAnalyzedDatasets(
                         principal,
                         info.catalogId,
                         info.analysis!!,
                         info.options!!,
                         message
                     )
-                    info.analysis
+                    info.analysis.apply { this.importResult = counter }
                 }
 
                 else -> null
@@ -75,7 +75,7 @@ class ImportTask @Autowired constructor(
 
         } catch (ex: Exception) {
             message.apply {
-                this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(ex.message ?: ex.toString())
+                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(ex.message ?: ex.toString())
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)

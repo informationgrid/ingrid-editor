@@ -31,6 +31,14 @@ export interface ImportLogReport {
   numAddresses: number;
   existingDatasets: DatasetInfo[];
   existingAddresses: DatasetInfo[];
+  importResult: Counter;
+}
+
+interface Counter {
+  documents: number;
+  addresses: number;
+  overwritten: number;
+  skipped: number;
 }
 
 export interface DocumentAnalysis {
