@@ -1,12 +1,11 @@
 package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
-import org.hibernate.query.NativeQuery
+import de.ingrid.igeserver.utils.UploadInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import javax.persistence.EntityManager
@@ -28,7 +27,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
-          AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
+          AND doc.state != 'ARCHIVED'
     """.trimIndent()
 
     val sqlNegativeDecisionDocsDraftAndPending = """
@@ -41,7 +40,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
-          AND (doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
+          AND doc.state != 'ARCHIVED'
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
@@ -114,25 +113,6 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
         return uniqueList
     }
 
-    private fun queryDocs(
-        sql: String,
-        jsonbField: String,
-        filterByDocId: Int?,
-        catalogId: String? = null
-    ): List<Array<Any>> {
-        var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
-        if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
-
-        @Suppress("UNCHECKED_CAST")
-        return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
-            .addScalar("uuid")
-            .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
-            .addScalar("title")
-            .addScalar("type")
-            .resultList as List<Array<Any>>
-    }
-
     private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> {
         return (getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks)
                 + getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks)
@@ -161,7 +141,5 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
         return UploadInfo(field, it.get("downloadURL").get("uri").textValue(), expiredDate)
     }
-
-    data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)
 
 }

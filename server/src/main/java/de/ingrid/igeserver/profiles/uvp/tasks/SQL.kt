@@ -1,8 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-
-data class UploadInfo(val uri: String, val validUntil: String?)
+import de.ingrid.igeserver.utils.UploadInfo
 
 val sqlStepsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -81,5 +80,5 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
     val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-    return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
+    return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
 }
