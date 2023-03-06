@@ -80,11 +80,6 @@ class URLChecker @Autowired constructor(
         }
     }
 
-    override fun interrupt() {
-        log.info("Task interrupted")
-        currentThread?.interrupt()
-    }
-
     private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
@@ -124,5 +119,5 @@ class URLChecker @Autowired constructor(
         info.success = urlRequestService.isSuccessCode(status)
     }
 
-    data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)
+    private data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)
 }

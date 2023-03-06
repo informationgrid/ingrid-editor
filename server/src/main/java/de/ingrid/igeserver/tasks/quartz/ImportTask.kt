@@ -124,7 +124,7 @@ class ImportTask @Autowired constructor(
         }
     }
 
-    data class JobInfo(
+    private data class JobInfo(
         val startTime: Date?,
         val profile: String,
         val catalogId: String,
