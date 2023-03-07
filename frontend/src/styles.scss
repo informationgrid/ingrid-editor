@@ -1009,7 +1009,11 @@ mat-icon.wide-icon-26px {
 
 /* TABLE */
 .mat-mdc-table .mat-mdc-row:hover {
-  background-color: darken(#ffffff, 5%);
+  background-color: darken(#ffffff, 5%) !important;
+
+  &.selected {
+    background-color: darken($ige-mark-color, 5%) !important;
+  }
 
   .menu-button {
     background-color: #ffffff;
