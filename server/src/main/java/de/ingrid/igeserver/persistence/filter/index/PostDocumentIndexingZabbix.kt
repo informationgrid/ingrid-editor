@@ -1,12 +1,19 @@
 package de.ingrid.igeserver.persistence.filter.index
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
+import de.ingrid.igeserver.services.SchedulerService
+import de.ingrid.igeserver.tasks.quartz.URLChecker
+import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.quartz.JobDataMap
+import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -19,7 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService) : Filter<PostIndexPayload> {
+class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService, val scheduler: SchedulerService,) : Filter<PostIndexPayload> {
 
     private val log = logger()
 
@@ -62,7 +69,22 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
             }
 
             val data = ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl!!, uploadsToAdd)
-            zabbixService.addOrUpdateVerfahren(data)
+
+            try {
+                val profile = profiles[0]
+                val jobKey = JobKey.jobKey(URLChecker.jobKey, catalogIdentifier)
+
+                val jobDataMap = JobDataMap().apply {
+                    put("profile", profile)
+                    put("catalogId", catalogIdentifier)
+                    put("data", jacksonObjectMapper().writeValueAsString(data))
+                }
+                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap)
+
+            } catch (ex: Exception) {
+//                notifier.endMessage(message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+                throw ex
+            }
         }
 
         return payload
