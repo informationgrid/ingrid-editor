@@ -7,7 +7,7 @@ import {
 } from "../exchange.service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
-import { map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
@@ -85,7 +85,7 @@ export class ImportComponent implements OnInit {
 
   parent = {
     document: "Daten",
-    address: "Addressen",
+    address: "Adressen",
   };
 
   constructor(
@@ -177,16 +177,17 @@ export class ImportComponent implements OnInit {
         },
       })
       .afterClosed()
+      .pipe(filter((result) => result))
       .subscribe((target: any) => {
         formControlForParent.setValue(target.selection);
         if (isAddress) {
           const title = this.addressTreeQuery.getEntity(
             target.selection
           )?.title;
-          this.parent.address = title ?? "Daten";
+          this.parent.address = title ?? "Adressen";
         } else {
           const title = this.treeQuery.getEntity(target.selection)?.title;
-          this.parent.document = title ?? "Adressen";
+          this.parent.document = title ?? "Daten";
         }
       });
   }
