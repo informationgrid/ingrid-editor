@@ -331,6 +331,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   this.id,
                   {
                     className: "optional",
+                    contextHelpId: "processStep",
                   }
                 ),
               ]),
