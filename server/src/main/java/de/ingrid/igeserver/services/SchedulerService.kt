@@ -77,7 +77,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
         when (command) {
             JobCommand.start -> {
-                if (scheduler.checkExists(jobKey).not() || checkRunning.not()) {
+                if (scheduler.checkExists(jobKey).not()) {
                     createJob(jobClass, jobKey)
                 }
                 start(jobKey, jobDataMap, checkRunning)
