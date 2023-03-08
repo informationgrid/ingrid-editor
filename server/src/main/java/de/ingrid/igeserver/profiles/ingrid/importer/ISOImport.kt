@@ -80,7 +80,7 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return "text/xml" == contentType
+        return "application/xml" == contentType
     }
 
     private class JsonStringOutput : StringOutput() {

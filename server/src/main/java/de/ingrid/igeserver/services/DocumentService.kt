@@ -337,10 +337,8 @@ class DocumentService @Autowired constructor(
 
     fun convertToDocument(docJson: JsonNode): Document {
 
-        val titleString = docJson.get("title").asText()
-
         return Document().apply {
-            title = titleString
+            title = docJson.get("title")?.asText() ?: ""
             type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
             version = docJson.get(FIELD_VERSION)?.asInt()
             if (docJson.hasNonNull(FIELD_UUID)) {

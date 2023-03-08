@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
@@ -68,7 +69,11 @@ class ImportService constructor(
         val importer = factory.getImporter(type, fileContent)
 
         val result = importer[0].run(fileContent)
-        return prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
+        return if (result is ArrayNode) {
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
+        } else {
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
+        }
     }
 
     private fun prepareForImport(importers: List<String>, analysis: List<DocumentAnalysis>): OptimizedImportAnalysis {
