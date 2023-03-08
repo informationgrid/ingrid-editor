@@ -80,6 +80,7 @@
             mat-button
             color="primary"
             data-cy="create-changeLocation"
+            [disabled]="alreadySubmitted"
             (click)="jumpToTree(this.parent)"
         >
             Zielordner ändern
@@ -92,7 +93,9 @@
             class="btn-create"
             data-cy="create-action"
             [disabled]="
-                formGroup.invalid || (!isAdmin && !pathWithWritePermission)
+                formGroup.invalid ||
+                (!isAdmin && !pathWithWritePermission) ||
+                alreadySubmitted
             "
             (click)="handleCreate()"
         >

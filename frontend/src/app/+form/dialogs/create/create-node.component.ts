@@ -48,6 +48,8 @@ export class CreateNodeComponent implements OnInit {
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
   pathWithWritePermission = false;
+  alreadySubmitted = false;
+
   private query: TreeQuery | AddressTreeQuery;
   docTypeChoice: string;
   docTypeChanged$ = new Subject();
@@ -121,6 +123,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
+    this.alreadySubmitted = true;
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
