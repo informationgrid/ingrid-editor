@@ -14,58 +14,27 @@
         </p>
     </div>
     <div main-header>
-        <div fxFlex fxLayoutAlign="center center" fxLayoutGap="12px">
-            <ng-container *ngIf="liveLog | async as log">
-                <mat-icon
-                    *ngIf="log.errors?.length > 0"
-                    class="error-color"
-                    matTooltip="Bei der letzten Prüfung trat ein Fehler auf"
-                    >error_outline</mat-icon
-                >
-
-                <span *ngIf="!isRunning; else running"
-                    >Letzte Prüfung erfolgte am
-                    {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
-                >
-                <ng-template #running>
-                    <span fxLayout>
-                        <mat-progress-spinner
-                            [value]="log.progress"
-                            diameter="16"
-                            [matTooltip]="log.progress + '% analysiert'"
-                        ></mat-progress-spinner>
-                    </span>
-                    <span>
-                        Laufende Prüfung seit:
-                        {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
-                    >
-                </ng-template>
+        <ige-job-handler-header
+            [message]="liveLog | async"
+            [isRunning]="isRunning"
+            (showMore)="showMore = $event"
+        >
+            <div class="report-btn">
                 <button
-                    mat-icon-button
-                    class="dark menu-button"
-                    [class.expanded]="showMore"
-                    (click)="showMore = !showMore"
+                    *ngIf="!isRunning; else stopJob"
+                    mat-flat-button
+                    color="primary"
+                    (click)="start()"
                 >
-                    <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+                    Prüfung starten
                 </button>
-            </ng-container>
-        </div>
-
-        <div class="report-btn">
-            <button
-                *ngIf="!isRunning; else stopJob"
-                mat-flat-button
-                color="primary"
-                (click)="start()"
-            >
-                Prüfung starten
-            </button>
-            <ng-template #stopJob>
-                <button mat-flat-button color="primary" (click)="stop()">
-                    Prüfung stoppen
-                </button>
-            </ng-template>
-        </div>
+                <ng-template #stopJob>
+                    <button mat-flat-button color="primary" (click)="stop()">
+                        Prüfung stoppen
+                    </button>
+                </ng-template>
+            </div>
+        </ige-job-handler-header>
     </div>
 
     <div status class="status" [class.hide]="!showMore">
@@ -237,7 +206,8 @@
 
     <ng-template #noData>
         <div *ngIf="!isRunning" main-content>
-            Es gibt keine Ergebnisse. Bitte starten Sie die Prüfung.
+            Bei der letzten Überprüfung wurden keine ungültigen URLs
+            festgestellt.
         </div>
     </ng-template>
 </page-template>

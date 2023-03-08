@@ -50,7 +50,7 @@ export class TreeService {
    * @param id
    */
   @transaction()
-  selectTreeNode(isAddress: boolean, id: string) {
+  selectTreeNode(isAddress: boolean, id: number) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     store.update({

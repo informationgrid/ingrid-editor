@@ -14,42 +14,41 @@ import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import java.util.*
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @Entity
-@Table(name="catalog")
+@Table(name = "catalog")
 class Catalog {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("db_id")
     var id: Int? = null
-    
-    @Column(nullable=false)
+
+    @Column(nullable = false)
     @JsonProperty("id")
-    lateinit var identifier: String
+    var identifier: String = "n/a"
 
     // TODO: make type non null
-    @Column(nullable=false)
-    lateinit var type: String
-
-    @Column(nullable=false)
-    lateinit var name: String
+    @Column(nullable = false)
+    var type: String = "n/a"
+    
+    @Column(nullable = false)
+    var name: String = "n/a"
 
     @Column
     var description: String? = null
 
     @Column
-    @JsonSerialize(using= DateSerializer::class)
-    @JsonDeserialize(using= DateDeserializer::class)
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
     var created: OffsetDateTime? = null
 
     @Column
-    @JsonSerialize(using= DateSerializer::class)
-    @JsonDeserialize(using= DateDeserializer::class)
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
     var modified: OffsetDateTime? = null
 
-    @ManyToMany(mappedBy="catalogs", fetch= FetchType.LAZY)
+    @ManyToMany(mappedBy = "catalogs", fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
@@ -57,7 +56,7 @@ class Catalog {
     @Type(type = "jsonb")
     @Column(name = "settings", columnDefinition = "jsonb")
     var settings: CatalogSettings? = CatalogSettings()
-    
+
     @PrePersist
     fun setPersistDate() {
         created = dateService?.now()
@@ -68,7 +67,7 @@ class Catalog {
     fun setUpdateDate() {
         modified = dateService?.now()
     }
-    
+
     companion object {
         private val dateService: DateService? by lazy {
             SpringContext.getBean(DateService::class.java)

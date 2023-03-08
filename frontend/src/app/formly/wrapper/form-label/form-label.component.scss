@@ -2,6 +2,7 @@
 
 :host {
   display: flex;
+  position: relative;
 }
 
 .label-wrapper {
@@ -45,6 +46,15 @@
       color: $ige-primary;
       cursor: pointer;
     }
+  }
+
+  &:hover:before {
+    content: "";
+    width: 24px;
+    left: -24px;
+    top: 0;
+    bottom: 0;
+    position: absolute;
   }
 
   .contextHelpIcon {

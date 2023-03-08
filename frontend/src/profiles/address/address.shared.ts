@@ -26,6 +26,7 @@ export abstract class AddressShared extends BaseDoctype {
           wrappers: null,
           className: "flex-1",
           required: true,
+          showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
               items.filter((item) => item.value !== "5" && item.value !== "6")

@@ -19,7 +19,7 @@ import javax.persistence.EntityManager
 
 data class Result(
     val title: String?,
-    val _id: String,
+    val _id: Int,
     val _uuid: String?,
     val _type: String?,
     val _created: Date?,
@@ -81,7 +81,12 @@ class ResearchService {
     }
 
     private fun hasRootAccess(groups: Set<Group>) =
-        groups.any { listOf(RootPermissionType.READ, RootPermissionType.WRITE).contains(it.permissions?.rootPermission) }
+        groups.any {
+            listOf(
+                RootPermissionType.READ,
+                RootPermissionType.WRITE
+            ).contains(it.permissions?.rootPermission)
+        }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
@@ -99,9 +104,8 @@ class ResearchService {
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.draft, document_wrapper.published, document_wrapper.category, document_wrapper.id as wrapperid
-                FROM catalog, document_wrapper
-                ${createFromStatement()}
+                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid
+                FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
             """ + if (query.orderByField != null) """
@@ -119,7 +123,10 @@ class ResearchService {
             """.trimIndent()
 
         val deletedFilter = "document_wrapper.deleted = 0 AND "
-        val catalogAndPermissionFilter = deletedFilter + catalogFilter + permissionFilter
+
+        // if we don't look explicitly for published state then look by default for latest version
+        val latestFilter = if (!checkForPublishedSearch(query.clauses)) "document1.is_latest = true AND " else ""
+        val catalogAndPermissionFilter = deletedFilter + latestFilter + catalogFilter + permissionFilter
 
         val termSearch = convertSearchTerm(query)
 
@@ -160,16 +167,31 @@ class ResearchService {
         return filterString.any { it }
     }
 
+    private fun checkForPublishedSearch(clauses: BoolFilter?): Boolean {
+        if (clauses == null) {
+            return false
+        }
+
+        val filterString: List<Boolean> = if (!clauses.clauses.isNullOrEmpty()) {
+            clauses.clauses.map { checkForPublishedSearch(it) }
+        } else {
+            clauses.value
+                ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
+        }
+
+        return filterString.any { it }
+    }
+
     private fun createCatalogFilter(catalogId: String): String {
 
-        return "document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
+        return "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     }
 
     private fun determineJsonSearch(term: String?): String {
 
-        return if (term != null)
-            "CROSS JOIN LATERAL jsonb_each_text(document1.data) as t(k, val)"
+        return if (!term.isNullOrEmpty())
+            "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
         else ""
 
     }
@@ -198,20 +220,10 @@ class ResearchService {
 
     }
 
-    private fun createFromStatement(): Any {
-        return """
-            JOIN document document1 ON
-                CASE
-                    WHEN document_wrapper.draft IS NULL THEN document_wrapper.published = document1.id
-                    ELSE document_wrapper.draft = document1.id
-                END
-            """.trimIndent()
-    }
-
-    private fun sendQuery(sql: String, termParameters: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
+    private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql)
 
-        termParameters.forEachIndexed { index, term ->
+        parameter.forEachIndexed { index, term ->
             nativeQuery.setParameter(index + 1, term)
         }
 
@@ -224,10 +236,11 @@ class ResearchService {
             .addScalar("type")
             .addScalar("created")
             .addScalar("modified")
-            .addScalar("draft")
-            .addScalar("published")
+//            .addScalar("draft")
+//            .addScalar("published")
             .addScalar("category")
             .addScalar("wrapperid")
+            .addScalar("state")
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
@@ -253,37 +266,35 @@ class ResearchService {
         principal: Principal
     ): List<Result> {
         principal as Authentication
-        return result.filter { item ->
-            isAdmin || aclService.getPermissionInfo(
-                principal,
-                item[9] as Int // "id"
-            ).canRead
-        }.map { item ->
-            Result(
-                title = item[1] as? String,
-                _uuid = item[2] as? String,
-                _type = item[3] as? String,
-                _created = item[4] as? Date,
-                _modified = item[5] as? Date,
-                _state = determineDocumentState(item),
-                _category = (item[8] as? String),
-                hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
+        return result
+            .filter { item ->
+                isAdmin || aclService.getPermissionInfo(
                     principal,
-                    item[9] as Int
-                ).canWrite,
-                hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
-                    principal,
-                    item[9] as Int
-                ).canOnlyWriteSubtree,
-                _id = (item[9] as Int).toString()
-            )
-        }
+                    item[7] as Int // "id"
+                ).canRead
+            }.map { item ->
+                Result(
+                    title = item[1] as? String,
+                    _uuid = item[2] as? String,
+                    _type = item[3] as? String,
+                    _created = item[4] as? Date,
+                    _modified = item[5] as? Date,
+                    _state = determineDocumentState(item[8] as String),
+                    _category = (item[6] as? String),
+                    hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
+                        principal,
+                        item[7] as Int
+                    ).canWrite,
+                    hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
+                        principal,
+                        item[7] as Int
+                    ).canOnlyWriteSubtree,
+                    _id = item[7] as Int
+                )
+            }
     }
 
-    private fun determineDocumentState(item: Array<out Any?>) =
-        if (item[6] == null) DocumentService.DocumentState.PUBLISHED.value
-        else if (item[7] == null) DocumentService.DocumentState.DRAFT.value
-        else DocumentService.DocumentState.DRAFT_AND_PUBLISHED.value
+    private fun determineDocumentState(state: String) = DOCUMENT_STATE.valueOf(state).getState()
 
     fun querySql(
         principal: Principal,
@@ -345,6 +356,7 @@ class ResearchService {
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter
                 """.trimIndent()
+
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
                 $catalogFilter AND 

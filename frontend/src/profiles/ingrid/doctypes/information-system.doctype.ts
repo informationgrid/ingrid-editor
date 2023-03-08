@@ -7,6 +7,7 @@ import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -28,10 +29,11 @@ export class InformationSystemDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addGroup(null, "Beschreibung", [
           this.addSelectInline("serviceType", "Art des Dienstes", {
+            showSearch: true,
             options: this.getCodelistForSelect(5300, "serviceType"),
             codelistId: 5300,
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
             hasInlineContextHelp: true,
@@ -97,8 +99,16 @@ export class InformationSystemDoctype extends IngridShared {
     codelistQuery: CodelistQuery,
     uploadService: UploadService,
     dialog: MatDialog,
-    cookieService: CookieService
+    cookieService: CookieService,
+    snack: MatSnackBar
   ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
+    super(
+      codelistService,
+      codelistQuery,
+      uploadService,
+      dialog,
+      cookieService,
+      snack
+    );
   }
 }

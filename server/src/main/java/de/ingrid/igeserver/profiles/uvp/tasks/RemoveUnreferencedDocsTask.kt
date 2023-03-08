@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import de.ingrid.mdek.upload.storage.impl.Scope

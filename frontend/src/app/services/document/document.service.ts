@@ -133,7 +133,7 @@ export class DocumentService {
   }
 
   getChildren(
-    parentId: string,
+    parentId: number,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress).pipe(
@@ -143,7 +143,7 @@ export class DocumentService {
   }
 
   load(
-    id: string,
+    id: string | number,
     address?: boolean,
     updateStore = true,
     useUuid = false
@@ -183,7 +183,7 @@ export class DocumentService {
     data: IgeDocument,
     isNewDoc?: boolean,
     isAddress?: boolean,
-    path?: string[],
+    path?: number[],
     noVisualUpdates = false
   ): Observable<IgeDocument> {
     const doc = this.preSaveActions(data, isAddress);
@@ -227,7 +227,7 @@ export class DocumentService {
   postSaveActions(
     json: any,
     isNewDoc: boolean,
-    path: string[],
+    path: number[],
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -285,7 +285,7 @@ export class DocumentService {
     );
   }
 
-  unpublish(id: string, forAddress: boolean): Observable<any> {
+  unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
@@ -309,7 +309,7 @@ export class DocumentService {
     );
   }
 
-  cancelPendingPublishing(id: string, forAddress: boolean): Observable<any> {
+  cancelPendingPublishing(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.cancelPendingPublishing(id).pipe(
       catchError((error) => {
@@ -339,7 +339,7 @@ export class DocumentService {
     );
   }
 
-  delete(ids: string[], isAddress: boolean): Observable<void> {
+  delete(ids: number[], isAddress: boolean): Observable<void> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.delete(ids).pipe(
       tap(() => {
@@ -411,7 +411,7 @@ export class DocumentService {
     );
   }
 
-  getPath(id: string): Observable<ShortTreeNode[]> {
+  getPath(id: number): Observable<ShortTreeNode[]> {
     let treeEntities = this.getEntitiesFromStoreContainingId(id);
     const path = this.getPathFromTreeStore(treeEntities, id);
 
@@ -431,7 +431,7 @@ export class DocumentService {
     );
   }
 
-  private getEntitiesFromStoreContainingId(id: string) {
+  private getEntitiesFromStoreContainingId(id: number) {
     let treeEntities = this.treeStore.getValue().entities;
     if (!treeEntities[id]) {
       treeEntities = this.addressTreeStore.getValue().entities;
@@ -448,8 +448,8 @@ export class DocumentService {
    * @returns {Observable<Response>}
    */
   copy(
-    srcIDs: string[],
-    dest: string,
+    srcIDs: number[],
+    dest: number,
     includeTree: boolean,
     isAddress: boolean
   ) {
@@ -484,8 +484,8 @@ export class DocumentService {
    * @returns {Observable<Response>}
    */
   move(
-    srcIDs: string[],
-    dest: string,
+    srcIDs: number[],
+    dest: number,
     isAddress: boolean,
     confirm = false
   ): Observable<any> {
@@ -605,7 +605,7 @@ export class DocumentService {
   }
 
   updateBreadcrumb(
-    id: string,
+    id: number,
     query: TreeQuery | AddressTreeQuery,
     isAddress = false
   ): Subscription {
@@ -624,7 +624,7 @@ export class DocumentService {
 
   private updateTreeStoreDocs(
     isAddress: boolean,
-    parentId: string,
+    parentId: number,
     docs: DocumentAbstract[]
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -637,17 +637,17 @@ export class DocumentService {
 
   mapToDocumentAbstracts(
     docs: IgeDocument[],
-    parentId?: string
+    parentId?: number
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id ? doc._id.toString() : null,
+        id: doc._id ? doc._id : null,
         icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || "-Kein Titel-",
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: doc._parent?.toString() ?? null,
+        _parent: doc._parent ?? null,
         _type: doc._type,
         _modified: doc._modified,
         _pendingDate: doc._pendingDate,
@@ -675,10 +675,10 @@ export class DocumentService {
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
-  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
+  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: number[]) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     let openedDocument = store.getValue().openedDocument;
-    const openedDocId = openedDocument?.id?.toString();
+    const openedDocId = openedDocument?.id as number;
     const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
     if (openedDocWasMoved) {
       this.reload$.next({ uuid: openedDocument?._uuid, forAddress: isAddress });
@@ -695,7 +695,7 @@ export class DocumentService {
   }
 
   @transaction()
-  private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
+  private updateStoreAfterDelete(ids: number[], isAddress: boolean) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     let entities = store.getValue().entities;
@@ -719,8 +719,8 @@ export class DocumentService {
 
   @transaction()
   private updateStoreAfterMove(
-    ids: string[],
-    parent: string,
+    ids: number[],
+    parent: number,
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -764,7 +764,7 @@ export class DocumentService {
   @transaction()
   private updateStoreAfterCopy(
     infos: DocumentAbstract[],
-    parentId: string,
+    parentId: number,
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -782,7 +782,7 @@ export class DocumentService {
   }
 
   private getChildrenIfNotDoneYet(
-    parent: string,
+    parent: number,
     isAddress: boolean
   ): Observable<DocumentAbstract[]> {
     if (parent !== null) {
@@ -809,7 +809,7 @@ export class DocumentService {
     return result.map(
       (pathItem) =>
         new ShortTreeNode(
-          pathItem.id.toString(),
+          pathItem.id,
           pathItem.title,
           pathItem.permission,
           !pathItem.permission.canWrite
@@ -819,7 +819,7 @@ export class DocumentService {
 
   private getPathFromTreeStore(
     entities: HashMap<DocumentAbstract>,
-    id: string
+    id: number
   ): ShortTreeNode[] {
     const entity = entities[id];
 
@@ -842,7 +842,7 @@ export class DocumentService {
 
   private mapEntityToShortTreeNode(entity: DocumentAbstract) {
     return new ShortTreeNode(
-      entity.id.toString(),
+      <number>entity.id,
       entity.title,
       {
         // canRead is always true, as you can not get a Document without having at least read access

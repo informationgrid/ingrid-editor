@@ -44,6 +44,7 @@
     "@ngx-formly/core": "6.1.1",
     "@ngx-formly/material": "6.1.1",
     "@stomp/rx-stomp": "^1.2.0",
+    "angular-mixed-cdk-drag-drop": "^2.0.0",
     "angular-split": "^14.1.0",
     "angular2-csv": "^0.2.9",
     "cronstrue": "^2.21.0",

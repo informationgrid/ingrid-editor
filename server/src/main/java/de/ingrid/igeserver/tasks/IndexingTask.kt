@@ -6,7 +6,6 @@ import de.ingrid.elasticsearch.IBusIndexManager
 import de.ingrid.elasticsearch.IIndexManager
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.elasticsearch.IndexManager
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
@@ -140,7 +139,7 @@ class IndexingTask @Autowired constructor(
                     realIndexName = info.second
                     toType = "base"
                     toAlias = categoryAlias
-                    docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id"
+                    docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
                 }
 
                 var page = -1
@@ -324,7 +323,7 @@ class IndexingTask @Autowired constructor(
             realIndexName = oldIndex
             toType = "base"
             toAlias = elasticsearchAlias
-            docIdField = if (category == DocumentCategory.ADDRESS) "t02_address.adr_id" else "t01_object.obj_id" // TODO: make docIdField dynamic
+            docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
         }
     }
 

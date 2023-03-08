@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: numberOfDimenstions
+id: numberOfDimensions
 docType:
   - InGridDataCollection
   - InGridGeoDataset

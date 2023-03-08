@@ -2,13 +2,14 @@ import java.nio.file.Paths
 import gg.jte.ContentType
 
 buildscript {
-    ext.kotlin_version = '1.7.20' // Required for Kotlin integration
-    ext.spring_boot_version = '2.7.7'
-    ext.hibernate_version = '5.6.12.Final' // Hibernate 6 is only supported by Spring Boot 3
+    ext.kotlin_version = '1.8.10' // Required for Kotlin integration
+    ext.spring_boot_version = '2.7.8'
+    ext.hibernate_version = '5.6.15.Final' // Hibernate 6 is only supported by Spring Boot 3
     ext.jackson_version = '2.14.2'
-    ext.kotest_version = '5.5.4'
-    ext.jte_version = '2.2.4'
+    ext.kotest_version = '5.5.5'
+    ext.jte_version = '2.2.6'
     ext.elastic_version = '7.17.6'
+    ext.geotools_version = '28.2'
     repositories {
         mavenCentral()
     }
@@ -28,9 +29,9 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.3.1'
-    id "com.gorylenko.gradle-git-properties" version "2.4.0"
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
     id 'io.kotest' version '0.3.9'
-    id "com.github.ben-manes.versions" version "0.42.0"
+    id "com.github.ben-manes.versions" version "0.46.0"
     id "gg.jte.gradle" version "$jte_version"
 }
 
@@ -46,6 +47,10 @@ apply plugin: 'kotlin-allopen'
 repositories {
     maven {
         url = 'https://nexus.informationgrid.eu/repository/maven-public'
+    }
+    maven {
+        url "https://repo.osgeo.org/repository/release/"
+//            url "https://nexus.terrestris.de/repository/public/"
     }
     mavenCentral()
 }
@@ -97,8 +102,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.2.0'
-    implementation 'org.apache.tika:tika-core:2.5.0'
-    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.0.8'
+    implementation 'org.apache.tika:tika-core:2.7.0'
+    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.1'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -125,40 +130,59 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.37'
+    implementation 'net.pwall.json:json-kotlin-schema:0.39'
 
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter:19.0.3'
     implementation 'org.keycloak:keycloak-admin-client:19.0.3'
 
     // Markdown
-    implementation "com.atlassian.commonmark:commonmark:0.17.0"
-    implementation "com.atlassian.commonmark:commonmark-ext-yaml-front-matter:0.17.0"
-    implementation "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.17.0"
+    implementation "org.commonmark:commonmark:0.21.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
 
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.11' // Attention: also update SwaggerDocumentationConfig.kt
     implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.11'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.5.1'
+    implementation 'org.postgresql:postgresql:42.5.4'
     implementation "org.hibernate:hibernate-core:$hibernate_version"
-    implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:6.0.0') {
+    implementation('de.ingrid:ingrid-codelist-service:6.0.1') {
         exclude group: 'log4j', module: 'log4j'
     }
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
+    
+    // GeoTools
+    implementation("org.geotools.xsd:gt-xsd-gml3:$geotools_version") {
+        exclude group: 'org.geotools', module: 'gt-coverage'
+        exclude group: 'org.geotools', module: 'gt-metadata'
+        exclude group: 'commons-pool', module: 'commons-pool'
+        exclude group: 'net.sf.geographiclib', module: 'GeographicLib-Java'
+        exclude group: 'javax.media', module: 'jai_core'
+        exclude group: 'org.ejml', module: 'ejml-ddense'
+        exclude group: 'jgridshift', module: 'jgridshift'
+        exclude group: 'org.jdom', module: 'jdom2'
+        exclude group: 'org.eclipse.emf', module: 'org.eclipse.emf.ecore.xmi'
+        exclude group: 'commons-jxpath', module: 'commons-jxpath'
+    }
+    implementation("org.geotools:gt-metadata:$geotools_version") {
+        exclude group: 'javax.media', module: 'jai_core'
+        exclude group: 'commons-pool', module: 'commons-pool'
+        exclude group: 'systems.uom', module: 'systems-common-java8'
+    }
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.2' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.2'
-    testImplementation "com.ninja-squad:springmockk:3.1.1"
+    testImplementation 'io.mockk:mockk:1.13.4'
+    testImplementation "com.ninja-squad:springmockk:4.0.0"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
@@ -253,7 +277,10 @@ jib {
     // tag for image on develop branch will be latest
     // tag for image on master branch will be the version
     // tag for image on any feature branch will have the branch name
-    def tag = project.ext.branch_name == "develop" ? "latest" : project.ext.branch_name
+    def name
+    if (project.hasProperty("branch_name")) name = project.ext.branch_name else name = "???"
+    def tag = name == "develop" ? "latest" : name
+//    def tag = project.ext.branch_name == "develop" ? "latest" : project.ext.branch_name
     tag = tag.replaceAll("/", "-")
     from {
         image = 'eclipse-temurin:17-jre-focal'
@@ -306,4 +333,16 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 //    options.deprecation = true
 //    options.compilerArgs << "-Xlint:unchecked"
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
 }

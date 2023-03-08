@@ -1,0 +1,40 @@
+<div>
+    Importer:
+    {{ report.importers.join(",") }}
+</div>
+<div>
+    Anzahl Datensätze:
+    {{ report.numDatasets }}
+</div>
+<div>
+    Anzahl Adressen:
+    {{ report.numAddresses }}
+</div>
+<div>
+    Existierende Datensätze:
+    {{ report.existingDatasets.length }}
+</div>
+<div>
+    Existierende Adressen:
+    {{ report.existingAddresses.length }}
+</div>
+
+<ng-container *ngIf="report.importResult">
+    <h3>Import-Ergebnis</h3>
+    <div>
+        Anzahl angelegter Datensätze:
+        {{ report.importResult.documents }}
+    </div>
+    <div>
+        Anzahl angelegter Adressen:
+        {{ report.importResult.addresses }}
+    </div>
+    <div>
+        Anzahl überschriebener Datensätze/Adressen:
+        {{ report.importResult.overwritten }}
+    </div>
+    <div>
+        Anzahl übersprungener Datensätze/Adressen:
+        {{ report.importResult.skipped }}
+    </div>
+</ng-container>

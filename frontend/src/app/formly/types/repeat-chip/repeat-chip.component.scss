@@ -12,7 +12,6 @@ mat-chip-listbox {
 .mat-mdc-chip {
   border-radius: 4px;
   cursor: move;
-  max-width: calc(100% - 32px);
   min-height: 36px;
 
   .label {

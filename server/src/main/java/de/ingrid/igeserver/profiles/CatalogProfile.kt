@@ -11,6 +11,8 @@ interface CatalogProfile {
     val title: String
     val description: String?
     val indexExportFormatID: String?
+    @get:JsonIgnore
+    val indexIdField: IndexIdFieldConfig
 
     @JsonIgnore
     fun getFacetDefinitionsForDocuments(): Array<FacetGroup>
@@ -37,4 +39,10 @@ interface CatalogProfile {
 
     @JsonIgnore
     fun additionalPublishConditions(catalogId: String): List<String> = emptyList()
+    
 }
+
+data class IndexIdFieldConfig(
+    val document: String,
+    val address: String
+)

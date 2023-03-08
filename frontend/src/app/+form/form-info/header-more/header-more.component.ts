@@ -51,7 +51,7 @@ export class HeaderMoreComponent implements OnInit {
     const catCreateDate =
       this.configService.$userInfo.getValue().currentCatalog.created;
     // compare the creation dates of document and catalog
-    this.migrated = new Date(this.model._created) < catCreateDate;
+    this.migrated = new Date(this.model._created) < new Date(catCreateDate);
   }
 
   getState(state: DocumentState) {

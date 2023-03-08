@@ -235,7 +235,7 @@ export class HistoryPlugin extends Plugin {
       return;
     }
     this.treeStore.update({
-      explicitActiveNode: new ShortTreeNode(<string>item.id, item.title),
+      explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
     });
     this.router.navigate([
       ConfigService.catalogId + this.navigatePath,

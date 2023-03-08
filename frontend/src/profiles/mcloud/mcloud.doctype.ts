@@ -163,11 +163,13 @@ export class McloudDoctype extends BaseDoctype {
         this.addGroup(null, "mFUND", [
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",
+            id: "mfundProject", // used for autocomplete by browser
             hasInlineContextHelp: true,
             wrappers: ["inline-help", "form-field"],
           }),
           this.addInput("mfundFKZ", null, {
             fieldLabel: "mFUND Förderkennzeichen",
+            id: "mfundFKZ", // used for autocomplete by browser
             hasInlineContextHelp: true,
             wrappers: ["inline-help", "form-field"],
           }),
@@ -191,6 +193,7 @@ export class McloudDoctype extends BaseDoctype {
                 wrappers: ["form-field"],
               }),
               this.addSelect("text", "Typ", {
+                showSearch: true,
                 required: true,
                 className: "flex-1",
                 wrappers: ["form-field"],
@@ -205,6 +208,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
+            showSearch: true,
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
@@ -229,6 +233,7 @@ export class McloudDoctype extends BaseDoctype {
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
+          showSearch: true,
           options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
           codelistId: 518,
         }),

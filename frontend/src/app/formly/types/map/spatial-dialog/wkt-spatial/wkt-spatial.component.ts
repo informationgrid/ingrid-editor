@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 
@@ -7,7 +14,7 @@ import { LeafletService } from "../../leaflet.service";
   templateUrl: "./wkt-spatial.component.html",
   styleUrls: ["./wkt-spatial.component.scss"],
 })
-export class WktSpatialComponent implements OnInit {
+export class WktSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
   @Input() wktString = "";
   @Output() result = new EventEmitter<string>();
@@ -23,6 +30,10 @@ export class WktSpatialComponent implements OnInit {
       this.drawWkt(this.wktString);
       setTimeout(() => this.result.next(this.wktString), 50);
     }
+  }
+
+  ngOnDestroy() {
+    this.clearLayer();
   }
 
   validateWKT(value: string) {

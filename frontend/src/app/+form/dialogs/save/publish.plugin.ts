@@ -152,8 +152,6 @@ export class PublishPlugin extends SaveBase {
       return false;
     } else {
       if (formIsInvalid || hasOtherErrors) {
-        const errors = this.calculateErrors(this.getForm().controls).join(",");
-        console.warn("Invalid fields:", errors);
         if (hasOtherErrors) console.warn("Other errors:", validation.errors);
         this.modalService.showJavascriptError(
           "Es müssen alle Felder korrekt ausgefüllt werden."
@@ -231,10 +229,6 @@ export class PublishPlugin extends SaveBase {
       .subscribe((date) => {
         this.saveWithData(this.getForm().value, date);
       });
-  }
-
-  private calculateErrors(controls: { [p: string]: AbstractControl }) {
-    return Object.keys(controls).filter((key) => controls[key].invalid);
   }
 
   saveWithData(data, delay: Date = null) {
@@ -325,12 +319,12 @@ export class PublishPlugin extends SaveBase {
     });
   }
 
-  private unpublish(id: string) {
+  private unpublish(id: number) {
     this.documentService.unpublish(id, this.forAddress).subscribe();
   }
 
   private checkForAllParentsPublished() {
-    const id = this.getForm().value._id;
+    const id: number = this.getForm().value._id;
     return this.tree
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");

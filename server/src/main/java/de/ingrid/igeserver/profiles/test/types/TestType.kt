@@ -6,7 +6,6 @@ import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 
 @Component
@@ -44,24 +43,6 @@ class TestType : EntityType() {
     }
 
     private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        val addresses = doc.data.path("addresses")
-        for (address in addresses) {
-            val uuid = if (address.path("ref").isTextual) {
-                address.path("ref").asText()
-            } else {
-                // fix used because references have not been saved with ID but full address
-                // this can be removed later
-                log.warn("Address reference is stored in a wrong way")
-                address.path("ref").path(FIELD_UUID).asText()
-            }
-            try {
-                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalog!!.identifier, uuid, options)
-                (address as ObjectNode).replace("ref", latestDocumentJson)
-            } catch (e: EmptyResultDataAccessException) {
-                // TODO: what to do with removed references?
-                log.error("Referenced address was not found: $uuid -> Should we remove it?")
-                continue
-            }
-        }
+        return replaceUuidWithReferenceData(doc, "addresses", options)
     }
 }

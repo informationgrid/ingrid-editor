@@ -4,8 +4,7 @@ id: statement
 docType: InGridGeoDataset
 profile: ingrid
 
-
-# title, used as wind  ow title
+# title, used as window title
 title: Fachliche Grundlage
 ---
 
@@ -13,11 +12,11 @@ title: Fachliche Grundlage
 
 Kurze zusammenfassende Aussage zur Erstellung dieser Geodatenressource. Hierzu können die Datengrundlage,
 die Methode der Datenerhebung und der Verarbeitungsprozess erwähnt werden. Der Eintrag soll
-in Textform erfolgen. Zusätzlich kann durch Auswahl der Registerkarte "Verweise" ein Verweis zu
-einem Dokument hinterlegt werden.
-HINWEIS: Für genauere Angaben sind die Felder _Datenquelle_  und _Herstellungsprozess_ zu verwenden.
+in Textform erfolgen.
+HINWEIS: Für genauere Angaben sind die Felder _Datenquelle_ und _Herstellungsprozess_ zu verwenden.
 
 (INSPIRE-Pflichtfeld für Datasets und Data series)
+
 ## Beispiele:
 
 Kombination verschiedenster Vektordatenquellen zu einem harmonisierten digitalen

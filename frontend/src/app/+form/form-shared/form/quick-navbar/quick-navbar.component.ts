@@ -26,6 +26,8 @@ export class QuickNavbarComponent implements AfterViewInit {
   @Input() sections: string[] = [];
   @Input() hasOptionalFields = false;
 
+  @Input() numberOfErrors: number = 0;
+
   @Input() set model(value: IgeDocument) {
     this.title = value.title;
     this.docIcon = this.profileService.getDocumentIcon(value);

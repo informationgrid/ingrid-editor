@@ -138,7 +138,7 @@ export class DeleteDocsPlugin extends Plugin {
   }
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
-    const docIdsToDelete = docs.map((doc) => <string>doc.id);
+    const docIdsToDelete = docs.map((doc) => <number>doc.id);
     const currentDoc = this.tree.getOpenedDocument();
 
     return this.documentService.delete(docIdsToDelete, this.forAddress).pipe(

@@ -81,8 +81,7 @@ class IndexService @Autowired constructor(
             ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )
         val docsToIndex = response.hits
-            .map { docWrapperRepo.findById(it._id.toInt()).get() }
-            .map { documentService.getLatestDocument(it, true, catalogId = catalogId) }
+            .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!).apply { wrapperId = it._id } }
         return Pair(response.totalHits.toLong(), docsToIndex)
     }
 
@@ -92,7 +91,7 @@ class IndexService @Autowired constructor(
         profile: CatalogProfile,
         uuid: String? = null
     ): BoolFilter {
-        val conditions = mutableListOf("category = '$category'", "published IS NOT NULL", "deleted = 0")
+        val conditions = mutableListOf("category = '$category'", "document1.state = 'PUBLISHED'", "deleted = 0")
 
         uuid?.let { conditions.add("document_wrapper.uuid = '$it'") }
 

@@ -4,8 +4,8 @@ export interface Catalog {
   description?: string;
   type?: string;
   adminUser?: string;
-  created?: Date;
-  modified?: Date;
+  created?: string;
+  modified?: string;
   countDocuments?: number;
-  lastDocModification?: Date;
+  lastDocModification?: string;
 }

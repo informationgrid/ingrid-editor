@@ -13,7 +13,6 @@ import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @NoArgs
 @Entity
