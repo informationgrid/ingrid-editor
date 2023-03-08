@@ -191,7 +191,7 @@ class ResearchService {
     private fun determineJsonSearch(term: String?): String {
 
         return if (!term.isNullOrEmpty())
-            "CROSS JOIN LATERAL jsonb_each_text(document1.data) as t(k, val)"
+            "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
         else ""
 
     }
