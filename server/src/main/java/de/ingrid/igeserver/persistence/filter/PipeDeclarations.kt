@@ -119,7 +119,7 @@ open class PostDeletePayload(type: EntityType, document: Document, wrapper: Docu
 /**
  * Payload holding index data after indexing the document
  */
-open class PostIndexPayload(var indexDoc: ElasticDocument): Payload
+open class PostIndexPayload(var indexDoc: ElasticDocument, var category: String): Payload
 
 /**
  * Declarations of pipes for different payloads

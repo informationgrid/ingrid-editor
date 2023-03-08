@@ -6,7 +6,6 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.services.SchedulerService
-import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
@@ -26,7 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService, val scheduler: SchedulerService,) : Filter<PostIndexPayload> {
+class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
 
     private val log = logger()
 
@@ -36,8 +35,9 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
 
         payload.indexDoc
         val catalogIdentifier = context.catalogId
+        val category = payload.category
 
-        if (zabbixService.activatedCatalogs.contains(catalogIdentifier)) {
+        if (zabbixService.activatedCatalogs.contains(catalogIdentifier) && category == "DATA") {
             val idf = payload.indexDoc["idf"].toString()
             val documentBuilderFactory = DocumentBuilderFactory.newInstance()
             val documentBuilder = documentBuilderFactory.newDocumentBuilder()
@@ -72,7 +72,7 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
 
             try {
                 val profile = profiles[0]
-                val jobKey = JobKey.jobKey(URLChecker.jobKey, catalogIdentifier)
+                val jobKey = JobKey.jobKey("${ZabbixJob.jobKey}_${uuid}", catalogIdentifier)
 
                 val jobDataMap = JobDataMap().apply {
                     put("profile", profile)

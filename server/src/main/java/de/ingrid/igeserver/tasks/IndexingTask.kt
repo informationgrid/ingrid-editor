@@ -242,7 +242,7 @@ class IndexingTask @Autowired constructor(
             .onEach {
                 val elasticDocument = convertToElasticDocument(it)
                 indexManager.update(indexInfo, elasticDocument, false)
-                postIndexPipe.runFilters(PostIndexPayload(elasticDocument), SimpleContext(catalogId, catalogType))
+                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name), SimpleContext(catalogId, catalogType))
             }
     }
 
@@ -310,7 +310,7 @@ class IndexingTask @Autowired constructor(
 
 
             val elasticDoc = convertToElasticDocument(export)
-            postIndexPipe.runFilters(PostIndexPayload(elasticDoc), SimpleContext(catalogId, catalogProfile.identifier))
+            postIndexPipe.runFilters(PostIndexPayload(elasticDoc, category.name), SimpleContext(catalogId, catalogProfile.identifier))
 
             indexManager.update(indexInfo, elasticDoc, false)
             log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")

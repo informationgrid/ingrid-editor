@@ -178,7 +178,7 @@ class ZabbixService @Autowired constructor(
         val response = requestApi(deleteJson)
         log.debug(response)
         val hostId = getFromResultArray(response, "hostid")
-        log.debug("Delete host: $hostId")
+        log.debug("Delete host: $uuid")
         deleteHosts(listOf(hostId.asText()))
     }
 
