@@ -13,11 +13,13 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     private val scheduler = factory.scheduler
 
-    fun start(jobKey: JobKey, jobDataMap: JobDataMap?) {
-        val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
-        if (isRunning) {
-            log.info("Job is already running. Skip execution")
-            return
+    fun start(jobKey: JobKey, jobDataMap: JobDataMap?, checkRunning: Boolean) {
+        if (checkRunning) {
+            val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
+            if (isRunning) {
+                log.info("Job is already running. Skip execution")
+                return
+            }
         }
 
         scheduler.triggerJob(jobKey, jobDataMap)
@@ -69,15 +71,16 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
         command: JobCommand,
         jobClass: Class<out Job>,
         jobKey: JobKey,
-        jobDataMap: JobDataMap? = null
+        jobDataMap: JobDataMap? = null,
+        checkRunning: Boolean = true
     ) {
 
         when (command) {
             JobCommand.start -> {
-                if (scheduler.checkExists(jobKey).not()) {
+                if (scheduler.checkExists(jobKey).not() || checkRunning.not()) {
                     createJob(jobClass, jobKey)
                 }
-                start(jobKey, jobDataMap)
+                start(jobKey, jobDataMap, checkRunning)
             }
             JobCommand.stop -> stop(jobKey)
             JobCommand.resume -> TODO()
