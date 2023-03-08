@@ -17,7 +17,7 @@ import java.net.http.HttpResponse
 const val JSONRPC = "2.0"
 
 @Service
-@Profile("elasticsearch")
+@Profile("zabbix")
 class ZabbixService @Autowired constructor(
     generalProperties: GeneralProperties
 ) {

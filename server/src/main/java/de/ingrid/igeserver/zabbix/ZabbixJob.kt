@@ -8,10 +8,12 @@ import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
 @PersistJobDataAfterExecution
+@Profile("zabbix")
 class ZabbixJob @Autowired constructor(
     val zabbixService: ZabbixService
 ) : IgeJob() {
