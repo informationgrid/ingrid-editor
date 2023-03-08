@@ -28,7 +28,11 @@ export class GeoServiceDoctype extends IngridShared {
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection({ inspireRelevant: true, openData: true }),
-      this.addKeywordsSection({ priorityDataset: true, spatialScope: true }),
+      this.addKeywordsSection({
+        priorityDataset: true,
+        spatialScope: true,
+        inspireTopics: true,
+      }),
 
       this.addSection("Fachbezug", [
         this.addGroupSimple("service", [
