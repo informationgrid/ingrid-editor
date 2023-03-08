@@ -19,7 +19,7 @@ export class AddressTemplateComponent implements OnInit {
   @Input() form: UntypedFormGroup;
   @Input() isPerson: boolean;
 
-  @Input() set parent(value: string) {
+  @Input() set parent(value: number) {
     this.initializeDocumentTypes(this.profileQuery.addressProfiles, value);
   }
 
@@ -41,7 +41,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private initializeDocumentTypes(
     profiles: Observable<ProfileAbstract[]>,
-    parent: string
+    parent: number
   ) {
     profiles
       .pipe(
@@ -111,7 +111,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private filterDocTypesByParent(
     types: ProfileAbstract[],
-    parent: string
+    parent: number
   ): ProfileAbstract[] {
     return this.docBehaviours.filterDocTypesByParent(types, parent);
   }

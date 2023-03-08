@@ -44,7 +44,7 @@ export class CreateNodeComponent implements OnInit {
   rootTreeName: string;
   isFolder = true;
   formGroup: UntypedFormGroup;
-  jumpedTreeNodeId: string = null;
+  jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
   pathWithWritePermission = false;
@@ -154,7 +154,7 @@ export class CreateNodeComponent implements OnInit {
     this.selectedPage = 0;
   }
 
-  jumpToTree(id: string) {
+  jumpToTree(id: number) {
     this.selectedPage = 1;
     if (id !== null && this.pathWithWritePermission) {
       this.jumpedTreeNodeId = id;
