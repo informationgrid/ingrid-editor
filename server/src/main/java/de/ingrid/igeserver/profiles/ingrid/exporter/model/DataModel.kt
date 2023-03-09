@@ -24,7 +24,7 @@ data class DataModel(
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
-    val isInspireIdentified: Boolean?,
+    val isInspireRelevant: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,

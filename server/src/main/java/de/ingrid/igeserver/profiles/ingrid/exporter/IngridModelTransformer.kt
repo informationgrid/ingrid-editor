@@ -227,7 +227,7 @@ open class IngridModelTransformer constructor(
         } ?: emptyList(),
     ) else Thesaurus()
     val inspireRelevantKeyword =
-        if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
+        if (data.isInspireRelevant == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation

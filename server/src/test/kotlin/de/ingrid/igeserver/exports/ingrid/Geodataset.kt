@@ -1,9 +1,9 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import com.ninjasquad.springmockk.MockkBean
-import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
@@ -16,7 +16,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 //@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -25,14 +24,17 @@ class Geodataset : AnnotationSpec() {
 
     override fun extensions() = listOf(SpringExtension)
 
-    private val codelistService = mockk<CodelistHandler>()
+    private val codelistHandler = mockk<CodelistHandler>()
     private val config = mockk<Config>()
 
     @BeforeAll
     fun beforeAll() {
-        this.exporter = IngridIDFExporter(codelistService, config, catalogService)
+        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
+        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
 
-        every { codelistService.getCodelistValue(any<String>(), any<String>(), any<String>()) } answers {
+
+        every { codelistHandler.getCodelistValue(any<String>(), any<String>(), any<String>()) } answers {
             when (firstArg<String>() + "_" + secondArg<String>() + "_" + thirdArg<String>()) {
                 "100_84_de" -> "CRS 84: CRS 84 / mathematisch"
                 "100_4230_de" -> "EPSG 4230: ED50 / geographisch"
@@ -96,13 +98,14 @@ class Geodataset : AnnotationSpec() {
             }
         }
 
-        every { codelistService.getCodelistEntryDataField("6500", "25") } returns "{\"id\":\"dl-zero-de/2.0\",\"name\":\"Datenlizenz Deutschland – Zero – Version 2.0\",\"url\":\"https://www.govdata.de/dl-de/zero-2-0\",\"quelle\":\"\"}"
-        every { codelistService.getCodelistEntryDataField("6500", "26") } returns null
+        every { codelistHandler.getCodelistEntryDataField("6500", "25") } returns "{\"id\":\"dl-zero-de/2.0\",\"name\":\"Datenlizenz Deutschland – Zero – Version 2.0\",\"url\":\"https://www.govdata.de/dl-de/zero-2-0\",\"quelle\":\"\"}"
+        every { codelistHandler.getCodelistEntryDataField("6500", "26") } returns null
 
     }
 
 
     private lateinit var exporter: IngridIDFExporter
+    private lateinit var indexExporter: IngridIndexExporter
     private lateinit var luceneExporter: IngridLuceneExporter
 
 
@@ -149,7 +152,7 @@ class Geodataset : AnnotationSpec() {
     fun completeLuceneExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJson(luceneExporter, "/export/ingrid/geodataset-Document2.json")
+        var result = exportJson(indexExporter, "/export/ingrid/geodataset-Document2.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
