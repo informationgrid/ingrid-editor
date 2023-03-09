@@ -104,6 +104,11 @@
   "spatial": {
     "references": [
       {
+        "type": "wkt",
+        "title": "",
+        "wkt": "POLYGON ((36 11, 46 46, 16 41, 11 21, 36 11), (21 31, 36 36, 31 21, 21 31))"
+      },
+      {
         "type": "free",
         "title": "Hamburg",
         "value": {

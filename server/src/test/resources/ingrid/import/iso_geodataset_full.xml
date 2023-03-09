@@ -492,6 +492,32 @@
             </gmd:topicCategory>
             <gmd:extent>
                 <gmd:EX_Extent>
+                    <gmd:geographicElement>
+                        <gmd:EX_BoundingPolygon>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:myvalue><tag>xxx</tag></gmd:myvalue>
+                            <gmd:polygon>
+                                <gml:Polygon gml:id="Polygon_ID_953bbea6-e623-4970-acf3-6546b95032d4" srsDimension="2">
+                                    <gml:exterior>
+                                        <gml:LinearRing>
+                                            <gml:posList>36 11 46 46 16 41 11 21 36 11</gml:posList>
+                                        </gml:LinearRing>
+                                    </gml:exterior>
+                                    <gml:interior>
+                                        <gml:LinearRing>
+                                            <gml:posList>21 31 36 36 31 21 21 31</gml:posList>
+                                        </gml:LinearRing>
+                                    </gml:interior>
+                                </gml:Polygon>
+                            </gmd:polygon>
+                        </gmd:EX_BoundingPolygon>
+                    </gmd:geographicElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+            <gmd:extent>
+                <gmd:EX_Extent>
                     <gmd:description>
                         <gco:CharacterString>Erläuterungen Raumbezug</gco:CharacterString>
                     </gmd:description>

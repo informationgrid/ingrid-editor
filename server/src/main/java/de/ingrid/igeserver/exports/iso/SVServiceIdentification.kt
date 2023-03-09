@@ -18,7 +18,7 @@ open class SVServiceIdentification(
     open val serviceType: LocalName?,
     open val serviceTypeVersion: List<CharacterString>?,
     @JacksonXmlProperty(namespace = "http://www.isotc211.org/2005/srv")
-    open val extent: EXExtentOrig?,
+    open val extent: List<EXExtentOrig>?,
     open val coupledResource: CoupledResource?,
     open val couplingType: CouplingType?,
     open val containsOperations: List<ContainsOperation>?,

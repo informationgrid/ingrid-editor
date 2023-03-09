@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.exports.iso
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
@@ -93,10 +94,12 @@ data class TimePeriod(
 )
 
 class TemporalPosition {
-    @JacksonXmlProperty(isAttribute = true) val indeterminatePosition: String? = null
+    @JacksonXmlProperty(isAttribute = true)
+    val indeterminatePosition: String? = null
 //    val value: String? = null
 
-    @JacksonXmlText val value: String? = null
+    @JacksonXmlText
+    val value: String? = null
 }
 
 
@@ -104,8 +107,13 @@ class TemporalPosition {
     namespace = "http://www.isotc211.org/2005/gmd",
 )
 data class EXGeographicDescription(
-    @JacksonXmlProperty(localName = "EX_GeographicDescription") val geographicDescription: GeographicDescription?,
-    @JacksonXmlProperty(localName = "EX_GeographicBoundingBox") val geographicBoundingBox: GeographicBoundingBox?
+    @JacksonXmlProperty(localName = "EX_BoundingPolygon") val boundingPolygon: BoundingPolygon?,
+    @JacksonXmlProperty(localName = "EX_GeographicBoundingBox") val geographicBoundingBox: GeographicBoundingBox?,
+    @JacksonXmlProperty(localName = "EX_GeographicDescription") val geographicDescription: GeographicDescription?
+)
+
+data class BoundingPolygon(
+    val polygon: ObjectNode? = null
 )
 
 class GeographicBoundingBox(

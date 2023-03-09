@@ -1,15 +1,18 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+
 
 open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler) {
 
@@ -96,7 +99,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.let { UtilsCountryCodelist.getCodeFromShortcut3(it) }
             ?.let { KeyValue(it.toString()) }
 
-        return if (listOfNotNull(city, postbox, street, countryCode, zipCode, zipPostbox, administrativeArea).isEmpty()) null
+        return if (listOfNotNull(
+                city,
+                postbox,
+                street,
+                countryCode,
+                zipCode,
+                zipPostbox,
+                administrativeArea
+            ).isEmpty()
+        ) null
         else {
             AddressInfo(
                 city,
@@ -112,7 +124,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     private fun getCommunications(ciContact: CIContact?): List<Communication> {
         val list = mutableListOf<Communication>()
-        ciContact?.address?.address?.electronicMailAddress?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("3"), it)) }
+        ciContact?.address?.address?.electronicMailAddress?.mapNotNull { it.value }
+            ?.forEach { list.add(Communication(KeyValue("3"), it)) }
         ciContact?.phone?.value?.let { list.add(Communication(KeyValue("1"), it)) }
         return list
     }
@@ -233,7 +246,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getSpatialReferences(): List<SpatialReference> {
         val references = mutableListOf<SpatialReference>()
 
-        metadata.identificationInfo[0].identificationInfo?.extent?.extend?.geographicElement
+        metadata.identificationInfo[0].identificationInfo?.extent
+            ?.flatMap { it.extend?.geographicElement ?: emptyList() }
             ?.forEach {
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
@@ -248,30 +262,41 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 }
 
                 // handle coordinates
-                val bbox = it.geographicBoundingBox
-                references.last().coordinates = BoundingBox(
-                    bbox?.southBoundLatitude?.value!!,
-                    bbox.westBoundLongitude?.value!!,
-                    bbox.northBoundLatitude?.value!!,
-                    bbox.eastBoundLongitude?.value!!
-                )
+                it.geographicBoundingBox?.let { bbox ->
+                    references.last().coordinates = BoundingBox(
+                        bbox.southBoundLatitude?.value!!,
+                        bbox.westBoundLongitude?.value!!,
+                        bbox.northBoundLatitude?.value!!,
+                        bbox.eastBoundLongitude?.value!!
+                    )
+                }
 
                 // TODO: handle bounding polygons
+                it.boundingPolygon?.polygon?.let { polygon ->
+                    val xmlMapper = XmlMapper()
+                    val xml = xmlMapper.writer().withoutRootName().writeValueAsString(it.boundingPolygon.polygon)
+                    val convertedWKT = convertGml32ToWkt(xml.substring(2, xml.length - 3))
+                    references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
+                }
             }
         return references
     }
 
     val spatialDescription =
-        metadata.identificationInfo[0].identificationInfo?.extent?.extend?.description?.value ?: ""
+        metadata.identificationInfo[0].identificationInfo?.extent?.mapNotNull { it.extend }
+            ?.mapNotNull { it.description?.value }
+            ?.joinToString(";")
 
     fun getRegionKey(): String {
-        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.geographicElement
-            ?.mapNotNull { it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code?.value }
+        return metadata.identificationInfo[0].identificationInfo?.extent
+            ?.flatMap { it.extend?.geographicElement?.map { it.geographicDescription } ?: emptyList() }
+            ?.mapNotNull { it?.geographicIdentifier?.mdIdentifier?.code?.value }
             ?.getOrNull(0) ?: ""
     }
 
     fun getVerticalExtent(): VerticalExtentModel? {
-        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.verticalElement
+        return metadata.identificationInfo[0].identificationInfo?.extent
+            ?.flatMap { it.extend?.verticalElement ?: emptyList() }
             ?.mapNotNull {
                 val uom =
                     it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
@@ -321,26 +346,28 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getTimeRelatedInfo(): TimeInfo? {
         val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
         val statusKey = codeListService.getCodeListEntryId("523", status, "ISO")
-        return metadata.identificationInfo[0].identificationInfo?.extent?.extend?.temporalElement
+        return metadata.identificationInfo[0].identificationInfo?.extent
+            ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.mapNotNull {
 
                 val instant = it.extent?.extent?.timeInstant?.timePosition
                 if (instant != null) {
                     return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
                 }
-                
+
                 val period = it.extent?.extent?.timePeriod
                 if (period != null) {
-                    val type = determineTemporalType(period) 
-                    val typeSince = determineTemporalTypeSince(period) 
+                    val type = determineTemporalType(period)
+                    val typeSince = determineTemporalTypeSince(period)
                     return TimeInfo(
-                        period.beginPosition?.value, 
-                        type, 
+                        period.beginPosition?.value,
+                        type,
                         KeyValue(statusKey),
                         period.endPosition?.value,
-                        typeSince)
+                        typeSince
+                    )
                 }
-                
+
                 log.warn("Do not support time info, returning null")
                 return null
             }
@@ -350,22 +377,22 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     private fun determineTemporalType(period: TimePeriod): KeyValue? {
         if (period.beginPosition?.value != null && period.endPosition?.value != null) {
             return KeyValue("since") // von
-        } else if (period.beginPosition?.indeterminatePosition == "unknown"){
+        } else if (period.beginPosition?.indeterminatePosition == "unknown") {
             return KeyValue("until")
-        } else if (period.endPosition?.indeterminatePosition == "unknown"){
+        } else if (period.endPosition?.indeterminatePosition == "unknown") {
             return KeyValue("since")
-        } else if (period.endPosition?.indeterminatePosition == "now"){
+        } else if (period.endPosition?.indeterminatePosition == "now") {
             return KeyValue("since")
         }
-        
+
         return null
     }
-    
+
     private fun determineTemporalTypeSince(period: TimePeriod): KeyValue? {
         if (period.beginPosition?.value != null && period.endPosition?.value != null) return KeyValue("exactDate")
         if (period.endPosition?.indeterminatePosition == "now") return KeyValue("requestTime")
         if (period.endPosition?.indeterminatePosition == "unknown") return KeyValue("unknown")
-        
+
         return null
     }
 
@@ -465,17 +492,21 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     } ?: emptyList()
             } ?: emptyList()
     }
-    
+
     fun getConformanceResult(): List<ConformanceResult> {
         return metadata.dataQualityInfo
             ?.filter { it.dqDataQuality?.report != null }
-            ?.flatMap { it.dqDataQuality?.report?.map { report -> report.dqDomainConsistency?.result?.dqConformanceResult } ?: emptyList() }
+            ?.flatMap {
+                it.dqDataQuality?.report?.map { report -> report.dqDomainConsistency?.result?.dqConformanceResult }
+                    ?: emptyList()
+            }
             ?.mapNotNull {
                 val pass = determineConformanceResultPass(it?.pass?.boolean?.value)
                 val specification = it?.specification?.citation?.title?.value ?: return@mapNotNull null
 
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "ISO")
-                val specificationKeyValue = if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
+                val specificationKeyValue =
+                    if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
                 val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
                 ConformanceResult(
                     pass,
@@ -499,15 +530,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         val otherConstraints = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.map { it.legalConstraint }
             ?.filter { it?.useConstraints != null }
-            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() } ?: emptyList()
-        
+            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() }
+            ?: emptyList()
+
         val result = mutableListOf<UseConstraint>()
-        
+
         // otherConstraints for use-constraints can have the following order/groups
         // LicenseText
         // LicenseText, Source
         // LicenseText, Source, JSON
-        otherConstraints.forEachIndexed { index, value -> 
+        otherConstraints.forEachIndexed { index, value ->
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
                 val text = node.get("name").asText()
@@ -523,32 +555,34 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
             val nextValue = otherConstraints.getOrNull(index + 1)
             val secondNextValue = otherConstraints.getOrNull(index + 2)
-            
+
             if (isJsonString(nextValue) || isJsonString(secondNextValue)) {
                 // skip item since JSON will be used
                 return@forEachIndexed
             }
-            
+
             if (isSourceNote(nextValue)) {
-                result.add(UseConstraint(
-                    convertUserConstraintToKeyValue(value), 
-                    nextValue?.replace("Quellenvermerk: ", ""))
+                result.add(
+                    UseConstraint(
+                        convertUserConstraintToKeyValue(value),
+                        nextValue?.replace("Quellenvermerk: ", "")
+                    )
                 )
                 return@forEachIndexed
             }
 
             // is last constraint or next one is another one/group
             result.add(UseConstraint(convertUserConstraintToKeyValue(value), null))
-            
+
         }
-        
+
         return result
     }
 
     private fun isSourceNote(value: String?): Boolean {
         return value?.startsWith("Quellenvermerk: ") ?: false
     }
-    
+
     private fun convertUserConstraintToKeyValue(text: String?): KeyValue? {
         if (text == null) return null
         val id = codeListService.getCodeListEntryId("6500", text, "de")
@@ -657,7 +691,13 @@ data class MaintenanceInterval(
     val description: String?
 )
 
-data class TimeInfo(val date: String?, val type: KeyValue?, val status: KeyValue, val untilDate: String? = null, val dateTypeSince: KeyValue? = null)
+data class TimeInfo(
+    val date: String?,
+    val type: KeyValue?,
+    val status: KeyValue,
+    val untilDate: String? = null,
+    val dateTypeSince: KeyValue? = null
+)
 
 data class Event(val type: KeyValue, val date: String)
 
@@ -671,7 +711,8 @@ data class VerticalExtentModel(
 data class SpatialReference(
     val type: String,
     val title: String?,
-    var coordinates: BoundingBox? = null
+    var coordinates: BoundingBox? = null,
+    var wkt: String? = null
 )
 
 data class BoundingBox(
@@ -699,8 +740,8 @@ data class PointOfContact(
     val address: AddressInfo? = null,
     val positionName: String = "",
     val hoursOfService: String = "",
-    
-)
+
+    )
 
 data class Communication(
     val type: KeyValue,

@@ -77,14 +77,19 @@
 "references": [
 @for(var ref : ForSupport.of(model.getSpatialReferences()))
     {
-    "type": "${ref.get().getType()}",
-    "title": "${ref.get().getTitle()}",
-    "value": {
-    "lat1": ${ref.get().getCoordinates().getLat1()},
-    "lon1": ${ref.get().getCoordinates().getLon1()},
-    "lat2": ${ref.get().getCoordinates().getLat2()},
-    "lon2": ${ref.get().getCoordinates().getLon2()}
-    }
+        "type": "${ref.get().getType()}",
+        "title": "${ref.get().getTitle()}",
+        @if(ref.get().getType().equals("free"))
+        "value": {
+            "lat1": ${ref.get().getCoordinates().getLat1()},
+            "lon1": ${ref.get().getCoordinates().getLon1()},
+            "lat2": ${ref.get().getCoordinates().getLat2()},
+            "lon2": ${ref.get().getCoordinates().getLon2()}
+        }
+        @elseif(ref.get().getType().equals("wkt"))
+        "wkt": "${ref.get().getWkt()}"
+        @endif
+
     }@if (!ref.isLast()),@endif
 @endfor
 ],

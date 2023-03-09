@@ -23,7 +23,7 @@ class MDDataIdentification(
     override val graphicOverview: List<GraphicOverview>?,
     override val serviceType: LocalName?,
     override val serviceTypeVersion: List<CharacterString>?,
-    override val extent: EXExtentOrig?,
+    override val extent: List<EXExtentOrig>?,
     override val coupledResource: CoupledResource?,
     override val couplingType: CouplingType?,
     override val containsOperations: List<ContainsOperation>?,
