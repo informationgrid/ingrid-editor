@@ -24,10 +24,16 @@ export abstract class OrganisationDoctype extends AddressShared {
           wrappers: ["panel", "form-field"],
         }),
       ]),
-      this.addSection("Kommunikation", [
-        this.addContact(),
-        this.addAddressSection(this.options),
-      ]),
+      this.addSection(
+        "Kommunikation",
+        [
+          this.addContact(),
+          this.addAddressSection(this.options),
+          ...(this.options.positionNameAndHoursOfService
+            ? this.addPositionNameAndHoursOfService()
+            : []),
+        ].filter(Boolean)
+      ),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
   }

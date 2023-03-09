@@ -12,6 +12,7 @@ export interface AddressOptions {
   hideCountryAndAdministrativeArea: boolean;
   hideAdministrativeArea: boolean;
   inheritAddress: boolean;
+  positionNameAndHoursOfService: boolean;
   requiredField: any;
 }
 
@@ -57,6 +58,19 @@ export abstract class AddressShared extends BaseDoctype {
         }),
       ],
     });
+  }
+
+  addPositionNameAndHoursOfService(): FormlyFieldConfig[] {
+    return [
+      this.addTextArea(
+        "positionName",
+        "Position/nachgeordnete Abteilung",
+        this.id
+      ),
+      this.addInput("hoursOfService", "Servicezeiten", {
+        wrappers: ["panel", "form-field"],
+      }),
+    ];
   }
 
   addAddressSection(options: Partial<AddressOptions> = {}): FormlyFieldConfig {

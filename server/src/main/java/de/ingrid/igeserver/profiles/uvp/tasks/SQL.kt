@@ -1,8 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-
-data class UploadInfo(val uri: String, val validUntil: String?)
+import de.ingrid.igeserver.utils.UploadInfo
 
 val sqlStepsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -14,7 +13,8 @@ val sqlStepsPublished = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND dw.published = doc.id
+          AND dw.uuid = doc.uuid
+          AND doc.state = 'PUBLISHED'
     """.trimIndent()
 
 val sqlStepsWithDrafts = """
@@ -27,7 +27,8 @@ val sqlStepsWithDrafts = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
     """.trimIndent()
 
 val sqlNegativeDecisionDocsPublished = """
@@ -39,7 +40,8 @@ val sqlNegativeDecisionDocsPublished = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND dw.published = doc.id
+          AND dw.uuid = doc.uuid
+          AND doc.state = 'PUBLISHED'
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
@@ -52,7 +54,8 @@ val sqlNegativeDecisionDocsWithDraft = """
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.published = doc.id OR dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
@@ -77,5 +80,5 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
     val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-    return UploadInfo(it.get("downloadURL").get("uri").textValue(), expiredDate)
+    return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
 }

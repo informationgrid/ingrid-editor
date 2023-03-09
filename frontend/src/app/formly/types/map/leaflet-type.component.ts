@@ -133,7 +133,9 @@ export class LeafletTypeComponent
       this.leafletReference.doubleClickZoom.disable();
     }
 
-    const locationsWithColor = this.extendLocationsWithColor(this.locations);
+    const locationsWithColor = this.leafletService.extendLocationsWithColor(
+      this.locations
+    );
     this.updateLocations(locationsWithColor);
 
     if (hasCoordinates) {
@@ -196,16 +198,6 @@ export class LeafletTypeComponent
           this.updateBoundingBox();
         }
       });
-  }
-
-  private extendLocationsWithColor(
-    locations: SpatialLocation[]
-  ): SpatialLocationWithColor[] {
-    return locations.map((location, index) => ({
-      ...location,
-      indexNumber: index,
-      color: this.leafletService.getColor(index),
-    }));
   }
 
   removeLocation(index: number) {

@@ -1,15 +1,17 @@
 package de.ingrid.igeserver.tasks.quartz
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.*
+import org.quartz.JobDataMap
+import org.quartz.JobExecutionContext
+import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
@@ -17,79 +19,73 @@ class URLChecker @Autowired constructor(
     val notifier: JobsNotifier,
     val referenceHandlerFactory: ReferenceHandlerFactory,
     val urlRequestService: UrlRequestService
-) :
-    InterruptableJob {
+) : IgeJob() {
 
     companion object {
-        val jobKey: JobKey = JobKey.jobKey("url-check", "system")
+        const val jobKey: String = "url-check"
     }
 
-    val log = logger()
+    override val log = logger()
 
-    var currentThread: Thread? = null
 
-    override fun execute(context: JobExecutionContext) {
+    override fun run(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
+        val message = Message()
+        val info = prepareJob(context)
+        val notificationType = MessageTarget(NotificationType.URL_CHECK, info.catalogId)
 
-        val message = UrlMessage()
-        notifier.sendMessage(message.apply { this.message = "Started URLChecker" })
+        try {
+            if (info.referenceHandler == null) {
+                val msg = "No class defined to get URLs from catalog with profile ${info.profile}"
+                log.warn(msg)
+                message.apply {
+                    this.message = "Finished URLChecker"
+                    this.report = URLCheckerReport(0, emptyList())
+                    this.endTime = Date()
+                    this.errors = mutableListOf(msg)
+                }.also {
+                    finishJob(context, it)
+                    notifier.sendMessage(notificationType, it)
 
-        val info = prepareJob(context, message)
-
-        val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
-
-        val urls = with(convertToUrlList(docs)) {
-            forEachIndexed { index, urlReport ->
-                notifier.sendMessage(message.apply { this.progress = calcProgress(index, size) })
-                checkAndReportUrl(urlReport)
+                }
+                throw ClientException.withReason(msg)
             }
-            this
+
+            notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
+
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+
+            val urls = with(convertToUrlList(docs)) {
+                forEachIndexed { index, urlReport ->
+                    notifier.sendMessage(notificationType, message.apply { this.progress = calcProgress(index, size) })
+                    checkAndReportUrl(urlReport)
+                }
+                this
+            }
+
+            val invalidUrlReport = URLCheckerReport(urls.size, urls.filter { it.success.not() })
+            message.apply {
+                this.message = "Finished URLChecker"
+                this.report = invalidUrlReport
+                this.endTime = Date()
+            }.also {
+                finishJob(context, it)
+                notifier.sendMessage(notificationType, it)
+
+            }
+            log.debug("Task finished: URLChecker for '$info.catalogId'")
+        } catch (ex: Exception) {
+            notifier.endMessage(notificationType, message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+            throw ex
         }
-
-        finishJob(message, urls, context)
-        log.debug("Task finished: URLChecker for '$info.catalogId'")
     }
 
-    private fun finishJob(
-        message: UrlMessage,
-        urls: List<UrlReport>,
-        context: JobExecutionContext,
-        errors: MutableList<String> = mutableListOf()
-    ) {
-        notifier.endMessage(message.apply {
-            this.message = "Finished URLChecker"
-            this.report = URLCheckerReport(urls.size, urls.filter { it.success.not() })
-            this.errors = errors
-        })
-
-        val persistData: JobDataMap = context.jobDetail?.jobDataMap!!
-        persistData["startTime"] = message.startTime
-        persistData["endTime"] = message.endTime
-        persistData["report"] = jacksonObjectMapper().writeValueAsString(message.report)
-        persistData["errors"] = jacksonObjectMapper().writeValueAsString(message.errors)
-
-        currentThread = null
-    }
-
-    override fun interrupt() {
-        log.info("Task interrupted")
-        currentThread?.interrupt()
-    }
-
-    private fun prepareJob(context: JobExecutionContext, message: UrlMessage): JobInfo {
+    private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
         val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
         val referenceHandler = referenceHandlerFactory.get(profile)
-
-        if (referenceHandler == null) {
-            val msg = "No class defined to get URLs from catalog with profile $profile"
-            log.warn(msg)
-            finishJob(message, emptyList(), context, mutableListOf(msg))
-            throw ClientException.withReason(msg)
-        }
-        currentThread = Thread.currentThread()
 
         return JobInfo(profile, catalogId, referenceHandler)
     }
@@ -123,5 +119,5 @@ class URLChecker @Autowired constructor(
         info.success = urlRequestService.isSuccessCode(status)
     }
 
-    data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler)
+    private data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)
 }

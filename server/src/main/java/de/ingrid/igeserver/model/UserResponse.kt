@@ -1,7 +1,5 @@
 package de.ingrid.igeserver.model
 
-import java.util.*
-
 /**
  * UserResponse
  */

@@ -221,6 +221,7 @@ h1 {
 
 .link-text {
   cursor: pointer;
+
   a:hover {
     color: $ige-primary;
   }
@@ -456,6 +457,7 @@ formly-field ige-one-column-wrapper mat-form-field,
 formly-wrapper-mat-form-field > mat-form-field {
   width: 100%;
 }
+
 ige-form-wrapper formly-field.ige-date-picker mat-form-field {
   width: inherit;
 }
@@ -649,10 +651,12 @@ svg {
   padding-right: 10px;
   flex: 1;
   align-items: flex-start;
+
   img {
     padding-right: 10px;
     padding-top: 1px;
   }
+
   word-break: break-all;
   line-height: 20px;
 }
@@ -725,6 +729,16 @@ ige-inline-help-wrapper {
   }
 }
 
+// color for accessibility
+[mat-dialog-close].cdk-keyboard-focused {
+  --mat-mdc-button-persistent-ripple-color: #ffffff;
+}
+
+// color for accessibility
+[mat-flat-button][color="primary"].cdk-keyboard-focused {
+  background-color: lighten($ige-secondary, 10%) !important;
+}
+
 // Context Buttons
 .mat-mdc-icon-button {
   &.table-options {
@@ -765,6 +779,7 @@ ige-context-help .mat-mdc-dialog-content {
     font-size: 16px;
     font-weight: 500;
   }
+
   h2 {
     color: #000000de;
     margin-bottom: 0;
@@ -772,6 +787,18 @@ ige-context-help .mat-mdc-dialog-content {
     & + p {
       margin-top: 0;
     }
+  }
+
+  table,
+  th,
+  td {
+    border: 1px solid;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 7px;
   }
 }
 
@@ -884,6 +911,7 @@ mat-icon.mark-color .coloring {
       height: 6px;
     }
   }
+
   /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
   & > .mat-tab-body-wrapper {
     flex: 1;
@@ -949,6 +977,7 @@ mat-icon.mark-color .coloring {
 .mat-mdc-option + .spacing {
   padding-bottom: 35px;
 }
+
 //}
 
 /* DRAG N DROP ANIMIATION */
@@ -997,7 +1026,11 @@ mat-icon.wide-icon-26px {
 
 /* TABLE */
 .mat-mdc-table .mat-mdc-row:hover {
-  background-color: darken(#ffffff, 5%);
+  background-color: darken(#ffffff, 5%) !important;
+
+  &.selected {
+    background-color: darken($ige-mark-color, 5%) !important;
+  }
 
   .menu-button {
     background-color: #ffffff;

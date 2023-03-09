@@ -34,8 +34,6 @@ import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
 import { WktSpatialComponent } from "./types/map/spatial-dialog/wkt-spatial/wkt-spatial.component";
-import { DrawSpatialComponent } from "./types/map/spatial-dialog/draw-spatial/draw-spatial.component";
-import { NameSpatialComponent } from "./types/map/spatial-dialog/name-spatial/name-spatial.component";
 import { RepeatListComponent } from "./types/repeat-list/repeat-list.component";
 import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { FormDialogComponent } from "./types/table/form-dialog/form-dialog.component";
@@ -85,6 +83,8 @@ import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-s
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
+import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
+import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -249,6 +249,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     DocumentIconModule,
+    MixedCdkDragDropModule,
   ],
   providers: [
     {
@@ -282,8 +283,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SpatialDialogComponent,
     FreeSpatialComponent,
     WktSpatialComponent,
-    DrawSpatialComponent,
-    NameSpatialComponent,
     RepeatListComponent,
     RepeatComponent,
     RepeatDetailListComponent,
@@ -305,6 +304,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     DocumentReferenceTypeComponent,
     SelectGeoDatasetDialog,
     SelectCswRecordDialog,
+    CoordinatesSpatialComponent,
   ],
   exports: [
     ReactiveFormsModule,

@@ -25,11 +25,11 @@ data class UVPModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
 ) {
-
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
 
+    var catalogId: String = ""
     val spatialTitle = data.spatials?.get(0)?.title
 
     var documentType = mapDocumentType()
@@ -50,8 +50,10 @@ data class UVPModel(
     val parentUuid: String? = data._parent
     var pointOfContact: AddressModel? = null
 
-    init {
+    fun init(catalogId: String): UVPModel {
+        this.catalogId = catalogId
         pointOfContact = determinePointOfContact()
+        return this
     }
 
     fun handleContent(value: String?): String? {
@@ -66,7 +68,8 @@ data class UVPModel(
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id)
+//        val catalogId = AddressModel.catalogRepository?.getCatalogIdentifier(doc.catalog!!.id!!)!!
+        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id, catalogId)
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
@@ -181,7 +184,7 @@ data class UVPModel(
     private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent)
+        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent, catalogId)
     }
 
 

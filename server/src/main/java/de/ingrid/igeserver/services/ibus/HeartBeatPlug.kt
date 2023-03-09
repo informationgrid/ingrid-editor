@@ -98,10 +98,10 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                     val plugId = _plugDescription.plugId
 
                     LOG.debug("heartbeat#$_name send heartbeat [$_heartBeatCount] to bus [$_busUrl]")
-                    val containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
+                    val containsPlugDescription = _bus.containsPlugDescription(plugId, md5)
                     if (!containsPlugDescription) {
                         if (LOG.isInfoEnabled()) {
-                            LOG.debug("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
+                            LOG.debug("adding or updating plug description to bus [$_busUrl] with md5 [$md5]")
                         }
                         _plugDescription.md5Hash = md5
 //                        injectMetadatas(_plugDescription)
@@ -308,9 +308,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
         // remove old hearbeats
         stopHeartBeats()
         _heartBeats.clear()
-        if (_plugDescription != null) {
-            configure(_plugDescription!!)
-        }
+        configure(_plugDescription)
     }
 
     @Throws(Exception::class)

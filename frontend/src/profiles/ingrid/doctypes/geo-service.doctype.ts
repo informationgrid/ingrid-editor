@@ -11,6 +11,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -27,7 +28,11 @@ export class GeoServiceDoctype extends IngridShared {
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection({ inspireRelevant: true, openData: true }),
-      this.addKeywordsSection({ priorityDataset: true, spatialScope: true }),
+      this.addKeywordsSection({
+        priorityDataset: true,
+        spatialScope: true,
+        inspireTopics: true,
+      }),
 
       this.addSection("Fachbezug", [
         this.addGroupSimple("service", [
@@ -48,7 +53,7 @@ export class GeoServiceDoctype extends IngridShared {
                   options: this.getCodelistForSelect(5100, "type"),
                   codelistId: 5100,
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
                 this.addCheckboxInline(
                   "isAtomDownload",
@@ -56,7 +61,7 @@ export class GeoServiceDoctype extends IngridShared {
                   {
                     className: "optional",
                     expressions: {
-                      hide: "formState.mainModel?.serviceType?.key !== '3'",
+                      hide: "formState.mainModel?.service?.serviceType?.key !== '3'",
                     },
                   }
                 ),
@@ -160,7 +165,7 @@ export class GeoServiceDoctype extends IngridShared {
                   { label: "tight", value: "tight" },
                 ],
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }),
             ],
             { contextHelpId: "shownData" }
@@ -195,8 +200,16 @@ export class GeoServiceDoctype extends IngridShared {
     codelistQuery: CodelistQuery,
     uploadService: UploadService,
     dialog: MatDialog,
-    cookieService: CookieService
+    cookieService: CookieService,
+    snack: MatSnackBar
   ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
+    super(
+      codelistService,
+      codelistQuery,
+      uploadService,
+      dialog,
+      cookieService,
+      snack
+    );
   }
 }

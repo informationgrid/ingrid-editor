@@ -97,6 +97,11 @@ ige-session-timeout-info {
   font-size: 1.25rem;
 }
 
+::ng-deep .user-popup-menu > div {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
 .user-popup {
   height: 32px;
   width: 32px;
@@ -115,19 +120,23 @@ ige-session-timeout-info {
     &:hover {
       background-color: lighten($ige-primary, 8%);
     }
+
+    ::ng-deep path {
+      fill: #ffffff;
+    }
   }
 }
 
 .user-popup-header {
   color: #ffffff;
   background-color: $ige-primary;
-  margin-top: -8px;
+  //margin-top: -8px;
   padding: 20px;
 }
 
 .user-popup-footer {
   border-top: 1px solid $ige-background-bar;
-  margin-bottom: -8px;
+  //margin-bottom: -8px;
   text-align: center;
 
   button {

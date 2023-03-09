@@ -46,7 +46,8 @@ class JsonSchemaValidator @Autowired constructor(
         val extraFields = """
             ,
             "title": "${JsonEscape.escapeJson(payload.document.title)}",
-            "_type": "${JsonEscape.escapeJson(payload.document.type)}"
+            "_type": "${JsonEscape.escapeJson(payload.document.type)}",
+            "_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}"
         """.trimIndent()
         return json.substringBeforeLast("}") + extraFields + "}"
     }

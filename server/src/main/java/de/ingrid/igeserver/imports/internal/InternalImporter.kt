@@ -11,7 +11,6 @@ import de.ingrid.igeserver.services.MapperService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import javax.management.ObjectName
 
 @Service
 class InternalImporter : IgeImporter {
@@ -32,8 +31,6 @@ class InternalImporter : IgeImporter {
     }
 
     private fun migrateDocumentsFrom(documents: ArrayNode): ArrayNode {
-
-
         documents.forEach { document ->
             document as ObjectNode
             document.put(FIELD_UUID, document.get(FIELD_ID).asText())
@@ -45,7 +42,6 @@ class InternalImporter : IgeImporter {
         }
 
         return documents
-
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {

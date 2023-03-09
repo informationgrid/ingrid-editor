@@ -40,7 +40,7 @@ export class UrlCheckComponent implements OnInit {
   liveLog: Observable<UrlLogResult> = merge(
     this.urlCheckService.getJobInfo().pipe(map((value) => value.info)),
     this.rxStompService
-      .watch("/topic/jobs")
+      .watch(`/topic/jobs/url-check/${ConfigService.catalogId}`)
       .pipe(map((msg) => JSON.parse(msg.body)))
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 

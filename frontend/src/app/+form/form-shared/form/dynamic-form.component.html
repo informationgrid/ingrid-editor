@@ -4,11 +4,8 @@
     <!-- Toolbar -->
     <form-toolbar></form-toolbar>
 
-    <as-split
-        [useTransition]="true"
-        (dragEnd)="rememberSizebarWidth($event)"
-        [gutterSize]="12"
-    >
+    <!--        [useTransition]="true"-->
+    <as-split (dragEnd)="rememberSizebarWidth($event)" [gutterSize]="12">
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
             <ige-sidebar
@@ -46,13 +43,12 @@
                         "
                     >
                     </ige-form-info>
-                    <!--                                      [scrollHeaderOffsetLeft]="scrollHeaderOffsetLeft" -->
                     <ige-quick-navbar
-                        #sticky_header
                         *ngIf="formInfoModel !== null"
                         [class.sticky-header]="isStickyHeader"
                         [model]="model"
                         [sections]="sections | async"
+                        [numberOfErrors]="numberOfErrors"
                         [hasOptionalFields]="hasOptionalFields"
                         (toggleOptionalFields)="hideOptionalFields = !$event"
                     ></ige-quick-navbar>

@@ -38,16 +38,18 @@ export interface CreateOptions {
 export class CreateNodeComponent implements OnInit {
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
-  parent: string = null;
+  parent: number = null;
   forAddress: boolean;
   selectedPage = 0;
   rootTreeName: string;
   isFolder = true;
   formGroup: UntypedFormGroup;
-  jumpedTreeNodeId: string = null;
+  jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
-  selectedLocation: string = null;
+  selectedLocation: number = null;
   pathWithWritePermission = false;
+  alreadySubmitted = false;
+
   private query: TreeQuery | AddressTreeQuery;
   docTypeChoice: string;
   docTypeChanged$ = new Subject();
@@ -121,6 +123,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
+    this.alreadySubmitted = true;
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
@@ -135,7 +138,7 @@ export class CreateNodeComponent implements OnInit {
     }
   }
 
-  updateParent(parentId: string) {
+  updateParent(parentId: number) {
     this.selectedLocation = parentId;
   }
 
@@ -154,14 +157,14 @@ export class CreateNodeComponent implements OnInit {
     this.selectedPage = 0;
   }
 
-  jumpToTree(id: string) {
+  jumpToTree(id: number) {
     this.selectedPage = 1;
     if (id !== null && this.pathWithWritePermission) {
       this.jumpedTreeNodeId = id;
     }
   }
 
-  quickBreadcrumbChange(id: string) {
+  quickBreadcrumbChange(id: number) {
     this.parent = id;
     const index = this.path.findIndex((item) => item.id === id);
     this.path = this.path.splice(0, index + 1);

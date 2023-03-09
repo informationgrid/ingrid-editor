@@ -14,6 +14,7 @@
             matEndDate
             placeholder="TT.MM.JJJJ"
             formControlName="end"
+            [errorStateMatcher]="errorStateMatcher"
             (change)="updateFormControl()"
         />
     </mat-date-range-input>
@@ -27,7 +28,7 @@
         (closed)="updateFormControl()"
     ></mat-date-range-picker>
 
-    <mat-error *ngIf="showError && formControl.hasError('matEndDateInvalid')">
-        Das Enddatum liegt vor dem Startdatum
+    <mat-error *ngIf="showError">
+        <formly-validation-message [field]="field"></formly-validation-message>
     </mat-error>
 </mat-form-field>

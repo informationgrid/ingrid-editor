@@ -1,4 +1,4 @@
-INSERT INTO document
+INSERT INTO document(id, catalog_id, uuid, type, title, data, version, created, modified, state)
 VALUES (1014, 100, '222-approval-222', 'UvpApprovalProcedureDoc', 'Approval1', '{
   "eiaNumbers": [
     {
@@ -21,8 +21,7 @@ VALUES (1014, 100, '222-approval-222', 'UvpApprovalProcedureDoc', 'Approval1', '
       "decisionDate": "2021-08-13T22:00:00.000Z"
     }
   ]
-}',
-        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00');
+}', 0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', 'PUBLISHED');
 
 
 INSERT INTO document_wrapper

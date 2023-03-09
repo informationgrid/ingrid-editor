@@ -1,0 +1,17 @@
+@import "src/variables";
+
+:host {
+  position: sticky;
+  z-index: 3000;
+  top: 0;
+}
+
+.wrapper {
+  background-color: $error-color;
+  color: #ffffff;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}

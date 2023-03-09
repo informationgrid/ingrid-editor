@@ -35,8 +35,8 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     }
 
-    fun getJobInfo(jobId: String) {
-
+    fun getJobInfo(jobKey: JobKey): JobDetail {
+        return scheduler.getJobDetail(jobKey)
     }
 
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
