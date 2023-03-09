@@ -129,6 +129,9 @@
                                     </gmd:electronicMailAddress>
                                 </gmd:CI_Address>
                             </gmd:address>
+                            <gmd:hoursOfService>
+                                <gco:CharacterString>Dies sind die Servicezeiten.</gco:CharacterString>
+                            </gmd:hoursOfService>
                         </gmd:CI_Contact>
                     </gmd:contactInfo>
                     <gmd:role>

@@ -21,7 +21,9 @@
             },
             "connection": "you@wemove.com"
           }
-        ]
+        ],
+        "positionName": "",
+        "hoursOfService": ""
       },
       "type": {
         "key": "7"
@@ -52,7 +54,9 @@
             },
             "connection": "test@wemove.com"
           }
-        ]
+        ],
+        "positionName": "Notizen MMMM",
+        "hoursOfService": ""
       },
       "type": {
         "key": "7"
@@ -95,16 +99,226 @@
   "spatialScope": {
     "key": "-673152846"
   },
+
+  "keywords": ["Wasser", "Unbekannt"],
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Hamburg",
+        "value": {
+          "lat1": 53.394985,
+          "lon1": 8.420551,
+          "lat2": 53.964153,
+          "lon2": 10.326304
+        }
+      },
+      {
+        "type": "free",
+        "title": "Frankfurt am Main",
+        "value": {
+          "lat1": 50.015156,
+          "lon1": 8.473561,
+          "lat2": 50.226444,
+          "lon2": 8.801178
+        }
+      }
+    ],
+    "regionKey": "Hamburg",
+    "spatialSystems": [
+      {
+        "key": "3068"
+      }
+    ],
+    "verticalExtent": {
+      "minimumValue": 1.0,
+      "maximumValue": 6.0,
+      "unitOfMeasure": {
+        "key": "9001"
+      },
+      "Datum": {
+        "key": "900002"
+      }
+    },
+    "description": "Erläuterungen Raumbezug"
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2016-03-01T00:00:00.000+01:00",
+        "referenceDateType": {
+          "key": "1"
+        }
+      }
+    ],
+    "resourceDateType": {
+      "key": "since"
+    },
+    "status": {
+      "key": "7"
+    },
+    "resourceDate": "2016-03-01T00:00:00.000+01:00",
+    "resourceDateTypeSince": {
+      "key": "requestTime"
+    }
+  },
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": {
+      "key": "1"
+    },
+    "userDefinedMaintenanceFrequency": {
+      "number": 6,
+      "unit": {
+        "key": "3"
+      }
+    },
+    "description": "Erläuterungen Zeitbezug"
+  },
+  "extraInfoPublishArea": {
+    "key": "1"
+  },
+  "conformanceResult": [
+    {
+      "pass": {
+        "key": "2"
+      },
+      "isInspire": false,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": null,
+        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+      },
+      "publicationDate": "2007-03-14"
+    },
+    {
+      "pass": {
+        "key": "1"
+      },
+      "isInspire": true,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": "10"
+      },
+      "publicationDate": "2010-12-08"
+    }
+  ],
+  "extraInfo": {
+    "legalBasicsDescriptions": [
+      {
+        "key": "38"
+      }
+    ]
+  },
+  "resource": {
+    "purpose": "Herstellung",
+    "specificUsage": "Eignung",
+    "accessConstraints": [
+      {
+        "key": "1"
+      }
+    ],
+    "useConstraints": [
+      {
+        "title": {
+          "key": "20"
+        },
+        "source": "Quelle 2"
+      }
+    ],
+    "useLimitation": "Datenlizenz Deutschland - Namensnennung - Version 2.0; <a href=\"https://www.govdata.de/dl-de/by-2-0\">https://www.govdata.de/dl-de/by-2-0</a>; dl-de-by-2.0; Namensnennung: \"Freie und Hansestadt Hamburg, Bezirksamt Nord, Fachamt Stadt- und Landschaftsplanung\""
+  },
+  "distribution": {
+    "format": [
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "",
+        "compression": "",
+        "specification": ""
+      },
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "4.1",
+        "compression": "ZIP",
+        "specification": "Spec 1"
+      },
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "3.0",
+        "compression": "",
+        "specification": ""
+      }
+    ]
+  },
+  "digitalTransferOptions": [
+    {
+      "name": {
+        "key": "4"
+      },
+      "transferSize": 700.0,
+      "mediumNote": "Bunker"
+    }
+  ],
+  "orderInfo": "Bestell",
+  "references": [
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Bekanntmachung im HmbGVBl als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "URL zu weiteren Informationen über den Datensatz",
+      "url": "http://www.hamburg.de/bebauungsplaene-online.de",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Begründung des Bebauungsplans als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    }
+  ],
+  "metadata": {
+    "language": {
+      "key": "150"
+    },
+    "characterSet": {
+      "key": "19"
+    }
+  },
+  "resolution": [
+    {
+      "denominator": 1000,
+      "distanceMeter": 100,
+      "distanceDPI": 300
+    }
+  ],
   "topicCategories": [
     {
       "key": "4"
     }
   ],
-  "keywords": ["Wasser", "Unbekannt"],
-  "lineage": {
-    "statement": "vergl. eGovernment Vorhaben \"PLIS\""
-  },
-  "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
   "spatialRepresentationType": [
     {
       "key": "1"
@@ -113,13 +327,10 @@
       "key": "2"
     }
   ],
-  "resolution": [
-    {
-      "denominator": 1000,
-      "distanceMeter": 100,
-      "distanceDPI": 300
-    }
-  ],
+  "lineage": {
+    "statement": "vergl. eGovernment Vorhaben \"PLIS\""
+  },
+  "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
   "portrayalCatalogueInfo": {
     "citation": [
       {
@@ -255,215 +466,9 @@
       "parameter": "Param 1"
     }
   ],
-  "spatial": {
-    "references": [
-      {
-        "type": "free",
-        "title": "Hamburg",
-        "value": {
-          "lat1": 53.394985,
-          "lon1": 8.420551,
-          "lat2": 53.964153,
-          "lon2": 10.326304
-        }
-      },
-      {
-        "type": "free",
-        "title": "Frankfurt am Main",
-        "value": {
-          "lat1": 50.015156,
-          "lon1": 8.473561,
-          "lat2": 50.226444,
-          "lon2": 8.801178
-        }
-      }
-    ],
-    "regionKey": "Hamburg",
-    "spatialSystems": [
-      {
-        "key": "3068"
-      }
-    ],
-    "verticalExtent": {
-      "minimumValue": 1.0,
-      "maximumValue": 6.0,
-      "unitOfMeasure": {
-        "key": "9001"
-      },
-      "Datum": {
-        "key": "900002"
-      }
-    },
-    "description": "Erläuterungen Raumbezug"
-  },
-  "temporal": {
-    "events": [
-      {
-        "referenceDate": "2016-03-01T00:00:00.000+01:00",
-        "referenceDateType": {
-          "key": "1"
-        }
-      }
-    ],
-    "resourceDateType": {
-      "key": "since"
-    },
-    "status": {
-      "key": "7"
-    },
-    "resourceDate": "2016-03-01T00:00:00.000+01:00",
-    "resourceDateTypeSince": {
-      "key": "requestTime"
-    }
-  },
-  "maintenanceInformation": {
-    "maintenanceAndUpdateFrequency": {
-      "key": "1"
-    },
-    "userDefinedMaintenanceFrequency": {
-      "number": 6,
-      "unit": {
-        "key": "3"
-      }
-    },
-    "description": "Erläuterungen Zeitbezug"
-  },
-  "metadata": {
-    "language": {
-      "key": "150"
-    },
-    "characterSet": {
-      "key": "19"
-    }
-  },
-  "extraInfoPublishArea": {
-    "key": "1"
-  },
-  "conformanceResult": [
-    {
-      "pass": {
-        "key": "2"
-      },
-      "isInspire": false,
-      "explanation": "see the referenced specification",
-      "specification": {
-        "key": null,
-        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
-      },
-      "publicationDate": "2007-03-14"
-    },
-    {
-      "pass": {
-        "key": "1"
-      },
-      "isInspire": true,
-      "explanation": "see the referenced specification",
-      "specification": {
-        "key": "10"
-      },
-      "publicationDate": "2010-12-08"
-    }
-  ],
   "dataset": {
     "languages": ["150", "134"]
   },
-  "extraInfo": {
-    "legalBasicsDescriptions": [
-      {
-        "key": "38"
-      }
-    ]
-  },
-  "resource": {
-    "purpose": "Herstellung",
-    "specificUsage": "Eignung",
-    "accessConstraints": [
-      {
-        "key": "1"
-      }
-    ],
-    "useConstraints": [
-      {
-        "title": {
-          "key": "20"
-        },
-        "source": "Quelle 2"
-      }
-    ],
-    "useLimitation": "Datenlizenz Deutschland - Namensnennung - Version 2.0; <a href=\"https://www.govdata.de/dl-de/by-2-0\">https://www.govdata.de/dl-de/by-2-0</a>; dl-de-by-2.0; Namensnennung: \"Freie und Hansestadt Hamburg, Bezirksamt Nord, Fachamt Stadt- und Landschaftsplanung\""
-  },
-  "distribution": {
-    "format": [
-      {
-        "name": {
-          "key": "26"
-        },
-        "version": "",
-        "compression": "",
-        "specification": ""
-      },
-      {
-        "name": {
-          "key": "26"
-        },
-        "version": "4.1",
-        "compression": "ZIP",
-        "specification": "Spec 1"
-      },
-      {
-        "name": {
-          "key": "26"
-        },
-        "version": "3.0",
-        "compression": "",
-        "specification": ""
-      }
-    ]
-  },
-  "digitalTransferOptions": [
-    {
-      "name": {
-        "key": "4"
-      },
-      "transferSize": 700.0,
-      "mediumNote": "Bunker"
-    }
-  ],
-  "orderInfo": "Bestell",
-  "references": [
-    {
-      "type": {
-        "key": "9999"
-      },
-      "title": "Bekanntmachung im HmbGVBl als PDF Datei",
-      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
-      "explanation": ""
-    },
-    {
-      "type": {
-        "key": "9999"
-      },
-      "title": "URL zu weiteren Informationen über den Datensatz",
-      "url": "http://www.hamburg.de/bebauungsplaene-online.de",
-      "explanation": ""
-    },
-    {
-      "type": {
-        "key": "9999"
-      },
-      "title": "Begründung des Bebauungsplans als PDF Datei",
-      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf",
-      "explanation": ""
-    },
-    {
-      "type": {
-        "key": "9999"
-      },
-      "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
-      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
-      "explanation": ""
-    }
-  ],
   "isInspireConform": true,
   "vectorSpatialRepresentation": [
     {

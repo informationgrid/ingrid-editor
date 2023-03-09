@@ -21,7 +21,9 @@
             },
             "connection": "kst@portalu.de"
           }
-        ]
+        ],
+        "positionName": "",
+        "hoursOfService": ""
       },
       "type": {
         "key": "7"
@@ -54,7 +56,9 @@
             },
             "connection": "besitzer@wemove.com"
           }
-        ]
+        ],
+        "positionName": "Liegenschaftsbuch (ALB)",
+        "hoursOfService": "Dies sind die Servicezeiten."
       },
       "type": {
         "key": "1"
@@ -82,7 +86,9 @@
             },
             "connection": "martin.muster@mu.niedersachsen.de"
           }
-        ]
+        ],
+        "positionName": "Testeinheit, NI TESTADRESSEN\n                            Testeinheit",
+        "hoursOfService": ""
       },
       "type": {
         "key": null,
@@ -124,54 +130,6 @@
     "key": "-673152846"
   },
   "keywords": ["Wasser", "Unbekannt"],
-  "service": {
-    "classification": [
-      {
-        "key": "211"
-      }
-    ],
-    "type": {
-      "key": "3"
-    },
-    "version": [
-      {
-        "key": "1"
-      }
-    ],
-    "operations": [
-      {
-        "name": "GetCapabilities",
-        "description": "Eine URL für die getCapabilities",
-        "methodCall": "https://my-getcapabilities"
-      }
-    ],
-    "resolution": [
-      {
-        "denominator": 1213,
-        "distanceMeter": 5435,
-        "distanceDPI": 545
-      }
-    ],
-    "coupledResources": [
-      {
-        "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
-        "isExternalRef": false
-      },
-      {
-        "uuid": "93BBCF92-BD74-47A2-9865-BE59ABC90C57",
-        "isExternalRef": false
-      },
-      {
-        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
-        "title": "Extern gekoppelter Datensatz",
-        "isExternalRef": true
-      }
-    ],
-    "couplingType": {
-      "key": "tight"
-    },
-    "hasAccessConstraints": false
-  },
   "spatial": {
     "references": [
       {
@@ -218,7 +176,8 @@
     "status": {
       "key": "7"
     },
-    "resourceDate": "2023-02-08T00:00:00.000+01:00"
+    "resourceDate": "2023-02-08T00:00:00.000+01:00",
+    "resourceDateTypeSince": null
   },
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": {
@@ -231,11 +190,6 @@
       }
     },
     "description": "Erläuterung Zeitbezug"
-  },
-  "metadata": {
-    "language": {
-      "key": "150"
-    }
   },
   "extraInfoPublishArea": {
     "key": "1"
@@ -354,5 +308,58 @@
       "url": "https://my-getcapabilities",
       "explanation": ""
     }
-  ]
+  ],
+  "metadata": {
+    "language": {
+      "key": "150"
+    }
+  },
+  "service": {
+    "classification": [
+      {
+        "key": "211"
+      }
+    ],
+    "type": {
+      "key": "3"
+    },
+    "version": [
+      {
+        "key": "1"
+      }
+    ],
+    "operations": [
+      {
+        "name": "GetCapabilities",
+        "description": "Eine URL für die getCapabilities",
+        "methodCall": "https://my-getcapabilities"
+      }
+    ],
+    "resolution": [
+      {
+        "denominator": 1213,
+        "distanceMeter": 5435,
+        "distanceDPI": 545
+      }
+    ],
+    "coupledResources": [
+      {
+        "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
+        "isExternalRef": false
+      },
+      {
+        "uuid": "93BBCF92-BD74-47A2-9865-BE59ABC90C57",
+        "isExternalRef": false
+      },
+      {
+        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
+        "title": "Extern gekoppelter Datensatz",
+        "isExternalRef": true
+      }
+    ],
+    "couplingType": {
+      "key": "tight"
+    },
+    "hasAccessConstraints": false
+  }
 }

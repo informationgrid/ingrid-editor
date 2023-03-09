@@ -50,6 +50,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             val organization = it.responsibleParty?.organisationName?.value
             val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
             val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
+            val positionName = it.responsibleParty?.positionName?.value ?: ""
+            val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
             PointOfContact(
                 it.responsibleParty?.uuid!!,
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
@@ -58,7 +60,9 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 individualName == null,
                 organization,
                 individualName,
-                addressInfo
+                addressInfo,
+                positionName,
+                hoursOfService
             )
         }
     }
@@ -692,7 +696,10 @@ data class PointOfContact(
     val isOrganization: Boolean = true,
     val organization: String? = null,
     val personInfo: PersonInfo? = null,
-    val address: AddressInfo? = null
+    val address: AddressInfo? = null,
+    val positionName: String = "",
+    val hoursOfService: String = "",
+    
 )
 
 data class Communication(
