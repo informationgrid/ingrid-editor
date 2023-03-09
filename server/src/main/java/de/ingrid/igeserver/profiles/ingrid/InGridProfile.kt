@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.ingrid
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
@@ -10,6 +11,7 @@ import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -18,7 +20,8 @@ import org.springframework.stereotype.Service
 @Profile("ingrid")
 class InGridProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
-    @JsonIgnore val codelistHandler: CodelistHandler
+    @JsonIgnore val codelistHandler: CodelistHandler,
+    @JsonIgnore val documentService: DocumentService
 ) : CatalogProfile {
     companion object {
         const val id = "ingrid"
@@ -192,5 +195,22 @@ class InGridProfile @Autowired constructor(
 
     override fun getElasticsearchSetting(format: String): String {
         return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
+    }
+
+    override fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis): List<String> {
+        val infos = report.references
+            .map { it.document.data.get("service").get("coupledResources") }
+            .filter { !it.get("isExternalRef").asBoolean() }
+            .map { it.get("uuid").asText() }
+            .mapNotNull { coupledUuid ->
+                report.references.any { it.document.uuid == coupledUuid }
+                try {
+                    val doc = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, coupledUuid)
+                } catch (ex: Exception) {
+                    "Coupled Resource with UUID $coupledUuid was not found"
+                }
+                null
+            }
+        return emptyList()
     }
 }

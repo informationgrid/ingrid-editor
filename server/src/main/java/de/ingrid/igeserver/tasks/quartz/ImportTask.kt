@@ -10,6 +10,7 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
+import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
@@ -50,8 +51,10 @@ class ImportTask @Autowired constructor(
             val report = when (stage) {
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
+                    val profile = catalogService.getCatalogById(info.catalogId).type.let { catalogService.getCatalogProfile(it) }
                     importService.analyzeFile(info.catalogId, info.importFile!!, message)
-                        .also { checkForValidDocumentsInProfile(info.catalogId, it) }
+                        .also { checkForValidDocumentsInProfile(profile, it) }
+                        .also { checkProfileSpecificValidation(info.catalogId, profile, it) }
                 }
 
                 Stage.IMPORT -> {
@@ -86,9 +89,16 @@ class ImportTask @Autowired constructor(
         log.debug("Task finished: Import for '$info.catalogId'")
     }
 
-    private fun checkForValidDocumentsInProfile(catalogId: String, report: OptimizedImportAnalysis) {
-        val documentTypesOfProfile = catalogService.getCatalogById(catalogId).type
-            .let { catalogService.getCatalogProfile(it) }
+    private fun checkProfileSpecificValidation(
+        catalogId: String,
+        profile: CatalogProfile,
+        report: OptimizedImportAnalysis
+    ) {
+        profile.additionalImportAnalysis(catalogId, report)
+    }
+
+    private fun checkForValidDocumentsInProfile(profile: CatalogProfile, report: OptimizedImportAnalysis) {
+        val documentTypesOfProfile = profile
             .let { documentService.getDocumentTypesOfProfile(it.identifier) }
             .map { it.className }
 
