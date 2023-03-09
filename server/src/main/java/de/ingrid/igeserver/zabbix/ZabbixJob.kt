@@ -25,7 +25,7 @@ class ZabbixJob @Autowired constructor(
     override val log = logger()
 
     override fun run(context: JobExecutionContext) {
-        log.info("Starting Task: ZabbixJob")
+        log.debug("Starting Task: ZabbixJob")
         val info = prepareJob(context)
 
         zabbixService.addOrUpdateVerfahren(info.data)

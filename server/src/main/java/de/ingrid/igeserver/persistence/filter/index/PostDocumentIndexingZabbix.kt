@@ -72,7 +72,7 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
 
             try {
                 val profile = profiles[0]
-                val jobKey = JobKey.jobKey("${ZabbixJob.jobKey}_${uuid}", catalogIdentifier)
+                val jobKey = JobKey.jobKey(ZabbixJob.jobKey, catalogIdentifier)
 
                 val jobDataMap = JobDataMap().apply {
                     put("profile", profile)
