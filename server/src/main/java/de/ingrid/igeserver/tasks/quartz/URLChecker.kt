@@ -73,7 +73,7 @@ class URLChecker @Autowired constructor(
                 notifier.sendMessage(notificationType, it)
 
             }
-            log.debug("Task finished: URLChecker for '$info.catalogId'")
+            log.debug("Task finished: URLChecker for '${info.catalogId}'")
         } catch (ex: Exception) {
             notifier.endMessage(notificationType, message.apply { this.errors.add("Exception occurred: ${ex.message}") })
             throw ex

@@ -29,7 +29,7 @@ class ZabbixJob @Autowired constructor(
         val info = prepareJob(context)
 
         zabbixService.addOrUpdateVerfahren(info.data)
-        log.debug("Task finished: ZabbixJob for '$info.catalogId'")
+        log.debug("Task finished: ZabbixJob for '${info.catalogId}'")
     }
 
     private fun prepareJob(context: JobExecutionContext): JobInfo {
