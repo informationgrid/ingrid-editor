@@ -11,7 +11,7 @@ export class PersonDoctype extends AddressShared {
 
   isAddressType = true;
 
-  options: Partial<AddressOptions>;
+  options: Partial<AddressOptions> = {};
 
   private fieldWithAddressReferences: string;
 
