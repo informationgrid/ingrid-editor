@@ -28,11 +28,9 @@ class ZabbixService @Autowired constructor(
     val detailUrl = generalProperties.zabbixDetailURL
     val uploadUrl = generalProperties.zabbixUploadURL
 
-    fun addOrUpdateVerfahren(data: ZabbixModel.ZabbixData) {
+    fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
         val jsonWebscenarioGet = """{"jsonrpc":"$JSONRPC","method":"httptest.get","params":{"output": ["hostid", "name", "status"],"selectSteps": ["name", "url"],"selectTags": "extend","tags":[{"tag":"id","value":"${data.uuid}","operator":"1"}]},"auth":"$apiKey","id":1}"""
-        val response = requestApi(jsonWebscenarioGet)
-        log.debug(response)
-        val result = response.get("result")
+        val result = requestApi(jsonWebscenarioGet).get("result")
         val currentDocuments = mutableListOf<ZabbixModel.Upload>()
         for (item in result) {
             val name = getDocumentName(item)
@@ -51,22 +49,19 @@ class ZabbixService @Autowired constructor(
                     break
                 }
             }
-            if (!exists) {
-                documentsToAdd.add(upload)
-            }
+            if (!exists) documentsToAdd.add(upload)
         }
 
-        log.debug("Add documents: $documentsToAdd")
         log.debug("Delete documents: $documentsToDelete")
-
-        createZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, data.documentURL, documentsToAdd)
         deleteZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, documentsToDelete)
+        log.debug("Add documents: $documentsToAdd")
+        createZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, data.documentURL, documentsToAdd)
     }
 
     fun createZabbixJob(catalogIdentifier: String, uuid: String, name: String, url: String, documentsToAdd: List<ZabbixModel.Upload>){
         val hostId = createHost(uuid, name, url, catalogIdentifier)
         for (document in documentsToAdd) {
-            log.debug("Add document: ${document.name}")
+            log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url)
             createTrigger(uuid, document.name, document.url)
         }
@@ -178,7 +173,7 @@ class ZabbixService @Autowired constructor(
         val response = requestApi(deleteJson)
         log.debug(response)
         val hostId = getFromResultArray(response, "hostid")
-        log.debug("Delete host: $uuid")
+        log.debug("Delete host $uuid")
         deleteHosts(listOf(hostId.asText()))
     }
 
@@ -232,13 +227,10 @@ class ZabbixService @Autowired constructor(
 
         if (json.has("error")) {
             val error = json.get("error").get("data")?.asText()
-            if (error?.contains("already exists") == true) {
-                log.debug("Already exists!")
-            } else if (error?.contains("does not exist") == true) {
-                log.debug("Does not exist or no permission!")
-            } else {
+            if (error?.contains("exist") == true)
+                log.debug(error)
+            else
                 throw ServerException.withReason(json.get("error").get("data")?.asText() ?: "Request Error occurred")
-            }
         }
         return json
     }
