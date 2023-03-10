@@ -127,15 +127,7 @@ export class ImportComponent implements OnInit {
   }
 
   startImport() {
-    // get path for destination for final page
-    /*this.documentService
-      .getPath(this.locationDoc[0].toString())
-      .subscribe((path) => (this.pathToDocument = path));*/
-
-    // upload each file
-    // const importer = this.optionsFormGroup.get("importer").value;
     const options = this.optionsFormGroup.value;
-
     this.exchangeService.import(options).subscribe();
   }
 
@@ -155,8 +147,12 @@ export class ImportComponent implements OnInit {
   }
 
   private handleRunningInfo(data: any) {
+    console.log("Handle Running Info");
     this.importIsRunning = !data.endTime;
     if (data?.stage === "ANALYZE") this.showMore = true;
+
+    // remove already loaded tree node information
+    if (data?.stage === "IMPORT") this.documentService.clearTreeStores();
   }
 
   chooseLocationForDatasets() {

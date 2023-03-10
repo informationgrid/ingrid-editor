@@ -3,6 +3,7 @@ package de.ingrid.igeserver.repository
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PostAuthorize
@@ -20,6 +21,10 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     @PostAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
+
+    @PostAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
+    @Query("SELECT dw.* FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true )
+    fun findByCatalogAndUuidIncludingDeleted(catalogIdentifier: String, uuid: String): DocumentWrapper
 
     fun existsById(uuid: String): Boolean
 
@@ -62,6 +67,11 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     override fun deleteById(id: Int)
 
+    @Modifying
+    @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
+    @Query("UPDATE document_wrapper SET deleted = 0 WHERE id = ?1", nativeQuery = true )
+    fun undeleteDocument(wrapperId: Int)
+    
     // allow if it's a new document, where id is null
     // then a permission check should be done before!
     @PreAuthorize("#docWrapper.id == null || hasPermission(#docWrapper, 'WRITE')")
