@@ -12,6 +12,7 @@
     <div main-header>
         <ige-job-handler-header
             [message]="message"
+            [showMoreForce]="showMore"
             [isRunning]="importIsRunning"
             (showMore)="showMore = $event"
         ></ige-job-handler-header>
@@ -64,10 +65,10 @@
                             <div class="section-title">
                                 Analyse abgeschlossen
                             </div>
-                            <ng-container
-                                [ngTemplateOutlet]="report"
-                                [ngTemplateOutletContext]="{ log: message }"
-                            ></ng-container>
+                            <div>
+                                Schauen Sie sich den Bericht an und klicken Sie
+                                auf "Weiter", um mit dem Import fortzufahren
+                            </div>
                         </ng-container>
                         <!--<mat-icon class="big-icon success-color"
                             >check_circle_outline
@@ -119,9 +120,6 @@
 
                         <div class="section-title">Optionen</div>
                         <div class="space-bottom display-flex flex-column">
-                            <mat-checkbox formControlName="overwriteDatasets"
-                                >Vorhandene Datensätze überschreiben
-                            </mat-checkbox>
                             <mat-checkbox formControlName="overwriteAddresses"
                                 >Vorhandene Adressen überschreiben
                             </mat-checkbox>
@@ -273,6 +271,13 @@
 </page-template>
 
 <ng-template #report let-log="log">
+    <div *ngIf="log.infos?.length > 0">
+        Informationen:
+        <span data-cy="count-infos">{{ log.infos.length }}</span>
+        <ul>
+            <li *ngFor="let info of log.infos">{{ info }}</li>
+        </ul>
+    </div>
     <div *ngIf="log.errors?.length > 0">
         Fehler:
         <span data-cy="count-errors">{{ log.errors.length }}</span>

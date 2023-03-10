@@ -54,10 +54,13 @@ class ImportTask @Autowired constructor(
                     val profile = catalogService.getCatalogById(info.catalogId).type.let { catalogService.getCatalogProfile(it) }
                     importService.analyzeFile(info.catalogId, info.importFile!!, message)
                         .also { checkForValidDocumentsInProfile(profile, it) }
-                        .also { checkProfileSpecificValidation(info.catalogId, profile, it) }
+                        .also {
+                            profile.additionalImportAnalysis(info.catalogId, it, message)
+                        }
                 }
 
                 Stage.IMPORT -> {
+                    message.infos = info.infos
                     val counter = importService.importAnalyzedDatasets(
                         principal,
                         info.catalogId,
@@ -89,14 +92,6 @@ class ImportTask @Autowired constructor(
         log.debug("Task finished: Import for '$info.catalogId'")
     }
 
-    private fun checkProfileSpecificValidation(
-        catalogId: String,
-        profile: CatalogProfile,
-        report: OptimizedImportAnalysis
-    ) {
-        profile.additionalImportAnalysis(catalogId, report)
-    }
-
     private fun checkForValidDocumentsInProfile(profile: CatalogProfile, report: OptimizedImportAnalysis) {
         val documentTypesOfProfile = profile
             .let { documentService.getDocumentTypesOfProfile(it.identifier) }
@@ -118,6 +113,7 @@ class ImportTask @Autowired constructor(
             put("endTime", null)
             put("report", null)
             put("errors", null)
+            put("infos", null)
         }
     }
 
@@ -127,10 +123,11 @@ class ImportTask @Autowired constructor(
             val profile = getString("profile")
             val catalogId: String = getString("catalogId")
             val importFile: String? = getString("importFile")
+            val infos: MutableList<String> = getString("infos")?.let { jacksonObjectMapper().readValue(it) } ?: mutableListOf()
             val report: OptimizedImportAnalysis? = getString("report")?.let { jacksonObjectMapper().readValue(it) }
             val options: ImportOptions? = getString("options")?.let { jacksonObjectMapper().readValue(it) }
 
-            return JobInfo(startTime, profile, catalogId, importFile, report, options)
+            return JobInfo(startTime, profile, catalogId, importFile, report, options, infos)
         }
     }
 
@@ -140,6 +137,7 @@ class ImportTask @Autowired constructor(
         val catalogId: String,
         val importFile: String?,
         val analysis: OptimizedImportAnalysis?,
-        val options: ImportOptions?
+        val options: ImportOptions?,
+        val infos: MutableList<String>
     )
 }

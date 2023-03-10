@@ -46,7 +46,6 @@ export class ImportComponent implements OnInit {
       Validators.required
     ),
     overwriteAddresses: new FormControl<boolean>(false),
-    overwriteDatasets: new FormControl<boolean>(false),
     publish: new FormControl<boolean>(false),
     parentDocument: new FormControl<number>(null),
     parentAddress: new FormControl<number>(null),
@@ -157,6 +156,7 @@ export class ImportComponent implements OnInit {
 
   private handleRunningInfo(data: any) {
     this.importIsRunning = !data.endTime;
+    if (data?.stage === "ANALYZE") this.showMore = true;
   }
 
   chooseLocationForDatasets() {

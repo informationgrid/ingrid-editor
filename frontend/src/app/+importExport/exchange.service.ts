@@ -16,6 +16,8 @@ export interface LogInfo<Type> {
   startTime: string;
   endTime: string;
   errors: string[];
+
+  infos: string[];
   report: Type;
   progress?: number;
 }

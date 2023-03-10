@@ -1,8 +1,11 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.imports.DocumentAnalysis
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -13,6 +16,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
@@ -21,7 +25,7 @@ import org.springframework.stereotype.Service
 class InGridProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val codelistHandler: CodelistHandler,
-    @JsonIgnore val documentService: DocumentService
+    @JsonIgnore @Lazy val documentService: DocumentService
 ) : CatalogProfile {
     companion object {
         const val id = "ingrid"
@@ -32,7 +36,7 @@ class InGridProfile @Autowired constructor(
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
-    
+
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf()
     }
@@ -57,7 +61,10 @@ class InGridProfile @Autowired constructor(
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
             null -> {
-                codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555))
+                codelistHandler.removeAndAddCodelists(
+                    catalogId,
+                    listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555)
+                )
             }
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
@@ -197,20 +204,35 @@ class InGridProfile @Autowired constructor(
         return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
     }
 
-    override fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis): List<String> {
-        val infos = report.references
-            .map { it.document.data.get("service").get("coupledResources") }
+    override fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {
+        val notExistingCoupledResources = mutableListOf<String>()
+
+        report.references
+            .flatMap { it.document.data.get("service")?.get("coupledResources")?.toList() ?: emptyList() }
             .filter { !it.get("isExternalRef").asBoolean() }
             .map { it.get("uuid").asText() }
-            .mapNotNull { coupledUuid ->
-                report.references.any { it.document.uuid == coupledUuid }
-                try {
-                    val doc = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, coupledUuid)
-                } catch (ex: Exception) {
-                    "Coupled Resource with UUID $coupledUuid was not found"
+            .forEach { coupledUuid ->
+                val referenceInImport = report.references.any { it.document.uuid == coupledUuid }
+                if (!referenceInImport) {
+                    try {
+                        documentService.getWrapperByCatalogAndDocumentUuid(catalogId, coupledUuid)
+                    } catch (ex: Exception) {
+                        message.infos.add("Coupled Resource with UUID $coupledUuid was not found. Removing reference.")
+                        notExistingCoupledResources.add(coupledUuid)
+                    }
                 }
-                null
             }
-        return emptyList()
+        
+        removeReferencesFromDatasets(report.references, notExistingCoupledResources)
+    }
+
+    private fun removeReferencesFromDatasets(refs: List<DocumentAnalysis>, uuids: MutableList<String>) {
+        refs.forEach { ref ->
+            ref.document.data.get("service")?.let { 
+                val coupledResources = it.get("coupledResources") as ArrayNode
+                coupledResources.removeAll { node -> node.get("uuid")?.asText() in uuids }
+                
+            }
+        }
     }
 }

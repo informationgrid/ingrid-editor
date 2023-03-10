@@ -51,13 +51,14 @@ class JobsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isRunning = scheduler.isRunning(id, catalogId)
         val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap?.apply {
-            val report = getString("report")
-            if (report != null) {
-                put("report", jacksonObjectMapper().readValue(report, Any::class.java))
+            getString("report")?.let { 
+                put("report", jacksonObjectMapper().readValue(it, Any::class.java))
             }
-            val errors = getString("errors")
-            if (errors != null) {
-                put("errors", jacksonObjectMapper().readValue(errors, List::class.java))
+            getString("errors")?.let {
+                put("errors", jacksonObjectMapper().readValue(it, List::class.java))
+            }
+            getString("infos")?.let {
+                put("infos", jacksonObjectMapper().readValue(it, List::class.java))
             }
         }
         return ResponseEntity.ok(JobInfo(isRunning, jobDataMap))

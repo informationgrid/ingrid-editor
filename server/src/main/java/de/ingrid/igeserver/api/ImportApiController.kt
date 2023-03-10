@@ -37,4 +37,4 @@ data class ImportOptions(
     val parentAddress: Int? = null, 
     val publish: Boolean = false, 
     val overwriteAddresses: Boolean = false, 
-    val overwriteDatasets: Boolean = false)
+    val overwriteDatasets: Boolean = true)

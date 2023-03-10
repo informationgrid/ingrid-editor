@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import java.util.*
 
 abstract class IgeJob : InterruptableJob {
 
@@ -40,6 +39,7 @@ abstract class IgeJob : InterruptableJob {
             put("startTime", jobInfo.startTime)
             put("endTime", jobInfo.endTime)
             put("report", jacksonObjectMapper().writeValueAsString(jobInfo.report))
+            put("infos", jacksonObjectMapper().writeValueAsString(jobInfo.infos))
             put("errors", jacksonObjectMapper().writeValueAsString(jobInfo.errors))
             put("stage", jobInfo.stage)
         }
