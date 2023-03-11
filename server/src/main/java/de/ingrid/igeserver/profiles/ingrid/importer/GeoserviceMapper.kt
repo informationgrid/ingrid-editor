@@ -9,13 +9,13 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
     
     fun getServiceCategories(): List<KeyValue> {
         return info?.descriptiveKeywords
-            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "ISO") }
+            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getServiceVersions(): List<KeyValue> {
         return info?.serviceTypeVersion
-            ?.map { codeListService.getCodeListEntryId("5153", it.value, "ISO") }
+            ?.map { codeListService.getCodeListEntryId("5153", it.value, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -32,7 +32,7 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
     
     fun getServiceType(): KeyValue {
         val value = info?.serviceType?.value
-        val id = codeListService.getCodeListEntryId("5100", value, "ISO")
+        val id = codeListService.getCodeListEntryId("5100", value, "iso")
         return KeyValue(id)
     }
 

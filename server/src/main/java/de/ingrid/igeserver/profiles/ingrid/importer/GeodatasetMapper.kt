@@ -15,14 +15,14 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler) :
     fun getTopicCategories(): List<KeyValue> {
         return identificationInfo?.topicCategory
             ?.mapNotNull { it.value }
-            ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "ISO") }
+            ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
 
     }
 
     fun getCharacterSet(): KeyValue? {
         val value = identificationInfo?.characterSet?.get(0)?.code?.codeListValue
-        val entryId = codeListService.getCodeListEntryId("510", value, "ISO")
+        val entryId = codeListService.getCodeListEntryId("510", value, "iso")
         if (entryId == null) {
             log.warn("Could not map CharacterSet: $value")
             return null
@@ -125,7 +125,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler) :
     fun getSpatialRepresentationTypes(): List<KeyValue> {
         return identificationInfo?.spatialRepresentationType
             ?.map { it.code?.codeListValue }
-            ?.map { codeListService.getCodeListEntryId("526", it, "ISO") }
+            ?.map { codeListService.getCodeListEntryId("526", it, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 

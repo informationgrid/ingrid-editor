@@ -17,49 +17,49 @@ class IsoImporterTest : AnnotationSpec() {
     fun beforeAll() {
         every { codelistService.getCodeListEntryId("100", "EPSG 3068: DHDN / Soldner Berlin", "de") } returns "3068"
         every { codelistService.getCodeListEntryId("101", "DE_AMST / NH", "de") } returns "900002"
-        every { codelistService.getCodeListEntryId("102", "Metre", "ISO") } returns "9001"
+        every { codelistService.getCodeListEntryId("102", "Metre", "iso") } returns "9001"
         every { codelistService.getCodeListEntryId("110", "Hessen", "de") } returns "8"
-        every { codelistService.getCodeListEntryId("502", "creation", "ISO") } returns "1"
-        every { codelistService.getCodeListEntryId("505", "resourceProvider", "ISO") } returns "1"
-        every { codelistService.getCodeListEntryId("505", "pointOfContact", "ISO") } returns "7"
-        every { codelistService.getCodeListEntryId("505", "Meister", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("510", "shiftJIS", "ISO") } returns "19"
-        every { codelistService.getCodeListEntryId("518", "continual", "ISO") } returns "1"
-        every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "ISO") } returns "4"
-        every { codelistService.getCodeListEntryId("523", "underDevelopment", "ISO") } returns "7"
-        every { codelistService.getCodeListEntryId("526", "vector", "ISO") } returns "1"
-        every { codelistService.getCodeListEntryId("526", "grid", "ISO") } returns "2"
-        every { codelistService.getCodeListEntryId("527", "climatologyMeteorologyAtmosphere", "ISO") } returns "4"
+        every { codelistService.getCodeListEntryId("502", "creation", "iso") } returns "1"
+        every { codelistService.getCodeListEntryId("505", "resourceProvider", "iso") } returns "1"
+        every { codelistService.getCodeListEntryId("505", "pointOfContact", "iso") } returns "7"
+        every { codelistService.getCodeListEntryId("505", "Meister", "iso") } returns null
+        every { codelistService.getCodeListEntryId("510", "shiftJIS", "iso") } returns "19"
+        every { codelistService.getCodeListEntryId("518", "continual", "iso") } returns "1"
+        every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "iso") } returns "4"
+        every { codelistService.getCodeListEntryId("523", "underDevelopment", "iso") } returns "7"
+        every { codelistService.getCodeListEntryId("526", "vector", "iso") } returns "1"
+        every { codelistService.getCodeListEntryId("526", "grid", "iso") } returns "2"
+        every { codelistService.getCodeListEntryId("527", "climatologyMeteorologyAtmosphere", "iso") } returns "4"
         every { codelistService.getCodeListEntryId("1230", "Stunden", "de") } returns "3"
         every { codelistService.getCodeListEntryId("1320", "PNG", "de") } returns "26"
         every { codelistService.getCodeListEntryId("1350", "Nieders. Abfallgesetz (NAbfG)", "de") } returns "38"
-        every { codelistService.getCodeListEntryId("2000", "order", "ISO") } returns "5304"
+        every { codelistService.getCodeListEntryId("2000", "order", "iso") } returns "5304"
 
-        every { codelistService.getCodeListEntryId("2000", "information", "ISO") } returns "5302"
+        every { codelistService.getCodeListEntryId("2000", "information", "iso") } returns "5302"
         every { codelistService.getCodeListEntryId("3535", "von Drachenfels 94", "de") } returns "1"
         every { codelistService.getCodeListEntryId("3555", "Ganzflächige Biotopkartierung 94", "de") } returns "1"
 
         every { codelistService.getCodeListEntryId("4300", "Herr", "de") } returns "2"
-        every { codelistService.getCodeListEntryId("5100", "download", "ISO") } returns "3"
-        every { codelistService.getCodeListEntryId("5153", "OGC:WFS 1.1.0", "ISO") } returns "1"
-        every { codelistService.getCodeListEntryId("5200", "infoStandingOrderService", "ISO") } returns "211"
-        every { codelistService.getCodeListEntryId("5200", "Unbekannt", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "Wasser", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "Adressen", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "inspireidentifiziert", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "opendata", "ISO") } returns null
+        every { codelistService.getCodeListEntryId("5100", "download", "iso") } returns "3"
+        every { codelistService.getCodeListEntryId("5153", "OGC:WFS 1.1.0", "iso") } returns "1"
+        every { codelistService.getCodeListEntryId("5200", "infoStandingOrderService", "iso") } returns "211"
+        every { codelistService.getCodeListEntryId("5200", "Unbekannt", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Wasser", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Adressen", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "inspireidentifiziert", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "opendata", "iso") } returns null
         every {
             codelistService.getCodeListEntryId(
                 "5200",
                 "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)",
-                "ISO"
+                "iso"
             )
         } returns null
-        every { codelistService.getCodeListEntryId("5200", "National", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "HEAL", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("5200", "Nieders. Abfallgesetz (NAbfG)", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("6005", "Technical Guidance for the implementation of INSPIRE Download Services", "ISO") } returns null
-        every { codelistService.getCodeListEntryId("6005", "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste", "ISO") } returns "10"
+        every { codelistService.getCodeListEntryId("5200", "National", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "HEAL", "iso") } returns null
+        every { codelistService.getCodeListEntryId("5200", "Nieders. Abfallgesetz (NAbfG)", "iso") } returns null
+        every { codelistService.getCodeListEntryId("6005", "Technical Guidance for the implementation of INSPIRE Download Services", "iso") } returns null
+        every { codelistService.getCodeListEntryId("6005", "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste", "iso") } returns "10"
         every { codelistService.getCodeListEntryId("6010", "Es gelten keine Zugriffsbeschränkungen", "de") } returns "1"
         every { codelistService.getCodeListEntryId("6100", "Adressen", null) } returns "105"
         every {

@@ -141,7 +141,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     private fun mapRoleToContactType(role: RoleCode): KeyValue {
         val value = role.codelist?.codeListValue
-        val entryId = codeListService.getCodeListEntryId("505", value, "ISO")
+        val entryId = codeListService.getCodeListEntryId("505", value, "iso")
 
         return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
@@ -231,7 +231,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             }
             ?.mapNotNull { it.keywords?.keyword?.value }
             ?.filter { !ignoreKeywords.contains(it) }
-            ?.filter { codeListService.getCodeListEntryId("5200", it, "ISO") == null }
+            ?.filter { codeListService.getCodeListEntryId("5200", it, "iso") == null }
             ?.map { it }
             ?.toList() ?: emptyList()
     }
@@ -300,7 +300,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.mapNotNull {
                 val uom =
                     it.verticalElement?.verticalCRS?.verticalCRS?.verticalCS?.verticalCS?.axis?.coordinateSystemAxis?.uom
-                val uomId = codeListService.getCodeListEntryId("102", uom, "ISO")
+                val uomId = codeListService.getCodeListEntryId("102", uom, "iso")
                 val min = it.verticalElement?.minimumValue?.value
                 val max = it.verticalElement?.maximumValue?.value
                 val datum = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
@@ -338,14 +338,14 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getTemporalEvents(): List<Event> {
         return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
-                val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "ISO")
+                val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "iso")
                 Event(KeyValue(typeKey), it.date?.date?.dateTime ?: "")
             } ?: emptyList()
     }
 
     fun getTimeRelatedInfo(): TimeInfo? {
         val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
-        val statusKey = codeListService.getCodeListEntryId("523", status, "ISO")
+        val statusKey = codeListService.getCodeListEntryId("523", status, "iso")
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.mapNotNull {
@@ -437,7 +437,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         val maintenanceInformation =
             metadata.identificationInfo[0].identificationInfo?.resourceMaintenance?.maintenanceInformation
         val updateFrequency = maintenanceInformation?.maintenanceAndUpdateFrequency?.code?.codeListValue
-        val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "ISO")
+        val updateFrequencyKey = codeListService.getCodeListEntryId("518", updateFrequency, "iso")
         val intervalEncoded = maintenanceInformation?.userDefinedMaintenanceFrequency?.periodDuration
 
         val value = TM_PeriodDurationToTimeAlle().parse(intervalEncoded)
@@ -457,7 +457,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.filter { it.offLine?.mdMedium != null }
             ?.map {
                 val value = it.offLine?.mdMedium?.name?.code?.codeListValue
-                val nameKey = codeListService.getCodeListEntryId("520", value, "ISO")
+                val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
                     it.transferSize?.value,
@@ -486,7 +486,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     ?.map { resource ->
                         val value = resource.function?.code?.codeListValue
                         val typeId =
-                            if (value == null) null else codeListService.getCodeListEntryId("2000", value, "ISO")
+                            if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         Reference(keyValue, resource.linkage.url, resource.name?.value, resource.description?.value)
                     } ?: emptyList()
@@ -504,7 +504,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val pass = determineConformanceResultPass(it?.pass?.boolean?.value)
                 val specification = it?.specification?.citation?.title?.value ?: return@mapNotNull null
 
-                val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "ISO")
+                val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue =
                     if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
                 val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
