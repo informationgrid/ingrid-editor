@@ -8,10 +8,11 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { tap } from "rxjs/operators";
+import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Subject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -25,10 +26,23 @@ export class GeoServiceDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  private mapServiceTypeToVersionCodelist = {
+    "1": 5151,
+    "2": 5152,
+    "3": 5153,
+    "4": 5154,
+  };
+
+  getServiceVersionOptions = new Subject<SelectOptionUi[]>();
+
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection({ inspireRelevant: true, openData: true }),
-      this.addKeywordsSection({ priorityDataset: true, spatialScope: true }),
+      this.addKeywordsSection({
+        priorityDataset: true,
+        spatialScope: true,
+        inspireTopics: true,
+      }),
 
       this.addSection("Fachbezug", [
         this.addGroupSimple("service", [
@@ -50,6 +64,9 @@ export class GeoServiceDoctype extends IngridShared {
                   codelistId: 5100,
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
+                  hooks: {
+                    onInit: (field) => this.handleServiceTypeChange(field),
+                  },
                 }),
                 this.addCheckboxInline(
                   "isAtomDownload",
@@ -66,13 +83,25 @@ export class GeoServiceDoctype extends IngridShared {
             ),
 
             this.addRepeatListInline("version", "Version des Dienstes", {
-              options: this.getCodelistForSelect(5152, "version"),
-              codelistId: 5152,
+              options: this.getServiceVersionOptions,
+              // codelistId: 5152,
               showSearch: true,
               fieldGroupClassName: "flex-1",
               hasInlineContextHelp: true,
               wrappers: ["inline-help"],
               className: "optional flex-1",
+              /*expressions: {
+                // @ts-ignore
+                "props.codelistId": (field) => {
+                  const codelistId =
+                    this.mapServiceTypeToVersionCodelist[field.parent.model.type?.key] ?? 5152;
+
+                  this.getCodelistForSelect(codelistId, "version").subscribe(
+                    (value) => this.getServiceVersionOptions.next(value)
+                  );
+                  return 100; //codelistId ?? 5152;
+                },
+              },*/
             }),
           ]),
           this.addRepeat("operations", "Operationen", {
@@ -207,5 +236,24 @@ export class GeoServiceDoctype extends IngridShared {
       cookieService,
       snack
     );
+  }
+
+  private handleServiceTypeChange(field) {
+    field.formControl.valueChanges
+      .pipe(
+        filter((value) => value != null),
+        distinctUntilKeyChanged("key")
+      )
+      .subscribe((value) => {
+        const codelistId = this.mapServiceTypeToVersionCodelist[value.key];
+        if (codelistId === undefined) {
+          this.getServiceVersionOptions.next([]);
+        } else {
+          this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
+            this.getServiceVersionOptions.next(value)
+          );
+        }
+        // TODO: remove all codelist values from version field?
+      });
   }
 }

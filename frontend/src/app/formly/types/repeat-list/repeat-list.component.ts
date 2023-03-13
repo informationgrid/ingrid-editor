@@ -1,39 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { filter, map, startWith, take, tap } from "rxjs/operators";
+import { filter, map, startWith, tap } from "rxjs/operators";
 import { merge, Observable, of, Subject } from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import {
-  AbstractControl,
-  FormControl,
-  FormGroupDirective,
-  NgForm,
-  UntypedFormControl,
-  ValidationErrors,
-  Validators,
-} from "@angular/forms";
+import { UntypedFormControl, ValidationErrors } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MatSelect } from "@angular/material/select";
-import { ErrorStateMatcher } from "@angular/material/core";
-
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
-  ): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(
-      control &&
-      control.invalid &&
-      (control.dirty || control.touched || isSubmitted)
-    );
-  }
-}
 
 @UntilDestroy()
 @Component({
@@ -56,9 +39,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   filterCtrl: UntypedFormControl;
   private manualUpdate = new Subject<string>();
 
-  matcher = new MyErrorStateMatcher();
-
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     super();
   }
 
@@ -73,9 +54,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       this.props.options
         .pipe(
           untilDestroyed(this),
-          filter((data) => data !== undefined && data.length > 0),
-          take(1),
-          tap((data) => this.initInputListener(data))
+          filter((data) => data !== undefined),
+          // take(1),
+          tap((data) => this.initInputListener(data)),
+          tap(() => this.cdr.detectChanges())
         )
         .subscribe();
     } else {
@@ -94,15 +76,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
     if (this.props.required) {
-      this.inputControl.addValidators(
-        (control: AbstractControl): ValidationErrors | null => {
-          return !this.showError ||
-            (this.props.required && this.formControl.value.length > 0)
-            ? null
-            : { required: "Pflicht!" };
-        }
-      );
-      // this.inputControl.addValidators(this.formControl.validator);
+      this.inputControl.addValidators((): ValidationErrors | null => {
+        return !this.showError ||
+          (this.props.required && this.formControl.value.length > 0)
+          ? null
+          : { required: "Pflicht!" };
+      });
     }
 
     this.formControl.statusChanges

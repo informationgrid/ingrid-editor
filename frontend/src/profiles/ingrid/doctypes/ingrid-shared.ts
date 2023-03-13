@@ -24,6 +24,7 @@ interface KeywordSectionOptions {
   priorityDataset?: boolean;
   spatialScope?: boolean;
   thesaurusTopics?: boolean;
+  inspireTopics?: boolean;
 }
 
 interface SpatialOptions {
@@ -236,16 +237,18 @@ export abstract class IngridShared extends BaseDoctype {
             "props.required": "formState.mainModel?.isAdVCompatible",
           },
         }),
-        this.addRepeatList("themes", "INSPIRE-Themen", {
-          asSelect: true,
-          showSearch: true,
-          options: this.getCodelistForSelect(6100, "themes"),
-          codelistId: 6100,
-          className: "optional",
-          expressions: {
-            "props.required": "formState.mainModel?.isInspireIdentified",
-          },
-        }),
+        options.inspireTopics
+          ? this.addRepeatList("themes", "INSPIRE-Themen", {
+              asSelect: true,
+              showSearch: true,
+              options: this.getCodelistForSelect(6100, "themes"),
+              codelistId: 6100,
+              className: "optional",
+              expressions: {
+                "props.required": "formState.mainModel?.isInspireIdentified",
+              },
+            })
+          : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
           required: true,
           asSelect: true,

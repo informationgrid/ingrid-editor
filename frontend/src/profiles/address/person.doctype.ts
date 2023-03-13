@@ -11,83 +11,92 @@ export class PersonDoctype extends AddressShared {
 
   isAddressType = true;
 
-  options: Partial<AddressOptions>;
+  options: Partial<AddressOptions> = {};
 
   private fieldWithAddressReferences: string;
 
   documentFields() {
     return <FormlyFieldConfig[]>[
-      this.addSection("Persönliche Daten", [
-        {
-          wrappers: ["panel"],
-          props: {
-            externalLabel: "Anrede",
-            required: false,
-          },
-          fieldGroup: [
-            {
-              fieldGroupClassName: "display-flex width-50",
-              fieldGroup: [
-                this.addAutoCompleteInline("salutation", "Anrede", {
-                  wrappers: ["inline-help", "form-field"],
-                  hasInlineContextHelp: true,
-                  highlightMatches: true,
-                  hideDeleteButton: true,
-                  placeholder: "",
-                  options: this.getCodelistForSelect(4300, "salutation"),
-                  codelistId: 4300,
-                }),
-                this.addAutoCompleteInline("academic-title", "Titel", {
-                  wrappers: ["inline-help", "form-field"],
-                  className: "flex-1 pad-right",
-                  hasInlineContextHelp: true,
-                  highlightMatches: true,
-                  hideDeleteButton: true,
-                  placeholder: "",
-                  options: this.getCodelistForSelect(4305, "academic-title"),
-                  codelistId: 4305,
-                }),
-              ],
+      this.addSection(
+        "Persönliche Daten",
+        [
+          {
+            wrappers: ["panel"],
+            props: {
+              externalLabel: "Anrede",
+              required: false,
             },
-          ],
-        },
-        {
-          wrappers: ["panel"],
-          props: {
-            externalLabel: "Name",
-            required: true,
-            contextHelpId: "name",
+            fieldGroup: [
+              {
+                fieldGroupClassName: "display-flex width-50",
+                fieldGroup: [
+                  this.addAutoCompleteInline("salutation", "Anrede", {
+                    wrappers: ["inline-help", "form-field"],
+                    hasInlineContextHelp: true,
+                    highlightMatches: true,
+                    hideDeleteButton: true,
+                    placeholder: "",
+                    options: this.getCodelistForSelect(4300, "salutation"),
+                    codelistId: 4300,
+                  }),
+                  this.addAutoCompleteInline("academic-title", "Titel", {
+                    wrappers: ["inline-help", "form-field"],
+                    className: "flex-1 pad-right",
+                    hasInlineContextHelp: true,
+                    highlightMatches: true,
+                    hideDeleteButton: true,
+                    placeholder: "",
+                    options: this.getCodelistForSelect(4305, "academic-title"),
+                    codelistId: 4305,
+                  }),
+                ],
+              },
+            ],
           },
-          fieldGroup: [
-            {
-              fieldGroupClassName: "display-flex",
-              fieldGroup: [
-                this.addInput("firstName", null, {
-                  fieldLabel: "Vorname",
-                  className: "flex-1 firstName",
-                }),
-                this.addInput("lastName", null, {
-                  fieldLabel: "Nachname",
-                  className: "flex-1 lastName",
-                  required: true,
-                }),
-              ],
+          {
+            wrappers: ["panel"],
+            props: {
+              externalLabel: "Name",
+              required: true,
+              contextHelpId: "name",
             },
-          ],
-        },
-
-        this.addCheckbox("hideAddress", null, {
-          fieldLabel:
-            "für Anzeige Daten der übergeordneten Organisation verwenden",
-          expressions: {
-            hide: "!model?._parent || formState.parentIsFolder",
+            fieldGroup: [
+              {
+                fieldGroupClassName: "display-flex",
+                fieldGroup: [
+                  this.addInput("firstName", null, {
+                    fieldLabel: "Vorname",
+                    className: "flex-1 firstName",
+                  }),
+                  this.addInput("lastName", null, {
+                    fieldLabel: "Nachname",
+                    className: "flex-1 lastName",
+                    required: true,
+                  }),
+                ],
+              },
+            ],
           },
-        }),
-      ]),
-      this.addSection("Kommunikation", [
-        this.addContact(),
-        this.addAddressSection(this.options),
-      ]),
+          this.options.publicationArea ? this.addPublicationArea() : null,
+          this.addCheckbox("hideAddress", null, {
+            fieldLabel:
+              "für Anzeige Daten der übergeordneten Organisation verwenden",
+            expressions: {
+              hide: "!model?._parent || formState.parentIsFolder",
+            },
+          }),
+        ].filter(Boolean)
+      ),
+      this.addSection(
+        "Kommunikation",
+        [
+          this.addContact(),
+          this.addAddressSection(this.options),
+          ...(this.options.positionNameAndHoursOfService
+            ? this.addPositionNameAndHoursOfService()
+            : []),
+        ].filter(Boolean)
+      ),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
   }

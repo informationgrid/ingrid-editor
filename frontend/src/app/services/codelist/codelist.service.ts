@@ -231,7 +231,7 @@ export class CodelistService {
       this.codelistQuery.getCatalogCodelist(codelistId) ||
       this.codelistQuery.getEntity(codelistId);
 
-    if (!alreadyInQueue || !alreadyInStore) {
+    if (!alreadyInQueue && !alreadyInStore) {
       this.byId(codelistId);
     }
 

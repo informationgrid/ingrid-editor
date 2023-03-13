@@ -18,6 +18,8 @@ import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.*
 
 
@@ -56,6 +58,10 @@ class ImportTask @Autowired constructor(
                         .also { checkForValidDocumentsInProfile(profile, it) }
                         .also {
                             profile.additionalImportAnalysis(info.catalogId, it, message)
+                        }
+                        .also {
+                            System.gc()    
+                            Files.delete(Path.of(info.importFile)) 
                         }
                 }
 

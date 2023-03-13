@@ -44,10 +44,12 @@ export class CreateNodeComponent implements OnInit {
   rootTreeName: string;
   isFolder = true;
   formGroup: UntypedFormGroup;
-  jumpedTreeNodeId: string = null;
+  jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
   pathWithWritePermission = false;
+  alreadySubmitted = false;
+
   private query: TreeQuery | AddressTreeQuery;
   docTypeChoice: string;
   docTypeChanged$ = new Subject();
@@ -121,6 +123,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
+    this.alreadySubmitted = true;
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
@@ -154,7 +157,7 @@ export class CreateNodeComponent implements OnInit {
     this.selectedPage = 0;
   }
 
-  jumpToTree(id: string) {
+  jumpToTree(id: number) {
     this.selectedPage = 1;
     if (id !== null && this.pathWithWritePermission) {
       this.jumpedTreeNodeId = id;

@@ -25,7 +25,6 @@ mat-spinner {
       font-size: 14px;
       display: flex;
       align-items: center;
-      /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
       mat-checkbox {
         padding-right: 12px;
 
@@ -52,44 +51,4 @@ mat-spinner {
   padding: 8px 12px 8px 24px;
   font-size: 14px;
   margin-bottom: 6px;
-}
-
-.search {
-  /*padding-top: 6px;
-  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-  !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-    margin-bottom: 0;
-    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-    .mat-form-field-flex {
-      align-items: center;
-      height: 40px;
-    }
-    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-    .mat-form-field-outline {
-      top: 0;
-      background-color: #ffffff;
-      border-radius: 4px;
-      !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-      &:not(.mat-form-field-outline-thick) > div {
-        border: none;
-      }
-    }
-    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-    .mat-form-field-prefix,
-    .mat-form-field-suffix {
-      top: 0;
-    }
-    !* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. *!
-    .mat-form-field-infix {
-      padding: 0;
-
-      input {
-        height: 100%;
-      }
-    }
-  }*/
 }
