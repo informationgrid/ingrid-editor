@@ -21,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
 import java.security.Principal
 import kotlin.io.path.absolutePathString
 
@@ -86,7 +83,7 @@ class JobsApiController @Autowired constructor(
         val profile = catalogService.getCatalogById(catalogId).type
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
-        val tempFile = kotlin.io.path.createTempFile("import-")
+        val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
         log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
         file.transferTo(tempFile)
 
