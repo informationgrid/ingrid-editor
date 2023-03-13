@@ -64,7 +64,7 @@ class ImportService constructor(
                 .toList().let { prepareForImport(importers, it) }
         }
 
-        val fileContent = String(file.readBytes(), Charset.defaultCharset())
+        val fileContent = file.readText(Charsets.UTF_8)
         val importer = factory.getImporter(type, fileContent)
 
         val result = importer[0].run(fileContent)
