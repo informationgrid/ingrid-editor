@@ -48,6 +48,8 @@ export interface SelectOptions extends Options {
   externalLabel?: string;
   showSearch?: boolean;
   allowNoValue?: boolean;
+  change?: any;
+  hooks?: any;
 }
 
 export interface TableOptions extends Options {
@@ -357,8 +359,10 @@ export class FormFieldHelper {
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        change: options?.change,
       },
       expressions: expressions,
+      hooks: options?.hooks,
     };
   }
 
