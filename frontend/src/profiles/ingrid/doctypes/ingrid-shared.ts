@@ -433,7 +433,6 @@ export abstract class IngridShared extends BaseDoctype {
           fields: [
             this.addDatepicker("referenceDate", null, {
               fieldLabel: "Datum",
-              className: "flex-1",
               required: true,
               wrappers: ["form-field"],
             }),
@@ -643,7 +642,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "publicationDate",
                   type: "datepicker",
                   label: "Datum",
-                  width: "100px",
+                  width: "110px",
                   props: {
                     label: "Datum",
                     appearance: "outline",
