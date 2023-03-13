@@ -3,10 +3,11 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.CodelistHandler
 
-class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : GeneralMapper(metadata, codeListService) {
+class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) :
+    GeneralMapper(metadata, codeListService) {
 
     val info = metadata.identificationInfo[0].identificationInfo
-    
+
     fun getServiceCategories(): List<KeyValue> {
         return info?.descriptiveKeywords
             ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "iso") }
@@ -29,11 +30,39 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
                 )
             } ?: emptyList()
     }
-    
+
     fun getServiceType(): KeyValue {
         val value = info?.serviceType?.value
         val id = codeListService.getCodeListEntryId("5100", value, "iso")
         return KeyValue(id)
+    }
+
+    fun getSystemEnvironment(): String {
+        val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
+
+        val beginOfExtra = description.indexOf("Systemumgebung:")
+        return description.substring(beginOfExtra + 15, description.indexOf(";", beginOfExtra)).trim()
+    }
+
+    fun getServiceExplanation(): String {
+        val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
+
+        val beginOfExtra = description.indexOf("Erläuterung zum Fachbezug:")
+        val end = description.indexOf(";", beginOfExtra)
+        return if (end == -1) {
+            description.substring(beginOfExtra + 26 ).trim()
+        } else {
+            description.substring(beginOfExtra + 26, end ).trim()
+        }
+    }
+
+    fun getImplementationHistory(): String {
+        return metadata.dataQualityInfo
+            ?.flatMap {
+                it.dqDataQuality?.lineage?.liLinage?.processStep
+                    ?.map { it.liProcessStep.description.value } ?: emptyList()
+            }
+            ?.joinToString(";") ?: ""
     }
 
     fun getCouplingType(): KeyValue {
@@ -57,7 +86,7 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
     }
 
     fun getResolutions(): List<Resolution> {
-        
+
         val description = info?.abstract?.value ?: return emptyList()
         var scale = listOf<String>()
         var groundResolution = listOf<String>()
@@ -87,5 +116,5 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) : G
             )
         }
     }
-    
+
 }

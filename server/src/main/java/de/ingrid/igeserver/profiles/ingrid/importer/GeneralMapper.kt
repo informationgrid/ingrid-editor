@@ -290,6 +290,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getRegionKey(): String {
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.geographicElement?.map { it.geographicDescription } ?: emptyList() }
+            ?.filter { it?.geographicIdentifier?.mdIdentifier?.code?.isAnchor ?: false }
             ?.mapNotNull { it?.geographicIdentifier?.mdIdentifier?.code?.value }
             ?.getOrNull(0) ?: ""
     }

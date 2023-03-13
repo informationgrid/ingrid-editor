@@ -30,6 +30,9 @@
             }@if (!resolution.isLast()),@endif
         @endfor
         ],
+        "systemEnvironment": "${model.getSystemEnvironment()}",
+        "implementationHistory": "${model.getImplementationHistory()}",
+        "explanation": "${model.getServiceExplanation()}",
         "coupledResources": [
         @for(var resource : ForSupport.of(model.getCoupledResources()))
             {
