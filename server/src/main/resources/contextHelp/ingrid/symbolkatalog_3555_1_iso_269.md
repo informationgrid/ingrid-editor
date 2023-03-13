@@ -4,8 +4,6 @@ id: citation
 docType: InGridGeoDataset
 profile: ingrid
 
-
-
 # title, used as window title
 title: Symbolkatalog
 ---
@@ -34,7 +32,7 @@ Domain: 360 (gmd:title)
 
 Datumsangaben: Datum der Erzeugung, Veröffentlichung oder Überarbeitung der Ressource
 
-Domain: 362 (gmd:date) 
+Domain: 362 (gmd:date)
 
 Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 
@@ -43,8 +41,3 @@ Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 Ausgabe: Ausgabe, Auflage oder Version der Ressource
 
 Domain: 363 (gmd:edition)
-
-## Verweise (Objekt)
-
-Domain: 269 (gmd:portrayalCatalogueCitation@uuidref)
-

@@ -41,6 +41,7 @@ export class GeoDatasetDoctype extends IngridShared {
         priorityDataset: true,
         spatialScope: true,
         thesaurusTopics: true,
+        inspireTopics: true,
       }),
 
       this.addSection("Fachbezug", [
@@ -331,6 +332,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   this.id,
                   {
                     className: "optional",
+                    contextHelpId: "processStep",
                   }
                 ),
               ]),

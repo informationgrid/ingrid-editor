@@ -11,23 +11,33 @@ export abstract class OrganisationDoctype extends AddressShared {
 
   isAddressType = true;
 
-  options: Partial<AddressOptions>;
+  options: Partial<AddressOptions> = {};
 
   private fieldWithAddressReferences: string;
 
   documentFields() {
     return <FormlyFieldConfig[]>[
-      this.addSection("Organisationsdaten", [
-        this.addInput("organization", "Bezeichnung", {
-          required: true,
-          className: "width-100 organization",
-          wrappers: ["panel", "form-field"],
-        }),
-      ]),
-      this.addSection("Kommunikation", [
-        this.addContact(),
-        this.addAddressSection(this.options),
-      ]),
+      this.addSection(
+        "Organisationsdaten",
+        [
+          this.addInput("organization", "Bezeichnung", {
+            required: true,
+            className: "width-100 organization",
+            wrappers: ["panel", "form-field"],
+          }),
+          this.options.publicationArea ? this.addPublicationArea() : null,
+        ].filter(Boolean)
+      ),
+      this.addSection(
+        "Kommunikation",
+        [
+          this.addContact(),
+          this.addAddressSection(this.options),
+          ...(this.options.positionNameAndHoursOfService
+            ? this.addPositionNameAndHoursOfService()
+            : []),
+        ].filter(Boolean)
+      ),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
   }

@@ -276,6 +276,9 @@ class DocumentService @Autowired constructor(
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
+        val preUpdatePayload = PreUpdatePayload(docType, preCreatePayload.document, preCreatePayload.wrapper)
+        preUpdatePipe.runFilters(preUpdatePayload, filterContext)
+
 
         // check for permission of parent explicitly, since save operations with no ID (create)
         // are excluded from permission check
@@ -287,20 +290,20 @@ class DocumentService @Autowired constructor(
         }
 
         if (publish) {
-            preCreatePayload.document.state = DOCUMENT_STATE.PUBLISHED
+            preUpdatePayload.document.state = DOCUMENT_STATE.PUBLISHED
 
-            val prePublishPayload = PrePublishPayload(docType, preCreatePayload.document, preCreatePayload.wrapper)
+            val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
 
         // save document
-        val newDocument = docRepo.save(preCreatePayload.document)
+        val newDocument = docRepo.save(preUpdatePayload.document)
 
         // save wrapper
-        val newWrapper = docWrapperRepo.save(preCreatePayload.wrapper)
+        val newWrapper = docWrapperRepo.save(preUpdatePayload.wrapper)
 
         // create ACL before trying to save since we need the permission
-        aclService.createAclForDocument(newWrapper.id!!, preCreatePayload.wrapper.parent?.id)
+        aclService.createAclForDocument(newWrapper.id!!, preUpdatePayload.wrapper.parent?.id)
 
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)

@@ -21,6 +21,8 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
       defaultCountry: { key: "276" },
       inheritAddress: false,
       requiredField: { administrativeArea: true },
+      positionNameAndHoursOfService: true,
+      publicationArea: true,
     };
   }
 }

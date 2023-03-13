@@ -15,11 +15,11 @@ export class DestinationSelectionComponent implements OnInit {
   @Input() disableRoot = false;
   @Input() typeToInsert: string;
 
-  @Output() choice = new EventEmitter<string>();
+  @Output() choice = new EventEmitter<number>();
 
-  parent: string = null;
+  parent: number = null;
   rootNode: Partial<DocumentAbstract>;
-  activeTreeNode = new BehaviorSubject<string>(null);
+  activeTreeNode = new BehaviorSubject<number>(null);
   activeListItem = new BehaviorSubject<Partial<DocumentAbstract>>(undefined);
   showOnlyFolders: boolean;
 
@@ -28,7 +28,7 @@ export class DestinationSelectionComponent implements OnInit {
     private translocoService: TranslocoService
   ) {}
 
-  @Input() set initialSelectedId(value: string) {
+  @Input() set initialSelectedId(value: number) {
     if (value !== null) this.activeTreeNode.next(value);
   }
 
@@ -60,7 +60,7 @@ export class DestinationSelectionComponent implements OnInit {
     };
   }
 
-  updateParent(node: string[], source: "Tree" | "List") {
+  updateParent(node: number[], source: "Tree" | "List") {
     const newParent = node[0] ?? null;
     if (this.parent === newParent) {
       return;
