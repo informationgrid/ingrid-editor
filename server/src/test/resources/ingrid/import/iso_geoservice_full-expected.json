@@ -143,7 +143,7 @@
         }
       }
     ],
-    "regionKey": "Hannover",
+    "regionKey": "054854700000",
     "spatialSystems": [
       {
         "key": "3068"
@@ -342,6 +342,9 @@
         "distanceDPI": 545
       }
     ],
+    "systemEnvironment": "System",
+    "implementationHistory": "Historie",
+    "explanation": "Erläuterung",
     "coupledResources": [
       {
         "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
