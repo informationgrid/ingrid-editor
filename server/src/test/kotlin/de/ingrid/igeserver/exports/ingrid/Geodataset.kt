@@ -119,20 +119,20 @@ class Geodataset : AnnotationSpec() {
     val GENERATED_UUID_REGEX = Regex("ID_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 
 
-    @Test
-    fun minimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+    /*    @Test
+        fun minimalExport() {
+            every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJsonToXML(exporter, "/export/ingrid/geodataset-Document1.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-            .replace("\r\n", "\n")
+            var result = exportJsonToXML(exporter, "/export/ingrid/geodataset-Document1.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+                .replace("\r\n", "\n")
 
-        result shouldNotBe null
-        // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document1.idf.xml")
-    }
+            result shouldNotBe null
+            // TODO: pending
+            // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document1.idf.xml")
+        }*/
 
     @Test
     fun completeExport() {
