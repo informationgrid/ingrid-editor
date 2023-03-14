@@ -378,7 +378,7 @@ export class GeoDatasetDoctype extends IngridShared {
           ],
           { fieldGroupClassName: "display-flex" }
         ),
-        this.addRepeat("qualities", "Qualität", {
+        this.addRepeat("qualities", "Qualitätsinformationen", {
           className: "optional",
           menuOptions: [
             {
@@ -477,11 +477,11 @@ export class GeoDatasetDoctype extends IngridShared {
           codelistId: codelistId,
           className: "flex-2",
         }),
-        this.addInputInline("value", "Wert", {
+        this.addInputInline("value", "Ergebnis", {
           required: true,
           type: "number",
         }),
-        this.addInputInline("parameter", "Parameter"),
+        this.addInputInline("parameter", "Beschreibung"),
       ],
       { fieldGroupClassName: "display-flex" }
     );
