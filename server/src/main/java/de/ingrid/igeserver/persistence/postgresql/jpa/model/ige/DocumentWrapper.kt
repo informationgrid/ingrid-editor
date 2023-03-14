@@ -81,7 +81,6 @@ class DocumentWrapper {
         get() = if (field == null) emptyList() else field // field can actually be null if in db table null
 
 
-    @Transient
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id and dw.deleted = 0)")
     var countChildren: Int = 0
 

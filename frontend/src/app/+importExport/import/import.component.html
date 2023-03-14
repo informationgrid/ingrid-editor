@@ -90,7 +90,7 @@
                         mat-flat-button
                         color="primary"
                         matStepperNext
-                        [disabled]="!step1Complete"
+                        [disabled]="!step1Complete || errorInAnalysis"
                     >
                         Weiter
                     </button>
@@ -101,7 +101,7 @@
                 <form class="content" [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
                     <div class="options">
-                        <div class="section-title space-bottom">Typ</div>
+                        <!--<div class="section-title space-bottom">Typ</div>
                         <mat-form-field
                             appearance="outline"
                             style="width: 372px"
@@ -116,7 +116,7 @@
                                     >{{ importer.name }}</mat-option
                                 >
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field>-->
 
                         <div class="section-title">Optionen</div>
                         <div class="space-bottom display-flex flex-column">
@@ -129,9 +129,11 @@
                         </div>
 
                         <div class="section-title">Anlageort</div>
-                        <div class="wrapper-target padding">
+                        <div class="padding">
                             <div>
-                                Datensätze: {{ parent.document }}
+                                <ige-breadcrumb
+                                    [path]="parent.documentPath"
+                                ></ige-breadcrumb>
                                 <span class="link-text">
                                     <a
                                         data-cy="dataset-location"
@@ -142,7 +144,10 @@
                                 </span>
                             </div>
                             <div>
-                                Adressen: {{ parent.address }}
+                                <ige-breadcrumb
+                                    [rootName]="'Adressen'"
+                                    [path]="parent.addressPath"
+                                ></ige-breadcrumb>
                                 <span class="link-text">
                                     <a
                                         data-cy="address-location"
@@ -175,48 +180,7 @@
                     </button>
                 </div>
             </mat-step>
-            <!--<mat-step [completed]="readyForImport">
-                <ng-template matStepLabel>Ort wählen</ng-template>
-                <div class="content">
-                    <div class="section-title">Dokument:</div>
-                    <ige-tree
-                        [hideReadOnly]="false"
-                        [showOnlyFolders]="true"
-                        [showHeaderOptions]="false"
-                        (activate)="setLocation($event, false)"
-                    ></ige-tree>
-                    &lt;!&ndash; FIXME: [hideReadOnly]="true" after completion of #4261 &ndash;&gt;
 
-                    <div class="section-title space-top">Adresse:</div>
-                    <ige-tree
-                        [forAddresses]="true"
-                        [hideReadOnly]="true"
-                        [showOnlyFolders]="true"
-                        [showHeaderOptions]="false"
-                        (activate)="setLocation($event, true)"
-                    ></ige-tree>
-                </div>
-
-                <div class="action-bar">
-                    <button mat-button color="primary" (click)="cancel()">
-                        Abbrechen
-                    </button>
-                    <div fxFlex></div>
-                    <button mat-button color="primary" matStepperPrevious>
-                        Zurück
-                    </button>
-                    <button
-                        mat-button
-                        mat-flat-button
-                        color="primary"
-                        [disabled]="!readyForImport"
-                        matStepperNext
-                        (click)="startImport()"
-                    >
-                        Importieren
-                    </button>
-                </div>
-            </mat-step>-->
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
                 <div class="content text-center">
@@ -232,14 +196,6 @@
                         class="display-flex flex-column"
                     >
                         <div class="section-title">Import abgeschlossen</div>
-
-                        <!--<ige-file-upload
-                            #uploadComponent
-                            showOnlyProgress="true"
-                            autoupload="false"
-                            target="/api/import"
-                            (complete)="onFileComplete($event)"
-                        ></ige-file-upload>-->
 
                         <mat-icon
                             *ngIf="message?.errors?.length > 0; else success"

@@ -23,7 +23,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun findByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String): DocumentWrapper
 
     @PostAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
-    @Query("SELECT dw.* FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true )
+    @Query("SELECT dw.*, 0 as countChildren FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true )
     fun findByCatalogAndUuidIncludingDeleted(catalogIdentifier: String, uuid: String): DocumentWrapper
 
     fun existsById(uuid: String): Boolean

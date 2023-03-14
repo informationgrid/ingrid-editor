@@ -58,6 +58,8 @@ export class ImportComponent implements OnInit {
 
   showMore = false;
 
+  errorInAnalysis = false;
+
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
       tap((data) =>
@@ -70,6 +72,10 @@ export class ImportComponent implements OnInit {
         this.optionsFormGroup
           .get("importer")
           .setValue(info?.report?.importers ? info?.report?.importers[0] : null)
+      ),
+      tap(
+        (info: ImportLogInfo) =>
+          (this.errorInAnalysis = info?.errors?.length > 0)
       )
     ),
     this.rxStompService
@@ -83,8 +89,8 @@ export class ImportComponent implements OnInit {
   message: ImportLogInfo;
 
   parent = {
-    document: "Daten",
-    address: "Adressen",
+    documentPath: [],
+    addressPath: [],
   };
 
   constructor(
@@ -149,7 +155,10 @@ export class ImportComponent implements OnInit {
   private handleRunningInfo(data: any) {
     console.log("Handle Running Info");
     this.importIsRunning = !data.endTime;
-    if (data?.stage === "ANALYZE") this.showMore = true;
+    if (data?.stage === "ANALYZE") {
+      this.showMore = true;
+      this.errorInAnalysis = data.errors?.length > 0;
+    }
 
     // remove already loaded tree node information
     if (data?.stage === "IMPORT") this.documentService.clearTreeStores();
@@ -180,10 +189,14 @@ export class ImportComponent implements OnInit {
           const title = this.addressTreeQuery.getEntity(
             target.selection
           )?.title;
-          this.parent.address = title ?? "Adressen";
+          this.documentService
+            .getPath(target.selection)
+            .subscribe((path) => (this.parent.addressPath = path));
         } else {
           const title = this.treeQuery.getEntity(target.selection)?.title;
-          this.parent.document = title ?? "Daten";
+          this.documentService
+            .getPath(target.selection)
+            .subscribe((path) => (this.parent.documentPath = path));
         }
       });
   }
