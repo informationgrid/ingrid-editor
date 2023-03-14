@@ -12,8 +12,8 @@
 !{var provider = ((String)map.get("provider"));}
 
 {
-    "iPlugId": "ige-ng_${catalog.identifier}",
-    "dataSourceName": "iPlug IGE-NG (${catalog.identifier})",
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
+    "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
@@ -83,7 +83,7 @@
         "t02_address.title_key": "",
         "t02_address.typ": "2",
     @endif
-    "t03_catalogue.cat_name": "${catalog.name}",
+    "t03_catalogue.cat_name": "${catalog.getName()}",
     "t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
     "t03_catalogue.cat_uuid": "",
     "t03_catalogue.country_code": "Deutschland",

@@ -10,7 +10,9 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 class IngridIndexExporterAddress @Autowired constructor(
     val catalogRepo: CatalogRepository,
     val codelistService: CodeListService,
-    val docWrapperRepo: DocumentWrapperRepository
+    val docWrapperRepo: DocumentWrapperRepository,
+    @Lazy val documentService: DocumentService
 ) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
@@ -83,7 +86,8 @@ class IngridIndexExporterAddress @Autowired constructor(
     private fun getParentTitle(parent: DocumentWrapper?): List<String> {
         if (parent == null || parent.type == "FOLDER") return emptyList()
 
-        return getParentTitle(parent.parent) + (parent.published?.title ?: "")
+        val publishedDoc = documentService.getLastPublishedDocument(parent.catalog!!.identifier, parent.uuid)
+        return getParentTitle(parent.parent) + (publishedDoc.title ?: "")
     }
 
     private fun getCommTypeKeys(doc: Document): ArrayNode {

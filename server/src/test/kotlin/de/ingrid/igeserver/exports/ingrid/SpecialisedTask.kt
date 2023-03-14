@@ -66,7 +66,7 @@ class SpecialisedTask : AnnotationSpec() {
     fun minimalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJson(exporter, "/export/ingrid/specialisedTask-Document1.json")
+        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
@@ -80,7 +80,7 @@ class SpecialisedTask : AnnotationSpec() {
     fun completeExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJson(exporter, "/export/ingrid/specialisedTask-Document2.json")
+        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
