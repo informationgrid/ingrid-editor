@@ -36,33 +36,6 @@ class TransformationTools {
 
 
         @kotlin.jvm.JvmStatic
-        fun wktToGml(wktGeometry: String): String {
-            val wktR = WKTReader()
-            val geom = wktR.read(wktGeometry)
-
-            // write JTS to string
-            val gmlW = GMLWriter(false)
-            var gml = gmlW.write(geom)
-
-            // add gml:id attributes
-            arrayOf(
-                "Point",
-                "MultiPoint",
-                "LineString",
-                "MultiLineString",
-                "Polygon",
-                "MultiPolygon",
-                "MultiGeometry"
-            ).forEach {
-                gml = gml.replace("<gml:$it", "<gml:$it gml:id=\"${it}_ID_${getRandomUUID()}\"")
-            }
-
-
-            return gml
-        }
-
-
-        @kotlin.jvm.JvmStatic
         fun getLanguageISO639_2Value(language: KeyValueModel): String {
             if (language.key == null) return language.value
                 ?: throw ServerException.withReason("Could not map document language: $language")
