@@ -239,21 +239,22 @@ export class GeoServiceDoctype extends IngridShared {
   }
 
   private handleServiceTypeChange(field) {
-    field.formControl.valueChanges
-      .pipe(
-        filter((value) => value != null),
-        distinctUntilKeyChanged("key")
-      )
-      .subscribe((value) => {
-        const codelistId = this.mapServiceTypeToVersionCodelist[value.key];
-        if (codelistId === undefined) {
-          this.getServiceVersionOptions.next([]);
-        } else {
-          this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
-            this.getServiceVersionOptions.next(value)
-          );
-        }
-        // TODO: remove all codelist values from version field?
-      });
+    return field.formControl.valueChanges.pipe(
+      filter((value) => value != null),
+      distinctUntilKeyChanged("key"),
+      tap((value) => this.updateServiceVersionField(value))
+    );
+  }
+
+  private updateServiceVersionField(value) {
+    const codelistId = this.mapServiceTypeToVersionCodelist[value.key];
+    if (codelistId === undefined) {
+      this.getServiceVersionOptions.next([]);
+    } else {
+      this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
+        this.getServiceVersionOptions.next(value)
+      );
+    }
+    // TODO: remove all codelist values from version field?
   }
 }
