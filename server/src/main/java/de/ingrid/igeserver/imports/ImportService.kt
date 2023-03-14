@@ -59,7 +59,8 @@ class ImportService constructor(
                 .mapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    analyzeDoc(catalogId, fileContent[0])
+                    val result = if (fileContent is ArrayNode) fileContent[0] else fileContent
+                    analyzeDoc(catalogId, result)
                 }
                 .toList().let { prepareForImport(importers, it) }
         }

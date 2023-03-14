@@ -58,7 +58,7 @@
     },
     "dataQuality": {
         "completenessOmission": {
-            "measResult": ${model.getCompletenessOmissionValue()}
+            @if(model.getCompletenessOmissionValue() != null)"measResult": ${model.getCompletenessOmissionValue()}@endif
         }
     },
     !{var positionalAccuracy = model.getPositionalAccuracy();}
