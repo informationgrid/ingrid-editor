@@ -62,7 +62,7 @@ interface UsersApi {
     )
     fun deleteUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<Void>
 
     @GetMapping(
@@ -73,7 +73,7 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: Int
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<User>
 
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])

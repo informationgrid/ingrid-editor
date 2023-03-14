@@ -18,6 +18,13 @@ export interface Options {
   };
 }
 
+export interface DatePickerOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  datepickerOptions?: any;
+  validators?: any;
+}
+
 export interface RepeatOptions extends Options {
   menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
@@ -48,6 +55,8 @@ export interface SelectOptions extends Options {
   externalLabel?: string;
   showSearch?: boolean;
   allowNoValue?: boolean;
+  change?: any;
+  hooks?: any;
 }
 
 export interface TableOptions extends Options {
@@ -357,8 +366,10 @@ export class FormFieldHelper {
         allowNoValue: options?.allowNoValue,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        change: options?.change,
       },
       expressions: expressions,
+      hooks: options?.hooks,
     };
   }
 
@@ -409,12 +420,12 @@ export class FormFieldHelper {
     };
   }
 
-  addDatepicker(id, label, options?) {
+  addDatepicker(id, label, options?: DatePickerOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "datepicker",
-      className: "ige-date-picker",
+      className: options?.className ?? "ige-date-picker width-date-small",
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]

@@ -135,7 +135,10 @@
                             <div>
                                 Datensätze: {{ parent.document }}
                                 <span class="link-text">
-                                    <a (click)="chooseLocationForDatasets()">
+                                    <a
+                                        data-cy="dataset-location"
+                                        (click)="chooseLocationForDatasets()"
+                                    >
                                         Ändern
                                     </a>
                                 </span>
@@ -143,7 +146,10 @@
                             <div>
                                 Adressen: {{ parent.address }}
                                 <span class="link-text">
-                                    <a (click)="chooseLocationForAddresses()">
+                                    <a
+                                        data-cy="address-location"
+                                        (click)="chooseLocationForAddresses()"
+                                    >
                                         Ändern
                                     </a>
                                 </span>

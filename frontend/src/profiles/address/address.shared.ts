@@ -11,6 +11,7 @@ export interface AddressOptions {
   defaultCountry: BackendOption;
   hideCountryAndAdministrativeArea: boolean;
   hideAdministrativeArea: boolean;
+  publicationArea: boolean;
   inheritAddress: boolean;
   positionNameAndHoursOfService: boolean;
   requiredField: any;
@@ -57,6 +58,17 @@ export abstract class AddressShared extends BaseDoctype {
           },
         }),
       ],
+    });
+  }
+
+  addPublicationArea(): FormlyFieldConfig {
+    return this.addSelect("publishArea", "Veröffentlichung", {
+      className: "single-field width-25",
+      options: this.getCodelistForSelect(3571, "publishArea"),
+      codelistId: 3571,
+      defaultValue: {
+        key: "1",
+      },
     });
   }
 

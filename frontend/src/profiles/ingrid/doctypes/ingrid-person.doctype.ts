@@ -22,6 +22,7 @@ export class IngridPersonDoctype extends PersonDoctype {
       inheritAddress: false,
       requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
+      publicationArea: true,
     };
   }
 }

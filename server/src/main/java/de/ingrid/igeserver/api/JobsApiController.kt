@@ -21,10 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
 import java.security.Principal
+import kotlin.io.path.absolutePathString
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -85,15 +83,14 @@ class JobsApiController @Autowired constructor(
         val profile = catalogService.getCatalogById(catalogId).type
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
-        val fileLocation = "/tmp/ige-ng/importFiles/${file.originalFilename}"
-        log.info("Save uploaded file to '${fileLocation}'")
-        Files.createDirectories(Path.of("/tmp/ige-ng/importFiles"))
-        file.transferTo(File(fileLocation))
+        val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
+        log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
+        file.transferTo(tempFile)
 
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
-            put("importFile", fileLocation)
+            put("importFile", tempFile.absolutePathString())
             put("report", null)
         }
         scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)

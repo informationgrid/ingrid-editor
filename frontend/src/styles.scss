@@ -257,6 +257,19 @@ h1 {
   width: 200px;
 }
 
+.single-field {
+  &.width-50 ige-one-column-wrapper > div > ige-form-label + * {
+    flex: 0.5;
+    padding-right: 10px; // simulate gap used by multiple fields in one row
+    min-width: 130px;
+  }
+  &.width-25 ige-one-column-wrapper > div > ige-form-label + * {
+    flex: 0.25;
+    padding-right: 10px; // simulate gap used by multiple fields in one row
+    min-width: 130px;
+  }
+}
+
 .section-title {
   font-weight: 500;
   font-size: 16px;
@@ -455,11 +468,11 @@ dynamic-form textarea {
 }*/
 formly-field ige-one-column-wrapper mat-form-field,
 formly-wrapper-mat-form-field > mat-form-field {
-  width: 100%;
+  //width: 100%;
 }
 
 ige-form-wrapper formly-field.ige-date-picker mat-form-field {
-  width: inherit;
+  //width: inherit;
 }
 
 ::placeholder {

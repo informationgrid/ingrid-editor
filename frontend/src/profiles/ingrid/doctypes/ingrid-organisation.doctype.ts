@@ -22,6 +22,7 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
       inheritAddress: false,
       requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
+      publicationArea: true,
     };
   }
 }

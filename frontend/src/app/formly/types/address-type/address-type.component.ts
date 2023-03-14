@@ -90,7 +90,7 @@ export class AddressTypeComponent
         self.findIndex((item) => {
           const sameType =
             item.type.key === value.type.key ||
-            item.type.value === value.type.value;
+            (item.type.key === null && item.type.value === value.type.value);
           const sameUuid = item.ref._uuid === value.ref._uuid;
           return sameType && sameUuid;
         })
