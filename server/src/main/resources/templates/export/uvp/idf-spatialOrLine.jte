@@ -9,7 +9,7 @@
 !{var docInfo = ((DocInfo)map.get("docInfo"));}
 !{page.getData().convertEiaNumbers(docInfo.getCatalogId());}
 
-@template.uvp.template-idf(content = @`
+@template.template-idf(content = @`
     @template.uvp.shared-general(page = page)
     <uvpgs>
         @for(UVPNumber uvpNumber : page.getUvpNumbers())

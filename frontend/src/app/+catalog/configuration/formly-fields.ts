@@ -59,4 +59,13 @@ export const fields = (codelistService: CodelistService) =>
         appearance: "outline",
       },
     },
+    {
+      key: "namespace",
+      type: "textarea",
+      wrappers: ["panel", "form-field"],
+      props: {
+        externalLabel: "Namespace",
+        appearance: "outline",
+      },
+    },
   ];

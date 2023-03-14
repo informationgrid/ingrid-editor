@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.uvp.types.address
+package de.ingrid.igeserver.profiles.ingrid.types.address
 
 import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.services.DocumentCategory

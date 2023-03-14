@@ -1,0 +1,508 @@
+{
+  "title": "Kompletter Geodatensatz",
+  "_id": "4",
+  "_uuid": "B02B301C-FDE9-4064-97DB-AD7BA7B15947",
+  "_type": "InGridGeoDataset",
+  "_created": "2023-02-21T11:16:50.178911+01:00",
+  "_createdBy": "Max Muster",
+  "_modified": "2023-02-21T11:35:51.9208592+01:00",
+  "_modifiedBy": "Max Muster",
+  "_state": "P",
+  "_version": 7,
+  "data": {
+    "isInspireIdentified": true,
+    "isAdVCompatible": true,
+    "isOpenData": true,
+    "subType": {
+      "key": "5"
+    },
+    "parentIdentifier": "ueber-id",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "asLink": true,
+          "value": "http://wemove.com/",
+          "uri": "http://wemove.com/"
+        },
+        "fileDescription": "vorschau-beschreibung"
+      }
+    ],
+    "alternateTitle": "kurzbezeichnung",
+    "description": "Beschreibung von Kompletter Geodatensatz",
+    "pointOfContact": [
+      {
+        "type": {
+          "key": "0"
+        },
+        "ref": {
+          "title": "Wemove Test",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "1C903F1F-D98A-4382-94B8-E45C173E0FC7",
+          "_type": "InGridOrganisationDoc",
+          "_version": 2,
+          "_created": "2023-02-15T10:48:26.838301+01:00",
+          "_modified": "2023-02-15T10:48:44.484899+01:00",
+          "_createdBy": "Max Muster",
+          "_modifiedBy": "Max Muster",
+          "_state": "P",
+          "_id": "1",
+          "address": {
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "test@wemove.com"
+            }
+          ],
+          "organization": "Wemove Test",
+          "_parent": null
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "4"
+      },
+      {
+        "key": "8"
+      }
+    ],
+    "themes": [
+      {
+        "key": "314"
+      },
+      {
+        "key": "105"
+      }
+    ],
+    "priorityDatasets": [
+      {
+        "key": "837881524"
+      }
+    ],
+    "spatialScope": {
+      "key": "-673152846"
+    },
+    "topicCategories": [
+      {
+        "key": "13"
+      },
+      {
+        "key": "17"
+      }
+    ],
+    "keywords": [
+      "Frei1",
+      "Frei2"
+    ],
+    "lineage": {
+      "statement": "Fachliche Grundlage Text"
+    },
+    "identifier": "test-identifikator",
+    "spatialRepresentationType": [
+      {
+        "key": "2"
+      },
+      {
+        "key": "4"
+      }
+    ],
+    "resolution": [
+      {
+        "denominator": 15,
+        "distanceMeter": 30,
+        "distanceDPI": 400
+      },
+      {
+        "denominator": 4,
+        "distanceMeter": 5,
+        "distanceDPI": 6
+      }
+    ],
+    "portrayalCatalogueInfo": {
+      "citation": [
+        {
+          "title": {
+            "key": "1"
+          },
+          "date": "2023-02-20T23:00:00.000Z",
+          "edition": "3"
+        }
+      ]
+    },
+    "featureCatalogueDescription": {
+      "citation": [
+        {
+          "title": {
+            "key": "1"
+          },
+          "date": "2023-02-20T23:00:00.000Z",
+          "edition": "4"
+        }
+      ],
+      "featureTypes": [
+        {
+          "key": null,
+          "value": "Attributinformation test"
+        },
+        {
+          "key": null,
+          "value": "Sachdaten test"
+        }
+      ]
+    },
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [
+            {
+              "key": null,
+              "value": "Datengrundlage text"
+            }
+          ],
+          "processStep": {
+            "description": "Herstellungsprozess text"
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "completenessOmission": {
+        "measResult": 25
+      }
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": 12,
+      "horizontal": 13,
+      "griddedDataPositionalAccuracy": 14
+    },
+    "qualities": [
+      {
+        "_type": "conceptualConsistency",
+        "measureType": {
+          "key": "2"
+        },
+        "value": 88,
+        "parameter": "66"
+      },
+      {
+        "_type": "temporalConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 3,
+        "parameter": "h"
+      },
+      {
+        "_type": "conceptualConsistency",
+        "measureType": {
+          "key": "3"
+        },
+        "value": 2,
+        "parameter": "3"
+      },
+      {
+        "_type": "domainConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 34,
+        "parameter": "mm"
+      },
+      {
+        "_type": "thematicClassificationCorrectness",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 12,
+        "parameter": "%"
+      },
+      {
+        "_type": "nonQuantitativeAttributeAccuracy",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 23,
+        "parameter": "rat"
+      },
+      {
+        "_type": "relativeInternalPositionalAccuracy",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 6,
+        "parameter": "tol"
+      },
+      {
+        "_type": "completenessComission",
+        "measureType": {
+          "key": "2"
+        },
+        "value": 11,
+        "parameter": "param1"
+      },
+      {
+        "_type": "topologicalConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 23,
+        "parameter": "hl"
+      },
+      {
+        "_type": "quantitativeAttributeAccuracy",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 21,
+        "parameter": "ter"
+      },
+      {
+        "_type": "completenessComission",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 55,
+        "parameter": "param2"
+      },
+      {
+        "_type": "formatConsistency",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 7,
+        "parameter": "kk"
+      }
+    ],
+    "spatial": {
+      "references": [
+        {
+          "value": {
+            "lat1": 4,
+            "lon1": 3,
+            "lat2": 6,
+            "lon2": 5
+          },
+          "title": "Auenland",
+          "type": "free"
+        },
+        {
+          "value": {
+            "lat1": 52.3051373,
+            "lon1": 9.60443,
+            "lat2": 52.4543349,
+            "lon2": 9.9184259
+          },
+          "title": "Hannover",
+          "type": "free"
+        }
+      ],
+      "regionKey": 12,
+      "spatialSystems": [
+        {
+          "key": "5676"
+        },
+        {
+          "key": "9000009"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 2,
+        "unitOfMeasure": {
+          "key": "9002"
+        },
+        "Datum": {
+          "key": "900007"
+        }
+      },
+      "description": "Test-Erläuterungen 1"
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-02-20T23:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "since"
+      },
+      "resourceDate": "2023-02-01T23:00:00.000Z",
+      "status": {
+        "key": "6"
+      },
+      "resourceDateTypeSince": {
+        "key": "requestTime"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 3,
+        "unit": {
+          "key": "5"
+        }
+      },
+      "description": "Test-Erläuterungen 2"
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      },
+      "characterSet": {
+        "key": "3"
+      }
+    },
+    "extraInfoPublishArea": {
+      "key": "1"
+    },
+    "dataset": {
+      "languages": [
+        "150",
+        "103"
+      ]
+    },
+    "conformanceResult": [
+      {
+        "specification": {
+          "key": "12"
+        },
+        "pass": {
+          "key": "1"
+        },
+        "publicationDate": "2010-12-08",
+        "explanation": "see the referenced specification",
+        "isInspire": true
+      }
+    ],
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": null,
+          "value": "Weitere Rechtliche Grundlagen 1"
+        },
+        {
+          "key": null,
+          "value": "Weitere Rechtliche Grundlagen 2"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Herstellungszweck test",
+      "specificUsage": "Eignung/Nutzung test",
+      "accessConstraints": [
+        {
+          "key": "1"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "26"
+          },
+          "source": "quellenvermerk1"
+        },
+        {
+          "title": {
+            "key": "25"
+          },
+          "source": "quellenvermerk2"
+        }
+      ],
+      "useLimitation": "Anwendungseinschränkungen test"
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "23"
+          },
+          "version": "4",
+          "compression": "5",
+          "specification": "6"
+        },
+        {
+          "name": {
+            "key": "24"
+          },
+          "version": "1",
+          "compression": "2",
+          "specification": "3"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "4"
+        },
+        "transferSize": 3,
+        "mediumNote": "4"
+      },
+      {
+        "name": {
+          "key": "14"
+        },
+        "transferSize": 1,
+        "mediumNote": "2"
+      }
+    ],
+    "orderInfo": "Bestellinformation test",
+    "references": [
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "Testverweis",
+        "url": "https://wemove.com",
+        "explanation": "ErläuterungenVerweis"
+      }
+    ],
+    "isInspireConform": true,
+    "openDataCategories": [
+      {
+        "key": "9"
+      },
+      {
+        "key": "3"
+      }
+    ],
+    "gridSpatialRepresentation": {
+      "type": {
+        "key": "basis"
+      },
+      "axesDimensionProperties": [
+        {
+          "name": {
+            "key": "2"
+          },
+          "size": 1,
+          "resolution": 3
+        },
+        {
+          "name": {
+            "key": "5"
+          },
+          "size": 3,
+          "resolution": 5
+        }
+      ],
+      "transformationParameterAvailability": true,
+      "numberOfDimensions": 2,
+      "cellGeometry": {
+        "key": "2"
+      }
+    }
+  }
+}

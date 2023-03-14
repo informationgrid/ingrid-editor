@@ -84,7 +84,7 @@ class JobsApiController @Autowired constructor(
         val profile = catalogService.getCatalogById(catalogId).type
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
-        val tempFile = kotlin.io.path.createTempFile("import-", file.originalFilename)
+        val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
         log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
         file.transferTo(tempFile)
 

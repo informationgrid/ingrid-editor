@@ -10,10 +10,12 @@ data class CatalogSettings(
     var config: CatalogConfig? = null
 )
 
+// TODO refactor for profile specific settings
 data class CatalogConfig(
     val partner: String? = null,
     val provider: String? = null,
     val elasticsearchAlias: String? = null,
+    var namespace: String? = null,
     val ibus: IBusConfig? = IBusConfig()
 )
 @JsonIgnoreProperties(ignoreUnknown = true)

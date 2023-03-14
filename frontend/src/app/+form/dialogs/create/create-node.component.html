@@ -61,6 +61,15 @@
 
     <mat-dialog-actions>
         <button
+            mat-button
+            mat-dialog-close
+            data-cy="create-cancel"
+            color="primary"
+        >
+            Abbrechen
+        </button>
+
+        <button
             *ngIf="selectedPage === 1"
             color="primary"
             mat-button

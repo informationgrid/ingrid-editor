@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.exports.interfaces.dcat
 
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.AddressModel
 
 interface DCAT {
 

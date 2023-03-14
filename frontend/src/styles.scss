@@ -468,11 +468,11 @@ dynamic-form textarea {
 }*/
 formly-field ige-one-column-wrapper mat-form-field,
 formly-wrapper-mat-form-field > mat-form-field {
-  width: 100%;
+  //width: 100%;
 }
 
 ige-form-wrapper formly-field.ige-date-picker mat-form-field {
-  width: inherit;
+  //width: inherit;
 }
 
 ::placeholder {

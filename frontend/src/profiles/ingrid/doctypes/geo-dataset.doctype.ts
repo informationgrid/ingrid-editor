@@ -95,7 +95,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addGroup(
           "gridSpatialRepresentation",
-          "Raster/Gitter",
+          "Raster/Gridformat",
           [
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
@@ -345,6 +345,7 @@ export class GeoDatasetDoctype extends IngridShared {
           this.addGroupSimple("completenessOmission", [
             this.addInput("measResult", "Datendefizit", {
               wrappers: ["panel", "form-field"],
+              className: "single-field width-25",
               type: "number",
             }),
           ]),
@@ -378,7 +379,7 @@ export class GeoDatasetDoctype extends IngridShared {
           ],
           { fieldGroupClassName: "display-flex" }
         ),
-        this.addRepeat("qualities", "Qualität", {
+        this.addRepeat("qualities", "Qualitätsinformationen", {
           className: "optional",
           menuOptions: [
             {
@@ -477,11 +478,11 @@ export class GeoDatasetDoctype extends IngridShared {
           codelistId: codelistId,
           className: "flex-2",
         }),
-        this.addInputInline("value", "Wert", {
+        this.addInputInline("value", "Ergebnis", {
           required: true,
           type: "number",
         }),
-        this.addInputInline("parameter", "Parameter"),
+        this.addInputInline("parameter", "Beschreibung"),
       ],
       { fieldGroupClassName: "display-flex" }
     );

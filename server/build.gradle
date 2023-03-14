@@ -190,6 +190,8 @@ dependencies {
 
     // iBus communication
     implementation('de.ingrid:ingrid-elasticsearch-tools:6.0.0')
+    // wkt handling
+    implementation('org.locationtech.jts:jts-core:1.19.0')
 
     implementation('de.ingrid:ingrid-ibus-client:6.0.0') {
         exclude group: 'org.apache.logging.log4j'

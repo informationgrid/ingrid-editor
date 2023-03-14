@@ -1,6 +1,7 @@
-package de.ingrid.igeserver.profiles.mcloud.exporter.model
+package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.utils.convertWktToGml32
 import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,7 +40,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     private fun getWktCoordinates(): String? {
         if (this.wkt != null) {
-            try{
+            try {
                 var coordsPos = wkt.indexOf("(")
                 var coords = wkt.substring(coordsPos).trim()
                 coords = coords.replace("\n", " ")
@@ -49,7 +50,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
                 coords = coords.replace("([0-9])\\s+([-0-9])".toRegex(), "$1, $2")
 
                 return coords
-            } catch (ex:Exception){
+            } catch (ex: Exception) {
                 log.error(ex)
             }
         }
@@ -57,14 +58,20 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         return null
     }
 
+    fun getWktCoordinatesISO(): String? =
+        if (this.wkt != null)
+            convertWktToGml32(this.wkt)
+        else null
+
+
     private fun getWktType(): String? {
         if (this.wkt != null) {
-            try{
+            try {
                 var coordsPos = wkt.indexOf("(")
                 var wktType = wkt.substring(0, coordsPos).trim().lowercase()
 
                 return wktType
-            } catch (ex:Exception){
+            } catch (ex: Exception) {
                 log.error(ex)
             }
         }
