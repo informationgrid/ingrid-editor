@@ -119,16 +119,20 @@ class UsersApiController : UsersApi {
     }
 
     @Transactional
-    override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
-        if (!catalogService.canEditUser(principal, userId)) {
+    override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+        val login = frontendUser.userId
+        
+        if (!catalogService.canEditUser(principal, login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val deleted = catalogService.deleteUser(catalogId, userId)
+        val deleted = catalogService.deleteUser(catalogId, login)
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
-            keycloakService.deleteUser(principal, userId)
+            keycloakService.deleteUser(principal, login)
         }
 
         return ResponseEntity.ok().build()
