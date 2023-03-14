@@ -194,8 +194,8 @@ data class Resource(
     val purpose: String?,
     val specificUsage: String?,
     val useLimitation: String?,
-    val useConstraints: List<UseConstraint>,
-    val accessConstraints: List<KeyValueModel>,
+    val useConstraints: List<UseConstraint>?,
+    val accessConstraints: List<KeyValueModel>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

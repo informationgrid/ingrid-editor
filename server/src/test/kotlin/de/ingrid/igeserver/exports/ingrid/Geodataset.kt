@@ -18,8 +18,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.springframework.test.context.ActiveProfiles
 
-//@SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@ActiveProfiles(profiles = ["ingrid"])
 class Geodataset : AnnotationSpec() {
 
     override fun extensions() = listOf(SpringExtension)

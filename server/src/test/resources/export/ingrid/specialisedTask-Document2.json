@@ -8,6 +8,7 @@
   "_modified": "2023-02-09T12:11:36.075864+01:00",
   "_modifiedBy": "Max Muster",
   "_version": 5,
+  "_state": "P",
   "data": {
     "isAdVCompatible": false,
     "parentIdentifier": "Übergeordneter Identifikator",
@@ -48,7 +49,7 @@
               "type": {
                 "key": "3"
               },
-              "connection": "wemovetest@wemove.com"
+              "connection": "test@wemove.com"
             }
           ],
           "organization": "Wemove Test",
@@ -155,7 +156,6 @@
           }
         }
       ],
-      "maintenanceNote": "Testerläuterung2",
       "resourceDateType": {
         "key": "since"
       },
@@ -176,7 +176,8 @@
         "unit": {
           "key": "5"
         }
-      }
+      },
+      "description": "Testerläuterung2"
     },
     "metadata": {
       "language": {

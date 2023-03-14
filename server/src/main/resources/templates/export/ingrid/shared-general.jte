@@ -289,16 +289,6 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
         @endif
-        <gmd:resourceConstraints>
-            <gmd:MD_LegalConstraints>
-                <gmd:accessConstraints>
-                    <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-                </gmd:accessConstraints>
-                <gmd:otherConstraints>
-                    <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Es gelten keine Zugriffsbeschränkungen</gmx:Anchor>
-                </gmd:otherConstraints>
-            </gmd:MD_LegalConstraints>
-        </gmd:resourceConstraints>
 
         @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
             <gmd:spatialRepresentationType>
@@ -407,14 +397,9 @@
                                     <gco:Boolean>true</gco:Boolean>
                                 </gmd:extentTypeCode>
                                 <gmd:polygon>
-                                    ${ref.getWktCoordinatesISO()}
+                                    $unsafe{ref.getWktCoordinatesISO()}
                                 </gmd:polygon>
                             </gmd:EX_BoundingPolygon>
-                            <gmd:polygon>
-                                <gml:Point gml:id="Point_ID_00000000-0000-0000-0000-000000000000" srsDimension="2">
-                                    <gml:pos>10 10</gml:pos>
-                                </gml:Point>
-                            </gmd:polygon>
                         </gmd:geographicElement>
                     @endif
                 @endfor
@@ -491,15 +476,9 @@
     </gmd:MD_DataIdentification>
 </gmd:identificationInfo>
 
-<%--  @template.ingrid.contentInfo(page = new GeodatasetModelTransformer(page))--%>
 ${contentInfo}
 
-
-
-
-
-
-
+@if(page.hasDistributionInfo())
 <gmd:distributionInfo>
     <gmd:MD_Distribution>
         @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
@@ -540,7 +519,7 @@ ${contentInfo}
             </gmd:MD_Distributor>
         </gmd:distributor>
         @endif
-        <gmd:transferOptions>
+<%--        <gmd:transferOptions>
             <gmd:MD_DigitalTransferOptions>
                 <gmd:onLine>
                     <idf:idfOnlineResource>
@@ -563,7 +542,7 @@ ${contentInfo}
                     </idf:idfOnlineResource>
                 </gmd:onLine>
             </gmd:MD_DigitalTransferOptions>
-        </gmd:transferOptions>
+        </gmd:transferOptions>--%>
         @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>
@@ -585,4 +564,5 @@ ${contentInfo}
         @endfor
     </gmd:MD_Distribution>
 </gmd:distributionInfo>
+@endif
 

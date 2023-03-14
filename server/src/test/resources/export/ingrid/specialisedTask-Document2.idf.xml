@@ -30,7 +30,7 @@
                             <gmd:address>
                                 <gmd:CI_Address>
                                     <gmd:electronicMailAddress>
-                                        <gco:CharacterString>wemovetest@wemove.com</gco:CharacterString>
+                                        <gco:CharacterString>test@wemove.com</gco:CharacterString>
                                     </gmd:electronicMailAddress>
                                 </gmd:CI_Address>
                             </gmd:address>
@@ -73,7 +73,7 @@
                 </gmd:MD_ReferenceSystem>
             </gmd:referenceSystemInfo>
             <gmd:identificationInfo>
-                <gmd:MD_DataIdentification uuid="http://portalu.de/igc_testNS#/55065077-0D06-4916-855F-F232311D7C07">
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/55065077-0D06-4916-855F-F232311D7C07">
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>

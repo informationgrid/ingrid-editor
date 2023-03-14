@@ -288,6 +288,10 @@ open class IngridModelTransformer constructor(
         contentField.add(value)
         return value
     }
+
+    fun hasDistributionInfo(): Boolean {
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null
+    }
 }
 
 enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }
