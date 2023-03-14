@@ -455,7 +455,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.mapNotNull { it.value }
             ?.joinToString(";")
 
-        return MaintenanceInterval(value.toInt(), KeyValue(intervalUnitKey), KeyValue(updateFrequencyKey), description)
+        return MaintenanceInterval(value?.toInt(), KeyValue(intervalUnitKey), KeyValue(updateFrequencyKey), description)
     }
 
     fun getDigitalTransferOptions(): List<DigitalTransferOption> {

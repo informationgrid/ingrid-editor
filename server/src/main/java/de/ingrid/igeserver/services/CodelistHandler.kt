@@ -129,7 +129,7 @@ class CodelistHandler @Autowired constructor(
     }
 
     fun getCodeListEntryId(listId: String, value: String?, language: String?): String? {
-        return codeListService.getCodeListEntryId(listId, value, language)
+        return if (value == null) null else codeListService.getCodeListEntryId(listId, value, language)
     }
     fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? {
         return codeListService.getCodeList(listId)

@@ -42,13 +42,22 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
 
         val beginOfExtra = description.indexOf("Systemumgebung:")
-        return description.substring(beginOfExtra + 15, description.indexOf(";", beginOfExtra)).trim()
+        if (beginOfExtra == -1) return ""
+        
+        val endIndex = description.indexOf(";", beginOfExtra)
+        return if (endIndex == -1) { 
+            description.substring(beginOfExtra + 15).trim()
+        } else {
+            description.substring(beginOfExtra + 15, endIndex).trim()
+        }
     }
 
     fun getServiceExplanation(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
 
         val beginOfExtra = description.indexOf("Erläuterung zum Fachbezug:")
+        if (beginOfExtra == -1) return ""
+        
         val end = description.indexOf(";", beginOfExtra)
         return if (end == -1) {
             description.substring(beginOfExtra + 26 ).trim()

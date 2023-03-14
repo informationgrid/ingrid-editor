@@ -113,30 +113,33 @@
 "events": [
 @for(var event : ForSupport.of(model.getTemporalEvents()))
     {
-    "referenceDate": "${event.get().getDate()}",
-    "referenceDateType": @template.ingrid.partial.key-value(item = event.get().getType())
+        "referenceDate": "${event.get().getDate()}",
+        "referenceDateType": @template.ingrid.partial.key-value(item = event.get().getType())
     }@if (!event.isLast()),@endif
 @endfor
-],
+]
 !{var time = model.getTimeRelatedInfo();}
-"resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
-"status": @template.ingrid.partial.key-value(item = time.getStatus()),
-@if(time.getUntilDate() == null)
-    "resourceDate": "${time.getDate()}",
-@else
-    "resourceRange": {
-    "start": "${time.getDate()}",
-    "end": "${time.getUntilDate()}"
-    },
+@if(time != null)
+    ,
+    "resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
+    "status": @template.ingrid.partial.key-value(item = time.getStatus()),
+    @if(time.getUntilDate() == null)
+        "resourceDate": "${time.getDate()}",
+    @else
+        "resourceRange": {
+        "start": "${time.getDate()}",
+        "end": "${time.getUntilDate()}"
+        },
+    @endif
+    "resourceDateTypeSince": @template.ingrid.partial.key-value(item = time.getDateTypeSince())
 @endif
-"resourceDateTypeSince": @template.ingrid.partial.key-value(item = time.getDateTypeSince())
 },
 "maintenanceInformation": {
 !{var interval = model.getMaintenanceInterval();}
 "maintenanceAndUpdateFrequency": @template.ingrid.partial.key-value(item = interval.getInterval()),
 "userDefinedMaintenanceFrequency": {
-"number": ${interval.getValue()},
-"unit": @template.ingrid.partial.key-value(item = interval.getUnit())
+    @if(interval.getValue() != null)"number": ${interval.getValue()},@endif
+    "unit": @template.ingrid.partial.key-value(item = interval.getUnit())
 },
 "description": "${interval.getDescription()}"
 },
