@@ -3,14 +3,15 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.CodelistHandler
 
-class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler) :
-    GeneralMapper(metadata, codeListService) {
+class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
+    GeneralMapper(metadata, codeListService, catalogId) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 
     fun getServiceCategories(): List<KeyValue> {
         return info?.descriptiveKeywords
-            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it.keywords?.keyword?.value, "iso") }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 

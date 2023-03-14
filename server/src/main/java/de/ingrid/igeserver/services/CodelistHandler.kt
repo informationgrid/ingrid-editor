@@ -96,6 +96,14 @@ class CodelistHandler @Autowired constructor(
             ?.entries
             ?.find { it.id == key }
             ?.fields?.get("de")
+    }  
+
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String): String? {
+        return getCatalogCodelists(catalogId)
+            .find { it.id == codelistId }
+            ?.entries
+            ?.find { it.getField("de") == value }
+            ?.id
     }    
     
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? {

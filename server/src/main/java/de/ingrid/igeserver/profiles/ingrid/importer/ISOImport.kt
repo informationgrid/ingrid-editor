@@ -28,7 +28,7 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override fun run(data: Any): JsonNode {
+    override fun run(catalogId: String, data: Any): JsonNode {
 
         /*val xmlDeserializer = XmlMapper.builder()
             .defaultUseWrapper(false)
@@ -47,30 +47,22 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val output = createISO(finalObject)
+        val output = createISO(catalogId, finalObject)
 
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
-
-
-        // input is XML
-//        val context = JAXBContext.newInstance(Metadata::class.java)
-//        val unmarshaller = context.createUnmarshaller()
-//        val reader = StringReader(data as String)
-//        val md = unmarshaller.unmarshal(reader) as Metadata
-//        return mapToJson(md)
     }
     
-    fun createISO(data: Metadata): String {
+    fun createISO(catalogId: String, data: Metadata): String {
         val output: TemplateOutput = JsonStringOutput()
 
         when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
-                val model = GeoserviceMapper(data, codelistService)
+                val model = GeoserviceMapper(data, codelistService, catalogId)
                 templateEngine.render("ingrid/geoservice.jte", model, output)
             }
 
             "dataset" -> {
-                val model = GeodatasetMapper(data, codelistService)
+                val model = GeodatasetMapper(data, codelistService, catalogId)
                 templateEngine.render("ingrid/geodataset.jte", model, output)
             }
 

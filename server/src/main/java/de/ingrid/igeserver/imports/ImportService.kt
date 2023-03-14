@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
-import java.nio.charset.Charset
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -53,7 +52,7 @@ class ImportService constructor(
         if (type == "application/zip") {
             val totalFiles: Int
             val importers: List<String>
-            return handleZipImport(file)
+            return handleZipImport(catalogId, file)
                 .also { totalFiles = it.documents.size }
                 .also { importers = it.importers }
                 .documents
@@ -68,7 +67,7 @@ class ImportService constructor(
         val fileContent = file.readText(Charsets.UTF_8)
         val importer = factory.getImporter(type, fileContent)
 
-        val result = importer[0].run(fileContent)
+        val result = importer[0].run(catalogId, fileContent)
         return if (result is ArrayNode) {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
         } else {
@@ -120,7 +119,7 @@ class ImportService constructor(
         }
     }
 
-    private fun handleZipImport(file: File): ExtractedZip {
+    private fun handleZipImport(catalogId: String, file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
         val importers = mutableSetOf<String>()
 
@@ -132,7 +131,7 @@ class ImportService constructor(
                     else -> null
                 }
                 val importer = factory.getImporter(type.toString(), os.toString())
-                val result = importer[0].run(os.toString())
+                val result = importer[0].run(catalogId, os.toString())
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
             }

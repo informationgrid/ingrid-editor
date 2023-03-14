@@ -7,7 +7,7 @@ data class DescriptiveKeyword(
 )
 
 data class MDKeywords(
-    val keyword: CharacterString?,
+    val keyword: List<CharacterString>,
     val type: MDKeywordTypeCode?,
     val thesaurusName: Citation?
 )

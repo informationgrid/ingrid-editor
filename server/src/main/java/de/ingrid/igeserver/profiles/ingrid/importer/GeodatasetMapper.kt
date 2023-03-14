@@ -6,8 +6,8 @@ import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 
-class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler) :
-    GeneralMapper(metadata, codeListService) {
+class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
+    GeneralMapper(metadata, codeListService, catalogId) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo

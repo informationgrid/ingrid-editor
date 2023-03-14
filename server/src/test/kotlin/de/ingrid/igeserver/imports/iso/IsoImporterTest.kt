@@ -32,7 +32,7 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("527", "climatologyMeteorologyAtmosphere", "iso") } returns "4"
         every { codelistService.getCodeListEntryId("1230", "Stunden", "de") } returns "3"
         every { codelistService.getCodeListEntryId("1320", "PNG", "de") } returns "26"
-        every { codelistService.getCodeListEntryId("1350", "Nieders. Abfallgesetz (NAbfG)", "de") } returns "38"
+        every { codelistService.getCatalogCodelistKey("test", "1350", "Nieders. Abfallgesetz (NAbfG)") } returns "38"
         every { codelistService.getCodeListEntryId("2000", "order", "iso") } returns "5304"
 
         every { codelistService.getCodeListEntryId("2000", "information", "iso") } returns "5302"
@@ -94,7 +94,7 @@ class IsoImporterTest : AnnotationSpec() {
     @Test
     fun importGeoservice() {
         val isoImporter = ISOImport(codelistService)
-        val result = isoImporter.run(getFile("ingrid/import/iso_geoservice_full.xml"))
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"))
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
@@ -105,7 +105,7 @@ class IsoImporterTest : AnnotationSpec() {
     @Test
     fun importGeodataset() {
         val isoImporter = ISOImport(codelistService)
-        val result = isoImporter.run(getFile("ingrid/import/iso_geodataset_full.xml"))
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"))
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(

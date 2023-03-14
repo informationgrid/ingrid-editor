@@ -14,7 +14,7 @@ import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
 
 
-open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler) {
+open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
 
     private val log = logger()
 
@@ -167,14 +167,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getThemes(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
-            ?.map { codeListService.getCodeListEntryId("6100", it.keywords?.keyword?.value, null) }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.map { codeListService.getCodeListEntryId("6100", it, null) }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
     fun getPriorityDatasets(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "INSPIRE priority data set" }
-            ?.map { codeListService.getCodeListEntryId("6350", it.keywords?.keyword?.value, null) }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.map { codeListService.getCodeListEntryId("6350", it, null) }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -183,7 +185,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.asSequence()
             ?.filter { it.keywords?.thesaurusName == null }
             ?.filter { it.keywords?.type?.codelist?.codeListValue == "theme" }
-            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.mapNotNull { it }
             ?.map { codeListService.getCodeListEntryIdMatchingData("6400", it) }
             ?.map { KeyValue(it) }
             ?.toList() ?: emptyList()
@@ -192,7 +195,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getSpatialScope(): KeyValue? {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
-            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.mapNotNull { it }
             ?.map { codeListService.getCodeListEntryId("6360", it, null) }
             ?.map { KeyValue(it) }
             ?.getOrNull(0)
@@ -229,7 +233,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     thesaurusName
                 ))
             }
-            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.mapNotNull { it }
             ?.filter { !ignoreKeywords.contains(it) }
             ?.filter { codeListService.getCodeListEntryId("5200", it, "iso") == null }
             ?.map { it }
@@ -324,9 +329,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getLegalDescriptions(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Further legal basis" }
-            ?.mapNotNull { it.keywords?.keyword?.value }
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.mapNotNull { it }
             ?.map {
-                val entryId = codeListService.getCodeListEntryId("1350", it, "de")
+                val entryId = codeListService.getCatalogCodelistKey(catalogId, "1350", it)
                 if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
             } ?: emptyList()
     }
@@ -346,7 +352,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     fun getTimeRelatedInfo(): TimeInfo? {
         val status = metadata.identificationInfo[0].identificationInfo?.status?.code?.codeListValue
-        val statusKey = codeListService.getCodeListEntryId("523", status, "iso")
+        val statusKey = if (status == null) null else codeListService.getCodeListEntryId("523", status, "iso")
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.mapNotNull {
@@ -363,7 +369,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     return TimeInfo(
                         period.beginPosition?.value,
                         type,
-                        KeyValue(statusKey),
+                        if (status == null) null else KeyValue(statusKey),
                         period.endPosition?.value,
                         typeSince
                     )
@@ -597,9 +603,9 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
 
     private fun containsKeyword(value: String): Boolean {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords?.any {
-            it.keywords?.keyword?.value == value
-        } ?: false
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+            ?.any { it == value } ?: false
     }
 
     // TODO: use mapper from export by refactoring same functionality
@@ -695,7 +701,7 @@ data class MaintenanceInterval(
 data class TimeInfo(
     val date: String?,
     val type: KeyValue?,
-    val status: KeyValue,
+    val status: KeyValue?,
     val untilDate: String? = null,
     val dateTypeSince: KeyValue? = null
 )
