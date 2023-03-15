@@ -198,18 +198,18 @@ export class UserComponent
     }
   }
 
-  deleteUser(login: string) {
+  deleteUser(userId: number) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
           title: "Benutzer löschen",
-          message: "Möchten Sie den Benutzer " + login + " wirklich löschen?",
+          message: `Möchten Sie den Benutzer "${userId}" wirklich löschen?`,
         } as ConfirmDialogData,
       })
       .afterClosed()
       .pipe(
         filter((result) => result),
-        switchMap(() => this.userService.deleteUser(login))
+        switchMap(() => this.userService.deleteUser(userId))
       )
       .subscribe(() => {
         this.userService.selectedUser$.next(null);
