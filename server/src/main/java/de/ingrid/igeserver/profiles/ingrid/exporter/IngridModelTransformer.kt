@@ -126,9 +126,9 @@ open class IngridModelTransformer constructor(
 
     var catalog: Catalog
 
-    val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.GERMANY)
-    val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY)
-    val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.GERMANY)
+    val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
+    val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
     var documentType = mapDocumentType()
 
 

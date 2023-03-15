@@ -25,9 +25,9 @@ data class UVPModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
 ) {
-    val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.GERMANY)
-    val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY)
-    val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.GERMANY)
+    val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
+    val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
 
     var catalogId: String = ""
     val spatialTitle = data.spatials?.get(0)?.title
