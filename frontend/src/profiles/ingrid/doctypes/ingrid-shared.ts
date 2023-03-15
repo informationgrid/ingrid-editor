@@ -1,6 +1,9 @@
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
@@ -13,6 +16,9 @@ import {
 import { CookieService } from "../../../app/services/cookie.service";
 import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -48,14 +54,14 @@ export abstract class IngridShared extends BaseDoctype {
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
   constructor(
-    codelistService: CodelistService,
+    private codelistServiceIngrid: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
     private dialog: MatDialog,
     private cookieService: CookieService,
     private snack: MatSnackBar
   ) {
-    super(codelistService, codelistQuery);
+    super(codelistServiceIngrid, codelistQuery);
   }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
@@ -257,7 +263,6 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 6400,
           expressions: { hide: "!formState.mainModel?.isOpenData" },
         }),
-        // TODO: output needs to be formatted in a different way
         options.priorityDataset
           ? this.addRepeatList(
               "priorityDatasets",
@@ -265,7 +270,7 @@ export abstract class IngridShared extends BaseDoctype {
               {
                 asSelect: true,
                 showSearch: true,
-                options: this.getCodelistForSelect(6350, "priorityDatasets"),
+                options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
                   className: (model) =>
@@ -1092,5 +1097,34 @@ export abstract class IngridShared extends BaseDoctype {
     field.model.advProductGroups = [];
     field.options.formState.updateModel();
     this.snack.open("Die AdV-Produktgruppe wurde automatisch geleert");
+  }
+
+  private getPriorityDatasets(): Observable<SelectOptionUi[]> {
+    return this.codelistServiceIngrid.observeRaw("6350").pipe(
+      map((codelist) => {
+        return CodelistService.mapToSelect(codelist, "de", false)
+          .map((item, index) =>
+            this.adaptPriorityDatasetItem(item, codelist.entries[index])
+          )
+          .sort((a, b) => {
+            // put INVALID items to the end of the list
+            if (a.label.indexOf("INVALID -") === 0) return 1;
+            if (b.label.indexOf("INVALID -") === 0) return -1;
+            return a.label?.localeCompare(b.label);
+          });
+      })
+    );
+  }
+
+  private adaptPriorityDatasetItem(item: SelectOptionUi, entry: CodelistEntry) {
+    item.label += " {en: " + entry.fields["en"] + "}";
+    const parsedData = JSON.parse(entry.data);
+    const isValid =
+      parsedData?.status === undefined || parsedData?.status === "VALID";
+    if (!isValid) {
+      item.label = "INVALID - " + item.label;
+      item.disabled = true;
+    }
+    return item;
   }
 }

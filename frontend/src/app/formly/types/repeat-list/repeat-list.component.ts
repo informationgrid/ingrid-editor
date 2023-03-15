@@ -161,9 +161,13 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      option.disabled = (<{ key; value? }[]>this.model)?.some(
+      const disabledByDefault = this.parameterOptions.find(
+        (item) => item.value === option.value
+      ).disabled;
+      const optionAlreadySelected = (<{ key; value? }[]>this.model)?.some(
         (modelOption) => modelOption && modelOption.key === option.value
       );
+      option.disabled = disabledByDefault || optionAlreadySelected;
       return option;
     });
   }

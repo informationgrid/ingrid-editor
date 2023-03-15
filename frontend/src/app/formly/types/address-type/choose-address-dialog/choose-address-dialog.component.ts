@@ -80,7 +80,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       .selectEntity("505")
       .pipe(
         untilDestroyed(this),
-        map(CodelistService.mapToSelectSorted),
+        map((codelist) => CodelistService.mapToSelect(codelist)),
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),
         tap(
