@@ -1,0 +1,67 @@
+{
+  "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4392a7be",
+  "title": "geodatendienst_test",
+  "_type": "InGridGeoService",
+  "themes": [],
+  "service": {
+    "type": { "key": "1" },
+    "version": [],
+    "operations": [],
+    "resolution": [],
+    "couplingType": { "key": "loose" },
+    "classification": [{ "key": "303" }],
+    "coupledResources": [],
+    "hasAccessConstraints": false
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Pausa, Pausa-Mühltroff, Vogtlandkreis, Sachsen, 07952, Deutschland (town)",
+        "value": {
+          "lat1": 50.5401795,
+          "lat2": 50.6201795,
+          "lon1": 11.957094,
+          "lon2": 12.037094
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000003" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": [],
+  "metadata": { "language": { "key": "134" } },
+  "resource": {
+    "useConstraints": [{ "title": { "key": "10" } }],
+    "accessConstraints": []
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-07-11T22:00:00.000Z",
+        "referenceDateType": { "key": "1" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "isOpenData": false,
+  "references": [],
+  "description": "descr",
+  "distribution": { "format": [] },
+  "spatialScope": null,
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "3" } }
+  ],
+  "isAdVCompatible": false,
+  "advProductGroups": [],
+  "priorityDatasets": [],
+  "isInspireIdentified": false,
+  "extraInfoPublishArea": { "key": "3" },
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  }
+}

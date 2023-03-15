@@ -1,0 +1,98 @@
+{
+  "_uuid": "a0d1ad6d-4237-4b6e-b0be-cfd072510531",
+  "_type": "InGridDataCollection",
+  "title": "abab",
+  "themes": [{ "key": "105" }],
+  "dataset": { "languages": ["123"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Lederhose, Münchenbernsdorf, Greiz, Thüringen, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.7910776,
+          "lat2": 50.8084996,
+          "lon1": 11.8930983,
+          "lon2": 11.941834
+        }
+      }
+    ],
+    "description": "jhgf",
+    "spatialSystems": [{ "key": "9000001" }],
+    "verticalExtent": {
+      "Datum": { "key": "900005" },
+      "maximumValue": 43,
+      "minimumValue": 234,
+      "unitOfMeasure": { "key": "9001" }
+    }
+  },
+  "keywords": [],
+  "metadata": { "language": { "key": "65" } },
+  "resource": {
+    "purpose": "purpose",
+    "specificUsage": "use",
+    "useLimitation": "constraints",
+    "useConstraints": [{ "title": { "key": "18" }, "source": "q" }],
+    "accessConstraints": [{ "key": "6" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2023-02-06T23:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": { "key": "5" },
+    "resourceDate": "2023-02-21T23:00:00.000Z",
+    "resourceDateType": { "key": "till" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "60" }] },
+  "orderInfo": "order",
+  "isOpenData": false,
+  "methodText": "ghjk",
+  "references": [
+    {
+      "url": "https://this.url.ag",
+      "type": { "key": "3570" },
+      "title": "basis",
+      "explanation": "blabla"
+    }
+  ],
+  "description": "asdf",
+  "explanation": "ghjk",
+  "distribution": {},
+  "alternateTitle": "fdsa",
+  "pointOfContact": [
+    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "10" } }
+  ],
+  "categoryCatalog": [
+    {
+      "date": "2023-02-08T23:00:00.000Z",
+      "title": { "key": "1" },
+      "edition": "asd"
+    }
+  ],
+  "databaseContent": [{ "moreInfo": "sdfg", "parameter": "rewq" }],
+  "isAdVCompatible": true,
+  "advProductGroups": [{ "key": "2" }],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "uri": "https://cpyresss.com/rubbish",
+        "value": "https://cpyresss.com/rubbish",
+        "asLink": true
+      },
+      "fileDescription": "asdf"
+    }
+  ],
+  "parentIdentifier": "ident",
+  "extraInfoPublishArea": { "key": "3" },
+  "digitalTransferOptions": [
+    { "name": { "key": "1" }, "mediumNote": "location", "transferSize": 50 }
+  ],
+  "maintenanceInformation": {
+    "description": "information",
+    "maintenanceAndUpdateFrequency": { "key": "8" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 4 }
+  }
+}

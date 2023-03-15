@@ -1,0 +1,72 @@
+{
+  "_uuid": "5369ad60-938f-4325-b041-25dacfc14705",
+  "title": "geodataset_min",
+  "_type": "InGridGeoDataset",
+  "themes": [],
+  "dataset": { "languages": [] },
+  "lineage": { "statement": "basics" },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Pleißa, Limbach-Oberfrohna, Zwickau, Sachsen, 09212, Deutschland (village)",
+        "value": {
+          "lat1": 50.8119735,
+          "lat2": 50.8519735,
+          "lon1": 12.738966,
+          "lon2": 12.778966
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "25833" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "subType": { "key": "5" },
+  "keywords": [],
+  "metadata": { "language": { "key": "306" }, "characterSet": null },
+  "resource": {
+    "useConstraints": [{ "title": { "key": "22" }, "source": "source4" }],
+    "accessConstraints": []
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2021-12-08T23:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "qualities": [],
+  "identifier": "identifier",
+  "isOpenData": false,
+  "references": [],
+  "resolution": [],
+  "dataQuality": { "completenessOmission": {} },
+  "description": "description2",
+  "distribution": {},
+  "spatialScope": null,
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
+  ],
+  "dataQualityInfo": {
+    "lineage": { "source": { "processStep": {}, "descriptions": [] } }
+  },
+  "isAdVCompatible": false,
+  "topicCategories": [{ "key": "7" }],
+  "advProductGroups": [],
+  "priorityDatasets": [],
+  "isInspireIdentified": false,
+  "extraInfoPublishArea": { "key": "2" },
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  },
+  "portrayalCatalogueInfo": { "citation": [] },
+  "spatialRepresentationType": [],
+  "featureCatalogueDescription": { "citation": [], "featureTypes": [] },
+  "absoluteExternalPositionalAccuracy": {}
+}

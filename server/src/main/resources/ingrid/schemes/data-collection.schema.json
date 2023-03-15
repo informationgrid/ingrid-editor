@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "DataCollection#1.0.0",
+  "$ref": "#/definitions/DataCollection",
+  "definitions": {
+    "DataCollection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isAdVCompatible": {
+          "type": "boolean"
+        },
+        "isOpenData": {
+          "type": "boolean"
+        },
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "const": "InGridDataCollection"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "alternateTitle": {
+          "type": "string"
+        },
+        "parentIdentifier": {
+          "type": "string"
+        },
+        "pointOfContact": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/PointOfContact"
+          },
+          "minItems": 1
+        },
+        "advProductGroups": {
+          "$ref": "refs/general.schema.json#/definitions/advProductGroups"
+        },
+        "themes":  {
+          "$ref": "refs/general.schema.json#/definitions/themes"
+        },
+        "spatial": {
+          "$ref": "refs/general.schema.json#/definitions/Spatial"
+        },
+        "temporal": {
+          "$ref": "refs/general.schema.json#/definitions/temporal"
+        },
+        "dataset": {
+          "$ref": "refs/general.schema.json#/definitions/dataset"
+        },
+        "extraInfo": {
+          "$ref": "refs/general.schema.json#/definitions/extraInfo"
+        },
+        "metadata": {
+          "$ref": "refs/general.schema.json#/definitions/metadata"
+        },
+        "extraInfoPublishArea": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "resource": {
+          "$ref": "refs/general.schema.json#/definitions/resource"
+        },
+        "keywords": {
+          "$ref": "refs/general.schema.json#/definitions/keywords"
+        },
+        "maintenanceInformation": {
+          "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
+        },
+        "references": {
+          "$ref": "refs/general.schema.json#/definitions/references"
+        },
+        "graphicOverviews": {
+          "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
+        },
+        "digitalTransferOptions": {
+          "$ref": "refs/general.schema.json#/definitions/digitalTransferOptions"
+        },
+        "categoryCatalog": {
+          "$ref": "refs/general.schema.json#/definitions/categoryCatalog"
+        },
+        "distribution": {
+          "$ref": "refs/general.schema.json#/definitions/distribution"
+        },
+        "databaseContent": {
+          "$ref": "refs/general.schema.json#/definitions/databaseContent"
+        },
+        "explanation": {
+          "$ref": "refs/general.schema.json#/definitions/explanation"
+        },
+        "methodText": {
+          "$ref": "refs/general.schema.json#/definitions/methodText"
+        },
+        "orderInfo": {
+          "$ref": "refs/general.schema.json#/definitions/orderInfo"
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "pointOfContact",
+        "spatial",
+        "temporal",
+        "metadata",
+        "dataset",
+        "extraInfoPublishArea"
+      ],
+      "title": "DataCollection"
+    }
+  }
+}

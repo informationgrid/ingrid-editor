@@ -1,0 +1,50 @@
+{
+  "_uuid": "39ebf57c-9b98-4861-804b-0af30ffdb6c0",
+  "title": "project_1",
+  "_type": "InGridProject",
+  "themes": [],
+  "dataset": { "languages": [] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Kahla, Saale-Holzland-Kreis, Thüringen, 07768, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.7883836,
+          "lat2": 50.8255522,
+          "lon1": 11.5588954,
+          "lon2": 11.6105771
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000012" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": [],
+  "metadata": { "language": { "key": "134" } },
+  "resource": { "useConstraints": [], "accessConstraints": [] },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2020-10-12T22:00:00.000Z",
+        "referenceDateType": { "key": "2" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "references": [],
+  "description": "some random description",
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "7" } }
+  ],
+  "isAdVCompatible": false,
+  "advProductGroups": [],
+  "extraInfoPublishArea": { "key": "2" },
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  }
+}

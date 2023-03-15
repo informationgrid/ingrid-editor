@@ -1,0 +1,52 @@
+{
+  "_uuid": "5aaa65dc-e811-40a1-8026-d262b3d9fcf7",
+  "title": "literature_5",
+  "_type": "InGridLiterature",
+  "themes": [],
+  "dataset": { "languages": ["247"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Heyda, Waldheim, Mittelsachsen, Sachsen, 04720, Deutschland (village)",
+        "value": {
+          "lat1": 51.0689498,
+          "lat2": 51.1089498,
+          "lon1": 13.0815141,
+          "lon2": 13.1215141
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000003" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": [],
+  "metadata": { "language": { "key": "363" } },
+  "resource": { "useConstraints": [], "accessConstraints": [] },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2020-11-12T23:00:00.000Z",
+        "referenceDateType": { "key": "2" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "isOpenData": false,
+  "references": [],
+  "description": "random description",
+  "publication": {},
+  "pointOfContact": [
+    { "ref": "83f92167-6606-4182-948c-5747ad608b80", "type": { "key": "7" } }
+  ],
+  "isAdVCompatible": false,
+  "advProductGroups": [],
+  "extraInfoPublishArea": { "key": "3" },
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  }
+}

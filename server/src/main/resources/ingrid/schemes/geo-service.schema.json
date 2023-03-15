@@ -1,0 +1,227 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "GeoService#1.0.0",
+  "$ref": "#/definitions/GeoService",
+  "definitions": {
+    "GeoService": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isAdVCompatible": {
+          "type": "boolean"
+        },
+        "isOpenData": {
+          "type": "boolean"
+        },
+        "isInspireIdentified": {
+          "type": "boolean"
+        },
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "const": "InGridGeoService"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "alternateTitle": {
+          "type": "string"
+        },
+        "parentIdentifier": {
+          "type": "string"
+        },
+        "pointOfContact": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/PointOfContact"
+          },
+          "minItems": 1
+        },
+        "advProductGroups": {
+          "$ref": "refs/general.schema.json#/definitions/advProductGroups"
+        },
+        "themes":  {
+          "$ref": "refs/general.schema.json#/definitions/themes"
+        },
+        "spatial": {
+          "$ref": "refs/general.schema.json#/definitions/Spatial"
+        },
+        "temporal": {
+          "$ref": "refs/general.schema.json#/definitions/temporal"
+        },
+        "extraInfo": {
+          "$ref": "refs/general.schema.json#/definitions/extraInfo"
+        },
+        "metadata": {
+          "$ref": "refs/general.schema.json#/definitions/metadata"
+        },
+        "extraInfoPublishArea": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "resource": {
+          "$ref": "refs/general.schema.json#/definitions/resource"
+        },
+        "keywords": {
+          "$ref": "refs/general.schema.json#/definitions/keywords"
+        },
+        "digitalTransferOptions": {
+          "$ref": "refs/general.schema.json#/definitions/digitalTransferOptions"
+        },
+        "distribution": {
+          "$ref": "refs/general.schema.json#/definitions/distribution"
+        },
+        "priorityDatasets": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
+        "spatialScope": {
+          "anyOf": [
+            { "$ref": "../../general.schema.json#/definitions/KeyValue" },
+            { "type": "null" }
+          ]
+        },
+        "maintenanceInformation": {
+          "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
+        },
+        "references": {
+          "$ref": "refs/general.schema.json#/definitions/references"
+        },
+        "graphicOverviews": {
+          "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
+        },
+        "orderInfo": {
+          "$ref": "refs/general.schema.json#/definitions/orderInfo"
+        },
+        "service": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            "version": {
+              "type": "array",
+              "items": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              }
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "methodCall": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "resolution": {
+              "$ref": "refs/general.schema.json#/definitions/resolution"
+            },
+            "explanation": {
+              "type": "string"
+            },
+            "couplingType": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            "classification": {
+              "type": "array",
+              "items": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              }
+            },
+            "coupledResources": {
+              "$ref": "#/definitions/coupledResources"
+            },
+            "systemEnvironment": {
+              "$ref": "refs/general.schema.json#/definitions/systemEnvironment"
+            },
+            "hasAccessConstraints": {
+              "type": "boolean"
+            },
+            "implementationHistory": {
+              "type": "string"
+            }
+          }
+        },
+        "conformanceResult": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "pass": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              },
+              "isInspire": {
+                "type": "boolean"
+              },
+              "explanation": {
+                "type": ["null", "string"]
+              },
+              "specification": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              },
+              "publicationDate": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "pointOfContact",
+        "service",
+        "spatial",
+        "temporal",
+        "metadata",
+        "resource",
+        "extraInfoPublishArea"
+      ],
+      "title": "GeoService"
+    },
+    "coupledResources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "isExternalRef": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
