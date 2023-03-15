@@ -2,10 +2,10 @@ version: '3'
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:18.0.2-dev
+    image: docker-registry.wemove.com/keycloak:19.0.3-1-dev
     restart: unless-stopped
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - ige-ng-network
 
@@ -19,7 +19,7 @@ services:
       - transport.host=0.0.0.0
       - http.cors.enabled=true
       - http.cors.allow-origin=*
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
       - xpack.monitoring.enabled=false
       - xpack.ml.enabled=false
@@ -29,22 +29,6 @@ services:
       - "9300:9300"
     networks:
       - ige-ng-network
-
-  ige:
-    image: docker-registry.wemove.com/ingrid-ige-ng:gradle
-    restart: unless-stopped
-    environment:
-      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-      - KEYCLOAK_URL=http://keycloak:8080
-      - KEYCLOAK_CLIENT_SECRET=600be265-6f32-4cc9-808e-c8a0a1b2ceaf
-    ports:
-      - 80:80
-      #- 8000:8000
-    networks:
-      - ige-ng-network
-    #volumes:
-    #  - ./conf/application-default.properties:/app/application-default.properties
-    #command: ["java","-Dlog4j.debug=true","-Dlog4j.configurationFile=/app/log4j2.xml","-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n","-jar","ige-ng-server-1.0.0-SNAPSHOT.jar"]
 
   db:
     image: "postgres"
@@ -66,7 +50,7 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - 8081:8080
+      - "8081:8080"
 
 networks:
   ige-ng-network:
