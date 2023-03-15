@@ -11,7 +11,7 @@ interface IgeImporter {
      * @param data contains the file content which shall be imported
      * @return the transformed content of the file in the destination json format
      */
-    fun run(data: Any): JsonNode
+    fun run(catalogId: String, data: Any): JsonNode
 
     /**
      * Check if a given file can be handled by this importer. This is needed to automatically determine which importer

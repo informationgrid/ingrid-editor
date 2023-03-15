@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
-import java.nio.charset.Charset
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -52,14 +52,15 @@ class ImportService constructor(
         if (type == "application/zip") {
             val totalFiles: Int
             val importers: List<String>
-            return handleZipImport(file)
+            return handleZipImport(catalogId, file)
                 .also { totalFiles = it.documents.size }
                 .also { importers = it.importers }
                 .documents
                 .mapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    analyzeDoc(catalogId, fileContent[0])
+                    val result = if (fileContent is ArrayNode) fileContent[0] else fileContent
+                    analyzeDoc(catalogId, result)
                 }
                 .toList().let { prepareForImport(importers, it) }
         }
@@ -67,8 +68,12 @@ class ImportService constructor(
         val fileContent = file.readText(Charsets.UTF_8)
         val importer = factory.getImporter(type, fileContent)
 
-        val result = importer[0].run(fileContent)
-        return prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
+        val result = importer[0].run(catalogId, fileContent)
+        return if (result is ArrayNode) {
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
+        } else {
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
+        }
     }
 
     private fun prepareForImport(importers: List<String>, analysis: List<DocumentAnalysis>): OptimizedImportAnalysis {
@@ -115,7 +120,7 @@ class ImportService constructor(
         }
     }
 
-    private fun handleZipImport(file: File): ExtractedZip {
+    private fun handleZipImport(catalogId: String, file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
         val importers = mutableSetOf<String>()
 
@@ -127,7 +132,7 @@ class ImportService constructor(
                     else -> null
                 }
                 val importer = factory.getImporter(type.toString(), os.toString())
-                val result = importer[0].run(os.toString())
+                val result = importer[0].run(catalogId, os.toString())
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
             }
@@ -150,7 +155,7 @@ class ImportService constructor(
                 val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
                 it.state = DOCUMENT_STATE.DRAFT
                 document.isLatest = true
-                DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null)
+                DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null, wrapper?.deleted == 1)
             }
 
         return DocumentAnalysis(
@@ -158,26 +163,13 @@ class ImportService constructor(
             documentWrapper?.id,
             isAddress(document.type),
             documentWrapper != null,
+            documentWrapper?.deleted == 1,
             references
         )
     }
 
     private fun isAddress(documentType: String) =
         documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
-
-
-    /*
-        private fun handleOptions(
-            document: ObjectNode,
-            options: ImportOptions
-        ) {
-            if (options.options == "create_under_target") {
-                document.put(FIELD_PARENT, options.parentDocument)
-                // if import under a special folder then create new UUIDs for docs
-                document.put(FIELD_ID, UUID.randomUUID().toString())
-            }
-        }
-    */
 
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
@@ -193,14 +185,7 @@ class ImportService constructor(
                 while (zip.read(buffer).also { length = it } != -1) {
                     outStream.write(buffer, 0, length)
                 }
-//                if (entry!!.name.endsWith(".zip")) {
-//                    // need to go deeper...
-//                    val inStream = ByteArrayInputStream(outStream.toByteArray())
-//                    readZipInputStream(inStream, consumerFunction)
-//                } else {
-                // do something...
                 consumerFunction.accept(entry!!, outStream)
-//                }
             }
 
         }
@@ -211,7 +196,7 @@ class ImportService constructor(
             if (uuid == null) {
                 null
             } else {
-                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid, true)
             }
         } catch (ex: NotFoundException) {
             null
@@ -253,16 +238,50 @@ class ImportService constructor(
             documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
+            // special case when document with uuid has been deleted
+            if (ref.deleted) removeDeletedFlag(ref.wrapperId!!)
+            
             setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
             if (options.publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
                 documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
+                
+                // special case when document was deleted and had published version
+                // => after import in draft state, we don't want to see the deleted published version
+                if (ref.deleted) handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
             }
             counter.overwritten++
         } else {
             counter.skipped++
         }
+    }
+
+    /**
+     * In case we recover a deleted document which was published before, we need to adjust the documents
+     * if and only if we import a document with the same UUID in draft-state.
+     * 
+     * In that case the published version will be marked as archived and the draft version, which had
+     * the state DRAFT_ADN_PUBLISHED will be set to DRAFT, so that the new imported version has no 
+     * knowledge of the published version. However, it's still possible to access this version internally.
+     */
+    private fun handleDeletedPublishedVersion(catalogId: String, uuid: String, wrapperId: Int) {
+        try {
+            documentService.getLastPublishedDocument(catalogId, uuid).also { 
+                it.state = DOCUMENT_STATE.ARCHIVED
+                documentService.docRepo.save(it)
+            }
+            documentService.getDocumentFromCatalog(catalogId, wrapperId).also { 
+                it.document.state = DOCUMENT_STATE.DRAFT
+                documentService.docRepo.save(it.document)
+            }
+        } catch (e: Exception) {
+            // no published document exists -> do nothing
+        }
+    }
+
+    private fun removeDeletedFlag(wrapperId: Int) {
+        documentService.recoverDocument(wrapperId)
     }
 
     private fun setVersionInfo(catalogId: String, wrapperId: Int, document: Document) {
@@ -284,6 +303,7 @@ data class DocumentAnalysis(
     val wrapperId: Int?,
     val isAddress: Boolean,
     val exists: Boolean,
+    val deleted: Boolean,
     val references: List<DocumentAnalysis> = emptyList()
 )
 

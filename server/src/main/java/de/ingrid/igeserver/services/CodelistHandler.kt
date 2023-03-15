@@ -98,6 +98,14 @@ class CodelistHandler @Autowired constructor(
             ?.fields?.get("de")
     }
 
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String): String? {
+        return getCatalogCodelists(catalogId)
+            .find { it.id == codelistId }
+            ?.entries
+            ?.find { it.getField("de") == value }
+            ?.id
+    }    
+    
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
@@ -130,6 +138,15 @@ class CodelistHandler @Autowired constructor(
         codelist.id = dbCodelist.id
         codelist.catalog = catalogRepo.findByIdentifier(catalogId)
         return codelistRepo.save(codelist)
+    }
+
+    fun getCodeListEntryId(listId: String, value: String?, language: String?): String? {
+        return if (value == null) null else codeListService.getCodeListEntryId(listId, value, language)
+    }
+    fun getCodeListEntryIdMatchingData(listId: String, dataValue: String): String? {
+        return codeListService.getCodeList(listId)
+            .entries.find { it.data.contains(dataValue) }
+            ?.id
     }
 
     val allCodelists: List<CodeList>

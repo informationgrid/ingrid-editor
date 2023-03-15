@@ -635,6 +635,11 @@ export class DocumentService {
     }
   }
 
+  clearTreeStores() {
+    this.treeStore.reset();
+    this.addressTreeStore.reset();
+  }
+
   mapToDocumentAbstracts(
     docs: IgeDocument[],
     parentId?: number

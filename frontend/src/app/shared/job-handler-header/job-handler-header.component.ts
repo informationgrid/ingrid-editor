@@ -8,6 +8,9 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 export class JobHandlerHeaderComponent {
   @Input() message;
   @Input() isRunning: boolean;
+  @Input() set showMoreForce(value: boolean) {
+    this.showMoreInternal = value;
+  }
 
   @Output() showMore = new EventEmitter<boolean>();
 

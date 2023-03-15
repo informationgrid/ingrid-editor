@@ -128,7 +128,6 @@ dependencies {
     // Jackson
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version"
-//    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 
     // JSON schema validation
     implementation 'net.pwall.json:json-kotlin-schema:0.39'

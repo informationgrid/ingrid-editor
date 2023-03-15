@@ -1,9 +1,14 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.*
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
-@XmlAccessorType(XmlAccessType.FIELD)
 data class CharacterString(
-    @field:XmlElement(name = "CharacterString", namespace = "http://www.isotc211.org/2005/gco")
-    var text: String? = null
-)
+    @JacksonXmlProperty(localName="CharacterString", namespace="http://www.isotc211.org/2005/gco")
+    private var text: String? = null,
+    @JacksonXmlProperty(localName="Anchor", namespace="http://www.isotc211.org/2005/gmx")
+    private var anchor: Anchor? = null
+) {
+    val value = text ?: anchor?.value
+    val anchorHref = anchor?.href
+    val isAnchor = anchor != null
+}

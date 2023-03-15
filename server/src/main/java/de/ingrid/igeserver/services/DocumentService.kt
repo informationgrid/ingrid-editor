@@ -106,9 +106,13 @@ class DocumentService @Autowired constructor(
 
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
-    fun getWrapperByCatalogAndDocumentUuid(catalogIdentifier: String, uuid: String): DocumentWrapper {
+    fun getWrapperByCatalogAndDocumentUuid(catalogIdentifier: String, uuid: String, includeDeleted: Boolean = false): DocumentWrapper {
         try {
-            return docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
+            return if (includeDeleted) {
+                docWrapperRepo.findByCatalogAndUuidIncludingDeleted(catalogIdentifier, uuid)
+            } else {
+                docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
+            }
         } catch (e: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(uuid, null)
         }
@@ -337,10 +341,8 @@ class DocumentService @Autowired constructor(
 
     fun convertToDocument(docJson: JsonNode): Document {
 
-        val titleString = docJson.get("title").asText()
-
         return Document().apply {
-            title = titleString
+            title = docJson.get("title")?.asText() ?: ""
             type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
             version = docJson.get(FIELD_VERSION)?.asInt()
             if (docJson.hasNonNull(FIELD_UUID)) {
@@ -671,6 +673,10 @@ class DocumentService @Autowired constructor(
         docWrapperRepo.save(markedDoc)
     }
 
+    fun recoverDocument(wrapperId: Int) {
+        docWrapperRepo.undeleteDocument(wrapperId)
+    }
+    
     fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
 
         val docData = getDocumentFromCatalog(catalogId, id)
