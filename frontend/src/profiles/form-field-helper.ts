@@ -498,6 +498,7 @@ export class FormFieldHelper {
         label: options?.fieldLabel,
         indeterminate: false,
         click: options?.click,
+        isSuffixUnsupported: true,
         hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: expressions,

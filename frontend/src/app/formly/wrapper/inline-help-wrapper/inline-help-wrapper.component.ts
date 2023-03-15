@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
@@ -12,6 +19,8 @@ export class InlineHelpWrapperComponent
   extends FieldWrapper
   implements OnInit, AfterViewInit
 {
+  @ViewChild("matSuffix", { static: true }) matSuffix!: TemplateRef<any>;
+
   private profile: string;
   private fieldId: string;
 
@@ -27,6 +36,10 @@ export class InlineHelpWrapperComponent
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
     this.fieldId = <string>this.field.key;
+
+    if (this.matSuffix && !this.props.isSuffixUnsupported) {
+      this.props.suffix = this.matSuffix;
+    }
   }
 
   showContextHelp(evt: MouseEvent) {

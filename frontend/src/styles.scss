@@ -715,33 +715,6 @@ ige-form-label + * {
   padding-bottom: 8px;
 }
 
-ige-inline-help-wrapper {
-  & > formly-field-mat-checkbox + button.infoIcon {
-    position: relative;
-    right: 0;
-    top: 6px;
-    margin-left: 10px;
-  }
-
-  & > ige-select-type + button.infoIcon {
-    margin-right: 12px;
-  }
-
-  & > ige-repeat-list + button.infoIcon {
-    top: unset;
-    bottom: -4px;
-  }
-
-  &
-    > formly-wrapper-mat-form-field:has(input[type="number"]:hover)
-    + button.infoIcon,
-  &
-    > formly-wrapper-mat-form-field:has(input[type="number"]:focus)
-    + button.infoIcon {
-    margin-right: 32px;
-  }
-}
-
 // color for accessibility
 [mat-dialog-close].cdk-keyboard-focused {
   --mat-mdc-button-persistent-ripple-color: #ffffff;
@@ -766,7 +739,6 @@ ige-inline-help-wrapper {
     height: 26px !important;
     line-height: 24px;
     align-items: center;
-    display: flex;
     justify-content: center;
     padding: 0 !important;
   }

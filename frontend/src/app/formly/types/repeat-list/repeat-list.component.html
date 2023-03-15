@@ -113,6 +113,8 @@
                 {{ option.label }}
             </mat-option>
         </mat-autocomplete>
+
+        <!-- clean button -->
         <button
             *ngIf="repeatListInput.value.length > 0"
             mat-icon-button
@@ -123,6 +125,14 @@
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
+
+        <!-- help info button -->
+        <ng-container
+            *ngIf="props.suffix"
+            matSuffix
+            [ngTemplateOutlet]="props.suffix"
+        ></ng-container>
+
         <mat-hint *ngIf="!parameterOptions"
             >Eingabe mit RETURN bestätigen
         </mat-hint>
