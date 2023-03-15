@@ -412,6 +412,8 @@ export class DocumentService {
   }
 
   getPath(id: number): Observable<ShortTreeNode[]> {
+    if (id === null) return of([]);
+
     let treeEntities = this.getEntitiesFromStoreContainingId(id);
     const path = this.getPathFromTreeStore(treeEntities, id);
 
