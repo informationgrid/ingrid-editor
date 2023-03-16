@@ -14,4 +14,9 @@ class GetCapabilitiesApiController(private var capabilitiesService: Capabilities
         val response = capabilitiesService.analyzeGetRecordUrl(url)
         return ResponseEntity.ok(response)
     }
+
+    override fun analyzeGetCapabilties(url: String): ResponseEntity<GetCapabilitiesAnalysis> {
+        val response = capabilitiesService.analyzeGetCapabilitiesUrl(url)
+        return ResponseEntity.ok(response)
+    }
 }

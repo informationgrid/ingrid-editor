@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.api.GetCapabilitiesAnalysis
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.utils.xpath.XPathUtils
 import org.springframework.stereotype.Service
@@ -73,6 +74,12 @@ class CapabilitiesService {
             pushbackInputStream.unread(bom)
         }
         return pushbackInputStream
+    }
+
+    fun analyzeGetCapabilitiesUrl(url: String): GetCapabilitiesAnalysis {
+        val document = getDocumentFromUrl(url)
+        
+        return GetCapabilitiesAnalysis()
     }
 
 

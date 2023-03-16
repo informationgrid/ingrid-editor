@@ -1,0 +1,9 @@
+<ige-dialog-template label="GetCapabilities-Assistent">
+    <ng-container content>
+        <button mat-stroked-button color="primary" (click)="analyze()">
+            Analyse
+        </button>
+
+        {{ report | json }}
+    </ng-container>
+</ige-dialog-template>

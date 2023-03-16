@@ -17,6 +17,36 @@ interface GetCapabilitiesApi {
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun analyzeGetRecordUrl(
-        @Parameter(description = "Save the group into the database.", required = true) @RequestBody url: String
+        @Parameter(required = true) @RequestBody url: String
     ): ResponseEntity<GetRecordUrlAnalysis>
+
+    @Operation
+    @PostMapping(value = ["/analyzeGetCapabilities"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun analyzeGetCapabilties(
+        @Parameter(required = true) @RequestBody url: String
+    ): ResponseEntity<GetCapabilitiesAnalysis>
+
 }
+
+data class GetCapabilitiesAnalysis(
+    val serviceType: String,
+    val dataServiceType: Int,
+    val title: String,
+    val description: String,
+    val fees: String,
+
+//    val versions: List<String>,
+//    val operations: List<OperationBean>,
+//    val keywords: List<String>,
+//    val timeSpans: List<TimeReferenceBean>,
+//    val timeReferences: List<TimeReferenceBean>,
+//    val conformities: List<ConformityBean>,
+//    val coupledResources: List<MdekDataBean>,
+//    val spatialReferenceSystems: List<SpatialReferenceSystemBean>,
+//    val accessConstraints: List<String>,
+//    val onlineResources: List<UrlBean>,
+//    val resourceLocators: List<UrlBean>,
+//    val boundingBoxes: List<LocationBean>,
+//
+//    val address: Address
+)

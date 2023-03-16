@@ -24,6 +24,8 @@ import { FlexModule } from "@angular/flex-layout";
 import { MatSelectModule } from "@angular/material/select";
 import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { GetCapabilitiesDialogComponent } from "./ingrid/plugins/get-capabilities-dialog/get-capabilities-dialog.component";
+import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
 
 @Component({
   template: "",
@@ -42,6 +44,7 @@ class InGridComponent {
     person: IngridPersonDoctype,
     organisation: IngridOrganisationDoctype
   ) {
+    profileService.setProfileId("ingrid");
     profileService.registerProfiles([
       folder,
       specialisedTask,
@@ -64,6 +67,7 @@ class InGridComponent {
     InGridComponent,
     ConformityDialogComponent,
     TableDialogComponent,
+    GetCapabilitiesDialogComponent,
   ],
   imports: [
     MatIconModule,
@@ -82,6 +86,7 @@ class InGridComponent {
     JsonPipe,
     NgIf,
     MatAutocompleteModule,
+    DialogTemplateModule,
   ],
 })
 export class ProfilePack {

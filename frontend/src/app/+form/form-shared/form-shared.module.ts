@@ -53,6 +53,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { ActionButtonModule } from "../../shared/action-button/action-button.module";
 import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
+import { GetCapabilitiesAssistantPlugin } from "../../../profiles/ingrid/plugins/get-capabilities-assistant.plugin";
 
 @NgModule({
   declarations: [
@@ -113,6 +114,7 @@ import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
     PrintViewPlugin,
     FormularService,
     HistoryPlugin,
+    GetCapabilitiesAssistantPlugin,
 
     // FORM-PLUGINS
     formPluginProvider,
