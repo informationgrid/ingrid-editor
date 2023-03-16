@@ -615,6 +615,10 @@ ige-root .mat-drawer-container {
   transition: all 0.2s linear;
 }
 
+.mat-icon.flipIt {
+  transform: scale(1, -1);
+}
+
 .mat-icon {
   &.passive {
     color: #000;
