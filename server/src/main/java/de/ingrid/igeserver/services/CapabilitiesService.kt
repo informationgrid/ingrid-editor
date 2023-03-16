@@ -1,7 +1,8 @@
 package de.ingrid.igeserver.services
 
-import de.ingrid.igeserver.api.GetCapabilitiesAnalysis
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
+import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
+import de.ingrid.igeserver.services.getCapabilities.Wfs200CapabilitiesParser
 import de.ingrid.utils.xpath.XPathUtils
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
@@ -76,10 +77,10 @@ class CapabilitiesService {
         return pushbackInputStream
     }
 
-    fun analyzeGetCapabilitiesUrl(url: String): GetCapabilitiesAnalysis {
+    fun analyzeGetCapabilitiesUrl(url: String): CapabilitiesBean {
         val document = getDocumentFromUrl(url)
         
-        return GetCapabilitiesAnalysis()
+        return Wfs200CapabilitiesParser().getCapabilitiesData(document)
     }
 
 

@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.CapabilitiesService
+import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -15,7 +16,7 @@ class GetCapabilitiesApiController(private var capabilitiesService: Capabilities
         return ResponseEntity.ok(response)
     }
 
-    override fun analyzeGetCapabilties(url: String): ResponseEntity<GetCapabilitiesAnalysis> {
+    override fun analyzeGetCapabilties(url: String): ResponseEntity<CapabilitiesBean> {
         val response = capabilitiesService.analyzeGetCapabilitiesUrl(url)
         return ResponseEntity.ok(response)
     }
