@@ -36,7 +36,10 @@ export class FormPluginsService {
       this.plugins.forEach((p) => p.setForAddress());
     }
 
-    this.plugins.filter((p) => p.isActive).forEach((p) => p.register());
+    this.plugins
+      .filter((p) => p.isActive)
+      .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
+      .forEach((p) => p.register());
 
     this.registered = true;
   }
