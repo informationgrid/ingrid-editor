@@ -262,6 +262,89 @@ class CapabilitiesServiceTest : ShouldSpec({
             }
         }
     }
+
+    should("WCS 1.1.0") {
+        getDocument("wcs110.xml").let {
+            val result = factory.get(it).getCapabilitiesData(it)
+            result.run {
+                title shouldBe "Acme Corp. Map Server"
+                description shouldBe "deegree WCS being OGC WCS 1.0.0 reference implementation"
+                keywords shouldContainExactly listOf(
+                    "Administratieveeenheden",
+                    "boundaries",
+                    "bird",
+                    "roadrunner",
+                    "ambush",
+                    "road",
+                    "transportation",
+                    "atlas",
+                    "river",
+                    "canal",
+                    "waterway"
+                )
+                serviceType shouldBe "WMS"
+                dataServiceType shouldBe "2"
+                versions shouldContainExactly emptyList()
+                fees shouldBe "NONE"
+                accessConstraints shouldContainExactly listOf("NONE")
+                boundingBoxes shouldContainExactly listOf(
+                    LocationBean(
+                        -180.0,
+                        -90.0,
+                        180.0,
+                        90.0,
+                        "Raumbezug von: Acme Corp. Map Server",
+                        "frei"
+                    )
+                )
+                spatialReferenceSystems shouldContainExactly listOf(
+                    SpatialReferenceSystemBean(84, "CRS 84: CRS 84 / mathematisch"),
+                    SpatialReferenceSystemBean(4230, "EPSG 4230: ED50 / geographisch")
+                )
+                address shouldBe AddressBean(
+                    firstName = "Jeff",
+                    lastName = "Smith",
+                    email = "user@host.com",
+                    organization = "NASA",
+                    street = "NASA Goddard Space Flight Center",
+                    city = "Greenbelt",
+                    postcode = "20771",
+                    country = "USA",
+                    state = "MD",
+                    phone = "+1 301 555-1212"
+                )
+                operations shouldContainExactly listOf(
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", "GetCapabilities"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", "GetMap"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", "GetFeatureInfo"),
+                )
+                onlineResources shouldContainExactly listOf(
+                    UrlBean(
+                        "http://hostname/my-online-resource",
+                        datatype = "simple"
+                    )
+                )
+                timeSpans shouldBe emptyList()
+                conformities shouldBe listOf(
+                    ConformityBean(
+                        level = 3,
+                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten"
+                    )
+                )
+                resourceLocators shouldBe listOf(
+                    UrlBean(
+                        url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
+                        relationType = 5066,
+                        relationTypeName = "Verweis zu Dienst"
+                    )
+                )
+                timeReference shouldBe listOf(
+                    TimeReferenceBean(1, formatter.parse("2003-01-01")),
+                    TimeReferenceBean(2, formatter.parse("2003-05-10"))
+                )
+            }
+        }
+    }
 })
 
 fun getDocument(name: String): Document {

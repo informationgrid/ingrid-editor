@@ -46,15 +46,14 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
         return when (getServiceType(doc)) {
             ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler)
             ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler)
-//            ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler)
+            ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler)
             ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler)
-//            ServiceType.WCS -> WcsCapabilitiesParser(syslistCache)
-//            ServiceType.WCS11 -> Wcs11CapabilitiesParser(syslistCache)
-//            ServiceType.WCS201 -> Wcs201CapabilitiesParser(syslistCache)
-//            ServiceType.CSW -> CswCapabilitiesParser(syslistCache)
-//            ServiceType.WCTS -> WctsCapabilitiesParser(syslistCache)
-//            ServiceType.WMTS -> WmtsCapabilitiesParser(syslistCache)
-            else -> throw RuntimeException("Unknown Service Type.")
+            ServiceType.WCS -> WcsCapabilitiesParser(codelistHandler)
+            ServiceType.WCS11 -> Wcs11CapabilitiesParser(codelistHandler)
+            ServiceType.WCS201 -> Wcs201CapabilitiesParser(codelistHandler)
+            ServiceType.CSW -> CswCapabilitiesParser(codelistHandler)
+            ServiceType.WCTS -> WctsCapabilitiesParser(codelistHandler)
+            ServiceType.WMTS -> WmtsCapabilitiesParser(codelistHandler)
         }
     }
 
