@@ -11,6 +11,7 @@ import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
 import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -18,6 +19,8 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     val codelistHandler = mockk<CodelistHandler>()
     lateinit var factory: GetCapabilitiesParserFactory
+
+    val formatter = SimpleDateFormat("yyyy-MM-dd")
 
     beforeAny {
         val codelists = CodeListService().initialCodelists
@@ -30,9 +33,13 @@ class CapabilitiesServiceTest : ShouldSpec({
                 ?.find { it.id == secondArg() }
                 ?.getField("de")
         }
+
+        every { codelistHandler.getCodelists(any()) } answers {
+            codelists.filter { it.id in firstArg() as List<String> }
+        }
     }
 
-    should("WMS 2.0.0") {
+    should("WFS 2.0.0") {
         getDocument("wfs200.xml").let {
             val result = factory.get(it).getCapabilitiesData(it)
             result.run {
@@ -72,15 +79,186 @@ class CapabilitiesServiceTest : ShouldSpec({
                     phone = "+49(0)2842/9070-110"
                 )
                 operations shouldContainExactly listOf(
-                    OperationBean(listOf("https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?"), listOf(7), "GetCapabilities", "GetCapabilities"),
-                    OperationBean(listOf("https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?", "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"), listOf(7, 8), "DescribeFeatureType", "DescribeFeatureType"),
-                    OperationBean(listOf("https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?", "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"), listOf(7, 8), "GetFeature", "GetFeature")
+                    OperationBean(
+                        listOf("https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?"),
+                        listOf(7),
+                        "GetCapabilities",
+                        "GetCapabilities"
+                    ),
+                    OperationBean(
+                        listOf(
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
+                        ), listOf(7, 8), "DescribeFeatureType", "DescribeFeatureType"
+                    ),
+                    OperationBean(
+                        listOf(
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
+                        ), listOf(7, 8), "GetFeature", "GetFeature"
+                    )
                 )
                 onlineResources shouldContainExactly listOf(UrlBean("https://geoservices.krzn.de"))
                 timeSpans shouldBe emptyList()
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
+            }
+        }
+    }
+
+    should("WMS 1.1.1") {
+        getDocument("wms111.xml").let {
+            val result = factory.get(it).getCapabilitiesData(it)
+            result.run {
+                title shouldBe "Acme Corp. Map Server"
+                description shouldBe "WMT Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations."
+                keywords shouldContainExactly listOf(
+                    "bird", "roadrunner", "ambush", "road", "transportation", "atlas", "river", "canal", "waterway"
+                )
+                serviceType shouldBe "WMS"
+                dataServiceType shouldBe "2"
+                versions shouldContainExactly emptyList()
+                fees shouldBe "none"
+                accessConstraints shouldContainExactly listOf("none")
+                boundingBoxes shouldContainExactly listOf(
+                    LocationBean(
+                        -180.0,
+                        -90.0,
+                        180.0,
+                        90.0,
+                        "Raumbezug von: Acme Corp. Map Server",
+                        "frei"
+                    )
+                )
+                spatialReferenceSystems shouldContainExactly listOf(
+                    SpatialReferenceSystemBean(84, "CRS 84: CRS 84 / mathematisch"),
+                    SpatialReferenceSystemBean(4230, "EPSG 4230: ED50 / geographisch")
+                )
+                address shouldBe AddressBean(
+                    firstName = "Jeff",
+                    lastName = "Smith",
+                    email = "user@host.com",
+                    organization = "NASA",
+                    street = "NASA Goddard Space Flight Center",
+                    city = "Greenbelt",
+                    postcode = "20771",
+                    country = "USA",
+                    state = "MD",
+                    phone = "+1 301 555-1212"
+                )
+                operations shouldContainExactly listOf(
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", "GetCapabilities"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", "GetMap"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", "GetFeatureInfo"),
+                )
+                onlineResources shouldContainExactly listOf(
+                    UrlBean(
+                        "http://hostname/my-online-resource",
+                        datatype = "simple"
+                    )
+                )
+                timeSpans shouldBe emptyList()
+                conformities shouldBe listOf(
+                    ConformityBean(
+                        level = 3,
+                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten"
+                    )
+                )
+                resourceLocators shouldBe listOf(
+                    UrlBean(
+                        url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
+                        relationType = 5066,
+                        relationTypeName = "Verweis zu Dienst"
+                    )
+                )
+                timeReference shouldBe listOf(
+                    TimeReferenceBean(1, formatter.parse("2003-01-01")),
+                    TimeReferenceBean(2, formatter.parse("2003-05-10"))
+                )
+            }
+        }
+    }
+
+    should("WMS 1.3.0") {
+        getDocument("wms130.xml").let {
+            val result = factory.get(it).getCapabilitiesData(it)
+            result.run {
+                title shouldBe "Acme Corp. Map Server"
+                description shouldBe "Map Server maintained by Acme Corporation. Contact: webmaster@wmt.acme.com. High-quality\n            maps showing\n            roadrunner nests and possible ambush locations.\n        "
+                keywords shouldContainExactly listOf(
+                    "Administratieveeenheden",
+                    "boundaries",
+                    "bird",
+                    "roadrunner",
+                    "ambush",
+                    "road",
+                    "transportation",
+                    "atlas",
+                    "river",
+                    "canal",
+                    "waterway"
+                )
+                serviceType shouldBe "WMS"
+                dataServiceType shouldBe "2"
+                versions shouldContainExactly emptyList()
+                fees shouldBe "none"
+                accessConstraints shouldContainExactly listOf("none")
+                boundingBoxes shouldContainExactly listOf(
+                    LocationBean(
+                        -180.0,
+                        -90.0,
+                        180.0,
+                        90.0,
+                        "Raumbezug von: Acme Corp. Map Server",
+                        "frei"
+                    )
+                )
+                spatialReferenceSystems shouldContainExactly listOf(
+                    SpatialReferenceSystemBean(84, "CRS 84: CRS 84 / mathematisch"),
+                    SpatialReferenceSystemBean(4230, "EPSG 4230: ED50 / geographisch")
+                )
+                address shouldBe AddressBean(
+                    firstName = "Jeff",
+                    lastName = "Smith",
+                    email = "user@host.com",
+                    organization = "NASA",
+                    street = "NASA Goddard Space Flight Center",
+                    city = "Greenbelt",
+                    postcode = "20771",
+                    country = "USA",
+                    state = "MD",
+                    phone = "+1 301 555-1212"
+                )
+                operations shouldContainExactly listOf(
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", "GetCapabilities"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", "GetMap"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", "GetFeatureInfo"),
+                )
+                onlineResources shouldContainExactly listOf(
+                    UrlBean(
+                        "http://hostname/my-online-resource",
+                        datatype = "simple"
+                    )
+                )
+                timeSpans shouldBe emptyList()
+                conformities shouldBe listOf(
+                    ConformityBean(
+                        level = 3,
+                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten"
+                    )
+                )
+                resourceLocators shouldBe listOf(
+                    UrlBean(
+                        url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
+                        relationType = 5066,
+                        relationTypeName = "Verweis zu Dienst"
+                    )
+                )
+                timeReference shouldBe listOf(
+                    TimeReferenceBean(1, formatter.parse("2003-01-01")),
+                    TimeReferenceBean(2, formatter.parse("2003-05-10"))
+                )
             }
         }
     }

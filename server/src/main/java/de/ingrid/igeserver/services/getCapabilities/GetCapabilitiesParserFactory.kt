@@ -31,7 +31,7 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
     }
 
     private enum class ServiceType {
-        WMS, WMS111, WFS110, WFS200, WCS, WCS11, WCS201, CSW, WCTS, WMTS
+        WMS130, WMS111, WFS110, WFS200, WCS, WCS11, WCS201, CSW, WCTS, WMTS
     }
 
     // identifier for each service type
@@ -44,9 +44,9 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
 
     fun get(doc: Document): ICapabilitiesParser {
         return when (getServiceType(doc)) {
-//            ServiceType.WMS -> Wms130CapabilitiesParser(syslistCache, catalogService)
-//            ServiceType.WMS111 -> Wms111CapabilitiesParser(syslistCache, catalogService)
-//            ServiceType.WFS110 -> Wfs110CapabilitiesParser(syslistCache)
+            ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler)
+            ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler)
+//            ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler)
             ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler)
 //            ServiceType.WCS -> WcsCapabilitiesParser(syslistCache)
 //            ServiceType.WCS11 -> Wcs11CapabilitiesParser(syslistCache)
@@ -62,7 +62,7 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
 
         return when {
             // WMS Version 1.3.0
-            isServiceType(doc, ServiceType.WMS) -> ServiceType.WMS
+            isServiceType(doc, ServiceType.WMS130) -> ServiceType.WMS130
             // WMS Version 1.1.1
             isServiceType(doc, ServiceType.WMS111) -> ServiceType.WMS111
             // WCS Version 1.0.0. Doesn't have a Service or ServiceType/Name Element. Just check if WCS_Capabilities exists
@@ -77,7 +77,7 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
                 val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")
                     ?: throw RuntimeException("Service Type not found")
                 when { // TODO: handle lowercase!
-                    value.contains(SERVICE_TYPE_WMS) -> ServiceType.WMS
+                    value.contains(SERVICE_TYPE_WMS) -> ServiceType.WMS130
                     value.contains(SERVICE_TYPE_WFS) -> ServiceType.WFS200
                     value.contains(SERVICE_TYPE_WCS) -> ServiceType.WCS
                     value.contains(SERVICE_TYPE_CSW) -> ServiceType.CSW
@@ -93,7 +93,7 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
 
     private fun isServiceType(doc: Document, serviceType: ServiceType): Boolean {
         return when (serviceType) {
-            ServiceType.WMS -> xPathUtils.getString(doc, "/wms:WMS_Capabilities/wms:Service/wms:Name[1]") != null
+            ServiceType.WMS130 -> xPathUtils.getString(doc, "/wms:WMS_Capabilities/wms:Service/wms:Name[1]") != null
             ServiceType.WMS111 -> xPathUtils.getString(doc, "/WMT_MS_Capabilities/Service/Name[1]") != null
             ServiceType.WFS110 -> xPathUtils.getString(
                 doc,

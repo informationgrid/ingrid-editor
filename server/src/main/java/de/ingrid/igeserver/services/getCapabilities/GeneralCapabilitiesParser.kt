@@ -23,6 +23,7 @@ data class AddressBean(
     var firstName: String? = null,
     var lastName: String? = null,
     var email: String? = null,
+    var organization: String? = null,
     var street: String? = null,
     var city: String? = null,
     var postcode: String? = null,
@@ -39,12 +40,12 @@ data class SpatialReferenceSystemBean(
 )
 
 data class LocationBean(
-    val latitude1: Double,
-    val longitude1: Double,
-    val latitude2: Double,
-    val longitude2: Double,
-    var name: String,
-    var type: String
+    var latitude1: Double? = null,
+    var longitude1: Double? = null,
+    var latitude2: Double? = null,
+    var longitude2: Double? = null,
+    var name: String? = null,
+    var type: String? = null
 )
 
 class CapabilitiesBean {
@@ -65,6 +66,7 @@ class CapabilitiesBean {
     var timeReference = mutableListOf<TimeReferenceBean>()
     var timeSpans = mutableListOf<TimeReferenceBean>()
     var conformities = listOf<ConformityBean>()
+    var coupledResources = listOf<Any>()
 }
 
 /**
