@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services.getCapabilities
 
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.w3c.dom.Document
@@ -9,52 +10,70 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.stream.Collectors
 
-class OperationBean {
-    val addressList: String? = null
-    var methodCall: String? = null
+data class OperationBean(
+    var addressList: List<String>? = null,
+    var platform: List<Int>? = null,
+    var methodCall: String? = null,
     var name: String? = null
-}
-data class TimeReferenceBean(val start: Date)
-data class ConformityBean(val conform: Boolean)
-class AddressBean {
-    var email: String? = null
-    var street: String? = null
-    var city: String? = null
-    var postcode: String? = null
-    var country: String? = null
-    var state: String? = null
-    var phone: String? = null
-    var postCode: String? = null
-}
-data class UrlBean(val uri: String)
-class SpatialReferenceSystemBean {
-    var id: Int? = null
-    var name: String? = null
-}
-data class LocationBean(val latitude1: Double, val longitude1: Double, val latitude2: Double, val longitude2: Double, var name: String, var type: String )
+)
+
+data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
+data class ConformityBean(var level: Int? = null, var specification: String? = null)
+data class AddressBean(
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var email: String? = null,
+    var street: String? = null,
+    var city: String? = null,
+    var postcode: String? = null,
+    var country: String? = null,
+    var state: String? = null,
+    var phone: String? = null,
+    var postCode: String? = null,
+)
+
+data class UrlBean(var url: String? = null, var relationType: Int? = null, var relationTypeName: String? = null, var datatype: String? = null)
+data class SpatialReferenceSystemBean(
+    var id: Int?,
+    var name: String?
+)
+
+data class LocationBean(
+    val latitude1: Double,
+    val longitude1: Double,
+    val latitude2: Double,
+    val longitude2: Double,
+    var name: String,
+    var type: String
+)
+
 class CapabilitiesBean {
     var serviceType: String? = null
-    var dataServiceType: Int? = null
+    var dataServiceType: String? = null
     var title: String? = null
     var description: String? = null
-    var versions: String? = null
+    var versions: List<String>? = emptyList()
     var fees: String? = null
-    var accessConstraints: List<String>? = null
-    var onlineResources: List<UrlBean>? = null
-    var keywords: MutableList<String>? = null
-    var boundingBoxes: List<LocationBean>? = null
-    var spatialReferenceSystems: List<SpatialReferenceSystemBean>? = null
+    var accessConstraints: List<String>? = emptyList()
+    var onlineResources: List<UrlBean>? = emptyList()
+    var keywords = mutableListOf<String>()
+    var boundingBoxes: List<LocationBean>? = emptyList()
+    var spatialReferenceSystems: List<SpatialReferenceSystemBean>? = emptyList()
     var address: AddressBean? = null
-    var operations: List<OperationBean>? = null
+    var operations: List<OperationBean>? = emptyList()
+    var resourceLocators: List<UrlBean>? = emptyList()
+    var timeReference = mutableListOf<TimeReferenceBean>()
+    var timeSpans = mutableListOf<TimeReferenceBean>()
+    var conformities = listOf<ConformityBean>()
 }
 
 /**
  * @author André
  */
-open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
-    
+open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codelistHandler: CodelistHandler) {
+
     val log = logger()
-    
+
     protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> {
         return xPathUtils.getStringArray(doc, xpath).toMutableList()
     }
@@ -69,40 +88,41 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
     }
 
     protected fun mapToOperationBean(
-        doc: Document?,
-        xPathsOfMethods: Array<String?>?,
-        platformsOfMethods: Array<Int?>?
+        doc: Document,
+        xPathsOfMethods: Array<String>,
+        platformsOfMethods: Array<Int>
     ): OperationBean {
-        /*List<String> methodAddresses = new ArrayList<>();
-        List<Integer> methodPlatforms = new ArrayList<>();
-        for (int i=0; i < xPathsOfMethods.length; i++) {
-            String methodAddress = xPathUtils.getString(doc, xPathsOfMethods[i]);
-            if (methodAddress != null && methodAddress.length() != 0) {
-                methodAddresses.add(methodAddress);
-                methodPlatforms.add(platformsOfMethods[i]);
+        val opBean = OperationBean()
+        val methodAddresses = mutableListOf<String>()
+        val methodPlatforms = mutableListOf<Int>()
+        for ( i in xPathsOfMethods.indices) {
+            val methodAddress = xPathUtils.getString(doc, xPathsOfMethods[i])
+            if (methodAddress != null && methodAddress.isNotEmpty()) {
+                methodAddresses.add(methodAddress)
+                methodPlatforms.add(platformsOfMethods[i])
             }
         }
-        opBean.setPlatform(methodPlatforms);
-        opBean.setAddressList(methodAddresses);*/return OperationBean()
+        opBean.platform = methodPlatforms
+        opBean.addressList = methodAddresses
+        return opBean
     }
 
-    protected fun mapToTimeReferenceBean(doc: Document?, xPath: String?): TimeReferenceBean? {
-
-        /*String date = xPathUtils.getString(doc, xPath);
+    protected fun mapToTimeReferenceBean(doc: Document, xPath: String): TimeReferenceBean? {
+        val date = xPathUtils.getString(doc, xPath)
         // determine type of date 
-        Integer dateType = getDateType(xPath);
+        val dateType = getDateType(xPath)
 
         if (date != null && dateType != null) {
-            timeRef = new TimeReferenceBean();
-            timeRef.setType(dateType);
+            return TimeReferenceBean(
+                dateType,
+                this.getSimpleDate(date)
+            )
+        }
 
-            Date dateObj = getSimpleDate(date);
-            if (dateObj != null)
-                timeRef.setDate(dateObj);
-        }*/return null as TimeReferenceBean?
+        return null
     }
 
-    protected fun getSimpleDate(date: String?): Date? {
+    protected fun getSimpleDate(date: String): Date? {
         // add date to time reference
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         var d: Date? = null
@@ -115,17 +135,24 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
     }
 
     private fun mapToConformityBeans(doc: Document, xPath: String): List<ConformityBean> {
-        /*NodeList conformityNodes = xPathUtils.getNodeList(doc, xPath);
-        if ( conformityNodes != null ) {
-            for (int index = 0; index < conformityNodes.getLength(); ++index) {
-                ConformityBean bean = new ConformityBean();
-                Integer degree = getConformityDegree(xPathUtils.getString(conformityNodes.item(index), "inspire_common:Degree"));
-                bean.setLevel(degree);
+        val beans = mutableListOf<ConformityBean>()
+        val conformityNodes = xPathUtils.getNodeList(doc, xPath)
+        if (conformityNodes != null) {
+
+            for (index in 0 until conformityNodes.length) {
+                val bean = ConformityBean()
+                val degree =
+                    getConformityDegree(xPathUtils.getString(conformityNodes.item(index), "inspire_common:Degree"))
+                bean.level = degree
                 // TODO: convert title to specific language!?
-                bean.setSpecification(xPathUtils.getString(conformityNodes.item(index), "inspire_common:Specification/inspire_common:Title"));
-                beans.add(bean);
+                bean.specification = xPathUtils.getString(
+                    conformityNodes.item(index),
+                    "inspire_common:Specification/inspire_common:Title"
+                )
+                beans.add(bean)
             }
-        }*/return ArrayList()
+        }
+        return beans
     }
 
     private fun getConformityDegree(value: String?): Int? {
@@ -167,9 +194,8 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
                 if (splitBySpace.size == 2) {
                     arrayOf(splitBySpace[0].trim { it <= ' ' }, splitBySpace[1].trim { it <= ' ' })
                 } else if (splitBySpace.size > 2) {
-                    val sub =
-                        Arrays.copyOfRange(splitBySpace, 0, splitBySpace.size - 1)
-                    // TODO: arrayOf(String.join(" ", *sub), splitBySpace[splitBySpace.size - 1].trim { it <= ' ' })
+                    val sub = Arrays.copyOfRange(splitBySpace, 0, splitBySpace.size - 1)
+                    arrayOf(sub.joinToString(" "), splitBySpace[splitBySpace.size - 1].trim { it <= ' ' })
                     arrayOf()
                 } else {
                     arrayOf("", name.trim { it <= ' ' })
@@ -185,15 +211,15 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
      * complete name string as last name
      */
     protected fun setNameInAddressBean(ab: AddressBean, name: String?): AddressBean {
-        /*String[] nameParts = this.extractName(name);
-        if (nameParts == null || nameParts.length == 0) {
-            ab.setLastname("N/A");
-        } else if (nameParts.length == 1) {
-            ab.setLastname(nameParts[0]);
-        } else if (nameParts.length == 2) {
-            ab.setFirstname(nameParts[0].trim());
-            ab.setLastname(nameParts[1].trim());
-        }*/
+        val nameParts = this.extractName(name)
+        if (nameParts.isEmpty()) {
+            ab.lastName = "N/A"
+        } else if (nameParts.size == 1) {
+            ab.lastName = nameParts[0]
+        } else if (nameParts.size == 2) {
+            ab.firstName = nameParts[0]?.trim()
+            ab.lastName = nameParts[1]?.trim()
+        }
         return ab
     }
 
@@ -203,7 +229,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
         if (versionNodes == null) return list
         for (i in 0 until versionNodes.length) {
             val content = versionNodes.item(i).textContent
-            if (content.trim { it <= ' ' }.length > 0) {
+            if (content.trim { it <= ' ' }.isNotEmpty()) {
                 list.add(content)
             }
         }
@@ -211,24 +237,21 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
     }
 
     protected fun mapVersionsFromCodelist(
-        listId: Int?,
-        versionList: List<String?>,
-        versionSyslistMap: Map<String?, Int?>
+        listId: String,
+        versionList: List<String>,
+        versionSyslistMap: Map<String, Int>
     ): List<String> {
-        val mappedVersionList: MutableList<String> = ArrayList()
-        for (version in versionList) {
-            val entryId = versionSyslistMap[version]
+        return versionList.mapNotNull {
+            var value: String? = null
+            val entryId = versionSyslistMap[it]
             if (entryId != null) {
-//                value = syslistCache.getValueFromListId( listId, entryId, true );
-                if (version == null) {
+                value = codelistHandler.getCodelistValue(listId, entryId.toString())
+                if (value == null) {
                     log.warn("Version could not be mapped!")
                 }
             }
-            if (version != null) {
-                mappedVersionList.add(version)
-            }
+            value
         }
-        return mappedVersionList
     }
 
     // TODO: should be mapped from a special codelist which only allows certain versions (this is for IGE-NG)
@@ -239,22 +262,24 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
     }
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
+        val urls = mutableListOf<UrlBean>()
         val orNodes = xPathUtils.getNodeList(doc, xPath)
-        /*if (orNodes != null) {
-            for (int i = 0; i < orNodes.getLength(); i++) {
-                UrlBean url = new UrlBean();
-                String link = xPathUtils.getString(orNodes.item(i), "@xlink:href");
+        if (orNodes != null) {
+            for (i in 0 until orNodes.length) {
+                val url = UrlBean()
+                val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
 
                 // do not add link if there's none (#781)
-                if (link == null || link.trim().equals( "" )) continue;
+                if (link == null || link.trim() == "") continue
 
-                url.setUrl(link);
-                String type = xPathUtils.getString(orNodes.item(i), "@xlink:type");
-                if (type != null) url.setDatatype(type);
+                url.url = link
+                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
+                if (type != null) url.datatype = type
 
-                urls.add(url);
+                urls.add(url)
             }
-        }*/return ArrayList()
+        }
+        return urls
     }
 
     /**
@@ -262,26 +287,26 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
      * @param xPathExtCap, the path to the extended capabilities element
      * @return
      */
-    protected fun getResourceLocators(doc: Document?, xPathExtCap: String): List<UrlBean> {
-        val locators: List<UrlBean> = ArrayList()
+    protected fun getResourceLocators(doc: Document, xPathExtCap: String): List<UrlBean> {
+        val locators = mutableListOf<UrlBean>()
         val url = xPathUtils.getNodeList(doc, "$xPathExtCap/inspire_common:ResourceLocator/inspire_common:URL")
         if (url != null) {
-            /*for (int i = 0; i < url.getLength(); i++) {
-                UrlBean urlBean = new UrlBean();
-                String type = xPathUtils.getString(doc, xPathExtCap + "/inspire_common:ResourceType["+(i+1)+"]");
-                urlBean.setUrl(url.item(i).getTextContent());
+            for (i in 0 until url.length) {
+                val urlBean = UrlBean()
+                val type = xPathUtils.getString(doc, xPathExtCap + "/inspire_common:ResourceType[" + (i + 1) + "]")
+                urlBean.url = url.item(i).textContent
                 if (type != null) {
-                    urlBean.setRelationType(getRelationType(type));
-                    urlBean.setRelationTypeName(syslistCache.getValueFromListId(2000, urlBean.getRelationType(), false));
+                    urlBean.relationType = getRelationType(type)
+                    urlBean.relationTypeName = codelistHandler.getCodelistValue("2000", urlBean.relationType.toString())
                 } else {
                     // use previously used type!
                     if (i > 0) {
-                        urlBean.setRelationType(locators.get(i-1).getRelationType());
-                        urlBean.setRelationTypeName(locators.get(i-1).getRelationTypeName());
+                        urlBean.relationType = locators[i - 1].relationType
+                        urlBean.relationTypeName = locators[i - 1].relationTypeName
                     }
                 }
-                locators.add(urlBean);
-            }*/
+                locators.add(urlBean)
+            }
         }
         return locators
     }
@@ -301,47 +326,59 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
      * @param doc
      * @param xpathExtCap
      */
-    protected fun addExtendedCapabilities(bean: CapabilitiesBean?, doc: Document?, xpathExtCap: String?) {
+    protected fun addExtendedCapabilities(bean: CapabilitiesBean, doc: Document, xpathExtCap: String) {
         if (xPathUtils.nodeExists(doc, xpathExtCap)) {
             // Resource Locator / Type
-            /*bean.setResourceLocators(getResourceLocators(doc, xpathExtCap));
+            bean.resourceLocators = getResourceLocators(doc, xpathExtCap)
             // Spatial Data Type
             // overwrite service type if defined here
-            String type = xPathUtils.getString(doc, xpathExtCap + "/inspire_common:SpatialDataServiceType");
+            val type = xPathUtils.getString(doc, "$xpathExtCap/inspire_common:SpatialDataServiceType")
             if (type != null) {
-                Integer mappedType = mapServiceTypeToKey(type);
+                val mappedType = mapServiceTypeToKey(type)
                 if (mappedType != null) {
-                    bean.setDataServiceType(mappedType);
+                    bean.dataServiceType = mappedType
                 } else {
-                    log.warn("ServiceType could not be identified from ISO-value: " + type);
+                    log.warn("ServiceType could not be identified from ISO-value: $type")
                 }
             }
 
             // add Temporal References if available
-            bean.addTimeReference(mapToTimeReferenceBean(doc, xpathExtCap + "/inspire_common:TemporalReference/inspire_common:DateOfCreation"));
-            bean.addTimeReference(mapToTimeReferenceBean(doc, xpathExtCap + "/inspire_common:TemporalReference/inspire_common:DateOfPublication"));
-            bean.addTimeReference(mapToTimeReferenceBean(doc, xpathExtCap + "/inspire_common:TemporalReference/inspire_common:DateOfLastRevision"));
+            mapToTimeReferenceBean(
+                doc,
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfCreation"
+            )?.let { bean.timeReference.add(it) }
+            mapToTimeReferenceBean(
+                doc,
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfPublication"
+            )?.let { bean.timeReference.add(it) }
+            mapToTimeReferenceBean(
+                doc,
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfLastRevision"
+            )?.let { bean.timeReference.add(it) }
 
             // add Timespan if available
-            String startDate = xPathUtils.getString(doc, xpathExtCap + "/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:StartingDate");
-            String endDate = xPathUtils.getString(doc, xpathExtCap + "/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:EndDate");
-            if ( startDate != null|| endDate != null ) {
-                List<TimeReferenceBean> timeSpans = new ArrayList<>();
-                TimeReferenceBean tr = new TimeReferenceBean();
-                Date dateObj = getSimpleDate(startDate);
-                if (dateObj != null) tr.setFrom(dateObj);
-                dateObj = getSimpleDate(endDate);
-                if (dateObj != null) tr.setTo(dateObj);
-                timeSpans.add(tr);
-                bean.setTimeSpans(timeSpans);
+            val startDate = xPathUtils.getString(
+                doc,
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:StartingDate"
+            )
+            val endDate = xPathUtils.getString(
+                doc,
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:EndDate"
+            )
+            if (startDate != null || endDate != null) {
+                bean.timeSpans = mutableListOf(TimeReferenceBean().apply {
+                    getSimpleDate(startDate)?.let { from = it }
+                    getSimpleDate(endDate)?.let { to = it }
+                })
             }
 
             // Extended - Keywords
-            String[] extKeywords = xPathUtils.getStringArray(doc, xpathExtCap + "/inspire_common:Keyword/inspire_common:KeywordValue");
-            bean.getKeywords().addAll(Arrays.asList(extKeywords));
+            val extKeywords =
+                xPathUtils.getStringArray(doc, "$xpathExtCap/inspire_common:Keyword/inspire_common:KeywordValue")
+            bean.keywords.addAll(extKeywords.toList())
 
             // Conformity
-            bean.setConformities(mapToConformityBeans(doc, xpathExtCap + "/inspire_common:Conformity"));*/
+            bean.conformities = mapToConformityBeans(doc, "$xpathExtCap/inspire_common:Conformity")
         }
     }
 
@@ -349,16 +386,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils) {
      * @param type
      * @return
      */
-    private fun mapServiceTypeToKey(type: String): Int? {
-        /*List<String[]> syslists = syslistCache.getSyslistByLanguage(5100, "iso");
-        if (!syslists.isEmpty()) {
-            for (String[] entry : syslists) {
-                if (entry[0].trim().equalsIgnoreCase(type.trim())) {
-                    return Integer.valueOf(entry[1]);
-                }
-            }
-        }*/
-        return null
+    private fun mapServiceTypeToKey(type: String): String? {
+        return codelistHandler.getCodelists(listOf("5100"))[0].entries
+            .find { it.getField("iso") == type }
+            ?.id
     }
     /**
      * Search for an existing address by equal firstname, lastname and email OR institution and email.

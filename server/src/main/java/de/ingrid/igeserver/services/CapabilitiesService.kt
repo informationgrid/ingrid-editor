@@ -2,7 +2,7 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
-import de.ingrid.igeserver.services.getCapabilities.Wfs200CapabilitiesParser
+import de.ingrid.igeserver.services.getCapabilities.GetCapabilitiesParserFactory
 import de.ingrid.utils.xpath.XPathUtils
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
@@ -17,7 +17,7 @@ import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Service
-class CapabilitiesService {
+class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabilitiesParserFactory){
 
     fun analyzeGetRecordUrl(url: String): GetRecordUrlAnalysis {
         val doc = getDocumentFromUrl(url)
@@ -48,7 +48,7 @@ class CapabilitiesService {
         return GetRecordUrlAnalysis(id, uuid, title, downloads)
     }
 
-    private fun getDocumentFromUrl(urlStr: String): Document {
+    private fun getDocumentFromUrl(urlStr: String, namespaceAware: Boolean = false): Document {
         val url = URL(urlStr)
         // get the content in UTF-8 format, to avoid "MalformedByteSequenceException: Invalid byte 1 of 1-byte UTF-8 sequence"
         val input = checkForUtf8BOMAndDiscardIfAny(url.openStream())
@@ -58,7 +58,7 @@ class CapabilitiesService {
         val factory = DocumentBuilderFactory.newInstance()
         // nameSpaceAware is false by default. Otherwise we would have to    
         // query for the correct namespace for every evaluation
-        factory.isNamespaceAware = false
+        factory.isNamespaceAware = namespaceAware
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false)
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false)
@@ -78,10 +78,10 @@ class CapabilitiesService {
     }
 
     fun analyzeGetCapabilitiesUrl(url: String): CapabilitiesBean {
-        val document = getDocumentFromUrl(url)
+        val document = getDocumentFromUrl(url, true)
         
-        return Wfs200CapabilitiesParser().getCapabilitiesData(document)
+        return capabilitiesParserFactory.get(document).getCapabilitiesData(document)
     }
 
-
+// https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS
 }

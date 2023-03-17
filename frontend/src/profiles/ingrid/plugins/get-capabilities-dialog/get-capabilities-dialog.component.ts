@@ -16,7 +16,7 @@ export class GetCapabilitiesDialogComponent {
   analyze() {
     this.getCapService
       .analyze(
-        "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?"
+        "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS"
       )
       .subscribe((report) => (this.report = report));
   }
