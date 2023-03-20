@@ -79,7 +79,7 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
                     put("catalogId", catalogIdentifier)
                     put("data", jacksonObjectMapper().writeValueAsString(data))
                 }
-                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, false)
+                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
 
             } catch (ex: Exception) {
                 throw ex

@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
+import org.quartz.Trigger.DEFAULT_PRIORITY
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
@@ -13,7 +14,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     private val scheduler = factory.scheduler
 
-    fun start(jobKey: JobKey, jobDataMap: JobDataMap?, checkRunning: Boolean) {
+    fun start(jobKey: JobKey, jobDataMap: JobDataMap?, jobPriority: Int, checkRunning: Boolean) {
         if (checkRunning) {
             val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
             if (isRunning) {
@@ -21,8 +22,12 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
                 return
             }
         }
+        val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
+            .usingJobData(jobDataMap)
+            .withPriority(jobPriority)
+            .build()
 
-        scheduler.triggerJob(jobKey, jobDataMap)
+        scheduler.scheduleJob(trigger)
     }
 
     fun pause(jobId: String) {
@@ -72,6 +77,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
         jobClass: Class<out Job>,
         jobKey: JobKey,
         jobDataMap: JobDataMap? = null,
+        jobPriority: Int = DEFAULT_PRIORITY,
         checkRunning: Boolean = true
     ) {
 
@@ -80,7 +86,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
                 if (scheduler.checkExists(jobKey).not()) {
                     createJob(jobClass, jobKey)
                 }
-                start(jobKey, jobDataMap, checkRunning)
+                start(jobKey, jobDataMap, jobPriority, checkRunning)
             }
             JobCommand.stop -> stop(jobKey)
             JobCommand.resume -> TODO()
