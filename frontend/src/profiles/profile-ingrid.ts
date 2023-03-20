@@ -26,6 +26,8 @@ import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.co
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { GetCapabilitiesDialogComponent } from "./ingrid/plugins/get-capabilities-dialog/get-capabilities-dialog.component";
 import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatListModule } from "@angular/material/list";
 
 @Component({
   template: "",
@@ -87,6 +89,8 @@ class InGridComponent {
     NgIf,
     MatAutocompleteModule,
     DialogTemplateModule,
+    MatProgressSpinnerModule,
+    MatListModule,
   ],
 })
 export class ProfilePack {

@@ -85,6 +85,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
+import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -167,6 +168,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "couplingService",
           component: DocumentReferenceTypeComponent,
+        },
+        {
+          name: "updateGetCapabilities",
+          component: UpdateGetCapabilitiesComponent,
         },
         /* FOR PREVIEW */
         {
@@ -305,6 +310,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectGeoDatasetDialog,
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
+    UpdateGetCapabilitiesComponent,
   ],
   exports: [
     ReactiveFormsModule,
@@ -312,6 +318,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlyModule,
     ContextHelpComponent,
     CodelistPipe,
+    FormErrorComponent,
   ],
 })
 export class IgeFormlyModule {}
