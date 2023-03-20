@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.configuration.ZabbixProperties
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -19,14 +19,16 @@ const val JSONRPC = "2.0"
 @Service
 @Profile("zabbix")
 class ZabbixService @Autowired constructor(
-    generalProperties: GeneralProperties
+    zabbixProperties: ZabbixProperties
 ) {
     private var log = logger()
-    private val apiKey = generalProperties.zabbixAPIKey
-    private val apiURL = generalProperties.zabbixAPIURL
-    val activatedCatalogs = generalProperties.zabbixCatalogs ?: emptyList()
-    val detailUrl = generalProperties.zabbixDetailURL
-    val uploadUrl = generalProperties.zabbixUploadURL
+    private val apiKey = zabbixProperties.apiKey
+    private val apiURL = zabbixProperties.apiURL
+    private val checkDelay = zabbixProperties.checkDelay
+    private val checkCount = zabbixProperties.checkCount
+    val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
+    val detailUrl = zabbixProperties.detailURLTemplate
+    val uploadUrl = zabbixProperties.uploadURL
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
         val jsonWebscenarioGet = """{"jsonrpc":"$JSONRPC","method":"httptest.get","params":{"output": ["hostid", "name", "status"],"selectSteps": ["name", "url"],"selectTags": "extend","tags":[{"tag":"id","value":"${data.uuid}","operator":"1"}]},"auth":"$apiKey","id":1}"""
@@ -123,7 +125,7 @@ class ZabbixService @Autowired constructor(
             ZabbixModel.Tag("document url", docUrlTag)
         )
         val steps = listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
-        val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, "1h", steps, tags)
+        val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         val response = requestApi(values)
@@ -143,7 +145,7 @@ class ZabbixService @Autowired constructor(
         )
         val params = ZabbixModel.TriggerParams(
             "Dokument: ${docName.trim()}",
-            "last(/$uuid/web.test.fail[$docNameTriggerExpression],#3)>0",
+            "last(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
             4,
             0,
             tags

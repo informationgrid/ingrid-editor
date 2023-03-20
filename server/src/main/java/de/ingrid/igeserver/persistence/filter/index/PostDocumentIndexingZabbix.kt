@@ -47,7 +47,7 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
             val uploadUrl = zabbixService.uploadUrl
             val uuid = xpath.getString(xmlDocument, "//idfMdMetadata/id")
             val documentTitle = xpath.getString(xmlDocument, "//idfMdMetadata/name")
-            val detailUrl = zabbixService.detailUrl?.format(uuid)
+            val detailUrl = zabbixService.detailUrl.format(uuid)
             val uploads = if (xpath.getString(xmlDocument, "//steps").isNotBlank()) {
                 // Get uvp docs
                 xpath.getNodeList(xmlDocument, "//steps/step/docs/doc")
@@ -68,7 +68,7 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
                 uploadsToAdd.add(upload)
             }
 
-            val data = ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl!!, uploadsToAdd)
+            val data = ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, uploadsToAdd)
 
             try {
                 val profile = profiles[0]
@@ -82,7 +82,6 @@ class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixServi
                 scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, false)
 
             } catch (ex: Exception) {
-//                notifier.endMessage(message.apply { this.errors.add("Exception occurred: ${ex.message}") })
                 throw ex
             }
         }
