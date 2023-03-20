@@ -331,7 +331,7 @@ export abstract class IngridShared extends BaseDoctype {
               })
             : null,
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
-            asSelect: true,
+            asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
