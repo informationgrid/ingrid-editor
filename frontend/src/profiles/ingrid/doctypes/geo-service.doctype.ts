@@ -33,7 +33,15 @@ export class GeoServiceDoctype extends IngridShared {
     "4": 5154,
   };
 
+  private mapServiceTypeToOperationNameCodelist = {
+    "1": 5105,
+    "2": 5110,
+    "3": 5120,
+    "4": 5130,
+  };
+
   getServiceVersionOptions = new Subject<SelectOptionUi[]>();
+  getServiceOperationNameOptions = new Subject<SelectOptionUi[]>();
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -106,7 +114,9 @@ export class GeoServiceDoctype extends IngridShared {
           ]),
           this.addRepeat("operations", "Operationen", {
             fields: [
-              this.addInputInline("name", "Name"),
+              this.addAutoCompleteInline("name", "Name", {
+                options: this.getServiceOperationNameOptions,
+              }),
               this.addInputInline("description", "Beschreibung"),
               this.addInputInline("methodCall", "Zugriffs-URL"),
             ],
@@ -242,7 +252,8 @@ export class GeoServiceDoctype extends IngridShared {
     return field.formControl.valueChanges.pipe(
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
-      tap((value) => this.updateServiceVersionField(value))
+      tap((value) => this.updateServiceVersionField(value)),
+      tap((value) => this.updateOperationNameField(value))
     );
   }
 
@@ -256,5 +267,13 @@ export class GeoServiceDoctype extends IngridShared {
       );
     }
     // TODO: remove all codelist values from version field?
+  }
+
+  private updateOperationNameField(value) {
+    const codelistId =
+      this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
+    this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
+      this.getServiceOperationNameOptions.next(value)
+    );
   }
 }
