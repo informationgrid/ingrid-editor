@@ -98,28 +98,34 @@ export class GeoServiceDoctype extends IngridShared {
               hasInlineContextHelp: true,
               wrappers: ["inline-help"],
               className: "optional flex-1",
-              /*expressions: {
-                // @ts-ignore
-                "props.codelistId": (field) => {
-                  const codelistId =
-                    this.mapServiceTypeToVersionCodelist[field.parent.model.type?.key] ?? 5152;
-
-                  this.getCodelistForSelect(codelistId, "version").subscribe(
-                    (value) => this.getServiceVersionOptions.next(value)
-                  );
-                  return 100; //codelistId ?? 5152;
-                },
-              },*/
             }),
           ]),
           this.addRepeat("operations", "Operationen", {
             fields: [
               this.addAutoCompleteInline("name", "Name", {
+                required: true,
                 options: this.getServiceOperationNameOptions,
               }),
               this.addInputInline("description", "Beschreibung"),
-              this.addInputInline("methodCall", "Zugriffs-URL"),
+              this.addInputInline("methodCall", "Zugriffs-URL", {
+                required: true,
+              }),
             ],
+            validators: {
+              getCapabilityForWMS: {
+                expression: (ctrl, field) => {
+                  const model = field.options.formState.mainModel;
+                  return (
+                    !model ||
+                    model._type !== "InGridGeoService" ||
+                    model.service.type?.key !== "2" ||
+                    field.model.some((item) => item.name?.key === "1")
+                  );
+                },
+                message:
+                  "Für Darstellungsdienste muss eine GetCapabilities-Operation angegeben sein",
+              },
+            },
           }),
           this.addRepeat("resolution", "Erstellungsmaßstab", {
             className: "optional",
