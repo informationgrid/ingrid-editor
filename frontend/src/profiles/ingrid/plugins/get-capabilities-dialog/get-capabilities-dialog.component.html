@@ -1,4 +1,4 @@
-<ige-dialog-template label="GetCapabilities-Assistent">
+<ige-dialog-template label="GetCapabilities-Assistent" (submit)="submit()">
     <ng-container content>
         <div class="display-flex centered gap">
             <mat-form-field appearance="outline" class="flex-1">
@@ -44,58 +44,58 @@
             </mat-list-option>
             <mat-divider></mat-divider>-->
 
-            <mat-list-option>
+            <mat-list-option value="title">
                 <div matListItemTitle>Titel</div>
                 <div matListItemLine>{{ report.title }}</div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="description">
                 <div matListItemTitle>Beschreibung</div>
                 <div matListItemLine>{{ report.description }}</div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="versions">
                 <div matListItemTitle>Versionen</div>
                 <div matListItemLine *ngFor="let version of report.versions">
-                    {{ version }}
+                    {{ version.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
-                <div matListItemTitle>Fees</div>
+            <mat-list-option value="fees">
+                <div matListItemTitle>Nutzungsbedingungen</div>
                 <div matListItemLine>
-                    {{ report.fees }}
+                    {{ report.fees?.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="accessConstraints">
                 <div matListItemTitle>Zugangsbeschränkungen</div>
                 <div
                     matListItemLine
                     *ngFor="let constraint of report.accessConstraints"
                 >
-                    {{ constraint }}
+                    {{ constraint.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="onlineResources">
                 <div matListItemTitle>Verweise</div>
                 <div
                     matListItemLine
                     *ngFor="let link of report.onlineResources"
                 >
-                    {{ link.url }}
+                    {{ link.url }} ({{ link.type?.value }})
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="keywords">
                 <div matListItemTitle>Schlagworte</div>
                 <div matListItemLine *ngFor="let keyword of report.keywords">
                     {{ keyword }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option lines="3">
+            <mat-list-option value="boundingBoxes" lines="3">
                 <span matListItemTitle>Raumbezüge</span>
                 <span>
                     <ng-container
@@ -110,17 +110,17 @@
                 </span>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="spatialReferenceSystems">
                 <div matListItemTitle>Raumbezugssysteme</div>
                 <div
                     matListItemLine
                     *ngFor="let srs of report.spatialReferenceSystems"
                 >
-                    {{ srs.name }}
+                    {{ srs.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="address">
                 <div matListItemTitle>Adresse</div>
                 <div matListItemLine>
                     {{ report.address.firstName }} {{ report.address.lastName }}
@@ -128,7 +128,7 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="operations">
                 <span matListItemTitle>Operationen</span>
                 <ng-container *ngFor="let operation of report.operations">
                     <span matListItemLine>{{ operation.name }}</span>
@@ -141,7 +141,7 @@
                 </ng-container>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="timeReference">
                 <div matListItemTitle>Zeitbezüge</div>
                 <div
                     matListItemLine
@@ -151,14 +151,14 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="timeSpans">
                 <div matListItemTitle>Zeitspannen</div>
                 <div matListItemLine *ngFor="let timeSpan of report.timeSpans">
                     {{ timeSpan | json }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="conformities">
                 <div matListItemTitle>Konformitäten</div>
                 <div
                     matListItemLine
@@ -168,7 +168,7 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option>
+            <mat-list-option value="coupledResources">
                 <div matListItemTitle>Gekoppelte Daten</div>
                 <div
                     matListItemLine

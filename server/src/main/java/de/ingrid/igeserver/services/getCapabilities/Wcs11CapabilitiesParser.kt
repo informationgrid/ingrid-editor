@@ -20,11 +20,11 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler) :
             addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
 
         // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WCS_FEES)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
 
         // Access Constraints
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS)
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
 
         // Online Resources
         result.onlineResources =

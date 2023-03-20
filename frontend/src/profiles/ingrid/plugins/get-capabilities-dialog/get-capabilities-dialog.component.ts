@@ -1,10 +1,12 @@
-import { Component } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import {
   GetCapabilitiesAnalysis,
   GetCapabilitiesService,
 } from "./get-capabilities.service";
 import { catchError, filter, tap } from "rxjs/operators";
 import { Observable, of } from "rxjs";
+import { MatSelectionList } from "@angular/material/list";
+import { MatDialogRef } from "@angular/material/dialog";
 
 interface ReportItem {
   key: string;
@@ -19,12 +21,17 @@ interface ReportItem {
   styleUrls: ["./get-capabilities-dialog.component.scss"],
 })
 export class GetCapabilitiesDialogComponent {
+  @ViewChild(MatSelectionList) selection: MatSelectionList;
+
   report: GetCapabilitiesAnalysis;
   error: string;
   isAnalyzing = false;
   report2: ReportItem[];
 
-  constructor(private getCapService: GetCapabilitiesService) {}
+  constructor(
+    private getCapService: GetCapabilitiesService,
+    private dlg: MatDialogRef<GetCapabilitiesDialogComponent>
+  ) {}
 
   analyze(url: string) {
     this.error = null;
@@ -85,5 +92,18 @@ export class GetCapabilitiesDialogComponent {
       default:
         return "???";
     }
+  }
+
+  submit() {
+    console.log(this.selection.selectedOptions.selected);
+    const selectedValues = this.selection.selectedOptions.selected.map(
+      (item) => item.value
+    );
+    const result = Object.fromEntries(
+      Object.entries(this.report).filter(
+        ([key]) => selectedValues.indexOf(key) !== -1
+      )
+    );
+    this.dlg.close(result);
   }
 }

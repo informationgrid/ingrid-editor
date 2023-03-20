@@ -4,7 +4,6 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SingletonHolder
 import de.ingrid.utils.xml.Wfs200NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
-import org.apache.commons.lang3.ArrayUtils
 import org.w3c.dom.Document
 
 /**
@@ -12,14 +11,8 @@ import org.w3c.dom.Document
  */
 class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler), ICapabilitiesParser {
-    private val versionSyslistMap: MutableMap<String, Int>
-
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["1.1.0"] = 1
-        versionSyslistMap["2.0"] = 2
-        versionSyslistMap["2.0.0"] = 2
-    }
+    
+    private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2", "2.0.0" to "2")
 
     companion object : SingletonHolder<Wfs200CapabilitiesParser, CodelistHandler>(::Wfs200CapabilitiesParser) {
         private const val XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE =
@@ -64,18 +57,16 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
     }
 
 
-    /* (non-Javadoc)
-     * @see de.ingrid.mdek.dwr.services.capabilities.ICapabilityDocument#setTitle(org.w3c.dom.Document)
-     */
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         return CapabilitiesBean().apply {
             this.serviceType = "WFS"
             this.dataServiceType = "3" // download
             this.title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
             this.description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
-            this.versions = getVersions(doc)
-            this.fees = xPathUtils.getString(doc, XPATH_EXP_WFS_FEES)
-            this.accessConstraints = getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS)
+            this.versions =
+                mapVersionsFromCodelist("5153", getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION), versionSyslistMap)
+            this.fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
+            this.accessConstraints = mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
             this.onlineResources = getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
 
             // add extended capabilities to the bean which contains even more information to be used
@@ -83,7 +74,12 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             this.keywords.addAll(getMoreKeywords(doc))
             this.boundingBoxes = getBoundingBoxesFromLayers(doc)
-            this.spatialReferenceSystems = getSpatialReferenceSystems(doc)
+            this.spatialReferenceSystems = getSpatialReferenceSystems(
+                doc,
+                "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:DefaultCRS",
+                "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:OtherCRS"
+
+            )
             this.address = getAddress(doc)
             this.operations = getOperations(doc)
         }
@@ -186,11 +182,6 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
         return keywords
     }
 
-    private fun getVersions(doc: Document): List<String>? {
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION)
-        return mapVersionsFromCodelist("5153", versionList, versionSyslistMap)        
-    }
-
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
         val bboxes: MutableList<LocationBean> = ArrayList()
         val layers = xPathUtils.getNodeList(doc, "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType")
@@ -219,44 +210,7 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs = xPathUtils.getStringArray(
-            doc,
-            "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:DefaultCRS"
-        )
-        val crsOther = xPathUtils.getStringArray(
-            doc,
-            "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:OtherCRS"
-        )
-        val crsAll = ArrayUtils.addAll(crs, *crsOther) as Array<String>
-        val uniqueCrs: MutableList<String?> = ArrayList()
-
-        // check codelists for matching entryIds
-        for (item in crsAll) {
-            val itemId: Int? = try {
-                val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            } catch (e: NumberFormatException) {
-                // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
-                val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            }
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString());
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            if (!uniqueCrs.contains(srsBean.name)) {
-                result.add(srsBean)
-                uniqueCrs.add(srsBean.name)
-            }
-        }
-        return result
-    }
-
+    
     private fun getAddress(doc: Document): AddressBean {
         return AddressBean().apply {
             setNameInAddressBean(

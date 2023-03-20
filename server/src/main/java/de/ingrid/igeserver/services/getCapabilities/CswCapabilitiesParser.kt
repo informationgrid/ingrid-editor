@@ -8,12 +8,7 @@ import org.w3c.dom.Document
 class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
-    private val versionSyslistMap: MutableMap<String, Int>
-
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["2.0.2"] = 1
-    }
+    private val versionSyslistMap = mapOf("2.0.2" to "1")
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         val result = CapabilitiesBean()
@@ -29,11 +24,11 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         result.versions = mappedVersionList
 
         // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_CSW_FEES)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_CSW_FEES, "6500")
 
         // Access Constraints
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS)
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS))
 
         // Online Resources
         result.onlineResources = getOnlineResources(doc, XPATH_EXP_CSW_ONLINE_RESOURCE)

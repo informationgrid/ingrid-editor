@@ -13,13 +13,7 @@ import org.w3c.dom.Node
 class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
-    private val versionSyslistMap: MutableMap<String, Int>
-
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["1.1.1"] = 1
-        versionSyslistMap["1.3.0"] = 2
-    }
+    private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         val result = CapabilitiesBean()
@@ -33,30 +27,14 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         val mappedVersionList =
             mapVersionsFromCodelist("???", versionList, versionSyslistMap)
         result.versions = mappedVersionList
-        val version = versionList[0]
-
-        // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WMS_FEES)
-
-        // Access Constraints
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS)
-
-        // Online Resources
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
         result.onlineResources =
             getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
-
-        // TODO: Extended Capabilities?
-
-        // Keywords
-        // use a Set to remove duplicate entries
         val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
         val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
-
-        // Extended - Keywords
         result.keywords.addAll(commonKeywords + allKeywordsSet)
-
-        // get bounding boxes of each layer and create a union
         val boundingBoxesFromLayers = emptyList<LocationBean>() // getBoundingBoxesFromLayers(doc)
         var unionOfBoundingBoxes: LocationBean? = null
         if (!boundingBoxesFromLayers.isEmpty()) {
@@ -106,7 +84,7 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
 
         // get all root Layer coordinate Reference Systems
         // there only can be one root layer!
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc)
+        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
 
         // get contact information
         result.address = getAddress(doc)
@@ -321,28 +299,6 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         return coordType
     }*/
 
-    /**
-     * @param doc
-     * @return
-     */
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs = xPathUtils.getStringArray(doc, XPATH_EXP_WMS_LAYER_CRS)
-
-        // check codelists for matching entryIds
-        for (item in crs) {
-            val itemId = Integer.valueOf(item.split(":".toRegex()).dropLastWhile { it.isEmpty() }
-                .toTypedArray()[1])
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString())
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            result.add(srsBean)
-        }
-        return result
-    }
 
 /*
     private fun getBoundingBoxFromLayer(layerNode: Node): LocationBean? {

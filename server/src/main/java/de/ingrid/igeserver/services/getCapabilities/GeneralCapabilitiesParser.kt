@@ -2,13 +2,13 @@ package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.xpath.XPathUtils
+import org.apache.commons.lang3.ArrayUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.stream.Collectors
 
 data class OperationBean(
     var addressList: List<String>? = null,
@@ -33,7 +33,13 @@ data class AddressBean(
     var postCode: String? = null,
 )
 
-data class UrlBean(var url: String? = null, var relationType: Int? = null, var relationTypeName: String? = null, var datatype: String? = null)
+data class UrlBean(
+    var url: String? = null,
+    var type: KeyValue? = null,
+    var title: String? = null,
+    var explanation: String? = null
+)
+
 data class SpatialReferenceSystemBean(
     var id: Int?,
     var name: String?
@@ -53,13 +59,13 @@ class CapabilitiesBean {
     var dataServiceType: String? = null
     var title: String? = null
     var description: String? = null
-    var versions: List<String>? = emptyList()
-    var fees: String? = null
-    var accessConstraints: List<String>? = emptyList()
+    var versions: List<KeyValue>? = emptyList()
+    var fees: KeyValue? = null
+    var accessConstraints: List<KeyValue>? = emptyList()
     var onlineResources: List<UrlBean>? = emptyList()
     var keywords = mutableListOf<String>()
     var boundingBoxes: List<LocationBean>? = emptyList()
-    var spatialReferenceSystems: List<SpatialReferenceSystemBean>? = emptyList()
+    var spatialReferenceSystems: List<KeyValue>? = emptyList()
     var address: AddressBean? = null
     var operations: List<OperationBean>? = emptyList()
     var resourceLocators: List<UrlBean>? = emptyList()
@@ -68,6 +74,8 @@ class CapabilitiesBean {
     var conformities = listOf<ConformityBean>()
     var coupledResources = listOf<Any>()
 }
+
+data class KeyValue(val key: String?, val value: String?)
 
 /**
  * @author André
@@ -97,7 +105,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         val opBean = OperationBean()
         val methodAddresses = mutableListOf<String>()
         val methodPlatforms = mutableListOf<Int>()
-        for ( i in xPathsOfMethods.indices) {
+        for (i in xPathsOfMethods.indices) {
             val methodAddress = xPathUtils.getString(doc, xPathsOfMethods[i])
             if (methodAddress != null && methodAddress.isNotEmpty()) {
                 methodAddresses.add(methodAddress)
@@ -227,7 +235,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     protected fun getNodesContentAsList(doc: Document, xPath: String): List<String> {
         val versionNodes = xPathUtils.getNodeList(doc, xPath)
-        val list: MutableList<String> = ArrayList()
+        val list = mutableListOf<String>()
         if (versionNodes == null) return list
         for (i in 0 until versionNodes.length) {
             val content = versionNodes.item(i).textContent
@@ -241,26 +249,35 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun mapVersionsFromCodelist(
         listId: String,
         versionList: List<String>,
-        versionSyslistMap: Map<String, Int>
-    ): List<String> {
+        versionSyslistMap: Map<String, String>
+    ): List<KeyValue> {
         return versionList.mapNotNull {
-            var value: String? = null
+            var value: String?
             val entryId = versionSyslistMap[it]
             if (entryId != null) {
                 value = codelistHandler.getCodelistValue(listId, entryId.toString())
                 if (value == null) {
                     log.warn("Version could not be mapped!")
                 }
-            }
-            value
+                KeyValue(entryId, value)
+            } else null
+        }
+    }
+
+    protected fun mapValuesFromCodelist(
+        listId: String,
+        values: List<String>
+    ): List<KeyValue> {
+        return values.map {
+            val itemId = codelistHandler.getCodeListEntryId(listId, it, "de")
+            KeyValue(itemId, it)
         }
     }
 
     // TODO: should be mapped from a special codelist which only allows certain versions (this is for IGE-NG)
-    protected fun addOGCtoVersions(versions: List<String>): List<String> {
-        return versions.stream()
-            .map { version: String -> "OGC:WCS $version" }
-            .collect(Collectors.toList())
+    protected fun addOGCtoVersions(versions: List<String>): List<KeyValue> {
+        return versions
+            .map { version -> KeyValue(null, "OGC:WCS $version") }
     }
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
@@ -275,8 +292,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 if (link == null || link.trim() == "") continue
 
                 url.url = link
-                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
-                if (type != null) url.datatype = type
+//                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
+//                if (type != null) url.type = type
+                url.type = KeyValue("9999", "Unspezifischer Verweis")
+                url.title = "Verweis"
 
                 urls.add(url)
             }
@@ -298,13 +317,11 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 val type = xPathUtils.getString(doc, xPathExtCap + "/inspire_common:ResourceType[" + (i + 1) + "]")
                 urlBean.url = url.item(i).textContent
                 if (type != null) {
-                    urlBean.relationType = getRelationType(type)
-                    urlBean.relationTypeName = codelistHandler.getCodelistValue("2000", urlBean.relationType.toString())
+                    urlBean.type = getRelationType(type)
                 } else {
                     // use previously used type!
                     if (i > 0) {
-                        urlBean.relationType = locators[i - 1].relationType
-                        urlBean.relationTypeName = locators[i - 1].relationTypeName
+                        urlBean.type = locators[i - 1].type
                     }
                 }
                 locators.add(urlBean)
@@ -317,8 +334,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * @param type
      * @return
      */
-    private fun getRelationType(type: String): Int {
-        return if ("service" == type) 5066 else 9999 // Link to Service
+    private fun getRelationType(type: String): KeyValue {
+        val value = codelistHandler.getCodelistValue("2000", type)
+        return if ("service" == type) KeyValue("5066", value) else KeyValue("9999", value) // Link to Service
 
         // else unspecified link
     }
@@ -383,6 +401,53 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             bean.conformities = mapToConformityBeans(doc, "$xpathExtCap/inspire_common:Conformity")
         }
     }
+
+    protected fun getKeyValueForPath(doc: Document, xpath: String, codelistId: String): KeyValue? {
+        val value = xPathUtils.getString(doc, xpath)
+        if (value.isNullOrEmpty()) return null
+        val entryId = codelistHandler.getCodeListEntryId(codelistId, value, "de")
+        return KeyValue(entryId, value)
+    }
+
+    protected fun getSpatialReferenceSystems(
+        doc: Document,
+        xpathDefault: String,
+        xpathOther: String? = null
+    ): List<KeyValue> {
+        val result = mutableListOf<KeyValue>()
+        val crs = xPathUtils.getStringArray(doc, xpathDefault)
+        val crsAll = if (xpathOther != null) {
+            val crsOther = xPathUtils.getStringArray(doc, xpathOther)
+            ArrayUtils.addAll(crs, *crsOther) as Array<String>
+        } else {
+            crs
+        }
+        val uniqueCrs: MutableList<String?> = ArrayList()
+
+        // check codelists for matching entryIds
+        for (item in crsAll) {
+            val itemId: String? = try {
+                val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                splittedItem[splittedItem.size - 1]
+            } catch (e: NumberFormatException) {
+                // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
+                val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                splittedItem[splittedItem.size - 1]
+            }
+            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString());
+            val srsBean = if (value.isNullOrEmpty()) {
+                KeyValue(null, item)
+            } else {
+                KeyValue(itemId, value)
+            }
+            if (!uniqueCrs.contains(srsBean.value)) {
+                result.add(srsBean)
+                uniqueCrs.add(srsBean.value)
+            }
+        }
+        return result
+    }
+
 
     /**
      * @param type

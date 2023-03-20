@@ -4,22 +4,12 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.xml.Wfs110NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
-import javax.xml.xpath.XPathExpressionException
 
 class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
-    private val versionSyslistMap: MutableMap<String, Int>
+    private val versionSyslistMap = mapOf("1.0.0" to "3")
 
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["1.0.0"] = 3
-    }
-
-    /* (non-Javadoc)
-     * @see de.ingrid.mdek.dwr.services.capabilities.ICapabilityDocument#setTitle(org.w3c.dom.Document)
-     */
-    @Throws(XPathExpressionException::class)
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         val result = CapabilitiesBean()
 
@@ -36,37 +26,23 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
 //        String version = versionList.get(0);
 
         // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WMTS_FEES)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMTS_FEES, "6500")
 
         // Access Constraints
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS)
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS))
 
         // TODO: Resource Locator / Type
         // ...
 
-        // Keywords
-        val keywords: List<String> = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS)
-
-        // Extended - Keywords
-        // add found keywords to our result bean
-        result.keywords = keywords.toMutableList()
-
-        // get contact information
+        result.keywords = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS).toMutableList()
         result.address = getAddress(doc)
 
-        // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
-
-        // Spatial reference
         val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
         result.boundingBoxes = boundingBoxesFromLayers
-
-        // Spatial reference system
-        val spatialReferenceSystems = getSpatialReferenceSystems(doc)
-        result.spatialReferenceSystems = spatialReferenceSystems
-
-        // Operation - GetCapabilities
+        result.spatialReferenceSystems =
+            getSpatialReferenceSystems(doc, "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS")
         val getCapabilitiesOp = mapToOperationBean(
             doc, arrayOf(
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF1,
@@ -235,36 +211,6 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
         return bboxes
     }
 
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs =
-            xPathUtils.getStringArray(doc, "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS")
-        val uniqueCrs: MutableList<String?> = ArrayList()
-
-        // check codelists for matching entryIds
-        for (item in crs) {
-            val itemId: Int? = try {
-                val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            } catch (e: NumberFormatException) {
-                // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
-                val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            }
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString())
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            if (!uniqueCrs.contains(srsBean.name)) {
-                result.add(srsBean)
-                uniqueCrs.add(srsBean.name)
-            }
-        }
-        return result
-    }
 
     companion object {
         private const val XPATH_EXP_WMTS_FEES = "/wmts:Capabilities/ows11:ServiceIdentification/ows11:Fees"

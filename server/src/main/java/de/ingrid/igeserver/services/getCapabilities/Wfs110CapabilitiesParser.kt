@@ -9,13 +9,7 @@ import javax.xml.xpath.XPathExpressionException
 class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
-    private val versionSyslistMap: MutableMap<String, Int>
-
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["1.1.0"] = 1
-        versionSyslistMap["2.0"] = 2
-    }
+    private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2")
 
     /* (non-Javadoc)
      * @see de.ingrid.mdek.dwr.services.capabilities.ICapabilityDocument#setTitle(org.w3c.dom.Document)
@@ -35,11 +29,11 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
         result.versions = mappedVersionList
 
         // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WFS_FEES)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
 
         // Access Constraints
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS)
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
 
         // Online Resources
         result.onlineResources =
@@ -60,8 +54,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
         result.keywords.addAll(keywords)
         val union = getBoundingBoxesFromLayers(doc)
         result.boundingBoxes = union
-        val spatialReferenceSystems = getSpatialReferenceSystems(doc)
-        result.spatialReferenceSystems = spatialReferenceSystems
+        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS", "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS")
 
 
         // get contact information
@@ -176,48 +169,6 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
         return result
     }
 
-    /**
-     * @param doc
-     * @return
-     */
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs =
-            xPathUtils.getStringArray(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS")
-        val crsOther =
-            xPathUtils.getStringArray(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS")
-        val crsAll = crs + crsOther
-        val uniqueCrs: MutableList<String?> = ArrayList()
-
-        // check codelists for matching entryIds
-        for (item in crsAll) {
-            val itemId: Int? = try {
-                val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            } catch (e: NumberFormatException) {
-                // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
-                val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            }
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString())
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            if (!uniqueCrs.contains(srsBean.name)) {
-                result.add(srsBean)
-                uniqueCrs.add(srsBean.name)
-            }
-        }
-        return result
-    }
-
-    /**
-     * @param doc
-     * @return
-     */
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
         val bboxes: MutableList<LocationBean> = ArrayList()
         val layers = xPathUtils.getNodeList(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType")

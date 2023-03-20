@@ -20,11 +20,11 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
             addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
 
         // Fees
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WCS_FEES)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
 
         // Access Constraints
         result.accessConstraints =
-            getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS)
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
 
         // Online Resources
         result.onlineResources =
@@ -93,8 +93,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
         result.operations = operations
         val union = getBoundingBoxes(doc)
         result.boundingBoxes = union
-        val spatialReferenceSystems = getSpatialReferenceSystems(doc)
-        result.spatialReferenceSystems = spatialReferenceSystems
+        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported")
         return result
     }
 
@@ -175,39 +174,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs = xPathUtils.getStringArray(
-            doc,
-            "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported"
-        )
-        val uniqueCrs: MutableList<String?> = ArrayList()
-        for (item in crs) {
-            val itemId = try {
-                val splittedItem = item.split(":".toRegex()).dropLastWhile { it.isEmpty() }
-                    .toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            } catch (e: NumberFormatException) {
-                // also detect crs like: http://www.opengis.net/def/crs/[epsg|ogc]/0/{code} (REDMINE-2108)
-                val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                Integer.valueOf(splittedItem[splittedItem.size - 1])
-            }
-
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString())
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            if (!uniqueCrs.contains(srsBean.name)) {
-                result.add(srsBean)
-                uniqueCrs.add(srsBean.name)
-            }
-        }
-        return result
-    }
-
+    
     companion object {
         private const val XPATH_EXT_WCS_SERVICECONTACT =
             "/wcs201:Capabilities/ows20:ServiceProvider/ows20:ServiceContact"

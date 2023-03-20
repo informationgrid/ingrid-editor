@@ -5,9 +5,9 @@ import { ConfigService } from "../../../../app/services/config/config.service";
 export interface GetCapabilitiesAnalysis {
   title: string;
   description: string;
-  versions: string[];
-  fees: string;
-  accessConstraints: string[];
+  versions: KeyValue[];
+  fees: KeyValue;
+  accessConstraints: KeyValue[];
   serviceType: string;
   dataServiceType: string;
   onlineResources: Url[];
@@ -23,8 +23,14 @@ export interface GetCapabilitiesAnalysis {
   coupledResources: any[];
 }
 
+interface KeyValue {
+  key: string;
+  value?: string;
+}
+
 interface SpatialReference {
-  name: string;
+  key: string;
+  value: string;
 }
 interface Address {
   firstName?: string;
@@ -41,9 +47,9 @@ interface Address {
 }
 interface Url {
   url?: string;
-  relationType?: number;
-  relationTypeName?: string;
-  datatype?: string;
+  type?: KeyValue;
+  title?: string;
+  explanation?: string;
 }
 interface Operation {
   name?: string;
@@ -78,5 +84,24 @@ export class GetCapabilitiesService {
       this.backendUrl + "getCapabilities/analyzeGetCapabilities",
       url
     );
+  }
+
+  applyChangesToModel(model: any, values: GetCapabilitiesAnalysis) {
+    Object.entries(values).forEach(([key, value]) => {
+      if (key === "title") model.title = value;
+      if (key === "description") model.description = value;
+      if (key === "versions") model.service.version = value;
+      if (key === "fees") model.resource.useConstraints = [{ title: value }];
+      if (key === "accessConstraints") model.resource.accessConstraints = value;
+      if (key === "onlineResources") model.references = value;
+      if (key === "dataServiceType") model.service.type = { key: value };
+      if (key === "keywords") model.keywords = value;
+      if (key === "spatialReferenceSystems")
+        model.spatial.spatialSystems = value.map((item) => {
+          return item.key !== null ? { key: item.key } : item;
+        });
+      // if (key === "description") model.description = value;
+      // if (key === "fees") model.resource.useConstraints = [{ title: value }];
+    });
   }
 }

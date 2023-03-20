@@ -15,17 +15,8 @@ import javax.xml.xpath.XPathExpressionException
 class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
-    private val versionSyslistMap: MutableMap<String, Int>
+    private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
-    init {
-        versionSyslistMap = HashMap()
-        versionSyslistMap["1.1.1"] = 1
-        versionSyslistMap["1.3.0"] = 2
-    }
-
-    /* (non-Javadoc)
-     * @see de.ingrid.mdek.dwr.services.capabilities.ICapabilityDocument#setTitle(org.w3c.dom.Document)
-     */
     @Throws(XPathExpressionException::class)
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         val result = CapabilitiesBean()
@@ -36,8 +27,8 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         result.title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_TITLE)
         result.description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_ABSTRACT)
         result.versions = getVersions(doc)
-        result.fees = xPathUtils.getString(doc, XPATH_EXP_WMS_FEES)
-        result.accessConstraints = getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS)
+        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
+        result.accessConstraints = mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
         result.onlineResources = getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
         addExtendedCapabilities(result, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
         result.keywords.addAll(getMoreKeywords(doc))
@@ -56,14 +47,14 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
 
         
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc)
+        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
         result.coupledResources = getCoupledResources(doc, result.spatialReferenceSystems)
         result.address = getAddress(doc)
         result.operations = getOperations(doc)
         return result
     }
 
-    private fun getCoupledResources(doc: Document, spatialReferenceSystems: List<SpatialReferenceSystemBean>?): List<Any> {
+    private fun getCoupledResources(doc: Document, spatialReferenceSystems: List<KeyValue>?): List<Any> {
         // Spatial Reference Systems (SRS / CRS)
         // Note: The root <Layer> element shall include a sequence of zero or more
         // CRS elements listing all CRSs that are common to all subsidiary layers.
@@ -72,7 +63,7 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         // get all root Layer coordinate Reference Systems
         // there only can be one root layer!
         
-        val rootCRSs = convertToStringList(spatialReferenceSystems)
+//        val rootCRSs = convertToStringList(spatialReferenceSystems)
 
         // Coupled Resources
         val identifierNodes =
@@ -170,7 +161,7 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         return commonKeywords + allKeywordsSet
     }
 
-    private fun getVersions(doc: Document): List<String> {
+    private fun getVersions(doc: Document): List<KeyValue> {
         val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_3_0_VERSION)
         return mapVersionsFromCodelist("???", versionList, versionSyslistMap)
     }
@@ -251,37 +242,7 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-
-    /**
-     * @param layerNode
-     * @return
-     */
-    private fun getSpatialReferenceSystems(doc: Document): List<SpatialReferenceSystemBean> {
-        val layerNode = xPathUtils.getNode(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer")
-        val result: MutableList<SpatialReferenceSystemBean> = ArrayList()
-        val crs = xPathUtils.getStringArray(layerNode, "wms:CRS")
-
-        // check codelists for matching entryIds
-        for (item in crs) {
-
-            var itemId: Int? = null
-            var value: String? = null
-            try {
-                itemId = Integer.valueOf(item.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1])
-                value = codelistHandler.getCodelistValue("100", itemId.toString())
-            } catch (e: NumberFormatException) {
-                // the id of the CRS is not an integer and will be set to unknown
-            }
-            val srsBean = if (value.isNullOrEmpty()) {
-                SpatialReferenceSystemBean(-1, item)
-            } else {
-                SpatialReferenceSystemBean(itemId, value)
-            }
-            result.add(srsBean)
-        }
-        return result
-    }
-
+    
     companion object {
         private val log = LoggerFactory.getLogger(Wms130CapabilitiesParser::class.java)
 
