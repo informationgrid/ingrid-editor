@@ -97,6 +97,10 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler) :
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:electronicMailAddress"
         )
+        address.organization = xPathUtils.getString(
+            doc,
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:organisationName"
+        )
 
         // try to find address in database and set the uuid if found
 //        searchForAddress(address)
@@ -132,7 +136,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler) :
         private const val XPATH_EXP_WCS_ABSTRACT = "/wcs:WCS_Capabilities/wcs:Service/wcs:description"
         private const val XPATH_EXP_WCS_VERSION = "/wcs:WCS_Capabilities/@version"
         private const val XPATH_EXP_WCS_OP_GET_CAPABILITIES_GET_HREF =
-            "/wcs:WCS_Capabilities/wcs:Capability/wcs:Request/wcs:GetCapabilities/wcs:DCPType/wcs:HTTP/wcs:Get/wcs:OnlineResource"
+            "/wcs:WCS_Capabilities/wcs:Capability/wcs:Request/wcs:GetCapabilities/wcs:DCPType/wcs:HTTP/wcs:Get/wcs:OnlineResource/@xlink:href"
         private const val XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF =
             "/wcs:WCS_Capabilities/wcs:Capability/wcs:Request/wcs:GetCapabilities/wcs:DCPType/wcs:HTTP/wcs:Post/wcs:OnlineResource/@xlink:href"
         private const val XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_GET_HREF =

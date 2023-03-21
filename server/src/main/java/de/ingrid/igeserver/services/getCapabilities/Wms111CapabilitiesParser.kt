@@ -33,47 +33,15 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
             val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
             val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
             keywords.addAll(commonKeywords + allKeywordsSet)
-            val boundingBoxesFromLayers = emptyList<LocationBean>() // getBoundingBoxesFromLayers(doc)
-            var unionOfBoundingBoxes: LocationBean?
+            val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
+            var unionOfBoundingBoxes: LocationBean? = null
             if (boundingBoxesFromLayers.isNotEmpty()) {
                 unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
-//            if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
                 unionOfBoundingBoxes.name = "Raumbezug von: " + title
-//            } else {
-//                unionOfBoundingBoxes.name = "spatial extent from: " + title
-//            }
                 boundingBoxes = listOf(unionOfBoundingBoxes)
             }
-
-            // Coupled Resources
-            /* TODO: val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
-        val coupledResources: MutableList<MdekDataBean?> = ArrayList<MdekDataBean?>()
-        val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
-        for (i in 0 until identifierNodes.length) {
-            val id = identifierNodes.item(i).textContent
-            // check for the found IDs if a metadata with this resource identifier exists
-            val coupledResource: MdekDataBean = checkForCoupledResource(id)
-            // the dataset does not exist yet
-            if (coupledResource == null) {
-                val newDataset = MdekDataBean()
-                val layerNode = xPathUtils.getNode(identifierNodes.item(i), "..")
-                newDataset.setUuid(null)
-                newDataset.setRef1ObjectIdentifier(id)
-                newDataset.setTitle(xPathUtils.getString(layerNode, "Title"))
-                val keywordsFromLayer: MutableList<SNSTopic> =
-                    transformKeywordListToSNSTopics(getKeywords(layerNode, "KeywordList/Keyword"))
-                keywordsFromLayer.addAll(commonSNSTopics)
-                newDataset.setThesaurusTermsTable(keywordsFromLayer)
-                val boxes: MutableList<LocationBean> = ArrayList()
-                val box = getBoundingBoxFromLayer(layerNode)
-                if (box != null) boxes.add(box) else if (unionOfBoundingBoxes != null) boxes.add(unionOfBoundingBoxes)
-                newDataset.setSpatialRefLocationTable(boxes)
-                coupledResources.add(newDataset)
-            } else {
-                coupledResources.add(coupledResource)
-            }
-        }
-        setCoupledResources(coupledResources)*/
+            
+            coupledResources = getCoupledResources(doc, unionOfBoundingBoxes)
 
             // Spatial Reference Systems (SRS / CRS)
             // Note: The root <Layer> element shall include a sequence of zero or more
@@ -83,16 +51,45 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
             // get all root Layer coordinate Reference Systems
             // there only can be one root layer!
             spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
-
-            // get contact information
             address = getAddress(doc)
-
-
             // Conformity
             // setConformities(mapToConformityBeans(doc, XPATH_EXP_CSW_CONFORMITY));
-
             operations = getOperations(doc)
         }
+    }
+
+    private fun getCoupledResources(doc: Document, unionOfBoundingBoxes: LocationBean?): List<GeoDataset> {
+        val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
+        val coupledResourcesList = mutableListOf<GeoDataset>()
+//       TODO: val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
+        for (i in 0 until identifierNodes.length) {
+            val id = identifierNodes.item(i).textContent
+            // check for the found IDs if a metadata with this resource identifier exists
+            val coupledResource: GeoDataset? = checkForCoupledResource(id)
+            // the dataset does not exist yet
+            if (coupledResource == null) {
+                val newDataset = GeoDataset()
+                val layerNode = xPathUtils.getNode(identifierNodes.item(i), "..")
+                newDataset.uuid = null
+                newDataset.objectIdentifier = id
+                newDataset.title = xPathUtils.getString(layerNode, "Title")
+//                val keywordsFromLayer: MutableList<SNSTopic> =
+//                    transformKeywordListToSNSTopics(getKeywords(layerNode, "KeywordList/Keyword"))
+//                keywordsFromLayer.addAll(commonSNSTopics)
+//                newDataset.setThesaurusTermsTable(keywordsFromLayer)
+                val boxes: MutableList<LocationBean> = ArrayList()
+                val box = getBoundingBoxFromLayer(layerNode)
+                if (box != null) boxes.add(box) 
+                else if (unionOfBoundingBoxes != null) boxes.add(
+                    unionOfBoundingBoxes
+                )
+                newDataset.spatialReferences = boxes
+                coupledResourcesList.add(newDataset)
+            } else {
+                coupledResourcesList.add(coupledResource)
+            }
+        }
+        return coupledResourcesList
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -200,11 +197,9 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         return address
     }
 
-// TODO:
-/*
+    // TODO:
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
-        val bboxes: MutableList<LocationBean> = ArrayList()
-        val coordUtils: CoordTransformUtil = CoordTransformUtil.getInstance()
+        val bboxes = mutableListOf<LocationBean>()
         val layers = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer/Layer")
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
@@ -213,65 +208,60 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
             val boundingBoxesNodes = xPathUtils.getNodeList(layer, "BoundingBox")
             for (j in 0 until boundingBoxesNodes.length) {
                 val bboxNode = boundingBoxesNodes.item(j)
-                var box: LocationBean? = null
-                val coordType: CoordType? = getCoordType(bboxNode, coordUtils)
+                var box: LocationBean?
+                val coordType: CoordType? = getCoordType(bboxNode)
                 var coordinates: DoubleArray? = null
                 coordinates = if (coordType == null) {
                     // if coordinate type could not be determined, then try the next available
                     // bounding box of the layer, which should use a different CRS
                     continue
-//                } else if (coordType.equals(CoordTransformUtil.CoordType.COORDS_WGS84)) {
-//                    getBoundingBoxCoordinates(bboxNode)
+                } else if (coordType.equals(CoordType.COORDS_WGS84)) {
+                    getBoundingBoxCoordinates(bboxNode)
                 } else { // TRANSFORM
-                    getBoundingBoxCoordinates(bboxNode, coordUtils, coordType)
+                    getBoundingBoxCoordinates(bboxNode)
                 }
-                if (coordinates != null) {
-                    box = LocationBean()
-                    box.latitude1 = coordinates[1]
-                    box.longitude1 = coordinates[0]
-                    box.latitude2 = coordinates[3]
-                    box.longitude2 = coordinates[2]
+                box = LocationBean().apply {
+                    latitude1 = coordinates[1]
+                    longitude1 = coordinates[0]
+                    latitude2 = coordinates[3]
+                    longitude2 = coordinates[2]
+                }
 
-                    // add a fallback for the name, since it's mandatory
-                    var name = xPathUtils.getString(layer, "wms:Name")
-                    if (name == null) name = xPathUtils.getString(layer, "wms:Title")
-                    if (name == null) name = "UNKNOWN"
-                    box.name = name
-                    // shall be a free spatial reference, but needs an ID to check for duplications!
+                // add a fallback for the name, since it's mandatory
+                var name = xPathUtils.getString(layer, "wms:Name")
+                if (name == null) name = xPathUtils.getString(layer, "wms:Title")
+                if (name == null) name = "UNKNOWN"
+                box.name = name
+                // shall be a free spatial reference, but needs an ID to check for duplications!
 //                    box.setTopicId(box.name)
-                    box.type = "frei"
-                    bboxes.add(box)
-                    // go to next layer!
-                    break
-                }
+                box.type = "frei"
+                bboxes.add(box)
+                // go to next layer!
+                break
             }
         }
         return bboxes
     }
-*/
 
-/*
     private fun getBoundingBoxCoordinates(
         bboxNode: Node,
-        coordUtils: CoordTransformUtil,
         coordType: CoordType
     ): DoubleArray? {
         var coordsTrans: DoubleArray? = DoubleArray(4)
         val coords = getBoundingBoxCoordinates(bboxNode)
         try {
-            val transMin: DoubleArray = coordUtils.transformToWGS84(coords[0], coords[1], coordType)
-            val transMax: DoubleArray = coordUtils.transformToWGS84(coords[2], coords[3], coordType)
+            val transMin: DoubleArray = transformToWGS84(coords[0], coords[1], coordType)
+            val transMax: DoubleArray = transformToWGS84(coords[2], coords[3], coordType)
             coordsTrans!![0] = transMin[0]
             coordsTrans[1] = transMin[1]
             coordsTrans[2] = transMax[0]
             coordsTrans[3] = transMax[1]
         } catch (e: Exception) {
             coordsTrans = null
-            e.printStackTrace()
+            log.error(e)
         }
         return coordsTrans
     }
-*/
 
     /**
      * @param bboxNode
@@ -286,46 +276,41 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         return coords
     }
 
-    /*private fun getCoordType(bboxNode: Node, coordUtils: CoordTransformUtil): CoordType? {
-        val crs = xPathUtils.getString(bboxNode, "@CRS")
-        var coordType: CoordType? = null
-        if (crs != null) {
-            val code = crs.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-            coordType = coordUtils.getCoordTypeByEPSGCode(code)
-        }
-        return coordType
-    }*/
+    private fun getCoordType(bboxNode: Node): CoordType? {
+        val crs = xPathUtils.getString(bboxNode, "@CRS") ?: return null
+        val code = crs.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+        return getCoordTypeByEPSGCode(code)
+    }
 
 
-/*
     private fun getBoundingBoxFromLayer(layerNode: Node): LocationBean? {
         var box: LocationBean? = null
-        val coordUtils: CoordTransformUtil = CoordTransformUtil.getInstance()
 
         // iterate over bounding boxes until it could be transformed to WGS84
         val boundingBoxesNodes = xPathUtils.getNodeList(layerNode, "BoundingBox")
         for (j in 0 until boundingBoxesNodes.length) {
             val bboxNode = boundingBoxesNodes.item(j)
-            val coordType: CoordType? = getCoordType(bboxNode, coordUtils)
+            val coordType: CoordType? = getCoordType(bboxNode)
             var coordinates: DoubleArray? = null
             coordinates = if (coordType == null) {
                 // if coordinate type could not be determined, then try the next available
                 // bounding box of the layer, which should use a different CRS
                 continue
-            } else if (coordType.equals(CoordTransformUtil.CoordType.COORDS_WGS84)) {
+            } else if (coordType.equals(CoordType.COORDS_WGS84)) {
                 getBoundingBoxCoordinates(bboxNode)
             } else { // TRANSFORM
-                getBoundingBoxCoordinates(bboxNode, coordUtils, coordType)
+                getBoundingBoxCoordinates(bboxNode, coordType)
             }
             if (coordinates != null) {
-                box = LocationBean()
-                box.latitude1 = coordinates[1]
-                box.longitude1 = coordinates[0]
-                box.latitude2 = coordinates[3]
-                box.longitude2 = coordinates[2]
-                box.name = xPathUtils.getString(layerNode, "Name")
-                box.setTopicId(box.name)
-                box.type = "F"
+                box = LocationBean().apply {
+                    latitude1 = coordinates[1]
+                    longitude1 = coordinates[0]
+                    latitude2 = coordinates[3]
+                    longitude2 = coordinates[2]
+                    name = xPathUtils.getString(layerNode, "Name")
+                    //                    setTopicId(name)
+                    type = "free"
+                }
 
                 // finished!
                 break
@@ -333,7 +318,6 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return box
     }
-*/
 
     companion object {
         /**

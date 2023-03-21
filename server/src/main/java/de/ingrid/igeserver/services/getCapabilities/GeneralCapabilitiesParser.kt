@@ -10,6 +10,17 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+data class GeoDataset(
+    var uuid: String? = null,
+    var objectIdentifier: String? = null,
+    var title: String? = null,
+    var spatialReferences: List<LocationBean>? = null,
+    var objectClass: String? = null,
+    var description: String? = null,
+    var spatialSystems: List<KeyValue>? = null
+)
+
 data class OperationBean(
     var addressList: List<String>? = null,
     var platform: List<Int>? = null,
@@ -30,7 +41,6 @@ data class AddressBean(
     var country: String? = null,
     var state: String? = null,
     var phone: String? = null,
-    var postCode: String? = null,
 )
 
 data class UrlBean(
@@ -38,11 +48,6 @@ data class UrlBean(
     var type: KeyValue? = null,
     var title: String? = null,
     var explanation: String? = null
-)
-
-data class SpatialReferenceSystemBean(
-    var id: Int?,
-    var name: String?
 )
 
 data class LocationBean(
@@ -72,7 +77,7 @@ class CapabilitiesBean {
     var timeReference = mutableListOf<TimeReferenceBean>()
     var timeSpans = mutableListOf<TimeReferenceBean>()
     var conformities = listOf<ConformityBean>()
-    var coupledResources = listOf<Any>()
+    var coupledResources = listOf<GeoDataset>()
 }
 
 data class KeyValue(val key: String?, val value: String?)
@@ -85,7 +90,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     val log = logger()
 
     protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> {
-        return xPathUtils.getStringArray(doc, xpath).toMutableList()
+        return xPathUtils.getStringArray(doc, xpath).toSet().toMutableList()
     }
 
     protected fun transformKeywordListToStrings(keywords: List<String?>): List<String> {
@@ -192,27 +197,26 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * @param name
      * @return
      */
-    protected fun extractName(name: String?): Array<String?> {
+    private fun extractName(name: String?): Array<String> {
         if (name != null) {
-            val splitByComma = name.trim { it <= ' ' }.split(",".toRegex()).dropLastWhile { it.isEmpty() }
+            val splitByComma = name.trim().split(",".toRegex()).dropLastWhile { it.isEmpty() }
                 .toTypedArray()
             return if (splitByComma.size > 1) {
-                arrayOf(splitByComma[1].trim { it <= ' ' }, splitByComma[0].trim { it <= ' ' })
+                arrayOf(splitByComma[1].trim(), splitByComma[0].trim())
             } else {
                 val splitBySpace = name.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 if (splitBySpace.size == 2) {
-                    arrayOf(splitBySpace[0].trim { it <= ' ' }, splitBySpace[1].trim { it <= ' ' })
+                    arrayOf(splitBySpace[0].trim(), splitBySpace[1].trim())
                 } else if (splitBySpace.size > 2) {
-                    val sub = Arrays.copyOfRange(splitBySpace, 0, splitBySpace.size - 1)
-                    arrayOf(sub.joinToString(" "), splitBySpace[splitBySpace.size - 1].trim { it <= ' ' })
-                    arrayOf()
+                    val sub = splitBySpace.copyOfRange(0, splitBySpace.size - 1)
+                    arrayOf(sub.joinToString(" "), splitBySpace[splitBySpace.size - 1].trim())
                 } else {
-                    arrayOf("", name.trim { it <= ' ' })
+                    arrayOf("", name.trim())
                 }
             }
         }
-        return arrayOfNulls(0)
+        return emptyArray()
     }
 
     /**
@@ -239,7 +243,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         if (versionNodes == null) return list
         for (i in 0 until versionNodes.length) {
             val content = versionNodes.item(i).textContent
-            if (content.trim { it <= ' ' }.isNotEmpty()) {
+            if (content.trim().isNotEmpty()) {
                 list.add(content)
             }
         }
@@ -335,10 +339,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * @return
      */
     private fun getRelationType(type: String): KeyValue {
-        val value = codelistHandler.getCodelistValue("2000", type)
-        return if ("service" == type) KeyValue("5066", value) else KeyValue("9999", value) // Link to Service
-
-        // else unspecified link
+        val entryId = if ("service" == type) "5066" else "9999" // Link to Service
+        val value = codelistHandler.getCodelistValue("2000", entryId)
+        return KeyValue(entryId, value)
     }
 
     /**
@@ -405,12 +408,20 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun getKeyValueForPath(doc: Document, xpath: String, codelistId: String): KeyValue? {
         val value = xPathUtils.getString(doc, xpath)
         if (value.isNullOrEmpty()) return null
-        val entryId = codelistHandler.getCodeListEntryId(codelistId, value, "de")
+        var entryId = codelistHandler.getCodeListEntryId(codelistId, value, "de")
+        if (entryId == null) {
+            // use constraints can contain additional link information
+            val endIndex = value.indexOf("(")
+            if (endIndex != -1) {
+                val valueWithoutLink = value.substring(0, endIndex).trim()
+                entryId = codelistHandler.getCodeListEntryId(codelistId, valueWithoutLink, "de")
+            }
+        }
         return KeyValue(entryId, value)
     }
 
     protected fun getSpatialReferenceSystems(
-        doc: Document,
+        doc: Node,
         xpathDefault: String,
         xpathOther: String? = null
     ): List<KeyValue> {
@@ -458,6 +469,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             .find { it.getField("iso") == type }
             ?.id
     }
+
     /**
      * Search for an existing address by equal firstname, lastname and email OR institution and email.
      * @param address
@@ -489,43 +501,29 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             }
         }
     }*/
-    /**
-     * @param id
-     * @return
-     */
-    /*protected MdekDataBean checkForCoupledResource(String id) {
-        MdekDataBean resultBean = new MdekDataBean();
 
-        String qString = "select oNode.objUuid, obj.objName, obj.objClass " +
-                "from ObjectNode oNode " +
-                "inner join oNode.t01ObjectWork obj " +
-                "inner join obj.t011ObjGeos oGeo " +
-                "where " +
-                "oGeo.datasourceUuid = '" + id + "'";
-
-        IngridDocument response = connectionFacade.getMdekCallerQuery().queryHQLToMap(connectionFacade.getCurrentPlugId(), qString, null, "");
-        IngridDocument result = MdekUtils.getResultFromResponse(response);
-        if (result != null) {
-            @SuppressWarnings("unchecked")
-            List<IngridDocument> objects = (List<IngridDocument>) result.get(MdekKeys.OBJ_ENTITIES);
-            if (objects != null && !objects.isEmpty()) {
-                resultBean.setRef1ObjectIdentifier( id );
-                resultBean.setObjectClass( objects.get( 0 ).getInt( "obj.objClass" ) );
-                resultBean.setUuid( objects.get( 0 ).getString( "oNode.objUuid" ) );
-                resultBean.setTitle( objects.get( 0 ).getString( "obj.objName" ) );
-                return resultBean;
-            } else {
-                // if no dataset was found then try another search if a namespace exists in the id
-                // In this case remove the namespace search again (INGRID34-6)
-                int seperatorPos = id.indexOf( '#' );
-                if (seperatorPos != -1) {
-                    return checkForCoupledResource( id.substring( seperatorPos + 1 ) );
-                }
+    protected fun checkForCoupledResource(id: String): GeoDataset? {
+        // TODO: get coupled resources
+        val objects = null
+        if (objects != null) {
+            return GeoDataset().apply {
+                objectIdentifier = id
+                objectClass = "???"
+                uuid = "???"
+                title = "???"
+            }
+        } else {
+            // if no dataset was found then try another search if a namespace exists in the id
+            // In this case remove the namespace search again (INGRID34-6)
+            val separatorPos = id.indexOf('#');
+            if (separatorPos != -1) {
+                return checkForCoupledResource(id.substring(separatorPos + 1));
             }
         }
 
         return null;
-    }*/
+    }
+
     companion object {
 
         /** ID of syslist entry "HTTPGet" in Syslist 5180  */

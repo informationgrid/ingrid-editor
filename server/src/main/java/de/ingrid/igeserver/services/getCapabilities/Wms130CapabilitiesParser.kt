@@ -34,7 +34,7 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             // get bounding boxes of each layer and create a union
             val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
-            val unionOfBoundingBoxes: LocationBean?
+            var unionOfBoundingBoxes: LocationBean? = null
             if (!boundingBoxesFromLayers.isEmpty()) {
                 unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
 //            TODO: if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
@@ -47,13 +47,17 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             spatialReferenceSystems =
                 getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
-            coupledResources = getCoupledResources(doc, spatialReferenceSystems)
+            coupledResources = getCoupledResources(doc, spatialReferenceSystems!!, unionOfBoundingBoxes)
             address = getAddress(doc)
             operations = getOperations(doc)
         }
     }
 
-    private fun getCoupledResources(doc: Document, spatialReferenceSystems: List<KeyValue>?): List<Any> {
+    private fun getCoupledResources(
+        doc: Document,
+        rootCRSs: List<KeyValue>,
+        unionOfBoundingBoxes: LocationBean?
+    ): List<GeoDataset> {
         // Spatial Reference Systems (SRS / CRS)
         // Note: The root <Layer> element shall include a sequence of zero or more
         // CRS elements listing all CRSs that are common to all subsidiary layers.
@@ -62,47 +66,41 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         // get all root Layer coordinate Reference Systems
         // there only can be one root layer!
 
-//        val rootCRSs = convertToStringList(spatialReferenceSystems)
-
         // Coupled Resources
         val identifierNodes =
             xPathUtils.getNodeList(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer//wms:Identifier")
-        /* TODO: val coupledResources: MutableList<MdekDataBean?> = ArrayList<MdekDataBean?>()
-        val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
+        val coupledResources = mutableListOf<GeoDataset>()
+//        val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
         for (i in 0 until identifierNodes.length) {
             val id = identifierNodes.item(i).textContent
             // check for the found IDs if a metadata with this resource identifier exists
-            val coupledResource: MdekDataBean = checkForCoupledResource(id)
+            val coupledResource: GeoDataset? = checkForCoupledResource(id)
             // the dataset does not exist yet
             if (coupledResource == null) {
-                val newDataset = MdekDataBean()
+                val newDataset = GeoDataset()
                 val layerNode = xPathUtils.getNode(identifierNodes.item(i), "..")
-                newDataset.setUuid(null)
-                newDataset.setRef1ObjectIdentifier(id)
-                newDataset.setTitle(xPathUtils.getString(layerNode, "wms:Title"))
-                newDataset.setGeneralDescription(xPathUtils.getString(layerNode, "wms:Abstract"))
-                val keywordsFromLayer: MutableList<SNSTopic> =
-                    transformKeywordListToSNSTopics(getKeywords(layerNode, "wms:KeywordList/wms:Keyword"))
-                keywordsFromLayer.addAll(commonSNSTopics)
-                newDataset.setThesaurusTermsTable(keywordsFromLayer)
+                newDataset.uuid = null
+                newDataset.objectIdentifier = id
+                newDataset.title = xPathUtils.getString(layerNode, "wms:Title")
+                newDataset.description = xPathUtils.getString(layerNode, "wms:Abstract")
+//                val keywordsFromLayer: MutableList<SNSTopic> =
+//                    transformKeywordListToSNSTopics(getKeywords(layerNode, "wms:KeywordList/wms:Keyword"))
+//                keywordsFromLayer.addAll(commonSNSTopics)
+//                newDataset.setThesaurusTermsTable(keywordsFromLayer)
                 val boxes: MutableList<LocationBean> = ArrayList()
                 val box = getBoundingBoxFromLayer(layerNode)
                 if (box != null) boxes.add(box) else if (unionOfBoundingBoxes != null) boxes.add(unionOfBoundingBoxes)
-                newDataset.setSpatialRefLocationTable(boxes)
+                newDataset.spatialReferences = boxes
                 // get CRS from layer and merge them with the ones found in root node
                 // using a set here to filter out duplicates!
-                val layerCRSs: MutableSet<String?> =
-                    HashSet<Any?>(convertToStringList(getSpatialReferenceSystems(layerNode)))
-                layerCRSs.addAll(rootCRSs)
-                val layerCRSsList: MutableList<String?> = ArrayList()
-                layerCRSsList.addAll(layerCRSs)
-                newDataset.setRef1SpatialSystemTable(layerCRSsList)
+                val layerCRSs = getSpatialReferenceSystems(layerNode, "wms:CRS")
+                newDataset.spatialSystems = layerCRSs + rootCRSs
                 coupledResources.add(newDataset)
             } else {
                 coupledResources.add(coupledResource)
             }
-        }*/
-        return emptyList()
+        }
+        return coupledResources
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -160,8 +158,8 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         return commonKeywords + allKeywordsSet
     }
 
-    private fun convertToStringList(spatialReferenceSystems: List<SpatialReferenceSystemBean>?): List<String?> {
-        return spatialReferenceSystems?.map { it.name } ?: emptyList()
+    private fun convertToStringList(spatialReferenceSystems: List<KeyValue>?): List<String> {
+        return spatialReferenceSystems?.mapNotNull { it.value } ?: emptyList()
     }
 
     private fun getAddress(doc: Document): AddressBean {
