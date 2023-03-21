@@ -16,49 +16,32 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
      */
     @Throws(XPathExpressionException::class)
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
+            serviceType = "WFS"
+            dataServiceType = "3" // download
+            title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
+            val versionList = getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION)
+            versions = mapVersionsFromCodelist("5153", versionList, versionSyslistMap)
+            fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
+            onlineResources =
+                getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
+            addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
+            keywords += getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(doc, XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE)
+            boundingBoxes = getBoundingBoxesFromLayers(doc)
+            spatialReferenceSystems = getSpatialReferenceSystems(
+                doc,
+                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS",
+                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS"
+            )
+            address = getAddress(doc)
+            operations = getOperations(doc)
+        }
+    }
 
-        // General settings
-        result.serviceType = "WFS"
-        result.dataServiceType = "3" // download
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION)
-        val mappedVersionList =
-            mapVersionsFromCodelist("???", versionList, versionSyslistMap)
-        result.versions = mappedVersionList
-
-        // Fees
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
-
-        // Access Constraints
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
-
-        // Online Resources
-        result.onlineResources =
-            getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
-
-        // add extended capabilities to the bean which contains even more information to be used
-        addExtendedCapabilities(result, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-
-        // Keywords
-        val keywords = getKeywords(doc, XPATH_EXP_WFS_KEYWORDS)
-
-        // add keywords from feature types
-        val keywordsFeatureType: List<String> =
-            getKeywords(doc, XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE)
-
-        // add found keywords to our result bean
-        keywords.addAll(keywordsFeatureType)
-        result.keywords.addAll(keywords)
-        val union = getBoundingBoxesFromLayers(doc)
-        result.boundingBoxes = union
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS", "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS")
-
-
-        // get contact information
-        result.address = getAddress(doc)
+    private fun getOperations(doc: Document): List<OperationBean> {
 
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
@@ -165,8 +148,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             operations.add(transactionOp)
         }
-        result.operations = operations
-        return result
+        return operations
     }
 
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {

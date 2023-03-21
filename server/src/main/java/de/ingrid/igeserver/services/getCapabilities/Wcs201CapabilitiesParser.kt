@@ -9,40 +9,40 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
     GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
 
-        // General settings
-        result.serviceType = "WCS"
-        result.dataServiceType = "3" // download
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
-        result.versions =
-            addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
+            // General settings
+            serviceType = "WCS"
+            dataServiceType = "3" // download
+            title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
+            versions = addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
 
-        // Fees
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
+            // Fees
+            fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
 
-        // Access Constraints
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
+            // Access Constraints
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
 
-        // Online Resources
-        result.onlineResources =
-            getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
+            // Online Resources
+            onlineResources = getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
 
-        // TODO: Resource Locator / Type
-        // ...
+            // TODO: Resource Locator / Type
+            // ...
 
-        // Keywords
-        val keywords: List<String> = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS)
+            keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
+            address = getAddress(doc)
+            operations = getOperations(doc)
+            boundingBoxes = getBoundingBoxes(doc)
+            spatialReferenceSystems = getSpatialReferenceSystems(
+                doc,
+                "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported"
+            )
+        }
+    }
 
-        // Extended - Keywords
-        // add found keywords to our result bean
-        result.keywords = keywords.toMutableList()
-
-        // get contact information
-        result.address = getAddress(doc)
-
+    private fun getOperations(doc: Document): List<OperationBean> {
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
@@ -90,11 +90,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             operations.add(getCoverageOp)
         }
-        result.operations = operations
-        val union = getBoundingBoxes(doc)
-        result.boundingBoxes = union
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported")
-        return result
+        return operations
     }
 
     /**
@@ -174,7 +170,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-    
+
     companion object {
         private const val XPATH_EXT_WCS_SERVICECONTACT =
             "/wcs201:Capabilities/ows20:ServiceProvider/ows20:ServiceContact"

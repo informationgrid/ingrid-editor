@@ -11,40 +11,25 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
     private val versionSyslistMap = mapOf("2.0.2" to "1")
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
+            serviceType = "CSW"
+            dataServiceType = "1" // discovery
+            title = xPathUtils.getString(doc, XPATH_EXP_CSW_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_CSW_ABSTRACT)
+            val versionList = getNodesContentAsList(doc, XPATH_EXP_CSW_VERSION)
+            versions = mapVersionsFromCodelist("5151", versionList, versionSyslistMap)
+            fees = getKeyValueForPath(doc, XPATH_EXP_CSW_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS))
+            onlineResources = getOnlineResources(doc, XPATH_EXP_CSW_ONLINE_RESOURCE)
+            addExtendedCapabilities(this, doc, XPATH_EXP_CSW_EXTENDED_CAPABILITIES)
+            keywords.addAll(getKeywords(doc, XPATH_EXP_CSW_KEYWORDS))
+            address = getAddress(doc)
+            operations = getOperations(doc)
+        }
+    }
 
-        // General settings
-        result.serviceType = "CSW"
-        result.dataServiceType = "1" // discovery
-        result.title = xPathUtils.getString(doc, XPATH_EXP_CSW_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_CSW_ABSTRACT)
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_CSW_VERSION)
-        val mappedVersionList =
-            mapVersionsFromCodelist("???", versionList, versionSyslistMap)
-        result.versions = mappedVersionList
-
-        // Fees
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_CSW_FEES, "6500")
-
-        // Access Constraints
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS))
-
-        // Online Resources
-        result.onlineResources = getOnlineResources(doc, XPATH_EXP_CSW_ONLINE_RESOURCE)
-
-        // add extended capabilities to the bean which contains even more information to be used
-        addExtendedCapabilities(result, doc, XPATH_EXP_CSW_EXTENDED_CAPABILITIES)
-
-        // Keywords
-        val keywords: List<String> = getKeywords(doc, XPATH_EXP_CSW_KEYWORDS)
-
-        // add found keywords to our result bean
-        result.keywords.addAll(keywords)
-
-        // get contact information
-        result.address = getAddress(doc)
-
+    private fun getOperations(doc: Document): List<OperationBean> {
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
@@ -62,7 +47,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = "GetCapabilities"
             getCapabilitiesOp.methodCall = "GetCapabilities"
-            
+
             operations.add(getCapabilitiesOp)
         }
 
@@ -81,7 +66,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (describeRecordOp.addressList!!.isNotEmpty()) {
             describeRecordOp.name = "DescribeRecord"
             describeRecordOp.methodCall = "DescribeRecord"
-            
+
             operations.add(describeRecordOp)
         }
 
@@ -100,7 +85,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (getDomainOp.addressList!!.isNotEmpty()) {
             getDomainOp.name = "GetDomain"
             getDomainOp.methodCall = "GetDomain"
-            
+
             operations.add(getDomainOp)
         }
 
@@ -118,7 +103,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (getRecordsOp.addressList!!.isNotEmpty()) {
             getRecordsOp.name = "GetRecords"
             getRecordsOp.methodCall = "GetRecords"
-            
+
             operations.add(getRecordsOp)
         }
 
@@ -136,7 +121,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (getRecordByIdOp.addressList!!.isNotEmpty()) {
             getRecordByIdOp.name = "GetRecordById"
             getRecordByIdOp.methodCall = "GetRecordById"
-            
+
             operations.add(getRecordByIdOp)
         }
 
@@ -154,11 +139,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         if (harvestOp.addressList!!.isNotEmpty()) {
             harvestOp.name = "Harvest"
             harvestOp.methodCall = "Harvest"
-            
+
             operations.add(harvestOp)
         }
-        result.operations = operations
-        return result
+        return operations
     }
 
     /**

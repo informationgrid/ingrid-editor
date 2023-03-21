@@ -11,38 +11,34 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
     private val versionSyslistMap = mapOf("1.0.0" to "3")
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
+            serviceType = "WMTS"
+            dataServiceType = "2" // Darstellungsdienst
+            title = xPathUtils.getString(doc, XPATH_EXP_WMTS_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WMTS_ABSTRACT)
+            val versionList = getNodesContentAsList(doc, XPATH_EXP_WMTS_VERSION)
+            versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+            fees = getKeyValueForPath(doc, XPATH_EXP_WMTS_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS))
 
-        // General settings
-        result.serviceType = "WMTS"
-        result.dataServiceType = "2" // Darstellungsdienst
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WMTS_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WMTS_ABSTRACT)
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_WMTS_VERSION)
-        val mappedVersionList =
-            mapVersionsFromCodelist("???", versionList, versionSyslistMap)
-        result.versions = mappedVersionList
+            // TODO: Resource Locator / Type
+            // ...
 
-//        String version = versionList.get(0);
+            keywords = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS).toMutableList()
+            address = getAddress(doc)
+            boundingBoxes = getBoundingBoxesFromLayers(doc)
+            spatialReferenceSystems =
+                getSpatialReferenceSystems(
+                    doc,
+                    "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS"
+                )
+            operations = getOperations(doc)
+        }
+    }
 
-        // Fees
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMTS_FEES, "6500")
-
-        // Access Constraints
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS))
-
-        // TODO: Resource Locator / Type
-        // ...
-
-        result.keywords = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS).toMutableList()
-        result.address = getAddress(doc)
-
+    private fun getOperations(doc: Document): List<OperationBean> {
         val operations: MutableList<OperationBean> = ArrayList()
-        val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
-        result.boundingBoxes = boundingBoxesFromLayers
-        result.spatialReferenceSystems =
-            getSpatialReferenceSystems(doc, "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS")
         val getCapabilitiesOp = mapToOperationBean(
             doc, arrayOf(
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF1,
@@ -60,80 +56,48 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
             getCapabilitiesOp.name = "GetCapabilities"
             // do not set method call so that it doesn't appear in ISO (#3651)
             // getCapabilitiesOp.setMethodCall("GetCapabilities");
-
-            // also do not set any parameters (#3651)
-            /*List<OperationParameterBean> paramList = new ArrayList<>();
-            paramList.add(new OperationParameterBean("SERVICE=WMTS", "Service type", "", false, false));
-            paramList.add(new OperationParameterBean("REQUEST=GetCapabilities", "Name of request", "", false, false));
-            paramList.add(new OperationParameterBean("ACCEPTVERSIONS=1.0.0,0.8.3", "Comma-separated prioritized sequence of one or more specification versions accepted by client, with preferred versions listed first", "", true, false));
-            paramList.add(new OperationParameterBean("SECTIONS=Contents", "Comma-separated unordered list of zero or more names of sections of service metadata document to be returned in service metadata document", "", true, false));
-            paramList.add(new OperationParameterBean("UPDATESEQUENCE=XXX (where XXX is character string previously provided by server)", "Service metadata document version, value is \"increased\" whenever any change is made in complete service metadata document", "", true, false));
-            paramList.add(new OperationParameterBean("ACCEPTFORMATS= text/xml", "Comma-separated prioritized sequence of zero or more response formats desired by client, with preferred formats listed first", "", true, false));
-            getCapabilitiesOp.setParamList(paramList);*/operations.add(getCapabilitiesOp)
+            operations.add(getCapabilitiesOp)
         }
 
         // Only import GetCapabilities - Operation (#3651)
         /*
-        // Operation - GetTile
-        OperationBean getTileOp = mapToOperationBean(doc,
-                new String[]{
-                        XPATH_EXP_WMTS_OP_GET_TILE_HREF1,
-                        XPATH_EXP_WMTS_OP_GET_TILE_HREF2,
-                        XPATH_EXP_WMTS_OP_GET_TILE_HREF3
-                },
-                new Integer[]{
-                        ID_OP_PLATFORM_HTTP_GET,
-                        ID_OP_PLATFORM_HTTP_GET,
-                        ID_OP_PLATFORM_HTTP_GET
-                });
-        if (!getTileOp.getAddressList().isEmpty()) {
-            getTileOp.setName("GetTile");
-            getTileOp.setMethodCall("GetTile");
+    // Operation - GetTile
+    OperationBean getTileOp = mapToOperationBean(doc,
+            new String[]{
+                    XPATH_EXP_WMTS_OP_GET_TILE_HREF1,
+                    XPATH_EXP_WMTS_OP_GET_TILE_HREF2,
+                    XPATH_EXP_WMTS_OP_GET_TILE_HREF3
+            },
+            new Integer[]{
+                    ID_OP_PLATFORM_HTTP_GET,
+                    ID_OP_PLATFORM_HTTP_GET,
+                    ID_OP_PLATFORM_HTTP_GET
+            });
+    if (!getTileOp.getAddressList().isEmpty()) {
+        getTileOp.setName("GetTile");
+        getTileOp.setMethodCall("GetTile");
 
-            List<OperationParameterBean> paramList = new ArrayList<>();
-            paramList.add(new OperationParameterBean("SERVICE=WMTS", "Service type", "", false, false));
-            paramList.add(new OperationParameterBean("REQUEST=GetTile", "Name of request", "", false, false));
-            paramList.add(new OperationParameterBean("VERSION=1.0.0", "", "", true, false));
-            paramList.add(new OperationParameterBean("Layer", "The layers available from the Online Catalogs; if more than one layer is requested they are in a comma-separated list. Available layers are advertised in the GetCapabilities response.", "", true, false));
-            paramList.add(new OperationParameterBean("Style=default", "Some layers can be rendered in different ways; check the capabilities document for allowed values on a layer-by-layer basis.", "", true, false));
-            paramList.add(new OperationParameterBean("Format=image/png", "The tile format to return.", "", true, false));
-            paramList.add(new OperationParameterBean("TileMatrixSet=EPSG:3857", "The Tile Matrix Set to be used to generate the response", "", true, false));
-            paramList.add(new OperationParameterBean("TileMatrix=EPSG:3857", "The Tile Matrix identifier of the tileMatrix in the tileMatrixSet requested that has the desired scale denominator that you want to request. 4326 is WGS84, that is, uses latitude/longitude, while 3857 provides tiles in the spherical mercator projection", "", true, false));
-            paramList.add(new OperationParameterBean("TileRow=X", "The Row location of the tile in the defined tileMatrixSet. The value must be in the valid range provided in the capabilities response.", "", true, false));
-            paramList.add(new OperationParameterBean("TileCol=Y", "The Column location of the tile in the defined tileMatrixSet. The value must be in the valid range provided in the capabilities response.", "", true, false));
-            getTileOp.setParamList(paramList);
-            operations.add(getTileOp);
-        }
+        
+        operations.add(getTileOp);
+    }
 
-        // Operation - GetFeatureInfo - optional
-        String getFeatureInfoAddress = xPathUtils.getString(doc,  XPATH_EXP_WMTS_OP_GET_FEATURE_INFO_HREF);
-        if (getFeatureInfoAddress != null && getFeatureInfoAddress.length() != 0) {
-            OperationBean getFeatureInfoOp = new OperationBean();
-            getFeatureInfoOp.setName("GetFeatureInfo");
-            getFeatureInfoOp.setMethodCall("GetFeatureInfo");
-            List<Integer> getFeatureInfoOpPlatform = new ArrayList<>();
-            getFeatureInfoOpPlatform.add(ID_OP_PLATFORM_HTTP_GET);
-            getFeatureInfoOp.setPlatform(getFeatureInfoOpPlatform);
-            List<String> getFeatureInfoOpAddressList = new ArrayList<>();
-            getFeatureInfoOpAddressList.add(getFeatureInfoAddress);
-            getFeatureInfoOp.setAddressList(getFeatureInfoOpAddressList);
+    // Operation - GetFeatureInfo - optional
+    String getFeatureInfoAddress = xPathUtils.getString(doc,  XPATH_EXP_WMTS_OP_GET_FEATURE_INFO_HREF);
+    if (getFeatureInfoAddress != null && getFeatureInfoAddress.length() != 0) {
+        OperationBean getFeatureInfoOp = new OperationBean();
+        getFeatureInfoOp.setName("GetFeatureInfo");
+        getFeatureInfoOp.setMethodCall("GetFeatureInfo");
+        List<Integer> getFeatureInfoOpPlatform = new ArrayList<>();
+        getFeatureInfoOpPlatform.add(ID_OP_PLATFORM_HTTP_GET);
+        getFeatureInfoOp.setPlatform(getFeatureInfoOpPlatform);
+        List<String> getFeatureInfoOpAddressList = new ArrayList<>();
+        getFeatureInfoOpAddressList.add(getFeatureInfoAddress);
+        getFeatureInfoOp.setAddressList(getFeatureInfoOpAddressList);
 
-            List<OperationParameterBean> paramList = new ArrayList<>();
-            paramList.add(new OperationParameterBean("VERSION="+version, "Request version", "", false, false));
-            paramList.add(new OperationParameterBean("REQUEST=GetFeatureInfo", "Request name", "", false, false));
-            paramList.add(new OperationParameterBean("(map_request_copy)", "Partial copy of the Map request parameters that generated the map for which information is desired", "", false, false));
-            paramList.add(new OperationParameterBean("QUERY_LAYERS=layer_list", "Comma-separated list of one or more layers to be queried", "", false, false));
-            paramList.add(new OperationParameterBean("INFO_FORMAT=output_format", "Return format of feature information (MIME type)", "", true, false));
-            paramList.add(new OperationParameterBean("FEATURE_COUNT=number", "Number of features about which to return information (default=1)", "", true, false));
-            paramList.add(new OperationParameterBean("X=pixel_column", "X coordinate in pixels of feature (measured from upper left corner=0)", "", false, false));
-            paramList.add(new OperationParameterBean("Y=pixel_row", "Y coordinate in pixels of feature (measured from upper left corner=0)", "", false, false));
-            paramList.add(new OperationParameterBean("EXCEPTIONS=exception_format", "The format in which exceptions are to be reported by the WMS (default=application/vnd.ogc.se_xml)", "", true, false));
-            paramList.add(new OperationParameterBean("Vendor-specific parameters", "Optional experimental parameters", "", true, false));
-
-            getFeatureInfoOp.setParamList(paramList);
-            operations.add(getFeatureInfoOp);
-        }*/result.operations = operations
-        return result
+        
+        operations.add(getFeatureInfoOp);
+    }*/
+        return operations
     }
 
     /**

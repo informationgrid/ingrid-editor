@@ -16,39 +16,37 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
 
-        // General settings
-        result.serviceType = "WMS"
-        result.dataServiceType = "2" // view
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_ABSTRACT)
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_1_1_VERSION)
-        val mappedVersionList =
-            mapVersionsFromCodelist("???", versionList, versionSyslistMap)
-        result.versions = mappedVersionList
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
-        result.onlineResources =
-            getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
-        val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
-        val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
-        result.keywords.addAll(commonKeywords + allKeywordsSet)
-        val boundingBoxesFromLayers = emptyList<LocationBean>() // getBoundingBoxesFromLayers(doc)
-        var unionOfBoundingBoxes: LocationBean? = null
-        if (!boundingBoxesFromLayers.isEmpty()) {
-            unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
+            // General settings
+            serviceType = "WMS"
+            dataServiceType = "2" // view
+            title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_ABSTRACT)
+            val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_1_1_VERSION)
+            versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+            fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
+            onlineResources =
+                getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
+            val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
+            val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
+            keywords.addAll(commonKeywords + allKeywordsSet)
+            val boundingBoxesFromLayers = emptyList<LocationBean>() // getBoundingBoxesFromLayers(doc)
+            var unionOfBoundingBoxes: LocationBean?
+            if (boundingBoxesFromLayers.isNotEmpty()) {
+                unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
 //            if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
-            unionOfBoundingBoxes.name = "Raumbezug von: " + result.title
+                unionOfBoundingBoxes.name = "Raumbezug von: " + title
 //            } else {
-//                unionOfBoundingBoxes.name = "spatial extent from: " + result.title
+//                unionOfBoundingBoxes.name = "spatial extent from: " + title
 //            }
-            result.boundingBoxes = listOf(unionOfBoundingBoxes)
-        }
+                boundingBoxes = listOf(unionOfBoundingBoxes)
+            }
 
-        // Coupled Resources
-        /* TODO: val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
+            // Coupled Resources
+            /* TODO: val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
         val coupledResources: MutableList<MdekDataBean?> = ArrayList<MdekDataBean?>()
         val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
         for (i in 0 until identifierNodes.length) {
@@ -75,23 +73,29 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
                 coupledResources.add(coupledResource)
             }
         }
-        result.setCoupledResources(coupledResources)*/
+        setCoupledResources(coupledResources)*/
 
-        // Spatial Reference Systems (SRS / CRS)
-        // Note: The root <Layer> element shall include a sequence of zero or more
-        // CRS elements listing all CRSs that are common to all subsidiary layers.
-        // see: 7.2.4.6.7 CRS (WMS Implementation Specification, page 26)
+            // Spatial Reference Systems (SRS / CRS)
+            // Note: The root <Layer> element shall include a sequence of zero or more
+            // CRS elements listing all CRSs that are common to all subsidiary layers.
+            // see: 7.2.4.6.7 CRS (WMS Implementation Specification, page 26)
 
-        // get all root Layer coordinate Reference Systems
-        // there only can be one root layer!
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
+            // get all root Layer coordinate Reference Systems
+            // there only can be one root layer!
+            spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
 
-        // get contact information
-        result.address = getAddress(doc)
+            // get contact information
+            address = getAddress(doc)
 
 
-        // Conformity
-        // result.setConformities(mapToConformityBeans(doc, XPATH_EXP_CSW_CONFORMITY));
+            // Conformity
+            // setConformities(mapToConformityBeans(doc, XPATH_EXP_CSW_CONFORMITY));
+
+            operations = getOperations(doc)
+        }
+    }
+
+    private fun getOperations(doc: Document): List<OperationBean> {
 
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
@@ -145,8 +149,7 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
 
             operations.add(getFeatureInfoOp)
         }
-        result.operations = operations
-        return result
+        return operations
     }
 
     private fun getAddress(doc: Document): AddressBean {
@@ -247,12 +250,6 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
     }
 */
 
-    /**
-     * @param bboxNode
-     * @param coordUtils
-     * @param coordType
-     * @return
-     */
 /*
     private fun getBoundingBoxCoordinates(
         bboxNode: Node,

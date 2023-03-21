@@ -10,38 +10,28 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler) :
 
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
+            serviceType = "WCS"
+            dataServiceType = "3" // download
+            title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
+            versions =
+                addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
+            fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
+            onlineResources = getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
 
-        // General settings
-        result.serviceType = "WCS"
-        result.dataServiceType = "3" // download
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
-        result.versions =
-            addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
+            // TODO: Resource Locator / Type
+            // ...
 
-        // Fees
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
+            keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
+            address = getAddress(doc)
+            operations = getOperations(doc)
+        }
+    }
 
-        // Access Constraints
-        result.accessConstraints =
-            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
-
-        // Online Resources
-        result.onlineResources = getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
-
-        // TODO: Resource Locator / Type
-        // ...
-
-        // Keywords
-        val keywords: List<String> = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS)
-
-        // add found keywords to our result bean
-        result.keywords = keywords.toMutableList()
-
-        // get contact information
-        result.address = getAddress(doc)
-
+    private fun getOperations(doc: Document): List<OperationBean> {
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
@@ -87,8 +77,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler) :
 
             operations.add(getCoverageOp)
         }
-        result.operations = operations
-        return result
+        return operations
     }
 
     /**

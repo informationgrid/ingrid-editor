@@ -3,10 +3,8 @@ package de.ingrid.igeserver.services.getCapabilities
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.utils.xml.Wms130NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
-import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 import org.w3c.dom.Node
-import javax.xml.xpath.XPathExpressionException
 
 
 /**
@@ -17,41 +15,42 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
 
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
-    @Throws(XPathExpressionException::class)
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        val result = CapabilitiesBean()
+        return CapabilitiesBean().apply {
+            serviceType = "WMS"
+            dataServiceType = "2" // view
+            title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_TITLE)
+            description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_ABSTRACT)
+            versions = run {
+                val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_3_0_VERSION)
+                mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+            }
+            fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
+            onlineResources = getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
+            addExtendedCapabilities(this, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
+            keywords.addAll(getMoreKeywords(doc))
 
-        // General settings
-        result.serviceType = "WMS"
-        result.dataServiceType = "2" // view
-        result.title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_TITLE)
-        result.description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_ABSTRACT)
-        result.versions = getVersions(doc)
-        result.fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
-        result.accessConstraints = mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
-        result.onlineResources = getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
-        addExtendedCapabilities(result, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
-        result.keywords.addAll(getMoreKeywords(doc))
-
-        // get bounding boxes of each layer and create a union
-        val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
-        var unionOfBoundingBoxes: LocationBean? = null
-        if (!boundingBoxesFromLayers.isEmpty()) {
-            unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
+            // get bounding boxes of each layer and create a union
+            val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
+            val unionOfBoundingBoxes: LocationBean?
+            if (!boundingBoxesFromLayers.isEmpty()) {
+                unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
 //            TODO: if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
-            unionOfBoundingBoxes.name = "Raumbezug von: " + result.title
+                unionOfBoundingBoxes.name = "Raumbezug von: " + title
 //            } else {
-//                unionOfBoundingBoxes.name = "spatial extent from: " + result.title
+//                unionOfBoundingBoxes.name = "spatial extent from: " + title
 //            }
-            result.boundingBoxes = listOf(unionOfBoundingBoxes)
-        }
+                boundingBoxes = listOf(unionOfBoundingBoxes)
+            }
 
-        
-        result.spatialReferenceSystems = getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
-        result.coupledResources = getCoupledResources(doc, result.spatialReferenceSystems)
-        result.address = getAddress(doc)
-        result.operations = getOperations(doc)
-        return result
+            spatialReferenceSystems =
+                getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
+            coupledResources = getCoupledResources(doc, spatialReferenceSystems)
+            address = getAddress(doc)
+            operations = getOperations(doc)
+        }
     }
 
     private fun getCoupledResources(doc: Document, spatialReferenceSystems: List<KeyValue>?): List<Any> {
@@ -62,7 +61,7 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
 
         // get all root Layer coordinate Reference Systems
         // there only can be one root layer!
-        
+
 //        val rootCRSs = convertToStringList(spatialReferenceSystems)
 
         // Coupled Resources
@@ -161,11 +160,6 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         return commonKeywords + allKeywordsSet
     }
 
-    private fun getVersions(doc: Document): List<KeyValue> {
-        val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_3_0_VERSION)
-        return mapVersionsFromCodelist("???", versionList, versionSyslistMap)
-    }
-
     private fun convertToStringList(spatialReferenceSystems: List<SpatialReferenceSystemBean>?): List<String?> {
         return spatialReferenceSystems?.map { it.name } ?: emptyList()
     }
@@ -242,10 +236,8 @@ class Wms130CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-    
-    companion object {
-        private val log = LoggerFactory.getLogger(Wms130CapabilitiesParser::class.java)
 
+    companion object {
         // Version 1.3.0 of the WMS uses 'WMS_Capabilities' as its root element (OGC 06-042, Chapter 7.2.4.1)
         private const val XPATH_EXP_WMS_1_3_0_TITLE = "/wms:WMS_Capabilities/wms:Service[1]/wms:Title[1]"
         private const val XPATH_EXP_WMS_1_3_0_ABSTRACT = "/wms:WMS_Capabilities/wms:Service[1]/wms:Abstract[1]"
