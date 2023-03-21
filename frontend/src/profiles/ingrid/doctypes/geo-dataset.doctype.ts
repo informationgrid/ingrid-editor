@@ -346,7 +346,7 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addInput("measResult", "Datendefizit", {
               wrappers: ["panel", "form-field", "addons"],
               type: "number",
-              rightSymbol: {
+              suffix: {
                 text: "%",
               },
             }),

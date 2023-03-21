@@ -22,12 +22,12 @@ export class AddonsWrapperComponent
   ngAfterViewInit() {
     if (this.matPrefix) {
       // Note: for text use `textPrefix` property (only in Angular Material >= 15)
-      this.props.prefix = this.matPrefix;
+      this.props.textPrefix = this.matPrefix;
     }
 
     if (this.matSuffix) {
       // Note: for text use `textSuffix` property (only in Angular Material >= 15)
-      this.props.suffix = this.matSuffix;
+      this.props.textSuffix = this.matSuffix;
     }
   }
 
