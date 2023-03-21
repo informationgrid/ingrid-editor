@@ -4,19 +4,14 @@ import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.services.DocumentService
 import net.pwall.json.schema.JSONSchema
 import net.pwall.json.schema.output.BasicOutput
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
 
 @Component
-class JsonSchemaValidator @Autowired constructor(
-    @Lazy private val documentService: DocumentService
-) : Filter<PrePublishPayload> {
+class JsonSchemaValidator : Filter<PrePublishPayload> {
 
     val log = logger()
 
