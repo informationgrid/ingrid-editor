@@ -372,7 +372,7 @@ export class FormFieldHelper {
         required: options?.required,
         options: options?.options,
         showSearch: options?.showSearch,
-        allowNoValue: options?.allowNoValue,
+        allowNoValue: options?.allowNoValue ?? !options?.required,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
