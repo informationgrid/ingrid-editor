@@ -12,7 +12,7 @@ import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -40,8 +40,8 @@ export class GeoServiceDoctype extends IngridShared {
     "4": 5130,
   };
 
-  getServiceVersionOptions = new Subject<SelectOptionUi[]>();
-  getServiceOperationNameOptions = new Subject<SelectOptionUi[]>();
+  getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+  getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -119,7 +119,7 @@ export class GeoServiceDoctype extends IngridShared {
                     !model ||
                     model._type !== "InGridGeoService" ||
                     model.service.type?.key !== "2" ||
-                    field.model.some((item) => item.name?.key === "1")
+                    field.model.some((item) => item?.name?.key === "1")
                   );
                 },
                 message:
