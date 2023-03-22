@@ -564,6 +564,9 @@ export abstract class IngridShared extends BaseDoctype {
                 ),
                 codelistId: 99999999,
                 required: true,
+                defaultValue: {
+                  key: "150",
+                },
               }),
               options.extraInfoCharSetData
                 ? this.addSelectInline(
@@ -586,6 +589,9 @@ export abstract class IngridShared extends BaseDoctype {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
           codelistId: 3571,
           required: true,
+          defaultValue: {
+            key: "1",
+          },
         }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
@@ -598,6 +604,7 @@ export abstract class IngridShared extends BaseDoctype {
                 useDialog: true,
                 required: true,
                 className: "optional",
+                // defaultValue: ["150"], // TODO: does not work
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
