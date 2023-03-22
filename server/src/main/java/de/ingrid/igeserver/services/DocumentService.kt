@@ -440,6 +440,10 @@ class DocumentService @Autowired constructor(
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
+
+            // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            entityManager.detach(updatedDoc)
+            
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -520,6 +524,9 @@ class DocumentService @Autowired constructor(
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
 
+            // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            entityManager.detach(updatedDoc)
+            
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
