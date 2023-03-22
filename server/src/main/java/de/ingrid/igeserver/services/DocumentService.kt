@@ -411,6 +411,7 @@ class DocumentService @Autowired constructor(
 
     }
 
+    @Transactional
     fun updateDocument(
         principal: Principal?,
         catalogId: String,
@@ -460,7 +461,6 @@ class DocumentService @Autowired constructor(
             docRepo.save(docData.document)
 
             // prepare new document
-            entityManager.detach(docData.document)
             docData.document.id = null
             docData.document.isLatest = true
             docData.document.version = docData.document.version?.inc()
@@ -478,6 +478,7 @@ class DocumentService @Autowired constructor(
         docData.document.modified = dateService.now()
     }
 
+    @Transactional
     fun publishDocument(
         principal: Principal?,
         catalogId: String,

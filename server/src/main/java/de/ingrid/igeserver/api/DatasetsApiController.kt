@@ -45,7 +45,6 @@ class DatasetsApiController @Autowired constructor(
     /**
      * Create dataset.
      */
-    @Transactional
     override fun createDataset(
         principal: Principal,
         data: JsonNode,
@@ -66,7 +65,6 @@ class DatasetsApiController @Autowired constructor(
     /**
      * Update dataset.
      */
-    @Transactional
     override fun updateDataset(
         principal: Principal,
         id: Int,
@@ -162,7 +160,6 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-    @Transactional
     override fun replaceAddress(
         principal: Principal,
         source: String,
