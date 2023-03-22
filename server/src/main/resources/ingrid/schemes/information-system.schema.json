@@ -149,7 +149,7 @@
           "$ref": "refs/general.schema.json#/definitions/orderInfo"
         },
         "distribution": {
-          "type": "object"
+          "$ref": "refs/general.schema.json#/definitions/distribution"
         }
       },
       "required": [

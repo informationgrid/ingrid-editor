@@ -15,5 +15,7 @@ class InGridOrganisationType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTempl
 
     override val referenceFieldInDocuments = "pointOfContact"
 
+//    override val jsonSchema = "/ingrid/schemes/data-collection.schema.json"
+
     val log = logger()
 }
