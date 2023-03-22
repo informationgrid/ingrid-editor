@@ -7,7 +7,11 @@
     "type": { "key": "6" },
     "version": [{ "key": "3" }],
     "operations": [
-      { "name": "op-name", "methodCall": "op-url", "description": "op-descr" }
+      {
+        "name": { "key": "1" },
+        "methodCall": "op-url",
+        "description": "op-descr"
+      }
     ],
     "resolution": [{ "denominator": 2, "distanceDPI": 5, "distanceMeter": 3 }],
     "explanation": "additional infos",
