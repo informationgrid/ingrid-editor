@@ -149,7 +149,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getDocumentByWrapperId(catalogId: String, id: Int): Document {
+    fun getDocumentByWrapperId(catalogId: String, id: Int, forExport: Boolean = false): Document {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -160,7 +160,7 @@ class DocumentService @Autowired constructor(
             doc.wrapperId = wrapper.id
             doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
@@ -704,9 +704,9 @@ class DocumentService @Autowired constructor(
         return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
-    fun getLastPublishedDocument(catalogId: String, uuid: String): Document {
+    fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
-        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {
