@@ -45,6 +45,7 @@ class DatasetsApiController @Autowired constructor(
     /**
      * Create dataset.
      */
+    @Transactional
     override fun createDataset(
         principal: Principal,
         data: JsonNode,
@@ -65,6 +66,7 @@ class DatasetsApiController @Autowired constructor(
     /**
      * Update dataset.
      */
+    @Transactional
     override fun updateDataset(
         principal: Principal,
         id: Int,
@@ -144,6 +146,7 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(results)
     }
 
+    @Transactional
     override fun moveDatasets(
         principal: Principal,
         ids: List<Int>,
@@ -159,6 +162,7 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
+    @Transactional
     override fun replaceAddress(
         principal: Principal,
         source: String,
@@ -293,7 +297,6 @@ class DatasetsApiController @Autowired constructor(
             throw ConflictException.withCopyConflict("Cannot copy '$sourceId' since  '$destinationId' is part of the hierarchy")
         }
     }
-
 
     override fun getChildren(
         principal: Principal,
