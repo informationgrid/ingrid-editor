@@ -807,25 +807,30 @@ export abstract class IngridShared extends BaseDoctype {
           }
         ),
       ]),
-      this.addGroupSimple("distribution", [
-        this.addRepeat("format", "Datenformat", {
-          className: "optional",
-          expressions: {
-            hide: `formState.mainModel?._type !== 'InGridGeoService'`, // TODO: simplify!
-            "props.required":
-              "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-          },
-          fields: [
-            this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(1320, "specification"),
-              codelistId: 1320,
-            }),
-            this.addInputInline("version", "Version"),
-            this.addInputInline("compression", "Kompressionstechnik"),
-            this.addInputInline("specification", "Spezifikation"),
-          ],
-        }),
-      ]),
+      this.addGroupSimple(
+        "distribution",
+        [
+          this.addRepeat("format", "Datenformat", {
+            className: "optional",
+            expressions: {
+              "props.required":
+                "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+            },
+            fields: [
+              this.addAutoCompleteInline("name", "Name", {
+                options: this.getCodelistForSelect(1320, "specification"),
+                codelistId: 1320,
+              }),
+              this.addInputInline("version", "Version"),
+              this.addInputInline("compression", "Kompressionstechnik"),
+              this.addInputInline("specification", "Spezifikation"),
+            ],
+          }),
+        ],
+        {
+          hideExpression: `formState.mainModel?._type === 'InGridSpecialisedTask'`,
+        }
+      ),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
         className: "optional",
         fields: [
