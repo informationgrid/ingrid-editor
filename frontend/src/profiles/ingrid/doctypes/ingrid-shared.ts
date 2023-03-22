@@ -903,7 +903,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   protected titleDateEditionFields(codelistForTitle: number) {
     return [
-      this.addAutocomplete("title", "Titel", {
+      this.addAutoCompleteInline("title", "Titel", {
         className: "flex-3",
         wrappers: ["form-field"],
         required: true,
