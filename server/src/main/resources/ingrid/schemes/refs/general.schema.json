@@ -159,7 +159,6 @@
         "useLimitation": {
           "type": "string"
         }
-
       }
     },
     "accessConstraints": {
@@ -270,8 +269,8 @@
           "date": {
             "anyOf": [
               {
-            "type": "string",
-            "format": "date-time"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
@@ -319,7 +318,7 @@
           "$ref": "#/definitions/KeyValue"
         },
         "characterSet": {
-          "type": ["null", "string"]
+          "$ref": "#/definitions/KeyValue"
         }
       }
     },
