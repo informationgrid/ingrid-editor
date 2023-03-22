@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.validators
+package de.ingrid.igeserver.persistence.filter.publish
 
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
 
 @Component
-class JsonSchemaValidator : Filter<PrePublishPayload> {
+class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
     val log = logger()
 
@@ -48,7 +48,7 @@ class JsonSchemaValidator : Filter<PrePublishPayload> {
     }
 
     fun validate(schemaFile: String, json: String): BasicOutput? {
-        val resource = JsonSchemaValidator::class.java.getResource(schemaFile)
+        val resource = PreJsonSchemaValidator::class.java.getResource(schemaFile)
 
         if (resource == null) {
             log.error("JSON-Schema not found: $schemaFile")
