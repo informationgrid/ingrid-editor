@@ -3,7 +3,11 @@ mat-spinner {
   vertical-align: middle;
 }
 .centered {
+  align-items: center;
+}
+.baselined {
   align-items: baseline;
+  width: 100%;
 }
 .intend {
   padding-left: 12px;

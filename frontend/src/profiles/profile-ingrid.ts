@@ -17,7 +17,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
-import { AsyncPipe, JsonPipe, NgForOf, NgIf } from "@angular/common";
+import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FlexModule } from "@angular/flex-layout";
@@ -28,6 +28,7 @@ import { GetCapabilitiesDialogComponent } from "../app/formly/types/update-get-c
 import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatListModule } from "@angular/material/list";
+import { SharedPipesModule } from "../app/directives/shared-pipes.module";
 
 @Component({
   template: "",
@@ -91,6 +92,8 @@ class InGridComponent {
     DialogTemplateModule,
     MatProgressSpinnerModule,
     MatListModule,
+    SharedPipesModule,
+    DatePipe,
   ],
 })
 export class ProfilePack {

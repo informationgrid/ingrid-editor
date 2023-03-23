@@ -57,8 +57,14 @@ interface Operation {
   platform?: number[];
   methodCall?: string;
 }
-interface TimeReference {}
-interface Conformity {}
+interface TimeReference {
+  type: number;
+  date: string;
+}
+interface Conformity {
+  level: number;
+  specification: string;
+}
 interface Location {
   latitude1?: number;
   longitude1?: number;

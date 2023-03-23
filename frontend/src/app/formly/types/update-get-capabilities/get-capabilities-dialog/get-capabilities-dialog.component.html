@@ -1,75 +1,71 @@
 <ige-dialog-template label="GetCapabilities-Assistent" (submit)="submit()">
     <ng-container content>
-        <div class="display-flex centered gap">
-            <mat-form-field appearance="outline" class="flex-1">
-                <mat-label>URL</mat-label>
-                <input
-                    #url
-                    matInput
-                    placeholder="https://"
-                    value="https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS"
-                />
-            </mat-form-field>
-            <button
-                mat-stroked-button
-                color="primary"
-                (click)="analyze(url.value)"
-                [disabled]="url.value.length === 0 || isAnalyzing"
-            >
-                Analyse
-            </button>
+        <div class="display-flex flex-column centered">
+            <div class="display-flex baselined gap">
+                <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>URL</mat-label>
+                    <input
+                        #url
+                        matInput
+                        placeholder="https://"
+                        value="https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS"
+                    />
+                </mat-form-field>
+                <button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="analyze(url.value)"
+                    [disabled]="url.value.length === 0 || isAnalyzing"
+                >
+                    Analyse
+                </button>
+            </div>
 
             <mat-spinner
                 *ngIf="isAnalyzing"
                 mode="indeterminate"
-                diameter="24"
+                diameter="48"
             ></mat-spinner>
         </div>
 
         <div *ngIf="error">{{ error }}</div>
 
         <mat-selection-list *ngIf="report">
-            <!--<mat-list-option *ngFor="let item of report2">
-                <div matListItemTitle>{{ item.title }}</div>
-                <div
-                    matListItemLine
-                    *ngIf="!item.hasMultiValues; else multiValues"
-                >
-                    {{ item.value }}
-                </div>
-                <ng-template #multiValues>
-                    <div matListItemLine *ngFor="let value of item.value">
-                        {{ value }}
-                    </div>
-                </ng-template>
-            </mat-list-option>
-            <mat-divider></mat-divider>-->
-
-            <mat-list-option value="title">
+            <mat-list-option *ngIf="report.title" value="title">
                 <div matListItemTitle>Titel</div>
                 <div matListItemLine>{{ report.title }}</div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="description" lines="3">
+            <mat-list-option
+                *ngIf="report.description"
+                value="description"
+                lines="3"
+            >
                 <div matListItemTitle>Beschreibung</div>
                 <span>{{ report.description }}</span>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="versions">
+            <mat-list-option
+                *ngIf="report.versions.length > 0"
+                value="versions"
+            >
                 <div matListItemTitle>Versionen</div>
                 <div matListItemLine *ngFor="let version of report.versions">
                     {{ version.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="fees">
+            <mat-list-option *ngIf="report.fees" value="fees">
                 <div matListItemTitle>Nutzungsbedingungen</div>
                 <div matListItemLine>
                     {{ report.fees?.value }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="accessConstraints">
+            <mat-list-option
+                *ngIf="report.accessConstraints.length > 0"
+                value="accessConstraints"
+            >
                 <div matListItemTitle>Zugangsbeschränkungen</div>
                 <div
                     matListItemLine
@@ -79,7 +75,10 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="onlineResources">
+            <mat-list-option
+                *ngIf="report.onlineResources.length > 0"
+                value="onlineResources"
+            >
                 <div matListItemTitle>Verweise</div>
                 <div
                     matListItemLine
@@ -89,14 +88,20 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="keywords">
+            <mat-list-option
+                *ngIf="report.keywords.length > 0"
+                value="keywords"
+            >
                 <div matListItemTitle>Schlagworte</div>
                 <div matListItemLine *ngFor="let keyword of report.keywords">
                     {{ keyword }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="boundingBoxes">
+            <mat-list-option
+                *ngIf="report.boundingBoxes.length > 0"
+                value="boundingBoxes"
+            >
                 <span matListItemTitle
                     >Raumbezüge {{ report.boundingBoxes.length }}</span
                 >
@@ -113,7 +118,10 @@
                 </span>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="spatialReferenceSystems">
+            <mat-list-option
+                *ngIf="report.spatialReferenceSystems.length > 0"
+                value="spatialReferenceSystems"
+            >
                 <div matListItemTitle>Raumbezugssysteme</div>
                 <span
                     matListItemLine
@@ -123,7 +131,7 @@
                 </span>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="address">
+            <mat-list-option *ngIf="report.address" value="address">
                 <div matListItemTitle>Adresse</div>
                 <div matListItemLine>
                     {{ report.address.firstName }} {{ report.address.lastName }}
@@ -131,7 +139,10 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="operations">
+            <mat-list-option
+                *ngIf="report.operations.length > 0"
+                value="operations"
+            >
                 <span matListItemTitle>Operationen</span>
                 <ng-container *ngFor="let operation of report.operations">
                     <span matListItemLine>{{ operation.name }}</span>
@@ -144,45 +155,67 @@
                 </ng-container>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="timeReference">
-                <div matListItemTitle>Zeitbezüge</div>
+            <mat-list-option
+                *ngIf="report.timeReference.length > 0"
+                value="timeReference"
+            >
+                <div matListItemTitle>Zeitbezug der Resource</div>
                 <div
                     matListItemLine
                     *ngFor="let timeReference of report.timeReference"
                 >
-                    {{ timeReference | json }}
+                    <span
+                        >{{
+                            timeReference.type.toString()
+                                | codelist : "502"
+                                | async
+                        }}: {{ timeReference.date | date }}</span
+                    >
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="timeSpans">
+            <mat-list-option
+                *ngIf="report.timeSpans.length > 0"
+                value="timeSpans"
+            >
                 <div matListItemTitle>Zeitspannen</div>
                 <div matListItemLine *ngFor="let timeSpan of report.timeSpans">
                     {{ timeSpan | json }}
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="conformities">
+            <mat-list-option
+                *ngIf="report.conformities.length > 0"
+                value="conformities"
+            >
                 <div matListItemTitle>Konformitäten</div>
                 <div
                     matListItemLine
                     *ngFor="let conformity of report.conformities"
                 >
-                    {{ conformity | json }}
+                    <span
+                        >{{
+                            conformity.level.toString()
+                                | codelist : "6000"
+                                | async
+                        }}: {{ conformity.specification }}</span
+                    >
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="coupledResources">
+            <mat-list-option
+                *ngIf="report.coupledResources.length > 0"
+                value="coupledResources"
+            >
                 <div matListItemTitle>Gekoppelte Daten</div>
                 <div
                     matListItemLine
                     *ngFor="let coupledResource of report.coupledResources"
                 >
-                    {{ coupledResource | json }}
+                    {{ coupledResource.title }}
                 </div>
             </mat-list-option>
         </mat-selection-list>
-
-        <!--        {{ report | json }}-->
     </ng-container>
 
     <ng-container actions *ngIf="report">

@@ -29,7 +29,6 @@ import { AddressTypeComponent } from "./types/address-type/address-type.componen
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
 import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
 import { MatCardModule } from "@angular/material/card";
-import { CodelistPipe } from "../directives/codelist.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
@@ -111,6 +110,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
     FormlyMatToggleModule,
+    SharedPipesModule,
     FormlyModule.forChild({
       types: [
         {
@@ -276,7 +276,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     },
   ],
   declarations: [
-    CodelistPipe,
     SelectOptionPipe,
     ContextHelpComponent,
     AutocompleteTypeComponent,
@@ -317,7 +316,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
-    CodelistPipe,
     FormErrorComponent,
   ],
 })
