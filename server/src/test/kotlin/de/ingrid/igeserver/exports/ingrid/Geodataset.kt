@@ -96,8 +96,10 @@ class Geodataset : AnnotationSpec() {
             }
         }
 
+        every { codelistHandler.getCodelistEntryDataField("6350", "837881524") } returns "{\"url\":\"http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset/Agglomerations-AircraftNoiseExposureDelineation\"}"
         every { codelistHandler.getCodelistEntryDataField("6500", "25") } returns "{\"id\":\"dl-zero-de/2.0\",\"name\":\"Datenlizenz Deutschland – Zero – Version 2.0\",\"url\":\"https://www.govdata.de/dl-de/zero-2-0\",\"quelle\":\"\"}"
         every { codelistHandler.getCodelistEntryDataField("6500", "26") } returns null
+        every { codelistHandler.getCodelistEntryDataField("6360", "-673152846") } returns "{\"url\":\"http://inspire.ec.europa.eu/metadata-codelist/SpatialScope/national\", \"thesaurusTitle\": \"Spatial scope\", \"thesaurusId\": \"http://inspire.ec.europa.eu/metadata-codelist/SpatialScope\" }"
 
     }
 
