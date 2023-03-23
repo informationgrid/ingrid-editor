@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 class InGridGeoServiceType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridGeoService"
 
-//    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"
+    override val jsonSchema = "/ingrid/schemes/geo-service.schema.json"
 }

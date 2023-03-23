@@ -301,6 +301,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param {string} id is the ID of document to be loaded
    */
   loadDocument(id: string) {
+    this.showValidationErrors = false;
+    this.numberOfErrors = 0;
     let previousDocUuid = this.form.value._uuid;
 
     if (id === undefined) {
@@ -312,9 +314,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.messageService.clearMessages();
 
     this.updateScrollPosition();
-
-    this.showValidationErrors = false;
-    this.numberOfErrors = 0;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
@@ -496,8 +495,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.errorCounterSubscription = this.form.valueChanges
       .pipe(
         untilDestroyed(this),
-        filter(() => this.showValidationErrors),
-        debounceTime(500)
+        debounceTime(500),
+        filter(() => this.showValidationErrors)
       )
       .subscribe(() => {
         const invalidFields = this.getInvalidControlNames(this.form);

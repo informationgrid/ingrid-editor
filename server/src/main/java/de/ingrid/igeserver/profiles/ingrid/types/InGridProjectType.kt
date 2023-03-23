@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 class InGridProjectType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridProject"
 
-//    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"
+    override val jsonSchema = "/ingrid/schemes/project.schema.json"
 }

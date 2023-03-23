@@ -327,11 +327,12 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           options.regionKey
             ? this.addInput("regionKey", "Regionalschlüssel", {
+                className: "optional flex-1",
                 wrappers: ["panel", "form-field"],
               })
             : null,
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
-            asSelect: true,
+            asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
@@ -563,6 +564,9 @@ export abstract class IngridShared extends BaseDoctype {
                 ),
                 codelistId: 99999999,
                 required: true,
+                defaultValue: {
+                  key: "150",
+                },
               }),
               options.extraInfoCharSetData
                 ? this.addSelectInline(
@@ -585,6 +589,9 @@ export abstract class IngridShared extends BaseDoctype {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
           codelistId: 3571,
           required: true,
+          defaultValue: {
+            key: "1",
+          },
         }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
@@ -597,6 +604,7 @@ export abstract class IngridShared extends BaseDoctype {
                 useDialog: true,
                 required: true,
                 className: "optional",
+                // defaultValue: ["150"], // TODO: does not work
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
@@ -806,25 +814,30 @@ export abstract class IngridShared extends BaseDoctype {
           }
         ),
       ]),
-      this.addGroupSimple("distribution", [
-        this.addRepeat("format", "Datenformat", {
-          className: "optional",
-          expressions: {
-            hide: `formState.mainModel?._type !== 'InGridGeoService'`, // TODO: simplify!
-            "props.required":
-              "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-          },
-          fields: [
-            this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(1320, "specification"),
-              codelistId: 1320,
-            }),
-            this.addInputInline("version", "Version"),
-            this.addInputInline("compression", "Kompressionstechnik"),
-            this.addInputInline("specification", "Spezifikation"),
-          ],
-        }),
-      ]),
+      this.addGroupSimple(
+        "distribution",
+        [
+          this.addRepeat("format", "Datenformat", {
+            className: "optional",
+            expressions: {
+              "props.required":
+                "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+            },
+            fields: [
+              this.addAutoCompleteInline("name", "Name", {
+                options: this.getCodelistForSelect(1320, "specification"),
+                codelistId: 1320,
+              }),
+              this.addInputInline("version", "Version"),
+              this.addInputInline("compression", "Kompressionstechnik"),
+              this.addInputInline("specification", "Spezifikation"),
+            ],
+          }),
+        ],
+        {
+          hideExpression: `formState.mainModel?._type === 'InGridSpecialisedTask'`,
+        }
+      ),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
         className: "optional",
         fields: [
@@ -902,7 +915,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   protected titleDateEditionFields(codelistForTitle: number) {
     return [
-      this.addAutocomplete("title", "Titel", {
+      this.addAutoCompleteInline("title", "Titel", {
         className: "flex-3",
         wrappers: ["form-field"],
         required: true,

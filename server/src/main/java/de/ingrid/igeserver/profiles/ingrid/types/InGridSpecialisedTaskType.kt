@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 class InGridSpecialisedTaskType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridSpecialisedTask"
 
-//    override val jsonSchema = "/ingrid/schemes/approval-procedure.schema.json"
+    override val jsonSchema = "/ingrid/schemes/specialised-task.schema.json"
 }

@@ -6,7 +6,6 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.ExportRequestParameter
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,11 +82,11 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         catalogId: String
     ): String {
         return try {
-            val docOptions = UpdateReferenceOptions(!options.useDraft, true)
-            val docVersion = if (docOptions.onlyPublished) documentService.getLastPublishedDocument(
+            val docVersion = if (!options.useDraft) documentService.getLastPublishedDocument(
                 catalogId,
-                doc.uuid
-            ) else documentService.getDocumentByWrapperId(catalogId, doc.id!!)
+                doc.uuid,
+                true
+            ) else documentService.getDocumentByWrapperId(catalogId, doc.id!!, true)
             val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
             val result = exporter.run(docVersion, catalogId)
             if (result is ObjectNode) result.toPrettyString() else result as String

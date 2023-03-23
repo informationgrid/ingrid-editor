@@ -6,4 +6,5 @@ import org.springframework.stereotype.Component
 @Component
 class InGridGeoDatasetType @Autowired constructor() : InGridBaseType() {
     override val className = "InGridGeoDataset"
+    override val jsonSchema = "/ingrid/schemes/geo-dataset.schema.json"
 }

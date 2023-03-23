@@ -185,7 +185,16 @@ export class FormFieldHelper {
         allowedTypes: options?.allowedTypes,
         max: options?.max,
       },
-      validators: options?.validators,
+      validators: {
+        addressesPublished: {
+          expression: (ctrl) =>
+            ctrl.value
+              ? ctrl.value.every((row) => row.ref._state === "P")
+              : false,
+          message: "Alle Adressen müssen veröffentlicht sein",
+        },
+        ...options?.validators,
+      },
     };
   }
 
@@ -363,7 +372,7 @@ export class FormFieldHelper {
         required: options?.required,
         options: options?.options,
         showSearch: options?.showSearch,
-        allowNoValue: options?.allowNoValue,
+        allowNoValue: options?.allowNoValue ?? !options?.required,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,

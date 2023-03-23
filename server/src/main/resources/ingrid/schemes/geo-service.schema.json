@@ -45,7 +45,7 @@
         "advProductGroups": {
           "$ref": "refs/general.schema.json#/definitions/advProductGroups"
         },
-        "themes":  {
+        "themes": {
           "$ref": "refs/general.schema.json#/definitions/themes"
         },
         "spatial": {
@@ -119,7 +119,7 @@
                 "additionalProperties": false,
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "$ref": "../../general.schema.json#/definitions/KeyValue"
                   },
                   "methodCall": {
                     "type": "string"
@@ -182,6 +182,12 @@
               }
             }
           }
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "required": [
@@ -202,25 +208,44 @@
     "coupledResources": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "icon": {
-            "type": "string"
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "icon": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "uuid": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "isExternalRef": {
+                "const": false
+              }
+            }
           },
-          "type": {
-            "type": "string"
-          },
-          "uuid": {
-            "type": "string"
-          },
-          "state": {
-            "type": "string"
-          },
-          "isExternalRef": {
-            "type": "boolean"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "isExternalRef": {
+                "const": true
+              }
+            }
           }
-        }
+        ]
       }
     }
   }
