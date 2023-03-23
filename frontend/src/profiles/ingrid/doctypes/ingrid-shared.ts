@@ -459,10 +459,8 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addSelect("resourceDateType", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "am", value: "at" },
                 { label: "bis", value: "till" },
                 { label: "von", value: "since" },
@@ -470,10 +468,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addSelect("resourceDateTypeSince", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "bis: unbekannter Zeitpunkt", value: "unknown" },
                 { label: "bis: Zeitpunkt des Abrufs", value: "requestTime" },
                 { label: "bis: genaues Datum", value: "exactDate" },
