@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "../../../../app/services/config/config.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
 export interface GetCapabilitiesAnalysis {
   title: string;

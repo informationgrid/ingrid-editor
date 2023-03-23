@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FieldTypeConfig } from "@ngx-formly/core";
-import { GetCapabilitiesDialogComponent } from "../../../../profiles/ingrid/plugins/get-capabilities-dialog/get-capabilities-dialog.component";
+import { GetCapabilitiesDialogComponent } from "./get-capabilities-dialog/get-capabilities-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import {
   GetCapabilitiesAnalysis,
   GetCapabilitiesService,
-} from "../../../../profiles/ingrid/plugins/get-capabilities-dialog/get-capabilities.service";
+} from "./get-capabilities-dialog/get-capabilities.service";
 import { filter } from "rxjs/operators";
 
 @Component({
@@ -25,9 +25,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
     this.dialog
       .open(GetCapabilitiesDialogComponent, {
         minWidth: 500,
-        maxWidth: 600,
-        minHeight: 500,
-        disableClose: false,
+        disableClose: true,
         hasBackdrop: true,
       })
       .afterClosed()

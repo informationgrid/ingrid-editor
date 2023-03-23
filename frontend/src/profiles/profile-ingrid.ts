@@ -24,7 +24,7 @@ import { FlexModule } from "@angular/flex-layout";
 import { MatSelectModule } from "@angular/material/select";
 import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { GetCapabilitiesDialogComponent } from "./ingrid/plugins/get-capabilities-dialog/get-capabilities-dialog.component";
+import { GetCapabilitiesDialogComponent } from "../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities-dialog.component";
 import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatListModule } from "@angular/material/list";

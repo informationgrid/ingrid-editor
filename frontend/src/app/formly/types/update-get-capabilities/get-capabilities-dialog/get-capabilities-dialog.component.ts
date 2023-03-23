@@ -26,7 +26,7 @@ export class GetCapabilitiesDialogComponent {
   report: GetCapabilitiesAnalysis;
   error: string;
   isAnalyzing = false;
-  report2: ReportItem[];
+  allChecked = false;
 
   constructor(
     private getCapService: GetCapabilitiesService,
@@ -43,55 +43,12 @@ export class GetCapabilitiesDialogComponent {
         tap(() => (this.isAnalyzing = false)),
         filter((report) => report !== null)
       )
-      .subscribe((report) => {
-        this.report = report;
-        // this.report2 = this.prepareReport(report);
-      });
-  }
-
-  private simpleArray = ["versions", "keywords"];
-
-  private prepareReport(data: GetCapabilitiesAnalysis): ReportItem[] {
-    return Object.keys(data).map((key) => {
-      return {
-        key: key,
-        title: this.mapTitle(key),
-        value: "???",
-        ...this.mapValue(data, key),
-      };
-    });
+      .subscribe((report) => (this.report = report));
   }
 
   private handleError(error: any): Observable<null> {
     this.error = error.message;
     return of(null);
-  }
-
-  private mapValue(
-    data: GetCapabilitiesAnalysis,
-    key: string
-  ): Partial<ReportItem> {
-    if (data[key] instanceof Array && this.simpleArray.indexOf(key) === -1) {
-      const values = data[key].map((item) => {
-        return item.title;
-      });
-      return { value: values, hasMultiValues: true };
-    } else if (data[key] instanceof Object) {
-      return { value: data[key].lastName };
-    } else {
-      return { value: data[key] };
-    }
-  }
-
-  private mapTitle(key: string): string {
-    switch (key) {
-      case "title":
-        return "Titel";
-      case "descriptions":
-        return "Beschreibung";
-      default:
-        return "???";
-    }
   }
 
   submit() {
@@ -105,5 +62,11 @@ export class GetCapabilitiesDialogComponent {
       )
     );
     this.dlg.close(result);
+  }
+
+  toggleAll(checked: boolean) {
+    this.allChecked = checked;
+    if (checked) this.selection.selectAll();
+    else this.selection.deselectAll();
   }
 }

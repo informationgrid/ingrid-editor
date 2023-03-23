@@ -18,14 +18,15 @@
             >
                 Analyse
             </button>
+
+            <mat-spinner
+                *ngIf="isAnalyzing"
+                mode="indeterminate"
+                diameter="24"
+            ></mat-spinner>
         </div>
 
         <div *ngIf="error">{{ error }}</div>
-        <mat-spinner
-            *ngIf="isAnalyzing"
-            mode="indeterminate"
-            diameter="24"
-        ></mat-spinner>
 
         <mat-selection-list *ngIf="report">
             <!--<mat-list-option *ngFor="let item of report2">
@@ -49,9 +50,9 @@
                 <div matListItemLine>{{ report.title }}</div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="description">
+            <mat-list-option value="description" lines="3">
                 <div matListItemTitle>Beschreibung</div>
-                <div matListItemLine>{{ report.description }}</div>
+                <span>{{ report.description }}</span>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option value="versions">
@@ -95,29 +96,31 @@
                 </div>
             </mat-list-option>
             <mat-divider></mat-divider>
-            <mat-list-option value="boundingBoxes" lines="3">
-                <span matListItemTitle>Raumbezüge</span>
+            <mat-list-option value="boundingBoxes">
+                <span matListItemTitle
+                    >Raumbezüge {{ report.boundingBoxes.length }}</span
+                >
                 <span>
-                    <ng-container
-                        matListItemLine
-                        *ngFor="let bbox of report.boundingBoxes"
-                    >
+                    <ng-container *ngFor="let bbox of report.boundingBoxes">
                         <span *ngIf="bbox.name">{{ bbox.name }} => </span>
-                        Lat1: {{ bbox.latitude1 }} Lon1:
-                        {{ bbox.longitude1 }} Lat2: {{ bbox.latitude2 }} Lon2:
-                        {{ bbox.longitude2 }}
+                        <span
+                            >Lat1: {{ bbox.latitude1 }} Lon1:
+                            {{ bbox.longitude1 }} Lat2:
+                            {{ bbox.latitude2 }} Lon2:
+                            {{ bbox.longitude2 }}
+                        </span>
                     </ng-container>
                 </span>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option value="spatialReferenceSystems">
                 <div matListItemTitle>Raumbezugssysteme</div>
-                <div
+                <span
                     matListItemLine
                     *ngFor="let srs of report.spatialReferenceSystems"
                 >
                     {{ srs.value }}
-                </div>
+                </span>
             </mat-list-option>
             <mat-divider></mat-divider>
             <mat-list-option value="address">
@@ -180,5 +183,15 @@
         </mat-selection-list>
 
         <!--        {{ report | json }}-->
+    </ng-container>
+
+    <ng-container actions *ngIf="report">
+        <mat-checkbox
+            class="toggle-checkbox"
+            [checked]="allChecked"
+            (change)="toggleAll($event.checked)"
+        >
+            Alles auswählen
+        </mat-checkbox>
     </ng-container>
 </ige-dialog-template>
