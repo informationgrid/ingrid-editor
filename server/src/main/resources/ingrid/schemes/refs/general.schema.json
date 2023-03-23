@@ -115,8 +115,12 @@
             },
             "unitOfMeasure": {
               "anyOf": [
-                { "$ref": "#/definitions/KeyValue" },
-                { "type": "null" }
+                {
+                  "$ref": "#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
@@ -318,7 +322,14 @@
           "$ref": "#/definitions/KeyValue"
         },
         "characterSet": {
-          "$ref": "#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -346,20 +357,33 @@
         },
         "status": {
           "anyOf": [
-            { "$ref": "general.schema.json#/definitions/KeyValue" },
-            { "type": "null" }
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDate": {
           "anyOf": [
-            { "type": "string", "format": "date-time" },
-            { "type": "null" }
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDateType": {
           "anyOf": [
-            { "$ref": "general.schema.json#/definitions/KeyValue" },
-            { "type": "null" }
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDateTypeSince": {
@@ -410,11 +434,25 @@
           "type": "string"
         },
         "maintenanceAndUpdateFrequency": {
-          "anyOf": [{ "$ref": "#/definitions/KeyValue" }, { "type": "null" }]
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "userDefinedMaintenanceFrequency": {
           "unit": {
-            "anyOf": [{ "$ref": "#/definitions/KeyValue" }, { "type": "null" }]
+            "anyOf": [
+              {
+                "$ref": "#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "number": {
             "type": "number"
