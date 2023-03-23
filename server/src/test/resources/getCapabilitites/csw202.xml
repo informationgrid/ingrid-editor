@@ -1,7 +1,7 @@
 <csw:Capabilities version="2.0.2" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 ../csw/2.0.2/CSW-discovery.xsd" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:ows="http://www.opengis.net/ows" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_ds="http://inspire.ec.europa.eu/schemas/inspire_ds/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0">
     <ows:ServiceIdentification>
         <ows:Title>con terra GmbH test catalogue Server</ows:Title>
-        <ows:Abstract> Web based Catalogue Service (CS-W 2.0.2/AP ISO 1.0) for service, datasets and applications        </ows:Abstract>
+        <ows:Abstract>Web based Catalogue Service (CS-W 2.0.2/AP ISO 1.0) for service, datasets and applications</ows:Abstract>
         <ows:Keywords>
             <ows:Keyword>CS-W</ows:Keyword>
             <ows:Keyword>ISO19119</ows:Keyword>

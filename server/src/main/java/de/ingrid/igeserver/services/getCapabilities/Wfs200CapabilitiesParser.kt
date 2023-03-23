@@ -23,6 +23,8 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
             "/wfs20:WFS_Capabilities/ows11:ServiceIdentification/ows11:ServiceTypeVersion"
         private const val XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF =
             "/wfs20:WFS_Capabilities/ows11:OperationsMetadata[1]/ows11:Operation[@name='GetCapabilities']/ows11:DCP[1]/ows11:HTTP[1]/ows11:Get[1]/@xlink:href"
+        private const val XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF =
+            "/wfs20:WFS_Capabilities/ows11:OperationsMetadata[1]/ows11:Operation[@name='GetCapabilities']/ows11:DCP[1]/ows11:HTTP[1]/ows11:Post[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_GET_HREF =
             "/wfs20:WFS_Capabilities/ows11:OperationsMetadata[1]/ows11:Operation[@name='DescribeFeatureType']/ows11:DCP[1]/ows11:HTTP[1]/ows11:Get[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_POST_HREF =
@@ -87,8 +89,8 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF), arrayOf(
-                ID_OP_PLATFORM_HTTP_GET
+            doc, arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF, XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF), arrayOf(
+                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
             )
         )
         if (getCapabilitiesOp.addressList?.isNotEmpty() == true) {

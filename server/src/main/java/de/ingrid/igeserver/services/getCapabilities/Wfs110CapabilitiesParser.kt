@@ -48,8 +48,8 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF), arrayOf(
-                ID_OP_PLATFORM_HTTP_GET
+            doc, arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF, XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF), arrayOf(
+                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
             )
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
@@ -235,10 +235,12 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
             "/wfs:WFS_Capabilities/ows:ServiceIdentification/ows:ServiceTypeVersion"
         private const val XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF =
             "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='GetCapabilities']/ows:DCP[1]/ows:HTTP[1]/ows:Get[1]/@xlink:href"
+        private const val XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF =
+            "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='GetCapabilities']/ows:DCP[1]/ows:HTTP[1]/ows:Post[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_GET_HREF =
             "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='DescribeFeatureType']/ows:DCP[1]/ows:HTTP[1]/ows:Get[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_POST_HREF =
-            "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='DescribeFeatureType']/ows:DCP[1]/ows:HTTP[1]/Post[1]/@xlink:href"
+            "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='DescribeFeatureType']/ows:DCP[1]/ows:HTTP[1]/ows:Post[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_GET_FEATURE_GET_HREF =
             "/wfs:WFS_Capabilities/ows:OperationsMetadata[1]/ows:Operation[@name='GetFeature']/ows:DCP[1]/ows:HTTP[1]/ows:Get[1]/@xlink:href"
         private const val XPATH_EXP_WFS_OP_GET_FEATURE_POST_HREF =

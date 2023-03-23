@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.utils.xml.Wfs110NamespaceContext
+import de.ingrid.utils.xml.WmtsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
 class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
-    GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
+    GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0.0" to "3")
 
@@ -149,7 +149,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
 
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
         val bboxes: MutableList<LocationBean> = ArrayList()
-        val layers = xPathUtils.getNodeList(doc, "/wmts:Capabilities/wmts:Contents/wmts:Layer")
+        val layers = xPathUtils.getNodeList(doc, "/wmts:Capabilities/wmts:Contents/wmts:Layer") ?: return emptyList()
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
             val lower = xPathUtils.getString(layer, "ows11:WGS84BoundingBox/ows11:LowerCorner").split(" ".toRegex())

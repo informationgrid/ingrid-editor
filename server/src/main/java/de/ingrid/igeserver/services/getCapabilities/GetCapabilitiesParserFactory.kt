@@ -73,7 +73,7 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
             isServiceType(doc, ServiceType.WFS200) -> ServiceType.WFS200
             isServiceType(doc, ServiceType.WMTS) -> ServiceType.WMTS
             else -> {
-                val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")
+                val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")?.uppercase()
                     ?: throw RuntimeException("Service Type not found")
                 when { // TODO: handle lowercase!
                     value.contains(SERVICE_TYPE_WMS) -> ServiceType.WMS130
@@ -108,17 +108,17 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
             ServiceType.WCS11 -> xPathUtils.getString(
                 doc,
                 "/wcs11:Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]"
-            )?.contains(SERVICE_TYPE_WCS) ?: false
+            )?.uppercase()?.contains(SERVICE_TYPE_WCS) ?: false
 
             ServiceType.WCS201 -> xPathUtils.getString(
                 doc,
                 "/wcs201:Capabilities/ows20:ServiceIdentification/ows20:ServiceType[1]"
-            )?.contains(SERVICE_TYPE_WCS) ?: false
+            )?.uppercase()?.contains(SERVICE_TYPE_WCS) ?: false
 
             ServiceType.WCTS -> xPathUtils.getString(
                 doc,
                 "/wcts:Capabilities/owsgeo:ServiceIdentification/owsgeo:ServiceType[1]"
-            )?.contains(SERVICE_TYPE_WCTS) ?: false
+            )?.uppercase()?.contains(SERVICE_TYPE_WCTS) ?: false
 
             ServiceType.WMTS -> xPathUtils.getString(
                 doc,

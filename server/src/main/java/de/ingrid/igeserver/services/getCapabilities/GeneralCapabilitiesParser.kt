@@ -90,7 +90,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     val log = logger()
 
     protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> {
-        return xPathUtils.getStringArray(doc, xpath).toSet().toMutableList()
+        return xPathUtils.getStringArray(doc, xpath)
+            .toSet()
+            .filter { it.isNotEmpty() }
+            .toMutableList()
     }
 
     protected fun transformKeywordListToStrings(keywords: List<String?>): List<String> {
@@ -255,17 +258,16 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         versionList: List<String>,
         versionSyslistMap: Map<String, String>
     ): List<KeyValue> {
-        return versionList.mapNotNull {
-            var value: String?
+        return versionList.map {
             val entryId = versionSyslistMap[it]
             if (entryId != null) {
-                value = codelistHandler.getCodelistValue(listId, entryId.toString())
+                val value = codelistHandler.getCodelistValue(listId, entryId.toString())
                 if (value == null) {
                     log.warn("Version could not be mapped!")
                 }
                 KeyValue(entryId, value)
-            } else null
-        }
+            } else KeyValue(null, it)
+        }.toSet().toList()
     }
 
     protected fun mapValuesFromCodelist(

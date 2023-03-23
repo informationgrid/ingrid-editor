@@ -9,7 +9,7 @@
                       xmlns:FD_FHH_Map_WFS_BSU_U_Geotourismus="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx">
     <ows:ServiceIdentification>
         <ows:Title>WFS_Geotourismus</ows:Title>
-        <ows:Abstract/>
+        <ows:Abstract>Test WFS 1.1.0</ows:Abstract>
         <ows:Keywords>
             <ows:Keyword/>
         </ows:Keywords>
