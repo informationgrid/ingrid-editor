@@ -10,7 +10,6 @@ import { DeleteEmptyFoldersBehaviour } from "./+catalog/+behaviours/system/Delet
 import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-json.behaviour";
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
-import { GetCapabilitiesAssistantPlugin } from "../profiles/ingrid/plugins/get-capabilities-assistant.plugin";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -18,11 +17,6 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: CreateDocumentPlugin, multi: true },
   { provide: FormPluginToken, useClass: SavePlugin, multi: true },
   { provide: FormPluginToken, useClass: CreateFolderPlugin, multi: true },
-  {
-    provide: FormPluginToken,
-    useClass: GetCapabilitiesAssistantPlugin,
-    multi: true,
-  },
   { provide: FormPluginToken, useClass: CopyCutPastePlugin, multi: true },
   // {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
