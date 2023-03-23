@@ -17,5 +17,7 @@ open class CodelistTransformer constructor(
 
 
     fun getData(codelistId: String, key: String?): String? = key?.let { codelistHandler.getCodelistEntryDataField(codelistId, it) }
+    fun getDataField(codelistId: String, key: String?, dataField: String?): String? = getData(codelistId, key)?.let { Regex("\"$dataField\":\"([^\"]*)\"").find(it)?.groupValues?.get(1)}
+
 }
 

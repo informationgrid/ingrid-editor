@@ -24,8 +24,9 @@ data class DataModel(
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
-    val isInspireRelevant: Boolean?,
+    val isInspireIdentified: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
+    val priorityDatasets: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
@@ -41,12 +42,44 @@ data class DataModel(
     val digitalTransferOptions: List<DigitalTransferOption>?,
     val distribution: Distribution?,
     val orderInfo: String?,
+    val references: List<Reference>?,
     val dataQuality: DataQuality?,
     val dataQualityInfo: DataQualityInfo?,
     val qualities: List<Quality>?,
     val absoluteExternalPositionalAccuracy: AbsoluteExternalPositionalAccuracy?,
     val conformanceResult: List<ConformanceResult>?,
     val lineage: Lineage?,
+    val service: Service?,
+    val spatialScope: KeyValueModel?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Service(
+    val classification: List<KeyValueModel>?,
+    val type: KeyValueModel?,
+    val version: List<KeyValueModel>?,
+    val operations: List<Operation>?,
+    val resolution: List<Resolution>?,
+    val systemEnvironment: String?,
+    val implementationHistory: String?,
+    val explanation: String?,
+    val coupledResources: List<Any>?,
+    val couplingType: KeyValueModel?,
+    val hasAccessConstraints: Boolean?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Reference(
+    val title: String?,
+    val type: KeyValueModel?,
+    val explanation: String?,
+    val url: String?,
+)
+
+data class Operation(
+    val name: KeyValueModel?,
+    val description: String?,
+    val methodCall: String?,
 )
 
 data class Lineage(
@@ -67,7 +100,7 @@ data class DataQualityInfo(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineage(
     val source: DataQualityLineageSource?,
-    )
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineageSource(

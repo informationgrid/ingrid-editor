@@ -1,0 +1,286 @@
+{
+  "title": "Testgeodatendienst",
+  "_id": 3,
+  "_uuid": "f5199e3e-384c-4c6d-aed8-5f9495a198eb",
+  "_state": "P",
+  "_type": "InGridGeoService",
+  "_created": "2023-03-21T14:51:23.039288+01:00",
+  "_createdBy": "Max Muster",
+  "_modified": "2023-03-21T15:14:01.985356+01:00",
+  "_modifiedBy": "Max Muster",
+  "_version": 15,
+  "data": {
+    "isInspireIdentified": true,
+    "isAdVCompatible": true,
+    "isOpenData": true,
+    "parentIdentifier": "Identifikator des übergeordneten Metadatensatzes",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de",
+          "value": "https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de",
+          "asLink": true
+        },
+        "fileDescription": "Vorschau1"
+      }
+    ],
+    "alternateTitle": "Kurzbezeichnung",
+    "description": "Testgeodatendienst Beschreibung",
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Wemove",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+          "_type": "InGridOrganisationDoc",
+          "_version": 4,
+          "_created": "2023-03-21T14:50:32.112956+01:00",
+          "_modified": "2023-03-21T14:51:11.38827+01:00",
+          "_createdBy": "Max Muster",
+          "_modifiedBy": "Max Muster",
+          "_state": "P",
+          "_id": 2,
+          "address": {
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "test@wemove.com"
+            }
+          ],
+          "publishArea": {
+            "key": "1"
+          },
+          "organization": "Wemove",
+          "positionName": "Positionsname",
+          "_parent": null
+        },
+        "type": {
+          "key": "7"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "4"
+      },
+      {
+        "key": "8"
+      }
+    ],
+    "themes": [
+      {
+        "key": "105"
+      },
+      {
+        "key": "313"
+      }
+    ],
+    "priorityDatasets": [
+      {
+        "key": "-79614265"
+      }
+    ],
+    "spatialScope": {
+      "key": "1339931727"
+    },
+    "keywords": [],
+    "service": {
+      "classification": [
+        {
+          "key": "303"
+        }
+      ],
+      "type": {
+        "key": "2"
+      },
+      "version": [
+        {
+          "key": "1"
+        },
+        {
+          "key": "2"
+        }
+      ],
+      "operations": [
+        {
+          "name": {
+            "key": null,
+            "value": "GetCapabilities"
+          },
+          "description": "Textliche Beschreibung der Funktionalität der Operation.",
+          "methodCall": "http://atlas.wsv.bund.de/bwastr/wms?request=GetCapabilities"
+        },
+        {
+          "name": {
+            "key": null,
+            "value": "Name der Operation2"
+          },
+          "description": "Textliche Beschreibung der Funktionalität der Operation.2",
+          "methodCall": "https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de2"
+        }
+      ],
+      "resolution": [
+        {
+          "denominator": 1,
+          "distanceMeter": 2,
+          "distanceDPI": 3
+        },
+        {
+          "denominator": 4,
+          "distanceMeter": 5,
+          "distanceDPI": 6
+        }
+      ],
+      "systemEnvironment": "Systemumgebung",
+      "implementationHistory": "Historie",
+      "explanation": "Erläuterungen1",
+      "coupledResources": [],
+      "couplingType": {
+        "key": "loose"
+      },
+      "hasAccessConstraints": true
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Hannover",
+          "value": {
+            "lat1": 52.3051373,
+            "lat2": 52.4543349,
+            "lon1": 9.60443,
+            "lon2": 9.9184259
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      }
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-03-20T23:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      }
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "extraInfoPublishArea": {
+      "key": "1"
+    },
+    "conformanceResult": [
+      {
+        "pass": {
+          "key": "1"
+        },
+        "isInspire": true,
+        "specification": {
+          "key": "10"
+        },
+        "explanation": "see the referenced specification",
+        "publicationDate": "2009-10-20T00:00:00.000Z"
+      }
+    ],
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "accessConstraints": [
+        {
+          "key": "1"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "18"
+          },
+          "source": "Quelle"
+        }
+      ],
+      "useLimitation": "Anwendungseinschränkungen"
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "24"
+          },
+          "version": "1",
+          "compression": "2",
+          "specification": "3"
+        },
+        {
+          "name": {
+            "key": "23"
+          },
+          "version": "3",
+          "compression": "4",
+          "specification": "6"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "14"
+        },
+        "transferSize": 1,
+        "mediumNote": "2"
+      },
+      {
+        "name": {
+          "key": "1"
+        },
+        "transferSize": 3,
+        "mediumNote": "4"
+      }
+    ],
+    "orderInfo": "Bestellinformation",
+    "references": [
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "ExtVerweis",
+        "url": "https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de",
+        "explanation": "ErläuterungenVerweis"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "9"
+      },
+      {
+        "key": "3"
+      }
+    ]
+  }
+}
