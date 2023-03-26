@@ -172,7 +172,8 @@ class Wms111CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-//        searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Address"

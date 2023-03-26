@@ -1,11 +1,14 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.WmtsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
+class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
+                             private val researchService: ResearchService,
+                             val catalogId: String) :
     GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0.0" to "3")
@@ -119,7 +122,8 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler) :
         )
 
         // try to find address in database and set the uuid if found
-//        searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint"

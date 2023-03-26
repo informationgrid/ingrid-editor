@@ -1,11 +1,14 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
+class CswCapabilitiesParser(codelistHandler: CodelistHandler,
+                            private val researchService: ResearchService,
+                            val catalogId: String) :
     GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("2.0.2" to "1")
@@ -164,7 +167,8 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler) :
         )
 
         // try to find address in database and set the uuid if found
-//        searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(
             doc,
             "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"

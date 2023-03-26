@@ -37,6 +37,9 @@ data class OperationBean(
 data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
 data class ConformityBean(var level: Int? = null, var specification: String? = null)
 data class AddressBean(
+    var uuid: String? = null,
+    var type: String? = null,
+    var exists: Boolean = false,
     var firstName: String? = null,
     var lastName: String? = null,
     var email: String? = null,
@@ -482,39 +485,45 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * Search for an existing address by equal firstname, lastname and email OR institution and email.
      * @param address
      */
-    /*protected void searchForAddress( AddressBean address ) {
-        String qString = "select aNode.addrUuid, addr.adrType " +
-                "from AddressNode aNode " +
-                "inner join aNode.t02AddressWork addr " +
-                "inner join addr.t021Communications comm " +
-                "where " +
-                AddressType.getHQLExcludeIGEUsersViaNode("aNode", "addr") + // exclude hidden user addresses !
-                " AND ((addr.lastname = '" + address.getLastname() + "'" +
-                " AND addr.firstname = '" + address.getFirstname() + "' ) " +
-                " OR addr.institution = '" + address.getOrganisation() + "' ) " +
-                " AND comm.commtypeKey = 3 " +  // type: email
-                " AND comm.commValue = '" + address.getEmail() + "'";
-
-        IngridDocument response = connectionFacade.getMdekCallerQuery().queryHQLToMap(connectionFacade.getCurrentPlugId(), qString, null, "");
-        IngridDocument result = MdekUtils.getResultFromResponse(response);
-        if (result != null) {
-            @SuppressWarnings("unchecked")
-            List<IngridDocument> addresses = (List<IngridDocument>) result.get(MdekKeys.ADR_ENTITIES);
-
-            // add the found uuid to the address object which marks it as found
-            // if there are more than one results, then use the first one!
-            if (addresses != null && !addresses.isEmpty()) {
-                address.setUuid( addresses.get( 0 ).getString( "aNode.addrUuid" ) );
-                address.setType( addresses.get( 0 ).getInt( "addr.adrType" ) );
-            }
+    protected fun searchForAddress(researchService: ResearchService, catalogId: String, address: AddressBean) {
+        val conditionPerson = mutableListOf(
+            "document1.data ->> 'firstName' = '${address.firstName}'",
+            "document1.data ->> 'lastName' = '${address.lastName}'",
+            "document1.data -> 'contact' ->> 'connection' = '${address.email}'",
+            "deleted = 0"
+        )
+        val conditionOrganisation = mutableListOf(
+            "document1.data ->> 'organization' = '${address.organization}'",
+            "document1.data -> 'contact' ->> 'connection' = '${address.email}'",
+            "deleted = 0"
+        )
+        val documentFilter = BoolFilter("OR", conditionPerson + conditionOrganisation, null, null, false)
+        researchService.query(
+            SecurityContextHolder.getContext().authentication,
+            emptySet(),
+            catalogId,
+            ResearchQuery(null, documentFilter)
+        ).hits.getOrNull(0)?.let {
+            address.uuid = it._uuid
+            address.type = it._type
+            address.exists = true
         }
-    }*/
+    }
 
-    protected fun checkForCoupledResource(researchService: ResearchService, catalogId: String, id: String): GeoDataset? {
+    protected fun checkForCoupledResource(
+        researchService: ResearchService,
+        catalogId: String,
+        id: String
+    ): GeoDataset? {
         val conditions = mutableListOf("document1.data ->> 'identifier' = '$id'", "deleted = 0")
         val documentFilter = BoolFilter("AND", conditions, null, null, false)
-        val coupledResourceQuery =  ResearchQuery(null, documentFilter)
-        val hit = researchService.query(SecurityContextHolder.getContext().authentication, emptySet(), catalogId, coupledResourceQuery).hits.getOrNull(0)
+        val coupledResourceQuery = ResearchQuery(null, documentFilter)
+        val hit = researchService.query(
+            SecurityContextHolder.getContext().authentication,
+            emptySet(),
+            catalogId,
+            coupledResourceQuery
+        ).hits.getOrNull(0)
         if (hit != null) {
             return GeoDataset().apply {
                 objectIdentifier = id

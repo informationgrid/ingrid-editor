@@ -127,6 +127,7 @@
             <mat-list-option *ngIf="report.address" value="address">
                 <div matListItemTitle>Adresse</div>
                 <div matListItemLine>
+                    {{ report.address.exists ? "bereits vorhanden" : "neu" }}:
                     {{ report.address.firstName }} {{ report.address.lastName }}
                     {{ report.address.organization }}
                 </div>

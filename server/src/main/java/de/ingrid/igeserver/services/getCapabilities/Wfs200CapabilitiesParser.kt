@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.utils.SingletonHolder
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wfs200NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
@@ -9,12 +9,16 @@ import org.w3c.dom.Document
 /**
  * @author André Wallat
  */
-class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
+class Wfs200CapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    val catalogId: String
+) :
     GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler), ICapabilitiesParser {
-    
+
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2", "2.0.0" to "2")
 
-    companion object : SingletonHolder<Wfs200CapabilitiesParser, CodelistHandler>(::Wfs200CapabilitiesParser) {
+    companion object /*: SingletonHolder<Wfs200CapabilitiesParser, CodelistHandler>(::Wfs200CapabilitiesParser)*/ {
         private const val XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE =
             "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/ows11:Keywords/ows11:Keyword"
         private const val XPATH_EXP_WFS_TITLE = "/wfs20:WFS_Capabilities/ows11:ServiceIdentification/ows11:Title"
@@ -68,7 +72,8 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
             versions =
                 mapVersionsFromCodelist("5153", getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION), versionSyslistMap)
             fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
-            accessConstraints = mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
+            accessConstraints =
+                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
             onlineResources = getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
             addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
             keywords.addAll(getMoreKeywords(doc))
@@ -208,7 +213,7 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
         return bboxes
     }
-    
+
     private fun getAddress(doc: Document): AddressBean {
         return AddressBean().apply {
             setNameInAddressBean(
@@ -221,7 +226,8 @@ class Wfs200CapabilitiesParser(codelistHandler: CodelistHandler) :
             )
 
             // try to find address in database and set the uuid if found
-//        TODO: searchForAddress(address);
+            searchForAddress(researchService, catalogId, this)
+
             street = xPathUtils.getString(
                 doc,
                 "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint"

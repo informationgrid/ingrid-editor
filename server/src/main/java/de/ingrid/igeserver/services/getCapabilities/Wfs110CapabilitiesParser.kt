@@ -1,12 +1,15 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wfs110NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 import javax.xml.xpath.XPathExpressionException
 
-class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
+class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
+                               private val researchService: ResearchService,
+                               val catalogId: String) :
     GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2")
@@ -198,7 +201,8 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler) :
         )
 
         // try to find address in database and set the uuid if found
-//        searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"

@@ -47,14 +47,14 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
         return when (getServiceType(doc)) {
             ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler, researchService, catalogId)
             ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler, researchService, catalogId)
-            ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler)
-            ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler)
-            ServiceType.WCS -> WcsCapabilitiesParser(codelistHandler)
-            ServiceType.WCS11 -> Wcs11CapabilitiesParser(codelistHandler)
-            ServiceType.WCS201 -> Wcs201CapabilitiesParser(codelistHandler)
-            ServiceType.CSW -> CswCapabilitiesParser(codelistHandler)
-            ServiceType.WCTS -> WctsCapabilitiesParser(codelistHandler)
-            ServiceType.WMTS -> WmtsCapabilitiesParser(codelistHandler)
+            ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WCS -> WcsCapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WCS11 -> Wcs11CapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WCS201 -> Wcs201CapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.CSW -> CswCapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WCTS -> WctsCapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WMTS -> WmtsCapabilitiesParser(codelistHandler, researchService, catalogId)
         }
     }
 

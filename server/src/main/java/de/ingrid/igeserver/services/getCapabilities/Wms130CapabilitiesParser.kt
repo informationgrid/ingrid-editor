@@ -182,7 +182,8 @@ class Wms130CapabilitiesParser(
             xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactElectronicMailAddress")
 
         // try to find address in database and set the uuid if found
-        // TODO: searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Address")
         address.city = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:City")
         address.postcode =

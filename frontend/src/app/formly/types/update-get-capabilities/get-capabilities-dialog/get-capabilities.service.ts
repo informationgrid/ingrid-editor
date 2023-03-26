@@ -56,6 +56,7 @@ interface SpatialReference {
 }
 
 interface Address {
+  exists: boolean;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -136,6 +137,8 @@ export class GetCapabilitiesService {
       if (key === "onlineResources") model.references = value;
       if (key === "dataServiceType") model.service.type = { key: value };
       if (key === "keywords") model.keywords = value;
+      if (key === "address")
+        model.pointOfContact = await this.handleAddress(value);
       if (key === "boundingBoxes")
         model.spatial.references = this.mapBoundingBox(value);
       if (key === "conformities")
@@ -275,5 +278,9 @@ export class GetCapabilitiesService {
         }),
       },
     };
+  }
+
+  private async handleAddress(value: Address) {
+    return [];
   }
 }

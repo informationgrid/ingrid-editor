@@ -1,11 +1,14 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wcs11NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler) :
+class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
+                              private val researchService: ResearchService,
+                              val catalogId: String) :
     GeneralCapabilitiesParser(XPathUtils(Wcs11NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
@@ -97,7 +100,8 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler) :
         )
 
         // try to find address in database and set the uuid if found
-//        searchForAddress(address)
+        searchForAddress(researchService, catalogId, address)
+        
         address.street = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint"
