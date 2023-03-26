@@ -16,6 +16,7 @@
         <mat-icon
             *ngIf="showSelection"
             [class.invisible]="currentSelection?.id !== doc.id"
+            [class.extra-padding]="!showIcons"
             class="marker mark-color"
             matListItemIcon
             svgIcon="baseline-check-24px"
