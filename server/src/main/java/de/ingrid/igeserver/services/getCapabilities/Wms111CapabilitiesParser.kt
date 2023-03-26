@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wms130NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
@@ -10,7 +11,11 @@ import org.w3c.dom.Node
 /**
  * @author André Wallat
  */
-class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
+class Wms111CapabilitiesParser(
+    codelistHandler: CodelistHandler, 
+    private val researchService: ResearchService,
+    val catalogId: String
+) :
     GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
@@ -40,8 +45,8 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
                 unionOfBoundingBoxes.name = "Raumbezug von: " + title
                 boundingBoxes = listOf(unionOfBoundingBoxes)
             }
-            
-            coupledResources = getCoupledResources(doc, unionOfBoundingBoxes)
+
+            coupledResources = getCoupledResources(doc, unionOfBoundingBoxes, commonKeywords)
 
             // Spatial Reference Systems (SRS / CRS)
             // Note: The root <Layer> element shall include a sequence of zero or more
@@ -58,32 +63,30 @@ class Wms111CapabilitiesParser(codelistHandler: CodelistHandler) :
         }
     }
 
-    private fun getCoupledResources(doc: Document, unionOfBoundingBoxes: LocationBean?): List<GeoDataset> {
+    private fun getCoupledResources(doc: Document, unionOfBoundingBoxes: LocationBean?, commonKeywords: List<String>): List<GeoDataset> {
         val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
         val coupledResourcesList = mutableListOf<GeoDataset>()
 //       TODO: val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
         for (i in 0 until identifierNodes.length) {
             val id = identifierNodes.item(i).textContent
             // check for the found IDs if a metadata with this resource identifier exists
-            val coupledResource: GeoDataset? = checkForCoupledResource(id)
+            val coupledResource: GeoDataset? = checkForCoupledResource(researchService, catalogId, id)
             // the dataset does not exist yet
             if (coupledResource == null) {
-                val newDataset = GeoDataset()
-                val layerNode = xPathUtils.getNode(identifierNodes.item(i), "..")
-                newDataset.uuid = null
-                newDataset.objectIdentifier = id
-                newDataset.title = xPathUtils.getString(layerNode, "Title")
-//                val keywordsFromLayer: MutableList<SNSTopic> =
-//                    transformKeywordListToSNSTopics(getKeywords(layerNode, "KeywordList/Keyword"))
-//                keywordsFromLayer.addAll(commonSNSTopics)
-//                newDataset.setThesaurusTermsTable(keywordsFromLayer)
-                val boxes: MutableList<LocationBean> = ArrayList()
-                val box = getBoundingBoxFromLayer(layerNode)
-                if (box != null) boxes.add(box) 
-                else if (unionOfBoundingBoxes != null) boxes.add(
-                    unionOfBoundingBoxes
-                )
-                newDataset.spatialReferences = boxes
+                val newDataset = GeoDataset().apply {
+                    val layerNode = xPathUtils.getNode(identifierNodes.item(i), "..")
+                    uuid = null
+                    objectIdentifier = id
+                    title = xPathUtils.getString(layerNode, "Title")
+                    keywords = getKeywords(layerNode, "KeywordList/Keyword") + commonKeywords
+                    val boxes: MutableList<LocationBean> = ArrayList()
+                    val box = getBoundingBoxFromLayer(layerNode)
+                    if (box != null) boxes.add(box)
+                    else if (unionOfBoundingBoxes != null) boxes.add(
+                        unionOfBoundingBoxes
+                    )
+                    spatialReferences = boxes
+                }
                 coupledResourcesList.add(newDataset)
             } else {
                 coupledResourcesList.add(coupledResource)

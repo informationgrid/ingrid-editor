@@ -184,14 +184,25 @@ export class DocumentService {
     isNewDoc?: boolean,
     isAddress?: boolean,
     path?: number[],
-    noVisualUpdates = false
+    noVisualUpdates = false,
+    updateForm = true
   ): Observable<IgeDocument> {
     const doc = this.preSaveActions(data, isAddress);
 
+    if (noVisualUpdates) {
+      return this.dataService.save(doc, isAddress).pipe(
+        tap((json) =>
+          this.postSaveActions(json, isNewDoc, path, isAddress, updateForm)
+        ),
+        finalize(() => this.documentOperationFinished$.next(true))
+      );
+    }
+
     return this.dataService.save(doc, isAddress).pipe(
-      filter(() => !noVisualUpdates),
       tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
-      tap((json) => this.postSaveActions(json, isNewDoc, path, isAddress)),
+      tap((json) =>
+        this.postSaveActions(json, isNewDoc, path, isAddress, updateForm)
+      ),
       finalize(() => this.documentOperationFinished$.next(true))
     );
   }
@@ -228,11 +239,12 @@ export class DocumentService {
     json: any,
     isNewDoc: boolean,
     path: number[],
-    isAddress: boolean
+    isAddress: boolean,
+    updateForm: boolean = true
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-    this.docEvents.sendAfterSave(json);
+    if (updateForm) this.docEvents.sendAfterSave(json);
 
     const parentId = json._parent;
     const info = this.mapToDocumentAbstracts([json], parentId)[0];
@@ -261,6 +273,7 @@ export class DocumentService {
         data: [info],
         parent: parentId,
         path: path,
+        doNotSelect: !updateForm,
       },
     });
   }

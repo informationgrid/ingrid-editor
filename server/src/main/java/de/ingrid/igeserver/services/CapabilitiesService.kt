@@ -13,6 +13,7 @@ import java.io.InputStreamReader
 import java.io.PushbackInputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.security.Principal
 import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -77,10 +78,10 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         return pushbackInputStream
     }
 
-    fun analyzeGetCapabilitiesUrl(url: String): CapabilitiesBean {
+    fun analyzeGetCapabilitiesUrl(principal: Principal, catalogId: String, url: String): CapabilitiesBean {
         val document = getDocumentFromUrl(url, true)
         
-        return capabilitiesParserFactory.get(document).getCapabilitiesData(document)
+        return capabilitiesParserFactory.get(document, catalogId).getCapabilitiesData(document)
     }
 
 // https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS

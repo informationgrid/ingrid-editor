@@ -24,7 +24,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   showDialog() {
     this.dialog
       .open(GetCapabilitiesDialogComponent, {
-        minWidth: 500,
+        minWidth: 700,
         maxWidth: "80vw",
         disableClose: true,
         hasBackdrop: true,
@@ -34,9 +34,8 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
       .subscribe((result) => this.updateDataset(result));
   }
 
-  private updateDataset(values: GetCapabilitiesAnalysis) {
-    console.log("Dialog result: ", values);
-    this.getCapService.applyChangesToModel(this.field.model, values);
+  private async updateDataset(values: GetCapabilitiesAnalysis) {
+    await this.getCapService.applyChangesToModel(this.field.model, values);
     this.field.options.formState.updateModel();
     this.form.markAsDirty();
   }

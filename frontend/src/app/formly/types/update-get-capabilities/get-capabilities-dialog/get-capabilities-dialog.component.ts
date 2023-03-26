@@ -3,9 +3,12 @@ import {
   GetCapabilitiesAnalysis,
   GetCapabilitiesService,
 } from "./get-capabilities.service";
-import { catchError, filter, tap } from "rxjs/operators";
+import { catchError, filter, finalize } from "rxjs/operators";
 import { Observable, of } from "rxjs";
-import { MatSelectionList } from "@angular/material/list";
+import {
+  MatSelectionList,
+  MatSelectionListChange,
+} from "@angular/material/list";
 import { MatDialogRef } from "@angular/material/dialog";
 
 interface ReportItem {
@@ -27,6 +30,7 @@ export class GetCapabilitiesDialogComponent {
   error: string;
   isAnalyzing = false;
   allChecked = false;
+  allowSubmit = false;
 
   constructor(
     private getCapService: GetCapabilitiesService,
@@ -34,14 +38,15 @@ export class GetCapabilitiesDialogComponent {
   ) {}
 
   analyze(url: string) {
+    this.report = null;
     this.error = null;
     this.isAnalyzing = true;
     this.getCapService
       .analyze(url)
       .pipe(
         catchError((error) => this.handleError(error)),
-        tap(() => (this.isAnalyzing = false)),
-        filter((report) => report !== null)
+        filter((report) => report !== null),
+        finalize(() => (this.isAnalyzing = false))
       )
       .subscribe((report) => (this.report = report));
   }
@@ -68,5 +73,14 @@ export class GetCapabilitiesDialogComponent {
     this.allChecked = checked;
     if (checked) this.selection.selectAll();
     else this.selection.deselectAll();
+    this.handleSubmitState(this.selection.selectedOptions.selected.length);
+  }
+
+  selectionChange($event: MatSelectionListChange) {
+    this.handleSubmitState($event.source.selectedOptions.selected.length);
+  }
+
+  private handleSubmitState(numOptions: number) {
+    this.allowSubmit = numOptions > 0;
   }
 }

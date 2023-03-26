@@ -1,9 +1,13 @@
 package de.ingrid.igeserver.services.getCapabilities
 
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.security.core.context.SecurityContextHolder
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.text.ParseException
@@ -18,7 +22,9 @@ data class GeoDataset(
     var spatialReferences: List<LocationBean>? = null,
     var objectClass: String? = null,
     var description: String? = null,
-    var spatialSystems: List<KeyValue>? = null
+    var spatialSystems: List<KeyValue>? = null,
+    var keywords: List<String>? = null,
+    var exists: Boolean = false
 )
 
 data class OperationBean(
@@ -504,22 +510,25 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         }
     }*/
 
-    protected fun checkForCoupledResource(id: String): GeoDataset? {
-        // TODO: get coupled resources
-        val objects = null
-        if (objects != null) {
+    protected fun checkForCoupledResource(researchService: ResearchService, catalogId: String, id: String): GeoDataset? {
+        val conditions = mutableListOf("document1.data ->> 'identifier' = '$id'", "deleted = 0")
+        val documentFilter = BoolFilter("AND", conditions, null, null, false)
+        val coupledResourceQuery =  ResearchQuery(null, documentFilter)
+        val hit = researchService.query(SecurityContextHolder.getContext().authentication, emptySet(), catalogId, coupledResourceQuery).hits.getOrNull(0)
+        if (hit != null) {
             return GeoDataset().apply {
                 objectIdentifier = id
-                objectClass = "???"
-                uuid = "???"
-                title = "???"
+                objectClass = hit._type
+                uuid = hit._uuid
+                title = hit.title
+                exists = true
             }
         } else {
             // if no dataset was found then try another search if a namespace exists in the id
             // In this case remove the namespace search again (INGRID34-6)
             val separatorPos = id.indexOf('#');
             if (separatorPos != -1) {
-                return checkForCoupledResource(id.substring(separatorPos + 1));
+                return checkForCoupledResource(researchService, catalogId, id.substring(separatorPos + 1));
             }
         }
 

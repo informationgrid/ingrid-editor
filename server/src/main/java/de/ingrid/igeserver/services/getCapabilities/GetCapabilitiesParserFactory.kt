@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.*
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -9,7 +10,7 @@ import org.w3c.dom.Document
 
 
 @Service
-class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHandler) {
+class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
 
     private lateinit var xPathUtils: XPathUtils
     val log = logger()
@@ -42,10 +43,10 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
     private val SERVICE_TYPE_WCTS = "WCTS"
     private val SERVICE_TYPE_WMTS = "WMTS"
 
-    fun get(doc: Document): ICapabilitiesParser {
+    fun get(doc: Document, catalogId: String): ICapabilitiesParser {
         return when (getServiceType(doc)) {
-            ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler)
-            ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler)
+            ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler, researchService, catalogId)
+            ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler, researchService, catalogId)
             ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler)
             ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler)
             ServiceType.WCS -> WcsCapabilitiesParser(codelistHandler)

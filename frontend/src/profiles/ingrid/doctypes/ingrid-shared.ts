@@ -434,7 +434,7 @@ export abstract class IngridShared extends BaseDoctype {
   addTimeReferenceSection() {
     return this.addSection("Zeitbezug", [
       this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Resource", {
+        this.addRepeat("events", "Zeitbezug der Ressource", {
           required: true,
           fields: [
             this.addDatepicker("referenceDate", null, {

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import java.security.Principal
 
 @Tag(name = "GetCapabilities", description = "the groups API")
 interface GetCapabilitiesApi {
@@ -24,6 +25,7 @@ interface GetCapabilitiesApi {
     @Operation
     @PostMapping(value = ["/analyzeGetCapabilities"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun analyzeGetCapabilties(
+        principal: Principal,
         @Parameter(required = true) @RequestBody url: String
     ): ResponseEntity<CapabilitiesBean>
 
