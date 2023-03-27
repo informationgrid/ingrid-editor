@@ -326,7 +326,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
           }),
           options.regionKey
-            ? this.addInput("regionKey", "Regionalschlüssel", {
+            ? this.addInput("regionKey", "Amtlicher Regionalschlüssel", {
                 className: "optional flex-1",
                 wrappers: ["panel", "form-field"],
               })
