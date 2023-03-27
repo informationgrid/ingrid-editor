@@ -108,9 +108,7 @@
 "param2",
 "kk"
 ],
-"iPlugId": "/ingrid-group:ige-iplug-test",
 "object_types_catalogue.type_date": "20230221000000000",
-"t02_address.institution": "Wemove Test",
 "t0113_dataset_reference.reference_date": "20230221000000000",
 "t011_obj_geo_symc.symbol_date": "20230221000000000",
 "t0110_avail_format.line": [
@@ -127,7 +125,6 @@
 "4",
 "2"
 ],
-"t03_catalogue.cat_name": "IGC Testsystem",
 "t01_object.time_alle": "3",
 "t017_url_ref.datatype": "PDF",
 "t0112_media_option.medium_name": [
@@ -136,13 +133,11 @@
 ],
 "publish_id": "1",
 "t017_url_ref.content": "Testverweis",
-"t02_address.job": "Notizen MMMM",
 "t011_obj_geo.referencesystem_id": [
 "DE_DHDN / GK_3_RP180",
 "EPSG 5676: DHDN / Gauss-Krüger Zone 2 (E-N)"
 ],
 "object_types_catalogue.title_value": "von Drachenfels 94",
-"t02_address.descr": "",
 "t015_legist.name": [
 "Weitere Rechtliche Grundlagen 1",
 "Weitere Rechtliche Grundlagen 2"
@@ -156,10 +151,6 @@
 "5",
 "2"
 ],
-"boost": [
-1,
-0.9
-],
 "t012_obj_adr.typ": "7",
 "t1": "20230202000000000",
 "t01_object.org_obj_id": "",
@@ -172,15 +163,9 @@
 "1",
 "2"
 ],
-"spatial_ref_value.x1": [
-3,
-9.235983848571777
-],
+"spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
 "t01_object.metadata_standard_version": "",
-"spatial_ref_value.x2": [
-5,
-10.309714317321777
-],
+"spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
 "t01_object.dataset_usage": "Eignung/Nutzung\n test",
 "t0114_env_topic.line": [
 "1",
@@ -190,8 +175,6 @@
 "2",
 "1"
 ],
-"t012_obj_adr.special_name": "Ansprechpartner",
-"t01_object.obj_id": "B02B301C-FDE9-4064-97DB-AD7BA7B15947",
 "object_data_language.data_language_value": [
 "Deutsch",
 "Dänisch"
@@ -209,31 +192,17 @@
 "050514EF-CD29-4769-91A5-DDE0495B347F"
 ],
 "t011_obj_geo.vector_topology_level": "",
-"spatial_ref_value.y2": [
-6,
-52.67826461791992
-],
+"spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
 "object_access.restriction_key": "1",
-"spatial_ref_value.y1": [
-4,
-52.130035400390625
-],
-"t02_address.firstname": "",
+"spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
 "t01_object.metadata_time": "",
-"partner": [
-"bund"
-],
-"parent.object_node.obj_uuid": "",
 "t01_object.time_to": "",
-"t03_catalogue.language_key": "150",
 "t017_url_ref.special_ref": "9990",
 "t011_obj_geo_scale.scale": [
 "15",
 "4"
 ],
 "t01_object.time_descr": "Test-Erläuterungen 2",
-"organisation": "Koordinierungsstelle PortalU",
-"t02_address.mod_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
 "object_use.terms_of_use_value": "Anwendungseinschränkungen test",
 "object_data_quality.dq_element_id": [
 "112",
@@ -249,31 +218,18 @@
 "109",
 "114"
 ],
-"t021_communication.comm_value": "test@wemove.com",
 "t01_object.time_period": "1",
 "object_types_catalogue.line": "1",
 "t01_object.vertical_extent_vdatum_value": "DE_DHHN85_NOH",
-"spatial_ref_value.topic_type": [
-"",
-""
-],
+"spatial_ref_value.topic_type": [],
 "object_conformity.specification_key": "12",
-"t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
 "t0110_avail_format.name": [
 "AI",
 "3D-Shape"
 ],
 "object_types_catalogue.title_key": "1",
 "t03_catalogue.mod_time": "20230221024908046",
-"searchterm_value.alternate_term": [
-"",
-"",
-"",
-"",
-"",
-"",
-""
-],
+"searchterm_value.alternate_term": [],
     "content": [
     @for(var entry : ForSupport.of(page.getContentField()))
         "${entry.get()}"@if (!entry.isLast()),@endif
