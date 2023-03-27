@@ -7,7 +7,11 @@ import { ContextHelpQuery } from "../../store/context-help/context-help.query";
 import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { ContextHelpComponent } from "../../shared/context-help/context-help.component";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import {
+  DialogPosition,
+  MatDialog,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { ContextHelpAbstract } from "../../store/context-help/context-help.model";
 
 @Injectable({
@@ -75,7 +79,21 @@ export class ContextHelpService {
     label: string,
     infoElement: HTMLElement
   ) {
-    const helpText$ = this.getContextHelpText(profile, docType, fieldId);
+    const helpText$ = this.getContextHelpText(profile, docType, fieldId); // allows passing in a custom help text
+    this.showContextHelpPopup(label, helpText$, infoElement);
+  }
+
+  public showContextHelpPopup(
+    label: string,
+    helpText$: Observable<String>,
+    infoElement?: HTMLElement
+  ) {
+    const dialogPosition: DialogPosition = infoElement
+      ? {
+          left: ContextHelpService.getLeftPosition(infoElement),
+          top: ContextHelpService.getTopPosition(infoElement),
+        }
+      : null;
 
     this.currentDialog?.close();
 
@@ -87,10 +105,7 @@ export class ContextHelpService {
       backdropClass: "cdk-overlay-transparent-backdrop",
       hasBackdrop: false,
       closeOnNavigation: true,
-      position: {
-        left: ContextHelpService.getLeftPosition(infoElement),
-        top: ContextHelpService.getTopPosition(infoElement),
-      },
+      position: dialogPosition,
       autoFocus: false,
     });
   }

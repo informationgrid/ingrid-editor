@@ -10,6 +10,15 @@
             data-cy="spatial-dialog-wkt"
             placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"
         ></textarea>
+        <button
+            mat-icon-button
+            matSuffix
+            class="hint"
+            (click)="showHelpDialog()"
+        >
+            <mat-icon class="material-icons-outlined" svgIcon="info-24px">
+            </mat-icon>
+        </button>
     </mat-form-field>
     <div>
         <button
@@ -23,9 +32,6 @@
     </div>
 
     <mat-hint class="hint-text-custom-style">
-        Nur in geografischen Koordinaten (WGS84) möglich. Unterstützt werden
-        Polygone mit einer Außen- und Innengrenze (Löcher), Points und
-        Linestrings. Zur Darstellung auf der Karte klicken Sie auf
-        "Anzeigen".</mat-hint
+        Zur Darstellung auf der Karte klicken Sie auf "Anzeigen".</mat-hint
     >
 </div>

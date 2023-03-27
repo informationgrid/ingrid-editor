@@ -1,4 +1,6 @@
 /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+@import "src/variables";
+
 :host ::ng-deep .mat-form-field-wrapper {
   padding: 0px !important;
   margin: 0px !important;
@@ -7,6 +9,10 @@
 .mat-form-field-appearance-outline {
   padding: 0px !important;
   margin-bottom: -10px !important;
+}
+
+button.hint {
+  background-color: $ige-background;
 }
 
 .hint-text-custom-style {
