@@ -345,7 +345,7 @@ export class GeoDatasetDoctype extends IngridShared {
           this.addGroupSimple("completenessOmission", [
             this.addInput("measResult", "Datendefizit", {
               wrappers: ["panel", "form-field", "addons"],
-              className: "single-field width-25",
+              className: "single-field width-25 right-align",
               type: "number",
               suffix: {
                 text: "%",
