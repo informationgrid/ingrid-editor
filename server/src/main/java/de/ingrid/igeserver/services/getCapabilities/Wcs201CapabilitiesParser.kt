@@ -129,14 +129,14 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:PostalCode"
         )
-        address.country = xPathUtils.getString(
+        address.country = getKeyValue("6200", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:Country"
-        )
-        address.state = xPathUtils.getString(
+        ))
+        address.state = getKeyValue("110", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:AdministrativeArea"
-        )
+        ), "name")
         address.phone = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Phone/ows20:Voice"

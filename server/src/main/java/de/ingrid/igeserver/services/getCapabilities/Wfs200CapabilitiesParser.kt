@@ -239,14 +239,14 @@ class Wfs200CapabilitiesParser(
                 "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:PostalCode"
             )
             country =
-                xPathUtils.getString(
+                getKeyValue("6200", xPathUtils.getString(
                     doc,
                     "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country"
-                )
-            state = xPathUtils.getString(
+                ))
+            state = getKeyValue("110", xPathUtils.getString(
                 doc,
                 "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
-            )
+            ), "name")
             phone =
                 xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Phone/ows11:Voice")
         }

@@ -39,6 +39,7 @@ data class ConformityBean(var level: Int? = null, var specification: String? = n
 data class AddressBean(
     var uuid: String? = null,
     var type: String? = null,
+    var _state: String? = null,
     var exists: Boolean = false,
     var firstName: String? = null,
     var lastName: String? = null,
@@ -47,8 +48,8 @@ data class AddressBean(
     var street: String? = null,
     var city: String? = null,
     var postcode: String? = null,
-    var country: String? = null,
-    var state: String? = null,
+    var country: KeyValue? = null,
+    var state: KeyValue? = null,
     var phone: String? = null,
 )
 
@@ -486,18 +487,21 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * @param address
      */
     protected fun searchForAddress(researchService: ResearchService, catalogId: String, address: AddressBean) {
+        address._state = "W"
+        val emailCondition =
+            "EXISTS (SELECT 1 FROM jsonb_array_elements(document1.data -> 'contact') AS elem WHERE elem @> '{\"connection\": \"${address.email}\"}')"
         val conditionPerson = mutableListOf(
-            "document1.data ->> 'firstName' = '${address.firstName}'",
-            "document1.data ->> 'lastName' = '${address.lastName}'",
-            "document1.data -> 'contact' ->> 'connection' = '${address.email}'",
-            "deleted = 0"
+            if (address.firstName == null) "document1.data ->> 'firstName' = null" else "document1.data ->> 'firstName' = '${address.firstName}'",
+            if (address.lastName == null) "document1.data ->> 'lastName' = null" else "document1.data ->> 'lastName' = '${address.lastName}'",
+            emailCondition,
         )
         val conditionOrganisation = mutableListOf(
             "document1.data ->> 'organization' = '${address.organization}'",
-            "document1.data -> 'contact' ->> 'connection' = '${address.email}'",
-            "deleted = 0"
+            emailCondition,
         )
-        val documentFilter = BoolFilter("OR", conditionPerson + conditionOrganisation, null, null, false)
+        val personFilter = BoolFilter("AND", conditionPerson, null, null, false)
+        val organizationFilter = BoolFilter("AND", conditionOrganisation, null, null, false)
+        val documentFilter = BoolFilter("OR", null, listOf(personFilter, organizationFilter), null, false)
         researchService.query(
             SecurityContextHolder.getContext().authentication,
             emptySet(),
@@ -506,6 +510,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         ).hits.getOrNull(0)?.let {
             address.uuid = it._uuid
             address.type = it._type
+            address._state = it._state
             address.exists = true
         }
     }
@@ -542,6 +547,14 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         }
 
         return null;
+    }
+    
+    protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
+        var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)
+        if (id == null && valueField == "de") {
+            id = codelistHandler.getCodeListEntryId(codelistId, value, "en")
+        }
+        return KeyValue(id, value)
     }
 
     companion object {

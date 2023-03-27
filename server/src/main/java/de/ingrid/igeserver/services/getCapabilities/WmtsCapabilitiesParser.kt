@@ -136,14 +136,14 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:PostalCode"
         )
-        address.country = xPathUtils.getString(
+        address.country = getKeyValue("6200", xPathUtils.getString(
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:Country"
-        )
-        address.state = xPathUtils.getString(
+        ))
+        address.state = getKeyValue("110", xPathUtils.getString(
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
-        )
+        ), "name")
         address.phone = xPathUtils.getString(
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Phone/ows11:Voice"

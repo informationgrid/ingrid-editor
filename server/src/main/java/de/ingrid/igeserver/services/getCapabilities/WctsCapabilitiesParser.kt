@@ -221,14 +221,14 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:PostalCode"
         )
-        address.country = xPathUtils.getString(
+        address.country = getKeyValue("6200", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:Country"
-        )
-        address.state = xPathUtils.getString(
+        ))
+        address.state = getKeyValue("110", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:AdministrativeArea"
-        )
+        ), "name")
         address.phone = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Phone/owsgeo:Voice"

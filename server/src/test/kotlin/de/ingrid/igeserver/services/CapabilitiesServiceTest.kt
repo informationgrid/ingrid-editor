@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.services.getCapabilities.*
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
@@ -8,6 +9,9 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import java.io.InputStreamReader
@@ -19,13 +23,19 @@ import javax.xml.parsers.DocumentBuilderFactory
 class CapabilitiesServiceTest : ShouldSpec({
 
     val codelistHandler = mockk<CodelistHandler>()
+    val researchService = mockk<ResearchService>()
+    val mockContext = mockk<SecurityContext>()
     lateinit var factory: GetCapabilitiesParserFactory
 
     val formatter = SimpleDateFormat("yyyy-MM-dd")
 
     beforeAny {
         val codelists = CodeListService().initialCodelists
-        factory = GetCapabilitiesParserFactory(codelistHandler)
+        SecurityContextHolder.setContext(mockContext)
+        every { mockContext.authentication } returns UsernamePasswordAuthenticationToken("test-user", "xxx")
+        every { researchService.query(any(), any(), any(), any()) } returns ResearchResponse(0, emptyList())
+
+        factory = GetCapabilitiesParserFactory(codelistHandler, researchService)
 //        every { codelistHandler.getCodelistValue("5153", "de") } returns "3068"
         every { codelistHandler.getCodelistValue(any(), any()) } answers {
             codelists
@@ -49,7 +59,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WFS 1.1.0") {
         getDocument("wfs110.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "WFS_Geotourismus"
                 description shouldBe "Test WFS 1.1.0"
@@ -144,8 +154,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "Neuenfelder Straße 19",
                     city = "Hamburg",
                     postcode = "21109",
-                    country = "Germany",
-                    state = "Hamburg",
+                    country = KeyValue("276", "Germany"),
+                    state = KeyValue("7", "Hamburg"),
                     phone = "+49 40 42826 5450"
                 )
                 operations shouldContainExactly listOf(
@@ -188,7 +198,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WFS 2.0.0") {
         getDocument("wfs200.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "Download Service Stolpersteine Stadt Moers"
                 description shouldBe "Die Stolpersteine sind im Boden verlegte kleine Gedenktafeln, die an Menschen erinnern, welche in der Zeit des Nationalsozialismus verfolgt, ermordet, deportiert, vertrieben oder in den Suizid getrieben wurden. Der Dienst zeigt die Stolpersteine, die bis jetzt in der Stadt Viersen verlegt wurden. Die Daten werden bei Bedarf aktualisiert."
@@ -224,8 +234,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "Friedrich-Heinrich-Allee 130",
                     city = "Kamp-Lintfort",
                     postcode = "47475",
-                    country = "Germany",
-                    state = "NRW",
+                    country = KeyValue("276", "Germany"),
+                    state = KeyValue(null, "NRW"),
                     phone = "+49(0)2842/9070-110"
                 )
                 operations shouldContainExactly listOf(
@@ -268,7 +278,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WFS 2.0.0 full") {
         getDocument("wfs200full.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "OGC Member WFS"
                 description shouldBe "Web Feature Service maintained by NSDI data provider, serving FGDC framework layer XXX; contact Paul.Bunyon@BlueOx.org"
@@ -325,8 +335,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "North Country",
                     city = "Small Town",
                     postcode = "12345",
-                    country = "USA",
-                    state = "Rural County",
+                    country = KeyValue(null, "USA"),
+                    state = KeyValue(null, "Rural County"),
                     phone = "1.800.BIG.WOOD"
                 )
                 operations shouldContainExactly listOf(
@@ -385,7 +395,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WMS 1.1.1") {
         getDocument("wms111.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "Acme Corp. Map Server"
                 description shouldBe "WMT Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations."
@@ -439,8 +449,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "NASA Goddard Space Flight Center, Code 933",
                     city = "Greenbelt",
                     postcode = "20771",
-                    country = "USA",
-                    state = "MD",
+                    country = KeyValue(null, "USA"),
+                    state = KeyValue(null, "MD"),
                     phone = "+1 301 286-1569"
                 )
                 operations?.shouldHaveSize(3)
@@ -479,7 +489,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WMS 1.3.0") {
         getDocument("wms130.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "Acme Corp. Map Server"
                 description shouldBe "Map Server maintained by Acme Corporation. Contact: webmaster@wmt.acme.com. High-quality\n            maps showing\n            roadrunner nests and possible ambush locations.\n        "
@@ -525,7 +535,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                             KeyValue(null, "EPSG:26986"),
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
                             KeyValue("4230", "EPSG 4230: ED50 / geographisch")
-                        )
+                        ),
+                        keywords = listOf("bird", "roadrunner", "ambush")
                     ),
                     GeoDataset(
                         null,
@@ -545,7 +556,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                         spatialSystems = listOf(
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
                             KeyValue("4230", "EPSG 4230: ED50 / geographisch")
-                        )
+                        ),
+                        keywords = listOf("road", "transportation", "atlas", "bird", "roadrunner", "ambush")
                     )
                 )
                 address shouldBe AddressBean(
@@ -556,8 +568,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "NASA Goddard Space Flight Center",
                     city = "Greenbelt",
                     postcode = "20771",
-                    country = "USA",
-                    state = "MD",
+                    country = KeyValue(null, "USA"),
+                    state = KeyValue(null, "MD"),
                     phone = "+1 301 555-1212"
                 )
                 operations shouldContainExactly listOf(
@@ -595,7 +607,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WCS 1.0.0") {
         getDocument("wcs100.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "deegree WCS"
                 description shouldBe "deegree WCS being OGC WCS 1.0.0 reference implementation"
@@ -629,8 +641,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     organization = "BKG",
                     city = "Potsdam",
                     postcode = "14777",
-                    country = "DE",
-                    state = "Brandenburg",
+                    country = KeyValue("276", "Deutschland"),
+                    state = KeyValue("5", "Brandenburg"),
                     phone = "+49 341 5634369"
                 )
 
@@ -685,7 +697,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WCS 1.1.2") {
         getDocument("wcs112.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "CubeWerx Demonstation WCS"
                 description shouldBe "A demonstration server used to illustrate CubeWerx's compilance with the Web Coverage Service 1.1.0 implementation specification"
@@ -705,8 +717,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "15 rue Gamelin",
                     city = "Gatineau",
                     postcode = "J8Y 6N5",
-                    country = "Canada",
-                    state = "Quebec",
+                    country = KeyValue(null, "Canada"),
+                    state = KeyValue(null, "Quebec"),
                     phone = "123-456-7890",
                     email = "pvretano[at]cubewerx[dot]com"
                 )
@@ -742,7 +754,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WCS 2.0.1") {
         getDocument("wcs201.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "INSPIRE-WCS Digitales Geländemodell Gitterweite 200 m"
                 description shouldBe "INSPIRE Downloaddienst des Digitalen Geländemodell Gitterweite 200 m für dasGebiet der Bundesrepublik Deutschland.Zur einheitlichen Beschreibung des Reliefs des Gebietes der BundesrepublikDeutschland werden im Rahmen des ATKIS®-Projektes durch die deutscheLandesvermessung Digitale Geländemodelle (DGM) unterschiedlicher Qualitätsstufenaufgebaut.Das Digitale Geländemodell DGM200 beschreibt die Geländeformen der Erdoberflächedurch eine in einem regelmäßigen Gitter angeordnete, in Lage und Höhegeoreferenzierte Punktmenge. Die Gitterweite beträgt 200 m.Die Visualisierung des Reliefs erfolgt nach den Stilvorgaben von INSPIRE für dasThema Elevetaion."
@@ -791,8 +803,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "Musterstr. 23",
                     city = "Berlin",
                     postcode = "12345",
-                    country = "Deutschland",
-                    state = "xxx",
+                    country = KeyValue("276", "Deutschland"),
+                    state = KeyValue(null, "xxx"),
                     phone = "+49 (0) 123 456 789",
                     email = "dlz[at]my-domain.net"
                 )
@@ -822,11 +834,16 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("WCTS") {
         getDocument("wcts.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "Web Coordinate Transformation Service"
                 description shouldBe "Network service for transforming coordinates from one CRS to another"
-                keywords shouldContainExactly listOf("Coordinate Reference System", "transformation", "conversion", "coordinate operation")
+                keywords shouldContainExactly listOf(
+                    "Coordinate Reference System",
+                    "transformation",
+                    "conversion",
+                    "coordinate operation"
+                )
                 serviceType shouldBe "WCTS"
                 dataServiceType shouldBe "4"
                 versions shouldContainExactly listOf(KeyValue(null, "0.0.0"))
@@ -840,8 +857,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "Meckenheimer Allee 176",
                     city = "Bonn",
                     postcode = "53115",
-                    country = "Germany",
-                    state = "NRW",
+                    country = KeyValue("276", "Germany"),
+                    state = KeyValue(null, "NRW"),
                     phone = "++49 228 732838",
                     email = "poth@lat-lon.de"
                 )
@@ -875,7 +892,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     should("CSW") {
         getDocument("csw202.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "con terra GmbH test catalogue Server"
                 description shouldBe "Web based Catalogue Service (CS-W 2.0.2/AP ISO 1.0) for service, datasets and applications"
@@ -907,8 +924,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     street = "Marting-Luther-King-Weg 24",
                     city = "Münster",
                     postcode = "48165",
-                    country = "Germany",
-                    state = "NRW",
+                    country = KeyValue("276", "Germany"),
+                    state = KeyValue(null, "NRW"),
                     phone = "+49-251-7474-402",
                     email = "voges@conterra.de"
                 )
@@ -976,10 +993,10 @@ class CapabilitiesServiceTest : ShouldSpec({
             }
         }
     }
-    
+
     should("WMTS") {
         getDocument("wmts.xml").let {
-            val result = factory.get(it).getCapabilitiesData(it)
+            val result = factory.get(it, "test").getCapabilitiesData(it)
             result.run {
                 title shouldBe "map_cache_vertical"
                 description shouldBe "Die vielfältige Geologie Deutschlands sowie die sich hieraus ergebende Nutzung sind Ursachen für verschiedenste Deformationsprozesse, wie z.B. Bodenverdichtung, lösliche und quellende Gesteinsformationen, Erdrutsche, Grundwasserentnahme, Erdgasförderung, Bergbau- und Kavernenspeicherbetrieb.             Die Erfassung von Oberflächendeformationen mittels SAR (Synthetic Aperture Radar) Satelliten ermöglicht es, bundesweite Basisinformationen für eine effiziente Erfassung von Deformationen der Erdoberfläche und deren Monitoring bereit zu stellen.             Sie tragen somit zu einer nachhaltigen Geosicherheit und Georessourcenmanagement bei.                        Möglich ist dies durch die langfristige und flächendeckende Aufnahmeplanung der Copernicus Satellitenmissionen und modernen interferometrischen SAR (InSAR) Verarbeitungstechniken.             Die Produkte basieren auf SAR Daten der Copernicus Sentinel -1A und Sentinel-1B Satelliten, die die Erdoberfläche mit einer Wiederkehrzeit von 6 Tagen im C-Band (Wellenlänge = 5,6 cm) seit April 2014 (Sentinel-1A) bzw. April 2016 (Sentinel-1B) abtasten.                        Vor diesem Hintergrund wurde von der Bundesanstalt für Geowissenschaften und Rohstoffe (BGR) der BodenBewegungsdienst Deutschland (BBD) mit dem Ziel entwickelt, Deformationen der Erdoberfläche darzustellen.             Das BBD Portal enthält Persistent Scatterer Interferometrie (PSI) Daten der gesamten Bundesrepublik Deutschland (ca. 360.000 km2).             Die PSI Technologie ermöglicht präzise Messungen von Deformationen der Erdoberfläche im mm Bereich.                        Die Messpunkte (Persistent Scatterer, PS) entsprechen bereits am Boden vorhandenen Objekten, wie z.B. Gebäuden, Infrastruktur oder natürlichen Objekten, wie Gesteinen und Schuttflächen.             Jeder PS wird durch einen über mehrere Jahre gemittelten Geschwindigkeitswert (ausgedrückt in mm/Jahr) und eine Zeitreihe der Verschiebungen charakterisiert.             Für jeden PS kann die Zeitreihe der Verschiebungen von der ersten Sentinel-1 Aufnahme bis zur letzten ausgewerteten Sentinel-1 Aufnahme eingesehen werden.             Die PS werden nach der mittleren Geschwindigkeit entlang der Sichtlinie der Sentinel-1 Satelliten, Line of Sight (LOS), gemäß der folgenden Konvention im BBD Portal visualisiert:            - die grüne Farbe entspricht den PS, deren mittlere Geschwindigkeit sehr gering ist, zwischen -2,0 und +2,0 mm/Jahr, d.h. im Empfindlichkeitsbereich der PSI Technologie;            - in den Farben von gelb bis rot werden diejenigen PS mit negativer Bewegungsrate visualisiert, d.h. Bewegungen vom Satelliten weg;            - mit den Farben von türkis bis blau werden diejenigen PS mit positiver Bewegungsrate visualisiert, d.h. PS die sich dem Satelliten nähern.                        Die Präzision der dargestellten PSI Daten liegt in der Größenordnung von typischerweise +- 2 mm/Jahr für die mittlere Geschwindigkeit in LOS."
@@ -994,16 +1011,30 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Die im BBD Portal zur Verfügung gestellten Daten können gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes -GeoNutzV- (http://www.geodatenzentrum.de/docpdf/geonutzv.pdf) genutzt werden.                        Im Übrigen gelten folgende Nutzungsbedingungen:                        Die im BBD Portal enthaltenen PSI Daten ermöglichen es, im Rahmen der räumlichen und zeitlichen Auflösung Deformationen der Erdoberfläche zu identifizieren.             Angesichts der Eigenschaften der Daten und der intrinsischen Grenzen der PSI Technologie können die im BBD Portal vorhandenen PSI Daten in keinem Fall als Echtzeit-Messung von Bodenbewegungen betrachtet werden.             Die im BBD Portal vorhandenen PSI Daten dürfen unter keinen Umständen als alleinige Entscheidungsgrundlage verwendet werden.                        Die im BBD Portal enthaltenen PSI Daten sind ein Produkt von hohem wissenschaftlichen Niveau und das Ergebnis der besten derzeit verfügbaren Techniken.             Daher müssen sie von entsprechend geschultem Fachpersonal interpretiert und angewendet werden.             Zu diesem Zweck ist es unerlässlich, dass der Nutzer des BBD Portals die Hinweise zur Nutzung für die korrekte Verwendung von PSI Daten sorgfältig liest und berücksichtigt.                        Die Daten des BBD Portals stellen ein nicht interpretiertes Produkt dar. Ihre Nutzung muss bewusst, umsichtig erfolgen.                        Eigentümer des BBD Portals und der darin enthaltenen Daten ist die Bundesrepublik Deutschland, vertreten durch die BGR.                        Datenschutz            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/datenschutzerklaerung.html?nn=1798032                        Impressum            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/impressum_node.html                        © Bundesanstalt für Geowissenschaften und Rohstoffe 2021            Contains modified Copernicus Sentinel data 2015-2021"
                     )
                 )
-                boundingBoxes shouldContainExactly listOf(LocationBean(latitude1=5.565645761105227, longitude1=47.14653466517609, latitude2=15.560505271487509, longitude2=55.056673348249255, "map_cache_vertical", "frei"))
-                spatialReferenceSystems shouldContainExactly listOf(KeyValue("3857", "EPSG 3857: WGS 84 / Pseudo-Mercator"))
+                boundingBoxes shouldContainExactly listOf(
+                    LocationBean(
+                        latitude1 = 5.565645761105227,
+                        longitude1 = 47.14653466517609,
+                        latitude2 = 15.560505271487509,
+                        longitude2 = 55.056673348249255,
+                        "map_cache_vertical",
+                        "frei"
+                    )
+                )
+                spatialReferenceSystems shouldContainExactly listOf(
+                    KeyValue(
+                        "3857",
+                        "EPSG 3857: WGS 84 / Pseudo-Mercator"
+                    )
+                )
                 address shouldBe AddressBean(
                     firstName = "Andre",
                     lastName = "Kalia",
                     street = "Bundesanstalt für Geowissenschaften und Rohstoffe",
                     city = "Hannover",
                     postcode = "30655",
-                    country = "Germany",
-                    state = "Lower Saxony",
+                    country = KeyValue("276", "Germany"),
+                    state = KeyValue(null, "Lower Saxony"),
                     phone = "+49 (0)511 643 3056",
                     email = "BBD@bgr.de"
                 )

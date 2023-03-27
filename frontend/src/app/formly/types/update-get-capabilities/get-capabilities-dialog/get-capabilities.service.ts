@@ -7,101 +7,13 @@ import {
   docReferenceTemplate,
   DocumentReference,
 } from "../../document-reference-type/document-reference-type.component";
-import { TreeStore } from "../../../../store/tree/tree.store";
-
-export interface GetCapabilitiesAnalysis {
-  title: string;
-  description: string;
-  versions: KeyValue[];
-  fees: KeyValue;
-  accessConstraints: KeyValue[];
-  serviceType: string;
-  dataServiceType: string;
-  onlineResources: Url[];
-  keywords: string[];
-  boundingBoxes: Location[];
-  spatialReferenceSystems: KeyValue[];
-  address: Address;
-  operations: Operation[];
-  resourceLocators: Url[];
-  timeReference: TimeReference[];
-  timeSpans: TimeReference[];
-  conformities: Conformity[];
-  coupledResources: CoupledResource[];
-}
-
-interface CoupledResource {
-  uuid: string;
-  exists: boolean;
-  title: string;
-  description: string;
-  objectIdentifier: string;
-  keywords: string[];
-  spatialReferences: SpatialReference[];
-  spatialSystems: KeyValue[];
-}
-
-interface KeyValue {
-  key: string;
-  value?: string;
-}
-
-interface SpatialReference {
-  name: string;
-  type: string;
-  latitude1: number;
-  latitude2: number;
-  longitude1: number;
-  longitude2: number;
-}
-
-interface Address {
-  exists: boolean;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  organization?: string;
-  street?: string;
-  city?: string;
-  postcode?: string;
-  country?: string;
-  state?: string;
-  phone?: string;
-  postCode?: string;
-}
-
-interface Url {
-  url?: string;
-  type?: KeyValue;
-  title?: string;
-  explanation?: string;
-}
-
-interface Operation {
-  name?: string;
-  addressList?: string[];
-  platform?: number[];
-  methodCall?: string;
-}
-
-interface TimeReference {
-  type: number;
-  date: string;
-}
-
-interface Conformity {
-  level: number;
-  specification: string;
-}
-
-interface Location {
-  latitude1?: number;
-  longitude1?: number;
-  latitude2?: number;
-  longitude2?: number;
-  name?: string;
-  type?: string;
-}
+import {
+  Address,
+  CoupledResource,
+  GetCapabilitiesAnalysis,
+  Location,
+  Operation,
+} from "./get-capabilities.model";
 
 @Injectable({
   providedIn: "root",
@@ -112,8 +24,7 @@ export class GetCapabilitiesService {
   constructor(
     private http: HttpClient,
     configService: ConfigService,
-    private documentService: DocumentService,
-    private store: TreeStore
+    private documentService: DocumentService
   ) {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl)
@@ -281,6 +192,59 @@ export class GetCapabilitiesService {
   }
 
   private async handleAddress(value: Address) {
-    return [];
+    const type =
+      value.firstName || value.lastName
+        ? "InGridPersonDoc"
+        : "InGridOrganisationDoc";
+
+    const contact = [];
+    if (value.email)
+      contact.push({
+        type: {
+          key: "3",
+        },
+        connection: value.email,
+      });
+
+    if (value.phone)
+      contact.push({
+        type: {
+          key: "1",
+        },
+        connection: value.phone,
+      });
+
+    const address: IgeDocument = {
+      _uuid: value.uuid,
+      _type: type,
+      _parent: null,
+      _state: value._state,
+      firstName: value.firstName,
+      lastName: value.lastName,
+      publishArea: {
+        key: "1",
+      },
+      contact: contact,
+      address: {
+        street: value.street,
+        "zip-code": value.postcode,
+        city: value.city,
+        administrativeArea: {
+          key: value.state.key,
+        },
+        country: {
+          key: value.country.key,
+        },
+      },
+    };
+
+    if (value.exists) {
+      return [{ ref: address, type: { key: "1" } }];
+    }
+
+    const result = await this.documentService
+      .save(address, true, true, null, true, false)
+      .toPromise();
+    return [{ ref: result, type: { key: "1" } }];
   }
 }

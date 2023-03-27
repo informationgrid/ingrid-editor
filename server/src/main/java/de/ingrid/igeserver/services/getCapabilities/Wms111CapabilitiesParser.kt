@@ -186,14 +186,14 @@ class Wms111CapabilitiesParser(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/PostCode"
         )
-        address.country = xPathUtils.getString(
+        address.country = getKeyValue("6200", xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Country"
-        )
-        address.state = xPathUtils.getString(
+        ))
+        address.state = getKeyValue("110", xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/StateOrProvince"
-        )
+        ), "name")
         address.phone = xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactVoiceTelephone"

@@ -3,11 +3,9 @@ import { FieldType } from "@ngx-formly/material";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { GetCapabilitiesDialogComponent } from "./get-capabilities-dialog/get-capabilities-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import {
-  GetCapabilitiesAnalysis,
-  GetCapabilitiesService,
-} from "./get-capabilities-dialog/get-capabilities.service";
+import { GetCapabilitiesService } from "./get-capabilities-dialog/get-capabilities.service";
 import { filter } from "rxjs/operators";
+import { GetCapabilitiesAnalysis } from "./get-capabilities-dialog/get-capabilities.model";
 
 @Component({
   selector: "ige-update-get-capabilities",

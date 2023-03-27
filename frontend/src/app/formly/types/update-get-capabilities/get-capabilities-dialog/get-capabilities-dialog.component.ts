@@ -1,8 +1,5 @@
 import { Component, ViewChild } from "@angular/core";
-import {
-  GetCapabilitiesAnalysis,
-  GetCapabilitiesService,
-} from "./get-capabilities.service";
+import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import {
@@ -10,13 +7,7 @@ import {
   MatSelectionListChange,
 } from "@angular/material/list";
 import { MatDialogRef } from "@angular/material/dialog";
-
-interface ReportItem {
-  key: string;
-  title: string;
-  value: string | string[];
-  hasMultiValues?: boolean;
-}
+import { GetCapabilitiesAnalysis } from "./get-capabilities.model";
 
 @Component({
   selector: "ige-get-capabilities-dialog",
