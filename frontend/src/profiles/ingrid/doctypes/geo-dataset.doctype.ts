@@ -280,12 +280,24 @@ export class GeoDatasetDoctype extends IngridShared {
           fields: [
             this.addInputInline("denominator", "Maßstab 1:x", {
               type: "number",
+              min: 0,
+              validators: {
+                validation: ["negative"],
+              },
             }),
             this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
               type: "number",
+              min: 0,
+              validators: {
+                validation: ["negative"],
+              },
             }),
             this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
               type: "number",
+              min: 0,
+              validators: {
+                validation: ["negative"],
+              },
             }),
           ],
         }),

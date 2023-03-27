@@ -13,6 +13,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { BehaviorSubject } from "rxjs";
+import { NegativeValidator } from "../../../app/formly/input.validators";
 
 @Injectable({
   providedIn: "root",
@@ -132,12 +133,24 @@ export class GeoServiceDoctype extends IngridShared {
             fields: [
               this.addInputInline("denominator", "Maßstab 1:x", {
                 type: "number",
+                min: 0,
+                validators: {
+                  validation: [NegativeValidator],
+                },
               }),
               this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
                 type: "number",
+                min: 0,
+                validators: {
+                  validation: [NegativeValidator],
+                },
               }),
               this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
                 type: "number",
+                min: 0,
+                validators: {
+                  validation: [NegativeValidator],
+                },
               }),
             ],
           }),

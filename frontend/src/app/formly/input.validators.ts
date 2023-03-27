@@ -22,3 +22,9 @@ export function LowercaseValidator(
     ? null
     : { lowercase: true };
 }
+
+export function NegativeValidator(
+  control: UntypedFormControl
+): ValidationErrors {
+  return Number(control.value) < 0 ? { negative: true } : null;
+}
