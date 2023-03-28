@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   EventEmitter,
   Input,
@@ -19,44 +20,30 @@ import { SpatialBoundingBox } from "../spatial-result.model";
   templateUrl: "./coordinates-spatial.component.html",
   styleUrls: ["./coordinates-spatial.component.scss"],
 })
-export class CoordinatesSpatialComponent implements OnInit, OnDestroy {
-  @Input() map: Map;
-  @Input() coordinates: SpatialBoundingBox;
-  @Output() result = new EventEmitter<any>();
+export class CoordinatesSpatialComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
+  form = new FormGroup({
+    lat1: new FormControl<number>(null, Validators.required),
+    lon1: new FormControl<number>(null, Validators.required),
+    lat2: new FormControl<number>(null, Validators.required),
+    lon2: new FormControl<number>(null, Validators.required),
+  });
 
-  form: FormGroup;
+  @Input() map: Map;
+
+  @Input() set coordinates(value: SpatialBoundingBox) {
+    if (!value) return;
+    this.form.setValue(value, { emitEvent: false });
+  }
+
+  @Output() result = new EventEmitter<any>();
 
   private boundingBoxes: Rectangle[];
 
   constructor(private leafletService: LeafletService) {}
 
   ngOnInit(): void {
-    this.leafletService.zoomToInitialBox(this.map);
-
-    this.form = new FormGroup({
-      lat1: new FormControl<number>(
-        this.coordinates?.lat1,
-        Validators.required
-      ),
-      lon1: new FormControl<number>(
-        this.coordinates?.lon1,
-        Validators.required
-      ),
-      lat2: new FormControl<number>(
-        this.coordinates?.lat2,
-        Validators.required
-      ),
-      lon2: new FormControl<number>(
-        this.coordinates?.lon2,
-        Validators.required
-      ),
-    });
-
-    if (this.coordinates) {
-      this.drawCoordinates(this.coordinates);
-      setTimeout(() => this.result.next(this.coordinates), 50);
-    }
-
     this.form.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -66,6 +53,15 @@ export class CoordinatesSpatialComponent implements OnInit, OnDestroy {
         tap((value) => this.drawCoordinates(value))
       )
       .subscribe();
+  }
+
+  ngAfterViewInit() {
+    this.leafletService.zoomToInitialBox(this.map);
+
+    if (this.coordinates) {
+      this.drawCoordinates(this.coordinates);
+      setTimeout(() => this.result.next(this.coordinates), 50);
+    }
   }
 
   ngOnDestroy() {
@@ -80,7 +76,7 @@ export class CoordinatesSpatialComponent implements OnInit, OnDestroy {
     const coloredBoundingBox = this.leafletService.extendLocationsWithColor([
       {
         title: "",
-        type: "coordinates",
+        type: "free",
         value: <SpatialBoundingBox>values,
       },
     ]);

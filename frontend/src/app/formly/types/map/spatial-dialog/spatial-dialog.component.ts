@@ -49,7 +49,6 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   types: LocationType[] = [
     { id: "free", label: "Freier Raumbezug" },
     { id: "wkt", label: "Raumbezug (WKT)" },
-    { id: "coordinates", label: "Koordinaten" },
     { id: "geo-name", label: "Nur Titel" },
   ];
   view: SpatialLocationType;

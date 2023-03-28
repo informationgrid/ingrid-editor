@@ -22,11 +22,7 @@
                 </div>
 
                 <div
-                    *ngIf="
-                        (location.type === 'free' ||
-                            location.type === 'coordinates') &&
-                        location.value
-                    "
+                    *ngIf="location.type === 'free' && location.value"
                     matLine
                     class="coordinates"
                 >

@@ -10,7 +10,7 @@ import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
-import { LatLng, LatLngBounds, Layer, Map, Rectangle } from "leaflet";
+import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
@@ -24,7 +24,12 @@ import { Subscription } from "rxjs";
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
-  @Input() initial: SpatialBoundingBox;
+
+  @Input() set coordinates(value: SpatialBoundingBox) {
+    if (!value) return;
+    setTimeout(() => this.drawAndZoom(value));
+  }
+
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
 
@@ -33,7 +38,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   showNoResult = false;
   showWelcome = true;
 
-  drawnBBox: Layer;
+  drawnBBox: Rectangle;
   spatialSelection: NominatimResult = null;
   searchSubscribe: Subscription;
 
@@ -47,9 +52,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
-    if (this.initial) {
-      this.drawAndZoom(this.initial);
-    } else {
+    if (!this.drawnBBox) {
       this.leafletService.zoomToInitialBox(this.map);
     }
 
@@ -106,12 +109,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     this.updateTitle.next(item.display_name);
   }
 
-  private drawAndZoom(value: {
-    lat1: number;
-    lat2: number;
-    lon1: number;
-    lon2: number;
-  }) {
+  private drawAndZoom(value: SpatialBoundingBox) {
     const bounds = new LatLngBounds(
       new LatLng(value.lat1, value.lon1),
       new LatLng(value.lat2, value.lon2)
@@ -167,6 +165,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
     });
 
     this.map.on("pm:create", (createEvent) => {
+      // @ts-ignore
       this.drawnBBox = createEvent.layer;
       // @ts-ignore
       this.updateSelectedArea(createEvent.layer.getBounds());

@@ -37,7 +37,7 @@
             <ige-free-spatial
                 *ngSwitchCase="'free'"
                 [map]="leafletReference"
-                [initial]="data?.value"
+                [coordinates]="result.value"
                 (updateTitle)="titleInput.setValue($event)"
                 (result)="updateBoundingBox($event)"
             ></ige-free-spatial>
@@ -47,12 +47,6 @@
                 [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
-            <ige-coordinates-spatial
-                *ngSwitchCase="'coordinates'"
-                [map]="leafletReference"
-                [coordinates]="data?.value"
-                (result)="updateBoundingBox($event)"
-            ></ige-coordinates-spatial>
         </div>
 
         <div fxLayout="column" fxFlex>
@@ -78,6 +72,13 @@
                 #leafletDlg
                 data-cy="spatial-dialog-map"
             ></div>
+            <div class="coordinates" *ngIf="view === 'free'">
+                <ige-coordinates-spatial
+                    [map]="leafletReference"
+                    [coordinates]="result.value"
+                    (result)="updateBoundingBox($event)"
+                ></ige-coordinates-spatial>
+            </div>
         </div>
     </div>
 </mat-dialog-content>
@@ -98,7 +99,6 @@
         [disabled]="
             (view === 'free' && !result.value) ||
             (view === 'wkt' && !result.wkt) ||
-            (view === 'coordinates' && !result.value) ||
             (view === 'geo-name' && !titleInput.value)
         "
         (click)="returnResult()"
