@@ -132,12 +132,15 @@ export class GeoServiceDoctype extends IngridShared {
             fields: [
               this.addInputInline("denominator", "Maßstab 1:x", {
                 type: "number",
+                min: 0,
               }),
               this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
                 type: "number",
+                min: 0,
               }),
               this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
                 type: "number",
+                min: 0,
               }),
             ],
           }),

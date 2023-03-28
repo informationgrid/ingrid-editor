@@ -1,4 +1,5 @@
 import { UntypedFormControl, ValidationErrors } from "@angular/forms";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export function IpValidator(control: UntypedFormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
@@ -21,4 +22,12 @@ export function LowercaseValidator(
   return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };
+}
+
+export function minValidationMessage(error: any, field: FormlyFieldConfig) {
+  return `Dieses Feld muss mehr als ${field.props.min} sein`;
+}
+
+export function maxValidationMessage(error: any, field: FormlyFieldConfig) {
+  return `Dieses Feld muss kleiner als ${field.props.max} sein`;
 }

@@ -61,6 +61,8 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
+  maxValidationMessage,
+  minValidationMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -224,6 +226,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "matDatepickerMax",
           message: "Das Datum ist größer als erlaubt",
+        },
+        {
+          name: "min",
+          message: minValidationMessage,
+        },
+        {
+          name: "max",
+          message: maxValidationMessage,
         },
       ] /*,
       wrappers: [

@@ -80,6 +80,8 @@ export interface InputOptions extends Options {
   validators?: any;
   suffix?: any;
   prefix?: any;
+  min?: number;
+  max?: number;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -340,6 +342,8 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         addonRight: options?.suffix,
         addonLeft: options?.prefix,
+        min: options?.min,
+        max: options?.max,
       },
       modelOptions: {
         updateOn: "blur",
