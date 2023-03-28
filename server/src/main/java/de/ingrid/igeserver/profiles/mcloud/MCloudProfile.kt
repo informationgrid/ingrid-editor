@@ -34,7 +34,7 @@ class MCloudProfile @Autowired constructor(
     override val title = "mCLOUD Katalog"
     override val description = null
     override val indexExportFormatID = "portal"
-    override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
+    override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
