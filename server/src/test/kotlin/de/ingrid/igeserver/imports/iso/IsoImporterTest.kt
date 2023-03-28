@@ -27,6 +27,7 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCodeListEntryId("518", "continual", "iso") } returns "1"
         every { codelistService.getCodeListEntryId("520", "3halfInchFloppy", "iso") } returns "4"
         every { codelistService.getCodeListEntryId("523", "underDevelopment", "iso") } returns "7"
+        every { codelistService.getCodeListEntryId("525", "dataset", "iso") } returns "5"
         every { codelistService.getCodeListEntryId("526", "vector", "iso") } returns "1"
         every { codelistService.getCodeListEntryId("526", "grid", "iso") } returns "2"
         every { codelistService.getCodeListEntryId("527", "climatologyMeteorologyAtmosphere", "iso") } returns "4"
