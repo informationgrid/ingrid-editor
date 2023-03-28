@@ -275,23 +275,7 @@ export class GeoDatasetDoctype extends IngridShared {
               '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
-        this.addRepeat("resolution", "Erstellungsmaßstab", {
-          className: "optional",
-          fields: [
-            this.addInputInline("denominator", "Maßstab 1:x", {
-              type: "number",
-              min: 0,
-            }),
-            this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
-              type: "number",
-              min: 0,
-            }),
-            this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
-              type: "number",
-              min: 0,
-            }),
-          ],
-        }),
+        this.addResolutionFields(),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
             fields: this.titleDateEditionFields(3555),

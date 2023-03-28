@@ -127,23 +127,7 @@ export class GeoServiceDoctype extends IngridShared {
               },
             },
           }),
-          this.addRepeat("resolution", "Erstellungsmaßstab", {
-            className: "optional",
-            fields: [
-              this.addInputInline("denominator", "Maßstab 1:x", {
-                type: "number",
-                min: 0,
-              }),
-              this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
-                type: "number",
-                min: 0,
-              }),
-              this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
-                type: "number",
-                min: 0,
-              }),
-            ],
-          }),
+          this.addResolutionFields(),
           this.addGroup(
             null,
             null,

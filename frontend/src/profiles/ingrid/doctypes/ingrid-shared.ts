@@ -872,6 +872,26 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
+  addResolutionFields(): FormlyFieldConfig {
+    return this.addRepeat("resolution", "Erstellungsmaßstab", {
+      className: "optional",
+      fields: [
+        this.addInputInline("denominator", "Maßstab 1:x", {
+          type: "number",
+          min: 0,
+        }),
+        this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
+          type: "number",
+          min: 0,
+        }),
+        this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
+          type: "number",
+          min: 0,
+        }),
+      ],
+    });
+  }
+
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },

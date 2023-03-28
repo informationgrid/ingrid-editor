@@ -25,9 +25,9 @@ export function LowercaseValidator(
 }
 
 export function minValidationMessage(error: any, field: FormlyFieldConfig) {
-  return `Dieses Feld muss mehr als ${field.props.min} sein`;
+  return `Der Wert darf nicht kleiner sein als ${field.props.min}`;
 }
 
 export function maxValidationMessage(error: any, field: FormlyFieldConfig) {
-  return `Dieses Feld muss kleiner als ${field.props.max} sein`;
+  return `Der Wert darf nicht größer sein als ${field.props.max}`;
 }
