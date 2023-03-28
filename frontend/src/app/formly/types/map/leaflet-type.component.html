@@ -47,7 +47,7 @@
 <div *ngIf="!disabled" class="spatialHelpText">
     Erstellen Sie Informationen über die räumliche Zuordnung des beschriebenen
     Datenbestands.
-    <a *ngIf="props.hasContextHelp" (click)="showContextHelp($event)"
+    <a *ngIf="props.hasContextHelp" (click)="showContextHelp()"
         >Hilfe zu Raumbezügen</a
     >
     <div *ngIf="maxLocationsReached">
