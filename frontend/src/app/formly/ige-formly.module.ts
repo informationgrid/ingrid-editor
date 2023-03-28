@@ -61,7 +61,8 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
-  NegativeValidator,
+  maxValidationMessage,
+  minValidationMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -203,7 +204,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
-        { name: "negative", validation: NegativeValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
@@ -228,8 +228,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           message: "Das Datum ist größer als erlaubt",
         },
         {
-          name: "negative",
-          message: "Dieses Feld darf keine negativen Zahlen",
+          name: "min",
+          message: minValidationMessage,
+        },
+        {
+          name: "max",
+          message: maxValidationMessage,
         },
       ] /*,
       wrappers: [

@@ -79,6 +79,7 @@ export interface InputOptions extends Options {
   contextHelpId?: string;
   validators?: any;
   min?: number;
+  max?: number;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -338,6 +339,7 @@ export class FormFieldHelper {
         disabled: options?.disabled,
         contextHelpId: options?.contextHelpId,
         min: options?.min,
+        max: options?.max,
       },
       modelOptions: {
         updateOn: "blur",

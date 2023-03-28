@@ -281,23 +281,14 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addInputInline("denominator", "Maßstab 1:x", {
               type: "number",
               min: 0,
-              validators: {
-                validation: ["negative"],
-              },
             }),
             this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
               type: "number",
               min: 0,
-              validators: {
-                validation: ["negative"],
-              },
             }),
             this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
               type: "number",
               min: 0,
-              validators: {
-                validation: ["negative"],
-              },
             }),
           ],
         }),
@@ -359,6 +350,8 @@ export class GeoDatasetDoctype extends IngridShared {
               wrappers: ["panel", "form-field"],
               className: "single-field width-25",
               type: "number",
+              min: 0,
+              max: 100,
             }),
           ]),
         ]),
