@@ -99,6 +99,56 @@
         "lon2"
       ],
       "title": "BoundingBox"
+    },
+    "AddressClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "street": {
+          "type": ["string", "null"]
+        },
+        "city": {
+          "type": ["string", "null"]
+        },
+        "po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "zip-code": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "zip-po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "administrativeArea": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "country": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": [
+      ],
+      "title": "AddressClass"
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "connection",
+        "type"
+      ],
+      "title": "Contact"
     }
   }
 }

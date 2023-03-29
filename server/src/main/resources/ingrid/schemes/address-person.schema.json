@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/InGridPerson",
+  "definitions": {
+    "InGridPerson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "address": {
+          "$ref": "../../general.schema.json#/definitions/AddressClass"
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/Contact"
+          },
+          "minItems": 1
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "salutation": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "publishArea": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "lastName",
+        "contact"
+      ],
+      "title": "Address"
+    }
+  }
+}
