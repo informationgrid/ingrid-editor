@@ -828,6 +828,9 @@ export abstract class IngridShared extends BaseDoctype {
               this.addInputInline("compression", "Kompressionstechnik"),
               this.addInputInline("specification", "Spezifikation"),
             ],
+            validators: {
+              validation: ["notEmptyArray"],
+            },
           }),
         ],
         {
