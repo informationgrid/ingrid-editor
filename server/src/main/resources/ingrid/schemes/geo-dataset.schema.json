@@ -16,6 +16,9 @@
         "isInspireIdentified": {
           "type": "boolean"
         },
+        "isInspireConform": {
+          "type": "boolean"
+        },
         "subType": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
