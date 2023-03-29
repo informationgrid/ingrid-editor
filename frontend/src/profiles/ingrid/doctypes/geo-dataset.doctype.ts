@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { isEmptyObject } from "../../../app/shared/utils";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -149,7 +149,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     type: "number",
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value, ["type"]),
+                        isNotEmptyObject(field.form.value, ["type"]),
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
@@ -162,7 +162,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   allowNoValue: true,
                   expressions: {
                     "props.required": (field) =>
-                      isEmptyObject(field.form.value, ["type"]),
+                      isNotEmptyObject(field.form.value, ["type"]),
                   },
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],

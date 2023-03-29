@@ -7,7 +7,7 @@ import {
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
-import { isEmptyObject } from "../../../app/shared/utils";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -352,7 +352,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                   this.addInputInline("maximumValue", "Maximum", {
@@ -361,7 +361,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                   this.addSelectInline("unitOfMeasure", "Maßeinheit", {
@@ -376,7 +376,7 @@ export abstract class IngridShared extends BaseDoctype {
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                 ],
@@ -408,7 +408,7 @@ export abstract class IngridShared extends BaseDoctype {
                     codelistId: 101,
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
@@ -518,7 +518,7 @@ export abstract class IngridShared extends BaseDoctype {
             this.addInputInline("number", "Anzahl", {
               type: "number",
               expressions: {
-                "props.required": (field) => isEmptyObject(field.form.value),
+                "props.required": (field) => isNotEmptyObject(field.form.value),
               },
             }),
             this.addSelectInline("unit", "Einheit", {
@@ -528,7 +528,7 @@ export abstract class IngridShared extends BaseDoctype {
               className: "flex-3",
               allowNoValue: true,
               expressions: {
-                "props.required": (field) => isEmptyObject(field.form.value),
+                "props.required": (field) => isNotEmptyObject(field.form.value),
               },
             }),
           ],

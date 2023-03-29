@@ -29,7 +29,7 @@ export interface RepeatOptions extends Options {
   menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
-  validators?: { [x: string]: { expression: any; message: string } };
+  validators?: { [x: string]: { expression: any; message: string } | string[] };
 }
 
 export interface RepeatListOptions extends Options {

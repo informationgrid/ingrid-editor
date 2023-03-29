@@ -1,5 +1,6 @@
 import { UntypedFormControl, ValidationErrors } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { isNotEmptyObject } from "../shared/utils";
 
 export function IpValidator(control: UntypedFormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
@@ -9,6 +10,16 @@ export function IpValidator(control: UntypedFormControl): ValidationErrors {
 
 export function EmailValidator(control: UntypedFormControl): ValidationErrors {
   return /^.+@.+\.\w+$/.test(control.value?.trim()) ? null : { email: true };
+}
+
+export function NotEmptyArrayValidator(
+  control: UntypedFormControl
+): ValidationErrors {
+  const value: any[] = control.value;
+  const result = value.every((item) => isNotEmptyObject(item));
+  return result
+    ? null
+    : { hasEmptyRows: { message: "Es dürfen keine leeren Zeilen vorkommen" } };
 }
 
 export function UrlValidator(control: UntypedFormControl): ValidationErrors {
