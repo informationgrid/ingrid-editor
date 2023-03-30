@@ -70,7 +70,8 @@ class IndexingTask @Autowired constructor(
     @Value("\${elastic.communication.ibus:true}")
     private val indexThroughIBus: Boolean,
     private val appProperties: GeneralProperties,
-    private val codelistService: CodeListService
+    private val codelistService: CodeListService,
+    private val postIndexPipe: PostIndexPipe
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -83,9 +84,6 @@ class IndexingTask @Autowired constructor(
     lateinit var generalProperties: GeneralProperties
 
     private lateinit var indexManager: IIndexManager
-
-    @Autowired
-    lateinit var postIndexPipe: PostIndexPipe
 
     @PostConstruct
     fun init() {
@@ -223,6 +221,7 @@ class IndexingTask @Autowired constructor(
         indexInfo: IndexInfo
     ) {
         val catalogType = catalogService.getCatalogById(catalogId).type
+        val simpleContext = SimpleContext(catalogId, catalogType)
 
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
@@ -242,7 +241,7 @@ class IndexingTask @Autowired constructor(
             .onEach {
                 val elasticDocument = convertToElasticDocument(it)
                 indexManager.update(indexInfo, elasticDocument, false)
-                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name), SimpleContext(catalogId, catalogType))
+                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name), simpleContext)
             }
     }
 

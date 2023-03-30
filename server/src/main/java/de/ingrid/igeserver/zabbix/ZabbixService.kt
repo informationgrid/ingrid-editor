@@ -31,50 +31,54 @@ class ZabbixService @Autowired constructor(
     val uploadUrl = zabbixProperties.uploadURL
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
-        val jsonWebscenarioGet = """{"jsonrpc":"$JSONRPC","method":"httptest.get","params":{"output": ["hostid", "name", "status"],"selectSteps": ["name", "url"],"selectTags": "extend","tags":[{"tag":"id","value":"${data.uuid}","operator":"1"}]},"auth":"$apiKey","id":1}"""
+        val jsonWebscenarioGet =
+            """{"jsonrpc":"$JSONRPC","method":"httptest.get","params":{"output": ["hostid", "name", "status"],"selectSteps": ["name", "url"],"selectTags": "extend","tags":[{"tag":"id","value":"${data.uuid}","operator":"1"}]},"auth":"$apiKey","id":1}"""
         val result = requestApi(jsonWebscenarioGet).get("result")
-        val currentDocuments = mutableListOf<ZabbixModel.Upload>()
-        for (item in result) {
-            val name = getDocumentName(item)
-            val url = getDocumentUrl(item)
-            val webscenarioId = getWebscenarioId(item)
-            currentDocuments += ZabbixModel.Upload(name, url, webscenarioId)
-        }
+
+        val remoteUploads = result.map { getUpload(it) }.toMutableList()
+
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
-        val documentsToDelete = currentDocuments
-        for (upload in data.uploads) {
-            var exists = false
-            for (current in currentDocuments) {
-                if (upload.url == current.url) {
-                    documentsToDelete.remove(current)
-                    exists = true
-                    break
-                }
-            }
-            if (!exists) documentsToAdd.add(upload)
+        val documentsToDelete = remoteUploads
+
+        data.uploads.forEach { upload ->
+            remoteUploads
+                .find { upload.url == it.url }
+                ?.let { documentsToDelete.remove(it) } ?: documentsToAdd.add(upload)
         }
 
         log.debug("Delete documents: $documentsToDelete")
-        deleteZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, documentsToDelete)
+        deleteZabbixJob(documentsToDelete)
         log.debug("Add documents: $documentsToAdd")
         createZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, data.documentURL, documentsToAdd)
     }
 
-    fun createZabbixJob(catalogIdentifier: String, uuid: String, name: String, url: String, documentsToAdd: List<ZabbixModel.Upload>){
+    private fun getUpload(item: JsonNode) = ZabbixModel.Upload(
+        getFromStepsAsString(item, "name"),
+        getFromStepsAsString(item, "url"),
+        getWebscenarioId(item),
+    )
+
+    private fun getWebscenarioId(response: JsonNode) = response.get("httptestid").asText()
+
+    private fun createZabbixJob(
+        catalogIdentifier: String,
+        uuid: String,
+        name: String,
+        url: String,
+        documentsToAdd: List<ZabbixModel.Upload>
+    ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
-        for (document in documentsToAdd) {
+        documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url)
             createTrigger(uuid, document.name, document.url)
         }
     }
 
-    fun deleteZabbixJob(catalogIdentifier: String, uuid: String, name: String, documentsToDelete: List<ZabbixModel.Upload>){
-        for (document in documentsToDelete)
-            deleteWebscenario(listOf(document.webscenarioId))
-    }
+    private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) =
+        documentsToDelete.forEach { document -> deleteWebscenario(listOf(document.webscenarioId)) }
 
-    fun createHostgroup(name: String): String {
+    private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)
         val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(hostgroup)
@@ -83,8 +87,9 @@ class ZabbixService @Autowired constructor(
         return getFromResultAsList(response, "groupids")[0].asText()
     }
 
-    fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
-        val jsonHostGroupGet = """{"jsonrpc":"$JSONRPC","method":"hostgroup.get","params":{"output":"extend","filter":{"name":["$catalogName"]}},"auth":"$apiKey","id":1}"""
+    private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
+        val jsonHostGroupGet =
+            """{"jsonrpc":"$JSONRPC","method":"hostgroup.get","params":{"output":"extend","filter":{"name":["$catalogName"]}},"auth":"$apiKey","id":1}"""
         val responseHostGroupGet = requestApi(jsonHostGroupGet)
         var groupid = responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText() ?: ""
         if (groupid.isEmpty()) groupid = createHostgroup(catalogName)
@@ -103,7 +108,8 @@ class ZabbixService @Autowired constructor(
         val values = jacksonObjectMapper().writeValueAsString(host)
         val response = requestApi(values)
         val hostId: String = if (response.has("error")) {
-            val jsonHostGet = """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"auth":"$apiKey","id":1}"""
+            val jsonHostGet =
+                """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"auth":"$apiKey","id":1}"""
             val responseHostGet = requestApi(jsonHostGet)
             val result = getFromResultArray(responseHostGet, "hostid")
             result.asText()
@@ -114,7 +120,7 @@ class ZabbixService @Autowired constructor(
         return hostId
     }
 
-    fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
+    private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
         val docNameStep = shortenString(docName, 64)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
@@ -124,7 +130,8 @@ class ZabbixService @Autowired constructor(
             ZabbixModel.Tag("document name", docNameTag),
             ZabbixModel.Tag("document url", docUrlTag)
         )
-        val steps = listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
+        val steps =
+            listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
@@ -132,7 +139,7 @@ class ZabbixService @Autowired constructor(
         log.debug(response)
     }
 
-    fun createTrigger(uuid: String, docName: String, docUrl: String) {
+    private fun createTrigger(uuid: String, docName: String, docUrl: String) {
         val docNameShort = shortenString(docName, 64)
         val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
         val docNameTag = shortenString(docName, 255)
@@ -156,14 +163,14 @@ class ZabbixService @Autowired constructor(
         log.debug(response)
     }
 
-    fun deleteHosts(ids: List<String>) {
+    private fun deleteHosts(ids: List<String>) {
         val host = ZabbixModel.Delete(method = "host.delete", params = ids, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(host)
         val response = requestApi(values)
         log.debug(response)
     }
 
-    fun deleteWebscenario(ids: List<String>) {
+    private fun deleteWebscenario(ids: List<String>) {
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         val response = requestApi(values)
@@ -171,7 +178,8 @@ class ZabbixService @Autowired constructor(
     }
 
     fun deleteDocument(uuid: String) {
-        val deleteJson = """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output": ["hostid", "name", "status"],"selectTags": "extend","tags":[{"tag":"id","value":"$uuid","operator":"1"}]},"auth":"$apiKey","id":1}"""
+        val deleteJson =
+            """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output": ["hostid", "name", "status"],"selectTags": "extend","tags":[{"tag":"id","value":"$uuid","operator":"1"}]},"auth":"$apiKey","id":1}"""
         val response = requestApi(deleteJson)
         log.debug(response)
         val hostId = getFromResultArray(response, "hostid")
@@ -180,29 +188,13 @@ class ZabbixService @Autowired constructor(
     }
 
     private fun getFromResultAsList(response: JsonNode, field: String): List<JsonNode> {
-        val array =  response.get("result").get(field) as ArrayNode
+        val array = response.get("result").get(field) as ArrayNode
         return array.map { it }
     }
 
-    private fun getFromResultArray(response: JsonNode, field: String): JsonNode {
-        return response.get("result").get(0).get(field)
-    }
+    private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
 
-    private fun getFromStepsAsString(response: JsonNode, field: String): String {
-        return response.get("steps").get(0).get(field).asText()
-    }
-
-    private fun getWebscenarioId(response: JsonNode): String {
-        return response.get("httptestid").asText()
-    }
-
-    private fun getDocumentName(steps: JsonNode): String {
-        return getFromStepsAsString(steps, "name")
-    }
-
-    private fun getDocumentUrl(steps: JsonNode): String {
-        return getFromStepsAsString(steps, "url")
-    }
+    private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asText()
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."

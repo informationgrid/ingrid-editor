@@ -25,7 +25,9 @@ class PostDocumentRemoverZabbix @Autowired constructor(
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
 
         // remove document from zabbix monitoring
-        if (zabbixService.activatedCatalogs.contains(context.catalogId)) zabbixService.deleteDocument(payload.document.uuid)
+        if (zabbixService.activatedCatalogs.contains(context.catalogId)) {
+            zabbixService.deleteDocument(payload.document.uuid)
+        }
 
         return payload
     }
