@@ -13,7 +13,12 @@ import {
   GetCapabilitiesAnalysis,
   Location,
   Operation,
+  TimeReference,
+  Url,
 } from "./get-capabilities.model";
+import { CodelistQuery } from "../../../../store/codelist/codelist.query";
+import { isEmptyObject } from "../../../../shared/utils";
+import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 
 @Injectable({
   providedIn: "root",
@@ -24,7 +29,8 @@ export class GetCapabilitiesService {
   constructor(
     private http: HttpClient,
     configService: ConfigService,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private codelistQuery: CodelistQuery
   ) {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl)
@@ -39,13 +45,14 @@ export class GetCapabilitiesService {
   }
 
   async applyChangesToModel(model: any, values: GetCapabilitiesAnalysis) {
+    const urlReferences: Url[] = [];
     for (const [key, value] of Object.entries(values)) {
       if (key === "title") model.title = value;
       if (key === "description") model.description = value;
       if (key === "versions") model.service.version = value;
       if (key === "fees") model.resource.useConstraints = [{ title: value }];
       if (key === "accessConstraints") model.resource.accessConstraints = value;
-      if (key === "onlineResources") model.references = value;
+      if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
       if (key === "keywords") model.keywords = value;
       if (key === "address")
@@ -60,14 +67,36 @@ export class GetCapabilitiesService {
         );
       if (key === "operations")
         model.service.operations = this.mapOperations(value);
-      if (key === "resourceLocators") null;
+      if (key === "resourceLocators") urlReferences.push(...value);
       if (key === "serviceType")
         model.service.classification = this.mapClassification(value);
       if (key === "timeReference")
         model.temporal.events = this.mapEvents(value);
-      if (key === "timeSpans") null;
+      if (key === "timeSpan")
+        model.temporal = {
+          ...model.temporal,
+          ...this.mapTimeSpan(value),
+        };
       if (key === "spatialReferenceSystems")
         model.spatial.spatialSystems = this.mapSpatialReferenceSystems(value);
+    }
+
+    if (urlReferences.length > 0) {
+      model.references = urlReferences;
+    }
+
+    this.handleDefaultTemporalEvent(model);
+  }
+
+  private handleDefaultTemporalEvent(model: any) {
+    const currentDateEvent = {
+      referenceDate: new Date(),
+      referenceDateType: { key: "1" },
+    };
+    if (model.temporal.events.length === 0) {
+      model.temporal.events.push(currentDateEvent);
+    } else if (isEmptyObject(model.temporal.events[0])) {
+      model.temporal.events[0] = currentDateEvent;
     }
   }
 
@@ -88,7 +117,9 @@ export class GetCapabilitiesService {
   private mapOperations(operations: Operation[]) {
     return operations.map((op) => {
       return {
-        name: 1,
+        name: op.name.key
+          ? { key: op.name.key }
+          : { key: null, value: op.name.value },
         methodCall: op.addressList[0],
       };
     });
@@ -115,6 +146,21 @@ export class GetCapabilitiesService {
     }
   }
 
+  private getCodelistForServiceType(value: any) {
+    switch (value) {
+      case "1":
+        return "5105";
+      case "2":
+        return "5110";
+      case "3":
+        return "5120";
+      case "4":
+        return "5130";
+      default:
+        return null;
+    }
+  }
+
   private mapEvents(value: any[]) {
     return value.map((item) => {
       return {
@@ -126,12 +172,19 @@ export class GetCapabilitiesService {
 
   private mapConformities(value: any[]) {
     return value.map((item) => {
+      const entry = this.codelistQuery.getCodelistEntryByValue(
+        "6005",
+        item.specification,
+        "iso"
+      );
+      const spec = entry
+        ? { key: entry.id }
+        : { key: null, value: item.specification };
       return {
-        pass: { key: item.level },
-        specification: {
-          key: null,
-          value: item.specification,
-        },
+        // pass: { key: `${item.level}` },
+        specification: spec,
+        publicationDate: this.getPublicationDate(entry),
+        isInspire: entry !== null,
       };
     });
   }
@@ -246,5 +299,41 @@ export class GetCapabilitiesService {
       .save(address, true, true, null, true, false)
       .toPromise();
     return [{ ref: result, type: { key: "1" } }];
+  }
+
+  private mapTimeSpan(value: TimeReference): any {
+    const template: any = {
+      resourceDateType: {
+        key: null,
+      },
+      resourceRange: {
+        start: null,
+        end: null,
+      },
+    };
+
+    if (value.from && value.to) {
+      template.resourceRange.start = value.from;
+      template.resourceRange.end = value.to;
+      template.resourceDateType.key = "since";
+      template.resourceDateTypeSince = {
+        key: "exactDate",
+      };
+    } else if (value.to) {
+      template.resourceDate = value.from;
+      template.resourceDateType.key = "since";
+    } else if (value.from) {
+      template.resourceDate = value.from;
+      template.resourceDateType.key = "till";
+    }
+
+    return template;
+  }
+
+  private getPublicationDate(entry: CodelistEntry) {
+    if (!entry) return null;
+
+    const dateParts = entry.data.split("-");
+    return new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
   }
 }

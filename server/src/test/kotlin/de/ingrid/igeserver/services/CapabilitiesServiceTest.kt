@@ -148,6 +148,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     KeyValue("4326", "EPSG 4326: WGS 84 / geographisch")
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Thomas",
                     lastName = "Eichhorn",
                     email = "gvgeoportal@gv.hamburg.de",
@@ -166,19 +167,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        "GetCapabilities"
+                        KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?",
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"
-                        ), listOf(7, 8), "DescribeFeatureType", "DescribeFeatureType"
+                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
                     ),
                     OperationBean(
                         listOf(
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?",
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"
-                        ), listOf(7, 8), "GetFeature", "GetFeature"
+                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
                     )
                 )
                 onlineResources shouldContainExactly listOf(
@@ -188,7 +189,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
@@ -228,6 +229,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     KeyValue(null, "urn:ogc:def:crs:EPSG::5554"),
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "",
                     lastName = "KRZN",
                     email = "ksc@krzn.de",
@@ -246,19 +248,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        "GetCapabilities"
+                        KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
-                        ), listOf(7, 8), "DescribeFeatureType", "DescribeFeatureType"
+                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
                     ),
                     OperationBean(
                         listOf(
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
-                        ), listOf(7, 8), "GetFeature", "GetFeature"
+                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
                     )
                 )
                 onlineResources shouldContainExactly listOf(
@@ -268,7 +270,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
@@ -329,6 +331,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     KeyValue(null, "urn:ogc:def:crs:EPSG::32618")
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Paul",
                     lastName = "Bunyon",
                     email = "Paul.Bunyon@BlueOx.org",
@@ -347,30 +350,30 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        "GetCapabilities"
+                        KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
                             "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "DescribeFeatureType", "DescribeFeatureType"
+                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
                             "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "GetFeature", "GetFeature"
+                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
                             "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "LockFeature", "LockFeature"
+                        ), listOf(7, 8), "LockFeature", KeyValue("4", "LockFeature")
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(8), "Transaction", "Transaction"
+                        ), listOf(8), "Transaction", KeyValue("5", "Transaction")
                     )
                 )
                 onlineResources shouldContainExactly listOf(
@@ -380,7 +383,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe listOf(ConformityBean(3, "Please enter a title"))
                 resourceLocators shouldBe listOf(
                     UrlBean(
@@ -442,6 +445,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     KeyValue("4326", "EPSG 4326: WGS 84 / geographisch")
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Jeff",
                     lastName = "deLaBeaujardiere",
                     email = "delabeau@iniki.gsfc.nasa.gov",
@@ -455,9 +459,9 @@ class CapabilitiesServiceTest : ShouldSpec({
                 )
                 operations?.shouldHaveSize(3)
                 operations shouldContainExactly listOf(
-                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetCapabilities", "GetCapabilities"),
-                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetMap", "GetMap"),
-                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetFeatureInfo", "GetFeatureInfo"),
+                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")),
+                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
+                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetFeatureInfo", KeyValue("3", "GetFeatureInfo")),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
@@ -466,7 +470,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 /*conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
@@ -561,6 +565,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     )
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Jeff",
                     lastName = "Smith",
                     email = "user@host.com",
@@ -573,9 +578,9 @@ class CapabilitiesServiceTest : ShouldSpec({
                     phone = "+1 301 555-1212"
                 )
                 operations shouldContainExactly listOf(
-                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", "GetCapabilities"),
-                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", "GetMap"),
-                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", "GetFeatureInfo"),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
+                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", KeyValue("3", "GetFeatureInfo")),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
@@ -584,7 +589,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
@@ -636,6 +641,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     KeyValue("4230", "EPSG 4230: ED50 / geographisch")
                 )*/
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Dr. Manfred",
                     lastName = "Endrullis",
                     organization = "BKG",
@@ -652,19 +658,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                         listOf(
                             "http://localhost:8080/wpvs/services?",
                             "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "GetCapabilities", "GetCapabilities"
+                        ), listOf(7, 8), "GetCapabilities", KeyValue(null, "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
                             "http://localhost:8080/wpvs/services?",
                             "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "DescribeCoverage", "DescribeCoverage"
+                        ), listOf(7, 8), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
                     ),
                     OperationBean(
                         listOf(
                             "http://localhost:8080/wpvs/services?",
                             "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "GetCoverage", "GetCoverage"
+                        ), listOf(7, 8), "GetCoverage", KeyValue(null, "GetCoverage")
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
@@ -674,7 +680,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                /*timeSpans shouldBe emptyList()
+                /*timeSpan null
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
@@ -712,6 +718,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 boundingBoxes shouldContainExactly listOf()
                 spatialReferenceSystems shouldContainExactly listOf()
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Panagiotis (Peter) A.",
                     lastName = "Vretanos",
                     street = "15 rue Gamelin",
@@ -726,15 +733,15 @@ class CapabilitiesServiceTest : ShouldSpec({
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "GetCapabilities", "GetCapabilities"
+                        listOf(7), "GetCapabilities", KeyValue(null, "GetCapabilities")
                     ),
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "DescribeCoverage", "DescribeCoverage"
+                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
                     ),
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "GetCoverage", "GetCoverage"
+                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage")
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
@@ -744,7 +751,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Verweis"
                     )
                 )
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
@@ -799,6 +806,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 )
                 spatialReferenceSystems?.shouldHaveSize(20)
                 address shouldBe AddressBean(
+                    _state = "W",
                     lastName = "N/A",
                     street = "Musterstr. 23",
                     city = "Berlin",
@@ -812,19 +820,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "GetCapabilities", "GetCapabilities"
+                        listOf(7), "GetCapabilities", KeyValue(null, "GetCapabilities")
                     ),
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "DescribeCoverage", "DescribeCoverage"
+                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
                     ),
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "GetCoverage", "GetCoverage"
+                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage")
                     ),
                 )
                 onlineResources shouldContainExactly emptyList()
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
@@ -852,6 +860,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 boundingBoxes shouldContainExactly listOf()
                 spatialReferenceSystems shouldBe emptyList()
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Andreas",
                     lastName = "Poth",
                     street = "Meckenheimer Allee 176",
@@ -866,23 +875,23 @@ class CapabilitiesServiceTest : ShouldSpec({
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "GetCapabilities", "GetCapabilities"
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "Transform", "Transform"
+                        listOf(7), "Transform", KeyValue("2", "Transform")
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "IsTransformable", "IsTransformable"
+                        listOf(7), "IsTransformable", KeyValue("3", "IsTransformable")
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "GetResourceByID", "GetResourceById"
+                        listOf(7), "GetResourceByID", KeyValue("5", "GetResourceById")
                     ),
                 )
                 onlineResources shouldContainExactly emptyList()
-                timeSpans shouldBe emptyList()
+                timeSpan shouldBe null
                 conformities shouldBe emptyList()
                 resourceLocators shouldBe emptyList()
                 timeReference shouldBe emptyList()
@@ -919,6 +928,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 boundingBoxes shouldContainExactly emptyList()
                 spatialReferenceSystems shouldContainExactly emptyList()
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Uwe",
                     lastName = "Voges",
                     street = "Marting-Luther-King-Weg 24",
@@ -936,27 +946,27 @@ class CapabilitiesServiceTest : ShouldSpec({
                         listOf(
                             "http://www.conterra.de/catalog?",
                             "http://www.conterra.de/catalog?"
-                        ), listOf(7, 8), "GetCapabilities", "GetCapabilities"
+                        ), listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
                             "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "DescribeRecord", "DescribeRecord"
+                        ), listOf(8), "DescribeRecord", KeyValue("4", "DescribeRecord")
                     ),
                     OperationBean(
                         listOf(
                             "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "GetRecords", "GetRecords"
+                        ), listOf(8), "GetRecords", KeyValue("2", "GetRecords")
                     ),
                     OperationBean(
                         listOf(
                             "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "GetRecordById", "GetRecordById"
+                        ), listOf(8), "GetRecordById", KeyValue("3", "GetRecordById")
                     ),
                     OperationBean(
                         listOf(
                             "http://linux2:7070/axis/services/CSW20_Publication_SOAP_Port"
-                        ), listOf(8), "Harvest", "Harvest"
+                        ), listOf(8), "Harvest", KeyValue("7", "Harvest")
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
@@ -977,9 +987,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     TimeReferenceBean(2, formatter.parse("2012-10-22")),
                     TimeReferenceBean(3, formatter.parse("2013-11-26"))
                 )
-                timeSpans shouldBe listOf(
-                    TimeReferenceBean(from = formatter.parse("2009-08-20"), to = formatter.parse("2010-04-29"))
-                )
+                timeSpan shouldBe TimeReferenceBean(from = formatter.parse("2009-08-20"), to = formatter.parse("2010-04-29"))
+                
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 1,
@@ -1028,6 +1037,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     )
                 )
                 address shouldBe AddressBean(
+                    _state = "W",
                     firstName = "Andre",
                     lastName = "Kalia",
                     street = "Bundesanstalt für Geowissenschaften und Rohstoffe",
@@ -1045,7 +1055,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                             "https://bodenbewegungsdienst.bgr.de/velocity_vertical/WMTS/1.0.0/WMTSCapabilities.xml",
                         ), listOf(7),
                         null /* do not set method call so that it doesn't appear in ISO (#3651) */,
-                        "GetCapabilities"
+                        KeyValue("1", "GetCapabilities")
                     )
                     // Only import GetCapabilities - Operation (#3651)
                     /*,
@@ -1058,7 +1068,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf()
                 resourceLocators shouldBe listOf()
                 timeReference shouldBe listOf()
-                timeSpans shouldBe listOf()
+                timeSpan shouldBe null
                 conformities shouldBe listOf()
             }
         }

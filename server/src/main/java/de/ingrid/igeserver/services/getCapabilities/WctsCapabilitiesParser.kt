@@ -52,7 +52,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
-            getCapabilitiesOp.name = "GetCapabilities"
+            getCapabilitiesOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "GetCapabilities", "de"), 
+                "GetCapabilities"
+            )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
             operations.add(getCapabilitiesOp)
@@ -70,7 +73,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (transformOp.addressList!!.isNotEmpty()) {
-            transformOp.name = "Transform"
+            transformOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "Transform", "de"), 
+                "Transform"
+            )
             transformOp.methodCall = "Transform"
 
             operations.add(transformOp)
@@ -89,7 +95,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (isTransformableOp.addressList!!.isNotEmpty()) {
-            isTransformableOp.name = "IsTransformable"
+            isTransformableOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "IsTransformable", "de"), 
+                "IsTransformable"
+            )
             isTransformableOp.methodCall = "IsTransformable"
 
             operations.add(isTransformableOp)
@@ -107,7 +116,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getTransformationOp.addressList!!.isNotEmpty()) {
-            getTransformationOp.name = "GetTransformation"
+            getTransformationOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "GetTransformation", "de"), 
+                "GetTransformation"
+            )
             getTransformationOp.methodCall = "GetTransformation"
 
             operations.add(getTransformationOp)
@@ -126,7 +138,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (describeTransformationOp.addressList!!.isNotEmpty()) {
-            describeTransformationOp.name = "DescribeTransformation"
+            describeTransformationOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "DescribeTransformation", "de"), 
+                "DescribeTransformation"
+            )
             describeTransformationOp.methodCall = "DescribeTransformation"
 
             operations.add(describeTransformationOp)
@@ -144,7 +159,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getResourceByIdOp.addressList!!.isNotEmpty()) {
-            getResourceByIdOp.name = "GetResourceById"
+            getResourceByIdOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "GetResourceById", "de"), 
+                "GetResourceById"
+            )
             getResourceByIdOp.methodCall = "GetResourceByID"
 
             operations.add(getResourceByIdOp)
@@ -162,7 +180,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (describeCRSOp.addressList!!.isNotEmpty()) {
-            describeCRSOp.name = "DescribeCRS"
+            describeCRSOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "DescribeCRS", "de"), 
+                "DescribeCRS"
+            )
             describeCRSOp.methodCall = "DescribeCRS"
 
             operations.add(describeCRSOp)
@@ -180,7 +201,10 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (describeMethodOp.addressList!!.isNotEmpty()) {
-            describeMethodOp.name = "DescribeMethod"
+            describeMethodOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5130", "DescribeMethod", "de"), 
+                "DescribeMethod"
+            )
             describeMethodOp.methodCall = "DescribeMethod"
 
             operations.add(describeMethodOp)

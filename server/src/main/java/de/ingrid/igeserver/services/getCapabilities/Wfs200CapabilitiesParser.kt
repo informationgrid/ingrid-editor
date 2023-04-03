@@ -99,7 +99,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (getCapabilitiesOp.addressList?.isNotEmpty() == true) {
-            getCapabilitiesOp.name = "GetCapabilities"
+            getCapabilitiesOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"), 
+                "GetCapabilities"
+            )
             getCapabilitiesOp.methodCall = "GetCapabilities"
             operations.add(getCapabilitiesOp)
         }
@@ -116,7 +119,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (describeFeatureTypeOp.addressList?.isNotEmpty() == true) {
-            describeFeatureTypeOp.name = "DescribeFeatureType"
+            describeFeatureTypeOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"), 
+                "DescribeFeatureType"
+            )
             describeFeatureTypeOp.methodCall = "DescribeFeatureType"
             operations.add(describeFeatureTypeOp)
         }
@@ -128,7 +134,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (getFeatureOp.addressList?.isNotEmpty() == true) {
-            getFeatureOp.name = "GetFeature"
+            getFeatureOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"), 
+                "GetFeature"
+            )
             getFeatureOp.methodCall = "GetFeature"
             operations.add(getFeatureOp)
         }
@@ -142,7 +151,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (getGmlObjectOp.addressList?.isNotEmpty() == true) {
-            getGmlObjectOp.name = "GetGmlObject"
+            getGmlObjectOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"), 
+                "GetGmlObject"
+            )
             getGmlObjectOp.methodCall = "GetGmlObject"
             operations.add(getGmlObjectOp)
         }
@@ -154,7 +166,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (lockFeatureOp.addressList?.isNotEmpty() == true) {
-            lockFeatureOp.name = "LockFeature"
+            lockFeatureOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"), 
+                "LockFeature"
+            )
             lockFeatureOp.methodCall = "LockFeature"
             operations.add(lockFeatureOp)
         }
@@ -166,7 +181,10 @@ class Wfs200CapabilitiesParser(
             )
         )
         if (transactionOp.addressList?.isNotEmpty() == true) {
-            transactionOp.name = "Transaction"
+            transactionOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5120", "Transaction", "de"), 
+                "Transaction"
+            )
             transactionOp.methodCall = "Transaction"
             operations.add(transactionOp)
         }

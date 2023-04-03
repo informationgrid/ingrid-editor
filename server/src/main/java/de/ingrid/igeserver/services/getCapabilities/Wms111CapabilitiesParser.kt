@@ -12,7 +12,7 @@ import org.w3c.dom.Node
  * @author André Wallat
  */
 class Wms111CapabilitiesParser(
-    codelistHandler: CodelistHandler, 
+    codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
     val catalogId: String
 ) :
@@ -63,7 +63,11 @@ class Wms111CapabilitiesParser(
         }
     }
 
-    private fun getCoupledResources(doc: Document, unionOfBoundingBoxes: LocationBean?, commonKeywords: List<String>): List<GeoDataset> {
+    private fun getCoupledResources(
+        doc: Document,
+        unionOfBoundingBoxes: LocationBean?,
+        commonKeywords: List<String>
+    ): List<GeoDataset> {
         val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
         val coupledResourcesList = mutableListOf<GeoDataset>()
 //       TODO: val commonSNSTopics: List<SNSTopic> = transformKeywordListToSNSTopics(commonKeywords)
@@ -102,7 +106,10 @@ class Wms111CapabilitiesParser(
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = OperationBean()
-        getCapabilitiesOp.name = "GetCapabilities"
+        getCapabilitiesOp.name = KeyValue(
+            codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+            "GetCapabilities"
+        )
         getCapabilitiesOp.methodCall = "GetCapabilities"
         val getCapabilitiesOpPlatform: MutableList<Int> = ArrayList()
         getCapabilitiesOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -117,7 +124,10 @@ class Wms111CapabilitiesParser(
 
         // Operation - GetMap
         val getMapOp = OperationBean()
-        getMapOp.name = "GetMap"
+        getMapOp.name = KeyValue(
+            codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
+            "GetMap"
+        )
         getMapOp.methodCall = "GetMap"
         val getMapOpPlatform: MutableList<Int> = ArrayList()
         getMapOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -138,7 +148,10 @@ class Wms111CapabilitiesParser(
             xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_OP_GET_FEATURE_INFO_HREF)
         if (getFeatureInfoAddress != null && getFeatureInfoAddress.length != 0) {
             val getFeatureInfoOp = OperationBean()
-            getFeatureInfoOp.name = "GetFeatureInfo"
+            getFeatureInfoOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
+                "GetFeatureInfo"
+            )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
             val getFeatureInfoOpPlatform: MutableList<Int> = ArrayList()
             getFeatureInfoOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -173,7 +186,7 @@ class Wms111CapabilitiesParser(
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Address"
@@ -186,14 +199,18 @@ class Wms111CapabilitiesParser(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/PostCode"
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Country"
-        ))
-        address.state = getKeyValue("110", xPathUtils.getString(
-            doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/StateOrProvince"
-        ), "name")
+        address.country = getKeyValue(
+            "6200", xPathUtils.getString(
+                doc,
+                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Country"
+            )
+        )
+        address.state = getKeyValue(
+            "110", xPathUtils.getString(
+                doc,
+                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/StateOrProvince"
+            ), "name"
+        )
         address.phone = xPathUtils.getString(
             doc,
             XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactVoiceTelephone"

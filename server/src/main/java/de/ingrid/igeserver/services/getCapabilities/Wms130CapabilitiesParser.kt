@@ -119,7 +119,10 @@ class Wms130CapabilitiesParser(
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = OperationBean()
-        getCapabilitiesOp.name = "GetCapabilities"
+        getCapabilitiesOp.name = KeyValue(
+            codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+            "GetCapabilities"
+        )
         getCapabilitiesOp.methodCall = "GetCapabilities"
         val getCapabilitiesOpPlatform: MutableList<Int> = ArrayList()
         getCapabilitiesOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -133,7 +136,10 @@ class Wms130CapabilitiesParser(
 
         // Operation - GetMap
         val getMapOp = OperationBean()
-        getMapOp.name = "GetMap"
+        getMapOp.name = KeyValue(
+            codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
+            "GetMap"
+        )
         getMapOp.methodCall = "GetMap"
         val getMapOpPlatform: MutableList<Int> = ArrayList()
         getMapOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -148,7 +154,10 @@ class Wms130CapabilitiesParser(
         val getFeatureInfoAddress = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_OP_GET_FEATURE_INFO_HREF)
         if (getFeatureInfoAddress != null && getFeatureInfoAddress.length != 0) {
             val getFeatureInfoOp = OperationBean()
-            getFeatureInfoOp.name = "GetFeatureInfo"
+            getFeatureInfoOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
+                "GetFeatureInfo"
+            )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
             val getFeatureInfoOpPlatform: MutableList<Int> = ArrayList()
             getFeatureInfoOpPlatform.add(ID_OP_PLATFORM_HTTP_GET)
@@ -183,13 +192,20 @@ class Wms130CapabilitiesParser(
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Address")
         address.city = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:City")
         address.postcode =
             xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:PostCode")
-        address.country = getKeyValue("6200", xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Country"))
-        address.state = getKeyValue("110", xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:StateOrProvince"), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Country")
+        )
+        address.state = getKeyValue(
+            "110",
+            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:StateOrProvince"),
+            "name"
+        )
         address.phone = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactVoiceTelephone")
         return address
     }

@@ -6,9 +6,11 @@ import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class CswCapabilitiesParser(codelistHandler: CodelistHandler,
-                            private val researchService: ResearchService,
-                            val catalogId: String) :
+class CswCapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    val catalogId: String
+) :
     GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("2.0.2" to "1")
@@ -48,7 +50,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
-            getCapabilitiesOp.name = "GetCapabilities"
+            getCapabilitiesOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "GetCapabilities", "de"),
+                "GetCapabilities"
+            )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
             operations.add(getCapabilitiesOp)
@@ -67,7 +72,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (describeRecordOp.addressList!!.isNotEmpty()) {
-            describeRecordOp.name = "DescribeRecord"
+            describeRecordOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "DescribeRecord", "de"),
+                "DescribeRecord"
+            )
             describeRecordOp.methodCall = "DescribeRecord"
 
             operations.add(describeRecordOp)
@@ -86,7 +94,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getDomainOp.addressList!!.isNotEmpty()) {
-            getDomainOp.name = "GetDomain"
+            getDomainOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "GetDomain", "de"),
+                "GetDomain"
+            )
             getDomainOp.methodCall = "GetDomain"
 
             operations.add(getDomainOp)
@@ -104,7 +115,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getRecordsOp.addressList!!.isNotEmpty()) {
-            getRecordsOp.name = "GetRecords"
+            getRecordsOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "GetRecords", "de"),
+                "GetRecords"
+            )
             getRecordsOp.methodCall = "GetRecords"
 
             operations.add(getRecordsOp)
@@ -122,7 +136,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (getRecordByIdOp.addressList!!.isNotEmpty()) {
-            getRecordByIdOp.name = "GetRecordById"
+            getRecordByIdOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "GetRecordById", "de"),
+                "GetRecordById"
+            )
             getRecordByIdOp.methodCall = "GetRecordById"
 
             operations.add(getRecordByIdOp)
@@ -140,7 +157,10 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (harvestOp.addressList!!.isNotEmpty()) {
-            harvestOp.name = "Harvest"
+            harvestOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5105", "Harvest", "de"),
+                "Harvest"
+            )
             harvestOp.methodCall = "Harvest"
 
             operations.add(harvestOp)
@@ -168,7 +188,7 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
             "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"
@@ -181,14 +201,18 @@ class CswCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode"
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
-        ))
-        address.state = getKeyValue("110", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200", xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
+            )
+        )
+        address.state = getKeyValue(
+            "110", xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
+            ), "name"
+        )
         address.phone = xPathUtils.getString(
             doc,
             "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice"

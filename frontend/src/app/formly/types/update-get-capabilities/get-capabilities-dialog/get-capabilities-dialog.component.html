@@ -10,9 +10,10 @@
                     <mat-label>URL</mat-label>
                     <input
                         #url
+                        [igeFocus]
+                        [value]="initialUrl"
                         matInput
                         placeholder="https://"
-                        value="https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?REQUEST=GetCapabilities&SERVICE=WFS"
                     />
                 </mat-form-field>
                 <button
@@ -86,6 +87,17 @@
                 >
             </mat-list-option>
             <mat-list-option
+                *ngIf="report.resourceLocators.length > 0"
+                value="resourceLocators"
+            >
+                <div matListItemTitle>Verweise zur Ressource</div>
+                <span
+                    matListItemLine
+                    *ngFor="let link of report.resourceLocators"
+                    >{{ link.url }} ({{ link.type?.value }})</span
+                >
+            </mat-list-option>
+            <mat-list-option
                 *ngIf="report.keywords.length > 0"
                 value="keywords"
             >
@@ -140,7 +152,8 @@
                 <span
                     matListItemLine
                     *ngFor="let operation of report.operations"
-                    >{{ operation.name }}: {{ operation.addressList[0] }}</span
+                    >{{ operation.name.value }}:
+                    {{ operation.addressList[0] }}</span
                 >
             </mat-list-option>
             <mat-list-option
@@ -161,14 +174,10 @@
                     >
                 </div>
             </mat-list-option>
-            <mat-list-option
-                *ngIf="report.timeSpans.length > 0"
-                value="timeSpans"
-            >
+            <mat-list-option *ngIf="report.timeSpan" value="timeSpan">
                 <div matListItemTitle>Zeitspannen</div>
-                <div matListItemLine *ngFor="let timeSpan of report.timeSpans">
-                    {{ timeSpan | json }}
-                </div>
+                Von: {{ report.timeSpan.from | date }} bis:
+                {{ report.timeSpan.to | date }}
             </mat-list-option>
             <mat-list-option
                 *ngIf="report.conformities.length > 0"

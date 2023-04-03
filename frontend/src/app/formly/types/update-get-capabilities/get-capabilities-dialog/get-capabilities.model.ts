@@ -16,7 +16,7 @@ export interface GetCapabilitiesAnalysis {
   operations: Operation[];
   resourceLocators: Url[];
   timeReference: TimeReference[];
-  timeSpans: TimeReference[];
+  timeSpan: TimeReference;
   conformities: Conformity[];
   coupledResources: CoupledResource[];
 }
@@ -63,7 +63,7 @@ export interface Address {
   postCode?: string;
 }
 
-interface Url {
+export interface Url {
   url?: string;
   type?: KeyValue;
   title?: string;
@@ -71,15 +71,17 @@ interface Url {
 }
 
 export interface Operation {
-  name?: string;
+  name?: KeyValue;
   addressList?: string[];
   platform?: number[];
   methodCall?: string;
 }
 
-interface TimeReference {
+export interface TimeReference {
   type: number;
   date: string;
+  from: string;
+  to: string;
 }
 
 interface Conformity {

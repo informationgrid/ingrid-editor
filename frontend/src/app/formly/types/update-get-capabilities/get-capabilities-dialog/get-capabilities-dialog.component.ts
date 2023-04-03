@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, Inject, ViewChild } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize } from "rxjs/operators";
 import { Observable, of } from "rxjs";
@@ -6,7 +6,7 @@ import {
   MatSelectionList,
   MatSelectionListChange,
 } from "@angular/material/list";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { GetCapabilitiesAnalysis } from "./get-capabilities.model";
 
 @Component({
@@ -25,8 +25,11 @@ export class GetCapabilitiesDialogComponent {
 
   constructor(
     private getCapService: GetCapabilitiesService,
+    @Inject(MAT_DIALOG_DATA) public initialUrl: string,
     private dlg: MatDialogRef<GetCapabilitiesDialogComponent>
-  ) {}
+  ) {
+    if (initialUrl) this.analyze(initialUrl);
+  }
 
   analyze(url: string) {
     this.report = null;
@@ -39,7 +42,10 @@ export class GetCapabilitiesDialogComponent {
         filter((report) => report !== null),
         finalize(() => (this.isAnalyzing = false))
       )
-      .subscribe((report) => (this.report = report));
+      .subscribe(
+        (report) =>
+          (this.report = this.addOriginalGetCapabilitiesUrl(report, url))
+      );
   }
 
   private handleError(error: any): Observable<null> {
@@ -48,10 +54,10 @@ export class GetCapabilitiesDialogComponent {
   }
 
   submit() {
-    console.log(this.selection.selectedOptions.selected);
     const selectedValues = this.selection.selectedOptions.selected.map(
       (item) => item.value
     );
+    selectedValues.push("dataServiceType", "serviceType");
     const result = Object.fromEntries(
       Object.entries(this.report).filter(
         ([key]) => selectedValues.indexOf(key) !== -1
@@ -73,5 +79,15 @@ export class GetCapabilitiesDialogComponent {
 
   private handleSubmitState(numOptions: number) {
     this.allowSubmit = numOptions > 0;
+  }
+
+  private addOriginalGetCapabilitiesUrl(
+    report: GetCapabilitiesAnalysis,
+    originalUrl: string
+  ) {
+    const getCapOp = report.operations.find((item) => item.name.key === "1");
+
+    getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
+    return report;
   }
 }

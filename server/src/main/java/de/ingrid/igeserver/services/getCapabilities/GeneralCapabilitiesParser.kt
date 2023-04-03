@@ -31,7 +31,7 @@ data class OperationBean(
     var addressList: List<String>? = null,
     var platform: List<Int>? = null,
     var methodCall: String? = null,
-    var name: String? = null
+    var name: KeyValue? = null
 )
 
 data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
@@ -85,7 +85,7 @@ class CapabilitiesBean {
     var operations: List<OperationBean>? = emptyList()
     var resourceLocators: List<UrlBean>? = emptyList()
     var timeReference = mutableListOf<TimeReferenceBean>()
-    var timeSpans = mutableListOf<TimeReferenceBean>()
+    var timeSpan: TimeReferenceBean? = null
     var conformities = listOf<ConformityBean>()
     var coupledResources = listOf<GeoDataset>()
 }
@@ -150,16 +150,13 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return null
     }
 
-    protected fun getSimpleDate(date: String): Date? {
-        // add date to time reference
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        var d: Date? = null
-        try {
-            d = formatter.parse(date)
+    private fun getSimpleDate(date: String): Date? {
+        return try {
+            SimpleDateFormat("yyyy-MM-dd").parse(date)
         } catch (e: ParseException) {
             log.debug("Error on getSimpleDate", e)
+            null
         }
-        return d
     }
 
     private fun mapToConformityBeans(doc: Document, xPath: String): List<ConformityBean> {
@@ -401,10 +398,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:EndDate"
             )
             if (startDate != null || endDate != null) {
-                bean.timeSpans = mutableListOf(TimeReferenceBean().apply {
+                bean.timeSpan = TimeReferenceBean().apply {
                     getSimpleDate(startDate)?.let { from = it }
                     getSimpleDate(endDate)?.let { to = it }
-                })
+                }
             }
 
             // Extended - Keywords

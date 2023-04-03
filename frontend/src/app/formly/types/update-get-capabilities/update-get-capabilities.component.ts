@@ -26,6 +26,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
         maxWidth: "80vw",
         disableClose: true,
         hasBackdrop: true,
+        data: this.getInitialGetCapabilitiesUrl(),
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -36,5 +37,13 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
     await this.getCapService.applyChangesToModel(this.field.model, values);
     this.field.options.formState.updateModel();
     this.form.markAsDirty();
+  }
+
+  private getInitialGetCapabilitiesUrl(): string {
+    return (
+      this.options.formState.mainModel.service.operations?.find(
+        (item) => item.name?.key === "1"
+      )?.methodCall ?? ""
+    );
   }
 }

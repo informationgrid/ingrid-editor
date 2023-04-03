@@ -45,7 +45,10 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
             ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
-            getCapabilitiesOp.name = "GetCapabilities"
+            getCapabilitiesOp.name = KeyValue(
+                null, 
+                "GetCapabilities"
+            )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
             operations.add(getCapabilitiesOp)
@@ -59,7 +62,10 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
             ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
-            describeCoverageOp.name = "DescribeCoverage"
+            describeCoverageOp.name = KeyValue(
+                null, 
+                "DescribeCoverage"
+            )
             describeCoverageOp.methodCall = "DescribeCoverage"
 
             operations.add(describeCoverageOp)
@@ -73,7 +79,10 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
             ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
-            getCoverageOp.name = "GetCoverage"
+            getCoverageOp.name = KeyValue(
+                null, 
+                "GetCoverage"
+            )
             getCoverageOp.methodCall = "GetCoverage"
 
             operations.add(getCoverageOp)

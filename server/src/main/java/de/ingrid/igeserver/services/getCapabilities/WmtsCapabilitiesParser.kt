@@ -56,7 +56,10 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
             )
         )
         if (!getCapabilitiesOp.addressList!!.isEmpty()) {
-            getCapabilitiesOp.name = "GetCapabilities"
+            getCapabilitiesOp.name = KeyValue(
+                codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"), 
+                "GetCapabilities"
+            )
             // do not set method call so that it doesn't appear in ISO (#3651)
             // getCapabilitiesOp.setMethodCall("GetCapabilities");
             operations.add(getCapabilitiesOp)
