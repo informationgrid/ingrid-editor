@@ -181,7 +181,7 @@ export class GetCapabilitiesService {
         ? { key: entry.id }
         : { key: null, value: item.specification };
       return {
-        // pass: { key: `${item.level}` },
+        pass: { key: `${item.level}` },
         specification: spec,
         publicationDate: this.getPublicationDate(entry),
         isInspire: entry !== null,

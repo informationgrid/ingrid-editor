@@ -138,7 +138,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private handleRequiredState() {
     if (this.props.required === this.currentStateRequired) return;
     let requiredValidator = (): ValidationErrors | null => {
-      return this.props.required && this.formControl.value.length > 0
+      return !this.showError ||
+        (this.props.required && this.formControl.value.length > 0)
         ? null
         : { required: "Pflicht!" };
     };
