@@ -23,6 +23,7 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { ValidationErrors } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -75,6 +76,22 @@ export class TableTypeComponent
       .subscribe(
         (value) => (this.dataSource = new MatTableDataSource<any>(value || []))
       );
+
+    const requiredColumnKeys = this.props.columns
+      .filter((col) => col.props.required)
+      .map((col) => col.key);
+    if (requiredColumnKeys.length > 0) {
+      this.formControl.addValidators((): ValidationErrors | null => {
+        return requiredColumnKeys.length === 0 ||
+          this.hasRequiredFields(requiredColumnKeys)
+          ? null
+          : {
+              requiredColumns: {
+                message: "Es sind nicht alle Pflichtspalten ausgefüllt",
+              },
+            };
+      });
+    }
 
     // init with formatted values
     this.prepareFormattedValues(this.formControl.value);
@@ -359,5 +376,11 @@ export class TableTypeComponent
       lastDotPos === -1 ? file.length : lastDotPos
     );
     return decodeURI(name);
+  }
+
+  private hasRequiredFields(requiredColumnKeys: string[]): boolean {
+    return this.formControl.value.every((item) =>
+      requiredColumnKeys.every((key) => item[key])
+    );
   }
 }
