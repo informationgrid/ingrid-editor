@@ -82,6 +82,10 @@ export function isObject(x: any) {
 }
 
 export function isEmptyObject(objValue: any, ignoreFields = []) {
+  return !isNotEmptyObject(objValue, ignoreFields);
+}
+
+export function isNotEmptyObject(objValue: any, ignoreFields = []) {
   return Object.keys(objValue).some((key) => {
     if (ignoreFields.indexOf(key) !== -1) return false;
     let valueElement = objValue[key];
@@ -90,7 +94,7 @@ export function isEmptyObject(objValue: any, ignoreFields = []) {
     if (Array.isArray(valueElement)) return valueElement.length > 0;
 
     if (typeof valueElement === "object") {
-      return isEmptyObject(valueElement, ignoreFields);
+      return isNotEmptyObject(valueElement, ignoreFields);
     }
 
     if (typeof valueElement === "boolean") {

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { QueryEntity } from "@datorama/akita";
 import { CodelistState, CodelistStore } from "./codelist.store";
 import { Codelist, CodelistEntry } from "./codelist.model";
-import { filter, first, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { Observable } from "rxjs";
 
 @Injectable({
@@ -48,5 +48,28 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
       this.getCatalogCodelist(codelistId) ??
       this.getValue().entities[codelistId];
     return entities?.entries?.find((entry) => entry.id === entryKey);
+  }
+
+  getCodelistEntryIdByValue(
+    codelistId: string,
+    value: string,
+    field: string
+  ): string {
+    const entities =
+      this.getCatalogCodelist(codelistId) ??
+      this.getValue().entities[codelistId];
+    return entities?.entries?.find((entry) => entry.fields[field] === value)
+      ?.id;
+  }
+
+  getCodelistEntryByValue(
+    codelistId: string,
+    value: string,
+    field: string
+  ): CodelistEntry {
+    const entities =
+      this.getCatalogCodelist(codelistId) ??
+      this.getValue().entities[codelistId];
+    return entities?.entries?.find((entry) => entry.fields[field] === value);
   }
 }
