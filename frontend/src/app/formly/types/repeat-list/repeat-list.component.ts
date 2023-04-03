@@ -77,8 +77,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     this.inputControl.markAllAsTouched();
     if (this.props.required) {
       this.inputControl.addValidators((): ValidationErrors | null => {
-        return !this.showError ||
-          (this.props.required && this.formControl.value.length > 0)
+        return this.props.required && this.formControl.value.length > 0
           ? null
           : { required: "Pflicht!" };
       });
