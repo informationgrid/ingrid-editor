@@ -17,6 +17,8 @@ export class ProfileService {
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
 
+  private profileId: string = null;
+
   constructor(
     private configService: ConfigService,
     private profileStore: ProfileStore,
@@ -138,5 +140,13 @@ export class ProfileService {
         ...data,
       },
     }));
+  }
+
+  setProfileId(id: string) {
+    this.profileId = id;
+  }
+
+  getProfileId() {
+    return this.profileId;
   }
 }

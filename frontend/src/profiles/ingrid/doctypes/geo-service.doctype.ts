@@ -45,6 +45,13 @@ export class GeoServiceDoctype extends IngridShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
+      {
+        type: "updateGetCapabilities",
+        wrappers: ["panel"],
+        props: {
+          externalLabel: "GetCapabilities-Aktualisierung",
+        },
+      },
       this.addGeneralSection({ inspireRelevant: true, openData: true }),
       this.addKeywordsSection({
         priorityDataset: true,

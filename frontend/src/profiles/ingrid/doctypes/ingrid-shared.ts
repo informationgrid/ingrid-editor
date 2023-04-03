@@ -434,7 +434,7 @@ export abstract class IngridShared extends BaseDoctype {
   addTimeReferenceSection() {
     return this.addSection("Zeitbezug", [
       this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Resource", {
+        this.addRepeat("events", "Zeitbezug der Ressource", {
           required: true,
           fields: [
             this.addDatepicker("referenceDate", null, {
@@ -622,6 +622,7 @@ export abstract class IngridShared extends BaseDoctype {
                   type: "select",
                   label: "Spezifikation",
                   props: {
+                    required: true,
                     label: "Spezifikation",
                     appearance: "outline",
                     // needed just to wait for codelist being loaded
@@ -639,6 +640,7 @@ export abstract class IngridShared extends BaseDoctype {
                   label: "Grad",
                   width: "100px",
                   props: {
+                    required: true,
                     label: "Grad",
                     appearance: "outline",
                     options: this.getCodelistForSelect(6000, "level"),

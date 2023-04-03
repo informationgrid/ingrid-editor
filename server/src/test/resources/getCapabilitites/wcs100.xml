@@ -1,0 +1,118 @@
+<WCS_Capabilities version="1.0.0"
+                  xmlns="http://www.opengis.net/wcs"
+                  xmlns:gml="http://www.opengis.net/gml"
+                  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <Service updateSequence="1.0.0" version="1.0.0">
+        <metadataLink about="http://www.deegree.org" metadataType="TC211" xlink:href="http://www.deegree.org"
+                      xlink:title="deegree WCS metadata" xlink:type="simple" />
+        <description>deegree WCS being OGC WCS 1.0.0 reference implementation</description>
+        <name>deegree WCS</name>
+        <label>deegree WCS</label>
+        <responsibleParty>
+            <individualName>Dr. Manfred Endrullis</individualName>
+            <organisationName>BKG</organisationName>
+            <positionName>technical director</positionName>
+            <contactInfo>
+                <phone>
+                    <voice>+49 341 5634369</voice>
+                    <facsimile>+49 341 5634415</facsimile>
+                </phone>
+                <address>
+                    <city>Potsdam</city>
+                    <administrativeArea>Brandenburg</administrativeArea>
+                    <postalCode>14777</postalCode>
+                    <country>Deutschland</country>
+                </address>
+                <onlineResource xlink:href="http://www.geodatenzentrum.de" xlink:type="simple" />
+            </contactInfo>
+        </responsibleParty>
+        <fees codeSpace="http://www.deegree.org">NONE</fees>
+        <accessConstraints codeSpace="http://www.deegree.org">NONE</accessConstraints>
+        <accessConstraints codeSpace="http://www.deegree.org">SOME</accessConstraints>
+    </Service>
+    <Capability updateSequence="1.0.0" version="1.0.0">
+        <Request>
+            <GetCapabilities>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Get>
+                        <Post>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetCapabilities>
+            <DescribeCoverage>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Get>
+                        <Post>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </DescribeCoverage>
+            <GetCoverage>
+                <DCPType>
+                    <HTTP>
+                        <Get>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Get>
+                        <Post>
+                            <OnlineResource xlink:href="http://localhost:8080/wpvs/services?" xlink:type="simple" />
+                        </Post>
+                    </HTTP>
+                </DCPType>
+            </GetCoverage>
+        </Request>
+        <Exception>
+            <Format>application/vnd.ogc.se_xml</Format>
+            <Format>application/deegree_xml</Format>
+        </Exception>
+    </Capability>
+    <ContentMetadata updateSequence="1.0.0" version="1.0.0">
+        <CoverageOfferingBrief>
+            <description>None</description>
+            <name>dgmcolored</name>
+            <label>Farbkarte der Höhenstufen</label>
+            <lonLatEnvelope srsName="WGS84(DD)">
+                <gml:pos dimension="2">5.844092079793996 46.98507709427775</gml:pos>
+                <gml:pos dimension="2">15.897714289348105 55.10269252495349</gml:pos>
+            </lonLatEnvelope>
+            <keywords>
+                <keyword>deegree</keyword>
+                <keyword>DGM</keyword>
+            </keywords>
+        </CoverageOfferingBrief>
+        <CoverageOfferingBrief>
+            <description>None</description>
+            <name>dgm</name>
+            <label>Digitales Geländemodell Deutschland</label>
+            <lonLatEnvelope srsName="WGS84(DD)">
+                <gml:pos dimension="2">5.844092079793996 46.98507709427775</gml:pos>
+                <gml:pos dimension="2">15.897714289348105 55.10269252495349</gml:pos>
+            </lonLatEnvelope>
+            <keywords>
+                <keyword>deegree</keyword>
+                <keyword>DGM</keyword>
+            </keywords>
+        </CoverageOfferingBrief>
+        <CoverageOfferingBrief>
+            <description>None</description>
+            <name>dgm25</name>
+            <label>DGM Deutschland</label>
+            <lonLatEnvelope srsName="WGS84(DD)">
+                <gml:pos dimension="2">5.844092079793996 46.98507709427775</gml:pos>
+                <gml:pos dimension="2">15.897714289348105 55.10269252495349</gml:pos>
+            </lonLatEnvelope>
+            <keywords>
+                <keyword>deegree</keyword>
+                <keyword>DGM25</keyword>
+            </keywords>
+        </CoverageOfferingBrief>
+    </ContentMetadata>
+</WCS_Capabilities>
