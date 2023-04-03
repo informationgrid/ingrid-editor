@@ -379,7 +379,7 @@ export class TableTypeComponent
   }
 
   private hasRequiredFields(requiredColumnKeys: string[]): boolean {
-    return this.formControl.value.every((item) =>
+    return this.formControl.value?.every((item) =>
       requiredColumnKeys.every((key) => item[key])
     );
   }
