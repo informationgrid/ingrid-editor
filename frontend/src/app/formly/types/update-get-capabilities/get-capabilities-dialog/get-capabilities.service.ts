@@ -63,7 +63,8 @@ export class GetCapabilitiesService {
         model.conformanceResult = this.mapConformities(value);
       if (key === "coupledResources")
         model.service.coupledResources = await this.handleCoupledResources(
-          value
+          value,
+          model._parent
         );
       if (key === "operations")
         model.service.operations = this.mapOperations(value);
@@ -190,12 +191,13 @@ export class GetCapabilitiesService {
   }
 
   private async handleCoupledResources(
-    resources: CoupledResource[]
+    resources: CoupledResource[],
+    parent: number
   ): Promise<DocumentReference[]> {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
       if (!resource.exists) {
-        const doc = this.mapCoupledResource(resource);
+        const doc = this.mapCoupledResource(resource, parent);
         const savedDoc = await this.documentService
           .save(doc, true, false, null, true, false)
           .toPromise();
@@ -214,11 +216,14 @@ export class GetCapabilitiesService {
     return await Promise.all(res);
   }
 
-  private mapCoupledResource(resource: CoupledResource): IgeDocument {
+  private mapCoupledResource(
+    resource: CoupledResource,
+    parent: number
+  ): IgeDocument {
     return {
       _uuid: resource.uuid,
       _type: "InGridGeoDataset",
-      _parent: null,
+      _parent: parent,
       title: resource.title,
       description: resource.description,
       identifier: resource.objectIdentifier,
