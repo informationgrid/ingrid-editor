@@ -76,7 +76,7 @@ class Geodataservice : AnnotationSpec() {
                 "6100_105_de" -> "Adressen"
                 "6100_313_de" -> "Atmosphärische Bedingungen"
                 "6100_314_de" -> "Meteorologisch-geografische Kennwerte"
-                "6250_8_de" -> "Hessen"
+                "110_8_de" -> "Hessen"
                 "6350_-79614265_de" -> "Abfalldeponien (Deponierichtlinie)"
                 "6360_1339931727_de" -> "Europäisch"
                 "6400_3_de" -> "EDUC"

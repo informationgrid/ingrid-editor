@@ -44,6 +44,7 @@ class Geodataset : AnnotationSpec() {
                 "101_900011_en" -> "Mean Sea Level"
                 "102_9002_iso" -> "Foot"
                 "102_9036_iso" -> "Kilometre"
+                "110_8_de" -> "Hessen"
                 "502_1_iso" -> "creation"
                 "502_3_iso" -> "revision"
                 "505_0_iso" -> "NOT_PRESENT"
@@ -70,7 +71,6 @@ class Geodataset : AnnotationSpec() {
                 "6100_105_de" -> "Adressen"
                 "6100_313_de" -> "Atmosphärische Bedingungen"
                 "6100_314_de" -> "Meteorologisch-geografische Kennwerte"
-                "6250_8_de" -> "Hessen"
                 "6400_3_de" -> "EDUC"
                 "6400_9_de" -> "SOCI"
                 "6500_25_de" -> "Datenlizenz Deutschland – Zero – Version 2.0"
@@ -92,6 +92,7 @@ class Geodataset : AnnotationSpec() {
                 "8010_4_de" -> "3D-Gebäudemodelle"
                 "8010_8_de" -> "ALKIS"
                 "1350_45_de" -> "Gesetz über eine Holzstatistik"
+                "2000_9990_iso" -> "download"
                 else -> "getCodelistValue " + firstArg<String>() + "_" + secondArg<String>() + "_" + thirdArg<String>()
             }
         }

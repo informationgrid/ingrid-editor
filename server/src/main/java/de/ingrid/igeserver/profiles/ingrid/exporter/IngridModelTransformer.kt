@@ -276,7 +276,7 @@ open class IngridModelTransformer constructor(
         data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
 
     var contact =
-        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContact") }?.ref
+        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContactMd") }?.ref
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =

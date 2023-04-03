@@ -32,7 +32,7 @@
     "pointOfContact": [
       {
         "type": {
-          "key": "0"
+          "key": "12"
         },
         "ref": {
           "title": "Wemove Test",
@@ -48,10 +48,19 @@
           "_state": "P",
           "_id": "1",
           "address": {
+            "street": "Hanauer Landstr. 52",
+            "zip-code": "60",
+            "city": "Frankfurt",
+            "zip-po-box": "P123 Frankfurt",
+            "po-box": "Postbox 123",
             "administrativeArea": {
               "key": "8"
+            },
+            "country": {
+              "key": "276"
             }
           },
+          "positionName": "Positionsname",
           "contact": [
             {
               "type": {

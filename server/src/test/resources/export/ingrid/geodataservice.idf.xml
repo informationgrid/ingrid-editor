@@ -2,7 +2,7 @@
 <idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
     <idf:head/>
     <idf:body>
-        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
             <gmd:fileIdentifier>
                 <gco:CharacterString>f5199e3e-384c-4c6d-aed8-5f9495a198eb</gco:CharacterString>
             </gmd:fileIdentifier>
@@ -95,19 +95,19 @@
                             ; Systemumgebung: Systemumgebung; Erläuterung zum Fachbezug: Erläuterungen1</gco:CharacterString>
                     </gmd:abstract>
                     <gmd:pointOfContact>
-                        <idf:idfResponsibleParty type="0" uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
+                        <idf:idfResponsibleParty type="12" uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
                             <gmd:organisationName>
                                 <gco:CharacterString>Wemove Test</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:positionName>
-                                <gco:CharacterString>Notizen MMMM</gco:CharacterString>
+                                <gco:CharacterString>Positionsname</gco:CharacterString>
                             </gmd:positionName>
                             <gmd:contactInfo>
                                 <gmd:CI_Contact>
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postbox 123,P123 Frankfurt</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 123, P123 Frankfurt</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
@@ -136,7 +136,7 @@
                             </gmd:role>
                             <idf:hierarchyParty uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
-                                <idf:addressType>0</idf:addressType>
+                                <idf:addressType>12</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>
@@ -514,7 +514,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:transferSize>
-                                <gco:Real>1.0</gco:Real>
+                                <gco:Real>1</gco:Real>
                             </gmd:transferSize>
                             <gmd:offLine>
                                 <gmd:MD_Medium>
