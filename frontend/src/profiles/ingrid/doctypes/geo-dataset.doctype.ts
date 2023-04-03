@@ -275,20 +275,7 @@ export class GeoDatasetDoctype extends IngridShared {
               '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
-        this.addRepeat("resolution", "Erstellungsmaßstab", {
-          className: "optional",
-          fields: [
-            this.addInputInline("denominator", "Maßstab 1:x", {
-              type: "number",
-            }),
-            this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
-              type: "number",
-            }),
-            this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
-              type: "number",
-            }),
-          ],
-        }),
+        this.addResolutionFields(),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
             fields: this.titleDateEditionFields(3555),
@@ -344,9 +331,14 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQuality", [
           this.addGroupSimple("completenessOmission", [
             this.addInput("measResult", "Datendefizit", {
-              wrappers: ["panel", "form-field"],
-              className: "single-field width-25",
+              wrappers: ["panel", "form-field", "addons"],
+              className: "single-field width-25 right-align",
               type: "number",
+              suffix: {
+                text: "%",
+              },
+              min: 0,
+              max: 100,
             }),
           ]),
         ]),

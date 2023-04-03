@@ -24,6 +24,8 @@ data class AddressModel(
     val contact: List<ContactModel>,
     val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
+    var positionName: String?,
+    var hoursOfService: String?,
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("_created") val created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
@@ -55,7 +57,7 @@ data class AddressModel(
         if (doc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()
         }
-        
+
         val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
 
         val convertedDoc = addInternalFields(publishedDoc, doc)
@@ -87,15 +89,15 @@ data class AddressModel(
         private fun getAddressInformationFromParent(parentId: Int?): Address {
             val emptyAddress = Address(false, "", "", "", "", "", null, null)
             if (parentId == null) return emptyAddress
-    
+
             val parentAddress = documentService?.getWrapperByDocumentId(parentId) ?: return emptyAddress
             if (parentAddress.type == "FOLDER") {
                 throw ServerException.withReason("Folder not allowed as parent of inherited address")
             }
-    
+
             val jsonParentAddress = parentAddress.published?.data?.get("address") ?: return emptyAddress
             val parent = jacksonObjectMapper().readValue(jsonParentAddress.toString(), Address::class.java)
-    
+
             return try {
                 if (parent.inheritAddress && parentAddress.parent?.id != null)
                     getAddressInformationFromParent(parentAddress.parent?.id)
@@ -104,7 +106,7 @@ data class AddressModel(
                 // parent probably was a folder and inherited field accidentally was set to true
                 parent
             }
-    
+
         }
     */
 

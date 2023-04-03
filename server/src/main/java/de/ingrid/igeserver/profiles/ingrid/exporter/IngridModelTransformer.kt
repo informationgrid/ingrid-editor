@@ -134,8 +134,9 @@ open class IngridModelTransformer constructor(
 
     open val hierarchyLevel = "nonGeographicDataset"
     open val hierarchyLevelName: String? = "job"
-    val mdStandardName = "ISO19115"
-    val mdStandardVersion = "2003/Cor.1:2006"
+    open val mdStandardName = "ISO19115"
+    open val mdStandardVersion = "2003/Cor.1:2006"
+    open val identificationType =  "gmd:MD_DataIdentification"
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValueModel(it, null)) }
@@ -155,12 +156,12 @@ open class IngridModelTransformer constructor(
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
         val epsgLink =
-            if (referenceSystem?.startsWith("EPSG") == true)
+            if (referenceSystem.startsWith("EPSG") == true)
                 "http://www.opengis.net/def/crs/EPSG/0/" + referenceSystem.substring(5, referenceSystem.indexOf(":"))
             else null
         CharacterStringModel(referenceSystem, epsgLink)
     }
-    val description = data.description
+    open val description = data.description
     var datasetURL: String
     val advProductGroups = data.advProductGroups?.map { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
@@ -197,7 +198,9 @@ open class IngridModelTransformer constructor(
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
     )
+
     val serviceTypeKeywords = Thesaurus(
+        keywords = data.service?.classification?.map { Keyword(name = codelists.getValue("5200", it, "iso"), link = null) } ?: emptyList(),
         date = "2008-06-01",
         name = "Service Classification, version 1.0"
     )
@@ -206,9 +209,18 @@ open class IngridModelTransformer constructor(
         name = "German Environmental Classification - Topic, version 1.0"
     )
     val inspirePriorityKeywords = Thesaurus(
+        keywords = data.priorityDatasets?.map { Keyword(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) } ?: emptyList(),
         date = "2018-04-04",
         name = "INSPIRE priority data set",
-        link = "https://inspire.ec.europa.eu/metadata-codelist/PriorityDataset"
+        link = "http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset",
+        showType = false
+    )
+    val spatialScopeKeyword = Thesaurus(
+        keywords = data.spatialScope?.let { listOf(Keyword(name = codelists.getValue("6360", it),link = codelists.getDataField("6360", it.key, "url")))  } ?: emptyList(),
+        date = "2019-05-22",
+        name = "Spatial scope",
+        link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
+        showType = false
     )
 
     val advCompatibleKeyword =
@@ -227,7 +239,7 @@ open class IngridModelTransformer constructor(
         } ?: emptyList(),
     ) else Thesaurus()
     val inspireRelevantKeyword =
-        if (data.isInspireRelevant == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
+        if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
@@ -248,13 +260,23 @@ open class IngridModelTransformer constructor(
         }
     }
 
+    // geodataservice
+    val serviceType = codelists.getValue("5300", data.service?.type, "iso")
+    val serviceTypeVersions = data.service?.version?.map { codelists.getValue("5153", it, "iso") } ?: emptyList()
+    val couplingType = data.service?.couplingType?.key
+    val operations = data.service?.operations ?: emptyList()
+    val references = data.references ?: emptyList()
+
+
+
+
     val parentIdentifier: String? = data.parentIdentifier
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._modified)
     var pointOfContact =
         data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
 
     var contact =
-        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContact") }?.ref
+        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContactMd") }?.ref
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -291,6 +313,12 @@ open class IngridModelTransformer constructor(
 
     fun hasDistributionInfo(): Boolean {
         return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null
+    }
+
+    fun hasCompleteVerticalExtent(): Boolean {
+        return data.spatial.verticalExtent?.let {
+            it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
+        } ?: false
     }
 }
 

@@ -101,7 +101,7 @@ export class LeafletService {
       (location) => location.type === "wkt" && location.wkt
     );
     const boxLocations = locations.filter(
-      (location) => location.type === "free" || location.type === "coordinates"
+      (location) => location.type === "free"
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);

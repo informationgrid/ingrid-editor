@@ -16,6 +16,9 @@
         "isInspireIdentified": {
           "type": "boolean"
         },
+        "isInspireConform": {
+          "type": "boolean"
+        },
         "subType": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
@@ -77,7 +80,7 @@
         "advProductGroups": {
           "$ref": "refs/general.schema.json#/definitions/advProductGroups"
         },
-        "themes":  {
+        "themes": {
           "$ref": "refs/general.schema.json#/definitions/themes"
         },
         "spatial": {
@@ -139,7 +142,10 @@
               "additionalProperties": false,
               "properties": {
                 "key": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 },
                 "value": {
                   "type": "string"
@@ -181,7 +187,10 @@
               "additionalProperties": false,
               "properties": {
                 "measResult": {
-                  "type": ["null", "number"]
+                  "type": [
+                    "null",
+                    "number"
+                  ]
                 }
               }
             }
@@ -225,10 +234,16 @@
           "additionalProperties": false,
           "properties": {
             "vertical": {
-              "type": "number"
+              "type": [
+                "null",
+                "number"
+              ]
             },
             "horizontal": {
-              "type": "number"
+              "type": [
+                "null",
+                "number"
+              ]
             }
           }
         },
@@ -240,8 +255,12 @@
         },
         "spatialScope": {
           "anyOf": [
-            { "$ref": "../../general.schema.json#/definitions/KeyValue" },
-            { "type": "null" }
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "maintenanceInformation": {
@@ -329,7 +348,10 @@
                 "type": "boolean"
               },
               "explanation": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "specification": {
                 "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -339,6 +361,9 @@
               }
             }
           }
+        },
+        "gridSpatialRepresentation": {
+          "$ref": "#/definitions/spatialGrid"
         }
       },
       "required": [
@@ -399,6 +424,62 @@
           },
           "edition": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "spatialGrid": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "axesDimensionProperties": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "name": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              },
+              "size": {
+                "type": "number"
+              },
+              "resolution": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "transformationParameterAvailability": {
+          "type": "boolean"
+        },
+        "numberOfDimensions": {
+          "type": "number"
+        },
+        "cellGeometry": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "georectified": {
+          "checkPointAvailability": {
+            "type": "boolean"
+          },
+          "checkPointDescription": {
+            "type": "string"
+          },
+          "cornerPoints": {
+            "type": "number"
+          },
+          "pointInPixel": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
+        "georeferenceable": {
+          "orientationParameterAvailability": {
+            "type": "boolean"
+          },
+          "controlPointAvaliability": {
+            "type": "boolean"
           }
         }
       }

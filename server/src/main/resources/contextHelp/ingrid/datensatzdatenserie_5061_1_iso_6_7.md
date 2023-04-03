@@ -23,8 +23,7 @@ Datensatz
 Je nach Auswahl wird `gmd:hierarchyLevel` (Bereich, auf den sich die Metadaten beziehen, weitere Informationen zu Hierarchieebenen sind dem ISO 19115 - Anhang H  zu entnehmen. Domain 6) und `gmd:hierarchyLevelName` (Bezeichnung der Hierarchieebene, auf die sich die Metadaten beziehen. Domain 7) gesetzt:
 
 
-| Datensatz/Datenserie | gmd:hierarchyLevel | gmd:hierarchyLevelName   |
-| -------------------- |:------------------:| :-----------------------:|
+| Datensatz/Datenserie&nbsp;&nbsp; | gmd:hierarchyLevel&nbsp;&nbsp; | gmd:hierarchyLevelName   |
+| -------------------------------- |:------------------------------:| :-----------------------:|
 | Datensatz            | "dataset"          | <ELEMNT NICHT VORHANDEN> |
 | Datenserie           | "series"           | "series"                 |
-

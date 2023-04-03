@@ -4,6 +4,7 @@
 
 {
     @template.ingrid.base(model = model)
+    "subType": @template.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
         "language": @template.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.ingrid.partial.key-value(item = model.getCharacterSet())

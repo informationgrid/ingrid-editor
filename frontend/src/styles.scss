@@ -554,6 +554,10 @@ ige-one-column-wrapper formly-group {
   flex: 6;
 }
 
+.right-align input {
+  text-align: right;
+}
+
 .hide-optionals .optional:not(:has(.required)) {
   display: none;
 }
@@ -954,7 +958,7 @@ mat-icon.mark-color .coloring {
 
 .doc-item {
   .mat-icon {
-    margin-top: -2px !important;
+    //margin-top: -2px !important;
   }
 
   .mat-line {

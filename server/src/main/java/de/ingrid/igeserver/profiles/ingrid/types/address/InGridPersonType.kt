@@ -15,7 +15,7 @@ class InGridPersonType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate) {
 
     override val referenceFieldInDocuments = "addresses"
 
-//    override val jsonSchema = "/ingrid/schemes/data-collection.schema.json"
+    override val jsonSchema = "/ingrid/schemes/address-person.schema.json"
 
     val log = logger()
 

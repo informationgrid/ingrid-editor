@@ -53,7 +53,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   placeholder: string;
-
+  initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
+    null
+  );
   typeSelectionEnabled = false;
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
@@ -149,6 +151,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     const isAllowed = this.isTypeAllowed(address);
     if (isAllowed) {
       this.selectedType = address.type.key;
+      this.initialActiveAddressType.next({
+        id: this.selectedType,
+      });
     }
     this.selectedNode.next(address.ref._id);
   }

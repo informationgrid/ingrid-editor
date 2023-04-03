@@ -326,7 +326,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
           }),
           options.regionKey
-            ? this.addInput("regionKey", "Regionalschlüssel", {
+            ? this.addInput("regionKey", "Amtlicher Regionalschlüssel", {
                 className: "optional flex-1",
                 wrappers: ["panel", "form-field"],
               })
@@ -459,10 +459,8 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addSelect("resourceDateType", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "am", value: "at" },
                 { label: "bis", value: "till" },
                 { label: "von", value: "since" },
@@ -470,10 +468,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addSelect("resourceDateTypeSince", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "bis: unbekannter Zeitpunkt", value: "unknown" },
                 { label: "bis: Zeitpunkt des Abrufs", value: "requestTime" },
                 { label: "bis: genaues Datum", value: "exactDate" },
@@ -834,6 +830,9 @@ export abstract class IngridShared extends BaseDoctype {
               this.addInputInline("compression", "Kompressionstechnik"),
               this.addInputInline("specification", "Spezifikation"),
             ],
+            validators: {
+              validation: ["notEmptyArray"],
+            },
           }),
         ],
         {
@@ -876,6 +875,26 @@ export abstract class IngridShared extends BaseDoctype {
         },
       }),
     ]);
+  }
+
+  addResolutionFields(): FormlyFieldConfig {
+    return this.addRepeat("resolution", "Erstellungsmaßstab", {
+      className: "optional",
+      fields: [
+        this.addInputInline("denominator", "Maßstab 1:x", {
+          type: "number",
+          min: 0,
+        }),
+        this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
+          type: "number",
+          min: 0,
+        }),
+        this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
+          type: "number",
+          min: 0,
+        }),
+      ],
+    });
   }
 
   protected urlRefFields() {

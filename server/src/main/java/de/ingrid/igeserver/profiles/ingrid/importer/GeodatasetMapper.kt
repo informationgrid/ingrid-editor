@@ -81,6 +81,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.mapNotNull { mapQuality(it) } ?: emptyList()
     }
 
+    fun getSubtype(): KeyValue? {
+        val value = metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue ?: return null
+        return codeListService.getCodeListEntryId("525", value, "iso")
+            ?.let { KeyValue(it) }
+    }
+
     private fun mapQuality(report: DQReport): Quality? {
         val info =
             // if (report.dqTemporalValidity != null) QualityInfo("temporalValidity", "", report.dqTemporalValidity)

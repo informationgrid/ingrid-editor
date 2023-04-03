@@ -38,6 +38,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();
   filterCtrl: UntypedFormControl;
   private manualUpdate = new Subject<string>();
+  private currentStateRequired = false;
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -75,21 +76,15 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
-    if (this.props.required) {
-      this.inputControl.addValidators((): ValidationErrors | null => {
-        return this.props.required && this.formControl.value.length > 0
-          ? null
-          : { required: "Pflicht!" };
-      });
-    }
 
     this.formControl.statusChanges
       .pipe(untilDestroyed(this))
-      .subscribe((status) =>
+      .subscribe((status) => {
+        this.handleRequiredState();
         status === "DISABLED"
           ? this.inputControl.disable()
-          : this.inputControl.enable()
-      );
+          : this.inputControl.enable();
+      });
 
     this.filteredOptions = merge(
       this.formControl.valueChanges,
@@ -138,6 +133,22 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       }
       setTimeout(() => this.inputControl.setValue(""));
     }
+  }
+
+  private handleRequiredState() {
+    if (this.props.required === this.currentStateRequired) return;
+    let requiredValidator = (): ValidationErrors | null => {
+      return this.props.required && this.formControl.value.length > 0
+        ? null
+        : { required: "Pflicht!" };
+    };
+
+    if (this.props.required) {
+      this.inputControl.addValidators(requiredValidator);
+    } else {
+      this.inputControl.removeValidators(requiredValidator);
+    }
+    this.inputControl.updateValueAndValidity();
   }
 
   private _filter(option: SelectOptionUi | string): SelectOptionUi[] {

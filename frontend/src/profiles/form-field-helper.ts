@@ -29,7 +29,7 @@ export interface RepeatOptions extends Options {
   menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
-  validators?: { [x: string]: { expression: any; message: string } };
+  validators?: { [x: string]: { expression: any; message: string } | string[] };
 }
 
 export interface RepeatListOptions extends Options {
@@ -78,6 +78,10 @@ export interface InputOptions extends Options {
   disabled?: boolean;
   contextHelpId?: string;
   validators?: any;
+  suffix?: any;
+  prefix?: any;
+  min?: number;
+  max?: number;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -336,6 +340,10 @@ export class FormFieldHelper {
         appearance: "outline",
         disabled: options?.disabled,
         contextHelpId: options?.contextHelpId,
+        addonRight: options?.suffix,
+        addonLeft: options?.prefix,
+        min: options?.min,
+        max: options?.max,
       },
       modelOptions: {
         updateOn: "blur",
