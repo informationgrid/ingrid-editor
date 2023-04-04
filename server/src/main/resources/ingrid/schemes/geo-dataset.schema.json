@@ -364,6 +364,12 @@
         },
         "gridSpatialRepresentation": {
           "$ref": "#/definitions/spatialGrid"
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "required": [

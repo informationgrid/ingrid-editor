@@ -150,6 +150,12 @@
         },
         "distribution": {
           "$ref": "refs/general.schema.json#/definitions/distribution"
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "required": [

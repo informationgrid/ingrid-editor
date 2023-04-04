@@ -36,6 +36,9 @@
         "salutation": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
+        "academic-title": {
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
         "publishArea": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
