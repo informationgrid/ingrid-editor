@@ -34,13 +34,34 @@
           "type": "string"
         },
         "salutation": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "academic-title": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "publishArea": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
