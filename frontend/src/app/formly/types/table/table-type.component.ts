@@ -82,7 +82,9 @@ export class TableTypeComponent
       .map((col) => col.key);
     if (requiredColumnKeys.length > 0) {
       this.formControl.addValidators((): ValidationErrors | null => {
-        return requiredColumnKeys.length === 0 ||
+        return !this.formControl.value ||
+          this.formControl.value.length === 0 ||
+          requiredColumnKeys.length === 0 ||
           this.hasRequiredFields(requiredColumnKeys)
           ? null
           : {
