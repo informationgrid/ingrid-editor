@@ -23,7 +23,11 @@ export class InformationSystemDoctype extends IngridShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ inspireRelevant: true, openData: true }),
+      this.addGeneralSection({
+        inspireRelevant: true,
+        advCompatible: true,
+        openData: true,
+      }),
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [

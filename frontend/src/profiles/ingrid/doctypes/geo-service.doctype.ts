@@ -52,7 +52,11 @@ export class GeoServiceDoctype extends IngridShared {
           externalLabel: "GetCapabilities-Aktualisierung",
         },
       },
-      this.addGeneralSection({ inspireRelevant: true, openData: true }),
+      this.addGeneralSection({
+        inspireRelevant: true,
+        advCompatible: true,
+        openData: true,
+      }),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,

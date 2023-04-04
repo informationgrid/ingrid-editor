@@ -24,6 +24,7 @@ interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
   openData?: boolean;
+  advCompatible?: boolean;
 }
 
 interface KeywordSectionOptions {
@@ -68,32 +69,41 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addGroupSimple(
       null,
       [
-        this.addGroup(
-          null,
-          "Typ",
-          [
-            options.inspireRelevant
-              ? this.addCheckboxInline(
-                  "isInspireIdentified",
-                  "INSPIRE-relevant",
-                  {
-                    className: "flex-1",
-                    click: (field) => this.handleInspireIdentifiedClick(field),
-                  }
-                )
-              : null,
-            this.addCheckboxInline("isAdVCompatible", "AdV kompatibel", {
-              className: "flex-1",
-              click: (field) => this.handleAdvClick(field),
-            }),
-            options.openData
-              ? this.addCheckboxInline("isOpenData", "Open Data", {
-                  className: "flex-1",
-                  click: (field) => this.handleOpenDataClick(field),
-                })
-              : null,
-          ].filter(Boolean)
-        ),
+        options.inspireRelevant || options.advCompatible || options.openData
+          ? this.addGroup(
+              null,
+              "Typ",
+              [
+                options.inspireRelevant
+                  ? this.addCheckboxInline(
+                      "isInspireIdentified",
+                      "INSPIRE-relevant",
+                      {
+                        className: "flex-1",
+                        click: (field) =>
+                          this.handleInspireIdentifiedClick(field),
+                      }
+                    )
+                  : null,
+                options.advCompatible
+                  ? this.addCheckboxInline(
+                      "isAdVCompatible",
+                      "AdV kompatibel",
+                      {
+                        className: "flex-1",
+                        click: (field) => this.handleAdvClick(field),
+                      }
+                    )
+                  : null,
+                options.openData
+                  ? this.addCheckboxInline("isOpenData", "Open Data", {
+                      className: "flex-1",
+                      click: (field) => this.handleOpenDataClick(field),
+                    })
+                  : null,
+              ].filter(Boolean)
+            )
+          : null,
         this.addRadioboxes("isInspireConform", "INSPIRE konform", {
           expressions: {
             hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",

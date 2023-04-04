@@ -29,6 +29,7 @@ export class GeoDatasetDoctype extends IngridShared {
     <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
+        advCompatible: true,
         openData: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: true,
