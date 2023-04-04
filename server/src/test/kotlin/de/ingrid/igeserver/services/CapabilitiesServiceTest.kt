@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.services
 
-import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.services.getCapabilities.*
 import io.kotest.core.spec.style.ShouldSpec
@@ -9,6 +8,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import mockCodelists
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
@@ -29,32 +29,16 @@ class CapabilitiesServiceTest : ShouldSpec({
 
     val formatter = SimpleDateFormat("yyyy-MM-dd")
 
-    beforeAny {
-        val codelists = CodeListService().initialCodelists
-        SecurityContextHolder.setContext(mockContext)
+    beforeSpec {
+        mockCodelists(codelistHandler)
         every { mockContext.authentication } returns UsernamePasswordAuthenticationToken("test-user", "xxx")
         every { researchService.query(any(), any(), any(), any()) } returns ResearchResponse(0, emptyList())
 
         factory = GetCapabilitiesParserFactory(codelistHandler, researchService)
-//        every { codelistHandler.getCodelistValue("5153", "de") } returns "3068"
-        every { codelistHandler.getCodelistValue(any(), any()) } answers {
-            codelists
-                .find { it.id == firstArg() }
-                ?.entries
-                ?.find { it.id == secondArg() }
-                ?.getField("de")
-        }
-
-        every { codelistHandler.getCodelists(any()) } answers {
-            codelists.filter { it.id in firstArg() as List<String> }
-        }
-
-        every { codelistHandler.getCodeListEntryId(any(), any(), any()) } answers {
-            codelists.find { it.id == firstArg() }
-                ?.entries
-                ?.find { it.getField(thirdArg()) == secondArg() }
-                ?.id
-        }
+    }
+    
+    beforeAny { 
+        SecurityContextHolder.setContext(mockContext)
     }
 
     should("WFS 1.1.0") {

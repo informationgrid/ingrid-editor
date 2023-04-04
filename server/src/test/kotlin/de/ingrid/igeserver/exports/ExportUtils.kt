@@ -2,7 +2,6 @@ package de.ingrid.igeserver.exports
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.vladmihalcea.hibernate.util.ClassLoaderUtils
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import java.io.StringReader
 import java.io.StringWriter
@@ -13,6 +12,9 @@ import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
+
+val GENERATED_UUID_REGEX = Regex("ID_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
 
 // TODO: use/replace other function from document service, but as here or as a companion object
 //       to use function without instantiation of the class
