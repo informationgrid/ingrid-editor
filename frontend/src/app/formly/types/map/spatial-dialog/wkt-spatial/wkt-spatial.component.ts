@@ -1,6 +1,5 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -24,6 +23,8 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
   @Input() wktString = "";
   @Output() result = new EventEmitter<string>();
+
+  error: string = null;
 
   private drawnWkt: Layer;
   private currentDialog: MatDialogRef<ContextHelpComponent, any>;
@@ -49,6 +50,15 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
 
   validateWKT(value: string) {
     this.clearLayer();
+    this.error = null;
+
+    const response = this.leafletService.validateWkt(value);
+    if (response) {
+      this.error = response;
+      this.result.next(null);
+      return;
+    }
+
     this.drawWkt(value);
     this.result.next(value);
   }

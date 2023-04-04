@@ -217,4 +217,8 @@ export class LeafletService {
       color: this.getColor(index),
     }));
   }
+
+  validateWkt(value: string) {
+    return this.wktTools.validate(value);
+  }
 }

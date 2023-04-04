@@ -19,6 +19,20 @@ export class WktTools {
     Wktleaflet.toString();
   }
 
+  validate(wkt: string): string {
+    this.wkt.read(wkt);
+    const json = this.wkt.toJson();
+    if (json.type === "Polygon") {
+      const allClosed = (<any[]>json.coordinates).every(
+        (group) =>
+          group[0][0] === group[group.length - 1][0] &&
+          group[0][1] === group[group.length - 1][1]
+      );
+      if (!allClosed) return "Polygon ist nicht geschlossen";
+    }
+    return null;
+  }
+
   /**
    * Maps the current contents of the textarea.
    * @param map
