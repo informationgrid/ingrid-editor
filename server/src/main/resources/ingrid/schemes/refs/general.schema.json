@@ -6,10 +6,16 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "value": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "title": "KeyValue"
@@ -25,7 +31,10 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": ["ref", "type"],
+      "required": [
+        "ref",
+        "type"
+      ],
       "title": "PointOfContact"
     },
     "graphicOverviews": {
@@ -56,7 +65,9 @@
             "type": "string"
           }
         },
-        "required": ["fileName"]
+        "required": [
+          "fileName"
+        ]
       }
     },
     "events": {
@@ -73,7 +84,10 @@
             "$ref": "#/definitions/KeyValue"
           }
         },
-        "required": ["referenceDateType", "referenceDate"],
+        "required": [
+          "referenceDateType",
+          "referenceDate"
+        ],
         "title": "events"
       },
       "minItems": 1
@@ -126,7 +140,10 @@
           }
         }
       },
-      "required": ["references", "spatialSystems"]
+      "required": [
+        "references",
+        "spatialSystems"
+      ]
     },
     "Date": {
       "type": "object",
@@ -199,7 +216,10 @@
             "type": "string"
           },
           "transferSize": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           }
         }
       }
@@ -387,7 +407,14 @@
           ]
         },
         "resourceDateTypeSince": {
-          "$ref": "general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "resourceRange": {
           "type": "object",
@@ -404,7 +431,9 @@
           }
         }
       },
-      "required": ["events"]
+      "required": [
+        "events"
+      ]
     },
     "keywords": {
       "type": "array",
