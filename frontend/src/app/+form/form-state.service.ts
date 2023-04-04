@@ -51,9 +51,9 @@ export class FormStateService {
       let height = (<HTMLTextAreaElement>entry.target).offsetHeight;
       let styleHeight = (<HTMLTextAreaElement>entry.target).style.height;
       if (styleHeight !== "") {
-        this.textareaElementsRows[entry.target.id] = Math.floor(
-          height / this.fontSize
-        );
+        const rows = Math.floor(height / this.fontSize);
+        this.textareaElementsRows[entry.target.id] =
+          rows <= 3 ? undefined : rows;
 
         this.sessionStore.update((state) => ({
           ui: {
