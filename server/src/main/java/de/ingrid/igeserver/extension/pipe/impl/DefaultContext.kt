@@ -40,3 +40,5 @@ open class DefaultContext(override val catalogId: String, override val profile: 
 
     override var properties: Map<String, Any?> = mutableMapOf()
 }
+
+class SimpleContext(override val catalogId: String, override val profile: String):  DefaultContext(catalogId, profile, null)
