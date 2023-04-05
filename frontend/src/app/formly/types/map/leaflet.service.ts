@@ -219,6 +219,8 @@ export class LeafletService {
   }
 
   validateWkt(value: string) {
-    return this.wktTools.validate(value);
+    // TODO: do real backend validation to make sure WKT can be converted to GML
+    // return this.wktTools.validate(value);
+    return null;
   }
 }
