@@ -70,7 +70,29 @@ export class RepeatChipComponent extends FieldArrayType {
   }
 
   addValues(value: string) {
-    let duplicates = [];
+    let duplicates = this.addValueAndDetermineDuplicates(value);
+
+    this.inputControl.setValue("");
+
+    if (duplicates.length > 0) this.handleDuplicates(duplicates);
+  }
+
+  private handleDuplicates(duplicates: any[]) {
+    let formattedDuplicates = this.prepareDuplicatesForView(duplicates);
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Bitte beachten",
+        message:
+          "Die Eingabe von " +
+          formattedDuplicates +
+          " erfolgte mehrfach, wurde aber nur einmal übernommen.",
+        buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
+      } as ConfirmDialogData,
+    });
+  }
+
+  private addValueAndDetermineDuplicates(value: string) {
+    const duplicates = [];
     value.split(",").forEach((item) => {
       const trimmed = item.trim();
       if (trimmed == "") return;
@@ -81,28 +103,18 @@ export class RepeatChipComponent extends FieldArrayType {
         if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
       }
     });
-    this.inputControl.setValue("");
-    if (duplicates.length > 0) {
-      duplicates = duplicates.map((dup) => "'" + dup + "'");
-      var formatedDuplicates = "";
-      if (duplicates.length == 1) {
-        formatedDuplicates = duplicates[0];
-      } else {
-        formatedDuplicates = duplicates
-          .join(", ")
-          .replace(/,([^,]*)$/, " und$1");
-      }
-      this.dialog.open(ConfirmDialogComponent, {
-        data: {
-          title: "Bitte beachten",
-          message:
-            "Die Eingabe von " +
-            formatedDuplicates +
-            " erfolgte mehrfach, wurde aber nur einmal übernommen.",
-          buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
-        } as ConfirmDialogData,
-      });
+    return duplicates;
+  }
+
+  private prepareDuplicatesForView(duplicates: any[]) {
+    duplicates = duplicates.map((dup) => "'" + dup + "'");
+    let formatedDuplicates: string;
+    if (duplicates.length == 1) {
+      formatedDuplicates = duplicates[0];
+    } else {
+      formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, " und$1");
     }
+    return formatedDuplicates;
   }
 
   drop(event: { previousIndex: number; currentIndex: number }) {
