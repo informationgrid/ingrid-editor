@@ -8,7 +8,7 @@
             [value]="wktString"
             igeFocus
             data-cy="spatial-dialog-wkt"
-            placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"
+            placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))"
         ></textarea>
         <button
             mat-icon-button
@@ -20,14 +20,16 @@
             </mat-icon>
         </button>
     </mat-form-field>
-    <div>
+    <div class="display-flex align-items-center gap btn-analyze space-bottom">
+        <mat-spinner *ngIf="isAnalyzing" diameter="16"></mat-spinner>
         <button
-            mat-button
+            mat-stroked-button
             color="primary"
             type="button"
             (click)="validateWKT(wkt.value)"
+            [disabled]="isAnalyzing || wkt.value.trim().length === 0"
         >
-            Anzeigen
+            Prüfen und anzeigen
         </button>
     </div>
 

@@ -13,6 +13,7 @@ import { ContextHelpComponent } from "../../../../../shared/context-help/context
 import { ContextHelpService } from "../../../../../services/context-help/context-help.service";
 import { Observable, of } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
+import { finalize } from "rxjs/operators";
 
 @Component({
   selector: "ige-wkt-spatial",
@@ -27,7 +28,9 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   error: string = null;
 
   private drawnWkt: Layer;
-  private currentDialog: MatDialogRef<ContextHelpComponent, any>;
+  private currentDialog: MatDialogRef<ContextHelpComponent>;
+  isAnalyzing = false;
+
   constructor(
     private leafletService: LeafletService,
     private contextHelpService: ContextHelpService,
@@ -49,18 +52,23 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   }
 
   validateWKT(value: string) {
+    this.isAnalyzing = true;
     this.clearLayer();
     this.error = null;
 
-    const response = this.leafletService.validateWkt(value);
-    if (response) {
-      this.error = response;
-      this.result.next(null);
-      return;
-    }
+    this.leafletService
+      .validateWkt(value)
+      .pipe(finalize(() => (this.isAnalyzing = false)))
+      .subscribe((response) => {
+        if (!response.isValid) {
+          this.error = response.message;
+          this.result.next(null);
+          return;
+        }
 
-    this.drawWkt(value);
-    this.result.next(value);
+        this.drawWkt(value);
+        this.result.next(value);
+      });
   }
 
   private clearLayer() {
