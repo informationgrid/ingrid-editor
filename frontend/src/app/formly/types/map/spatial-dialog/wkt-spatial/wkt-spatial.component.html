@@ -26,6 +26,7 @@
             mat-stroked-button
             color="primary"
             type="button"
+            data-cy="btn-analyze"
             (click)="validateWKT(wkt.value)"
             [disabled]="isAnalyzing || wkt.value.trim().length === 0"
         >
