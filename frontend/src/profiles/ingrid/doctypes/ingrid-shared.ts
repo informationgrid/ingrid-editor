@@ -322,7 +322,7 @@ export abstract class IngridShared extends BaseDoctype {
               required: true,
             })
           : null,
-        this.addRepeatChip("keyWordsUmthes", "Umthes Schlagworte", {
+        this.addRepeatChip("keywordsUmthes", "Umthes Schlagworte", {
           restCall: (http: HttpClient, query: string) =>
             http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",

@@ -80,24 +80,28 @@
 <ng-container *ngIf="type === 'object'">
     <ige-search-input
         [autocompleteRef]="searchAuto"
+        [withWhiteBorder]="false"
         [searchSub]="searchSub"
         [query]="inputControl"
         [flexWidth]="true"
-        placeholder="Suchen"
+        placeholder="Im Umweltthesaurus suchen"
         showSearchIcon="true"
     ></ige-search-input>
 
     <mat-autocomplete
         #searchAuto="matAutocomplete"
-        class="quicksearch-auto-tree dense"
+        class="denseX"
+        (optionSelected)="addValueObject($event)"
     >
-        <mat-option *ngFor="let doc of searchResult | async">
+        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
             {{ doc[props.labelField] }}
         </mat-option>
     </mat-autocomplete>
 </ng-container>
 
-<ng-container *ngIf="!props.useDialog && formControl.enabled">
+<ng-container
+    *ngIf="type !== 'object' && !props.useDialog && formControl.enabled"
+>
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput

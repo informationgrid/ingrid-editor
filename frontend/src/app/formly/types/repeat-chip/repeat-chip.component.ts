@@ -14,6 +14,8 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, startWith } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
+import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -32,6 +34,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
   constructor(
     private dialog: MatDialog,
     private http: HttpClient,
+    private snack: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
     super();
@@ -113,6 +116,21 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     this.inputControl.setValue("");
 
     if (duplicates.length > 0) this.handleDuplicates(duplicates);
+  }
+
+  addValueObject(event: MatAutocompleteSelectedEvent) {
+    this.inputControl.setValue("");
+
+    const label = event.option.value[this.props.labelField];
+    const alreadyExists = this.model.some(
+      (item) => item[this.props.labelField] == label
+    );
+    if (alreadyExists) {
+      this.snack.open(`Der Begriff '${label}' existiert bereits`);
+      return;
+    }
+
+    this.add(null, event.option.value);
   }
 
   private handleDuplicates(duplicates: any[]) {

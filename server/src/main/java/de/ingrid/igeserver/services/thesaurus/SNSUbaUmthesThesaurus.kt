@@ -11,11 +11,12 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
 
     override fun search(term: String, options: ThesaurusSearchOptions): List<Keyword> {
         if (term.isEmpty()) return emptyList()
-        
+
         val response = sendRequest("GET", "$searchUrlTemplate$term&qt=contains")
         val mapper = XmlMapper(JacksonXmlModule())
         return mapper.readTree(response).get("Description")
-            .mapNotNull { it.get("prefLabel") }
+            .mapNotNull { it.get("prefLabel") ?: it.get("officialName") ?: it.get("altLabel") }
             .map { Keyword(it.get(0).get("resource").asText(), it.get(1).get("").asText()) }
+            .toSet().toList()
     }
 }
