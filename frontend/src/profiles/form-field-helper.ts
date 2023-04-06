@@ -1,6 +1,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
+import { HttpClient } from "@angular/common/http";
 
 export interface Options {
   id?: string;
@@ -46,6 +47,8 @@ export interface RepeatChipOptions extends Options {
   useDialog?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: number;
+  restCall?: (http: HttpClient, query: string) => Observable<any[]>;
+  labelField?: string;
 }
 
 export interface SelectOptions extends Options {
@@ -217,6 +220,8 @@ export class FormFieldHelper {
         useDialog: options?.useDialog,
         options: options?.options,
         codelistId: options?.codelistId,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
       },
     };
   }

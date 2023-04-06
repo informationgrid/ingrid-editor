@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -10,21 +10,59 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
+import { BehaviorSubject, Subscription } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { debounceTime, startWith } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
   styleUrls: ["./repeat-chip.component.scss"],
 })
-export class RepeatChipComponent extends FieldArrayType {
+export class RepeatChipComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();
 
-  constructor(private dialog: MatDialog) {
+  type: "simple" | "codelist" | "object" = "simple";
+
+  searchSub: Subscription;
+  searchResult = new BehaviorSubject<any[]>([]);
+
+  constructor(
+    private dialog: MatDialog,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {
     super();
 
     // show error immediately (on publish)
     this.inputControl.setValue("");
     this.inputControl.markAllAsTouched();
+  }
+
+  ngOnInit() {
+    if (this.props.codelistId) this.type = "codelist";
+    else if (this.props.restCall) {
+      this.type = "object";
+      this.inputControl.valueChanges
+        .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+        .subscribe((query) => this.search(query));
+    }
+  }
+
+  search(value) {
+    if (!value || value.length === 0) {
+      this.searchResult.next([]);
+      return;
+    }
+    this.searchSub?.unsubscribe();
+    this.searchSub = this.props
+      .restCall(this.http, value)
+      .subscribe((result) => {
+        this.searchResult.next(result);
+      });
+    this.cdr.detectChanges();
   }
 
   openDialog() {

@@ -29,15 +29,19 @@
                 svgIcon="language-24px"
             ></mat-icon>
 
-            <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
+            <ng-container *ngIf="type === 'codelist'">
                 <div class="label">
                     {{ model[i] | codelist : props.codelistId | async }}
                 </div>
             </ng-container>
 
-            <ng-template #simpleLabel>
+            <ng-container *ngIf="type === 'simple'">
                 <div class="label">{{ model[i] }}</div>
-            </ng-template>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'object'">
+                <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
 
             <button
                 *ngIf="formControl.enabled"
@@ -73,6 +77,26 @@
     "
 ></ige-add-button>
 
+<ng-container *ngIf="type === 'object'">
+    <ige-search-input
+        [autocompleteRef]="searchAuto"
+        [searchSub]="searchSub"
+        [query]="inputControl"
+        [flexWidth]="true"
+        placeholder="Suchen"
+        showSearchIcon="true"
+    ></ige-search-input>
+
+    <mat-autocomplete
+        #searchAuto="matAutocomplete"
+        class="quicksearch-auto-tree dense"
+    >
+        <mat-option *ngFor="let doc of searchResult | async">
+            {{ doc[props.labelField] }}
+        </mat-option>
+    </mat-autocomplete>
+</ng-container>
+
 <ng-container *ngIf="!props.useDialog && formControl.enabled">
     <mat-form-field class="width-100" appearance="outline">
         <input
@@ -84,7 +108,7 @@
             (keydown.enter)="addValues(inputControl.value)"
         />
         <button
-            *ngIf="inputControl.value.length > 0"
+            *ngIf="type !== 'object' && inputControl.value.length > 0"
             mat-icon-button
             matSuffix
             type="button"

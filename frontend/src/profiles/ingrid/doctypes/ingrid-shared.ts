@@ -19,6 +19,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
+import { HttpClient } from "@angular/common/http";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -321,6 +322,11 @@ export abstract class IngridShared extends BaseDoctype {
               required: true,
             })
           : null,
+        this.addRepeatChip("keyWordsUmthes", "Umthes Schlagworte", {
+          restCall: (http: HttpClient, query: string) =>
+            http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+          labelField: "label",
+        }),
         this.addRepeatChip("keywords", "Optionale Schlagworte"),
       ].filter(Boolean)
     );
