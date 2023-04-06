@@ -110,7 +110,17 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  addValues(value: string) {
+  async addValues(value: string) {
+    if (this.props.preprocessValues) {
+      value = await this.props.preprocessValues(
+        this.http,
+        this.options.formState.mainModel,
+        value
+      );
+      console.log("after preprocess");
+      this.options.formState.updateModel();
+    }
+
     let duplicates = this.addValueAndDetermineDuplicates(value);
 
     this.inputControl.setValue("");

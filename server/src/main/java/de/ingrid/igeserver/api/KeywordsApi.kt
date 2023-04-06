@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.services.thesaurus.Keyword
+import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -21,7 +22,8 @@ interface KeywordsApi {
     @GetMapping(value = ["/keywords/{thesaurusId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun search(
         @Parameter(required = true) @PathVariable("thesaurusId") thesaurusId: String,
-        @RequestParam(value = "q", required = true) term: String
+        @RequestParam(value = "q", required = true) term: String,
+        @RequestParam(value = "type", required = false) type: ThesaurusSearchType? = ThesaurusSearchType.CONTAINS
     ): ResponseEntity<List<Keyword>>
 
 }

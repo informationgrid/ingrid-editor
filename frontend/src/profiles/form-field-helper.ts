@@ -49,6 +49,11 @@ export interface RepeatChipOptions extends Options {
   codelistId?: number;
   restCall?: (http: HttpClient, query: string) => Observable<any[]>;
   labelField?: string;
+  preprocessValues?: (
+    http: HttpClient,
+    model: any,
+    value: string
+  ) => Promise<string>;
 }
 
 export interface SelectOptions extends Options {
@@ -222,6 +227,7 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
         restCall: options?.restCall,
         labelField: options?.labelField,
+        preprocessValues: options?.preprocessValues,
       },
     };
   }

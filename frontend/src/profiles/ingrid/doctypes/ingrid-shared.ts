@@ -327,7 +327,32 @@ export abstract class IngridShared extends BaseDoctype {
             http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",
         }),
-        this.addRepeatChip("keywords", "Optionale Schlagworte"),
+        this.addRepeatChip("keywords", "Optionale Schlagworte", {
+          preprocessValues: async (
+            http: HttpClient,
+            model: any,
+            value: String
+          ) => {
+            return await Promise.all(
+              value.split(",").map(async (item) => {
+                // check if value is contained in
+                const response = await http
+                  .get<any[]>(
+                    `/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`
+                  )
+                  .toPromise();
+                if (response.length > 0) {
+                  const exists = model.keywordsUmthes.some(
+                    (item) => item.label === response[0].label
+                  );
+                  if (!exists) model.keywordsUmthes.push(response[0]);
+                  return null;
+                }
+                return item;
+              })
+            ).then((res) => res.filter((item) => item !== null).join(","));
+          },
+        }),
       ].filter(Boolean)
     );
   }
