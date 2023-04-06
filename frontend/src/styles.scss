@@ -560,8 +560,16 @@ ige-one-column-wrapper formly-group {
 
 .right-align input {
   text-align: right;
+  -moz-appearance: textfield;
 }
 
+.right-align input::-webkit-outer-spin-button,
+.right-align input::-webkit-inner-spin-button {
+  display: none;
+}
+.mat-mdc-form-field-text-suffix {
+  padding-left: 5px;
+}
 .hide-optionals .optional:not(:has(.required)) {
   display: none;
 }

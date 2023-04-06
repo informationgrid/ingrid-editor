@@ -857,8 +857,13 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen (MB)", {
+          this.addInputInline("transferSize", "Datenvolumen", {
             type: "number",
+            className: "right-align",
+            wrappers: ["form-field", "addons"],
+            suffix: {
+              text: "MB",
+            },
           }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
@@ -895,13 +900,23 @@ export abstract class IngridShared extends BaseDoctype {
           type: "number",
           min: 0,
         }),
-        this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
+        this.addInputInline("distanceMeter", "Bodenauflösung", {
           type: "number",
           min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "m",
+          },
         }),
-        this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
+        this.addInputInline("distanceDPI", "Scanauflösung", {
           type: "number",
           min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "DPI",
+          },
         }),
       ],
     });

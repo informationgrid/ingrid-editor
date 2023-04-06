@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { isNotEmptyObject } from "../../../app/shared/utils";
+import { isEmptyObject, isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -335,11 +335,11 @@ export class GeoDatasetDoctype extends IngridShared {
               wrappers: ["panel", "form-field", "addons"],
               className: "single-field width-25 right-align",
               type: "number",
+              min: 0,
+              max: 100,
               suffix: {
                 text: "%",
               },
-              min: 0,
-              max: 100,
             }),
           ]),
         ]),
@@ -348,26 +348,37 @@ export class GeoDatasetDoctype extends IngridShared {
           "Genauigkeit",
           [
             this.addInput("griddedDataPositionalAccuracy", null, {
-              fieldLabel: "Rasterpositionsgenauigkeit (m)",
+              fieldLabel: "Rasterpositionsgenauigkeit",
               type: "number",
-              className: "optional",
+              className: "optional right-align",
               expressions: {
                 hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
               },
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("vertical", null, {
-              fieldLabel: "Höhengenauigkeit (m)",
+              fieldLabel: "Höhengenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("horizontal", null, {
-              fieldLabel: "Lagegenauigkeit (m)",
+              fieldLabel: "Lagegenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
           ],
           { fieldGroupClassName: "display-flex" }

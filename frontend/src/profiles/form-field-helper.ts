@@ -356,7 +356,7 @@ export class FormFieldHelper {
   addInputInline(id, label, options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       ...options,
     });
   }
