@@ -63,7 +63,7 @@
                     <gmd:pointOfContact>
                         <idf:idfResponsibleParty type="7" uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
                             <gmd:organisationName>
-                                <gco:CharacterString>Orga1</gco:CharacterString>
+                                <gco:CharacterString>Wemove Test</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:positionName>
                                 <gco:CharacterString>Positionsname</gco:CharacterString>
@@ -72,9 +72,6 @@
                                 <gmd:CI_Contact>
                                     <gmd:address>
                                         <gmd:CI_Address>
-                                            <gmd:administrativeArea>
-                                                <gco:CharacterString/>
-                                            </gmd:administrativeArea>
                                             <gmd:country>
                                                 <gco:CharacterString>DEU</gco:CharacterString>
                                             </gmd:country>
@@ -89,6 +86,7 @@
                                 <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
                             </gmd:role>
                             <idf:hierarchyParty uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
+                                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                                 <idf:addressType>7</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
