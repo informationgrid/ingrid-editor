@@ -563,10 +563,11 @@ export class FormFieldHelper {
     messageNoReferences?: string,
     referencesHint?: string,
     options?
-  ) {
+  ): FormlyFieldConfig {
     return {
       type: "referencedDocuments",
       wrappers: ["panel"],
+      className: options?.className,
       props: {
         externalLabel: label,
         referenceField: referenceField,

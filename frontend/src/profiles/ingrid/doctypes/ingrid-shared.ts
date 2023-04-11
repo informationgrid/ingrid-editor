@@ -431,7 +431,9 @@ export abstract class IngridShared extends BaseDoctype {
               fieldGroupClassName: "",
               expressions: {
                 className: (field) =>
-                  isNotEmptyObject(field.form.value) ? "" : "optional",
+                  isNotEmptyObject(field.form.value?.verticalExtent)
+                    ? ""
+                    : "optional",
               },
             }
           ),
@@ -887,6 +889,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
         fields: [this.urlRefFields()],
+        className: "optional",
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl, field) =>

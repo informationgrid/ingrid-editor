@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { isEmptyObject, isNotEmptyObject } from "../../../app/shared/utils";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -279,6 +279,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addResolutionFields(),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
+            className: "optional",
             fields: this.titleDateEditionFields(3555),
           }),
         ]),
@@ -288,6 +289,7 @@ export class GeoDatasetDoctype extends IngridShared {
             expressions: {
               "props.required":
                 "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+              className: "field.props.required ? '' : 'optional'",
             },
             contextHelpId: "citation_2",
           }),
@@ -304,6 +306,7 @@ export class GeoDatasetDoctype extends IngridShared {
           "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
           "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
           {
+            className: "optional",
             contextHelpId: "coupledResources",
           }
         ),
