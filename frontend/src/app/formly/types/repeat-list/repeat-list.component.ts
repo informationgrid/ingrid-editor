@@ -34,6 +34,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
+  initialParameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new UntypedFormControl();
   filterCtrl: UntypedFormControl;
@@ -72,6 +73,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options;
+    if (options)
+      this.initialParameterOptions = JSON.parse(JSON.stringify(options));
     this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
@@ -172,7 +175,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      const disabledByDefault = this.parameterOptions.find(
+      const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value
       ).disabled;
       const optionAlreadySelected = (<{ key; value? }[]>this.model)?.some(
