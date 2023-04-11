@@ -17,7 +17,16 @@ import {
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
 import { WktTools } from "./spatial-dialog/wkt-spatial/wkt-tools";
-import { ConfigService } from "../../../services/config/config.service";
+import {
+  ConfigService,
+  Configuration,
+} from "../../../services/config/config.service";
+import { HttpClient } from "@angular/common/http";
+
+export interface WktValidateResponse {
+  isValid: boolean;
+  message: string;
+}
 
 @Injectable({
   providedIn: "root",
@@ -35,6 +44,7 @@ export class LeafletService {
     "#2C4EB7",
   ];
   private wktTools: WktTools;
+  private configuration: Configuration;
 
   static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     if (!bbox) {
@@ -50,7 +60,8 @@ export class LeafletService {
         '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
-  constructor(private config: ConfigService) {
+  constructor(private config: ConfigService, private http: HttpClient) {
+    this.configuration = this.config.getConfiguration();
     this.wktTools = new WktTools();
 
     // fix for marker-icon location
@@ -101,7 +112,7 @@ export class LeafletService {
       (location) => location.type === "wkt" && location.wkt
     );
     const boxLocations = locations.filter(
-      (location) => location.type === "free" || location.type === "coordinates"
+      (location) => location.type === "free"
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -216,5 +227,12 @@ export class LeafletService {
       indexNumber: index,
       color: this.getColor(index),
     }));
+  }
+
+  validateWkt(value: string) {
+    return this.http.post<WktValidateResponse>(
+      `${this.configuration.backendUrl}tools/validate/wkt`,
+      value
+    );
   }
 }

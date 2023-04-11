@@ -3,6 +3,7 @@ package de.ingrid.igeserver
 import de.ingrid.igeserver.configuration.BeansConfiguration
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.MailProperties
+import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.development.DevelopmentProperties
 import de.ingrid.mdek.upload.configuration.SpringConfiguration
 import org.apache.logging.log4j.LogManager
@@ -15,7 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @Configuration
 @EnableAutoConfiguration
-@EnableConfigurationProperties(DevelopmentProperties::class, MailProperties::class, GeneralProperties::class)
+@EnableConfigurationProperties(DevelopmentProperties::class, MailProperties::class, ZabbixProperties::class, GeneralProperties::class)
 @Import(value = [BeansConfiguration::class, SpringConfiguration::class])
 @EnableScheduling
 class IgeServer

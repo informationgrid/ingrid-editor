@@ -26,6 +26,7 @@ export abstract class Plugin {
   subscriptions: Subscription[] = [];
   fields?: FormlyFieldConfig[] = [];
   data?: any;
+  hideInAddress = false;
 
   register(): void {
     console.log("Register: ", this.name);

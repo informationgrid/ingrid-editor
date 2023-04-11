@@ -20,9 +20,13 @@ class AddressModelTransformer(
         return individualName.ifBlank { null }
     }
 
+    val postBoxAddress = listOfNotNull( model.address.poBox, model.address.zipPoBox).joinToString(", ")
     val country = model.address.country?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it) }
-//    val administrativeArea = codelist.getValue("6250", model.address.administrativeArea)
-    val administrativeArea = model.address.administrativeArea.let { codelist.getValue("6250", it) }
+    val positionName = model.positionName
+    val zipCode = model.address.zipCode
+    val street = model.address.street
+    val city = model.address.city
+    val administrativeArea = codelist.getValue("110", model.address.administrativeArea)
 
 
 }

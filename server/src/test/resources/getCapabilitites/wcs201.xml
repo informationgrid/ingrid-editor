@@ -1,0 +1,193 @@
+<wcs:Capabilities version="2.0.1" updateSequence="32477"
+                  xsi:schemaLocation=" http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd http://inspire.ec.europa.eu/schemas/inspire_dls/1.0 http://inspire.ec.europa.eu/schemas/inspire_dls/1.0/inspire_dls.xsd"
+                  xmlns:wcs="http://www.opengis.net/wcs/2.0" xmlns:ows="http://www.opengis.net/ows/2.0"
+                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:int="http://www.opengis.net/WCS_service-extension_interpolation/1.0"
+                  xmlns:crs="http://www.opengis.net/wcs/crs/1.0"
+                  xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
+                  xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0">
+    <ows:ServiceIdentification>
+        <ows:Title>INSPIRE-WCS Digitales Geländemodell Gitterweite 200 m</ows:Title>
+        <ows:Abstract>INSPIRE Downloaddienst des Digitalen Geländemodell Gitterweite 200 m für dasGebiet der Bundesrepublik Deutschland.Zur einheitlichen Beschreibung des Reliefs des Gebietes der BundesrepublikDeutschland werden im Rahmen des ATKIS®-Projektes durch die deutscheLandesvermessung Digitale Geländemodelle (DGM) unterschiedlicher Qualitätsstufenaufgebaut.Das Digitale Geländemodell DGM200 beschreibt die Geländeformen der Erdoberflächedurch eine in einem regelmäßigen Gitter angeordnete, in Lage und Höhegeoreferenzierte Punktmenge. Die Gitterweite beträgt 200 m.Die Visualisierung des Reliefs erfolgt nach den Stilvorgaben von INSPIRE für dasThema Elevetaion.</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword>WCS</ows:Keyword>
+            <ows:Keyword>INSPIRE:DownloadService</ows:Keyword>
+            <ows:Keyword>INSPIRE</ows:Keyword>
+            <ows:Keyword>infoCoverageAccessService</ows:Keyword>
+            <ows:Keyword>BKG</ows:Keyword>
+            <ows:Keyword>Bundesamt für Kartographie und Geodäsie</ows:Keyword>
+            <ows:Keyword>Deutschland</ows:Keyword>
+            <ows:Keyword>Germany</ows:Keyword>
+            <ows:Keyword>Geobasisdaten</ows:Keyword>
+            <ows:Keyword>AdV</ows:Keyword>
+            <ows:Keyword>DGM</ows:Keyword>
+            <ows:Keyword>DGM200</ows:Keyword>
+            <ows:Keyword>Digitales Gelände Modell 200 m</ows:Keyword>
+            <ows:Keyword>Digital Terrain Model Grid Width 200 m</ows:Keyword>
+            <ows:Keyword>DEM</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType>urn:ogc:service:wcs</ows:ServiceType>
+        <ows:ServiceTypeVersion>2.0.1</ows:ServiceTypeVersion>
+        <ows:ServiceTypeVersion>1.1.1</ows:ServiceTypeVersion>
+        <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+        <ows:Profile>http://www.opengis.net/spec/WCS/2.0/conf/core</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-gridded-coverage</ows:Profile>
+        <ows:Profile> http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/GMLCOV/1.0/conf/gml-coverage</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/GMLCOV/1.0/conf/special-format</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/GMLCOV/1.0/conf/multipart</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation-per-axis</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/nearest-neighbor</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/linear</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/cubic</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting</ows:Profile>
+        <ows:Fees>Diese Daten können geldleistungsfrei gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes (GeoNutzV) vom 19. März 2013 (Bundesgesetzblatt Jahrgang 2013 Teil I Nr. 14) genutzt werden, siehe https://sg.geodatenzentrum.de/web_public/gdz/lizenz/geonutzv.pdf. Der Quellenvermerk ist zu beachten. | Quellenvermerk: © GeoBasis-DE / BKG &lt;Jahr></ows:Fees>
+        <ows:AccessConstraints>Es gelten keine Zugriffsbeschränkungen.</ows:AccessConstraints>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>Dienstleistungszentrum des Bundes für Geoinformation und Geodäsie</ows:ProviderName>
+        <ows:ProviderSite xlink:href=""/>
+        <ows:ServiceContact>
+            <ows:PositionName>Technischer Administrator</ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>+49 (0) 123 456 789</ows:Voice>
+                    <ows:Facsimile>+49 (0) 123 456 999</ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint>Musterstr. 23</ows:DeliveryPoint>
+                    <ows:City>Berlin</ows:City>
+                    <ows:AdministrativeArea>xxx</ows:AdministrativeArea>
+                    <ows:PostalCode>12345</ows:PostalCode>
+                    <ows:Country>Deutschland</ows:Country>
+                    <ows:ElectronicMailAddress>dlz[at]my-domain.net</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Constraint name="PostEncoding">
+            <ows:AllowedValues>
+                <ows:Value>XML</ows:Value>
+            </ows:AllowedValues>
+        </ows:Constraint>
+    </ows:OperationsMetadata>
+    <wcs:ServiceMetadata>
+        <wcs:formatSupported>application/gml+xml</wcs:formatSupported>
+        <wcs:formatSupported>application/x-gzip</wcs:formatSupported>
+        <wcs:formatSupported>image/jpeg</wcs:formatSupported>
+        <wcs:formatSupported>image/png</wcs:formatSupported>
+        <wcs:formatSupported>image/tiff</wcs:formatSupported>
+        <wcs:formatSupported>text/plain</wcs:formatSupported>
+        <wcs:Extension>
+            <crs:CrsMetadata>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/4326</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/3857</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/25832</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/25833</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/4647</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/5650</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/31466</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/31467</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/31468</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/31469</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/5676</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/5677</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/5678</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/5679</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/4839</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/4258</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/3034</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/3035</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/3044</crs:crsSupported>
+                <crs:crsSupported>http://www.opengis.net/def/crs/EPSG/0/3045</crs:crsSupported>
+            </crs:CrsMetadata>
+            <int:interpolationSupported>http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor</int:interpolationSupported>
+            <int:interpolationSupported>http://www.opengis.net/def/interpolation/OGC/1/linear</int:interpolationSupported>
+            <int:interpolationSupported>http://www.opengis.net/def/interpolation/OGC/1/cubic</int:interpolationSupported>
+        </wcs:Extension>
+    </wcs:ServiceMetadata>
+    <wcs:Contents>
+        <wcs:CoverageSummary>
+            <ows:Title>Grid Coverage</ows:Title>
+            <ows:Abstract>Generated from ImageMosaic</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword>grid</ows:Keyword>
+                <ows:Keyword>coverage</ows:Keyword>
+            </ows:Keywords>
+            <wcs:CoverageId>dgm200_inspire__EL.GridCoverage</wcs:CoverageId>
+            <wcs:CoverageSubtype>RectifiedGridCoverage</wcs:CoverageSubtype>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>5.5493554862369905 47.140652918628305</ows:LowerCorner>
+                <ows:UpperCorner>15.57402035157314 55.0611433089022</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <ows:BoundingBox crs="http://www.opengis.net/def/crs/EPSG/0/EPSG:25832">
+                <ows:LowerCorner>279400.0 5235800.0</ows:LowerCorner>
+                <ows:UpperCorner>921400.0 6102000.0</ows:UpperCorner>
+            </ows:BoundingBox>
+        </wcs:CoverageSummary>
+        <wcs:Extension>
+            <ows:ExtendedCapabilities>
+                <inspire_dls:ExtendedCapabilities>
+                    <inspire_common:MetadataUrl>
+                        <inspire_common:URL>https://gdk.gdi-de.org/gdi-de/srv/eng/xml_iso19139?uuid=B567ABDA-10CD-4335-83EA-8D8D2EA9E6B6</inspire_common:URL>
+                        <inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>
+                    </inspire_common:MetadataUrl>
+                    <inspire_common:SupportedLanguages>
+                        <inspire_common:DefaultLanguage>
+                            <inspire_common:Language>ger</inspire_common:Language>
+                        </inspire_common:DefaultLanguage>
+                    </inspire_common:SupportedLanguages>
+                    <inspire_common:ResponseLanguage>
+                        <inspire_common:Language>ger</inspire_common:Language>
+                    </inspire_common:ResponseLanguage>
+                    <inspire_dls:SpatialDataSetIdentifier metadataURL="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000113">
+                        <inspire_common:Code>DEBKG00M00000113</inspire_common:Code>
+                        <inspire_common:Namespace>https://registry.gdi-de.org/id/de.bund.bkg.csw/</inspire_common:Namespace>
+                    </inspire_dls:SpatialDataSetIdentifier>
+                </inspire_dls:ExtendedCapabilities>
+            </ows:ExtendedCapabilities>
+        </wcs:Extension>
+    </wcs:Contents>
+</wcs:Capabilities>

@@ -149,7 +149,7 @@ class CodelistHandler @Autowired constructor(
             ?.id
     }
 
-    val allCodelists: List<CodeList>
-        get() = codeListService.codeLists
+    val allCodelists: List<CodeList> = codeListService.codeLists
 
+    val initialCodelists: MutableList<CodeList> = codeListService.initialCodelists
 }

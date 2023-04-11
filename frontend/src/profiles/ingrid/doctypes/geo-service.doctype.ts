@@ -12,7 +12,7 @@ import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -33,11 +33,30 @@ export class GeoServiceDoctype extends IngridShared {
     "4": 5154,
   };
 
-  getServiceVersionOptions = new Subject<SelectOptionUi[]>();
+  private mapServiceTypeToOperationNameCodelist = {
+    "1": 5105,
+    "2": 5110,
+    "3": 5120,
+    "4": 5130,
+  };
+
+  getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+  getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ inspireRelevant: true, openData: true }),
+      {
+        type: "updateGetCapabilities",
+        wrappers: ["panel"],
+        props: {
+          externalLabel: "GetCapabilities-Aktualisierung",
+        },
+      },
+      this.addGeneralSection({
+        inspireRelevant: true,
+        advCompatible: true,
+        openData: true,
+      }),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,
@@ -90,41 +109,36 @@ export class GeoServiceDoctype extends IngridShared {
               hasInlineContextHelp: true,
               wrappers: ["inline-help"],
               className: "optional flex-1",
-              /*expressions: {
-                // @ts-ignore
-                "props.codelistId": (field) => {
-                  const codelistId =
-                    this.mapServiceTypeToVersionCodelist[field.parent.model.type?.key] ?? 5152;
-
-                  this.getCodelistForSelect(codelistId, "version").subscribe(
-                    (value) => this.getServiceVersionOptions.next(value)
-                  );
-                  return 100; //codelistId ?? 5152;
-                },
-              },*/
             }),
           ]),
           this.addRepeat("operations", "Operationen", {
             fields: [
-              this.addInputInline("name", "Name"),
+              this.addAutoCompleteInline("name", "Name", {
+                required: true,
+                options: this.getServiceOperationNameOptions,
+              }),
               this.addInputInline("description", "Beschreibung"),
-              this.addInputInline("methodCall", "Zugriffs-URL"),
-            ],
-          }),
-          this.addRepeat("resolution", "Erstellungsmaßstab", {
-            className: "optional",
-            fields: [
-              this.addInputInline("denominator", "Maßstab 1:x", {
-                type: "number",
-              }),
-              this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
-                type: "number",
-              }),
-              this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
-                type: "number",
+              this.addInputInline("methodCall", "Zugriffs-URL", {
+                required: true,
               }),
             ],
+            validators: {
+              getCapabilityForWMS: {
+                expression: (ctrl, field) => {
+                  const model = field.options.formState.mainModel;
+                  return (
+                    !model ||
+                    model._type !== "InGridGeoService" ||
+                    model.service.type?.key !== "2" ||
+                    field.model.some((item) => item?.name?.key === "1")
+                  );
+                },
+                message:
+                  "Für Darstellungsdienste muss eine GetCapabilities-Operation angegeben sein",
+              },
+            },
           }),
+          this.addResolutionFields(),
           this.addGroup(
             null,
             null,
@@ -242,7 +256,8 @@ export class GeoServiceDoctype extends IngridShared {
     return field.formControl.valueChanges.pipe(
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
-      tap((value) => this.updateServiceVersionField(value))
+      tap((value) => this.updateServiceVersionField(value)),
+      tap((value) => this.updateOperationNameField(value))
     );
   }
 
@@ -256,5 +271,13 @@ export class GeoServiceDoctype extends IngridShared {
       );
     }
     // TODO: remove all codelist values from version field?
+  }
+
+  private updateOperationNameField(value) {
+    const codelistId =
+      this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
+    this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
+      this.getServiceOperationNameOptions.next(value)
+    );
   }
 }

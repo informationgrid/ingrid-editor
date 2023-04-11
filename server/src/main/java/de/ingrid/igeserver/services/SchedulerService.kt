@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
+import org.quartz.Trigger.DEFAULT_PRIORITY
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
@@ -13,14 +14,20 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
 
     private val scheduler = factory.scheduler
 
-    fun start(jobKey: JobKey, jobDataMap: JobDataMap?) {
-        val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
-        if (isRunning) {
-            log.info("Job is already running. Skip execution")
-            return
+    fun start(jobKey: JobKey, jobDataMap: JobDataMap?, jobPriority: Int, checkRunning: Boolean) {
+        if (checkRunning) {
+            val isRunning = scheduler.currentlyExecutingJobs.any { it.jobDetail.key == jobKey }
+            if (isRunning) {
+                log.info("Job is already running. Skip execution")
+                return
+            }
         }
+        val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
+            .usingJobData(jobDataMap)
+            .withPriority(jobPriority)
+            .build()
 
-        scheduler.triggerJob(jobKey, jobDataMap)
+        scheduler.scheduleJob(trigger)
     }
 
     fun pause(jobId: String) {
@@ -69,7 +76,9 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
         command: JobCommand,
         jobClass: Class<out Job>,
         jobKey: JobKey,
-        jobDataMap: JobDataMap? = null
+        jobDataMap: JobDataMap? = null,
+        jobPriority: Int = DEFAULT_PRIORITY,
+        checkRunning: Boolean = true
     ) {
 
         when (command) {
@@ -77,7 +86,7 @@ class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean)
                 if (scheduler.checkExists(jobKey).not()) {
                     createJob(jobClass, jobKey)
                 }
-                start(jobKey, jobDataMap)
+                start(jobKey, jobDataMap, jobPriority, checkRunning)
             }
             JobCommand.stop -> stop(jobKey)
             JobCommand.resume -> TODO()

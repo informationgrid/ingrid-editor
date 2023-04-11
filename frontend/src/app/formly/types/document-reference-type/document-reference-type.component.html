@@ -11,9 +11,14 @@
         <ng-template #showDocumentIcon>
             <ige-document-icon [doc]="item" mat-list-icon></ige-document-icon>
         </ng-template>
-        <span>{{ item.title }}</span>
+        <span>{{ item.title ?? "???" }}</span>
     </div>
-    <button mat-icon-button type="button" (click)="removeItem(i, $event)">
+    <button
+        mat-icon-button
+        type="button"
+        class="remove-icon"
+        (click)="removeItem(i, $event)"
+    >
         <mat-icon>clear</mat-icon>
     </button>
 </div>

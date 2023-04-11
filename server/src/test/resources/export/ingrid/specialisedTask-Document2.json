@@ -40,10 +40,19 @@
           "_state": "PW",
           "_id": "5",
           "address": {
+            "street": "Hanauer Landstr. 52",
+            "zip-code": "60",
+            "city": "Frankfurt",
+            "zip-po-box": "P123 Frankfurt",
+            "po-box": "Postbox 123",
             "administrativeArea": {
               "key": "8"
+            },
+            "country": {
+              "key": "276"
             }
           },
+          "positionName": "Positionsname",
           "contact": [
             {
               "type": {
@@ -56,7 +65,7 @@
           "_parent": null
         },
         "type": {
-          "key": "7"
+          "key": "12"
         }
       }
     ],

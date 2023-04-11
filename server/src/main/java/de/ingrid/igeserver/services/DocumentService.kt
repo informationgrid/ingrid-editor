@@ -149,7 +149,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    fun getDocumentByWrapperId(catalogId: String, id: Int): Document {
+    fun getDocumentByWrapperId(catalogId: String, id: Int, forExport: Boolean = false): Document {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -160,7 +160,7 @@ class DocumentService @Autowired constructor(
             doc.wrapperId = wrapper.id
             doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
@@ -411,6 +411,7 @@ class DocumentService @Autowired constructor(
 
     }
 
+    @Transactional
     fun updateDocument(
         principal: Principal?,
         catalogId: String,
@@ -439,6 +440,10 @@ class DocumentService @Autowired constructor(
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
+
+            // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            entityManager.detach(updatedDoc)
+            
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -460,7 +465,6 @@ class DocumentService @Autowired constructor(
             docRepo.save(docData.document)
 
             // prepare new document
-            entityManager.detach(docData.document)
             docData.document.id = null
             docData.document.isLatest = true
             docData.document.version = docData.document.version?.inc()
@@ -478,6 +482,7 @@ class DocumentService @Autowired constructor(
         docData.document.modified = dateService.now()
     }
 
+    @Transactional
     fun publishDocument(
         principal: Principal?,
         catalogId: String,
@@ -519,6 +524,9 @@ class DocumentService @Autowired constructor(
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
 
+            // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            entityManager.detach(updatedDoc)
+            
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -704,9 +712,9 @@ class DocumentService @Autowired constructor(
         return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
-    fun getLastPublishedDocument(catalogId: String, uuid: String): Document {
+    fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
-        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId))
+        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {

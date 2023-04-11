@@ -29,7 +29,6 @@ import { AddressTypeComponent } from "./types/address-type/address-type.componen
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
 import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
 import { MatCardModule } from "@angular/material/card";
-import { CodelistPipe } from "../directives/codelist.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
@@ -61,6 +60,9 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
+  maxValidationMessage,
+  minValidationMessage,
+  NotEmptyArrayValidator,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -85,6 +87,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
 import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
+import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -110,6 +113,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
     FormlyMatToggleModule,
+    SharedPipesModule,
     FormlyModule.forChild({
       types: [
         {
@@ -168,6 +172,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "couplingService",
           component: DocumentReferenceTypeComponent,
         },
+        {
+          name: "updateGetCapabilities",
+          component: UpdateGetCapabilitiesComponent,
+        },
         /* FOR PREVIEW */
         {
           name: "textareaPrint",
@@ -202,6 +210,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
+        { name: "notEmptyArray", validation: NotEmptyArrayValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
@@ -224,6 +233,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "matDatepickerMax",
           message: "Das Datum ist größer als erlaubt",
+        },
+        {
+          name: "min",
+          message: minValidationMessage,
+        },
+        {
+          name: "max",
+          message: maxValidationMessage,
         },
       ] /*,
       wrappers: [
@@ -271,7 +288,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     },
   ],
   declarations: [
-    CodelistPipe,
     SelectOptionPipe,
     ContextHelpComponent,
     AutocompleteTypeComponent,
@@ -305,13 +321,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectGeoDatasetDialog,
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
+    UpdateGetCapabilitiesComponent,
   ],
   exports: [
     ReactiveFormsModule,
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
-    CodelistPipe,
+    FormErrorComponent,
   ],
 })
 export class IgeFormlyModule {}

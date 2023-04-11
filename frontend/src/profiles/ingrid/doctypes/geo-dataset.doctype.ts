@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { isEmptyObject } from "../../../app/shared/utils";
+import { isEmptyObject, isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -29,6 +29,7 @@ export class GeoDatasetDoctype extends IngridShared {
     <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
+        advCompatible: true,
         openData: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: true,
@@ -149,7 +150,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     type: "number",
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value, ["type"]),
+                        isNotEmptyObject(field.form.value, ["type"]),
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
@@ -162,7 +163,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   allowNoValue: true,
                   expressions: {
                     "props.required": (field) =>
-                      isEmptyObject(field.form.value, ["type"]),
+                      isNotEmptyObject(field.form.value, ["type"]),
                   },
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
@@ -275,20 +276,7 @@ export class GeoDatasetDoctype extends IngridShared {
               '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
           }
         ),
-        this.addRepeat("resolution", "Erstellungsmaßstab", {
-          className: "optional",
-          fields: [
-            this.addInputInline("denominator", "Maßstab 1:x", {
-              type: "number",
-            }),
-            this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
-              type: "number",
-            }),
-            this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
-              type: "number",
-            }),
-          ],
-        }),
+        this.addResolutionFields(),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
             fields: this.titleDateEditionFields(3555),
@@ -344,9 +332,14 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQuality", [
           this.addGroupSimple("completenessOmission", [
             this.addInput("measResult", "Datendefizit", {
-              wrappers: ["panel", "form-field"],
-              className: "single-field width-25",
+              wrappers: ["panel", "form-field", "addons"],
+              className: "single-field width-25 right-align",
               type: "number",
+              min: 0,
+              max: 100,
+              suffix: {
+                text: "%",
+              },
             }),
           ]),
         ]),
@@ -355,26 +348,37 @@ export class GeoDatasetDoctype extends IngridShared {
           "Genauigkeit",
           [
             this.addInput("griddedDataPositionalAccuracy", null, {
-              fieldLabel: "Rasterpositionsgenauigkeit (m)",
+              fieldLabel: "Rasterpositionsgenauigkeit",
               type: "number",
-              className: "optional",
+              className: "optional right-align",
               expressions: {
                 hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
               },
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("vertical", null, {
-              fieldLabel: "Höhengenauigkeit (m)",
+              fieldLabel: "Höhengenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("horizontal", null, {
-              fieldLabel: "Lagegenauigkeit (m)",
+              fieldLabel: "Lagegenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
           ],
           { fieldGroupClassName: "display-flex" }

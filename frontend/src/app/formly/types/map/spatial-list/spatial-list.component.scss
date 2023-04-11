@@ -8,7 +8,7 @@
 .wrapper {
   display: flex;
   align-items: center;
-  height: 88px;
+  min-height: 88px;
   border-bottom: 2px solid #ffffff;
 
   & > mat-icon {

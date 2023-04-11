@@ -1,10 +1,13 @@
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
-import { isEmptyObject } from "../../../app/shared/utils";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -13,11 +16,15 @@ import {
 import { CookieService } from "../../../app/services/cookie.service";
 import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
   openData?: boolean;
+  advCompatible?: boolean;
 }
 
 interface KeywordSectionOptions {
@@ -48,46 +55,55 @@ export abstract class IngridShared extends BaseDoctype {
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
   constructor(
-    codelistService: CodelistService,
+    private codelistServiceIngrid: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
     private dialog: MatDialog,
     private cookieService: CookieService,
     private snack: MatSnackBar
   ) {
-    super(codelistService, codelistQuery);
+    super(codelistServiceIngrid, codelistQuery);
   }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addGroupSimple(
       null,
       [
-        this.addGroup(
-          null,
-          "Typ",
-          [
-            options.inspireRelevant
-              ? this.addCheckboxInline(
-                  "isInspireIdentified",
-                  "INSPIRE-relevant",
-                  {
-                    className: "flex-1",
-                    click: (field) => this.handleInspireIdentifiedClick(field),
-                  }
-                )
-              : null,
-            this.addCheckboxInline("isAdVCompatible", "AdV kompatibel", {
-              className: "flex-1",
-              click: (field) => this.handleAdvClick(field),
-            }),
-            options.openData
-              ? this.addCheckboxInline("isOpenData", "Open Data", {
-                  className: "flex-1",
-                  click: (field) => this.handleOpenDataClick(field),
-                })
-              : null,
-          ].filter(Boolean)
-        ),
+        options.inspireRelevant || options.advCompatible || options.openData
+          ? this.addGroup(
+              null,
+              "Typ",
+              [
+                options.inspireRelevant
+                  ? this.addCheckboxInline(
+                      "isInspireIdentified",
+                      "INSPIRE-relevant",
+                      {
+                        className: "flex-1",
+                        click: (field) =>
+                          this.handleInspireIdentifiedClick(field),
+                      }
+                    )
+                  : null,
+                options.advCompatible
+                  ? this.addCheckboxInline(
+                      "isAdVCompatible",
+                      "AdV kompatibel",
+                      {
+                        className: "flex-1",
+                        click: (field) => this.handleAdvClick(field),
+                      }
+                    )
+                  : null,
+                options.openData
+                  ? this.addCheckboxInline("isOpenData", "Open Data", {
+                      className: "flex-1",
+                      click: (field) => this.handleOpenDataClick(field),
+                    })
+                  : null,
+              ].filter(Boolean)
+            )
+          : null,
         this.addRadioboxes("isInspireConform", "INSPIRE konform", {
           expressions: {
             hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
@@ -257,7 +273,6 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: 6400,
           expressions: { hide: "!formState.mainModel?.isOpenData" },
         }),
-        // TODO: output needs to be formatted in a different way
         options.priorityDataset
           ? this.addRepeatList(
               "priorityDatasets",
@@ -265,7 +280,7 @@ export abstract class IngridShared extends BaseDoctype {
               {
                 asSelect: true,
                 showSearch: true,
-                options: this.getCodelistForSelect(6350, "priorityDatasets"),
+                options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
                   className: (model) =>
@@ -321,12 +336,13 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
           }),
           options.regionKey
-            ? this.addInput("regionKey", "Regionalschlüssel", {
+            ? this.addInput("regionKey", "Amtlicher Regionalschlüssel", {
+                className: "optional flex-1",
                 wrappers: ["panel", "form-field"],
               })
             : null,
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
-            asSelect: true,
+            asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
@@ -346,7 +362,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                   this.addInputInline("maximumValue", "Maximum", {
@@ -355,7 +371,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                   this.addSelectInline("unitOfMeasure", "Maßeinheit", {
@@ -370,7 +386,7 @@ export abstract class IngridShared extends BaseDoctype {
                     hasInlineContextHelp: true,
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                   }),
                 ],
@@ -402,7 +418,7 @@ export abstract class IngridShared extends BaseDoctype {
                     codelistId: 101,
                     expressions: {
                       "props.required": (field) =>
-                        isEmptyObject(field.form.value),
+                        isNotEmptyObject(field.form.value),
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
@@ -428,7 +444,7 @@ export abstract class IngridShared extends BaseDoctype {
   addTimeReferenceSection() {
     return this.addSection("Zeitbezug", [
       this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Resource", {
+        this.addRepeat("events", "Zeitbezug der Ressource", {
           required: true,
           fields: [
             this.addDatepicker("referenceDate", null, {
@@ -453,10 +469,8 @@ export abstract class IngridShared extends BaseDoctype {
           [
             this.addSelect("resourceDateType", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "am", value: "at" },
                 { label: "bis", value: "till" },
                 { label: "von", value: "since" },
@@ -464,10 +478,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addSelect("resourceDateTypeSince", null, {
               showSearch: true,
-              // className: "flex-1",
               wrappers: ["form-field"],
               options: [
-                { label: "", value: undefined },
                 { label: "bis: unbekannter Zeitpunkt", value: "unknown" },
                 { label: "bis: Zeitpunkt des Abrufs", value: "requestTime" },
                 { label: "bis: genaues Datum", value: "exactDate" },
@@ -516,7 +528,7 @@ export abstract class IngridShared extends BaseDoctype {
             this.addInputInline("number", "Anzahl", {
               type: "number",
               expressions: {
-                "props.required": (field) => isEmptyObject(field.form.value),
+                "props.required": (field) => isNotEmptyObject(field.form.value),
               },
             }),
             this.addSelectInline("unit", "Einheit", {
@@ -526,7 +538,7 @@ export abstract class IngridShared extends BaseDoctype {
               className: "flex-3",
               allowNoValue: true,
               expressions: {
-                "props.required": (field) => isEmptyObject(field.form.value),
+                "props.required": (field) => isNotEmptyObject(field.form.value),
               },
             }),
           ],
@@ -558,6 +570,9 @@ export abstract class IngridShared extends BaseDoctype {
                 ),
                 codelistId: 99999999,
                 required: true,
+                defaultValue: {
+                  key: "150",
+                },
               }),
               options.extraInfoCharSetData
                 ? this.addSelectInline(
@@ -580,6 +595,9 @@ export abstract class IngridShared extends BaseDoctype {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
           codelistId: 3571,
           required: true,
+          defaultValue: {
+            key: "1",
+          },
         }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
@@ -592,6 +610,7 @@ export abstract class IngridShared extends BaseDoctype {
                 useDialog: true,
                 required: true,
                 className: "optional",
+                // defaultValue: ["150"], // TODO: does not work
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
@@ -613,6 +632,7 @@ export abstract class IngridShared extends BaseDoctype {
                   type: "select",
                   label: "Spezifikation",
                   props: {
+                    required: true,
                     label: "Spezifikation",
                     appearance: "outline",
                     // needed just to wait for codelist being loaded
@@ -630,6 +650,7 @@ export abstract class IngridShared extends BaseDoctype {
                   label: "Grad",
                   width: "100px",
                   props: {
+                    required: true,
                     label: "Grad",
                     appearance: "outline",
                     options: this.getCodelistForSelect(6000, "level"),
@@ -801,25 +822,33 @@ export abstract class IngridShared extends BaseDoctype {
           }
         ),
       ]),
-      this.addGroupSimple("distribution", [
-        this.addRepeat("format", "Datenformat", {
-          className: "optional",
-          expressions: {
-            hide: `formState.mainModel?._type !== 'InGridGeoService'`, // TODO: simplify!
-            "props.required":
-              "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-          },
-          fields: [
-            this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(1320, "specification"),
-              codelistId: 1320,
-            }),
-            this.addInputInline("version", "Version"),
-            this.addInputInline("compression", "Kompressionstechnik"),
-            this.addInputInline("specification", "Spezifikation"),
-          ],
-        }),
-      ]),
+      this.addGroupSimple(
+        "distribution",
+        [
+          this.addRepeat("format", "Datenformat", {
+            className: "optional",
+            expressions: {
+              "props.required":
+                "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+            },
+            fields: [
+              this.addAutoCompleteInline("name", "Name", {
+                options: this.getCodelistForSelect(1320, "specification"),
+                codelistId: 1320,
+              }),
+              this.addInputInline("version", "Version"),
+              this.addInputInline("compression", "Kompressionstechnik"),
+              this.addInputInline("specification", "Spezifikation"),
+            ],
+            validators: {
+              validation: ["notEmptyArray"],
+            },
+          }),
+        ],
+        {
+          hideExpression: `formState.mainModel?._type === 'InGridSpecialisedTask'`,
+        }
+      ),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
         className: "optional",
         fields: [
@@ -828,8 +857,13 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen (MB)", {
+          this.addInputInline("transferSize", "Datenvolumen", {
             type: "number",
+            className: "right-align",
+            wrappers: ["form-field", "addons"],
+            suffix: {
+              text: "MB",
+            },
           }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
@@ -856,6 +890,36 @@ export abstract class IngridShared extends BaseDoctype {
         },
       }),
     ]);
+  }
+
+  addResolutionFields(): FormlyFieldConfig {
+    return this.addRepeat("resolution", "Erstellungsmaßstab", {
+      className: "optional",
+      fields: [
+        this.addInputInline("denominator", "Maßstab 1:x", {
+          type: "number",
+          min: 0,
+        }),
+        this.addInputInline("distanceMeter", "Bodenauflösung", {
+          type: "number",
+          min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "m",
+          },
+        }),
+        this.addInputInline("distanceDPI", "Scanauflösung", {
+          type: "number",
+          min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "DPI",
+          },
+        }),
+      ],
+    });
   }
 
   protected urlRefFields() {
@@ -897,7 +961,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   protected titleDateEditionFields(codelistForTitle: number) {
     return [
-      this.addAutocomplete("title", "Titel", {
+      this.addAutoCompleteInline("title", "Titel", {
         className: "flex-3",
         wrappers: ["form-field"],
         required: true,
@@ -1092,5 +1156,34 @@ export abstract class IngridShared extends BaseDoctype {
     field.model.advProductGroups = [];
     field.options.formState.updateModel();
     this.snack.open("Die AdV-Produktgruppe wurde automatisch geleert");
+  }
+
+  private getPriorityDatasets(): Observable<SelectOptionUi[]> {
+    return this.codelistServiceIngrid.observeRaw("6350").pipe(
+      map((codelist) => {
+        return CodelistService.mapToSelect(codelist, "de", false)
+          .map((item, index) =>
+            this.adaptPriorityDatasetItem(item, codelist.entries[index])
+          )
+          .sort((a, b) => {
+            // put INVALID items to the end of the list
+            if (a.label.indexOf("INVALID -") === 0) return 1;
+            if (b.label.indexOf("INVALID -") === 0) return -1;
+            return a.label?.localeCompare(b.label);
+          });
+      })
+    );
+  }
+
+  private adaptPriorityDatasetItem(item: SelectOptionUi, entry: CodelistEntry) {
+    item.label += " {en: " + entry.fields["en"] + "}";
+    const parsedData = JSON.parse(entry.data);
+    const isValid =
+      parsedData?.status === undefined || parsedData?.status === "VALID";
+    if (!isValid) {
+      item.label = "INVALID - " + item.label;
+      item.disabled = true;
+    }
+    return item;
   }
 }

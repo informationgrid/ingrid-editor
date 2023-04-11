@@ -98,6 +98,12 @@
         },
         "orderInfo": {
           "$ref": "refs/general.schema.json#/definitions/orderInfo"
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "required": [

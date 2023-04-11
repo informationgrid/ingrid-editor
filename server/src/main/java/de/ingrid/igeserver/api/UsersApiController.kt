@@ -123,7 +123,7 @@ class UsersApiController : UsersApi {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
         val login = frontendUser.userId
-        
+
         if (!catalogService.canEditUser(principal, login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
@@ -161,10 +161,16 @@ class UsersApiController : UsersApi {
 
     }
 
-    private fun getSingleUser(principal: Principal, userId: String): User {
+    private fun getSingleUser(principal: Principal, userId: String): User? {
         keycloakService.getClient(principal).use { client ->
 
-            val user = keycloakService.getUser(client, userId)
+
+            val user = try {
+                keycloakService.getUser(client, userId)
+            } catch (e: Exception) {
+                logger.error("Couldn't find keycloak user with login: $userId")
+                return null
+            }
 
             val frontendUser =
                 userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
@@ -186,7 +192,7 @@ class UsersApiController : UsersApi {
         val userIds = catalogService.getAllCatalogUserIds(principal)
             .filter { catalogService.canEditUser(principal, it) }
 
-        return ResponseEntity.ok(userIds.map { getSingleUser(principal, it) })
+        return ResponseEntity.ok(userIds.mapNotNull { getSingleUser(principal, it) })
 
     }
 

@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
     <idf:head/>
     <idf:body>
-        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
             <gmd:fileIdentifier>
                 <gco:CharacterString>B02B301C-FDE9-4064-97DB-AD7BA7B15947</gco:CharacterString>
             </gmd:fileIdentifier>
@@ -66,7 +65,7 @@
                                 <gco:Integer>1</gco:Integer>
                             </gmd:dimensionSize>
                             <gmd:resolution>
-                                <gco:Scale uom="meter">3</gco:Scale>
+                                <gco:Scale uom="meter">3.0</gco:Scale>
                             </gmd:resolution>
                         </gmd:MD_Dimension>
                     </gmd:axisDimensionProperties>
@@ -79,7 +78,7 @@
                                 <gco:Integer>3</gco:Integer>
                             </gmd:dimensionSize>
                             <gmd:resolution>
-                                <gco:Scale uom="meter">5</gco:Scale>
+                                <gco:Scale uom="meter">5.0</gco:Scale>
                             </gmd:resolution>
                         </gmd:MD_Dimension>
                     </gmd:axisDimensionProperties>
@@ -114,7 +113,7 @@
                 </gmd:MD_ReferenceSystem>
             </gmd:referenceSystemInfo>
             <gmd:identificationInfo>
-                <gmd:MD_DataIdentification uuid="http://portalu.de/igc_testNS#/test-identifikator">
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/test-identifikator">
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>
@@ -142,7 +141,7 @@
                             <gmd:identifier>
                                 <gmd:MD_Identifier>
                                     <gmd:code>
-                                        <gco:CharacterString>http://portalu.de/igc_testNS#/test-identifikator</gco:CharacterString>
+                                        <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/test-identifikator</gco:CharacterString>
                                     </gmd:code>
                                 </gmd:MD_Identifier>
                             </gmd:identifier>
@@ -158,19 +157,19 @@
                         <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="required"/>
                     </gmd:status>
                     <gmd:pointOfContact>
-                        <idf:idfResponsibleParty type="0" uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
+                        <idf:idfResponsibleParty type="12" uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
                             <gmd:organisationName>
                                 <gco:CharacterString>Wemove Test</gco:CharacterString>
                             </gmd:organisationName>
                             <gmd:positionName>
-                                <gco:CharacterString>Notizen MMMM</gco:CharacterString>
+                                <gco:CharacterString>Positionsname</gco:CharacterString>
                             </gmd:positionName>
                             <gmd:contactInfo>
                                 <gmd:CI_Contact>
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postbox 123,P123 Frankfurt</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 123, P123 Frankfurt</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
@@ -199,7 +198,7 @@
                             </gmd:role>
                             <idf:hierarchyParty uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
-                                <idf:addressType>0</idf:addressType>
+                                <idf:addressType>12</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>
@@ -723,7 +722,7 @@
                             <gmd:onLine>
                                 <idf:idfOnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>http://wemove.com</gmd:URL>
+                                        <gmd:URL>https://wemove.com</gmd:URL>
                                     </gmd:linkage>
                                     <gmd:applicationProfile>
                                         <gco:CharacterString>PDF</gco:CharacterString>
@@ -745,7 +744,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:transferSize>
-                                <gco:Real>3.0</gco:Real>
+                                <gco:Real>3</gco:Real>
                             </gmd:transferSize>
                             <gmd:offLine>
                                 <gmd:MD_Medium>
@@ -762,7 +761,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:transferSize>
-                                <gco:Real>1.0</gco:Real>
+                                <gco:Real>1</gco:Real>
                             </gmd:transferSize>
                             <gmd:offLine>
                                 <gmd:MD_Medium>

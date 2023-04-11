@@ -520,6 +520,10 @@ ige-one-column-wrapper formly-group {
   flex: 1;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
 .gap {
   gap: 8px;
 }
@@ -554,6 +558,18 @@ ige-one-column-wrapper formly-group {
   flex: 6;
 }
 
+.right-align input {
+  text-align: right;
+  -moz-appearance: textfield;
+}
+
+.right-align input::-webkit-outer-spin-button,
+.right-align input::-webkit-inner-spin-button {
+  display: none;
+}
+.mat-mdc-form-field-text-suffix {
+  padding-left: 5px;
+}
 .hide-optionals .optional > :not(.required) {
   display: none;
 }
@@ -613,6 +629,10 @@ ige-root .mat-drawer-container {
 
 .mat-icon.animated {
   transition: all 0.2s linear;
+}
+
+.mat-icon.flipIt {
+  transform: scale(1, -1);
 }
 
 .mat-icon {
@@ -950,7 +970,7 @@ mat-icon.mark-color .coloring {
 
 .doc-item {
   .mat-icon {
-    margin-top: -2px !important;
+    //margin-top: -2px !important;
   }
 
   .mat-line {

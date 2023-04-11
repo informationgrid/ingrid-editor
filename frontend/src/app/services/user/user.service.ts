@@ -126,8 +126,8 @@ export class UserService {
     );
   }
 
-  deleteUser(login: string): Observable<any> {
-    return this.dataService.deleteUser(login);
+  deleteUser(userId: number): Observable<any> {
+    return this.dataService.deleteUser(userId);
   }
 
   getAssignedUsers(dbId: string) {

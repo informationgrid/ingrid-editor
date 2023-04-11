@@ -6,6 +6,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.UseConstraint
@@ -139,7 +140,7 @@
 @endfor
 
 <gmd:identificationInfo>
-    <gmd:MD_DataIdentification uuid="${page.getDatasetURL()}">
+    <${page.getIdentificationType()} uuid="${page.getDatasetURL()}">
         <gmd:citation>
             <gmd:CI_Citation>
                 <gmd:title>
@@ -239,8 +240,11 @@
 
 
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataKeyword())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
@@ -344,6 +348,16 @@
                 <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
             </gmd:topicCategory>
         @endfor
+        @if(page.getServiceType() != null)
+            <srv:serviceType>
+                <gco:LocalName>${page.getServiceType()}</gco:LocalName>
+            </srv:serviceType>
+        @endif
+        @for(String version : page.getServiceTypeVersions())
+            <srv:serviceTypeVersion>
+                <gco:CharacterString>${version}</gco:CharacterString>
+            </srv:serviceTypeVersion>
+        @endfor
         <gmd:extent>
             <gmd:EX_Extent>
                 @if(spatial.getDescription() != null)
@@ -434,7 +448,7 @@
                         </gmd:EX_TemporalExtent>
                     </gmd:temporalElement>
                 @endif
-                @if(verticalExtent != null)
+                @if(page.hasCompleteVerticalExtent())
                     <gmd:verticalElement>
                         <gmd:EX_VerticalExtent>
                             <gmd:minimumValue>
@@ -473,7 +487,36 @@
                 @endif
             </gmd:EX_Extent>
         </gmd:extent>
-    </gmd:MD_DataIdentification>
+    @if(page.getCouplingType() != null)
+        <srv:couplingType>
+            <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType" codeListValue="${page.getCouplingType()}"/>
+        </srv:couplingType>
+    @endif
+    @for( Operation operation : page.getOperations() )
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>${page.getCodelists().getValue("5110",operation.getName())}</gco:CharacterString>
+                </srv:operationName>
+<%--                <srv:DCP>
+                    <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="${page.getCodelists().getValue("5180", operation.getPlatform())}"/>
+                </srv:DCP>--%>
+                @if(operation.getDescription() != null)
+                <srv:operationDescription>
+                    <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
+                </srv:operationDescription>
+                @endif
+                <srv:connectPoint>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                        </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                </srv:connectPoint>
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endfor
+</${page.getIdentificationType()}>
 </gmd:identificationInfo>
 
 ${contentInfo}
@@ -519,30 +562,30 @@ ${contentInfo}
             </gmd:MD_Distributor>
         </gmd:distributor>
         @endif
-<%--        <gmd:transferOptions>
-            <gmd:MD_DigitalTransferOptions>
-                <gmd:onLine>
-                    <idf:idfOnlineResource>
-                        <gmd:linkage>
-                            <gmd:URL>http://wemove.com</gmd:URL>
-                        </gmd:linkage>
-                        <gmd:applicationProfile>
-                            <gco:CharacterString>PDF</gco:CharacterString>
-                        </gmd:applicationProfile>
-                        <gmd:name>
-                            <gco:CharacterString>Testverweis</gco:CharacterString>
-                        </gmd:name>
-                        <gmd:description>
-                            <gco:CharacterString>ErläuterungenVerweis</gco:CharacterString>
-                        </gmd:description>
-                        <gmd:function>
-                            <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
-                        </gmd:function>
-                        <idf:attachedToField entry-id="9990" list-id="2000">Datendownload</idf:attachedToField>
-                    </idf:idfOnlineResource>
-                </gmd:onLine>
-            </gmd:MD_DigitalTransferOptions>
-        </gmd:transferOptions>--%>
+        @for( Reference reference : page.getReferences() )
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${reference.getUrl()}</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>${reference.getTitle()}</gco:CharacterString>
+                            </gmd:name>
+                            @if(reference.getExplanation() != null)
+                            <gmd:description>
+                                <gco:CharacterString>${reference.getExplanation()}</gco:CharacterString>
+                            </gmd:description>
+                            @endif
+                            <gmd:function>
+                                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${page.getCodelists().getValue("2000", reference.getType(), "iso")}">${page.getCodelists().getValue("2000", reference.getType(), "iso")}</gmd:CI_OnLineFunctionCode>
+                            </gmd:function>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        @endfor
         @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>

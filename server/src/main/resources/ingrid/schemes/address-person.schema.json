@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/InGridPerson",
+  "definitions": {
+    "InGridPerson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "address": {
+          "$ref": "../../general.schema.json#/definitions/AddressClass"
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/Contact"
+          },
+          "minItems": 1
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "salutation": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "academic-title": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publishArea": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "lastName",
+        "contact"
+      ],
+      "title": "Address"
+    }
+  }
+}

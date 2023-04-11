@@ -38,43 +38,93 @@
         "title": "Date"
       }
     },
-      "PointOfContact": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ref": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/definitions/KeyValue"
-          }
+    "PointOfContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string"
         },
-        "required": [
-          "ref",
-          "type"
-        ],
-        "title": "PointOfContact"
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        }
       },
-      "Spatial": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "type": "string"
+      "required": [
+        "ref",
+        "type"
+      ],
+      "title": "PointOfContact"
+    },
+    "Spatial": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "free"
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "value": {
+              "$ref": "#/definitions/BoundingBox"
+            }
           },
-          "title": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "value": {
-            "$ref": "#/definitions/BoundingBox"
-          }
+          "required": [],
+          "title": "Spatial"
         },
-        "required": [],
-        "title": "Spatial"
-      },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "wkt"
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "wkt": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "value": {
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "geo-name"
+            },
+            "title": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "value": {
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        }
+      ]
+    },
     "BoundingBox": {
       "type": "object",
       "additionalProperties": false,
@@ -99,6 +149,71 @@
         "lon2"
       ],
       "title": "BoundingBox"
+    },
+    "AddressClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "street": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "po-box": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "integer"
+        },
+        "zip-code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "integer"
+        },
+        "zip-po-box": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "integer"
+        },
+        "administrativeArea": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "country": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": [
+      ],
+      "title": "AddressClass"
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "connection",
+        "type"
+      ],
+      "title": "Contact"
     }
   }
 }

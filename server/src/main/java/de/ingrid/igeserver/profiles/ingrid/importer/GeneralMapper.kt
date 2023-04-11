@@ -93,7 +93,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.getOrNull(0)
         val zipCode = address?.postalCode?.value
         val administrativeArea = address?.administrativeArea?.value
-            ?.let { codeListService.getCodeListEntryId("110", it, "de") }
+            ?.let { codeListService.getCodeListEntryId("110", it, "name") }
             ?.let { KeyValue(it) }
         val countryCode = address?.country?.value
             ?.let { UtilsCountryCodelist.getCodeFromShortcut3(it) }
@@ -168,7 +168,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.map { codeListService.getCodeListEntryId("6100", it, null) }
+            ?.map { codeListService.getCodeListEntryId("6100", it, "de") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -176,7 +176,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "INSPIRE priority data set" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.map { codeListService.getCodeListEntryId("6350", it, null) }
+            ?.map { codeListService.getCodeListEntryId("6350", it, "de") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -197,7 +197,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
             ?.mapNotNull { it }
-            ?.map { codeListService.getCodeListEntryId("6360", it, null) }
+            ?.map { codeListService.getCodeListEntryId("6360", it, "de") }
             ?.map { KeyValue(it) }
             ?.getOrNull(0)
     }

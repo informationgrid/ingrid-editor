@@ -1,9 +1,10 @@
-import java.nio.file.Paths
 import gg.jte.ContentType
+
+import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '1.8.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.7.8'
+    ext.spring_boot_version = '2.7.10'
     ext.hibernate_version = '5.6.15.Final' // Hibernate 6 is only supported by Spring Boot 3
     ext.jackson_version = '2.14.2'
     ext.kotest_version = '5.5.5'
@@ -156,7 +157,7 @@ dependencies {
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
-    
+
     // GeoTools
     implementation("org.geotools.xsd:gt-xsd-gml3:$geotools_version") {
         exclude group: 'org.geotools', module: 'gt-coverage'
@@ -190,8 +191,6 @@ dependencies {
 
     // iBus communication
     implementation('de.ingrid:ingrid-elasticsearch-tools:6.0.0')
-    // wkt handling
-    implementation('org.locationtech.jts:jts-core:1.19.0')
 
     implementation('de.ingrid:ingrid-ibus-client:6.0.0') {
         exclude group: 'org.apache.logging.log4j'
@@ -209,6 +208,8 @@ dependencyManagement {
         dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
         dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
         dependency "org.elasticsearch.client:transport:$elastic_version"
+        dependency "org.yaml:snakeyaml:2.0"
+
     }
 }
 
@@ -263,6 +264,7 @@ tasks.named('compileKotlin') {
 
 test {
     ignoreFailures = true
+    systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
 }
 

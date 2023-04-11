@@ -81,6 +81,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.mapNotNull { mapQuality(it) } ?: emptyList()
     }
 
+    fun getSubtype(): KeyValue? {
+        val value = metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue ?: return null
+        return codeListService.getCodeListEntryId("525", value, "iso")
+            ?.let { KeyValue(it) }
+    }
+
     private fun mapQuality(report: DQReport): Quality? {
         val info =
             // if (report.dqTemporalValidity != null) QualityInfo("temporalValidity", "", report.dqTemporalValidity)
@@ -155,12 +161,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                 it.mdPortrayalCatalogueInfo?.portrayalCatalogueCitation
                     ?.map {
                         val titleValue = it.citation?.title?.value
-                        val titleKey = codeListService.getCodeListEntryId("3555", titleValue, "de")
+                        val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3555", titleValue!!)
                         val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
                         CatalogInfo(
                             title,
-                            it.citation?.date?.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation?.edition?.value
+                            it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                            it.citation.edition?.value
                         )
                     } ?: emptyList()
             }?: emptyList()
@@ -172,12 +178,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                 it.mdFeatureCatalogueDescription?.featureCatalogueCitation
                     ?.map {
                         val titleValue = it.citation?.title?.value
-                        val titleKey = codeListService.getCodeListEntryId("3535", titleValue, "de")
+                        val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3535", titleValue!!)
                         val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
                         CatalogInfo(
                             title,
-                            it.citation?.date?.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation?.edition?.value
+                            it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                            it.citation.edition?.value
                         )
                     } ?: emptyList()
             }?: emptyList()

@@ -6,10 +6,16 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "value": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "title": "KeyValue"
@@ -25,7 +31,10 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": ["ref", "type"],
+      "required": [
+        "ref",
+        "type"
+      ],
       "title": "PointOfContact"
     },
     "graphicOverviews": {
@@ -56,7 +65,9 @@
             "type": "string"
           }
         },
-        "required": ["fileName"]
+        "required": [
+          "fileName"
+        ]
       }
     },
     "events": {
@@ -73,7 +84,10 @@
             "$ref": "#/definitions/KeyValue"
           }
         },
-        "required": ["referenceDateType", "referenceDate"],
+        "required": [
+          "referenceDateType",
+          "referenceDate"
+        ],
         "title": "events"
       },
       "minItems": 1
@@ -115,14 +129,21 @@
             },
             "unitOfMeasure": {
               "anyOf": [
-                { "$ref": "#/definitions/KeyValue" },
-                { "type": "null" }
+                {
+                  "$ref": "#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }
         }
       },
-      "required": ["references", "spatialSystems"]
+      "required": [
+        "references",
+        "spatialSystems"
+      ]
     },
     "Date": {
       "type": "object",
@@ -159,7 +180,6 @@
         "useLimitation": {
           "type": "string"
         }
-
       }
     },
     "accessConstraints": {
@@ -196,7 +216,10 @@
             "type": "string"
           },
           "transferSize": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           }
         }
       }
@@ -270,8 +293,8 @@
           "date": {
             "anyOf": [
               {
-            "type": "string",
-            "format": "date-time"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
@@ -319,7 +342,14 @@
           "$ref": "#/definitions/KeyValue"
         },
         "characterSet": {
-          "type": ["null", "string"]
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -347,24 +377,44 @@
         },
         "status": {
           "anyOf": [
-            { "$ref": "general.schema.json#/definitions/KeyValue" },
-            { "type": "null" }
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDate": {
           "anyOf": [
-            { "type": "string", "format": "date-time" },
-            { "type": "null" }
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDateType": {
           "anyOf": [
-            { "$ref": "general.schema.json#/definitions/KeyValue" },
-            { "type": "null" }
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "resourceDateTypeSince": {
-          "$ref": "general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "resourceRange": {
           "type": "object",
@@ -381,7 +431,9 @@
           }
         }
       },
-      "required": ["events"]
+      "required": [
+        "events"
+      ]
     },
     "keywords": {
       "type": "array",
@@ -411,11 +463,25 @@
           "type": "string"
         },
         "maintenanceAndUpdateFrequency": {
-          "anyOf": [{ "$ref": "#/definitions/KeyValue" }, { "type": "null" }]
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "userDefinedMaintenanceFrequency": {
           "unit": {
-            "anyOf": [{ "$ref": "#/definitions/KeyValue" }, { "type": "null" }]
+            "anyOf": [
+              {
+                "$ref": "#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "number": {
             "type": "number"

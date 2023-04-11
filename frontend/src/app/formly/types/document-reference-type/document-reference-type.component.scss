@@ -10,7 +10,15 @@
 
     mat-icon,
     ige-document-icon {
-      padding-right: 10px;
+      //padding-right: 10px;
+      //margin-right: 16px;
+    }
+  }
+
+  .remove-icon {
+    opacity: 0.4;
+    &:hover {
+      opacity: 1;
     }
   }
 }

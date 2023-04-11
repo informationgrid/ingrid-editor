@@ -174,8 +174,13 @@ class GroupService @Autowired constructor(
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
         keycloakService.getClient(principal).use { client ->
             val users = userRepo.findByGroups_Id(id)
-                .map {
-                    keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                .mapNotNull {
+                    try {
+                        keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                    } catch (e: Exception) {
+                        log.error("Couldn't find keycloak user with login: ${it.userId}")
+                        null
+                    }
                 }
             return users
         }

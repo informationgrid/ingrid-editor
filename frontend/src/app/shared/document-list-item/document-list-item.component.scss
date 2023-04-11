@@ -55,6 +55,9 @@ mat-divider {
     &.marker {
       margin: 0 0 0 16px;
     }
+    &.extra-padding {
+      margin-right: 16px;
+    }
   }
 
   .doc-item-content {
