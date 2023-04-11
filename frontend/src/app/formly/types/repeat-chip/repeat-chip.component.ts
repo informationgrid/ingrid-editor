@@ -10,12 +10,17 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, startWith } from "rxjs/operators";
+import { debounceTime, map, startWith } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
-import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
+import {
+  CodelistService,
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 
 @UntilDestroy()
 @Component({
@@ -30,12 +35,15 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
 
   searchSub: Subscription;
   searchResult = new BehaviorSubject<any[]>([]);
+  codelistOptions: Observable<SelectOptionUi[]>;
+  filteredOptions: Observable<SelectOptionUi[]>;
 
   constructor(
     private dialog: MatDialog,
     private http: HttpClient,
     private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private codelistQuery: CodelistQuery
   ) {
     super();
 
@@ -45,8 +53,13 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
   }
 
   ngOnInit() {
-    if (this.props.codelistId) this.type = "codelist";
-    else if (this.props.restCall) {
+    if (this.props.codelistId) {
+      this.type = "codelist";
+      this.props.labelField = "label";
+      this.codelistOptions = this.codelistQuery
+        .selectEntity(this.props.codelistId)
+        .pipe(map((codelist) => CodelistService.mapToSelect(codelist)));
+    } else if (this.props.restCall) {
       this.type = "object";
       this.inputControl.valueChanges
         .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
@@ -128,10 +141,10 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     if (duplicates.length > 0) this.handleDuplicates(duplicates);
   }
 
-  addValueObject(event: MatAutocompleteSelectedEvent) {
+  addValueObject(value: any) {
     this.inputControl.setValue("");
 
-    const label = event.option.value[this.props.labelField];
+    const label = value[this.props.labelField];
     const alreadyExists = this.model.some(
       (item) => item[this.props.labelField] == label
     );
@@ -140,7 +153,12 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
       return;
     }
 
-    this.add(null, event.option.value);
+    if (this.type === "codelist") {
+      const prepared = new SelectOption(value.value, value.label);
+      this.add(null, prepared.forBackend());
+    } else {
+      this.add(null, value);
+    }
   }
 
   private handleDuplicates(duplicates: any[]) {

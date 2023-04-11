@@ -41,6 +41,7 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  view?: "chip" | "list";
 }
 
 export interface RepeatChipOptions extends Options {
@@ -210,6 +211,9 @@ export class FormFieldHelper {
     };
   }
 
+  /**
+   * @deprecated use addRepeatList
+   */
   addRepeatChip(id, label, options?: RepeatChipOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -253,6 +257,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        view: options?.view,
       },
       expressions: expressions,
     };

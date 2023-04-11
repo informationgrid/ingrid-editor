@@ -245,6 +245,7 @@ export abstract class IngridShared extends BaseDoctype {
       "Verschlagwortung",
       [
         this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
+          view: "chip",
           asSelect: true,
           showSearch: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
@@ -256,8 +257,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
-              asSelect: true,
-              showSearch: true,
+              view: "chip",
               options: this.getCodelistForSelect(6100, "themes"),
               codelistId: 6100,
               className: "optional",
@@ -267,9 +267,8 @@ export abstract class IngridShared extends BaseDoctype {
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
+          view: "chip",
           required: true,
-          asSelect: true,
-          showSearch: true,
           options: this.getCodelistForSelect(6400, "openDataCategories"),
           codelistId: 6400,
           expressions: { hide: "!formState.mainModel?.isOpenData" },
@@ -279,8 +278,7 @@ export abstract class IngridShared extends BaseDoctype {
               "priorityDatasets",
               "INSPIRE - priority data set",
               {
-                asSelect: true,
-                showSearch: true,
+                view: "chip",
                 options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
@@ -315,8 +313,7 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         options.thesaurusTopics
           ? this.addRepeatList("topicCategories", "ISO-Themenkategorie", {
-              asSelect: true,
-              showSearch: true,
+              view: "chip",
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
               required: true,
@@ -336,18 +333,12 @@ export abstract class IngridShared extends BaseDoctype {
             return await Promise.all(
               value.split(",").map(async (item) => {
                 // check if value is contained in
-                const response = await http
-                  .get<any[]>(
-                    `/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`
-                  )
-                  .toPromise();
-                if (response.length > 0) {
-                  const exists = model.keywordsUmthes.some(
-                    (item) => item.label === response[0].label
-                  );
-                  if (!exists) model.keywordsUmthes.push(response[0]);
-                  return null;
-                }
+                const handledInUmthes = await this.checkInUmthes(
+                  http,
+                  model,
+                  item
+                );
+                if (handledInUmthes) return null;
                 return item;
               })
             ).then((res) => res.filter((item) => item !== null).join(","));
@@ -355,6 +346,20 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ].filter(Boolean)
     );
+  }
+
+  private async checkInUmthes(http: HttpClient, model, item) {
+    const response = await http
+      .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
+      .toPromise();
+    if (response.length > 0) {
+      const exists = model.keywordsUmthes.some(
+        (item) => item.label === response[0].label
+      );
+      if (!exists) model.keywordsUmthes.push(response[0]);
+      return true;
+    }
+    return false;
   }
 
   addSpatialSection(options: SpatialOptions = {}) {

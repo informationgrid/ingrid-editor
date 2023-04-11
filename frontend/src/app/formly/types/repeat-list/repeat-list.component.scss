@@ -89,3 +89,22 @@ mat-icon.search-icon {
 .text-wrapper {
   padding: 6px 0 6px 0;
 }
+
+mat-chip-listbox {
+  padding-bottom: 10px;
+  ige-add-button {
+    margin-left: 8px;
+    line-height: 42px;
+  }
+}
+
+.mat-mdc-chip {
+  border-radius: 4px;
+  cursor: move;
+  min-height: 36px;
+
+  .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
