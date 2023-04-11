@@ -64,9 +64,9 @@ export class GeoDatasetDoctype extends IngridShared {
             showSearch: true,
             options: this.getCodelistForSelect(526, "priorityDataset"),
             codelistId: 526,
-            className: "optional",
             expressions: {
               "props.required": "formState.mainModel?.isInspireConform",
+              className: "field.props.required ? '' : 'optional'",
             },
           }
         ),

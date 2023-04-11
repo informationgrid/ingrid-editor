@@ -248,9 +248,9 @@ export abstract class IngridShared extends BaseDoctype {
           showSearch: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
-          className: "optional",
           expressions: {
             "props.required": "formState.mainModel?.isAdVCompatible",
+            className: "field.props.required ? '' : 'optional'",
           },
         }),
         options.inspireTopics
@@ -259,9 +259,9 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect(6100, "themes"),
               codelistId: 6100,
-              className: "optional",
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
+                className: "field.props.required ? '' : 'optional'",
               },
             })
           : null,
@@ -429,7 +429,10 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             {
               fieldGroupClassName: "",
-              className: "optional",
+              expressions: {
+                className: (field) =>
+                  isNotEmptyObject(field.form.value) ? "" : "optional",
+              },
             }
           ),
           this.addTextArea("description", "Erläuterungen", "spatial", {
@@ -542,7 +545,12 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
           ],
-          { className: "optional" }
+          {
+            expressions: {
+              className: (field) =>
+                isNotEmptyObject(field.form.value) ? "" : "optional",
+            },
+          }
         ),
         this.addTextArea("description", "Erläuterungen", "dataset", {
           className: "optional flex-1",
@@ -609,11 +617,11 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 99999999,
                 useDialog: true,
                 required: true,
-                className: "optional",
                 // defaultValue: ["150"], // TODO: does not work
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
+                  className: "field.props.required ? '' : 'optional'",
                 },
               }),
             ])
@@ -621,9 +629,9 @@ export abstract class IngridShared extends BaseDoctype {
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
-              className: "optional",
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
+                className: "field.props.required ? '' : 'optional'",
               },
               dialog: ConformityDialogComponent,
               columns: [
@@ -786,16 +794,16 @@ export abstract class IngridShared extends BaseDoctype {
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
-          className: "optional",
           expressions: {
             "props.required": "formState.mainModel?.isInspireIdentified",
+            className: "field.props.required ? '' : 'optional'",
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          // className: "optional",
           expressions: {
             "props.required":
               "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            className: "field.props.required ? '' : 'optional'",
           },
           fields: [
             this.addAutocomplete("title", null, {
@@ -826,10 +834,10 @@ export abstract class IngridShared extends BaseDoctype {
         "distribution",
         [
           this.addRepeat("format", "Datenformat", {
-            className: "optional",
             expressions: {
               "props.required":
                 "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+              className: "field.props.required ? '' : 'optional'",
             },
             fields: [
               this.addAutoCompleteInline("name", "Name", {

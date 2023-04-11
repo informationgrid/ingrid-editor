@@ -28,10 +28,10 @@ export class DataCollectionDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addRepeat("categoryCatalog", "Objektartenkatalog", {
-          className: "optional",
           expressions: {
             "props.required":
               "formState.mainModel?.databaseContent?.length > 0",
+            className: "field.props.required ? '' : 'optional'",
           },
           fields: [
             this.addAutocomplete("title", "Titel", {

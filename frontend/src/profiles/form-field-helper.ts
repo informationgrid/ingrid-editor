@@ -105,6 +105,7 @@ export class FormFieldHelper {
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,
       id: options?.id,
@@ -117,7 +118,10 @@ export class FormFieldHelper {
         required: options?.required,
       },
       fieldGroup: fields,
-      expressions: { hide: options?.hideExpression },
+      expressions: {
+        ...expressions,
+        hide: options?.hideExpression,
+      },
       validators: options?.validators,
     };
   }

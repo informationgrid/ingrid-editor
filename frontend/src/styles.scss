@@ -263,6 +263,7 @@ h1 {
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.width-25 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.25;
     padding-right: 10px; // simulate gap used by multiple fields in one row
@@ -567,10 +568,12 @@ ige-one-column-wrapper formly-group {
 .right-align input::-webkit-inner-spin-button {
   display: none;
 }
+
 .mat-mdc-form-field-text-suffix {
   padding-left: 5px;
 }
-.hide-optionals .optional > :not(.required) {
+
+.hide-optionals .optional {
   display: none;
 }
 
