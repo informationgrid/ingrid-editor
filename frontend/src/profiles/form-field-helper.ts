@@ -10,6 +10,8 @@ export interface Options {
   defaultValue?: any;
   hasInlineContextHelp?: boolean;
   contextHelpId?: string;
+  change?: (field, event) => void;
+  remove?: (field, event) => void;
   expressions?: {
     hide?;
     className?;
@@ -247,6 +249,8 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        change: options?.change,
+        remove: options?.remove,
       },
       expressions: expressions,
     };

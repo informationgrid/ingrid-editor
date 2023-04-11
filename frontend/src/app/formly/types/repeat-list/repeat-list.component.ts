@@ -120,8 +120,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label);
-    this.add(null, prepared.forBackend());
+    const prepared = new SelectOption(option.value, option.label).forBackend();
+    this.add(null, prepared);
+    this.props.change?.(this.field, prepared);
 
     this.inputControl.setValue(null);
 
@@ -187,7 +188,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   removeItem(index: number, $event?: KeyboardEvent) {
+    const item = this.model[index];
     this.remove(index);
+    this.props.remove?.(this.field, item);
     this.manualUpdate.next("");
 
     if (this.props.asSelect && this.inputControl.disabled) {

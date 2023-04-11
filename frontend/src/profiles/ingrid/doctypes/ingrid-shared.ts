@@ -54,7 +54,42 @@ export abstract class IngridShared extends BaseDoctype {
   private openDataMessage =
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
-  constructor(
+  private inspireToIsoMapping = {
+    "101": "13",
+    "103": "13",
+    "104": "3",
+    "105": "13",
+    "106": "15",
+    "107": "18",
+    "108": "12",
+    "109": "7",
+    "201": "6",
+    "202": "10",
+    "203": "10",
+    "204": "8",
+    "301": "3",
+    "302": "17",
+    "303": "8",
+    "304": "15",
+    "305": "9",
+    "306": "19",
+    "307": "17",
+    "308": "17",
+    "309": "1",
+    "310": "16",
+    "311": "15",
+    "312": "8",
+    "313": "4",
+    "315": "14",
+    "316": "14",
+    "317": "2",
+    "318": "2",
+    "319": "2",
+    "320": "5",
+    "321": "5",
+  };
+
+  protected constructor(
     private codelistServiceIngrid: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
@@ -263,6 +298,12 @@ export abstract class IngridShared extends BaseDoctype {
                 "props.required": "formState.mainModel?.isInspireIdentified",
                 className: "field.props.required ? '' : 'optional'",
               },
+              change: (field, $event) =>
+                options.thesaurusTopics &&
+                this.updateIsoCategory($event, field),
+              remove: (field, $event) =>
+                options.thesaurusTopics &&
+                this.updateIsoCategory($event, field, true),
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
@@ -319,11 +360,63 @@ export abstract class IngridShared extends BaseDoctype {
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
               required: true,
+              remove: (field, event) =>
+                this.checkConnectedIsoCategory(event, field),
             })
           : null,
         this.addRepeatChip("keywords", "Optionale Schlagworte"),
       ].filter(Boolean)
     );
+  }
+
+  private checkConnectedIsoCategory(event, field) {
+    const possibleKeys = Object.keys(this.inspireToIsoMapping).filter(
+      (key) => this.inspireToIsoMapping[key] === event.key
+    );
+    const themes = field.options.formState.mainModel.themes;
+    const connectedInspireTheme = themes.find(
+      (item) => possibleKeys.indexOf(item.key) !== -1
+    );
+    if (connectedInspireTheme) {
+      field.model.push(event);
+      field.options.formState.updateModel();
+      const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
+        "6100",
+        connectedInspireTheme.key
+      );
+      this.snack.open(
+        `Die Kategorie muss bestehen bleiben, solange das INSPIRE-Thema '${inspireThemeValue}' verwendet wird.`
+      );
+    }
+  }
+
+  private updateIsoCategory($event, field, doRemove: boolean = false) {
+    const isoKey = this.inspireToIsoMapping[$event.key];
+    if (!isoKey) return;
+
+    // check if exists and add if not
+    const topics = field.options.formState.mainModel.topicCategories;
+    const alreadyExists = topics.some((item) => item.key === isoKey);
+    const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
+      "527",
+      isoKey
+    );
+
+    if (!doRemove && !alreadyExists) {
+      topics.push({ key: isoKey });
+      field.options.formState.updateModel();
+      this.snack.open(
+        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`
+      );
+    } else if (doRemove && alreadyExists) {
+      field.options.formState.mainModel.topicCategories = topics.filter(
+        (item) => item.key !== isoKey
+      );
+      field.options.formState.updateModel();
+      this.snack.open(
+        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`
+      );
+    }
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
