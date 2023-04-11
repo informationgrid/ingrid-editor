@@ -7,7 +7,11 @@
 </div>
 
 <div class="label-wrapper">
-    <label (click)="showContextHelp($event)">
+    <label
+        [attr.tabindex]="hasContextHelp ? 0 : null"
+        (click)="showContextHelp($event)"
+        (keydown.enter)="showContextHelp($event)"
+    >
         <ng-content></ng-content>
     </label>
 </div>
