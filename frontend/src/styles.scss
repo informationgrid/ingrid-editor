@@ -577,6 +577,11 @@ ige-one-column-wrapper formly-group {
   display: none;
 }
 
+.top-align-suffix .mat-mdc-form-field-icon-suffix {
+  margin-top: 10px;
+  align-self: start;
+}
+
 formly-field {
   min-width: 130px;
 }

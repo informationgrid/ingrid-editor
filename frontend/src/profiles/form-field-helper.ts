@@ -174,6 +174,7 @@ export class FormFieldHelper {
     options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
+      className: "top-align-suffix flex-1",
       wrappers: ["form-field"],
       fieldLabel: label,
       ...options,
