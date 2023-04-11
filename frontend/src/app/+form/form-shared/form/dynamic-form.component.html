@@ -50,6 +50,7 @@
                         [sections]="sections | async"
                         [numberOfErrors]="numberOfErrors"
                         [hasOptionalFields]="hasOptionalFields"
+                        [optionalButtonState]="!hideOptionalFields"
                         (toggleOptionalFields)="hideOptionalFields = !$event"
                     ></ige-quick-navbar>
 

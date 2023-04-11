@@ -27,6 +27,7 @@ export class QuickNavbarComponent implements AfterViewInit {
   @Input() hasOptionalFields = false;
 
   @Input() numberOfErrors: number = 0;
+  @Input() optionalButtonState: boolean = true;
 
   @Input() set model(value: IgeDocument) {
     this.title = value.title;
