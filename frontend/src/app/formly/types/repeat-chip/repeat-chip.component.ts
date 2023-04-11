@@ -34,6 +34,7 @@ export class RepeatChipComponent extends FieldArrayType {
           options: this.props.options,
           model: this.model,
         },
+        restoreFocus: true,
         hasBackdrop: true,
       })
       .afterClosed()

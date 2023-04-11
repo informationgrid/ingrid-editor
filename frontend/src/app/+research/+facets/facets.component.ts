@@ -220,6 +220,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     this.dialog
       .open(SpatialDialogComponent, {
         data: data,
+        restoreFocus: true,
       })
       .afterClosed()
       .subscribe((result) => {
