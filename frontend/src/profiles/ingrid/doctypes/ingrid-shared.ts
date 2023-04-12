@@ -332,14 +332,15 @@ export abstract class IngridShared extends BaseDoctype {
           ) => {
             return await Promise.all(
               value.split(",").map(async (item) => {
+                const trimmedItem = item.trim();
                 // check if value is contained in
                 const handledInUmthes = await this.checkInUmthes(
                   http,
                   model,
-                  item
+                  trimmedItem
                 );
                 if (handledInUmthes) return null;
-                return item;
+                return trimmedItem;
               })
             ).then((res) => res.filter((item) => item !== null).join(","));
           },
