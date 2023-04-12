@@ -49,5 +49,8 @@
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Verfahren referenziert. Möchten Sie die Adresse ersetzen?",
     "reference-error-multiple-files": "Diese Adresse wird von mindestens einem Verfahren referenziert und kann nicht gelöscht werden."
+  },
+  "spatial": {
+    "limitHelpText": "Sie können nur einen Raumbezug anlegen. Ändern oder Löschen des Eintrags führen Sie über das rechte 3-Punkte-Icon aus."
   }
 }
