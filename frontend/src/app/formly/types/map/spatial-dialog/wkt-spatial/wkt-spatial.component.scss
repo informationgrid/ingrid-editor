@@ -13,6 +13,7 @@
 
 button.hint {
   background-color: $ige-background;
+  margin-right: 8px;
 }
 
 .hint-text-custom-style {
@@ -22,4 +23,8 @@ button.hint {
   padding: 6px !important;
   color: rgba(0, 0, 0, 0.87);
   opacity: 0.6;
+}
+
+.btn-analyze {
+  align-self: flex-end;
 }

@@ -55,7 +55,42 @@ export abstract class IngridShared extends BaseDoctype {
   private openDataMessage =
     "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
-  constructor(
+  private inspireToIsoMapping = {
+    "101": "13",
+    "103": "13",
+    "104": "3",
+    "105": "13",
+    "106": "15",
+    "107": "18",
+    "108": "12",
+    "109": "7",
+    "201": "6",
+    "202": "10",
+    "203": "10",
+    "204": "8",
+    "301": "3",
+    "302": "17",
+    "303": "8",
+    "304": "15",
+    "305": "9",
+    "306": "19",
+    "307": "17",
+    "308": "17",
+    "309": "1",
+    "310": "16",
+    "311": "15",
+    "312": "8",
+    "313": "4",
+    "315": "14",
+    "316": "14",
+    "317": "2",
+    "318": "2",
+    "319": "2",
+    "320": "5",
+    "321": "5",
+  };
+
+  protected constructor(
     private codelistServiceIngrid: CodelistService,
     codelistQuery: CodelistQuery,
     private uploadService: UploadService,
@@ -250,9 +285,9 @@ export abstract class IngridShared extends BaseDoctype {
           showSearch: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
           codelistId: 8010,
-          className: "optional",
           expressions: {
             "props.required": "formState.mainModel?.isAdVCompatible",
+            className: "field.props.required ? '' : 'optional'",
           },
         }),
         options.inspireTopics
@@ -260,10 +295,16 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               options: this.getCodelistForSelect(6100, "themes"),
               codelistId: 6100,
-              className: "optional",
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
+                className: "field.props.required ? '' : 'optional'",
               },
+              change: (field, $event) =>
+                options.thesaurusTopics &&
+                this.updateIsoCategory($event, field),
+              remove: (field, $event) =>
+                options.thesaurusTopics &&
+                this.updateIsoCategory($event, field, true),
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
@@ -317,6 +358,8 @@ export abstract class IngridShared extends BaseDoctype {
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
               required: true,
+              remove: (field, event) =>
+                this.checkConnectedIsoCategory(event, field),
             })
           : null,
         this.addRepeatChip("keywordsUmthes", "Umthes Schlagworte", {
@@ -347,6 +390,56 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ].filter(Boolean)
     );
+  }
+
+  private checkConnectedIsoCategory(event, field) {
+    const possibleKeys = Object.keys(this.inspireToIsoMapping).filter(
+      (key) => this.inspireToIsoMapping[key] === event.key
+    );
+    const themes = field.options.formState.mainModel.themes;
+    const connectedInspireTheme = themes.find(
+      (item) => possibleKeys.indexOf(item.key) !== -1
+    );
+    if (connectedInspireTheme) {
+      field.model.push(event);
+      field.options.formState.updateModel();
+      const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
+        "6100",
+        connectedInspireTheme.key
+      );
+      this.snack.open(
+        `Die Kategorie muss bestehen bleiben, solange das INSPIRE-Thema '${inspireThemeValue}' verwendet wird.`
+      );
+    }
+  }
+
+  private updateIsoCategory($event, field, doRemove: boolean = false) {
+    const isoKey = this.inspireToIsoMapping[$event.key];
+    if (!isoKey) return;
+
+    // check if exists and add if not
+    const topics = field.options.formState.mainModel.topicCategories;
+    const alreadyExists = topics.some((item) => item.key === isoKey);
+    const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
+      "527",
+      isoKey
+    );
+
+    if (!doRemove && !alreadyExists) {
+      topics.push({ key: isoKey });
+      field.options.formState.updateModel();
+      this.snack.open(
+        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`
+      );
+    } else if (doRemove && alreadyExists) {
+      field.options.formState.mainModel.topicCategories = topics.filter(
+        (item) => item.key !== isoKey
+      );
+      field.options.formState.updateModel();
+      this.snack.open(
+        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`
+      );
+    }
   }
 
   private async checkInUmthes(http: HttpClient, model, item) {
@@ -466,7 +559,12 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             {
               fieldGroupClassName: "",
-              className: "optional",
+              expressions: {
+                className: (field) =>
+                  isNotEmptyObject(field.form.value?.verticalExtent)
+                    ? ""
+                    : "optional",
+              },
             }
           ),
           this.addTextArea("description", "Erläuterungen", "spatial", {
@@ -579,7 +677,12 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
           ],
-          { className: "optional" }
+          {
+            expressions: {
+              className: (field) =>
+                isNotEmptyObject(field.form.value) ? "" : "optional",
+            },
+          }
         ),
         this.addTextArea("description", "Erläuterungen", "dataset", {
           className: "optional flex-1",
@@ -646,11 +749,11 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: 99999999,
                 useDialog: true,
                 required: true,
-                className: "optional",
                 // defaultValue: ["150"], // TODO: does not work
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
+                  className: "field.props.required ? '' : 'optional'",
                 },
               }),
             ])
@@ -658,9 +761,9 @@ export abstract class IngridShared extends BaseDoctype {
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
-              className: "optional",
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
+                className: "field.props.required ? '' : 'optional'",
               },
               dialog: ConformityDialogComponent,
               columns: [
@@ -823,16 +926,16 @@ export abstract class IngridShared extends BaseDoctype {
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
-          className: "optional",
           expressions: {
             "props.required": "formState.mainModel?.isInspireIdentified",
+            className: "field.props.required ? '' : 'optional'",
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          // className: "optional",
           expressions: {
             "props.required":
               "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            className: "field.props.required ? '' : 'optional'",
           },
           fields: [
             this.addAutocomplete("title", null, {
@@ -863,10 +966,10 @@ export abstract class IngridShared extends BaseDoctype {
         "distribution",
         [
           this.addRepeat("format", "Datenformat", {
-            className: "optional",
             expressions: {
               "props.required":
                 "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+              className: "field.props.required ? '' : 'optional'",
             },
             fields: [
               this.addAutoCompleteInline("name", "Name", {
@@ -894,8 +997,13 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen (MB)", {
+          this.addInputInline("transferSize", "Datenvolumen", {
             type: "number",
+            className: "right-align",
+            wrappers: ["form-field", "addons"],
+            suffix: {
+              text: "MB",
+            },
           }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
@@ -911,6 +1019,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "display-flex flex-column",
         fields: [this.urlRefFields()],
+        className: "optional",
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl, field) =>
@@ -932,13 +1041,23 @@ export abstract class IngridShared extends BaseDoctype {
           type: "number",
           min: 0,
         }),
-        this.addInputInline("distanceMeter", "Bodenauflösung (m)", {
+        this.addInputInline("distanceMeter", "Bodenauflösung", {
           type: "number",
           min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "m",
+          },
         }),
-        this.addInputInline("distanceDPI", "Scanauflösung (DPI)", {
+        this.addInputInline("distanceDPI", "Scanauflösung", {
           type: "number",
           min: 0,
+          className: "right-align",
+          wrappers: ["form-field", "addons"],
+          suffix: {
+            text: "DPI",
+          },
         }),
       ],
     });

@@ -36,16 +36,15 @@
 }
 
 :host-context(.hasContextHelp) {
-  &:hover {
-    .contextHelpIcon {
-      position: absolute;
-      display: block;
-    }
+  &:hover .contextHelpIcon {
+    position: absolute;
+    display: block;
+  }
 
-    label {
-      color: $ige-primary;
-      cursor: pointer;
-    }
+  &:hover label,
+  label:focus {
+    color: $ige-primary;
+    cursor: pointer;
   }
 
   &:hover:before {
@@ -59,6 +58,7 @@
 
   .contextHelpIcon {
     display: none;
+    cursor: pointer;
     background-color: $ige-background;
     border-radius: 50%;
     height: 24px;

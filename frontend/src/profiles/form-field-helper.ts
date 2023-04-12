@@ -11,6 +11,8 @@ export interface Options {
   defaultValue?: any;
   hasInlineContextHelp?: boolean;
   contextHelpId?: string;
+  change?: (field, event) => void;
+  remove?: (field, event) => void;
   expressions?: {
     hide?;
     className?;
@@ -114,6 +116,7 @@ export class FormFieldHelper {
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,
       id: options?.id,
@@ -126,7 +129,10 @@ export class FormFieldHelper {
         required: options?.required,
       },
       fieldGroup: fields,
-      expressions: { hide: options?.hideExpression },
+      expressions: {
+        ...expressions,
+        hide: options?.hideExpression,
+      },
       validators: options?.validators,
     };
   }
@@ -179,6 +185,7 @@ export class FormFieldHelper {
     options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
+      className: "top-align-suffix flex-1",
       wrappers: ["form-field"],
       fieldLabel: label,
       ...options,
@@ -257,6 +264,8 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        change: options?.change,
+        remove: options?.remove,
         view: options?.view,
       },
       expressions: expressions,
@@ -372,7 +381,7 @@ export class FormFieldHelper {
   addInputInline(id, label, options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       ...options,
     });
   }
@@ -575,10 +584,11 @@ export class FormFieldHelper {
     messageNoReferences?: string,
     referencesHint?: string,
     options?
-  ) {
+  ): FormlyFieldConfig {
     return {
       type: "referencedDocuments",
       wrappers: ["panel"],
+      className: options?.className,
       props: {
         externalLabel: label,
         referenceField: referenceField,

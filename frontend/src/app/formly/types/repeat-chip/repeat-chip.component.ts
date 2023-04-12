@@ -88,6 +88,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
           options: this.props.options,
           model: this.model,
         },
+        restoreFocus: true,
         hasBackdrop: true,
       })
       .afterClosed()
@@ -123,7 +124,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  async addValues(value: string) {
+  addValues(value: string) {
     if (this.props.preprocessValues) {
       value = await this.props.preprocessValues(
         this.http,

@@ -263,6 +263,7 @@ h1 {
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.width-25 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.25;
     padding-right: 10px; // simulate gap used by multiple fields in one row
@@ -520,6 +521,10 @@ ige-one-column-wrapper formly-group {
   flex: 1;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
 .gap {
   gap: 8px;
 }
@@ -556,10 +561,25 @@ ige-one-column-wrapper formly-group {
 
 .right-align input {
   text-align: right;
+  -moz-appearance: textfield;
 }
 
-.hide-optionals .optional:not(:has(.required)) {
+.right-align input::-webkit-outer-spin-button,
+.right-align input::-webkit-inner-spin-button {
   display: none;
+}
+
+.mat-mdc-form-field-text-suffix {
+  padding-left: 5px;
+}
+
+.hide-optionals .optional {
+  display: none;
+}
+
+.top-align-suffix .mat-mdc-form-field-icon-suffix {
+  margin-top: 10px;
+  align-self: start;
 }
 
 formly-field {

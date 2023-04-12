@@ -174,7 +174,7 @@ export class GeoServiceDoctype extends IngridShared {
               <FormlyFieldConfig>{
                 key: "coupledResources",
                 type: "couplingService",
-                className: "optional flex-1",
+                className: "flex-1",
                 props: {
                   label: "Dargestellte Daten",
                   required: true,
@@ -186,6 +186,7 @@ export class GeoServiceDoctype extends IngridShared {
                 expressions: {
                   "props.required":
                     "formState.mainModel?.couplingType?.key === 'tight'",
+                  className: "field.props.required ? '' : 'optional'",
                 },
                 hooks: {
                   onInit: (field) =>

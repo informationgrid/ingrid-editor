@@ -33,6 +33,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
+  initialParameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new UntypedFormControl();
   filterCtrl: UntypedFormControl;
@@ -71,6 +72,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options;
+    if (options)
+      this.initialParameterOptions = JSON.parse(JSON.stringify(options));
     this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
@@ -116,8 +119,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label);
-    this.add(null, prepared.forBackend());
+    const prepared = new SelectOption(option.value, option.label).forBackend();
+    this.add(null, prepared);
+    this.props.change?.(this.field, prepared);
 
     this.inputControl.setValue(null);
 
@@ -171,7 +175,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
-      const disabledByDefault = this.parameterOptions.find(
+      const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value
       ).disabled;
       const optionAlreadySelected = (<{ key; value? }[]>this.model)?.some(
@@ -183,7 +187,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   removeItem(index: number, $event?: KeyboardEvent) {
+    const item = this.model[index];
     this.remove(index);
+    this.props.remove?.(this.field, item);
     this.manualUpdate.next("");
 
     if (this.props.asSelect && this.inputControl.disabled) {

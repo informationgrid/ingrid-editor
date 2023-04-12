@@ -56,6 +56,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .open(UpdateCodelistComponent, {
         minWidth: 400,
         hasBackdrop: true,
+        restoreFocus: true,
         disableClose: true,
         data: {
           ids: this.selectedCodelist.entries

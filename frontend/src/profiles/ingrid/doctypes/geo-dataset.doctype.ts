@@ -64,9 +64,9 @@ export class GeoDatasetDoctype extends IngridShared {
             showSearch: true,
             options: this.getCodelistForSelect(526, "priorityDataset"),
             codelistId: 526,
-            className: "optional",
             expressions: {
               "props.required": "formState.mainModel?.isInspireConform",
+              className: "field.props.required ? '' : 'optional'",
             },
           }
         ),
@@ -279,6 +279,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addResolutionFields(),
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
+            className: "optional",
             fields: this.titleDateEditionFields(3555),
           }),
         ]),
@@ -288,6 +289,7 @@ export class GeoDatasetDoctype extends IngridShared {
             expressions: {
               "props.required":
                 "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+              className: "field.props.required ? '' : 'optional'",
             },
             contextHelpId: "citation_2",
           }),
@@ -304,6 +306,7 @@ export class GeoDatasetDoctype extends IngridShared {
           "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
           "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
           {
+            className: "optional",
             contextHelpId: "coupledResources",
           }
         ),
@@ -335,11 +338,11 @@ export class GeoDatasetDoctype extends IngridShared {
               wrappers: ["panel", "form-field", "addons"],
               className: "single-field width-25 right-align",
               type: "number",
+              min: 0,
+              max: 100,
               suffix: {
                 text: "%",
               },
-              min: 0,
-              max: 100,
             }),
           ]),
         ]),
@@ -348,26 +351,37 @@ export class GeoDatasetDoctype extends IngridShared {
           "Genauigkeit",
           [
             this.addInput("griddedDataPositionalAccuracy", null, {
-              fieldLabel: "Rasterpositionsgenauigkeit (m)",
+              fieldLabel: "Rasterpositionsgenauigkeit",
               type: "number",
-              className: "optional",
+              className: "optional right-align",
               expressions: {
                 hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
               },
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("vertical", null, {
-              fieldLabel: "Höhengenauigkeit (m)",
+              fieldLabel: "Höhengenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
             this.addInput("horizontal", null, {
-              fieldLabel: "Lagegenauigkeit (m)",
+              fieldLabel: "Lagegenauigkeit",
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              className: "right-align",
+              wrappers: ["inline-help", "form-field", "addons"],
+              suffix: {
+                text: "m",
+              },
             }),
           ],
           { fieldGroupClassName: "display-flex" }

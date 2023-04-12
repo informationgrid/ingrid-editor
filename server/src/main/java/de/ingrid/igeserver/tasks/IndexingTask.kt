@@ -13,9 +13,12 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.PAGE_SIZE
 import de.ingrid.igeserver.model.IndexConfigOptions
+import de.ingrid.igeserver.persistence.filter.PostIndexPayload
+import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -67,7 +70,8 @@ class IndexingTask @Autowired constructor(
     @Value("\${elastic.communication.ibus:true}")
     private val indexThroughIBus: Boolean,
     private val appProperties: GeneralProperties,
-    private val codelistService: CodeListService
+    private val codelistService: CodeListService,
+    private val postIndexPipe: PostIndexPipe
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -216,6 +220,9 @@ class IndexingTask @Autowired constructor(
         exporter: IgeExporter,
         indexInfo: IndexInfo
     ) {
+        val catalogType = catalogService.getCatalogById(catalogId).type
+        val simpleContext = SimpleContext(catalogId, catalogType)
+
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
                 handleCancelation(catalogId, message)
@@ -232,7 +239,9 @@ class IndexingTask @Autowired constructor(
                 }
             }
             .onEach {
-                indexManager.update(indexInfo, convertToElasticDocument(it), false)
+                val elasticDocument = convertToElasticDocument(it)
+                indexManager.update(indexInfo, elasticDocument, false)
+                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name), simpleContext)
             }
     }
 
@@ -295,10 +304,14 @@ class IndexingTask @Autowired constructor(
             val doc = indexService.getSinglePublishedDocument(catalogId, category.value, catalogProfile, docId)
 
             val export = exporter.run(doc, catalogId)
-
             log.debug("Exported document: $export")
             val indexInfo = getOrPrepareIndex(catalogProfile, category, format, elasticsearchAlias)
-            indexManager.update(indexInfo, convertToElasticDocument(export), false)
+
+
+            val elasticDoc = convertToElasticDocument(export)
+            postIndexPipe.runFilters(PostIndexPayload(elasticDoc, category.name), SimpleContext(catalogId, catalogProfile.identifier))
+
+            indexManager.update(indexInfo, elasticDoc, false)
             log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")
         } catch (ex: NoSuchElementException) {
             log.info("Document not indexed, probably because of profile specific condition: $catalogId -> $docId")
@@ -332,7 +345,7 @@ class IndexingTask @Autowired constructor(
         category: DocumentCategory
     ) = "${elasticsearchAlias}_${category.value}"
 
-    private fun convertToElasticDocument(doc: Any): ElasticDocument? {
+    private fun convertToElasticDocument(doc: Any): ElasticDocument {
 
         return jacksonObjectMapper()
 //            .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature())
