@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.api
 
-import javax.servlet.*
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.*
+import jakarta.servlet.http.HttpServletResponse
 
 class ApiOriginFilter : Filter {
 

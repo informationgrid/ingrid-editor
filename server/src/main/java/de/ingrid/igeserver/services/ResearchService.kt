@@ -1,12 +1,13 @@
 package de.ingrid.igeserver.services
 
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
+import jakarta.persistence.EntityManager
 import org.hibernate.jpa.QueryHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
-import javax.persistence.EntityManager
 
 
 data class Result(
@@ -230,7 +230,7 @@ class ResearchService {
         return nativeQuery
             .setHint(QueryHints.HINT_READONLY, true)
             .unwrap(NativeQuery::class.java)
-            .addScalar("data", JsonNodeBinaryType.INSTANCE)
+            .addScalar("data", JsonType::class.java)
             .addScalar("title")
             .addScalar("uuid")
             .addScalar("type")

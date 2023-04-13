@@ -6,11 +6,14 @@ import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.UnauthenticatedException
 import de.ingrid.igeserver.model.User
+import jakarta.annotation.PostConstruct
+import jakarta.ws.rs.ClientErrorException
+import jakarta.ws.rs.ForbiddenException
+import jakarta.ws.rs.core.Response
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.keycloak.KeycloakPrincipal
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -31,10 +34,6 @@ import java.io.Closeable
 import java.net.URL
 import java.security.Principal
 import java.util.*
-import javax.annotation.PostConstruct
-import javax.ws.rs.ClientErrorException
-import javax.ws.rs.ForbiddenException
-import javax.ws.rs.core.Response
 
 
 @Service
@@ -123,7 +122,7 @@ class KeycloakService : UserManagementService {
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
             return users
-        } catch (e: javax.ws.rs.NotFoundException) {
+        } catch (e: jakarta.ws.rs.NotFoundException) {
             log.warn("No users found with role '$roleName'")
             return emptyList()
         }
@@ -131,8 +130,8 @@ class KeycloakService : UserManagementService {
 
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
         val client: Keycloak
-        val keycloakPrincipal = principal as KeycloakAuthenticationToken?
-        val tokenString = keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
+        val keycloakPrincipal = principal// as KeycloakAuthenticationToken?
+        val tokenString = "???" //keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
 
         client = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)
@@ -204,17 +203,19 @@ class KeycloakService : UserManagementService {
     }
 
     override fun getRoles(principal: Authentication): Set<String>? {
-        principal as KeycloakAuthenticationToken
-        return principal.account?.roles
+//        principal as KeycloakAuthenticationToken
+//        return principal.account?.roles
+        return emptySet()
     }
 
     override fun getName(principal: Authentication): String? {
-        principal as KeycloakAuthenticationToken
-        val expiration = principal.account?.keycloakSecurityContext?.token?.exp ?: -99
-        val issuedAt = principal.account?.keycloakSecurityContext?.token?.iat ?: -99
-        log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
-        log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
-        return principal.account?.keycloakSecurityContext?.idToken?.name
+//        principal as KeycloakAuthenticationToken
+//        val expiration = principal.account?.keycloakSecurityContext?.token?.exp ?: -99
+//        val issuedAt = principal.account?.keycloakSecurityContext?.token?.iat ?: -99
+//        log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
+//        log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
+//        return principal.account?.keycloakSecurityContext?.idToken?.name
+        return "?"
     }
 
     override fun getCurrentPrincipal(): Principal? {
@@ -247,7 +248,7 @@ class KeycloakService : UserManagementService {
             }
             val createResponse = usersResource.create(keycloakUser)
 
-            handleReponseErrors(createResponse) // will throw on error
+            // TODO: boot3 => handleReponseErrors(createResponse) // will throw on error
 
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 

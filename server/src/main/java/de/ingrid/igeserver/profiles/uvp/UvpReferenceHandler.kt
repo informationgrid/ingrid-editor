@@ -6,9 +6,9 @@ import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 @Service
 class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {

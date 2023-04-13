@@ -3,14 +3,15 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.model.Message
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
-import javax.persistence.*
 
 @Entity
 @Table(name = "messages")
@@ -33,7 +34,7 @@ class Message {
     @JsonProperty("_expires")
     var expires: OffsetDateTime? = null
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(name = "message", columnDefinition = "jsonb")
     var message: Message = Message("")
 

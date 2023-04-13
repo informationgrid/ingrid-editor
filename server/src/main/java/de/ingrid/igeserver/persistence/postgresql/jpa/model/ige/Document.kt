@@ -5,17 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
+import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
 
 @Entity
 @Table(name = "document")
@@ -43,7 +44,7 @@ class Document {
     @Column(nullable = false)
     var title: String? = null
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(columnDefinition = "jsonb")
     lateinit var data: ObjectNode
 

@@ -2,9 +2,6 @@ package de.ingrid.igeserver.utils
 
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.KeycloakPrincipal
-import org.keycloak.adapters.RefreshableKeycloakSecurityContext
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
-import org.keycloak.representations.AccessToken
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -19,9 +16,9 @@ class KeycloakAuthUtils : AuthUtils {
 
     override fun getUsernameFromPrincipal(principal: Principal): String {
 
-        return if (principal is KeycloakAuthenticationToken) {
+        return /*if (principal is KeycloakAuthenticationToken) {
             principal.account.keycloakSecurityContext.token.preferredUsername
-        }  else if (principal is UsernamePasswordAuthenticationToken) {
+        }  else */if (principal is UsernamePasswordAuthenticationToken) {
             principal.principal as String
         } else{
             (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
@@ -29,21 +26,22 @@ class KeycloakAuthUtils : AuthUtils {
     }
 
     override fun getFullNameFromPrincipal(principal: Principal): String {
-        return try {
-            ((((principal as KeycloakAuthenticationToken).principal as KeycloakPrincipal<*>)
-                .keycloakSecurityContext as RefreshableKeycloakSecurityContext).token as AccessToken).name
-        } catch (ex: Exception) {
-            log.warn("Full name could not be extracted from principal")
+//        return try {
+//            ((((principal as KeycloakAuthenticationToken).principal as KeycloakPrincipal<*>)
+//                .keycloakSecurityContext as RefreshableKeycloakSecurityContext).token as AccessToken).name
+//        } catch (ex: Exception) {
+//            log.warn("Full name could not be extracted from principal")
             return getUsernameFromPrincipal(principal)
-        }
+//        }
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
         return if (principal is UsernamePasswordAuthenticationToken) {
             principal.authorities.contains(SimpleGrantedAuthority(role))
         } else {
-            principal as KeycloakAuthenticationToken
-            principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
+//            principal as KeycloakAuthenticationToken
+//            principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
+            throw RuntimeException("Problem with principal")
         }
     }
 

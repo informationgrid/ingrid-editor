@@ -6,11 +6,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
+import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.*
-import javax.annotation.PostConstruct
 import kotlin.concurrent.schedule
 
 @Profile("dev")

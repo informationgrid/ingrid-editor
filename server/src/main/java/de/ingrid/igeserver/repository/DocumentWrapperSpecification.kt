@@ -1,11 +1,11 @@
 package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
 class DocumentWrapperSpecification(val filter: DocumentWrapper): Specification<DocumentWrapper> {
     

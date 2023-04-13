@@ -4,12 +4,12 @@ import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import javax.persistence.EntityManager
 
 @RestController
 @RequestMapping(path = ["/api/uvp/upload-check"])

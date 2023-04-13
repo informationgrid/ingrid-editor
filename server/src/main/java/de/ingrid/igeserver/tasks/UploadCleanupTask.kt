@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.tasks
 
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.nio.file.Paths
-import javax.persistence.EntityManager
 
 @Profile("uvp")
 @Component

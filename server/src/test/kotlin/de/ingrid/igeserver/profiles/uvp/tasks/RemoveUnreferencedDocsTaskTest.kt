@@ -13,8 +13,8 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
-import javax.persistence.EntityManager
 
 class RemoveUnreferencedDocsTaskTest : FunSpec({
 

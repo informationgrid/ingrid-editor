@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 @Service
 class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {

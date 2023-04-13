@@ -6,8 +6,6 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
-import org.keycloak.adapters.springsecurity.account.KeycloakRole
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
@@ -15,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
 import org.springframework.stereotype.Service
+import java.security.Principal
 import java.util.*
 
 @Service
@@ -33,18 +32,18 @@ class MyAuthenticationProvider @Autowired constructor(
     // TODO: try to cache function since it's been called on each request
     override fun authenticate(authentication: Authentication?): Authentication {
 
-        val token = authentication as KeycloakAuthenticationToken
+        val token = authentication// as KeycloakAuthenticationToken
         val grantedAuthorities: MutableList<GrantedAuthority> = ArrayList()
 
         var isSuperAdmin = false
         // add keycloak roles
-        for (role in token.account.roles) {
+        /*for (role in token.account.roles) {
             if (role.equals("ige-super-admin")) isSuperAdmin = true;
             grantedAuthorities.add(KeycloakRole("ROLE_$role"))
-        }
+        }*/
 
         // TODO: make function static
-        val username = authUtils.getUsernameFromPrincipal(authentication);
+        val username = authUtils.getUsernameFromPrincipal(authentication as Principal);
         var userDb = userRepository.findByUserId(username)
         userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
 
@@ -83,7 +82,7 @@ class MyAuthenticationProvider @Autowired constructor(
 
         }
 
-        return KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
+        return authentication!! //KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
 
     }
 
@@ -109,7 +108,7 @@ class MyAuthenticationProvider @Autowired constructor(
     }
 
     override fun supports(authentication: Class<*>?): Boolean {
-        return KeycloakAuthenticationToken::class.java.isAssignableFrom(authentication)
+        return false // KeycloakAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
 
 }

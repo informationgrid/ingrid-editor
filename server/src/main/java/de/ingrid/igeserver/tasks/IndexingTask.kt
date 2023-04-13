@@ -28,6 +28,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.utils.ElasticDocument
+import jakarta.annotation.PostConstruct
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.elasticsearch.common.Strings
@@ -53,7 +54,6 @@ import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
-import javax.annotation.PostConstruct
 import kotlin.concurrent.schedule
 
 

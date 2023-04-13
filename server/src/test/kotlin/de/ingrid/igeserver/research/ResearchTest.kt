@@ -5,6 +5,7 @@ import de.ingrid.igeserver.IgeServer
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeExactly
+import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
 import org.intellij.lang.annotations.Language
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
-import javax.persistence.EntityManager
 
 
 @SpringBootTest(classes = [IgeServer::class])

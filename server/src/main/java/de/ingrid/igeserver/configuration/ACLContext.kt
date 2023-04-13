@@ -5,8 +5,7 @@ import de.ingrid.igeserver.configuration.acl.IgeAclPermissionCacheOptimizer
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.cache.ehcache.EhCacheFactoryBean
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean
+import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
@@ -28,27 +27,33 @@ open class ACLContext {
     @Autowired
     var dataSource: DataSource? = null
 
+    @Autowired lateinit var cacheManager: CacheManager
+
     @Bean
-    open fun aclCache(): EhCacheBasedAclCache {
-        return EhCacheBasedAclCache(
-            aclEhCacheFactoryBean().getObject(),
+    open fun aclCache(): SpringCacheBasedAclCache {
+        return SpringCacheBasedAclCache(
+            cacheManager.getCache("aclCache"),
             permissionGrantingStrategy(),
             aclAuthorizationStrategy()
         )
     }
 
+/*
     @Bean
-    open fun aclEhCacheFactoryBean(): EhCacheFactoryBean {
+    open fun aclEhCacheFactoryBean(): SpCacFac {
         val ehCacheFactoryBean = EhCacheFactoryBean()
         ehCacheFactoryBean.setCacheManager(aclCacheManager().getObject()!!)
         ehCacheFactoryBean.setCacheName("aclCache")
         return ehCacheFactoryBean
     }
+*/
 
+/*
     @Bean
     open fun aclCacheManager(): EhCacheManagerFactoryBean {
         return EhCacheManagerFactoryBean()
     }
+*/
 
     @Bean
     open fun permissionGrantingStrategy(): PermissionGrantingStrategy {

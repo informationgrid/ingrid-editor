@@ -4,8 +4,8 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '1.8.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.7.10'
-    ext.hibernate_version = '5.6.15.Final' // Hibernate 6 is only supported by Spring Boot 3
+    ext.spring_boot_version = '3.0.5'
+    ext.hibernate_version = '6.1.7.Final' // Hibernate 6 is only supported by Spring Boot 3
     ext.jackson_version = '2.14.2'
     ext.kotest_version = '5.5.5'
     ext.jte_version = '2.2.6'
@@ -20,7 +20,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
         // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-        classpath "org.hibernate:hibernate-gradle-plugin:$hibernate_version"
+//        classpath "org.hibernate.orm:hibernate-gradle-plugin:$hibernate_version"
     }
 }
 
@@ -34,13 +34,13 @@ plugins {
     id 'io.kotest' version '0.3.9'
     id "com.github.ben-manes.versions" version "0.46.0"
     id "gg.jte.gradle" version "$jte_version"
+    id("org.hibernate.orm") version "$hibernate_version"
 }
 
 apply plugin: 'kotlin' // Required for Kotlin integration
 apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.hibernate.orm'
 apply plugin: 'kotlin-noarg'
 //apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-allopen'
@@ -134,7 +134,9 @@ dependencies {
     implementation 'net.pwall.json:json-kotlin-schema:0.39'
 
     // Keycloak
-    implementation 'org.keycloak:keycloak-spring-boot-starter:19.0.3'
+//    implementation 'org.keycloak:keycloak-spring-boot-starter:19.0.3'
+    // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.keycloak:keycloak-admin-client:19.0.3'
 
     // Markdown
@@ -147,8 +149,8 @@ dependencies {
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.5.4'
-    implementation "org.hibernate:hibernate-core:$hibernate_version"
-    implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
+    implementation "org.hibernate.orm:hibernate-core:$hibernate_version"
+    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
     implementation('de.ingrid:ingrid-codelist-service:6.0.1') {
@@ -321,11 +323,11 @@ noArg {
 }
 
 hibernate {
-    enhance {
-        enableLazyInitialization= true
-        enableDirtyTracking = true
-        enableAssociationManagement = true
-        enableExtendedEnhancement = false
+    enhancement {
+        lazyInitialization = true
+        dirtyTracking = true
+//        associationManagement = true
+//        extendedEnhancement = false
     }
 }
 

@@ -1,18 +1,18 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import de.ingrid.mdek.upload.storage.impl.Scope
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import javax.persistence.EntityManager
 
 @Profile("uvp")
 @Component
@@ -89,7 +89,7 @@ class RemoveUnreferencedDocsTask(
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
+            .addScalar(jsonbField, JsonType::class.java)
             .resultList as List<Array<Any>>
     }
 

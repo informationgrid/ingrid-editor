@@ -6,14 +6,14 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.services.ibus.HeartBeatPlug
 import de.ingrid.utils.*
+import de.ingrid.utils.query.IngridQuery
+import jakarta.annotation.PostConstruct
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
-import de.ingrid.utils.query.IngridQuery
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
 
 @Service
 @Profile("ibus & elasticsearch")

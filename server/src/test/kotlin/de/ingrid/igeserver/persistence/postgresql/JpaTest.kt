@@ -10,13 +10,13 @@ import de.ingrid.igeserver.services.DOCUMENT_STATE
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 
 @Transactional

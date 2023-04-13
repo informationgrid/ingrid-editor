@@ -21,6 +21,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -32,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.time.ZoneOffset
 import java.util.*
-import javax.persistence.EntityManager
 
 @Service
 class DocumentService @Autowired constructor(
