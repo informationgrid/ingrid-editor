@@ -44,6 +44,14 @@ export interface RepeatListOptions extends Options {
   fieldGroupClassName?: string; // TODO: move up
   options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   view?: "chip" | "list";
+  restCall?: (http: HttpClient, query: string) => Observable<any[]>;
+  labelField?: string;
+  preprocessValues?: (
+    http: HttpClient,
+    model: any,
+    value: string
+  ) => Promise<string>;
+  hint?: string;
 }
 
 export interface RepeatChipOptions extends Options {
@@ -267,6 +275,9 @@ export class FormFieldHelper {
         change: options?.change,
         remove: options?.remove,
         view: options?.view,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
+        preprocessValues: options?.preprocessValues,
       },
       expressions: expressions,
     };

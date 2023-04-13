@@ -7,15 +7,28 @@ import {
 } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { filter, map, startWith, tap } from "rxjs/operators";
-import { merge, Observable, of, Subject } from "rxjs";
+import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+} from "rxjs";
 import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import { UntypedFormControl, ValidationErrors } from "@angular/forms";
+import {
+  FormControl,
+  UntypedFormControl,
+  ValidationErrors,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
+import { HttpClient } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -35,22 +48,42 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
   parameterOptions$: Observable<SelectOptionUi[]>;
-  inputControl = new UntypedFormControl();
+  inputControl = new FormControl<string>("");
   filterCtrl: UntypedFormControl;
+  searchSub: Subscription;
+  searchResult = new BehaviorSubject<any[]>([]);
   private manualUpdate = new Subject<string>();
   private currentStateRequired = false;
+  type: "simple" | "select" | "autocomplete" | "search" = "simple";
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(
+    private http: HttpClient,
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {
     super();
   }
 
   ngOnInit(): void {
-    if (this.props.asSelect && this.props.showSearch) {
-      this.filterCtrl = new UntypedFormControl();
-      this.filterCtrl.valueChanges
-        .pipe(untilDestroyed(this))
-        .subscribe((value) => this.manualUpdate.next(value));
+    if (this.props.asSelect) {
+      this.type = "select";
+      if (this.props.showSearch) {
+        this.filterCtrl = new FormControl<string>("");
+        this.filterCtrl.valueChanges
+          .pipe(untilDestroyed(this))
+          .subscribe((value) => this.manualUpdate.next(value));
+      }
+    } else if (this.props.restCall) {
+      this.type = "search";
+    } else if (
+      this.props.options &&
+      !this.props.asSelect &&
+      !this.props.restCall
+    ) {
+      this.type = "autocomplete";
+      if (!this.props.hint) this.props.hint = "Eingabe mit RETURN bestätigen";
     }
+
     if (this.props.options instanceof Observable) {
       this.props.options
         .pipe(
@@ -88,17 +121,28 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           : this.inputControl.enable();
       });
 
-    this.filteredOptions = merge(
-      this.formControl.valueChanges,
-      this.inputControl.valueChanges,
-      this.manualUpdate.asObservable()
-    ).pipe(
-      untilDestroyed(this),
-      startWith(""),
-      filter((value) => value !== undefined && value !== null),
-      map((value) => this._filter(value)),
-      map((value) => this._markSelected(value))
-    );
+    if (this.props.restCall) {
+      this.inputControl.valueChanges
+        .pipe(
+          untilDestroyed(this),
+          startWith(""),
+          debounceTime(300),
+          filter((query) => query?.length > 1)
+        )
+        .subscribe((query) => this.search(query));
+    } else {
+      this.filteredOptions = merge(
+        this.formControl.valueChanges,
+        this.inputControl.valueChanges,
+        this.manualUpdate.asObservable()
+      ).pipe(
+        untilDestroyed(this),
+        startWith(""),
+        filter((value) => value !== undefined && value !== null),
+        map((value) => this._filter(value)),
+        map((value) => this._markSelected(value))
+      );
+    }
   }
 
   addToList(option: SelectOptionUi) {
@@ -125,17 +169,32 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     this.inputControl.setValue(null);
 
-    if (!this.props.asSelect) {
+    if (this.type === "autocomplete") {
       // element successfully added when input was blurred
-      this.autoCompleteEl.nativeElement.blur();
-      this.autoComplete.closePanel();
-      setTimeout(() => this.autoCompleteEl.nativeElement.focus());
-    } else {
-      if (this._filter(null).length === 0) {
+      // this.autoCompleteEl?.nativeElement?.blur();
+      // this.autoComplete?.closePanel();
+      // setTimeout(() => this.autoCompleteEl?.nativeElement?.focus());
+    } else if (this.type === "select") {
+      if (this._filter(null)?.length === 0) {
         this.inputControl.disable();
       }
       setTimeout(() => this.inputControl.setValue(""));
     }
+  }
+
+  addValueObject(value: any) {
+    this.inputControl.setValue("");
+
+    const label = value[this.props.labelField];
+    const alreadyExists = this.model.some(
+      (item) => item[this.props.labelField] == label
+    );
+    if (alreadyExists) {
+      this.snack.open(`Der Begriff '${label}' existiert bereits`);
+      return;
+    }
+
+    this.add(null, value);
   }
 
   private handleRequiredState() {
@@ -171,6 +230,20 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           originOption.value.toLowerCase() !== option.value?.toLowerCase()
       );
     }
+  }
+
+  private search(value) {
+    if (!value || value.length === 0) {
+      this.searchResult.next([]);
+      return;
+    }
+    this.searchSub?.unsubscribe();
+    this.searchSub = this.props
+      .restCall(this.http, value)
+      .subscribe((result) => {
+        this.searchResult.next(result);
+      });
+    this.cdr.detectChanges();
   }
 
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
@@ -240,13 +313,77 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  addFreeEntry(value: string) {
-    if (value.trim() === "") return;
+  async addFreeEntry(value: string) {
+    if (!value || value.trim() === "") return;
 
+    let entries: string | string[] = value;
+
+    if (this.props.preprocessValues) {
+      entries = await this.props.preprocessValues(
+        this.http,
+        this.options.formState.mainModel,
+        entries
+      );
+      this.options.formState.updateModel();
+    }
+
+    if (entries instanceof Array) {
+      entries.forEach((entry) => {});
+    }
     // check if really free entry
     const option = this.parameterOptions?.find(
       (param) => param.label === value
     );
     this.addToList(option ?? new SelectOption(null, value));
+  }
+
+  async addSimpleValues(value: string) {
+    if (this.props.preprocessValues) {
+      value = await this.props.preprocessValues(
+        this.http,
+        this.options.formState.mainModel,
+        value
+      );
+      this.options.formState.updateModel();
+    }
+
+    let duplicates = this.addValueAndDetermineDuplicates(value);
+
+    this.inputControl.setValue("");
+
+    if (duplicates.length > 0) this.handleDuplicates(duplicates);
+  }
+
+  private addValueAndDetermineDuplicates(value: string) {
+    const duplicates = [];
+    value.split(",").forEach((item) => {
+      const trimmed = item.trim();
+      if (trimmed == "") return;
+
+      if (this.model.indexOf(trimmed) === -1) {
+        this.add(null, trimmed);
+      } else {
+        if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
+      }
+    });
+    return duplicates;
+  }
+
+  private handleDuplicates(duplicates: any[]) {
+    let formattedDuplicates = this.prepareDuplicatesForView(duplicates);
+    this.snack.open(
+      `Die Eingabe von ${formattedDuplicates} erfolgte mehrfach, wurde aber nur einmal übernommen.`
+    );
+  }
+
+  private prepareDuplicatesForView(duplicates: any[]) {
+    duplicates = duplicates.map((dup) => "'" + dup + "'");
+    let formatedDuplicates: string;
+    if (duplicates.length == 1) {
+      formatedDuplicates = duplicates[0];
+    } else {
+      formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, " und$1");
+    }
+    return formatedDuplicates;
   }
 }

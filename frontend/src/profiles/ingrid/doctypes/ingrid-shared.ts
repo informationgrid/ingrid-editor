@@ -362,12 +362,16 @@ export abstract class IngridShared extends BaseDoctype {
                 this.checkConnectedIsoCategory(event, field),
             })
           : null,
-        this.addRepeatChip("keywordsUmthes", "Umthes Schlagworte", {
+        this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
+          view: "chip",
+          placeholder: "Im Umweltthesaurus suchen",
           restCall: (http: HttpClient, query: string) =>
             http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",
         }),
-        this.addRepeatChip("keywords", "Optionale Schlagworte", {
+        this.addRepeatList("keywords", "Optionale Schlagworte", {
+          view: "chip",
+          hint: "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen",
           preprocessValues: async (
             http: HttpClient,
             model: any,

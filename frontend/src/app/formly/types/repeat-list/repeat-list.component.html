@@ -1,5 +1,5 @@
 <mat-chip-listbox
-    *ngIf="props.view === 'chip' && field.fieldGroup.length > 0"
+    *ngIf="props.view === 'chip' && field.fieldGroup?.length > 0"
     [disabled]="formControl.disabled"
     cdkDropListGroup
     mixedCdkDragDrop
@@ -31,12 +31,16 @@
                 </div>
             </ng-container>
 
-            <!--<ng-container *ngIf="type === 'simple'">
-                <div class="label">{{ model[i] }}</div>
-            </ng-container>-->
-
-            <ng-container *ngIf="!props.codelistId">
+            <ng-container *ngIf="!props.codelistId && !props.restCall">
                 <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'search'">
+                <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'simple'">
+                <div class="label">{{ model[i] }}</div>
             </ng-container>
 
             <button
@@ -52,7 +56,7 @@
 
 <div
     *ngIf="
-        props.view !== 'chip' && field.fieldGroup.length > 0;
+        props.view !== 'chip' && field.fieldGroup?.length > 0;
         else noFieldsSelected
     "
     class="component-list"
@@ -64,7 +68,7 @@
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
         [cdkDragDisabled]="
-            props.noDrag || formControl.disabled || model.length < 2
+            props.noDrag || formControl.disabled || model?.length < 2
         "
         class="clickable list-item"
         tabindex="0"
@@ -109,7 +113,7 @@
 </ng-template>
 
 <mat-form-field
-    *ngIf="props.asSelect; else templateAutocomplete"
+    *ngIf="type === 'select'"
     appearance="outline"
     class="width-100"
 >
@@ -138,22 +142,21 @@
     <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 
-<ng-template #templateAutocomplete>
+<ng-container *ngIf="type === 'autocomplete'">
     <mat-form-field appearance="outline" class="width-100">
         <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
         <mat-icon
-            *ngIf="parameterOptions && repeatListInput.value.length === 0"
+            *ngIf="parameterOptions && inputControl.value?.length === 0"
             class="search-icon gray"
             matPrefix
             >search
         </mat-icon>
         <input
             type="text"
-            #repeatListInput
             [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            (keydown.enter)="addFreeEntry(repeatListInput.value)"
+            (keydown.enter)="addFreeEntry(inputControl.value)"
             [matAutocomplete]="auto"
         />
         <mat-autocomplete
@@ -171,12 +174,12 @@
 
         <!-- clean button -->
         <button
-            *ngIf="repeatListInput.value.length > 0"
+            *ngIf="inputControl.value?.length > 0"
             mat-icon-button
             matSuffix
             type="button"
             class="field-close"
-            (click)="repeatListInput.value = ''"
+            (click)="inputControl.setValue('')"
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
@@ -188,9 +191,53 @@
             [ngTemplateOutlet]="props.suffix"
         ></ng-container>
 
-        <mat-hint *ngIf="!parameterOptions"
-            >Eingabe mit RETURN bestätigen
-        </mat-hint>
+        <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
         <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
-</ng-template>
+</ng-container>
+
+<ng-container *ngIf="type === 'search'">
+    <ige-search-input
+        [autocompleteRef]="searchAuto"
+        [withWhiteBorder]="false"
+        [searchSub]="searchSub"
+        [query]="inputControl"
+        [flexWidth]="true"
+        [placeholder]="props.placeholder"
+        showSearchIcon="true"
+    ></ige-search-input>
+
+    <mat-autocomplete
+        #searchAuto="matAutocomplete"
+        (optionSelected)="addValueObject($event.option.value)"
+    >
+        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
+            {{ doc[props.labelField] }}
+        </mat-option>
+    </mat-autocomplete>
+</ng-container>
+
+<ng-container *ngIf="type === 'simple' && formControl.enabled">
+    <mat-form-field class="width-100" appearance="outline">
+        <input
+            matInput
+            placeholder="Bitte eingeben"
+            autocomplete="off"
+            [formControl]="inputControl"
+            [required]="showError && props.required && formControl.invalid"
+            (keydown.enter)="addSimpleValues(inputControl.value)"
+        />
+        <button
+            *ngIf="inputControl.value?.length > 0"
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="field-close"
+            (click)="inputControl.setValue('')"
+        >
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
+        <mat-hint>{{ props.hint }} </mat-hint>
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    </mat-form-field>
+</ng-container>
