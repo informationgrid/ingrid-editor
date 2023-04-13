@@ -45,6 +45,13 @@ interface AdditionalInformationSectionOptions {
   extraInfoLangData?: boolean;
 }
 
+interface ThesaurusResult {
+  thesaurus: "themes" | "umthes";
+  value: string;
+  found: boolean;
+  alreadyExists?: boolean;
+}
+
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
 
@@ -293,6 +300,8 @@ export abstract class IngridShared extends BaseDoctype {
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
               view: "chip",
+              asSelect: true,
+              showSearch: true,
               options: this.getCodelistForSelect(6100, "themes"),
               codelistId: 6100,
               expressions: {
@@ -309,6 +318,8 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
           view: "chip",
+          asSelect: true,
+          showSearch: true,
           required: true,
           options: this.getCodelistForSelect(6400, "openDataCategories"),
           codelistId: 6400,
@@ -320,6 +331,8 @@ export abstract class IngridShared extends BaseDoctype {
               "INSPIRE - priority data set",
               {
                 view: "chip",
+                asSelect: true,
+                showSearch: true,
                 options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
@@ -355,6 +368,8 @@ export abstract class IngridShared extends BaseDoctype {
         options.thesaurusTopics
           ? this.addRepeatList("topicCategories", "ISO-Themenkategorie", {
               view: "chip",
+              asSelect: true,
+              showSearch: true,
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
               required: true,
@@ -377,23 +392,56 @@ export abstract class IngridShared extends BaseDoctype {
             model: any,
             value: String
           ) => {
+            this.snack.dismiss();
             return await Promise.all(
-              value.split(",").map(async (item) => {
-                const trimmedItem = item.trim();
-                // check if value is contained in
-                const handledInUmthes = await this.checkInUmthes(
-                  http,
-                  model,
-                  trimmedItem
-                );
-                if (handledInUmthes) return null;
-                return trimmedItem;
-              })
-            ).then((res) => res.filter((item) => item !== null).join(","));
+              value
+                .split(",")
+                .map((item) => item.trim())
+                .map(async (item) => {
+                  const resultTheme = this.checkInThemes(model, item);
+                  if (resultTheme.found) return resultTheme;
+                  return await this.checkInUmthes(http, model, item);
+                })
+            ).then((res) => {
+              this.informUserAboutThesaurusAnalysis(res);
+              return res
+                .filter((item) => !item.found)
+                .map((item) => item.value)
+                .join(",");
+            });
           },
         }),
       ].filter(Boolean)
     );
+  }
+
+  private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
+    const foundItems = res.filter((item) => item.found);
+    const addedThesaurusItems = foundItems.filter(
+      (item) => !item.alreadyExists
+    );
+    const duplicateThesaurusItems = foundItems.filter(
+      (item) => item.alreadyExists
+    );
+    let message: string[] = [];
+    if (addedThesaurusItems.length > 0) {
+      message.push(
+        "Die folgenden Werte konnten zu einem Thesaurus zugeordnet werden: " +
+          addedThesaurusItems
+            .map((item) => `${item.value} (${item.thesaurus})`)
+            .join(", ")
+      );
+    }
+    if (duplicateThesaurusItems.length > 0) {
+      message.push(
+        "Die folgenden Werte waren bereits in einem Schlagwort vorhanden: " +
+          duplicateThesaurusItems
+            .map((item) => `${item.value} (${item.thesaurus})`)
+            .join(", ")
+      );
+    }
+    if (message.length > 0)
+      this.snack.open(message.join(". "), "Ok", { duration: 20000 });
   }
 
   private checkConnectedIsoCategory(event, field) {
@@ -446,7 +494,11 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private async checkInUmthes(http: HttpClient, model, item) {
+  private async checkInUmthes(
+    http: HttpClient,
+    model,
+    item
+  ): Promise<ThesaurusResult> {
     const response = await http
       .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
       .toPromise();
@@ -455,9 +507,14 @@ export abstract class IngridShared extends BaseDoctype {
         (item) => item.label === response[0].label
       );
       if (!exists) model.keywordsUmthes.push(response[0]);
-      return true;
+      return {
+        thesaurus: "umthes",
+        found: true,
+        alreadyExists: exists,
+        value: response[0].label,
+      };
     }
-    return false;
+    return { thesaurus: "umthes", found: false, value: item };
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
@@ -1330,5 +1387,20 @@ export abstract class IngridShared extends BaseDoctype {
       item.disabled = true;
     }
     return item;
+  }
+
+  private checkInThemes(model: any, item: string): ThesaurusResult {
+    const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
+    if (id) {
+      const exists = model.themes.some((entry) => entry.key === id);
+      if (!exists) model.themes.push({ key: id });
+      return {
+        thesaurus: "themes",
+        found: true,
+        alreadyExists: exists,
+        value: item,
+      };
+    }
+    return { thesaurus: "themes", found: false, value: item };
   }
 }

@@ -14,6 +14,7 @@
         <mat-chip-option
             disableRipple
             cdkDrag
+            data-cy="list-item"
             [cdkDragDisabled]="formControl.disabled"
             [removable]="true"
             [selectable]="false"
@@ -25,22 +26,14 @@
                 svgIcon="language-24px"
             ></mat-icon>
 
-            <ng-container *ngIf="props.codelistId">
+            <ng-container *ngIf="type !== 'search'">
                 <div class="label">
-                    {{ model[i] | codelist : props.codelistId | async }}
+                    {{ getParameter(model[i]) }}
                 </div>
-            </ng-container>
-
-            <ng-container *ngIf="!props.codelistId && !props.restCall">
-                <div class="label">{{ model[i][props.labelField] }}</div>
             </ng-container>
 
             <ng-container *ngIf="type === 'search'">
                 <div class="label">{{ model[i][props.labelField] }}</div>
-            </ng-container>
-
-            <ng-container *ngIf="type === 'simple'">
-                <div class="label">{{ model[i] }}</div>
             </ng-container>
 
             <button
@@ -71,6 +64,7 @@
             props.noDrag || formControl.disabled || model?.length < 2
         "
         class="clickable list-item"
+        data-cy="list-item"
         tabindex="0"
         (keydown.delete)="removeItem(i, $event)"
         (keydown.backspace)="removeItem(i, $event)"
@@ -82,7 +76,12 @@
                     *ngIf="this.props.elementIcon"
                     [svgIcon]="this.props.elementIcon"
                 ></mat-icon>
-                {{ getParameter(model[i]) }}
+                <ng-container *ngIf="type !== 'search'">
+                    {{ getParameter(model[i]) }}
+                </ng-container>
+                <ng-container *ngIf="type === 'search'">
+                    <div class="label">{{ model[i][props.labelField] }}</div>
+                </ng-container>
             </span>
         </div>
         <button
@@ -181,7 +180,7 @@
             class="field-close"
             (click)="inputControl.setValue('')"
         >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            <mat-icon>close</mat-icon>
         </button>
 
         <!-- help info button -->
@@ -209,6 +208,7 @@
 
     <mat-autocomplete
         #searchAuto="matAutocomplete"
+        [autoActiveFirstOption]="true"
         (optionSelected)="addValueObject($event.option.value)"
     >
         <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
@@ -235,7 +235,7 @@
             class="field-close"
             (click)="inputControl.setValue('')"
         >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            <mat-icon>close</mat-icon>
         </button>
         <mat-hint>{{ props.hint }} </mat-hint>
         <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>

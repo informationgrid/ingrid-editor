@@ -1,8 +1,7 @@
 import { RepeatListComponent } from "./repeat-list.component";
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
-import { fakeAsync, tick } from "@angular/core/testing";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { RepeatDetailListComponent } from "../repeat-detail-list/repeat-detail-list.component";
 import { IgeFormlyModule } from "../../ige-formly.module";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
@@ -11,12 +10,19 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { of } from "rxjs";
 import { Codelist } from "../../../store/codelist/codelist.model";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatSelectModule } from "@angular/material/select";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { MatAutocompleteHarness } from "@angular/material/autocomplete/testing";
+import { HttpClient } from "@angular/common/http";
+import { delay } from "rxjs/operators";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
+  const form = new FormGroup<any>({});
+  let auto: MatAutocompleteHarness = null;
+
   const createHost = createHostFactory({
     component: FormlyForm,
     declarations: [RepeatDetailListComponent, AddButtonComponent],
@@ -30,14 +36,6 @@ describe("RepeatListComponent", () => {
       MatSelectModule,
       ReactiveFormsModule,
       MatIconTestingModule,
-      FormlyModule.forRoot({
-        types: [
-          {
-            name: "repeatList",
-            component: RepeatListComponent,
-          },
-        ],
-      }),
     ],
   });
 
@@ -61,96 +59,241 @@ describe("RepeatListComponent", () => {
       expect(spectator).toBeTruthy();
     });
 
-    it("should add a simple value", fakeAsync(() => {
+    it("should add a simple value", () => {
       spectator.detectChanges();
-      let listItemSelector = ".list-item";
       let input = "input";
 
-      let elements = spectator.queryAll(listItemSelector);
-      expect(elements.length).toBe(0);
+      checkItemCount(0);
       spectator.typeInElement("test-simple", input);
       spectator.dispatchKeyboardEvent(input, "keydown", "Enter");
-      elements = spectator.queryAll(listItemSelector);
-      expect(elements.length).toBe(1);
-      tick(300);
-    }));
+      checkItemCount(1);
+    });
   });
 
   describe("Codelist", () => {
-    beforeEach(() => {
-      spectator = createHost(`<formly-form [fields]="config"></formly-form>`, {
-        hostProps: {
-          config: [
-            {
-              key: "repeatListCodelist",
-              type: "repeatList",
-              defaultValue: [],
-              props: {
-                options: of(<SelectOptionUi[]>[
-                  { label: "Eins", value: "1" },
-                  { label: "Zwei", value: "2" },
-                  { label: "Drei", value: "3" },
-                ]),
-                codelistId: 123,
+    beforeEach(async () => {
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: [
+              {
+                key: "repeatListCodelist",
+                type: "repeatList",
+                defaultValue: [],
+                props: {
+                  options: of(<SelectOptionUi[]>[
+                    { label: "Eins", value: "1" },
+                    { label: "Zwei", value: "2" },
+                    { label: "Drei", value: "3" },
+                  ]),
+                  formatter: (item: any) => item.value,
+                },
               },
-            },
-          ] as FormlyFieldConfig[],
-        },
-      });
+            ] as FormlyFieldConfig[],
+          },
+        }
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
     });
 
-    fit("should add a codelist value", fakeAsync(() => {
+    it("should add a codelist value", async () => {
       spectator.detectChanges();
-      let listItemSelector = ".list-item";
-      let input = "input";
+      checkItemCount(0);
 
-      let elements = spectator.queryAll(listItemSelector);
-      expect(elements.length).toBe(0);
-      // spectator.typeInElement("test-simple", input);
+      spectator.dispatchFakeEvent("input", "focusin");
+      await auto.selectOption({ text: "Eins" });
 
-      // arrange
-      // const validateButton: HTMLButtonElement = spectator.query(VALIDATE_BUTTON_SELECTOR);
-      // const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
-      // const radioButton: MatRadioButtonHarness = await loader.getHarness(MatRadioButtonHarness);
-      // act
-      // await radioButton.check();
+      checkItemCount(1);
+      checkItemContent(0, "Eins");
+      expect(form.value.repeatListCodelist).toEqual([{ key: "1" }]);
 
-      spectator.click(input);
-      tick(500);
-      spectator.click(".mat-mdc-option:nth-child(1)");
-      spectator.click(".mat-mdc-option:nth-child(1)");
-      // expect(spectator.queryAll(".mat-mdc-autocomplete-panel").length).toBe(1);
-      // spectator.keyboard.pressKey("Ein", input);
+      checkDisabledOptions([true, false, false]);
+    });
+
+    it("should remove an item", async () => {
       spectator.detectChanges();
-      // spectator.typeInElement("Ein", input);
-      // spectator.dispatchKeyboardEvent(input, "keydown", "a");
-      // spectator.keyboard.pressKey("ArrowDown", input);
-      // const keyboardEvent = createKeyboardEvent("keyup", "ArrowDown");
-      // spectator.evendispatchKeyboardEvent(input, )
-      // expect(spectator.queryAll(".mat-mdc-option-active").length).toBe(1);
-      // spectator.dispatchKeyboardEvent(input, "keydown", "Enter");
-      // spectator.keyboard.pressKey("arrowdown", input);
-      spectator.keyboard.pressEnter(".mat-mdc-option");
-      tick(500);
-      elements = spectator.queryAll(listItemSelector);
-      expect(elements.length).toBe(1);
-      tick(300);
-    }));
+      spectator.dispatchFakeEvent("input", "focusin");
+
+      await auto.selectOption({ text: "Eins" });
+
+      removeItem(0);
+      spectator.detectChanges();
+
+      checkItemCount(0);
+      expect(form.value.repeatListCodelist).toEqual([]);
+      checkDisabledOptions([false, false, false]);
+    });
   });
 
-  xit("should remove a simple value", () => {
-    expect(spectator).toBeTruthy();
+  describe("Select", () => {
+    beforeEach(async () => {
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: [
+              {
+                key: "repeatListCodelist",
+                type: "repeatList",
+                defaultValue: [],
+                props: {
+                  asSelect: true,
+                  options: of(<SelectOptionUi[]>[
+                    { label: "Eins", value: "1" },
+                    { label: "Zwei", value: "2" },
+                    { label: "Drei", value: "3" },
+                  ]),
+                  codelistId: 123,
+                  formatter: (item: any, form: any, row: any) => item.value,
+                },
+              },
+            ] as FormlyFieldConfig[],
+          },
+        }
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
+    });
+
+    xit("should add a value", async () => {});
   });
 
-  xit("should show a codelist and select an item", () => {
-    /*spectator.component.to.options = of([
-      {label: 'a', value: 'a'},
-      {label: 'b', value: 'b'},
-      {label: 'c', value: 'c'}
-    ]);*/
+  describe("Search", () => {
+    beforeEach(async () => {
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: [
+              {
+                key: "repeatListCodelist",
+                type: "repeatList",
+                defaultValue: [],
+                props: {
+                  restCall: (http: HttpClient, query: string) =>
+                    of([
+                      { label: "remote 1", other: "a" },
+                      { label: "remote 2", other: "b" },
+                    ]).pipe(delay(200)),
+                  labelField: "label",
+                },
+              },
+            ] as FormlyFieldConfig[],
+          },
+        }
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
+    });
 
-    spectator.detectChanges();
+    it("should add a value after search", async () => {
+      spectator.detectChanges();
 
-    // spectator.query()
+      expect(spectator.query("mat-spinner")).not.toExist();
+      await auto.enterText("remote");
+      expect(spectator.query("mat-spinner")).toExist();
+
+      expect((await auto.getOptions()).length).toBe(2);
+
+      spectator.detectChanges();
+
+      await auto.selectOption({ text: "remote 2" });
+
+      checkItemCount(1);
+      checkItemContent(0, "remote 2");
+      expect(form.value.repeatListCodelist).toEqual([
+        { label: "remote 2", other: "b" },
+      ]);
+      // checkDisabledOptions([false, false, false]);
+    });
+
+    it("should remove a value", async () => {
+      spectator.detectChanges();
+
+      await auto.enterText("remote");
+      spectator.detectChanges();
+      await auto.selectOption({ text: "remote 2" });
+      removeItem(0);
+
+      spectator.detectChanges();
+      checkItemCount(0);
+
+      expect(form.value.repeatListCodelist).toEqual([]);
+      // checkDisabledOptions([false, false, false]);
+    });
   });
+
+  describe("Chips", () => {
+    beforeEach(async () => {
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: [
+              {
+                key: "repeatListCodelist",
+                type: "repeatList",
+                defaultValue: [],
+                props: {
+                  view: "chip",
+                  options: of(<SelectOptionUi[]>[
+                    { label: "Eins", value: "1" },
+                    { label: "Zwei", value: "2" },
+                    { label: "Drei", value: "3" },
+                  ]),
+                },
+              },
+            ] as FormlyFieldConfig[],
+          },
+        }
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      auto = await loader.getHarness(MatAutocompleteHarness);
+    });
+
+    it("should show an added value", async () => {
+      spectator.detectChanges();
+      checkItemCount(0);
+
+      spectator.dispatchFakeEvent("input", "focusin");
+      await auto.selectOption({ text: "Eins" });
+
+      checkItemCount(1);
+      checkItemContent(0, "Eins");
+    });
+  });
+
+  function checkDisabledOptions(values: boolean[]) {
+    spectator.dispatchFakeEvent("input", "focusin");
+    let matOptions = document.querySelectorAll("mat-option");
+    values.forEach((value, index) => {
+      expect(matOptions[index]).toHaveAttribute("aria-disabled", `${value}`);
+    });
+  }
+
+  function checkItemCount(count: number) {
+    let listItemSelector = "[data-cy=list-item]";
+    let elements = spectator.queryAll(listItemSelector);
+    expect(elements.length).toBe(count);
+  }
+
+  function checkItemContent(index: number, text: string) {
+    let listItemSelector = "[data-cy=list-item]";
+    let elements = spectator.queryAll(listItemSelector);
+    expect(elements[index]).toContainText(text);
+  }
+
+  function removeItem(index: number) {
+    const removeButton = spectator.queryAll("[data-cy=list-item] button")[
+      index
+    ] as HTMLElement;
+
+    removeButton.click();
+  }
 });

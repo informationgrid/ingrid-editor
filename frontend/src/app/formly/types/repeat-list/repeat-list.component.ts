@@ -289,7 +289,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     return (
       this.parameterOptions?.find((param) => param.value === option.key)
-        ?.label ?? option.value
+        ?.label ??
+      option.value ??
+      option
     );
   }
 
