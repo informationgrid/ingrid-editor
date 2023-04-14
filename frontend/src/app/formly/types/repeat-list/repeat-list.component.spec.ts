@@ -23,7 +23,7 @@ import { MatSelectHarness } from "@angular/material/select/testing";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
-  const form = new FormGroup<any>({});
+  let form: FormGroup;
 
   const createHost = createHostFactory({
     component: FormlyForm,
@@ -54,8 +54,9 @@ describe("RepeatListComponent", () => {
           props: {},
         },
       ];
+      form = new FormGroup({});
       spectator = createHost(
-        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        `<formly-form [fields]="config" [form]="form" [model]="{}"></formly-form>`,
         {
           hostProps: {
             form: form,
@@ -80,14 +81,31 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a simple value", async () => {
+      spectator.setInput("model", { repeatListSimple: ["item 1"] });
       spectator.detectChanges();
 
-      await input.setValue("test-simple");
-      await (await input.host()).sendKeys(TestKey.ENTER);
+      checkItemCount(1);
       removeItem(0);
 
       checkItemCount(0);
       expect(form.value.repeatListSimple).toEqual([]);
+    });
+
+    it("should show multiple items", async () => {
+      spectator.setInput("model", {
+        repeatListSimple: ["item 1", "item 2", "item 3"],
+      });
+      spectator.detectChanges();
+
+      checkItemCount(3);
+      checkItemContent(0, "item 1");
+      checkItemContent(1, "item 2");
+      checkItemContent(2, "item 3");
+
+      removeItem(1);
+      checkItemCount(2);
+      checkItemContent(0, "item 1");
+      checkItemContent(1, "item 3");
     });
 
     it("should show a defined placeholder", async () => {
@@ -120,6 +138,7 @@ describe("RepeatListComponent", () => {
           },
         },
       ];
+      form = new FormGroup({});
 
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
@@ -139,6 +158,7 @@ describe("RepeatListComponent", () => {
       spectator.detectChanges();
       checkItemCount(0);
 
+      // TODO: test => await input.focus()
       spectator.dispatchFakeEvent("input", "focusin");
       await auto.selectOption({ text: "Eins" });
 
@@ -150,10 +170,8 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove an item", async () => {
+      spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
       spectator.detectChanges();
-      spectator.dispatchFakeEvent("input", "focusin");
-
-      await auto.selectOption({ text: "Eins" });
 
       removeItem(0);
 
@@ -191,6 +209,7 @@ describe("RepeatListComponent", () => {
           },
         },
       ];
+      form = new FormGroup({});
 
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
@@ -251,6 +270,7 @@ describe("RepeatListComponent", () => {
           },
         },
       ];
+      form = new FormGroup({});
 
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
@@ -288,11 +308,11 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a value", async () => {
+      spectator.setInput("model", {
+        repeatListCodelist: [{ label: "remote 2", other: "b" }],
+      });
       spectator.detectChanges();
 
-      await auto.enterText("remote");
-      spectator.detectChanges();
-      await auto.selectOption({ text: "remote 2" });
       removeItem(0);
 
       checkItemCount(0);
@@ -356,12 +376,10 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a chip", async () => {
+      spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
       spectator.detectChanges();
 
-      spectator.dispatchFakeEvent("input", "focusin");
-      await auto.selectOption({ text: "Eins" });
       removeChip(0);
-
       checkItemCount(0);
     });
   });
