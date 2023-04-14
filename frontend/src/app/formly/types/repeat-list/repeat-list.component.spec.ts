@@ -17,11 +17,13 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { MatAutocompleteHarness } from "@angular/material/autocomplete/testing";
 import { HttpClient } from "@angular/common/http";
 import { delay } from "rxjs/operators";
+import { MatInputHarness } from "@angular/material/input/testing";
+import { TestKey } from "@angular/cdk/testing";
+import { MatSelectHarness } from "@angular/material/select/testing";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const form = new FormGroup<any>({});
-  let auto: MatAutocompleteHarness = null;
 
   const createHost = createHostFactory({
     component: FormlyForm,
@@ -40,63 +42,97 @@ describe("RepeatListComponent", () => {
   });
 
   describe("Simple", () => {
-    beforeEach(() => {
-      spectator = createHost(`<formly-form [fields]="config"></formly-form>`, {
-        hostProps: {
-          config: [
-            {
-              key: "repeatListSimple",
-              type: "repeatList",
-              defaultValue: [],
-              props: {},
-            },
-          ] as FormlyFieldConfig[],
-        },
-      });
-    });
+    let input: MatInputHarness;
+    let fieldConfig: FormlyFieldConfig[];
 
-    it("should create", () => {
-      expect(spectator).toBeTruthy();
-    });
-
-    it("should add a simple value", () => {
-      spectator.detectChanges();
-      let input = "input";
-
-      checkItemCount(0);
-      spectator.typeInElement("test-simple", input);
-      spectator.dispatchKeyboardEvent(input, "keydown", "Enter");
-      checkItemCount(1);
-    });
-  });
-
-  describe("Codelist", () => {
     beforeEach(async () => {
+      fieldConfig = [
+        {
+          key: "repeatListSimple",
+          type: "repeatList",
+          defaultValue: [],
+          props: {},
+        },
+      ];
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
         {
           hostProps: {
             form: form,
-            config: [
-              {
-                key: "repeatListCodelist",
-                type: "repeatList",
-                defaultValue: [],
-                props: {
-                  options: of(<SelectOptionUi[]>[
-                    { label: "Eins", value: "1" },
-                    { label: "Zwei", value: "2" },
-                    { label: "Drei", value: "3" },
-                  ]),
-                  formatter: (item: any) => item.value,
-                },
-              },
-            ] as FormlyFieldConfig[],
+            config: fieldConfig,
+          },
+        }
+      );
+      const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+      input = await loader.getHarness(MatInputHarness);
+    });
+
+    it("should add a simple value", async () => {
+      spectator.detectChanges();
+
+      checkItemCount(0);
+      await input.setValue("test-simple");
+      await (await input.host()).sendKeys(TestKey.ENTER);
+
+      checkItemCount(1);
+      checkItemContent(0, "test-simple");
+      expect(form.value.repeatListSimple).toEqual(["test-simple"]);
+    });
+
+    it("should remove a simple value", async () => {
+      spectator.detectChanges();
+
+      await input.setValue("test-simple");
+      await (await input.host()).sendKeys(TestKey.ENTER);
+      removeItem(0);
+
+      checkItemCount(0);
+      expect(form.value.repeatListSimple).toEqual([]);
+    });
+
+    it("should show a defined placeholder", async () => {
+      const placeholder = "This is a test placeholder";
+      fieldConfig[0].props.placeholder = placeholder;
+      spectator.detectChanges();
+
+      expect(await input.getPlaceholder()).toBe(placeholder);
+    });
+  });
+
+  describe("Codelist", () => {
+    let auto: MatAutocompleteHarness = null;
+    let input: MatInputHarness = null;
+    let fieldConfig: FormlyFieldConfig[];
+
+    beforeEach(async () => {
+      fieldConfig = [
+        {
+          key: "repeatListCodelist",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            options: of(<SelectOptionUi[]>[
+              { label: "Eins", value: "1" },
+              { label: "Zwei", value: "2" },
+              { label: "Drei", value: "3" },
+            ]),
+            formatter: (item: any) => item.value,
+          },
+        },
+      ];
+
+      spectator = createHost(
+        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        {
+          hostProps: {
+            form: form,
+            config: fieldConfig,
           },
         }
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
+      input = await loader.getHarness(MatInputHarness);
     });
 
     it("should add a codelist value", async () => {
@@ -120,75 +156,114 @@ describe("RepeatListComponent", () => {
       await auto.selectOption({ text: "Eins" });
 
       removeItem(0);
-      spectator.detectChanges();
 
       checkItemCount(0);
       expect(form.value.repeatListCodelist).toEqual([]);
       checkDisabledOptions([false, false, false]);
     });
+
+    it("should show a defined placeholder", async () => {
+      const placeholder = "This is a test placeholder";
+      fieldConfig[0].props.placeholder = placeholder;
+      spectator.detectChanges();
+
+      expect(await input.getPlaceholder()).toBe(placeholder);
+    });
   });
 
   describe("Select", () => {
+    let select: MatSelectHarness;
+    let fieldConfig: FormlyFieldConfig[];
+
     beforeEach(async () => {
+      fieldConfig = [
+        {
+          key: "repeatListCodelist",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            asSelect: true,
+            options: of(<SelectOptionUi[]>[
+              { label: "Eins", value: "1" },
+              { label: "Zwei", value: "2" },
+              { label: "Drei", value: "3" },
+            ]),
+          },
+        },
+      ];
+
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
         {
           hostProps: {
             form: form,
-            config: [
-              {
-                key: "repeatListCodelist",
-                type: "repeatList",
-                defaultValue: [],
-                props: {
-                  asSelect: true,
-                  options: of(<SelectOptionUi[]>[
-                    { label: "Eins", value: "1" },
-                    { label: "Zwei", value: "2" },
-                    { label: "Drei", value: "3" },
-                  ]),
-                  codelistId: 123,
-                  formatter: (item: any, form: any, row: any) => item.value,
-                },
-              },
-            ] as FormlyFieldConfig[],
+            config: fieldConfig,
           },
         }
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
-      auto = await loader.getHarness(MatAutocompleteHarness);
+      select = await loader.getHarness(MatSelectHarness);
     });
 
-    xit("should add a value", async () => {});
+    it("should add a value", async () => {
+      spectator.detectChanges();
+
+      await select.open();
+      const options = await select.getOptions();
+      expect(options.length).toBe(3);
+
+      await select.clickOptions({ text: "Drei" });
+      checkItemCount(1);
+      checkItemContent(0, "Drei");
+      expect(form.value.repeatListCodelist).toEqual([{ key: "3" }]);
+    });
+
+    it("should show a defined placeholder", async () => {
+      const placeholder = "This is a test placeholder";
+      fieldConfig[0].props.placeholder = placeholder;
+      spectator.detectChanges();
+
+      const placeholderElement = document.querySelector(
+        ".mat-mdc-select-placeholder"
+      );
+      expect(placeholderElement).toContainText(placeholder);
+    });
   });
 
   describe("Search", () => {
+    let fieldConfig: FormlyFieldConfig[];
+    let auto: MatAutocompleteHarness;
+    let input: MatInputHarness;
+
     beforeEach(async () => {
+      fieldConfig = [
+        {
+          key: "repeatListCodelist",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            restCall: (http: HttpClient, query: string) =>
+              of([
+                { label: "remote 1", other: "a" },
+                { label: "remote 2", other: "b" },
+              ]).pipe(delay(200)),
+            labelField: "label",
+          },
+        },
+      ];
+
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
         {
           hostProps: {
             form: form,
-            config: [
-              {
-                key: "repeatListCodelist",
-                type: "repeatList",
-                defaultValue: [],
-                props: {
-                  restCall: (http: HttpClient, query: string) =>
-                    of([
-                      { label: "remote 1", other: "a" },
-                      { label: "remote 2", other: "b" },
-                    ]).pipe(delay(200)),
-                  labelField: "label",
-                },
-              },
-            ] as FormlyFieldConfig[],
+            config: fieldConfig,
           },
         }
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
+      input = await loader.getHarness(MatInputHarness);
     });
 
     it("should add a value after search", async () => {
@@ -220,36 +295,48 @@ describe("RepeatListComponent", () => {
       await auto.selectOption({ text: "remote 2" });
       removeItem(0);
 
-      spectator.detectChanges();
       checkItemCount(0);
 
       expect(form.value.repeatListCodelist).toEqual([]);
       // checkDisabledOptions([false, false, false]);
     });
+
+    it("should show a defined placeholder", async () => {
+      const placeholder = "This is a test placeholder";
+      fieldConfig[0].props.placeholder = placeholder;
+      spectator.detectChanges();
+
+      expect(await input.getPlaceholder()).toBe(placeholder);
+    });
   });
 
   describe("Chips", () => {
+    let fieldConfig: FormlyFieldConfig[];
+    let auto: MatAutocompleteHarness = null;
+
     beforeEach(async () => {
+      fieldConfig = [
+        {
+          key: "repeatListCodelist",
+          type: "repeatList",
+          defaultValue: [],
+          props: {
+            view: "chip",
+            options: of(<SelectOptionUi[]>[
+              { label: "Eins", value: "1" },
+              { label: "Zwei", value: "2" },
+              { label: "Drei", value: "3" },
+            ]),
+          },
+        },
+      ];
+
       spectator = createHost(
         `<formly-form [fields]="config" [form]="form"></formly-form>`,
         {
           hostProps: {
             form: form,
-            config: [
-              {
-                key: "repeatListCodelist",
-                type: "repeatList",
-                defaultValue: [],
-                props: {
-                  view: "chip",
-                  options: of(<SelectOptionUi[]>[
-                    { label: "Eins", value: "1" },
-                    { label: "Zwei", value: "2" },
-                    { label: "Drei", value: "3" },
-                  ]),
-                },
-              },
-            ] as FormlyFieldConfig[],
+            config: fieldConfig,
           },
         }
       );
@@ -266,6 +353,16 @@ describe("RepeatListComponent", () => {
 
       checkItemCount(1);
       checkItemContent(0, "Eins");
+    });
+
+    it("should remove a chip", async () => {
+      spectator.detectChanges();
+
+      spectator.dispatchFakeEvent("input", "focusin");
+      await auto.selectOption({ text: "Eins" });
+      removeChip(0);
+
+      checkItemCount(0);
     });
   });
 
@@ -289,11 +386,17 @@ describe("RepeatListComponent", () => {
     expect(elements[index]).toContainText(text);
   }
 
+  function removeChip(index: number) {
+    // since a chip contains of two buttons, we need to use the latter one
+    removeItem(index * 2 + 1);
+  }
+
   function removeItem(index: number) {
     const removeButton = spectator.queryAll("[data-cy=list-item] button")[
       index
     ] as HTMLElement;
 
     removeButton.click();
+    spectator.detectChanges();
   }
 });
