@@ -14,26 +14,19 @@ import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.StringReader
-import java.io.StringWriter
-import javax.xml.XMLConstants
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.Source
-import javax.xml.transform.Transformer
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.stream.StreamResult
-import javax.xml.transform.stream.StreamSource
 
 
 @Service
 @Profile("uvp")
 class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

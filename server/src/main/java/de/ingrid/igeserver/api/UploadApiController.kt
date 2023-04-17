@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -38,7 +38,10 @@ class UploadApiController @Autowired constructor(
 ) : UploadApi {
 
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
-    private val log = logger()
+    
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override fun chunkExists(flowChunkNumber: Int, flowIdentifier: String?): ResponseEntity<Void> {
         val fileInfo = this.fileInfos[flowIdentifier]

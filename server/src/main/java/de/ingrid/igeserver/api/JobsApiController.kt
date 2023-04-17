@@ -12,7 +12,7 @@ import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,7 +33,9 @@ class JobsApiController @Autowired constructor(
     val urlRequestService: UrlRequestService
 ) : JobsApi {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override fun getJobs(principal: Principal): ResponseEntity<Job> {
         TODO("Not yet implemented")

@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.configuration.acl
 
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.hibernate.Hibernate
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
@@ -15,7 +15,9 @@ import org.springframework.security.core.Authentication
 
 class IgeAclPermissionCacheOptimizer(private val aclService: AclService): AclPermissionCacheOptimizer(aclService) {
 
-    val logger = logger()
+    companion object {
+        private val logger = LogManager.getLogger()
+    }
 
     private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
 

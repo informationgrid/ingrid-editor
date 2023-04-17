@@ -6,7 +6,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.lang3.ArrayUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.security.core.context.SecurityContextHolder
 import org.w3c.dom.Document
 import org.w3c.dom.Node
@@ -97,7 +97,17 @@ data class KeyValue(val key: String?, val value: String?)
  */
 open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codelistHandler: CodelistHandler) {
 
-    val log = logger()
+    companion object {
+        val log = LogManager.getLogger()
+
+        /** ID of syslist entry "HTTPGet" in Syslist 5180  */
+        @JvmStatic
+        val ID_OP_PLATFORM_HTTP_GET = 7
+
+        /** ID of syslist entry "HTTPPost" in Syslist 5180  */
+        @JvmStatic
+        val ID_OP_PLATFORM_HTTP_POST = 8
+    }
 
     protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> {
         return xPathUtils.getStringArray(doc, xpath)
@@ -554,14 +564,4 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return KeyValue(id, value)
     }
 
-    companion object {
-
-        /** ID of syslist entry "HTTPGet" in Syslist 5180  */
-        @JvmStatic
-        val ID_OP_PLATFORM_HTTP_GET = 7
-
-        /** ID of syslist entry "HTTPPost" in Syslist 5180  */
-        @JvmStatic
-        val ID_OP_PLATFORM_HTTP_POST = 8
-    }
 }

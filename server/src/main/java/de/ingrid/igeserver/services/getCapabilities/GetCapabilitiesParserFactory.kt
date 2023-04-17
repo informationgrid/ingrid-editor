@@ -4,7 +4,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.*
 import de.ingrid.utils.xpath.XPathUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
 
@@ -13,7 +13,9 @@ import org.w3c.dom.Document
 class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
 
     private lateinit var xPathUtils: XPathUtils
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     init {
         val ns = ConfigurableNamespaceContext().apply {

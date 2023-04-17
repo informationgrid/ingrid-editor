@@ -5,7 +5,7 @@ import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -22,10 +22,9 @@ class URLChecker @Autowired constructor(
 ) : IgeJob() {
 
     companion object {
+        private val log = LogManager.getLogger()
         const val jobKey: String = "url-check"
     }
-
-    override val log = logger()
 
 
     override fun run(context: JobExecutionContext) {

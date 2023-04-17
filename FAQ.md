@@ -259,7 +259,9 @@ Here are the steps you should follow:
 @Profile("example")
 class ExampleImporter : IgeImporter {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     private val mapperService = MapperService()
 
@@ -420,7 +422,9 @@ and implement something like this example for a migration to version 0.17:
 @Service
 class M017_TestMigration : MigrationBase("0.17") {
 
-    private var log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override fun exec(databaseName: String) {
         log.info("Executing migration 0.17")

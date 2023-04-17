@@ -3,7 +3,6 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
-import org.apache.logging.log4j.kotlin.Logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,7 +11,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class BehavioursApiController : BehavioursApi, Logging {
+class BehavioursApiController : BehavioursApi {
 
     @Autowired
     private lateinit var catalogService: CatalogService

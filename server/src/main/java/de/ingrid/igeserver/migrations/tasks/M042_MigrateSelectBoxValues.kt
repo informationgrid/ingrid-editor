@@ -10,7 +10,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -22,7 +22,9 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     @Autowired
     lateinit var entityManager: EntityManager

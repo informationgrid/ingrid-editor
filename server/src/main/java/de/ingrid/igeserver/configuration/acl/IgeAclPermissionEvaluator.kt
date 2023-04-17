@@ -2,7 +2,7 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.checkForRootPermissions
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
@@ -14,7 +14,9 @@ import java.util.*
 
 class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvaluator(aclService) {
 
-    val logger = logger()
+    companion object {
+        private val logger = LogManager.getLogger()
+    }
 
     private val objectIdentityRetrievalStrategy: ObjectIdentityRetrievalStrategy = ObjectIdentityRetrievalStrategyImpl()
 

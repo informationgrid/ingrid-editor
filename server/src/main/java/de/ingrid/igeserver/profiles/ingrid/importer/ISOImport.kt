@@ -16,7 +16,7 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
@@ -24,7 +24,9 @@ import org.unbescape.json.JsonEscape
 @Service
 @Profile("ingrid")
 class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 

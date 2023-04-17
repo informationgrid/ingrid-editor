@@ -2,7 +2,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.messaging.Message
-import org.apache.logging.log4j.kotlin.KotlinLogger
+import org.apache.logging.log4j.LogManager
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
@@ -13,7 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 abstract class IgeJob : InterruptableJob {
 
-    abstract val log: KotlinLogger
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     var currentThread: Thread? = null
 

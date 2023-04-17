@@ -22,7 +22,7 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.orm.ObjectOptimisticLockingFailureException
@@ -93,7 +93,9 @@ class DocumentService @Autowired constructor(
     @Autowired
     private lateinit var entityManager: EntityManager
 
-    private var log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     /**
      * Get the DocumentWrapper with the given document uuid

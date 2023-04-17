@@ -10,7 +10,7 @@ import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import de.ingrid.utils.xpath.XPathUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +28,9 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Profile("zabbix")
 class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override val profiles = arrayOf("uvp")
 

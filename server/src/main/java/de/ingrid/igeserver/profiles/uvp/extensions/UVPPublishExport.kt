@@ -8,7 +8,7 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -24,7 +24,9 @@ class UVPPublishExport @Autowired constructor(
     val indexingTask: IndexingTask
 ) : Filter<PostPublishPayload> {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override val profiles = arrayOf("uvp")
 

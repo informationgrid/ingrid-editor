@@ -159,7 +159,9 @@ IGE Server uses the [Log4j Framework](https://logging.apache.org/log4j/2.x/) wit
 A class typically creates it's own **logger instance** using the following code
 
 ```kotlin
-private val log = logger()
+private companion object {
+        private val log = LogManager.getLogger()
+    }
 ```
 
 #### Audit Log
@@ -405,7 +407,9 @@ More information can be found in the FAQ.md.
 @Service
 class M017_TestMigration : MigrationBase("0.17") {
 
-    private var log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override fun exec() {
         log.info("Executing migration 0.17")

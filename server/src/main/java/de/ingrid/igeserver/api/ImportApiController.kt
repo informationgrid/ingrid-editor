@@ -3,7 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,7 +18,9 @@ class ImportApiController @Autowired constructor(
     private val catalogService: CatalogService
 ) : ImportApi {
 
-    private val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
     override fun getImporter(principal: Principal, profile: String): ResponseEntity<List<ImportTypeInfo>> {
         val importer = importService.getImporterInfos()
         return ResponseEntity.ok(importer)

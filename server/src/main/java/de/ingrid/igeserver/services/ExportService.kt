@@ -7,7 +7,7 @@ import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
@@ -23,7 +23,9 @@ data class ExportResult(val result: ByteArray, val fileName: String, val exportF
 @Service
 class ExportService @Autowired constructor(val exporterFactory: ExporterFactory) {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     @Autowired
     @Lazy

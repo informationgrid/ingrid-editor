@@ -17,7 +17,7 @@ import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -31,7 +31,9 @@ class IngridIDFExporter @Autowired constructor(
     val catalogService: CatalogService,
 ) : IgeExporter {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     val codelistTransformer = CodelistTransformer(codelistHandler)
 

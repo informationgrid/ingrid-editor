@@ -5,7 +5,7 @@ import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -20,7 +20,9 @@ class UploadExpiredTask(
     val entityManager: EntityManager,
     val referenceHandler: UvpReferenceHandler
 ) {
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     data class Counter(var archived: Int, var restored: Int)
 

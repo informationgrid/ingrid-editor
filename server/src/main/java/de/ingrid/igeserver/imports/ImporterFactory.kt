@@ -2,13 +2,15 @@ package de.ingrid.igeserver.imports
 
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ConfigurationException
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class ImporterFactory {
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     @Autowired
     private lateinit var importer: List<IgeImporter>

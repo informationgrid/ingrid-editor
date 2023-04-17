@@ -2,43 +2,23 @@ package de.ingrid.igeserver.exporter
 
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.model.KeyValueModel
-import org.apache.logging.log4j.kotlin.logger
-import org.locationtech.jts.io.WKTReader
-import org.locationtech.jts.io.gml2.GMLWriter
+import org.apache.logging.log4j.LogManager
 import java.util.*
 
 class TransformationTools {
 
     companion object {
-        val log = logger()
-
-        fun getISORealFromIGCNumber(igcNumber: Float): String? {
-            return try {
-                val n = igcNumber.toDouble()
-                if (java.lang.Double.isNaN(n)) {
-                    "NaN"
-                } else if (java.lang.Double.isInfinite(n)) {
-                    "INF"
-                } else {
-                    n.toString()
-                }
-            } catch (e: NumberFormatException) {
-                log.warn("Could not convert to ISO gco:Real: $igcNumber")
-                "NaN"
-            }
-        }
+        private val log = LogManager.getLogger()
 
         /** returns java generated UUID via UUID.randomUUID()  */
-        @kotlin.jvm.JvmStatic
+        @JvmStatic
         fun getRandomUUID(): String {
             return UUID.randomUUID().toString()
         }
 
-
-        @kotlin.jvm.JvmStatic
         fun getLanguageISO639_2Value(language: KeyValueModel): String {
             if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+                    ?: throw ServerException.withReason("Could not map document language: $language")
             return when (language.key) {
                 "150" -> "ger"
                 "123" -> "eng"
@@ -73,10 +53,9 @@ class TransformationTools {
             }
         }
 
-        @kotlin.jvm.JvmStatic
         fun getISO3166_1_Alpha_3FromNumericLanguageCode(language: KeyValueModel): String {
             if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+                    ?: throw ServerException.withReason("Could not map document language: $language")
             return when (language.key) {
                 "4" -> "AFG"
                 "818" -> "EGY"
@@ -331,7 +310,21 @@ class TransformationTools {
 
     }
 
-
-
+    fun getISORealFromIGCNumber(igcNumber: Float): String? {
+        return try {
+            val n = igcNumber.toDouble()
+            if (java.lang.Double.isNaN(n)) {
+                "NaN"
+            } else if (java.lang.Double.isInfinite(n)) {
+                "INF"
+            } else {
+                n.toString()
+            }
+        } catch (e: NumberFormatException) {
+            log.warn("Could not convert to ISO gco:Real: $igcNumber")
+            "NaN"
+        }
+    }
 
 }
+

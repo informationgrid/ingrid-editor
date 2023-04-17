@@ -15,7 +15,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
 import de.ingrid.igeserver.services.ResearchService
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
@@ -35,7 +35,9 @@ class IndexService @Autowired constructor(
     private val researchService: ResearchService,
 ) {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     fun getSinglePublishedDocument(
         catalogId: String,

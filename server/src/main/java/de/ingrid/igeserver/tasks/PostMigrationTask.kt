@@ -11,7 +11,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -31,7 +31,9 @@ class PostMigrationTask(
     val documentService: DocumentService,
     val aclService: IgeAclService
 ) {
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     // this ensures that the post migration task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)

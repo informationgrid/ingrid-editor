@@ -12,7 +12,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,9 +30,9 @@ class ImportService constructor(
     val documentService: DocumentService,
 
     ) {
-    private val log = logger()
 
     companion object {
+        private val log = LogManager.getLogger()
         const val jobKey: String = "import"
     }
 

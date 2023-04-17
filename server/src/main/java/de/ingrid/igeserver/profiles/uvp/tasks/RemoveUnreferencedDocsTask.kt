@@ -8,7 +8,7 @@ import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import de.ingrid.mdek.upload.storage.impl.Scope
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.hibernate.query.NativeQuery
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,7 +22,9 @@ class RemoveUnreferencedDocsTask(
     val catalogRepo: CatalogRepository
 ) {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun start() {

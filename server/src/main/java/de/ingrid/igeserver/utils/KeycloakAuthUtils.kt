@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.utils
 
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.keycloak.KeycloakPrincipal
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -12,7 +12,9 @@ import java.security.Principal
 @Profile("!dev")
 class KeycloakAuthUtils : AuthUtils {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     override fun getUsernameFromPrincipal(principal: Principal): String {
 

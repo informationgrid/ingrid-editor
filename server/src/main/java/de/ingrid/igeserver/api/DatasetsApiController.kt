@@ -11,6 +11,7 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.storage.Storage
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -38,7 +39,9 @@ class DatasetsApiController @Autowired constructor(
     private val storage: Storage,
 ) : DatasetsApi {
 
-//    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
 

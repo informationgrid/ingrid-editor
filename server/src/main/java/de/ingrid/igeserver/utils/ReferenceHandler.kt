@@ -3,14 +3,16 @@ package de.ingrid.igeserver.utils
 import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.api.messaging.UrlReport
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.hibernate.query.NativeQuery
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 abstract class ReferenceHandler(val entityManager: EntityManager) {
 
-    val log = logger()
+    companion object {
+        private val log = LogManager.getLogger()
+    }
 
     abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
 

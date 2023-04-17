@@ -8,14 +8,16 @@ import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.services.MapperService
-import org.apache.logging.log4j.kotlin.logger
+import org.apache.logging.log4j.LogManager
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
 class InternalImporter : IgeImporter {
 
-    private val log = logger()
+    private companion object {
+        private val log = LogManager.getLogger()
+    }
 
     private val mapperService = MapperService()
 
