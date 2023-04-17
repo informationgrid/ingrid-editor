@@ -54,6 +54,29 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
   ];
 
+  private metaFields: FormlyFieldConfig[] = [
+    this.addSection("", [
+      this.addTextArea("title", "Titel", {
+        className: "width-100",
+        wrappers: ["panel", "form-field"],
+      }),
+      this.addDatepicker("_created", "Erstellt am", {
+        className: "flex-1",
+      }),
+      this.addTextArea("_createdBy", "Ersteller", {
+        className: "flex-1",
+        wrappers: ["panel", "form-field"],
+      }),
+      this.addDatepicker("_modified", "Geändert am", {
+        className: "flex-1",
+      }),
+      this.addTextArea("_modifiedBy", "Bearbeiter", {
+        className: "flex-1",
+        wrappers: ["panel", "form-field"],
+      }),
+    ]),
+  ];
+
   id: string;
 
   label: string;
@@ -217,7 +240,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   public getFieldsForPrint(diffObj) {
-    const copy: FormlyFieldConfig[] = clone(this.cleanFields);
+    const copy: FormlyFieldConfig[] = [
+      ...clone(this.metaFields),
+      ...clone(this.cleanFields),
+    ];
     if (diffObj) this.addDifferenceFlags(copy, diffObj);
     return this.createFieldsForPrint(copy);
   }
@@ -234,7 +260,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "repeatList",
       // "table",
     ];
-    fields.forEach((field) => {
+    fields?.forEach((field) => {
       if (field.fieldGroup) {
         this.createFieldsForPrint(field.fieldGroup);
       }
@@ -322,6 +348,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     fields: FormlyFieldConfig[],
     tableId: string
   ): any[] {
+    if (!fields) return null;
     for (const field of fields) {
       if (field.fieldGroup) {
         const result = this.getFormatterForColumn(field.fieldGroup, tableId);
