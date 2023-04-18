@@ -15,6 +15,7 @@ import java.time.OffsetDateTime
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_id") val id: Int,
+    @JsonProperty("_type") val docType: String,
     val salutation: KeyValueModel?,
     @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
     val firstName: String?,

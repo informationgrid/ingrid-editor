@@ -41,7 +41,7 @@ class IngridIndexExporterAddress @Autowired constructor(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident") ?: ""
         val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident") ?: ""
-        val addressType = if (doc.type == "IngridOrganisationDoc") 0 else 1
+        val addressType = if (doc.type == "InGridOrganisationDoc") 0 else 1
         val commTypeKeys = getCommTypeKeys(doc)
         val commTypeValues = getCommTypeValues(doc)
         val commValues = getCommValues(doc)

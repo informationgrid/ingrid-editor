@@ -27,6 +27,7 @@ class AddressModelTransformer(
     val street = model.address.street
     val city = model.address.city
     val administrativeArea = codelist.getValue("110", model.address.administrativeArea)
+    val addressDocType = if (model.docType == "InGridOrganisationDoc") 0 else 1
 
 
 }
