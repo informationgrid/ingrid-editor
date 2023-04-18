@@ -16,7 +16,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter, switchMap } from "rxjs/operators";
+import { filter, switchMap, tap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
@@ -185,7 +185,16 @@ export class CopyCutPastePlugin extends Plugin {
             includeTree,
             this.forAddress
           )
-        )
+        ),
+        tap((documents) => {
+          // if only one document was copied, open the copy
+          if (documents.length == 1) {
+            this.documentService.reload$.next({
+              uuid: documents[0]._uuid,
+              forAddress: this.forAddress,
+            });
+          }
+        })
       )
       .subscribe();
   }
