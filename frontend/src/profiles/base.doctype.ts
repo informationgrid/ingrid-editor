@@ -314,7 +314,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
-    fields.forEach((field) => {
+    fields?.forEach((field) => {
       if (field.fieldGroup) {
         this.addDifferenceFlags(field.fieldGroup, diffObj);
       }
