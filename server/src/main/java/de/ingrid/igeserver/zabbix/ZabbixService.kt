@@ -152,7 +152,7 @@ class ZabbixService @Autowired constructor(
         )
         val params = ZabbixModel.TriggerParams(
             "Dokument: ${docName.trim()}",
-            "last(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
+            "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
             4,
             0,
             tags
