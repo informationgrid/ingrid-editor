@@ -77,6 +77,7 @@ data class AddressModel(
 
         val visibleAddress = publishedParent.data.apply {
             put("_id", wrapper.id)
+            put("_type", wrapper.type)
             put("_uuid", publishedParent.uuid)
             put("_created", publishedParent.created.toString())
             put("_modified", publishedParent.modified.toString())
