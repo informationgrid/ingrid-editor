@@ -16,12 +16,14 @@ import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter, switchMap, tap } from "rxjs/operators";
+import { delay, filter, switchMap, tap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { Router } from "@angular/router";
+import { IgeDocument } from "../../../models/ige-document";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -47,7 +49,8 @@ export class CopyCutPastePlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private modalService: ModalService,
     private messageService: FormMessageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {
     super();
   }
@@ -186,17 +189,20 @@ export class CopyCutPastePlugin extends Plugin {
             this.forAddress
           )
         ),
-        tap((documents) => {
-          // if only one document was copied, open the copy
-          if (documents.length == 1) {
-            this.documentService.reload$.next({
-              uuid: documents[0]._uuid,
-              forAddress: this.forAddress,
-            });
-          }
-        })
+        delay(100), // give some time to be available in store to update tree
+        tap((documents) => this.selectCopiedDataset(documents))
       )
       .subscribe();
+  }
+
+  private selectCopiedDataset(documents: IgeDocument[]) {
+    if (documents.length == 1) {
+      const target = this.forAddress ? "address" : "form";
+      this.router.navigate([
+        `${ConfigService.catalogId}/${target}`,
+        { id: documents[0]._uuid },
+      ]);
+    }
   }
 
   async cut() {
