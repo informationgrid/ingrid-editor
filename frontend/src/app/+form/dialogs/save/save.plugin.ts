@@ -95,7 +95,7 @@ export class SavePlugin extends SaveBase {
     this.documentService.publishState$.next(false);
 
     return this.documentService
-      .save(formData, false, this.forAddress)
+      .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
       .pipe(
         catchError((error) =>
           this.handleError(error, formData, this.forAddress, "SAVE")
