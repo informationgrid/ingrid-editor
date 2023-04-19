@@ -482,7 +482,7 @@ class DocumentService @Autowired constructor(
         docData.document.modified = dateService.now()
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = [PostSaveException::class])
     fun publishDocument(
         principal: Principal?,
         catalogId: String,
