@@ -284,7 +284,13 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
                 }
             }
-        return references
+        
+        // if a spatial value has no bounding box, then convert it to a geo name
+        return references.map {
+            if (it.type == "free" && it.coordinates == null) {
+                SpatialReference("geo-name", it.title)
+            } else it
+        }
     }
 
     val spatialDescription =

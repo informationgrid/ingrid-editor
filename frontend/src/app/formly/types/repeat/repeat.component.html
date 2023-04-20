@@ -24,6 +24,7 @@
             *ngFor="let fieldRef of groupedFields[key]; let i = index"
             class="display-flex"
             cdkDrag
+            [class.extended-gap]="props.hasExtendedGap"
             [cdkDragDisabled]="!canBeDragged"
         >
             <mat-icon *ngIf="canBeDragged" cdkDragHandle>
@@ -54,4 +55,5 @@
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "
+    [showLabel]="groupedFieldsKeys.length == 0"
 ></ige-add-button>

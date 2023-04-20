@@ -33,6 +33,8 @@ export interface RepeatOptions extends Options {
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
+  // if true, the gap between repeats will be extended.
+  hasExtendedGap?: boolean;
 }
 
 export interface RepeatListOptions extends Options {
@@ -318,6 +320,7 @@ export class FormFieldHelper {
         menuOptions: options?.menuOptions,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        hasExtendedGap: options?.hasExtendedGap,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",

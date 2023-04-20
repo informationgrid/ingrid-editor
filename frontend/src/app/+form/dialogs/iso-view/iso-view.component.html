@@ -1,0 +1,30 @@
+<div class="dialog-title-wrapper">
+    <h2 mat-dialog-title>
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="text flex-1">ISO-Ansicht</span>
+        <mat-button-toggle-group
+            *ngIf="isoTextPublished"
+            class="pull-right"
+            name="compareView"
+            value="false"
+            aria-label="Ansicht"
+            (change)="this.compareView = !this.compareView"
+        >
+            <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
+            <mat-button-toggle value="true"
+                >Vergleichsansicht
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </h2>
+</div>
+<mat-dialog-content id="print-content" class="preview-dialog">
+    <pre [hidden]="compareView">{{ isoText }}</pre>
+    <div [hidden]="!compareView" id="diffView"></div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button color="primary" mat-dialog-close>Schließen</button>
+    <div fxFlex></div>
+</mat-dialog-actions>

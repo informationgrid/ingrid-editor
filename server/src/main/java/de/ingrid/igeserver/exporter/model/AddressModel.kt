@@ -15,6 +15,7 @@ import java.time.OffsetDateTime
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_id") val id: Int,
+    @JsonProperty("_type") val docType: String,
     val salutation: KeyValueModel?,
     @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
     val firstName: String?,
@@ -76,6 +77,7 @@ data class AddressModel(
 
         val visibleAddress = publishedParent.data.apply {
             put("_id", wrapper.id)
+            put("_type", wrapper.type)
             put("_uuid", publishedParent.uuid)
             put("_created", publishedParent.created.toString())
             put("_modified", publishedParent.modified.toString())

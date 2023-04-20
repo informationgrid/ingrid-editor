@@ -175,7 +175,14 @@ export class TreeComponent implements OnInit {
       return;
     }
 
-    this.setActiveNode.pipe(untilDestroyed(this)).subscribe((id) => {
+    this.setActiveNode.pipe(untilDestroyed(this)).subscribe(async (id) => {
+      if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
+        this.activeNodeId = id;
+        await this.reloadTree(true).toPromise();
+        // reloadTree will jump to node
+        return;
+      }
+
       if (this.activeNodeId === id) {
         return;
       }

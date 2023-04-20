@@ -130,7 +130,11 @@ export abstract class SaveBase extends Plugin {
       .load(id, address)
       .pipe(
         tap((data) =>
-          this.documentService.postSaveActions(data, false, null, address)
+          this.documentService.postSaveActions({
+            data: data,
+            isNewDoc: false,
+            isAddress: address,
+          })
         )
       )
       .subscribe();
