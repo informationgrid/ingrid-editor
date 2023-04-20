@@ -227,16 +227,21 @@
             [required]="showError && props.required && formControl.invalid"
             (keydown.enter)="addSimpleValues(inputControl.value)"
         />
-        <button
-            *ngIf="inputControl.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            type="button"
-            class="field-close"
-            (click)="inputControl.setValue('')"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
+        <div matSuffix>
+            <mat-spinner
+                *ngIf="searchSub && !searchSub.closed"
+                [diameter]="24"
+            ></mat-spinner>
+            <button
+                *ngIf="inputControl.value?.length > 0"
+                mat-icon-button
+                type="button"
+                class="field-close"
+                (click)="inputControl.setValue('')"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
         <mat-hint>{{ props.hint }} </mat-hint>
         <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>

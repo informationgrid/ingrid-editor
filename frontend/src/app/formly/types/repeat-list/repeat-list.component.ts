@@ -341,12 +341,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   async addSimpleValues(value: string) {
     if (this.props.preprocessValues) {
+      this.searchSub = new Observable().subscribe();
       value = await this.props.preprocessValues(
         this.http,
         this.options.formState.mainModel,
         value
       );
       this.options.formState.updateModel();
+      this.searchSub.unsubscribe();
     }
 
     let duplicates = this.addValueAndDetermineDuplicates(value);
