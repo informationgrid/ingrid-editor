@@ -46,6 +46,7 @@ export interface RepeatListOptions extends Options {
   view?: "chip" | "list";
   restCall?: (http: HttpClient, query: string) => Observable<any[]>;
   labelField?: string;
+  selectLabelField?: string;
   preprocessValues?: (
     http: HttpClient,
     model: any,
@@ -277,6 +278,7 @@ export class FormFieldHelper {
         view: options?.view,
         restCall: options?.restCall,
         labelField: options?.labelField,
+        selectLabelField: options?.selectLabelField ?? options?.labelField,
         preprocessValues: options?.preprocessValues,
       },
       expressions: expressions,

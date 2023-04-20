@@ -383,6 +383,7 @@ export abstract class IngridShared extends BaseDoctype {
           restCall: (http: HttpClient, query: string) =>
             http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",
+          selectLabelField: "preparedLabel",
         }),
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",
