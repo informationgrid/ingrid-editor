@@ -983,6 +983,7 @@ export abstract class IngridShared extends BaseDoctype {
         fieldGroupClassName: "display-flex flex-column",
         fields: [this.urlRefFields()],
         className: "optional",
+        hasExtendedGap: true,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl, field) =>

@@ -14,6 +14,10 @@
   }
 }
 
+.extended-gap:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
 .cdk-drag-preview {
   background-color: #ffffff;
 }
