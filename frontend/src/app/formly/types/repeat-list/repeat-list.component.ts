@@ -75,6 +75,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       }
     } else if (this.props.restCall) {
       this.type = "search";
+      if (!this.props.labelField) this.props.labelField = "label";
+      if (!this.props.selectLabelField)
+        this.props.selectLabelField = this.props.labelField;
     } else if (
       this.props.options &&
       !this.props.asSelect &&
