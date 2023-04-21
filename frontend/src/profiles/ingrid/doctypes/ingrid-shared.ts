@@ -20,6 +20,9 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
+import { ThesaurusResult } from "../components/thesaurus-result";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -45,15 +48,9 @@ interface AdditionalInformationSectionOptions {
   extraInfoLangData?: boolean;
 }
 
-interface ThesaurusResult {
-  thesaurus: "themes" | "umthes";
-  value: string;
-  found: boolean;
-  alreadyExists?: boolean;
-}
-
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
+  http = inject(HttpClient);
 
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
@@ -388,61 +385,51 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",
           hint: "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen",
-          preprocessValues: async (
-            http: HttpClient,
-            model: any,
-            value: String
-          ) => {
+        }),
+        this.addInput(null, null, {
+          wrappers: ["panel", "form-field"],
+          fieldLabel: "Analyse",
+          updateOn: "change",
+          hintStart:
+            "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen",
+          keydown: async (field, event: KeyboardEvent) => {
+            if (event.key !== "Enter") return;
+
+            const value = field.formControl.value;
+            if (!value) return;
+            field.formControl.disable();
             this.snack.dismiss();
-            return await Promise.all(
+            const model = field.options.formState.mainModel;
+            const res = await Promise.all(
               value
                 .split(",")
                 .map((item) => item.trim())
-                .map(async (item) => {
-                  const resultTheme = this.checkInThemes(model, item);
-                  if (resultTheme.found) return resultTheme;
-                  return await this.checkInUmthes(http, model, item);
-                })
-            ).then((res) => {
-              this.informUserAboutThesaurusAnalysis(res);
-              return res
-                .filter((item) => !item.found)
-                .map((item) => item.value)
-                .join(",");
-            });
+                .map(async (item) => await this.assignKeyword(model, item))
+            );
+
+            field.options.formState.updateModel();
+            field.formControl.enable();
+            field.formControl.setValue("");
+            this.informUserAboutThesaurusAnalysis(res);
           },
         }),
       ].filter(Boolean)
     );
   }
 
+  private async assignKeyword(model, item) {
+    const resultTheme = this.checkInThemes(model, item);
+    if (resultTheme.found) return resultTheme;
+    const umthesResult = await this.checkInUmthes(this.http, model, item);
+    if (umthesResult.found) return umthesResult;
+    else return this.addFreeKeyword(model, item);
+  }
+
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
-    const foundItems = res.filter((item) => item.found);
-    const addedThesaurusItems = foundItems.filter(
-      (item) => !item.alreadyExists
-    );
-    const duplicateThesaurusItems = foundItems.filter(
-      (item) => item.alreadyExists
-    );
-    let message: string[] = [];
-    if (addedThesaurusItems.length > 0) {
-      message.push(
-        "Die folgenden Werte konnten zu einem Thesaurus zugeordnet werden: " +
-          addedThesaurusItems
-            .map((item) => `${item.value} (${item.thesaurus})`)
-            .join(", ")
-      );
-    }
-    if (duplicateThesaurusItems.length > 0) {
-      message.push(
-        "Die folgenden Werte waren bereits in einem Schlagwort vorhanden: " +
-          duplicateThesaurusItems
-            .map((item) => `${item.value} (${item.thesaurus})`)
-            .join(", ")
-      );
-    }
-    if (message.length > 0)
-      this.snack.open(message.join(". "), "Ok", { duration: 20000 });
+    this.snack.openFromComponent(ThesaurusReportComponent, {
+      duration: 20000,
+      data: res,
+    });
   }
 
   private checkConnectedIsoCategory(event, field) {
@@ -509,13 +496,13 @@ export abstract class IngridShared extends BaseDoctype {
       );
       if (!exists) model.keywordsUmthes.push(response[0]);
       return {
-        thesaurus: "umthes",
+        thesaurus: "Umthes Schlagworte",
         found: true,
         alreadyExists: exists,
         value: response[0].label,
       };
     }
-    return { thesaurus: "umthes", found: false, value: item };
+    return { thesaurus: "Umthes Schlagworte", found: false, value: item };
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
@@ -1397,12 +1384,23 @@ export abstract class IngridShared extends BaseDoctype {
       const exists = model.themes.some((entry) => entry.key === id);
       if (!exists) model.themes.push({ key: id });
       return {
-        thesaurus: "themes",
+        thesaurus: "INSPIRE-Themen",
         found: true,
         alreadyExists: exists,
         value: item,
       };
     }
-    return { thesaurus: "themes", found: false, value: item };
+    return { thesaurus: "INSPIRE-Themen", found: false, value: item };
+  }
+
+  private addFreeKeyword(model, item: string): ThesaurusResult {
+    const exists = model.keywords.some((entry) => entry === item);
+    if (!exists) model.keywords.push(item);
+    return {
+      found: true,
+      value: item,
+      thesaurus: "Optionale Schlagworte",
+      alreadyExists: exists,
+    };
   }
 }

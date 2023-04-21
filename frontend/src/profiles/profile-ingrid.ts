@@ -29,6 +29,8 @@ import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-templ
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatListModule } from "@angular/material/list";
 import { SharedPipesModule } from "../app/directives/shared-pipes.module";
+import { ThesaurusReportComponent } from "./ingrid/components/thesaurus-report.component";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @Component({
   template: "",
@@ -71,6 +73,7 @@ class InGridComponent {
     ConformityDialogComponent,
     TableDialogComponent,
     GetCapabilitiesDialogComponent,
+    ThesaurusReportComponent,
   ],
   imports: [
     MatIconModule,
@@ -94,6 +97,7 @@ class InGridComponent {
     MatListModule,
     SharedPipesModule,
     DatePipe,
+    MatSnackBarModule,
   ],
 })
 export class ProfilePack {

@@ -321,20 +321,6 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   async addFreeEntry(value: string) {
     if (!value || value.trim() === "") return;
 
-    let entries: string | string[] = value;
-
-    if (this.props.preprocessValues) {
-      entries = await this.props.preprocessValues(
-        this.http,
-        this.options.formState.mainModel,
-        entries
-      );
-      this.options.formState.updateModel();
-    }
-
-    if (entries instanceof Array) {
-      entries.forEach((entry) => {});
-    }
     // check if really free entry
     const option = this.parameterOptions?.find(
       (param) => param.label === value
@@ -343,17 +329,6 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   async addSimpleValues(value: string) {
-    if (this.props.preprocessValues) {
-      this.searchSub = new Observable().subscribe();
-      value = await this.props.preprocessValues(
-        this.http,
-        this.options.formState.mainModel,
-        value
-      );
-      this.options.formState.updateModel();
-      this.searchSub.unsubscribe();
-    }
-
     let duplicates = this.addValueAndDetermineDuplicates(value);
 
     this.inputControl.setValue("");

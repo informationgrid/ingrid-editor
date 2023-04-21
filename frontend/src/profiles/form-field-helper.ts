@@ -19,6 +19,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
   };
+  hooks?: { onInit: (field) => void };
 }
 
 export interface DatePickerOptions extends Options {
@@ -49,11 +50,6 @@ export interface RepeatListOptions extends Options {
   restCall?: (http: HttpClient, query: string) => Observable<any[]>;
   labelField?: string;
   selectLabelField?: string;
-  preprocessValues?: (
-    http: HttpClient,
-    model: any,
-    value: string
-  ) => Promise<string>;
   hint?: string;
 }
 
@@ -63,11 +59,6 @@ export interface RepeatChipOptions extends Options {
   codelistId?: number;
   restCall?: (http: HttpClient, query: string) => Observable<any[]>;
   labelField?: string;
-  preprocessValues?: (
-    http: HttpClient,
-    model: any,
-    value: string
-  ) => Promise<string>;
 }
 
 export interface SelectOptions extends Options {
@@ -104,6 +95,9 @@ export interface InputOptions extends Options {
   prefix?: any;
   min?: number;
   max?: number;
+  hintStart?: string;
+  updateOn?: "change" | "blur" | "submit";
+  keydown?: (field: FormlyFieldConfig, event) => void;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -249,7 +243,6 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
         restCall: options?.restCall,
         labelField: options?.labelField,
-        preprocessValues: options?.preprocessValues,
       },
     };
   }
@@ -281,7 +274,6 @@ export class FormFieldHelper {
         restCall: options?.restCall,
         labelField: options?.labelField,
         selectLabelField: options?.selectLabelField ?? options?.labelField,
-        preprocessValues: options?.preprocessValues,
       },
       expressions: expressions,
     };
@@ -385,12 +377,15 @@ export class FormFieldHelper {
         addonLeft: options?.prefix,
         min: options?.min,
         max: options?.max,
+        hintStart: options?.hintStart,
+        keydown: options?.keydown,
       },
       modelOptions: {
-        updateOn: "blur",
+        updateOn: options?.updateOn ?? "blur",
       },
       expressions: expressions,
       validators: options?.validators,
+      hooks: options?.hooks,
     };
   }
 
