@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.utils
 
 import org.apache.logging.log4j.LogManager
-import org.keycloak.KeycloakPrincipal
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.security.Principal
 
@@ -18,12 +20,18 @@ class KeycloakAuthUtils : AuthUtils {
 
     override fun getUsernameFromPrincipal(principal: Principal): String {
 
-        return /*if (principal is KeycloakAuthenticationToken) {
-            principal.account.keycloakSecurityContext.token.preferredUsername
-        }  else */if (principal is UsernamePasswordAuthenticationToken) {
-            principal.principal as String
-        } else{
-            (principal as KeycloakPrincipal<*>).keycloakSecurityContext.token.preferredUsername
+        return when (principal) {
+            is JwtAuthenticationToken -> {
+                (principal.principal as Jwt).getClaimAsString("preferred_username")
+            }
+
+            is UsernamePasswordAuthenticationToken -> {
+                principal.principal as String
+            }
+
+            else -> {
+                "???"
+            }
         }
     }
 
@@ -41,9 +49,10 @@ class KeycloakAuthUtils : AuthUtils {
         return if (principal is UsernamePasswordAuthenticationToken) {
             principal.authorities.contains(SimpleGrantedAuthority(role))
         } else {
-//            principal as KeycloakAuthenticationToken
-//            principal.account.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
-            throw RuntimeException("Problem with principal")
+            principal as JwtAuthenticationToken
+            val auth = SecurityContextHolder.getContext().getAuthentication()
+            auth != null && auth.authorities.any { a -> a.getAuthority().equals(role)}
+//            principal.principal.roles.contains(role) || principal.authorities.contains(SimpleGrantedAuthority(role))
         }
     }
 

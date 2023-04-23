@@ -12,21 +12,33 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.core.convert.converter.Converter
+import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.session.SessionRegistryImpl
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
+import java.util.stream.Collectors
+
 
 @Profile("!dev")
 @Configuration
-//@EnableWebSecurity
+@EnableWebSecurity
 //@EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
-internal class KeycloakConfig {
+class KeycloakConfig {
     companion object {
         val log = LogManager.getLogger()
     }
@@ -36,12 +48,26 @@ internal class KeycloakConfig {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
+
+        /*http.oauth2Login()
+                .and()
+                .logout()
+                .addLogoutHandler(keycloakLogoutHandler)
+                .logoutSuccessUrl("/");
+        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);*/
+        
         http {
             authorizeRequests {
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
+            }
+            oauth2Login { 
+                
+            }
+            oauth2ResourceServer { 
+                jwt { jwtAuthenticationConverter =  jwtAuthenticationConverter() }
             }
             if (generalProperties.enableCsrf) {
                 csrf { csrfTokenRepository to CookieCsrfTokenRepository.withHttpOnlyFalse() }
@@ -60,6 +86,12 @@ internal class KeycloakConfig {
         }
 
         return http.build();
+    }
+
+    private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken>? {
+        val jwtConverter = JwtAuthenticationConverter()
+        jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter())
+        return jwtConverter
     }
 
     inner class RequestResponseLoggingFilter : Filter {
@@ -106,10 +138,10 @@ internal class KeycloakConfig {
      * and NullAuthenticatedSessionStrategy for bearer-only applications.
      */
 
-//    @Bean
-//    override fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
-//        return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
-//    }
+    @Bean
+    fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
+        return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
+    }
 
     /**
      * Do allow semicolons in URL, which are matrix-parameters used by Angular
@@ -131,5 +163,17 @@ internal class KeycloakConfig {
 //    override fun httpSessionManager(): HttpSessionManager {
 //        return HttpSessionManager()
 //    }
+
+}
+
+
+class KeycloakRealmRoleConverter : Converter<Jwt, Collection<GrantedAuthority>> {
+    override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
+        val realmAccess = jwt.getClaims().get("realm_access") as Map<String, Any>
+        return (realmAccess["roles"] as List<String>?)!!.stream()
+                .map { roleName: String -> "ROLE_$roleName" } // prefix to map to a Spring Security "role"
+                .map { role: String? -> SimpleGrantedAuthority(role) }
+                .collect(Collectors.toList())
+    }
 
 }

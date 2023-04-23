@@ -151,7 +151,7 @@ interface UsersApi {
             description = ""
         )]
     )
-    fun currentUserInfo(principal: Principal): ResponseEntity<UserInfo>
+    fun currentUserInfo(principal: Principal?): ResponseEntity<UserInfo>
 
     @PostMapping(
         value = ["/info/setCatalogAdmin"],

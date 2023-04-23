@@ -29,6 +29,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
 import java.net.URL
@@ -129,9 +130,10 @@ class KeycloakService : UserManagementService {
     }
 
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
+        principal as JwtAuthenticationToken
         val client: Keycloak
-        val keycloakPrincipal = principal// as KeycloakAuthenticationToken?
-        val tokenString = "???" //keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
+//        val keycloakPrincipal = principal// as KeycloakAuthenticationToken?
+        val tokenString = principal.token.tokenValue //keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
 
         client = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)

@@ -236,15 +236,15 @@ class UsersApiController : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
+    override fun currentUserInfo(principal: Principal?): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
         principal as Authentication
 
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        keycloakService.getClient(principal).use { client ->
+        val userId = authUtils.getUsernameFromPrincipal(principal!!)
+        keycloakService.getClient(principal!!).use { client ->
             val user = keycloakService.getUser(client, userId)
 
 
-            val lastLogin = this.updateAndGetLastLogin(principal, user.login)
+            val lastLogin = this.updateAndGetLastLogin(principal!!, user.login)
             val dbUser = catalogService.getUser(userId)
 
             val userInfo = UserInfo(
@@ -261,7 +261,7 @@ class UsersApiController : UsersApi {
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
-                permissions = catalogService.getPermissions(principal)
+                permissions = catalogService.getPermissions(principal!!)
             )
             return ResponseEntity.ok(userInfo)
         }
