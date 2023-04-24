@@ -50,6 +50,8 @@ interface AdditionalInformationSectionOptions {
 
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
+  private keywordFieldHint =
+    "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen";
   http = inject(HttpClient);
 
   private inspireChangeMessage =
@@ -384,37 +386,46 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",
-          hint: "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen",
+          hint: this.keywordFieldHint,
         }),
         this.addInput(null, null, {
           wrappers: ["panel", "form-field"],
           fieldLabel: "Analyse",
           updateOn: "change",
-          hintStart:
-            "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen",
+          hintStart: this.keywordFieldHint,
           keydown: async (field, event: KeyboardEvent) => {
-            if (event.key !== "Enter") return;
-
-            const value = field.formControl.value;
-            if (!value) return;
-            field.formControl.disable();
-            this.snack.dismiss();
-            const model = field.options.formState.mainModel;
-            const res = await Promise.all(
-              value
-                .split(",")
-                .map((item) => item.trim())
-                .map(async (item) => await this.assignKeyword(model, item))
-            );
-
-            field.options.formState.updateModel();
-            field.formControl.enable();
-            field.formControl.setValue("");
-            this.informUserAboutThesaurusAnalysis(res);
+            await this.analyzeKeywords(event, field);
           },
         }),
       ].filter(Boolean)
     );
+  }
+
+  private async analyzeKeywords(
+    event: KeyboardEvent,
+    field: FormlyFieldConfig
+  ) {
+    if (event.key !== "Enter") return;
+
+    const value = field.formControl.value;
+    if (!value) return;
+
+    field.props.hintStart = "Schlagworte werden analysiert ...";
+    field.formControl.disable();
+    this.snack.dismiss();
+    const model = field.options.formState.mainModel;
+    const res = await Promise.all(
+      value
+        .split(",")
+        .map((item) => item.trim())
+        .map(async (item) => await this.assignKeyword(model, item))
+    );
+
+    field.options.formState.updateModel();
+    field.formControl.enable();
+    field.formControl.setValue("");
+    this.informUserAboutThesaurusAnalysis(res);
+    field.props.hintStart = this.keywordFieldHint;
   }
 
   private async assignKeyword(model, item) {

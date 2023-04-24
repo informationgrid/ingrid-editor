@@ -271,6 +271,7 @@ export class FormFieldHelper {
         change: options?.change,
         remove: options?.remove,
         view: options?.view,
+        hint: options?.hint,
         restCall: options?.restCall,
         labelField: options?.labelField,
         selectLabelField: options?.selectLabelField ?? options?.labelField,
