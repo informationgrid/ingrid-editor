@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.research
 
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.IgeServer
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.extensions.spring.SpringExtension
@@ -60,7 +59,7 @@ class ResearchTest : ShouldSpec() {
         return entityManager
             .createNativeQuery(sql)
             .unwrap(NativeQuery::class.java)
-            .addScalar("data", JsonNodeBinaryType.INSTANCE)
+            .addScalar("data")
             .addScalar("title")
             .addScalar("uuid")
             .addScalar("type")

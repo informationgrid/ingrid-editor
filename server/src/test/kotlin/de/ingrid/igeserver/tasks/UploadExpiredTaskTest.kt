@@ -2,7 +2,6 @@ package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
@@ -35,7 +34,7 @@ class UploadExpiredTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("step", JsonNodeBinaryType.INSTANCE)
+                .addScalar("step")
                 .addScalar("title")
                 .addScalar("type").resultList
         } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
@@ -43,7 +42,7 @@ class UploadExpiredTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE)
+                .addScalar("negativeDocs")
                 .addScalar("title")
                 .addScalar("type").resultList
         } returns emptyList()

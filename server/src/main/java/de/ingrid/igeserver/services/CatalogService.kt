@@ -279,9 +279,10 @@ class CatalogService @Autowired constructor(
     )
 
     fun getPermissions(principal: Authentication): List<String> {
-        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
-        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
-        val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
+        
+        val isMdAdmin = authUtils.containsRole(principal, "md-admin")
+        val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
+        val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
         val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
 
         val permissions = if (isSuperAdmin) {

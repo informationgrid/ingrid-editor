@@ -2,7 +2,6 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
@@ -50,13 +49,13 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlStepsWithDrafts).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("step", JsonNodeBinaryType.INSTANCE).resultList
+                .addScalar("step").resultList
         } returns listOf(arrayOf("123", "test-cat", input))
         every {
             entityManager.createNativeQuery(sqlNegativeDecisionDocsWithDraft).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE).resultList
+                .addScalar("negativeDocs").resultList
         } returns listOf(arrayOf("123", "test-cat", inputNegative))
     }
 

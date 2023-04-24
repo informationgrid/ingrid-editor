@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -44,8 +44,9 @@ class Document {
     @Column(nullable = false)
     var title: String? = null
 
-    @Type(JsonType::class)
-    @Column(columnDefinition = "jsonb")
+//    @Type(JsonType::class)
+//    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     lateinit var data: ObjectNode
 
     @Version

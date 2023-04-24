@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
@@ -91,7 +90,7 @@ class RemoveUnreferencedDocsTask(
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")
-            .addScalar(jsonbField, JsonType::class.java)
+            .addScalar(jsonbField)
             .resultList as List<Array<Any>>
     }
 

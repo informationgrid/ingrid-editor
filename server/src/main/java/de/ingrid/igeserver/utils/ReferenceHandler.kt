@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.utils
 
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.api.messaging.UrlReport
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.LogManager
@@ -61,7 +60,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")
-            .addScalar(jsonbField, JsonType::class.java)
+            .addScalar(jsonbField)
             .addScalar("title")
             .addScalar("type")
             .resultList as List<Array<Any>>
