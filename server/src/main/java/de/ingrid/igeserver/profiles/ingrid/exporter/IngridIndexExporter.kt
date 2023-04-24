@@ -7,12 +7,16 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
 @Profile("ingrid")
-class IngridIndexExporter @Autowired constructor(val idfExporter: IngridIDFExporter, val luceneExporter: IngridLuceneExporter): IgeExporter {
+class IngridIndexExporter @Autowired constructor(
+    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+    val luceneExporter: IngridLuceneExporter
+) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -30,7 +34,7 @@ class IngridIndexExporter @Autowired constructor(val idfExporter: IngridIDFExpor
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-        luceneJson.put("idf", idf as String)
+        luceneJson.put("idf", idf)
         return luceneJson.toPrettyString()
     }
 

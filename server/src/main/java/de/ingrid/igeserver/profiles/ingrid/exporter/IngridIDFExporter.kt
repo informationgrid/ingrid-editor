@@ -48,7 +48,7 @@ class IngridIDFExporter @Autowired constructor(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override fun run(doc: Document, catalogId: String): Any {
+    override fun run(doc: Document, catalogId: String): String {
         val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
         // pretty printing takes around 5ms
