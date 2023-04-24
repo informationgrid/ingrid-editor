@@ -29,6 +29,7 @@ export class HeaderTitleRowComponent implements OnInit {
     this._model = value;
     this.stateClass = this.getStateClass(value);
     this.icon = this.getIcon(value);
+    this.updateHeaderMenuOptions();
   }
 
   @Input() disableEdit: boolean;
@@ -54,11 +55,7 @@ export class HeaderTitleRowComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.moreActions = this.formularService.getHeaderMenuOptions(
-      this._model,
-      this.address
-    );
-    this.showMoreActions = this.moreActions.length > 0;
+    this.updateHeaderMenuOptions();
   }
 
   editTitle() {
@@ -78,5 +75,13 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private getStateClass(model) {
     return DocumentUtils.getStateClass(model._state, model._type);
+  }
+
+  private updateHeaderMenuOptions() {
+    this.moreActions = this.formularService.getHeaderMenuOptions(
+      this._model,
+      this.address
+    );
+    this.showMoreActions = this.moreActions.length > 0;
   }
 }
