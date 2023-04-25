@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.configuration.KeycloakConfig
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,9 +18,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter
+import org.springframework.util.function.SingletonSupplier
 
 @Profile("dev")
 @Configuration
@@ -47,7 +52,7 @@ internal class KeycloakMockConfig : KeycloakConfig() {
         log.info("================== DEVELOPMENT MODE ==================")
         log.info("======================================================")
         http {
-            addFilterAt<UsernamePasswordAuthenticationFilter>(DevelopmentAuthenticationFilter())
+            addFilterAt<RequestHeaderAuthenticationFilter>(DevelopmentAuthenticationFilter())
             csrf { disable() }
             authorizeRequests {
                 authorize(anyRequest, permitAll)
@@ -59,16 +64,26 @@ internal class KeycloakMockConfig : KeycloakConfig() {
 }
 
 private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessingFilter("/login") {
-    override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
+
+    private val securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy()
+
+    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
+        return DummyAuthenticationToken(emptyList())
+    }
+
+    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
 
         val auths = listOf(SimpleGrantedAuthority("admin"))
-        return DummyAuthenticationToken(auths)
+        val context = securityContextHolderStrategy.createEmptyContext()
+        context.authentication = DummyAuthenticationToken(auths)
+        this.securityContextHolderStrategy.deferredContext = SingletonSupplier.of(context)
 
+        chain.doFilter(request, response)
     }
 }
 
 private class DummyAuthenticationToken(grantedAuthorities: List<GrantedAuthority>) :
-    AbstractAuthenticationToken(grantedAuthorities) {
+        AbstractAuthenticationToken(grantedAuthorities) {
 
     private val token = "DummyPrincipal"
 
