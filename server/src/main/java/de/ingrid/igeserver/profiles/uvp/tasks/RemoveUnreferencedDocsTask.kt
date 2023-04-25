@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
@@ -37,12 +38,16 @@ class RemoveUnreferencedDocsTask(
         val docs = queryDocs(sqlStepsWithDrafts, "step")
         val negativeDocs = queryDocs(sqlNegativeDecisionDocsWithDraft, "negativeDocs")
 
-        val uploads = docs.map { DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(it[2] as JsonNode)) }
+        val uploads = docs.map {
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(data))
+        }
         val uploadsNegative = negativeDocs.map {
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
             DocUrls(
                 it[1] as String,
                 it[0] as String,
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs")
+                getUrlsFromJsonFieldTable(data, "uvpNegativeDecisionDocs")
             )
         }
         val allUploads = uploads + uploadsNegative

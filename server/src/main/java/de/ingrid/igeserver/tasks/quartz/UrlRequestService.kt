@@ -18,7 +18,7 @@ class UrlRequestService {
     }
 
     fun getStatus(url: String): Int {
-        try {
+        return try {
             val requestHead = createHttpRequest("HEAD", url)
             var status = httpRequestSync(requestHead)
             // if server responds with NOT ALLOWED try with GET request
@@ -27,10 +27,10 @@ class UrlRequestService {
                 status = httpRequestSync(requestGet)
             }
             log.debug("Status of URL '$url' is $status")
-            return status
+            status
         } catch (e: Exception) {
             log.debug("URL seems invalid: $url")
-            return 500
+            500
         }
     }
 
@@ -45,7 +45,7 @@ class UrlRequestService {
         val httpClient = createHttpClient(executor)
 
         return try {
-            log.debug("Check URL '${request.uri()}' with method '${request.method()}'")
+            log.debug("Check URL '{}' with method '{}'", request.uri(), request.method())
             httpClient
                 .send(request, HttpResponse.BodyHandlers.discarding())
                 .statusCode()

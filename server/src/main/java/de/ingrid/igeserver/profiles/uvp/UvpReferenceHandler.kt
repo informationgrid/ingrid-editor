@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
@@ -73,31 +74,33 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
                         catalogId,
                         docUuid,
-                        getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
+                        getUrlsFromJsonField(data, onlyLinks),
                         it[3].toString(),
                         it[4].toString()
                     )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
             }
         }
         resultNegativeDocs.forEach {
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
                         catalogId,
                         docUuid,
                         getUrlsFromJsonFieldTable(
-                            it[2] as JsonNode,
+                            data,
                             "uvpNegativeDecisionDocs",
                             onlyLinks
                         ).toMutableList(),
@@ -106,7 +109,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
                     )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
             }
         }
 
@@ -141,5 +144,18 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
         return UploadInfo(field, it.get("downloadURL").get("uri").textValue(), expiredDate)
     }
+    
+    private data class UrlTableFields(
+            val applicationDocs: List<TableDef>?,
+            val announcementDocs: List<TableDef>?,
+            val reportsRecommendationDocs: List<TableDef>?,
+            val furtherDocs: List<TableDef>?,
+            val considerationDocs: List<TableDef>?,
+            val approvalDocs: List<TableDef>?,
+            val decisionDocs: List<TableDef>?,
+    )
+    
+    private data class TableDef(val downloadUrl: UrlDef, val validUntil: String?)
+    private data class UrlDef(val asLink: Boolean, val uri: String)
 
 }
