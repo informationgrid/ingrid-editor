@@ -142,10 +142,7 @@
               "additionalProperties": false,
               "properties": {
                 "key": {
-                  "type": [
-                    "null",
-                    "string"
-                  ]
+                  "type": ["null", "string"]
                 },
                 "value": {
                   "type": "string"
@@ -187,10 +184,7 @@
               "additionalProperties": false,
               "properties": {
                 "measResult": {
-                  "type": [
-                    "null",
-                    "number"
-                  ]
+                  "type": ["null", "number"]
                 }
               }
             }
@@ -234,16 +228,13 @@
           "additionalProperties": false,
           "properties": {
             "vertical": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": ["null", "number"]
             },
             "horizontal": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": ["null", "number"]
+            },
+            "griddedDataPositionalAccuracy": {
+              "type": ["null", "number"]
             }
           }
         },
@@ -348,10 +339,7 @@
                 "type": "boolean"
               },
               "explanation": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "specification": {
                 "$ref": "../../general.schema.json#/definitions/KeyValue"

@@ -134,7 +134,7 @@
               "$ref": "refs/general.schema.json#/definitions/resolution"
             },
             "explanation": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "couplingType": {
               "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -223,6 +223,9 @@
                 "type": "string"
               },
               "state": {
+                "type": "string"
+              },
+              "title": {
                 "type": "string"
               },
               "isExternalRef": {

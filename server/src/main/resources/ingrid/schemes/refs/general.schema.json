@@ -6,16 +6,10 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"
@@ -31,10 +25,7 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "ref",
-        "type"
-      ],
+      "required": ["ref", "type"],
       "title": "PointOfContact"
     },
     "graphicOverviews": {
@@ -65,9 +56,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "fileName"
-        ]
+        "required": ["fileName"]
       }
     },
     "events": {
@@ -84,10 +73,7 @@
             "$ref": "#/definitions/KeyValue"
           }
         },
-        "required": [
-          "referenceDateType",
-          "referenceDate"
-        ],
+        "required": ["referenceDateType", "referenceDate"],
         "title": "events"
       },
       "minItems": 1
@@ -140,10 +126,7 @@
           }
         }
       },
-      "required": [
-        "references",
-        "spatialSystems"
-      ]
+      "required": ["references", "spatialSystems"]
     },
     "Date": {
       "type": "object",
@@ -216,10 +199,7 @@
             "type": "string"
           },
           "transferSize": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           }
         }
       }
@@ -258,13 +238,13 @@
         "additionalProperties": false,
         "properties": {
           "denominator": {
-            "type": "number"
+            "type": ["number", "null"]
           },
           "distanceDPI": {
-            "type": "number"
+            "type": ["number", "null"]
           },
           "distanceMeter": {
-            "type": "number"
+            "type": ["number", "null"]
           }
         }
       }
@@ -431,9 +411,7 @@
           }
         }
       },
-      "required": [
-        "events"
-      ]
+      "required": ["events"]
     },
     "keywords": {
       "type": "array",
@@ -502,10 +480,10 @@
             "$ref": "#/definitions/KeyValue"
           },
           "title": {
-            "type": "string"
+            "type": ["null", "string"]
           },
           "explanation": {
-            "type": "string"
+            "type": ["null", "string"]
           }
         }
       }
