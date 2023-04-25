@@ -72,9 +72,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   private initInputListener(options: SelectOptionUi[]) {
-    this.parameterOptions = options;
-    if (options)
+    this.parameterOptions = JSON.parse(JSON.stringify(options));
+    if (options) {
       this.initialParameterOptions = JSON.parse(JSON.stringify(options));
+    }
     this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
