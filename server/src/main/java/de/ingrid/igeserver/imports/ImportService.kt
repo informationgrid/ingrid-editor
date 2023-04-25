@@ -234,6 +234,13 @@ class ImportService constructor(
         options: ImportOptions,
         counter: ImportCounter
     ) {
+
+        if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
+            val data = ref.document.data
+            ref.document.title = if (data.has("organization")) data.get("organization")
+                .asText() else "${data.get("lastName")}, ${data.get("firstName")}"
+        }
+
         if (!ref.exists) {
             val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
             documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
