@@ -10,7 +10,7 @@ export class ActionButtonComponent implements OnInit {
   @Input() disabled: boolean;
   @Input() icon: string;
   @Input() svgIcon: string;
-  @Output() submit = new EventEmitter();
+  @Output() submit = new EventEmitter<void>();
 
   constructor() {}
 
