@@ -1,14 +1,16 @@
 package de.ingrid.igeserver.persistence.filter.publish
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.fge.jsonschema.core.report.LogLevel
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import net.pwall.json.schema.JSONSchema
-import net.pwall.json.schema.output.BasicOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
+
 
 @Component
 class PreJsonSchemaValidator : Filter<PrePublishPayload> {
@@ -47,25 +49,26 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         return json.substringBeforeLast("}") + extraFields + "}"
     }
 
-    fun validate(schemaFile: String, json: String): BasicOutput? {
+    fun validate(schemaFile: String, json: String) {
         val resource = PreJsonSchemaValidator::class.java.getResource(schemaFile)
 
         if (resource == null) {
             log.error("JSON-Schema not found: $schemaFile")
-            return null
+            return
         }
 
-        val schema = JSONSchema.parseFile(resource.file)
-        val output = schema.validateBasic(json)
-        log.debug("Document valid: ${output.valid}")
-        output.errors?.forEach {
-            log.error("${it.error} - ${it.instanceLocation}")
-        }
+        val result = JsonSchemaFactory.byDefault()
+            .getJsonSchema(resource.toString())
+            .validate(jacksonObjectMapper().readTree(json))
+        val errors = result
+            .filter { it.logLevel == LogLevel.ERROR }
+            .map { with(it.asJson()) { "${get("instance").get("pointer").asText()}: ${get("message").asText()}" } }
 
-        if (!output.valid) {
-            throw ValidationException.withReason(output.errors)
-        }
+        log.debug("Document valid: ${result.isSuccess}")
+        errors.forEach { log.error(it) }
 
-        return output
+        if (!result.isSuccess) {
+            throw ValidationException.withReason(errors)
+        }
     }
 }

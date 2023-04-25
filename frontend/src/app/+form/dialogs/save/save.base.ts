@@ -61,7 +61,6 @@ export abstract class SaveBase extends Plugin {
         "Es trat ein Fehler bei der JSON-Schema Validierung auf."
       );
       igeError.detail = error?.error?.data?.error
-        ?.map((item) => item.error)
         ?.filter((item) => item.indexOf("A subschema had errors") === -1)
         ?.join("\n");
       throw igeError;
