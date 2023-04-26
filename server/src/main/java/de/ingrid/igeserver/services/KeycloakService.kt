@@ -13,7 +13,6 @@ import jakarta.ws.rs.core.Response
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
-import org.keycloak.KeycloakPrincipal
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -132,8 +131,7 @@ class KeycloakService : UserManagementService {
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
         principal as JwtAuthenticationToken
         val client: Keycloak
-//        val keycloakPrincipal = principal// as KeycloakAuthenticationToken?
-        val tokenString = principal.token.tokenValue //keycloakPrincipal!!.account.keycloakSecurityContext.tokenString
+        val tokenString = principal.token.tokenValue
 
         client = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)
@@ -225,7 +223,7 @@ class KeycloakService : UserManagementService {
         if (securityContext?.authentication is UsernamePasswordAuthenticationToken) {
             return securityContext.authentication
         }
-        return securityContext?.authentication?.principal as KeycloakPrincipal<*>?
+        return securityContext?.authentication as JwtAuthenticationToken?
     }
 
     override fun userExists(principal: Principal, userId: String): Boolean {

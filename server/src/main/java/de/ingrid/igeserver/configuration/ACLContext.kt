@@ -3,6 +3,7 @@ package de.ingrid.igeserver.configuration
 import de.ingrid.igeserver.configuration.acl.CustomPermissionFactory
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionCacheOptimizer
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.cache.CacheManager
@@ -22,7 +23,7 @@ import javax.sql.DataSource
 
 @Configuration
 @EnableAutoConfiguration
-open class ACLContext {
+class ACLContext {
 
     @Autowired
     var dataSource: DataSource? = null
@@ -30,7 +31,7 @@ open class ACLContext {
     @Autowired lateinit var cacheManager: CacheManager
 
     @Bean
-    open fun aclCache(): SpringCacheBasedAclCache {
+    fun aclCache(): SpringCacheBasedAclCache {
         return SpringCacheBasedAclCache(
             cacheManager.getCache("aclCache"),
             permissionGrantingStrategy(),
@@ -56,19 +57,19 @@ open class ACLContext {
 */
 
     @Bean
-    open fun permissionGrantingStrategy(): PermissionGrantingStrategy {
+    fun permissionGrantingStrategy(): PermissionGrantingStrategy {
         return DefaultPermissionGrantingStrategy(ConsoleAuditLogger())
     }
 
     @Bean
-    open fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
+    fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
         return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
     }
 
     @Bean
-    open fun defaultMethodSecurityExpressionHandler(): MethodSecurityExpressionHandler? {
+    fun defaultMethodSecurityExpressionHandler(authUtils: AuthUtils): MethodSecurityExpressionHandler? {
         val expressionHandler = DefaultMethodSecurityExpressionHandler()
-        val permissionEvaluator = IgeAclPermissionEvaluator(aclService())
+        val permissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils)
         expressionHandler.setPermissionEvaluator(permissionEvaluator)
         expressionHandler.setPermissionCacheOptimizer(IgeAclPermissionCacheOptimizer(aclService()))
         return expressionHandler
@@ -76,7 +77,7 @@ open class ACLContext {
 
 
     @Bean
-    open fun lookupStrategy(): LookupStrategy {
+    fun lookupStrategy(): LookupStrategy {
         val strategy = BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), ConsoleAuditLogger())
         strategy.setPermissionFactory(CustomPermissionFactory())
         strategy.setAclClassIdSupported(true)
@@ -84,7 +85,7 @@ open class ACLContext {
     }
 
     @Bean
-    open fun aclService(): AclService {
+    fun aclService(): AclService {
         val jdbcMutableAclService = JdbcMutableAclService(dataSource, lookupStrategy(), aclCache())
         jdbcMutableAclService.setAclClassIdSupported(true)
         jdbcMutableAclService.setClassIdentityQuery("select currval(pg_get_serial_sequence('acl_class', 'id'))")

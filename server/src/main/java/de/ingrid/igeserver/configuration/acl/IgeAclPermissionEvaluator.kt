@@ -2,6 +2,7 @@ package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.checkForRootPermissions
+import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.LogManager
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
@@ -12,7 +13,7 @@ import org.springframework.security.core.Authentication
 import java.io.Serializable
 import java.util.*
 
-class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvaluator(aclService) {
+class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthUtils) : AclPermissionEvaluator(aclService) {
 
     companion object {
         private val logger = LogManager.getLogger()
@@ -33,7 +34,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
         permission: Any,
 //        parentId: Serializable?
     ): Boolean {
-        if (hasAdminRole(authentication)) {
+        if (authUtils.isAdmin(authentication)) {
             return true
         }
 
@@ -51,7 +52,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return false
         }
 
-        if (hasAdminRole(authentication)) {
+        if (authUtils.isAdmin(authentication)) {
             return true
         }
 
@@ -80,12 +81,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService) : AclPermissionEvalu
             return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
         }*/
     }
-
-    private fun hasAdminRole(authentication: Authentication): Boolean {
-        val roles = authentication.authorities.map { it.authority }
-        return roles.contains("ige-super-admin") || roles.contains("cat-admin")
-    }
-
+    
     private fun checkPermission(
         authentication: Authentication,
         oid: ObjectIdentity,
