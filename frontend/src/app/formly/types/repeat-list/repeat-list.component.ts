@@ -294,6 +294,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     );
   }
 
+  getLabel(item): string {
+    if (typeof this.props.selectLabelField === "function") {
+      return this.props.selectLabelField(item);
+    }
+
+    return item[this.props.selectLabelField];
+  }
+
   handleKeydown($event: KeyboardEvent) {
     if ($event.key !== "Escape") {
       $event.stopImmediatePropagation();

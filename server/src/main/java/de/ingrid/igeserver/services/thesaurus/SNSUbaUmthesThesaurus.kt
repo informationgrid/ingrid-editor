@@ -14,28 +14,24 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
     override fun search(term: String, options: ThesaurusSearchOptions): List<Keyword> {
         if (term.isEmpty()) return emptyList()
 
-        val encodedTerm = URLEncoder.encode(term, "utf-8");
+        val encodedTerm = URLEncoder.encode(term, "utf-8")
 
         val type = convertType(options.searchType)
         val response = sendRequest("GET", "$searchUrlTemplate$encodedTerm&qt=$type")
         val mapper = XmlMapper(JacksonXmlModule())
         return mapper.readTree(response).get("Description")
             .mapNotNull { mapToKeyword(it) }
-            .toSet().toList().sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.preparedLabel })
+            .toSet().toList().sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
     }
 
     private fun mapToKeyword(it: JsonNode): Keyword? {
         val labelElement = it.get("prefLabel") ?: it.get("officialName") ?: it.get("altLabel") ?: return null
         val alternativeLabel = it.get("altLabel")?.get(1)?.get("")?.asText()
         val label = labelElement.get(1).get("").asText()
-        val preparedLabel = if (alternativeLabel != null)
-            "$label (${alternativeLabel})"
-        else label
-
+        
         return Keyword(
             labelElement.get(0).get("resource").asText(),
             label,
-            preparedLabel,
             if (alternativeLabel == label) null else alternativeLabel,
         )
     }

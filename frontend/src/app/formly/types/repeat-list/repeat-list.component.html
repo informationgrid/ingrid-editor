@@ -212,7 +212,7 @@
         (optionSelected)="addValueObject($event.option.value)"
     >
         <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
-            {{ doc[props.selectLabelField] }}
+            {{ getLabel(doc) }}
         </mat-option>
     </mat-autocomplete>
 </ng-container>

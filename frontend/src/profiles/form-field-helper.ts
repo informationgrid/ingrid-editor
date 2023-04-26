@@ -49,7 +49,7 @@ export interface RepeatListOptions extends Options {
   view?: "chip" | "list";
   restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
-  selectLabelField?: string;
+  selectLabelField?: string | ((item) => string);
   hint?: string;
 }
 

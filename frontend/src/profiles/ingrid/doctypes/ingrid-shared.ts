@@ -382,7 +382,11 @@ export abstract class IngridShared extends BaseDoctype {
           restCall: (query: string) =>
             this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",
-          selectLabelField: "preparedLabel",
+          selectLabelField: (item) => {
+            return item.alternativeLabel
+              ? `${item.label} (${item.alternativeLabel})`
+              : item.label;
+          },
         }),
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",

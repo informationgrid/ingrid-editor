@@ -3,7 +3,6 @@ package de.ingrid.igeserver.services.thesaurus
 data class Keyword(
     val id: String,
     val label: String,
-    val preparedLabel: String,
     val alternativeLabel: String? = null
 ) {
     // two keywords are equal when "id" and "label" are equal
