@@ -309,10 +309,10 @@ export abstract class IngridShared extends BaseDoctype {
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field),
+                this.updateIsoCategory($event, field.options.formState),
               remove: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field, true),
+                this.updateIsoCategory($event, field.options.formState, true),
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
@@ -398,7 +398,7 @@ export abstract class IngridShared extends BaseDoctype {
           updateOn: "change",
           hintStart: this.keywordFieldHint,
           keydown: async (field, event: KeyboardEvent) => {
-            await this.analyzeKeywords(event, field);
+            await this.analyzeKeywords(event, field, options.thesaurusTopics);
           },
         }),
       ].filter(Boolean)
@@ -407,7 +407,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   private async analyzeKeywords(
     event: KeyboardEvent,
-    field: FormlyFieldConfig
+    field: FormlyFieldConfig,
+    thesaurusTopicsEnabled: boolean
   ) {
     if (event.key !== "Enter") return;
 
@@ -417,12 +418,15 @@ export abstract class IngridShared extends BaseDoctype {
     field.props.hintStart = "Schlagworte werden analysiert ...";
     field.formControl.disable();
     this.snack.dismiss();
-    const model = field.options.formState.mainModel;
+    const formState = field.options.formState;
     const res = await Promise.all(
       value
         .split(",")
         .map((item) => item.trim())
-        .map(async (item) => await this.assignKeyword(model, item))
+        .map(
+          async (item) =>
+            await this.assignKeyword(formState, item, thesaurusTopicsEnabled)
+        )
     );
 
     field.options.formState.updateModel();
@@ -432,12 +436,20 @@ export abstract class IngridShared extends BaseDoctype {
     field.props.hintStart = this.keywordFieldHint;
   }
 
-  private async assignKeyword(model, item) {
-    const resultTheme = this.checkInThemes(model, item);
+  private async assignKeyword(formState, item, withThesaurusTopics: boolean) {
+    const resultTheme = this.checkInThemes(
+      formState,
+      item,
+      withThesaurusTopics
+    );
     if (resultTheme.found) return resultTheme;
-    const umthesResult = await this.checkInUmthes(this.http, model, item);
+    const umthesResult = await this.checkInUmthes(
+      this.http,
+      formState.mainModel,
+      item
+    );
     if (umthesResult.found) return umthesResult;
-    else return this.addFreeKeyword(model, item);
+    else return this.addFreeKeyword(formState.mainModel, item);
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -468,12 +480,12 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private updateIsoCategory($event, field, doRemove: boolean = false) {
-    const isoKey = this.inspireToIsoMapping[$event.key];
+  private updateIsoCategory(item, formstate, doRemove: boolean = false) {
+    const isoKey = this.inspireToIsoMapping[item.key];
     if (!isoKey) return;
 
     // check if exists and add if not
-    const topics = field.options.formState.mainModel.topicCategories;
+    const topics = formstate.mainModel.topicCategories;
     const alreadyExists = topics.some((item) => item.key === isoKey);
     const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
       "527",
@@ -482,15 +494,15 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (!doRemove && !alreadyExists) {
       topics.push({ key: isoKey });
-      field.options.formState.updateModel();
+      formstate.updateModel();
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`
       );
     } else if (doRemove && alreadyExists) {
-      field.options.formState.mainModel.topicCategories = topics.filter(
+      formstate.mainModel.topicCategories = topics.filter(
         (item) => item.key !== isoKey
       );
-      field.options.formState.updateModel();
+      formstate.updateModel();
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`
       );
@@ -1393,11 +1405,23 @@ export abstract class IngridShared extends BaseDoctype {
     return item;
   }
 
-  private checkInThemes(model: any, item: string): ThesaurusResult {
+  private checkInThemes(
+    formState: any,
+    item: string,
+    withThesaurusTopics: boolean
+  ): ThesaurusResult {
     const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
     if (id) {
-      const exists = model.themes.some((entry) => entry.key === id);
-      if (!exists) model.themes.push({ key: id });
+      const exists = formState.mainModel.themes.some(
+        (entry) => entry.key === id
+      );
+      if (!exists) {
+        const itemTheme = { key: id };
+        formState.mainModel.themes.push(itemTheme);
+        if (withThesaurusTopics) {
+          this.updateIsoCategory(itemTheme, formState);
+        }
+      }
       return {
         thesaurus: "INSPIRE-Themen",
         found: true,
