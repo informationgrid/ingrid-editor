@@ -187,7 +187,7 @@ class JpaTest : IntegrationTest() {
         addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
 
         val q2 =
-            em.createNativeQuery("SELECT * FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
+            em.createNativeQuery("SELECT d.* FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
                 .unwrap(NativeQuery::class.java)
                 .addEntity("doc", Document::class.java)
                 //.addJoin("c", "doc.catalog")

@@ -44,7 +44,7 @@ class ResearchTest : ShouldSpec() {
 
         should("find by term (like)") {
             @Language("PostgreSQL") val sql = """
-            SELECT *
+            SELECT document1.*
             FROM document_wrapper
             LEFT JOIN document document1 ON document_wrapper.draft = document1.id
             WHERE document1.data ->> 'company' LIKE '%verwaltung%';

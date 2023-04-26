@@ -26,15 +26,13 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @Query("SELECT dw.*, 0 as countChildren FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true )
     fun findByCatalogAndUuidIncludingDeleted(catalogIdentifier: String, uuid: String): DocumentWrapper
 
-    fun existsById(uuid: String): Boolean
-
     @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d")
     fun getAll(): List<DocumentWrapper?>
 
     @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
-        catalog_identifier: String, parentUuid: String?, category: String
+        catalog_identifier: String, parentUuid: Int?, category: String
     ): List<DocumentWrapper>
 
     @PostFilter("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")

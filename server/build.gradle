@@ -5,28 +5,23 @@ import java.nio.file.Paths
 buildscript {
     ext.kotlin_version = '1.8.10' // Required for Kotlin integration
     ext.spring_boot_version = '3.0.5'
-    ext.hibernate_version = '6.1.7.Final' // Hibernate 6 is only supported by Spring Boot 3
+//    ext.hibernate_version = '6.1.7.Final'
     ext.jackson_version = '2.14.2'
     ext.kotest_version = '5.5.5'
     ext.jte_version = '2.2.6'
     ext.elastic_version = '7.17.6'
     ext.geotools_version = '28.2'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
-        // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-//        classpath "org.hibernate.orm:hibernate-gradle-plugin:$hibernate_version"
-    }
 }
 
 plugins {
     id 'base'
     id 'java'
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
+    id "org.springframework.boot" version "$spring_boot_version"
+    id "io.spring.dependency-management" version "1.1.0"
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.3.1'
@@ -34,16 +29,8 @@ plugins {
     id 'io.kotest' version '0.3.9'
     id "com.github.ben-manes.versions" version "0.46.0"
     id "gg.jte.gradle" version "$jte_version"
-    id("org.hibernate.orm") version "$hibernate_version"
+    id "org.hibernate.orm" version "6.2.1.Final"
 }
-
-apply plugin: 'kotlin' // Required for Kotlin integration
-apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'kotlin-noarg'
-//apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-allopen'
 
 repositories {
     maven {
@@ -58,7 +45,7 @@ repositories {
 
 configurations {
     webapp
-    all {
+    configureEach {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
         exclude group: 'com.sun.mail', module: 'javax.mail'
@@ -86,7 +73,7 @@ if (hasProperty('buildProfile')) {
         dependsOn(unzip)
     }
 
-    bootJarMainClassName {
+    resolveMainClassName {
         dependsOn(unzip)
     }
 
@@ -154,7 +141,7 @@ dependencies {
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.5.4'
-    implementation "org.hibernate.orm:hibernate-core:$hibernate_version"
+    implementation "org.hibernate.orm:hibernate-core"
     implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
@@ -340,8 +327,6 @@ if (hasProperty('buildDockerImage')) {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-//    options.deprecation = true
-//    options.compilerArgs << "-Xlint:unchecked"
 }
 
 def isNonStable = { String version ->

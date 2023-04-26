@@ -72,7 +72,7 @@ class AuditLogger {
      * Get the logger with the given name
      */
     private fun getLogger(name: String?): Logger {
-        return if (!name.isNullOrBlank()) LogManager.getLogger() else LogManager.getLogger()
+        return if (!name.isNullOrBlank()) LogManager.getLogger(name) else LogManager.getLogger(DEFAULT_LOGGER)
     }
 
     /**
