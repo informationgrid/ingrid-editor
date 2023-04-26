@@ -26,9 +26,9 @@ export class AddressCardComponent implements OnInit {
   @Input() address: AddressRef;
   @Input() disabled = false;
 
-  @Output() remove = new EventEmitter();
-  @Output() edit = new EventEmitter();
-  @Output() gotoAddress = new EventEmitter();
+  @Output() remove = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<void>();
+  @Output() gotoAddress = new EventEmitter<void>();
 
   content: {
     iconClass: string;

@@ -45,7 +45,8 @@ class ImportService constructor(
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
         val file = File(fileLocation)
         val contentType = file.toURI().toURL().openConnection().contentType
-        val type = contentType ?: ContentType.TEXT_PLAIN.mimeType
+        val type =
+            if (contentType == null || contentType == "content/unknown") ContentType.TEXT_PLAIN.mimeType else contentType
 
         notifier.sendMessage(notificationType, message.apply { this.message = "Start analysis" })
 
@@ -233,6 +234,13 @@ class ImportService constructor(
         options: ImportOptions,
         counter: ImportCounter
     ) {
+
+        if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
+            val data = ref.document.data
+            ref.document.title = if (data.has("organization")) data.get("organization")
+                .asText() else "${data.get("lastName")}, ${data.get("firstName")}"
+        }
+
         if (!ref.exists) {
             val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
             documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
@@ -240,13 +248,13 @@ class ImportService constructor(
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
             // special case when document with uuid has been deleted
             if (ref.deleted) removeDeletedFlag(ref.wrapperId!!)
-            
+
             setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
             if (options.publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
                 documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
-                
+
                 // special case when document was deleted and had published version
                 // => after import in draft state, we don't want to see the deleted published version
                 if (ref.deleted) handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
@@ -260,18 +268,18 @@ class ImportService constructor(
     /**
      * In case we recover a deleted document which was published before, we need to adjust the documents
      * if and only if we import a document with the same UUID in draft-state.
-     * 
+     *
      * In that case the published version will be marked as archived and the draft version, which had
-     * the state DRAFT_ADN_PUBLISHED will be set to DRAFT, so that the new imported version has no 
+     * the state DRAFT_ADN_PUBLISHED will be set to DRAFT, so that the new imported version has no
      * knowledge of the published version. However, it's still possible to access this version internally.
      */
     private fun handleDeletedPublishedVersion(catalogId: String, uuid: String, wrapperId: Int) {
         try {
-            documentService.getLastPublishedDocument(catalogId, uuid).also { 
+            documentService.getLastPublishedDocument(catalogId, uuid).also {
                 it.state = DOCUMENT_STATE.ARCHIVED
                 documentService.docRepo.save(it)
             }
-            documentService.getDocumentFromCatalog(catalogId, wrapperId).also { 
+            documentService.getDocumentFromCatalog(catalogId, wrapperId).also {
                 it.document.state = DOCUMENT_STATE.DRAFT
                 documentService.docRepo.save(it.document)
             }
@@ -316,6 +324,7 @@ data class OptimizedImportAnalysis(
     val existingAddresses: List<DatasetInfo>,
     var importResult: ImportCounter? = null
 )
+
 data class ExtractedZip(
     val importers: List<String>,
     val documents: List<JsonNode>

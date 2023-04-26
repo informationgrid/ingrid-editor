@@ -67,6 +67,7 @@
                 mat-menu-item
                 *ngFor="let action of moreActions"
                 (click)="action.action()"
+                [disabled]="action.disabled"
             >
                 {{ action.title }}
             </button>

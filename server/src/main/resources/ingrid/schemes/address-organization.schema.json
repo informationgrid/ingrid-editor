@@ -32,14 +32,15 @@
         },
         "publishArea": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
+        },
+        "positionName": {
+          "type": "string"
+        },
+        "hoursOfService": {
+          "type": "string"
         }
       },
-      "required": [
-        "_uuid",
-        "_type",
-        "organization",
-        "contact"
-      ],
+      "required": ["_uuid", "_type", "organization", "contact"],
       "title": "Address"
     }
   }

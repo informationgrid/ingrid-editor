@@ -7,7 +7,7 @@ import { Subject } from "rxjs";
 })
 export class FormMessageService {
   message$ = new Subject<FormMessageType>();
-  clearMessages$ = new EventEmitter<boolean>();
+  clearMessages$ = new EventEmitter<void>();
 
   constructor() {}
 

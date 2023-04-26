@@ -52,7 +52,7 @@ export class CreateNodeComponent implements OnInit {
 
   private query: TreeQuery | AddressTreeQuery;
   docTypeChoice: string;
-  docTypeChanged$ = new Subject();
+  docTypeChanged$ = new Subject<void>();
 
   constructor(
     private config: ConfigService,

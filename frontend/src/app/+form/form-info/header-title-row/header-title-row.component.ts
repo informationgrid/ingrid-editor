@@ -12,8 +12,7 @@ import { UntypedFormGroup } from "@angular/forms";
 import { ProfileService } from "../../../services/profile.service";
 import { IgeDocument } from "../../../models/ige-document";
 import { DocumentUtils } from "../../../services/document.utils";
-import { ConfigService } from "../../../services/config/config.service";
-import { DocEventsService } from "../../../services/event/doc-events.service";
+import { FormularService, HeaderMenuOption } from "../../formular.service";
 
 @Component({
   selector: "ige-header-title-row",
@@ -30,6 +29,7 @@ export class HeaderTitleRowComponent implements OnInit {
     this._model = value;
     this.stateClass = this.getStateClass(value);
     this.icon = this.getIcon(value);
+    this.updateHeaderMenuOptions();
   }
 
   @Input() disableEdit: boolean;
@@ -46,30 +46,16 @@ export class HeaderTitleRowComponent implements OnInit {
   showMore = false;
   showMoreActions = false;
 
-  // TODO: fill more actions by a service
-  moreActions = [
-    {
-      title: "Adresse ersetzen",
-      name: "replace-address",
-      action: () =>
-        this.docEventsService.sendEvent({
-          type: "REPLACE_ADDRESS",
-          data: { uuid: this._model._uuid },
-        }),
-    },
-  ];
+  moreActions: HeaderMenuOption[];
 
   constructor(
     private cdRef: ChangeDetectorRef,
     private profileService: ProfileService,
-    private configService: ConfigService,
-    private docEventsService: DocEventsService
+    private formularService: FormularService
   ) {}
 
   ngOnInit() {
-    const role = this.configService.$userInfo.value.role;
-    const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
-    this.showMoreActions = this.address && isPrivileged;
+    this.updateHeaderMenuOptions();
   }
 
   editTitle() {
@@ -89,5 +75,13 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private getStateClass(model) {
     return DocumentUtils.getStateClass(model._state, model._type);
+  }
+
+  private updateHeaderMenuOptions() {
+    this.moreActions = this.formularService.getHeaderMenuOptions(
+      this._model,
+      this.address
+    );
+    this.showMoreActions = this.moreActions.length > 0;
   }
 }

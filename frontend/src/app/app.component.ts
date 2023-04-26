@@ -22,7 +22,7 @@ import { ProfileService } from "./services/profile.service";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
-  sessionRefresher$ = new Subject();
+  sessionRefresher$ = new Subject<void>();
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
   showTestBadge: boolean;
 

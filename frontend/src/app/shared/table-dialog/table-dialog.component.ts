@@ -11,7 +11,7 @@ export class TableDialogComponent implements OnInit {
   }
   @Input() submitDisabled = false;
 
-  @Output() submit = new EventEmitter();
+  @Output() submit = new EventEmitter<void>();
 
   title: string;
 

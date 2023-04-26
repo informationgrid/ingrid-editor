@@ -55,7 +55,7 @@ export class UploadComponent implements OnInit {
   /* hide everything except the progressed files */
   @Input() showOnlyProgress = false;
 
-  @Output() complete = new EventEmitter<any>();
+  @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
   @Output() removeFile = new EventEmitter<string>();
 

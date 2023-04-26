@@ -73,12 +73,12 @@ export class IsoViewPlugin extends Plugin {
     const options = {
       id: this.treeQuery.getOpenedDocument().id as number,
       useDraft: true,
-      exportFormat: "ingridIDF",
+      exportFormat: "ingridISO",
     };
     const optionsOnlyPublished = {
       id: this.treeQuery.getOpenedDocument().id as number,
       useDraft: false,
-      exportFormat: "ingridIDF",
+      exportFormat: "ingridISO",
     };
     combineLatest([
       this.exportService.export(options),
