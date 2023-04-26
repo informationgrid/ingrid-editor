@@ -419,6 +419,27 @@
         "type": "string"
       }
     },
+    "keywordsUmthes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "preparedLabel": {
+            "type": "string"
+          },
+          "alternativeLabel": {
+            "type": ["null", "string"]
+          }
+        }
+      }
+    },
     "themes": {
       "type": "array",
       "items": {
