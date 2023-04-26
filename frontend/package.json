@@ -50,7 +50,7 @@
     "cronstrue": "^2.21.0",
     "file-saver": "^2.0.5",
     "keycloak-angular": "^13.0.0",
-    "keycloak-js": "^19.0.3",
+    "keycloak-js": "^21.1.1",
     "leaflet": "^1.9.3",
     "material-components-web": "14.0.0",
     "material-design-icons-iconfont": "^6.7.0",
