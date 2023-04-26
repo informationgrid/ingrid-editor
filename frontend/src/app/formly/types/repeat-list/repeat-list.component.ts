@@ -72,9 +72,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   private initInputListener(options: SelectOptionUi[]) {
-    this.parameterOptions = JSON.parse(JSON.stringify(options));
+    // create copies to not change the original options
     if (options) {
-      this.initialParameterOptions = JSON.parse(JSON.stringify(options));
+      const optionsAsString = JSON.stringify(options);
+      this.parameterOptions = JSON.parse(optionsAsString);
+      this.initialParameterOptions = JSON.parse(optionsAsString);
     }
     this.parameterOptions$ = of(this.parameterOptions);
 
