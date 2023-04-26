@@ -82,6 +82,6 @@ class Iso19115Exporter : IgeExporter {
     }
 
     init {
-        info = ExportTypeInfo(DocumentCategory.DATA, "iso19115", "ISO-19115", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
+        info = ExportTypeInfo(DocumentCategory.DATA, "iso19115", "ISO/TS 19139:2007", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
     }
 }
