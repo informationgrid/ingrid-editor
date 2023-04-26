@@ -379,8 +379,8 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
           view: "chip",
           placeholder: "Im Umweltthesaurus suchen",
-          restCall: (http: HttpClient, query: string) =>
-            http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+          restCall: (query: string) =>
+            this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
           labelField: "label",
           selectLabelField: "preparedLabel",
         }),

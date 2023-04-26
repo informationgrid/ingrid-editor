@@ -47,7 +47,7 @@ export interface RepeatListOptions extends Options {
   fieldGroupClassName?: string; // TODO: move up
   options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   view?: "chip" | "list";
-  restCall?: (http: HttpClient, query: string) => Observable<any[]>;
+  restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
   selectLabelField?: string;
   hint?: string;

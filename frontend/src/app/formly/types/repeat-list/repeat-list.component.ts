@@ -27,7 +27,6 @@ import {
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
-import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
@@ -56,11 +55,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private currentStateRequired = false;
   type: "simple" | "select" | "autocomplete" | "search" = "simple";
 
-  constructor(
-    private http: HttpClient,
-    private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private snack: MatSnackBar, private cdr: ChangeDetectorRef) {
     super();
   }
 
@@ -244,11 +239,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       return;
     }
     this.searchSub?.unsubscribe();
-    this.searchSub = this.props
-      .restCall(this.http, value)
-      .subscribe((result) => {
-        this.searchResult.next(result);
-      });
+    this.searchSub = this.props.restCall(value).subscribe((result) => {
+      this.searchResult.next(result);
+    });
     this.cdr.detectChanges();
   }
 
