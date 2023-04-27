@@ -15,51 +15,47 @@ import { ConfigService } from "../services/config/config.service";
   providedIn: "root",
 })
 export class RedirectFormGuard implements CanActivate {
-  // TODO: get along without catalogId info!?
-  private catalogId: string;
-
   constructor(
     private router: Router,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
-    private behaviourService: BehaviourService,
-    private configService: ConfigService
-  ) {
-    this.catalogId = configService.$userInfo.value.currentCatalog.id;
-  }
+    private behaviourService: BehaviourService
+  ) {}
 
   async canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
-    if (state.url.indexOf(`/${this.catalogId}/form`) === 0) {
+    if (state.url.indexOf(`/${ConfigService.catalogId}/form`) === 0) {
       // in case we come from a different page
-      if (this.router.url.indexOf(`/${this.catalogId}/form`) !== 0) {
+      if (this.router.url.indexOf(`/${ConfigService.catalogId}/form`) !== 0) {
         this.behaviourService.registerState$.next({
           register: true,
           address: false,
         });
+        if (route.params.id) {
+          this.reloadDataset(route.params.id, false);
+        } else {
+          const previousOpenedDocId = this.getOpenedDocumentId(false);
+          return await this.handleNavigation(route, previousOpenedDocId, false);
+        }
       }
-      if (route.params.id) {
-        this.reloadDataset(route.params.id, false);
-      } else {
-        const previousOpenedDocId = this.getOpenedDocumentId(false);
-        return await this.handleNavigation(route, previousOpenedDocId, false);
-      }
-    } else if (state.url.indexOf(`/${this.catalogId}/address`) === 0) {
+    } else if (state.url.indexOf(`/${ConfigService.catalogId}/address`) === 0) {
       // in case we come from a different page
-      if (this.router.url.indexOf(`/${this.catalogId}/address`) !== 0) {
+      if (
+        this.router.url.indexOf(`/${ConfigService.catalogId}/address`) !== 0
+      ) {
         this.behaviourService.registerState$.next({
           register: true,
           address: true,
         });
-      }
-      if (route.params.id) {
-        this.reloadDataset(route.params.id, true);
-      } else {
-        const previousOpenedDocId = this.getOpenedDocumentId(true);
-        return await this.handleNavigation(route, previousOpenedDocId, true);
+        if (route.params.id) {
+          this.reloadDataset(route.params.id, true);
+        } else {
+          const previousOpenedDocId = this.getOpenedDocumentId(true);
+          return await this.handleNavigation(route, previousOpenedDocId, true);
+        }
       }
     }
 
@@ -78,7 +74,9 @@ export class RedirectFormGuard implements CanActivate {
   ): Promise<boolean> {
     if (uuid && route.params.id !== uuid) {
       await this.router.navigate([
-        forAddress ? `/${this.catalogId}/address` : `/${this.catalogId}/form`,
+        forAddress
+          ? `/${ConfigService.catalogId}/address`
+          : `/${ConfigService.catalogId}/form`,
         { id: uuid },
       ]);
       return false;

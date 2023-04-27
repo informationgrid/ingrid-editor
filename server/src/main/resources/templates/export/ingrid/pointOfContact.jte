@@ -81,7 +81,7 @@
                     @if(address.getModel().getOrganization() != null)
                         <idf:addressOrganisationName>${address.getModel().getOrganization()}</idf:addressOrganisationName>
                     @endif
-                        <idf:addressType>${address.getType().getKey()}</idf:addressType>
+                        <idf:addressType>${address.getAddressDocType()}</idf:addressType>
                 </idf:hierarchyParty>
             </idf:idfResponsibleParty>
         </gmd:pointOfContact>

@@ -9,6 +9,7 @@ const initialState = {
   breadcrumb: [],
   explicitActiveNode: undefined,
   scrollPosition: 0,
+  needsReload: false,
 };
 
 @Injectable({ providedIn: "root" })

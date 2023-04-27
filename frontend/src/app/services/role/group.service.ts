@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { FrontendGroup, Group, UserResponse } from "../../models/user-group";
 import { Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
-import { filter, map, tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { FrontendUser, User } from "../../+user/user";
 import { GroupStore } from "../../store/group/group.store";
 import { ConfigService } from "../config/config.service";
@@ -12,7 +12,7 @@ import { ConfigService } from "../config/config.service";
 })
 export class GroupService {
   // selectedGroup$: BehaviorSubject<Group>;
-  forceReload$ = new EventEmitter<boolean>();
+  forceReload$ = new EventEmitter<void>();
 
   constructor(
     private configService: ConfigService,

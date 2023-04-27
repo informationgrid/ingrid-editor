@@ -178,31 +178,25 @@ export class DocumentService {
     });
   }
 
-  // TODO: Refactor to use options instead so many parameters
-  save(
-    data: IgeDocument,
-    isNewDoc?: boolean,
-    isAddress?: boolean,
-    path?: number[],
-    noVisualUpdates = false,
-    updateForm = true
-  ): Observable<IgeDocument> {
-    const doc = this.preSaveActions(data, isAddress);
+  save(saveOptions: SaveOptions): Observable<IgeDocument> {
+    const doc = this.preSaveActions(saveOptions.data, saveOptions.isAddress);
 
-    if (noVisualUpdates) {
-      return this.dataService.save(doc, isAddress).pipe(
-        tap((json) =>
-          this.postSaveActions(json, isNewDoc, path, isAddress, updateForm)
-        ),
+    if (saveOptions.noVisualUpdates) {
+      return this.dataService.save(doc, saveOptions.isAddress).pipe(
+        tap((json) => {
+          saveOptions.data = json;
+          this.postSaveActions(saveOptions);
+        }),
         finalize(() => this.documentOperationFinished$.next(true))
       );
     }
 
-    return this.dataService.save(doc, isAddress).pipe(
+    return this.dataService.save(doc, saveOptions.isAddress).pipe(
       tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
-      tap((json) =>
-        this.postSaveActions(json, isNewDoc, path, isAddress, updateForm)
-      ),
+      tap((json) => {
+        saveOptions.data = json;
+        this.postSaveActions(saveOptions);
+      }),
       finalize(() => this.documentOperationFinished$.next(true))
     );
   }
@@ -235,33 +229,30 @@ export class DocumentService {
     );
   }
 
-  postSaveActions(
-    json: any,
-    isNewDoc: boolean,
-    path: number[],
-    isAddress: boolean,
-    updateForm: boolean = true
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
+  postSaveActions(saveOptions: SaveOptions) {
+    const store = saveOptions.isAddress
+      ? this.addressTreeStore
+      : this.treeStore;
 
-    if (updateForm) this.docEvents.sendAfterSave(json);
+    if (!saveOptions.dontUpdateForm)
+      this.docEvents.sendAfterSave(saveOptions.data);
 
-    const parentId = json._parent;
-    const info = this.mapToDocumentAbstracts([json], parentId)[0];
+    const parentId = saveOptions.data._parent;
+    const info = this.mapToDocumentAbstracts([saveOptions.data], parentId)[0];
 
     // after renaming a folder the folder must still be expandable
-    if (!isNewDoc) {
+    if (!saveOptions.isNewDoc) {
       const entity = store.getValue().entities[info.id];
       if (entity) {
         info._hasChildren = entity._hasChildren;
       }
     }
 
-    this.updateOpenedDocumentInTreestore(info, isAddress);
+    this.updateOpenedDocumentInTreestore(info, saveOptions.isAddress);
 
     // update state by adding node and updating parent info
     store.upsert(info.id, info);
-    if (isNewDoc && parentId) {
+    if (saveOptions.isNewDoc && parentId) {
       store.update(parentId, {
         _hasChildren: true,
       });
@@ -269,11 +260,11 @@ export class DocumentService {
 
     store.update({
       datasetsChanged: {
-        type: isNewDoc ? UpdateType.New : UpdateType.Update,
+        type: saveOptions.isNewDoc ? UpdateType.New : UpdateType.Update,
         data: [info],
         parent: parentId,
-        path: path,
-        doNotSelect: !updateForm,
+        path: saveOptions.path,
+        doNotSelect: saveOptions.dontUpdateForm,
       },
     });
   }
@@ -293,7 +284,13 @@ export class DocumentService {
         if (!publishDate)
           this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
       }),
-      tap((json) => this.postSaveActions(json, false, null, isAddress)),
+      tap((json) =>
+        this.postSaveActions({
+          data: json,
+          isNewDoc: false,
+          isAddress: isAddress,
+        })
+      ),
       finalize(() => this.documentOperationFinished$.next(true))
     );
   }
@@ -880,4 +877,13 @@ export class DocumentService {
       null
     );
   }
+}
+
+export class SaveOptions {
+  data: IgeDocument;
+  isNewDoc?: boolean;
+  isAddress?: boolean;
+  path?: number[];
+  noVisualUpdates?: boolean;
+  dontUpdateForm?: boolean;
 }

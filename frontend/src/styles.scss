@@ -67,6 +67,20 @@ button.button-with-text {
   -webkit-font-smoothing: antialiased;
 }
 
+// prevent hint and error wrappers from overlapping other fields
+.mat-mdc-form-field-bottom-align {
+  min-height: 22px;
+
+  &:before {
+    display: none !important;
+  }
+
+  .mat-mdc-form-field-error-wrapper,
+  .mat-mdc-form-field-hint-wrapper {
+    position: relative;
+  }
+}
+
 form-toolbar .mdc-button > .mat-icon {
   height: 24px;
   width: 24px;

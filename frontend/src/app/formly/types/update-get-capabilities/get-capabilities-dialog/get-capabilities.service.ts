@@ -199,7 +199,13 @@ export class GetCapabilitiesService {
       if (!resource.exists) {
         const doc = this.mapCoupledResource(resource, parent);
         const savedDoc = await this.documentService
-          .save(doc, true, false, null, true, false)
+          .save({
+            data: doc,
+            isNewDoc: true,
+            isAddress: false,
+            noVisualUpdates: true,
+            dontUpdateForm: true,
+          })
           .toPromise();
         return <DocumentReference>{
           ...docReferenceTemplate,
@@ -301,7 +307,13 @@ export class GetCapabilitiesService {
     }
 
     const result = await this.documentService
-      .save(address, true, true, null, true, false)
+      .save({
+        data: address,
+        isNewDoc: true,
+        isAddress: true,
+        noVisualUpdates: true,
+        dontUpdateForm: true,
+      })
       .toPromise();
     return [{ ref: result, type: { key: "1" } }];
   }

@@ -14,7 +14,6 @@ import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -155,7 +154,8 @@ class DocumentService @Autowired constructor(
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
-
+            
+            entityManager.detach(doc);
             // add metadata
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
@@ -311,15 +311,16 @@ class DocumentService @Autowired constructor(
         // create ACL before trying to save since we need the permission
         aclService.createAclForDocument(newWrapper.id!!, preUpdatePayload.wrapper.parent?.id)
 
+        // since we're within a transaction the expandInternalReferences-function would modify the db-document
+        docRepo.flush()
+        entityManager.detach(newDocument)
+        
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
-        // run post-publish pipe(s)
-        val postPublishPayload = PostPublishPayload(docType, postCreatePayload.document, postCreatePayload.wrapper)
-        postPublishPipe.runFilters(postPublishPayload, filterContext)
 
-        // also run update pipes!
+        // also run update/publish pipes!
         val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
 
         return DocumentData(postWrapper, newDocument)
@@ -335,8 +336,6 @@ class DocumentService @Autowired constructor(
         data.fields().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
-        // convert FIELD_ID to String, since frontend needs it as string
-//        node.put(FIELD_ID, node.get(FIELD_ID).asText())
         return node
 
     }
@@ -444,6 +443,7 @@ class DocumentService @Autowired constructor(
                 runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
 
             // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            docRepo.flush()
             entityManager.detach(updatedDoc)
             
             return DocumentData(
@@ -484,7 +484,7 @@ class DocumentService @Autowired constructor(
         docData.document.modified = dateService.now()
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = [PostSaveException::class])
     fun publishDocument(
         principal: Principal?,
         catalogId: String,
@@ -523,11 +523,13 @@ class DocumentService @Autowired constructor(
                 preUpdatePayload.wrapper
             }
 
+            // since we're within a transaction the expandInternalReferences-function would modify the db-document
+            // make sure database has current state
+            docRepo.flush()
+            entityManager.detach(updatedDoc)
+
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
-
-            // since we're within a transaction the expandInternalReferences-function would modify the db-document
-            entityManager.detach(updatedDoc)
             
             return DocumentData(
                 postWrapper,
@@ -671,6 +673,10 @@ class DocumentService @Autowired constructor(
         // remove references in groups
         groupService.removeDocFromGroups(catalogId, id)
 
+        // since we're within a transaction the expandInternalReferences-function would modify the db-document
+        docRepo.flush()
+        entityManager.detach(preDeletePayload.document)
+
         // run post-delete pipe(s)
         val postDeletePayload =
             PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
@@ -707,6 +713,10 @@ class DocumentService @Autowired constructor(
         latestPublishedDoc.isLatest = true
         docRepo.save(latestPublishedDoc)
 
+        // since we're within a transaction the expandInternalReferences-function would modify the db-document
+        docRepo.flush()
+        entityManager.detach(latestPublishedDoc)
+
         // run post-revert pipe(s)
         val postRevertPayload = PostRevertPayload(docType, latestPublishedDoc, docData.wrapper)
         postRevertPipe.runFilters(postRevertPayload, filterContext)
@@ -716,6 +726,7 @@ class DocumentService @Autowired constructor(
 
     fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        entityManager.detach(doc)
         return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
     }
 
@@ -744,6 +755,10 @@ class DocumentService @Autowired constructor(
             currentDoc.document.state = DOCUMENT_STATE.DRAFT
             docRepo.save(currentDoc.document)
         }
+
+        // since we're within a transaction the expandInternalReferences-function would modify the db-document
+        docRepo.flush()
+        entityManager.detach(updatedDoc)
 
         // run post-unpublish pipe(s)
         val postUnpublishPayload = PostUnpublishPayload(docType, updatedDoc, currentDoc.wrapper)
@@ -778,10 +793,6 @@ class DocumentService @Autowired constructor(
 
         return DocumentData(updatedWrapper, updatedDoc)
     }
-
-    // TODO: the same function is also defined in IndexingTask
-    private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
-        catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
 
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
         return if (includeFolders)

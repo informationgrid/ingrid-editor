@@ -67,6 +67,13 @@ ige-form-label {
     padding-bottom: 6px;
     word-break: break-all;
   }
+
+  ::ng-deep .disabled mat-cell {
+    a,
+    span {
+      color: rgba(0, 0, 0, 0.38);
+    }
+  }
 }
 
 mat-row,

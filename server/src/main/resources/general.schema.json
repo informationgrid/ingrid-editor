@@ -6,16 +6,10 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"
@@ -49,10 +43,7 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "ref",
-        "type"
-      ],
+      "required": ["ref", "type"],
       "title": "PointOfContact"
     },
     "Spatial": {
@@ -65,10 +56,7 @@
               "const": "free"
             },
             "title": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "value": {
               "$ref": "#/definitions/BoundingBox"
@@ -85,16 +73,10 @@
               "const": "wkt"
             },
             "title": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "wkt": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "value": {
               "type": "null"
@@ -111,10 +93,7 @@
               "const": "geo-name"
             },
             "title": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "value": {
               "type": "null"
@@ -142,12 +121,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "lat1",
-        "lat2",
-        "lon1",
-        "lon2"
-      ],
+      "required": ["lat1", "lat2", "lon1", "lon2"],
       "title": "BoundingBox"
     },
     "AddressClass": {
@@ -155,47 +129,45 @@
       "additionalProperties": false,
       "properties": {
         "street": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "city": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "po-box": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "integer"
         },
         "zip-code": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "integer"
         },
         "zip-po-box": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "integer"
         },
         "administrativeArea": {
-          "$ref": "#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "country": {
-          "$ref": "#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
-      "required": [
-      ],
+      "required": [],
       "title": "AddressClass"
     },
     "Contact": {
@@ -209,10 +181,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "connection",
-        "type"
-      ],
+      "required": ["connection", "type"],
       "title": "Contact"
     }
   }

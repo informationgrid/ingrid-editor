@@ -134,15 +134,16 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     ): List<UploadInfo> {
         return json.get(tableField)
             ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
-            ?.map { mapToUploadInfo(tableField, it) }
+            ?.mapNotNull { mapToUploadInfo(tableField, it) }
             ?: emptyList()
     }
 
-    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo {
+    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo? {
         val validUntilDateField = it.get("validUntil")
         val expiredDate =
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-        return UploadInfo(field, it.get("downloadURL").get("uri").textValue(), expiredDate)
+        val uri = it.get("downloadURL")?.get("uri")?.textValue() ?: return null
+        return UploadInfo(field, uri, expiredDate)
     }
     
     private data class UrlTableFields(

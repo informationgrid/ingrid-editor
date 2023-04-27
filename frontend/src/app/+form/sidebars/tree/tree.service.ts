@@ -70,4 +70,11 @@ export class TreeService {
       scrollPosition: top,
     });
   }
+
+  isReloadNeededWithReset(isAddress: boolean): boolean {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    const needsReload = store.getValue().needsReload;
+    if (needsReload) store.update({ needsReload: false });
+    return needsReload;
+  }
 }

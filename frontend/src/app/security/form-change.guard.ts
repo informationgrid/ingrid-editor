@@ -141,7 +141,12 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     if (action === "save") {
       const form = this.formStateService.getForm()?.value;
       await this.documentService
-        .save(form, false, isAddress, null, true)
+        .save({
+          data: form,
+          isNewDoc: false,
+          isAddress: isAddress,
+          noVisualUpdates: true,
+        })
         .toPromise();
       this.documentService.reload$.next({
         uuid: currentUuid,

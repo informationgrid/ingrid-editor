@@ -42,6 +42,6 @@ export class UploadItemComponent implements OnInit {
   }
 
   retry() {
-    this.retryUpload.next();
+    this.retryUpload.next({});
   }
 }

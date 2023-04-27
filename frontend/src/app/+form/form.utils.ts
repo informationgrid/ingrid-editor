@@ -42,7 +42,9 @@ export class FormUtils {
       const value = form.value;
       const decision = await this.showDecisionDialog(dialog);
       if (decision === "save") {
-        await documentService.save(value, false, isAddress).toPromise();
+        await documentService
+          .save({ data: value, isNewDoc: false, isAddress: isAddress })
+          .toPromise();
       } else if (decision === "discard") {
         form.reset();
       } else {

@@ -12,6 +12,10 @@ import { FormMessageService } from "../services/form-message.service";
 import { ProfileQuery } from "../store/profile/profile.query";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
+import { DocEventsService } from "../services/event/doc-events.service";
+import { IgeDocument } from "../models/ige-document";
+import { ConfigService } from "../services/config/config.service";
+import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 
 @Injectable()
 export class FormularService {
@@ -27,9 +31,12 @@ export class FormularService {
   constructor(
     private dialog: MatDialog,
     private profiles: ProfileService,
+    private configService: ConfigService,
     private documentService: DocumentService,
+    private docEventsService: DocEventsService,
     private formMessageService: FormMessageService,
     private treeQuery: TreeQuery,
+    private addressTreeQuery: AddressTreeQuery,
     private treeStore: TreeStore,
     private sessionStore: SessionStore,
     private profileQuery: ProfileQuery
@@ -58,6 +65,48 @@ export class FormularService {
     } else {
       throw new Error("Document type not found: " + profile);
     }
+  }
+
+  getHeaderMenuOptions(
+    doc: IgeDocument,
+    isAddress: boolean
+  ): HeaderMenuOption[] {
+    const moreOptions = [];
+
+    const isFolder = doc._type === "FOLDER";
+    const query = isAddress ? this.addressTreeQuery : this.treeQuery;
+    const parent = query.getEntity(doc._parent);
+
+    if (isAddress && !isFolder) {
+      moreOptions.push({
+        title: "Kontaktangaben der übergeordneten Adresse übernehmen",
+        name: "inherit-contact-data",
+        disabled: !parent || parent._type === "FOLDER",
+        action: () =>
+          this.docEventsService.sendEvent({
+            type: "INHERIT_CONTACT_DATA",
+            data: { docId: doc._id, parentId: parent.id },
+          }),
+      });
+
+      if (this.isUserPrivileged())
+        moreOptions.push({
+          title: "Adresse ersetzen",
+          name: "replace-address",
+          action: () =>
+            this.docEventsService.sendEvent({
+              type: "REPLACE_ADDRESS",
+              data: { uuid: doc._uuid },
+            }),
+        });
+    }
+
+    return moreOptions;
+  }
+
+  private isUserPrivileged() {
+    const role = this.configService.$userInfo.value.role;
+    return role === "ige-super-admin" || role === "cat-admin";
   }
 
   private getProfile(id: string): Doctype {
@@ -114,4 +163,11 @@ export class FormularService {
       this.sections$.next([...this.profileSections, ...sections])
     );
   }
+}
+
+export class HeaderMenuOption {
+  title: string;
+  name: string;
+  disabled?: boolean;
+  action: () => void;
 }

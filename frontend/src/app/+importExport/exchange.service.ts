@@ -6,6 +6,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs/operators";
+import { TreeStore } from "../store/tree/tree.store";
+import { AddressTreeStore } from "../store/address-tree/address-tree.store";
 
 export interface ImportLog<Type> {
   isRunning: boolean;
@@ -102,7 +104,12 @@ export class ExchangeService {
     };
   }
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+    private treeStore: TreeStore,
+    private addressTreeStore: AddressTreeStore
+  ) {
     this.configuration = configService.getConfiguration();
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
   }
@@ -131,10 +138,17 @@ export class ExchangeService {
   }
 
   import(options: any) {
-    return this.http.post(
-      this.configuration.backendUrl + "jobs/import?command=start",
-      options
-    );
+    return this.http
+      .post(
+        this.configuration.backendUrl + "jobs/import?command=start",
+        options
+      )
+      .pipe(
+        tap(() => {
+          this.treeStore.update({ needsReload: true });
+          this.addressTreeStore.update({ needsReload: true });
+        })
+      );
   }
 
   fetchLastLog() {

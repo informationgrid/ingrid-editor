@@ -1,7 +1,6 @@
 @import "src/variables";
 
 :host {
-  padding-top: 10px;
   padding-bottom: 32px;
   position: relative;
   display: block;
@@ -15,10 +14,26 @@
 }
 
 .spatialHelpText {
-  margin-top: 16px;
+  margin-bottom: 16px;
 
   a {
     cursor: pointer;
+  }
+}
+
+.limitHelpText {
+  font-size: 14px;
+  margin-top: 16px;
+
+  gap: 10px;
+  display: flex;
+  align-items: center;
+
+  .limitHelpIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f3f3f3;
   }
 }
 
@@ -33,6 +48,7 @@
     left: calc(50% - 28px);
     margin-top: -28px;
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
   ::ng-deep .mat-button-wrapper {
     padding: 0;
@@ -49,6 +65,7 @@
     ::ng-deep .coloring {
       fill: #ffffff;
     }
+
     ::ng-deep .coloring-stroke {
       stroke: #cccccc;
     }

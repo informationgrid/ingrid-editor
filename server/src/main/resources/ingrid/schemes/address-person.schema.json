@@ -62,14 +62,15 @@
               "type": "null"
             }
           ]
+        },
+        "positionName": {
+          "type": "string"
+        },
+        "hoursOfService": {
+          "type": "string"
         }
       },
-      "required": [
-        "_uuid",
-        "_type",
-        "lastName",
-        "contact"
-      ],
+      "required": ["_uuid", "_type", "lastName", "contact"],
       "title": "Address"
     }
   }

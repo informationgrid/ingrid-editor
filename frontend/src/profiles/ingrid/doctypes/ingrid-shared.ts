@@ -694,8 +694,10 @@ export abstract class IngridShared extends BaseDoctype {
           ),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
-          showSearch: true,
-          options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
+          options: this.getCodelistForSelect(3571, "extraInfoPublishArea").pipe(
+            // sort by ID, which defines hierarchy
+            map((items) => items.sort((a, b) => a.value.localeCompare(b.value)))
+          ),
           codelistId: 3571,
           required: true,
           defaultValue: {
@@ -983,6 +985,7 @@ export abstract class IngridShared extends BaseDoctype {
         fieldGroupClassName: "display-flex flex-column",
         fields: [this.urlRefFields()],
         className: "optional",
+        hasExtendedGap: true,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl, field) =>

@@ -12,10 +12,10 @@ import { SavePlugin } from "../dialogs/save/save.plugin";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { CreateFolderPlugin } from "../dialogs/create/create-folder.plugin";
 import { DeleteDocsPlugin } from "../dialogs/delete-docs/delete-docs.plugin";
-import { IsoViewPlugin } from "../dialogs/isoView/iso-view.plugin";
 import { CopyCutPastePlugin } from "../dialogs/copy-cut-paste/copy-cut-paste.plugin";
 import { PublishPlugin } from "../dialogs/save/publish.plugin";
 import { UndoPlugin } from "../dialogs/undo/undo.plugin";
+import { IsoViewPlugin } from "../dialogs/iso-view/iso-view.plugin";
 import { PrintViewPlugin } from "../dialogs/print-view/print-view.plugin";
 import { FormularService } from "../formular.service";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -106,10 +106,10 @@ import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
     SavePlugin,
     CreateFolderPlugin,
     DeleteDocsPlugin,
-    IsoViewPlugin,
     CopyCutPastePlugin,
     PublishPlugin,
     UndoPlugin,
+    IsoViewPlugin,
     PrintViewPlugin,
     FormularService,
     HistoryPlugin,

@@ -87,7 +87,7 @@
                             </gmd:role>
                             <idf:hierarchyParty uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
-                                <idf:addressType>7</idf:addressType>
+                                <idf:addressType>0</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>

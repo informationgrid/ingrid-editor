@@ -13,6 +13,7 @@ const initialState = {
   isDocLoading: false,
   multiSelectMode: false,
   datasetsChanged: null,
+  needsReload: false,
 };
 
 @Injectable({ providedIn: "root" })

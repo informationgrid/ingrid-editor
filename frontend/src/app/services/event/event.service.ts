@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { filter, map, switchMap, take, tap } from "rxjs/operators";
-import { ActivatedRouteSnapshot } from "@angular/router";
 
 export enum IgeEvent {
   DELETE = "DELETE",
@@ -35,7 +34,7 @@ export class EventService {
   private observersCount$: { [x: string]: BehaviorSubject<any> } = {};
 
   // this is the event a consumer can subscribe to
-  private event$: { [x: string]: Subject<any> } = {};
+  private event$: { [x: string]: Subject<void> } = {};
 
   // this contains the results of an event type
   private result: { [x: string]: EventData[] } = {};
