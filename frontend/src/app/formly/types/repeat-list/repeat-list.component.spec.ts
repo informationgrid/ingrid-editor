@@ -187,6 +187,12 @@ describe("RepeatListComponent", () => {
 
       expect(await input.getPlaceholder()).toBe(placeholder);
     });
+
+    xit("should show already selected values as disabled");
+    xit("should reset disabled state when setting a new value", () => {
+      // the previously disabled items should not be disabled anymore when we load a new model
+      // and the list is going to be updated
+    });
   });
 
   describe("Select", () => {
