@@ -55,11 +55,21 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
             val positionName = it.responsibleParty?.positionName?.value ?: ""
             val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
+
+            // if contact is from main element and not a person (with individual name)
+            // then it gets special role: pointOfContactMd (key=12)
+            val role = if (individualName == null && mainContact.contains(it)) RoleCode(
+                CodelistAttributes(
+                    "",
+                    "pointOfContactMd"
+                )
+            ) else it.responsibleParty?.role!!
+
             PointOfContact(
                 it.responsibleParty?.uuid!!,
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
-                mapRoleToContactType(it.responsibleParty?.role!!),
+                mapRoleToContactType(role),
                 individualName == null,
                 organization,
                 individualName,
@@ -284,7 +294,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                     references.add(SpatialReference(type = "wkt", title = null, wkt = convertedWKT))
                 }
             }
-        
+
         // if a spatial value has no bounding box, then convert it to a geo name
         return references.map {
             if (it.type == "free" && it.coordinates == null) {
