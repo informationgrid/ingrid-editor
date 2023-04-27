@@ -237,8 +237,9 @@ class ImportService constructor(
 
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
-            ref.document.title = if (data.has("organization")) data.get("organization")
-                .asText() else "${data.get("lastName")}, ${data.get("firstName")}"
+            ref.document.title = if (data.has("organization")) 
+                data.get("organization").asText() 
+            else "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
         }
 
         if (!ref.exists) {
