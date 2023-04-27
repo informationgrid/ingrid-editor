@@ -49,14 +49,12 @@ class KeycloakConfig {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
-        /*http.oauth2Login()
-                .and()
-                .logout()
-                .addLogoutHandler(keycloakLogoutHandler)
-                .logoutSuccessUrl("/");
-        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);*/
-        
         http {
+            headers { 
+                frameOptions {
+                    sameOrigin
+                }
+            }
             authorizeRequests {
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)

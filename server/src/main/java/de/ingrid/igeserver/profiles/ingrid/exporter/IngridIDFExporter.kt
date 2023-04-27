@@ -32,7 +32,7 @@ class IngridIDFExporter @Autowired constructor(
 ) : IgeExporter {
 
     companion object {
-        private val log = LogManager.getLogger()
+        val log = LogManager.getLogger()
     }
 
     val codelistTransformer = CodelistTransformer(codelistHandler)
