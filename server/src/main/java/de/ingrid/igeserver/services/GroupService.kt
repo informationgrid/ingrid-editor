@@ -32,6 +32,7 @@ class GroupService @Autowired constructor(
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
     private val aclService: AclService,
+    private val catalogService: CatalogService,
     private var keycloakService: UserManagementService
 ) {
 
@@ -172,11 +173,13 @@ class GroupService @Autowired constructor(
     }
 
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
             val users = userRepo.findByGroups_Id(id)
                 .mapNotNull {
                     try {
-                        keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                        val user = keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: ""}
+                        catalogService.applyIgeUserInfo(user, it, catalogId)
                     } catch (e: Exception) {
                         log.error("Couldn't find keycloak user with login: ${it.userId}")
                         null
