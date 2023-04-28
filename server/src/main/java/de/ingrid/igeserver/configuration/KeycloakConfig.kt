@@ -52,7 +52,7 @@ class KeycloakConfig {
         http {
             headers { 
                 frameOptions {
-                    sameOrigin
+                    sameOrigin = true
                 }
             }
             authorizeRequests {
@@ -61,9 +61,9 @@ class KeycloakConfig {
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
             }
-            oauth2Login { 
+//            oauth2Login { 
                 
-            }
+//            }
             oauth2ResourceServer { 
                 jwt { jwtAuthenticationConverter =  jwtAuthenticationConverter() }
             }
