@@ -6,18 +6,16 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper
-import org.springframework.stereotype.Service
 import java.security.Principal
 import java.util.*
 
-@Service
-class MyAuthenticationProvider @Autowired constructor(
+//@Service
+class MyAuthenticationProvider(
     val userRepository: UserRepository,
     val roleRepository: RoleRepository,
     val authUtils: AuthUtils
@@ -108,7 +106,7 @@ class MyAuthenticationProvider @Autowired constructor(
     }
 
     override fun supports(authentication: Class<*>?): Boolean {
-        return false // KeycloakAuthenticationToken::class.java.isAssignableFrom(authentication)
+        return true // false // KeycloakAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
 
 }

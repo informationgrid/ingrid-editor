@@ -1,6 +1,10 @@
 package de.ingrid.igeserver.configuration
 
-import de.ingrid.igeserver.configuration.acl.MyAuthenticationProvider
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
+import de.ingrid.igeserver.repository.RoleRepository
+import de.ingrid.igeserver.repository.UserRepository
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
@@ -14,13 +18,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.oauth2.jwt.Jwt
@@ -31,26 +33,33 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.firewall.HttpFirewall
 import org.springframework.security.web.firewall.StrictHttpFirewall
-import java.util.stream.Collectors
+import java.util.*
 
 
 @Profile("!dev")
 @Configuration
 @EnableWebSecurity
 //@EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
-class KeycloakConfig {
-    companion object {
-        val log = LogManager.getLogger()
-    }
+class KeycloakConfig() {
 
     @Autowired
     lateinit var generalProperties: GeneralProperties
+
+    @Autowired
+    lateinit var userRepository: UserRepository
+
+    @Autowired
+    lateinit var roleRepository: RoleRepository
+
+    companion object {
+        val log = LogManager.getLogger()
+    }
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
         http {
-            headers { 
+            headers {
                 frameOptions {
                     sameOrigin = true
                 }
@@ -60,12 +69,11 @@ class KeycloakConfig {
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
+
             }
-//            oauth2Login { 
-                
-//            }
-            oauth2ResourceServer { 
-                jwt { jwtAuthenticationConverter =  jwtAuthenticationConverter() }
+            oauth2Login {}
+            oauth2ResourceServer {
+                jwt { jwtAuthenticationConverter = jwtAuthenticationConverter() }
             }
             if (generalProperties.enableCsrf) {
                 csrf { csrfTokenRepository to CookieCsrfTokenRepository.withHttpOnlyFalse() }
@@ -86,17 +94,17 @@ class KeycloakConfig {
         return http.build();
     }
 
-    private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken>? {
+    private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken> {
         val jwtConverter = JwtAuthenticationConverter()
-        jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter())
+        jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter(userRepository, roleRepository))
         return jwtConverter
     }
 
     inner class RequestResponseLoggingFilter : Filter {
         override fun doFilter(
-            request: ServletRequest,
-            response: ServletResponse,
-            chain: FilterChain
+                request: ServletRequest,
+                response: ServletResponse,
+                chain: FilterChain
         ) {
             request as HttpServletRequest
             response as HttpServletResponse
@@ -111,13 +119,14 @@ class KeycloakConfig {
             chain.doFilter(request, response)
         }
     }
-
-    @Autowired
-    lateinit var myAuthenticationProvider: MyAuthenticationProvider
-
+    /*
+        @Autowired
+        lateinit var myAuthenticationProvider: MyAuthenticationProvider
+    
+        */
     /**
      * Registers the KeycloakAuthenticationProvider with the authentication manager.
-     */
+     *//*
 
     @Autowired
     fun configureGlobal(auth: AuthenticationManagerBuilder) {
@@ -128,6 +137,13 @@ class KeycloakConfig {
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(grantedAuthorityMapper)
         auth.authenticationProvider(keycloakAuthenticationProvider)
     }
+
+    @Bean
+    fun authManager(http: HttpSecurity): AuthenticationManager {
+        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        authenticationManagerBuilder.authenticationProvider(myAuthenticationProvider)
+        return authenticationManagerBuilder.build()
+    }*/
 
 
     /**
@@ -165,13 +181,77 @@ class KeycloakConfig {
 }
 
 
-class KeycloakRealmRoleConverter : Converter<Jwt, Collection<GrantedAuthority>> {
+class KeycloakRealmRoleConverter(private val userRepository: UserRepository, private val roleRepository: RoleRepository) : Converter<Jwt, Collection<GrantedAuthority>> {
     override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
-        val realmAccess = jwt.getClaims().get("realm_access") as Map<String, Any>
-        return (realmAccess["roles"] as List<String>?)!!.stream()
-                .map { roleName: String -> "ROLE_$roleName" } // prefix to map to a Spring Security "role"
-                .map { role: String? -> SimpleGrantedAuthority(role) }
-                .collect(Collectors.toList())
+        val realmAccess = jwt.claims["realm_access"] as Map<*, *>
+        val roles = realmAccess["roles"] as List<*>
+
+        // add roles from Keycloak
+        val grantedAuthorities = roles.map { "ROLE_$it" } // prefix to map to a Spring Security "role"
+                .map { SimpleGrantedAuthority(it) }
+
+        val isSuperAdmin = roles.contains("ige-super-admin")
+
+        // TODO: cache this function since expensive!
+        val dbUserRoles = getDbUserRoles(jwt, isSuperAdmin)
+
+        return grantedAuthorities + dbUserRoles
+    }
+
+    private fun getDbUserRoles(jwt: Jwt, isSuperAdmin: Boolean): Collection<GrantedAuthority> {
+        val grantedAuthorities = mutableListOf<GrantedAuthority>()
+        // TODO: make function static
+        //        val username = authUtils.getUsernameFromPrincipal(jwt)
+        val username = jwt.getClaimAsString("preferred_username")
+        var userDb = userRepository.findByUserId(username)
+        userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
+
+        userDb?.curCatalog?.id?.let { catalogId ->
+            val groups = userDb.groups.filter { it.catalog?.id == catalogId }
+
+            // add groups
+            groups.forEach {
+                grantedAuthorities.add(SimpleGrantedAuthority("GROUP_${it.name}"))
+                if (it.permissions?.rootPermission == RootPermissionType.WRITE) {
+                    grantedAuthorities.add(SimpleGrantedAuthority("SPECIAL_write_root"))
+                } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {
+                    grantedAuthorities.add(SimpleGrantedAuthority("SPECIAL_read_root"))
+                }
+            }
+        }
+
+        // add roles
+        userDb?.role?.name?.let {
+            // add acl access role for everyone
+            grantedAuthorities.addAll(
+                    listOf(
+                            SimpleGrantedAuthority(it),
+                            SimpleGrantedAuthority("ROLE_ACL_ACCESS")
+                    )
+            )
+        }
+        
+        return grantedAuthorities
+    }
+
+    private fun checkAndCreateSuperUser(
+            userDb: UserInfo?,
+            isSuperAdmin: Boolean,
+            username: String
+    ): UserInfo? {
+        if (userDb == null && isSuperAdmin) {
+            // create user for super admin in db
+            val userDbUpdate = UserInfo().apply {
+                userId = username
+                role = roleRepository.findByName("ige-super-admin")
+                data = UserInfoData().apply {
+                    this.creationDate = Date()
+                    this.modificationDate = Date()
+                }
+            }
+            return userRepository.save(userDbUpdate)
+        }
+        return userDb
     }
 
 }
