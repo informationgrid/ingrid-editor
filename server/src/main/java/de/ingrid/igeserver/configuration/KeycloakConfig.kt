@@ -225,7 +225,7 @@ class KeycloakRealmRoleConverter(private val userRepository: UserRepository, pri
             // add acl access role for everyone
             grantedAuthorities.addAll(
                     listOf(
-                            SimpleGrantedAuthority(it),
+                            SimpleGrantedAuthority("ROLE_$it"),
                             SimpleGrantedAuthority("ROLE_ACL_ACCESS")
                     )
             )
