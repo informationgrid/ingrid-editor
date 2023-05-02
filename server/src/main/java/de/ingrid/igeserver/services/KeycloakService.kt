@@ -9,7 +9,6 @@ import de.ingrid.igeserver.model.User
 import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
-import jakarta.ws.rs.core.Response
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
@@ -203,19 +202,13 @@ class KeycloakService : UserManagementService {
     }
 
     override fun getRoles(principal: Authentication): Set<String>? {
-//        principal as KeycloakAuthenticationToken
-//        return principal.account?.roles
-        return emptySet()
+        principal as JwtAuthenticationToken
+        return principal.authorities.map { it.authority }.toSet()
     }
 
     override fun getName(principal: Authentication): String? {
-//        principal as KeycloakAuthenticationToken
-//        val expiration = principal.account?.keycloakSecurityContext?.token?.exp ?: -99
-//        val issuedAt = principal.account?.keycloakSecurityContext?.token?.iat ?: -99
-//        log.info("Expiration in: " + Date((expiration.toString() + "000").toLong()))
-//        log.info("Issued at: " + Date((issuedAt.toString() + "000").toLong()))
-//        return principal.account?.keycloakSecurityContext?.idToken?.name
-        return "?"
+        principal as JwtAuthenticationToken
+        return principal.name
     }
 
     override fun getCurrentPrincipal(): Principal? {
@@ -248,7 +241,7 @@ class KeycloakService : UserManagementService {
             }
             val createResponse = usersResource.create(keycloakUser)
 
-            // TODO: boot3 => handleReponseErrors(createResponse) // will throw on error
+            handleReponseErrors(createResponse.status) // will throw on error
 
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
@@ -301,12 +294,10 @@ class KeycloakService : UserManagementService {
         return user.role.contains("ige-super-admin") || user.role.contains("cat-admin") || user.role.contains("md-admin")
     }
 
-    private fun handleReponseErrors(createResponse: Response) {
-
-        when (createResponse.status) {
+    private fun handleReponseErrors(status: Int) {
+        when (status) {
             409 -> throw ConflictException.withReason("New user cannot be created, because another user might have the same email address")
         }
-
     }
 
     override fun requestPasswordChange(principal: Principal?, id: String) {
