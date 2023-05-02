@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.security.Principal
+import java.time.Instant
 import java.util.*
 
 
@@ -274,8 +275,8 @@ class ResearchService {
                             title = item[1] as? String,
                             _uuid = item[2] as? String,
                             _type = item[3] as? String,
-                            _created = item[4] as? Date,
-                            _modified = item[5] as? Date,
+                            _created = Date.from(item[4] as Instant),
+                            _modified = Date.from(item[5] as Instant),
                             _state = determineDocumentState(item[8] as String),
                             _category = (item[6] as? String),
                             hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
