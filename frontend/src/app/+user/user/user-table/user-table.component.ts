@@ -7,7 +7,7 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { User } from "../../user";
+import { FrontendUser, User } from "../../user";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
@@ -22,6 +22,8 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { GroupDataService } from "../../../services/role/group-data.service";
+import { Group } from "../../../models/user-group";
 
 @Component({
   selector: "user-table",
@@ -60,7 +62,11 @@ export class UserTableComponent
   dataSource = new MatTableDataSource<User>([]);
   selection: SelectionModel<User>;
 
-  constructor(public userService: UserService, public dialog: MatDialog) {
+  constructor(
+    public userService: UserService,
+    public groupDataService: GroupDataService,
+    public dialog: MatDialog
+  ) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
@@ -129,14 +135,68 @@ export class UserTableComponent
         if (confirmed) this.downloadTable();
       });
   }
-  downloadTable() {
-    let fileText = "Vorname;Nachname;Email;Organisation\n";
-    this.dataSource.filteredData.forEach((row) => {
-      fileText += `${row.firstName};${row.lastName};${row.email};${row.organisation}\n`;
-    });
+
+  private async downloadTable() {
+    // Create the header row.
+    const headerColumns = [
+      "Account eingerichtet am",
+      "Benutzername",
+      "Rolle",
+      "Name",
+      "Vorname",
+      "E-Mail-Adresse",
+      "Organisation",
+      "Abteilung",
+      "Telefon-Nr.",
+      "Zugeordnete Gruppe(n)",
+    ];
+    let fileText = this.createRow(headerColumns);
+
+    // Get groups for [Zugeordnete Gruppe(n)].
+    const groups = (await this.groupDataService.getGroups().toPromise()).map(
+      (group) => group.backendGroup
+    );
+
+    // Create rows by existing users.
+    for (const user of this.dataSource.filteredData) {
+      fileText += this.createRowByUser(user, groups);
+    }
+
     const blob = new Blob([fileText], {
       type: "text/plain;charset=utf-8",
     });
     saveAs(blob, "users.csv");
+  }
+
+  private createRowByUser(user: FrontendUser, groups: Group[]): string {
+    const userColumns = [
+      user.creationDate.toString(),
+      user.login,
+      user.role,
+      user.lastName,
+      user.firstName,
+      user.email,
+      user.organisation,
+      user.department,
+      user.phoneNumber,
+    ];
+
+    // Add group names if assigned.
+    if (user.groups?.length) {
+      let groupNames = [];
+      for (const userGroup of user.groups) {
+        const group = groups.find(
+          (group) => group.id.toString() == userGroup.key
+        );
+        if (group != undefined) groupNames.push(group.name);
+      }
+      if (groupNames.length) userColumns.push(groupNames.join(" | "));
+    }
+
+    return this.createRow(userColumns);
+  }
+
+  private createRow(values: string[]) {
+    return `${values.join(";")}\n`;
   }
 }
