@@ -1,6 +1,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
+import { HttpClient } from "@angular/common/http";
 
 export interface Options {
   id?: string;
@@ -18,6 +19,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
   };
+  hooks?: { onInit: (field) => void };
 }
 
 export interface DatePickerOptions extends Options {
@@ -44,12 +46,19 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  view?: "chip" | "list";
+  restCall?: (query: string) => Observable<any[]>;
+  labelField?: string;
+  selectLabelField?: string | ((item) => string);
+  hint?: string;
 }
 
 export interface RepeatChipOptions extends Options {
   useDialog?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: number;
+  restCall?: (http: HttpClient, query: string) => Observable<any[]>;
+  labelField?: string;
 }
 
 export interface SelectOptions extends Options {
@@ -86,6 +95,9 @@ export interface InputOptions extends Options {
   prefix?: any;
   min?: number;
   max?: number;
+  hintStart?: string;
+  updateOn?: "change" | "blur" | "submit";
+  keydown?: (field: FormlyFieldConfig, event) => void;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -211,6 +223,9 @@ export class FormFieldHelper {
     };
   }
 
+  /**
+   * @deprecated use addRepeatList
+   */
   addRepeatChip(id, label, options?: RepeatChipOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -226,6 +241,8 @@ export class FormFieldHelper {
         useDialog: options?.useDialog,
         options: options?.options,
         codelistId: options?.codelistId,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
       },
     };
   }
@@ -253,6 +270,11 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         remove: options?.remove,
+        view: options?.view,
+        hint: options?.hint,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
+        selectLabelField: options?.selectLabelField ?? options?.labelField,
       },
       expressions: expressions,
     };
@@ -356,12 +378,15 @@ export class FormFieldHelper {
         addonLeft: options?.prefix,
         min: options?.min,
         max: options?.max,
+        hintStart: options?.hintStart,
+        keydown: options?.keydown,
       },
       modelOptions: {
-        updateOn: "blur",
+        updateOn: options?.updateOn ?? "blur",
       },
       expressions: expressions,
       validators: options?.validators,
+      hooks: options?.hooks,
     };
   }
 

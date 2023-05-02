@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -10,21 +10,75 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { debounceTime, map, startWith } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
+import {
+  CodelistService,
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
   styleUrls: ["./repeat-chip.component.scss"],
 })
-export class RepeatChipComponent extends FieldArrayType {
+export class RepeatChipComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();
 
-  constructor(private dialog: MatDialog) {
+  type: "simple" | "codelist" | "object" = "simple";
+
+  searchSub: Subscription;
+  searchResult = new BehaviorSubject<any[]>([]);
+  codelistOptions: Observable<SelectOptionUi[]>;
+  filteredOptions: Observable<SelectOptionUi[]>;
+
+  constructor(
+    private dialog: MatDialog,
+    private http: HttpClient,
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private codelistQuery: CodelistQuery
+  ) {
     super();
 
     // show error immediately (on publish)
     this.inputControl.setValue("");
     this.inputControl.markAllAsTouched();
+  }
+
+  ngOnInit() {
+    if (this.props.codelistId) {
+      this.type = "codelist";
+      this.props.labelField = "label";
+      this.codelistOptions = this.codelistQuery
+        .selectEntity(this.props.codelistId)
+        .pipe(map((codelist) => CodelistService.mapToSelect(codelist)));
+    } else if (this.props.restCall) {
+      this.type = "object";
+      this.inputControl.valueChanges
+        .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+        .subscribe((query) => this.search(query));
+    }
+  }
+
+  search(value) {
+    if (!value || value.length === 0) {
+      this.searchResult.next([]);
+      return;
+    }
+    this.searchSub?.unsubscribe();
+    this.searchSub = this.props
+      .restCall(this.http, value)
+      .subscribe((result) => {
+        this.searchResult.next(result);
+      });
+    this.cdr.detectChanges();
   }
 
   openDialog() {
@@ -70,12 +124,32 @@ export class RepeatChipComponent extends FieldArrayType {
     }
   }
 
-  addValues(value: string) {
+  async addValues(value: string) {
     let duplicates = this.addValueAndDetermineDuplicates(value);
 
     this.inputControl.setValue("");
 
     if (duplicates.length > 0) this.handleDuplicates(duplicates);
+  }
+
+  addValueObject(value: any) {
+    this.inputControl.setValue("");
+
+    const label = value[this.props.labelField];
+    const alreadyExists = this.model.some(
+      (item) => item[this.props.labelField] == label
+    );
+    if (alreadyExists) {
+      this.snack.open(`Der Begriff '${label}' existiert bereits`);
+      return;
+    }
+
+    if (this.type === "codelist") {
+      const prepared = new SelectOption(value.value, value.label);
+      this.add(null, prepared.forBackend());
+    } else {
+      this.add(null, value);
+    }
   }
 
   private handleDuplicates(duplicates: any[]) {
