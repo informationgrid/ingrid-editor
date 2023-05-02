@@ -74,7 +74,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
-            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            val data = jacksonObjectMapper().readTree(it[2].toString())
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
@@ -93,7 +93,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
-            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            val data = jacksonObjectMapper().readTree(it[2].toString())
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
