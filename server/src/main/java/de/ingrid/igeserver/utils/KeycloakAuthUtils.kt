@@ -35,13 +35,12 @@ class KeycloakAuthUtils : AuthUtils {
     }
 
     override fun getFullNameFromPrincipal(principal: Principal): String {
-//        return try {
-//            ((((principal as KeycloakAuthenticationToken).principal as KeycloakPrincipal<*>)
-//                .keycloakSecurityContext as RefreshableKeycloakSecurityContext).token as AccessToken).name
-//        } catch (ex: Exception) {
-//            log.warn("Full name could not be extracted from principal")
+        return try {
+            ((principal as JwtAuthenticationToken).principal as Jwt).getClaimAsString("name")
+        } catch (ex: Exception) {
+            log.warn("Full name could not be extracted from principal: ${ex.message}")
             return getUsernameFromPrincipal(principal)
-//        }
+        }
     }
 
     override fun containsRole(principal: Principal, role: String): Boolean {
