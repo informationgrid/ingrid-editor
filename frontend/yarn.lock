@@ -3936,10 +3936,10 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.8.17.tgz#65fa3be377126253f6c7988b365dfc78d62d536e"
   integrity sha512-lXmY2lBjE38ASvP7ah38yZwXCdc7DTCKhHqx4J3WGNiVzp134U0BD9VKdL5x9q9AAfhnpJeQr4owL6ZOXhOpfA==
 
-"@types/jasmine@~3.6.7":
-  version "3.6.11"
-  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.6.11.tgz#4b1d77aa9dfc757407cb9e277216d8e83553f09d"
-  integrity sha512-S6pvzQDvMZHrkBz2Mcn/8Du7cpr76PlRJBAoHnSDNbulULsH5dp0Gns+WRyNX5LHejz/ljxK4/vIHK/caHt6SQ==
+"@types/jasmine@~4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-4.3.1.tgz#2d8ab5601c2fe7d9673dcb157e03f128ab5c5fff"
+  integrity sha512-Vu8l+UGcshYmV1VWwULgnV/2RDbBaO6i2Ptx7nd//oJPIZGhoI1YLST4VKagD2Pq/Bc2/7zvtvhM7F3p4SN7kQ==
 
 "@types/json-schema@*":
   version "7.0.7"
@@ -3951,7 +3951,7 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
   integrity sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==
 
-"@types/leaflet@^1.9.0":
+"@types/leaflet@^1.9.3":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.9.3.tgz#7aac302189eb3aa283f444316167995df42a5467"
   integrity sha512-Caa1lYOgKVqDkDZVWkto2Z5JtVo09spEaUt2S69LiugbBpoqQu92HYFMGUbYezZbnBkyOxMNPXHSgRrRY5UyIA==
@@ -6355,6 +6355,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0,
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
+graceful-fs@^4.2.10:
+  version "4.2.11"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
+  integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
+
 graceful-fs@^4.2.9:
   version "4.2.9"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
@@ -6585,7 +6590,7 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-husky@^8.0.1:
+husky@^8.0.3:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.3.tgz#4936d7212e46d1dea28fef29bb3a108872cd9184"
   integrity sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==
@@ -7206,12 +7211,12 @@ karma-source-map-support@1.4.0:
   dependencies:
     source-map-support "^0.5.5"
 
-karma-sourcemap-loader@^0.3.8:
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/karma-sourcemap-loader/-/karma-sourcemap-loader-0.3.8.tgz#d4bae72fb7a8397328a62b75013d2df937bdcf9c"
-  integrity sha512-zorxyAakYZuBcHRJE+vbrK2o2JXLFWK8VVjiT/6P+ltLBUGUvqTEkUiQ119MGdOrK7mrmxXHZF1/pfT6GgIZ6g==
+karma-sourcemap-loader@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/karma-sourcemap-loader/-/karma-sourcemap-loader-0.4.0.tgz#b01d73f8f688f533bcc8f5d273d43458e13b5488"
+  integrity sha512-xCRL3/pmhAYF3I6qOrcn0uhbQevitc2DERMPH82FMnG+4WReoGcGFZb1pURf2a5apyrOHRdvD+O6K7NljqKHyA==
   dependencies:
-    graceful-fs "^4.1.2"
+    graceful-fs "^4.2.10"
 
 karma@~6.4.1:
   version "6.4.1"
@@ -7338,7 +7343,7 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@^13.1.0:
+lint-staged@^13.2.1:
   version "13.2.2"
   resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-13.2.2.tgz#5e711d3139c234f73402177be2f8dd312e6508ca"
   integrity sha512-71gSwXKy649VrSU09s10uAT0rWCcY3aewhMaHyl2N84oBk4Xs9HgxvUp3AYu+bNsK4NrOYYxvSgg7FyGJ+jGcA==
@@ -8678,10 +8683,10 @@ postcss@^8.4.19:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-prettier@2.8.1:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.1.tgz#4e1fd11c34e2421bc1da9aea9bd8127cd0a35efc"
-  integrity sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==
+prettier@2.8.7:
+  version "2.8.7"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.7.tgz#bb79fc8729308549d28fe3a98fce73d2c0656450"
+  integrity sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==
 
 pretty-bytes@^5.3.0:
   version "5.6.0"
@@ -9699,7 +9704,7 @@ statuses@2.0.1:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-stop-only@^3.1.2:
+stop-only@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/stop-only/-/stop-only-3.3.1.tgz#0fc5126d556ba624641e655069abacd2f6c1d121"
   integrity sha512-G8x+lRj6RU9pAm+gxaK7wIHmQ2ws6YlXwC2e/WgIwDdrMkr5iPWakLxD5BVOTVyw/mA578N8EBxSXjL4tDQu0A==
