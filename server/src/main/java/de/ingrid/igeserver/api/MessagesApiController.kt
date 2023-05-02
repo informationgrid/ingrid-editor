@@ -32,7 +32,7 @@ class MessagesApiController @Autowired constructor(
         result = result + this.messageService.get(null)
 
         // sort and remove expired messages
-        result = result.sortedBy { it.id }.filter { it.expires?.toLocalDate()?.isAfter(OffsetDateTime.now().toLocalDate().minusDays(1))  ?: true }
+        result = result.sortedBy { it.id }.filter { it.expires?.toInstant()?.isAfter(OffsetDateTime.now().minusDays(1).toInstant())  ?: true }
         return ResponseEntity.ok(result.map { it.message })
     }
 
