@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.exports.iso19115
+package de.ingrid.igeserver.exports.iso19139
 
 import java.util.*
 

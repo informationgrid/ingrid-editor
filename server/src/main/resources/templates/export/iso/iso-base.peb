@@ -1,4 +1,4 @@
-{# @pebvariable name="iso" type="de.ingrid.igeserver.exports.iso19115.Iso" #}
+{# @pebvariable name="iso" type="de.ingrid.igeserver.exports.iso19139.Iso" #}
 {% import "./utils.peb" %}
 
 <gmd:MD_Metadata

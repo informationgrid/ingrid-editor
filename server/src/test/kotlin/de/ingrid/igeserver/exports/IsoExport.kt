@@ -3,17 +3,17 @@ package de.ingrid.igeserver.exports
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.exports.iso19115.Iso19115Exporter
+import de.ingrid.igeserver.exports.iso19139.Iso19139Exporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.string.shouldContain
 
 class IsoExport : AnnotationSpec() {
-    private lateinit var exporter: Iso19115Exporter
+    private lateinit var exporter: Iso19139Exporter
 
     @Before
     fun init() {
-        exporter = Iso19115Exporter()
+        exporter = Iso19139Exporter()
     }
 
     @Test
