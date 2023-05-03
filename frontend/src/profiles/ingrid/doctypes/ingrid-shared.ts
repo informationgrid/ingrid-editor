@@ -821,6 +821,8 @@ export abstract class IngridShared extends BaseDoctype {
           ? this.addGroupSimple("dataset", [
               this.addRepeatList("languages", "Sprache der Ressource", {
                 view: "chip",
+                asSelect: true,
+                asSimpleValues: true,
                 options: this.getCodelistForSelect(
                   99999999,
                   "extraInfoLangData"

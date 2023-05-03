@@ -152,6 +152,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       return;
     }
 
+    if (this.props.asSimpleValues) {
+      this.addSimpleValues(option.value);
+      return;
+    }
+
     // ignore duplicate entries
     const containsCodelistItem =
       option.value &&
@@ -285,8 +290,15 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   getParameter(option: { key; value? }) {
     if (!option) return "";
 
+    let optionKey: string;
+    if (typeof option === "object") {
+      optionKey = option.key;
+    } else {
+      optionKey = option;
+    }
+
     return (
-      this.parameterOptions?.find((param) => param.value === option.key)
+      this.parameterOptions?.find((param) => param.value === optionKey)
         ?.label ??
       option.value ??
       option
