@@ -9,7 +9,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DocumentTileComponent } from "./document-tile/document-tile.component";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
-import { FlexModule } from "@angular/flex-layout";
 import { MatDividerModule } from "@angular/material/divider";
 import { SharedModule } from "../shared/shared.module";
 import { MatListModule } from "@angular/material/list";
@@ -39,7 +38,6 @@ const routes: Routes = [
     MatIconModule,
     MatInputModule,
     MatCardModule,
-    FlexModule,
     MatDividerModule,
     SharedModule,
     MatListModule,

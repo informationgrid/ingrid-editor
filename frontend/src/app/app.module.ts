@@ -33,7 +33,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { ErrorDialogComponent } from "./dialogs/error/error-dialog.component";
 import { IgeError } from "./models/ige-error";
 import { FormsModule } from "@angular/forms";
@@ -230,8 +229,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     NgxFlowModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    // Flex layout
-    FlexLayoutModule,
     FormlyModule.forRoot({
       types: [
         {
