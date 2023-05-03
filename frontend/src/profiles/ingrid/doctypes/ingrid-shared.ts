@@ -829,7 +829,7 @@ export abstract class IngridShared extends BaseDoctype {
                 ),
                 codelistId: 99999999,
                 required: true,
-                defaultValue: [{ key: "150" }],
+                defaultValue: ["150"],
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
