@@ -819,15 +819,15 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
-              this.addRepeatChip("languages", "Sprache der Ressource", {
+              this.addRepeatList("languages", "Sprache der Ressource", {
+                view: "chip",
                 options: this.getCodelistForSelect(
                   99999999,
                   "extraInfoLangData"
                 ),
                 codelistId: 99999999,
-                useDialog: true,
                 required: true,
-                // defaultValue: ["150"], // TODO: does not work
+                defaultValue: [{ key: "150" }],
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",

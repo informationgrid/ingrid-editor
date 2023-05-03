@@ -256,7 +256,7 @@ export class FormFieldHelper {
       type: "repeatList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: [],
+      defaultValue: options?.defaultValue ?? [],
       fieldGroupClassName: options?.fieldGroupClassName,
       props: {
         externalLabel: label,
