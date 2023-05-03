@@ -877,6 +877,13 @@ export class DocumentService {
       null
     );
   }
+
+  getUsersWithAccess(id: number): Observable<any> {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${id}/users`,
+      null
+    );
+  }
 }
 
 export class SaveOptions {

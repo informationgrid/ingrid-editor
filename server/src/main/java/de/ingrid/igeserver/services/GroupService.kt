@@ -2,11 +2,13 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
+import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.GroupData
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.UserRepository
@@ -17,9 +19,9 @@ import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
-import org.springframework.security.acls.model.AclService
 import org.springframework.security.acls.model.MutableAcl
 import org.springframework.security.acls.model.Permission
+import org.springframework.security.acls.model.Sid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
@@ -31,7 +33,9 @@ class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
-    private val aclService: AclService,
+    private val aclService: IgeAclService,
+    private val catalogService: CatalogService,
+    private val igeAclPermissionEvaluator: IgeAclPermissionEvaluator,
     private var keycloakService: UserManagementService
 ) {
 
@@ -114,6 +118,33 @@ class GroupService @Autowired constructor(
         }
     }
 
+    fun getGroupsWithAccess(
+        catalogId: String,
+        datasetId: Int,
+        permission: Permission = BasePermission.READ
+    ): List<Group> {
+        val allGroups = getAll(catalogId)
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, datasetId)
+
+        return allGroups.filter { group: Group ->
+            igeAclPermissionEvaluator.checkPermissionForSids(
+                this.getSidsForGroup(group),
+                objIdentity,
+                permission
+            )
+        }
+
+    }
+
+    fun getUsersWithAccess(
+        principal: Principal,
+        catalogId: String,
+        datasetId: Int,
+        permission: Permission = BasePermission.READ
+    ): Set<User> =
+        getGroupsWithAccess(catalogId, datasetId, permission).flatMap { getUsersOfGroup(it.id!!, principal) }.toSet()
+
+
     private fun getAllDocPermissions(group: Group): List<JsonNode> {
         val docs = group.permissions?.documents ?: emptyList()
         val addresses = group.permissions?.addresses ?: emptyList()
@@ -160,6 +191,7 @@ class GroupService @Autowired constructor(
                 BasePermission.ADMINISTRATION,
                 CustomPermission.WRITE_ONLY_SUBTREE
             )
+
             "readTree" -> listOf(BasePermission.READ)
             else -> listOf(BasePermission.READ)
         }
@@ -172,11 +204,13 @@ class GroupService @Autowired constructor(
     }
 
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         keycloakService.getClient(principal).use { client ->
             val users = userRepo.findByGroups_Id(id)
                 .mapNotNull {
                     try {
-                        keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                        val user = keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
+                        catalogService.applyIgeUserInfo(user, it, catalogId)
                     } catch (e: Exception) {
                         log.error("Couldn't find keycloak user with login: ${it.userId}")
                         null
@@ -215,6 +249,17 @@ class GroupService @Autowired constructor(
         if (!wasUpdated) {
             log.debug("No group had to be updated after deleting document '${docId}'")
         }
+    }
+
+
+    fun getSidsForGroup(group: Group): List<Sid> {
+        val sids = mutableListOf(GrantedAuthoritySid("GROUP_${group.name}"))
+        if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
+            sids += (GrantedAuthoritySid("SPECIAL_write_root"))
+        } else if (group.permissions?.rootPermission == RootPermissionType.READ) {
+            sids += (GrantedAuthoritySid("SPECIAL_read_root"))
+        }
+        return sids
     }
 
 }

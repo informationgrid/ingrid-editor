@@ -295,6 +295,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             className: "optional",
+            asAutocomplete: true,
           }),
         ]),
         this.addReferencesForAddress(
@@ -315,6 +316,7 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addGroupSimple("source", [
               this.addRepeatList("descriptions", "Datengrundlage", {
                 className: "optional flex-1",
+                asAutocomplete: true,
               }),
               this.addGroupSimple("processStep", [
                 this.addTextArea(

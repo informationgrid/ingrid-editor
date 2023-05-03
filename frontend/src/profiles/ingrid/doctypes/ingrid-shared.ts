@@ -19,6 +19,10 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
+import { HttpClient } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
+import { ThesaurusResult } from "../components/thesaurus-result";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -46,6 +50,9 @@ interface AdditionalInformationSectionOptions {
 
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
+  private keywordFieldHint =
+    "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen";
+  http = inject(HttpClient);
 
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
@@ -279,6 +286,7 @@ export abstract class IngridShared extends BaseDoctype {
       "Verschlagwortung",
       [
         this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
+          view: "chip",
           asSelect: true,
           showSearch: true,
           options: this.getCodelistForSelect(8010, "advProductGroups"),
@@ -290,6 +298,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
+              view: "chip",
               asSelect: true,
               showSearch: true,
               options: this.getCodelistForSelect(6100, "themes"),
@@ -300,16 +309,17 @@ export abstract class IngridShared extends BaseDoctype {
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field),
+                this.updateIsoCategory($event, field.options.formState),
               remove: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field, true),
+                this.updateIsoCategory($event, field.options.formState, true),
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
-          required: true,
+          view: "chip",
           asSelect: true,
           showSearch: true,
+          required: true,
           options: this.getCodelistForSelect(6400, "openDataCategories"),
           codelistId: 6400,
           expressions: { hide: "!formState.mainModel?.isOpenData" },
@@ -319,6 +329,7 @@ export abstract class IngridShared extends BaseDoctype {
               "priorityDatasets",
               "INSPIRE - priority data set",
               {
+                view: "chip",
                 asSelect: true,
                 showSearch: true,
                 options: this.getPriorityDatasets(),
@@ -355,6 +366,7 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         options.thesaurusTopics
           ? this.addRepeatList("topicCategories", "ISO-Themenkategorie", {
+              view: "chip",
               asSelect: true,
               showSearch: true,
               options: this.getCodelistForSelect(527, "topicCategories"),
@@ -364,9 +376,87 @@ export abstract class IngridShared extends BaseDoctype {
                 this.checkConnectedIsoCategory(event, field),
             })
           : null,
-        this.addRepeatChip("keywords", "Optionale Schlagworte"),
+        this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
+          view: "chip",
+          placeholder: "Im Umweltthesaurus suchen",
+          restCall: (query: string) =>
+            this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+          labelField: "label",
+          selectLabelField: (item) => {
+            return item.alternativeLabel
+              ? `${item.label} (${item.alternativeLabel})`
+              : item.label;
+          },
+        }),
+        this.addRepeatList("keywords", "Optionale Schlagworte", {
+          view: "chip",
+          hint: this.keywordFieldHint,
+        }),
+        this.addInput(null, null, {
+          wrappers: ["panel", "form-field"],
+          fieldLabel: "Analyse",
+          updateOn: "change",
+          hintStart: this.keywordFieldHint,
+          keydown: async (field, event: KeyboardEvent) => {
+            await this.analyzeKeywords(event, field, options.thesaurusTopics);
+          },
+        }),
       ].filter(Boolean)
     );
+  }
+
+  private async analyzeKeywords(
+    event: KeyboardEvent,
+    field: FormlyFieldConfig,
+    thesaurusTopicsEnabled: boolean
+  ) {
+    if (event.key !== "Enter") return;
+
+    const value = field.formControl.value;
+    if (!value) return;
+
+    field.props.hintStart = "Schlagworte werden analysiert ...";
+    field.formControl.disable();
+    this.snack.dismiss();
+    const formState = field.options.formState;
+    const res = await Promise.all(
+      value
+        .split(",")
+        .map((item) => item.trim())
+        .map(
+          async (item) =>
+            await this.assignKeyword(formState, item, thesaurusTopicsEnabled)
+        )
+    );
+
+    field.options.formState.updateModel();
+    field.formControl.enable();
+    field.formControl.setValue("");
+    this.informUserAboutThesaurusAnalysis(res);
+    field.props.hintStart = this.keywordFieldHint;
+  }
+
+  private async assignKeyword(formState, item, withThesaurusTopics: boolean) {
+    const resultTheme = this.checkInThemes(
+      formState,
+      item,
+      withThesaurusTopics
+    );
+    if (resultTheme.found) return resultTheme;
+    const umthesResult = await this.checkInUmthes(
+      this.http,
+      formState.mainModel,
+      item
+    );
+    if (umthesResult.found) return umthesResult;
+    else return this.addFreeKeyword(formState.mainModel, item);
+  }
+
+  private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
+    this.snack.openFromComponent(ThesaurusReportComponent, {
+      duration: 20000,
+      data: res,
+    });
   }
 
   private checkConnectedIsoCategory(event, field) {
@@ -390,12 +480,12 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private updateIsoCategory($event, field, doRemove: boolean = false) {
-    const isoKey = this.inspireToIsoMapping[$event.key];
+  private updateIsoCategory(item, formstate, doRemove: boolean = false) {
+    const isoKey = this.inspireToIsoMapping[item.key];
     if (!isoKey) return;
 
     // check if exists and add if not
-    const topics = field.options.formState.mainModel.topicCategories;
+    const topics = formstate.mainModel.topicCategories;
     const alreadyExists = topics.some((item) => item.key === isoKey);
     const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
       "527",
@@ -404,19 +494,42 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (!doRemove && !alreadyExists) {
       topics.push({ key: isoKey });
-      field.options.formState.updateModel();
+      formstate.updateModel();
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`
       );
     } else if (doRemove && alreadyExists) {
-      field.options.formState.mainModel.topicCategories = topics.filter(
+      formstate.mainModel.topicCategories = topics.filter(
         (item) => item.key !== isoKey
       );
-      field.options.formState.updateModel();
+      formstate.updateModel();
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`
       );
     }
+  }
+
+  private async checkInUmthes(
+    http: HttpClient,
+    model,
+    item
+  ): Promise<ThesaurusResult> {
+    const response = await http
+      .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
+      .toPromise();
+    if (response.length > 0) {
+      const exists = model.keywordsUmthes.some(
+        (item) => item.label === response[0].label
+      );
+      if (!exists) model.keywordsUmthes.push(response[0]);
+      return {
+        thesaurus: "Umthes Schlagworte",
+        found: true,
+        alreadyExists: exists,
+        value: response[0].label,
+      };
+    }
+    return { thesaurus: "Umthes Schlagworte", found: false, value: item };
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
@@ -694,8 +807,10 @@ export abstract class IngridShared extends BaseDoctype {
           ),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
-          showSearch: true,
-          options: this.getCodelistForSelect(3571, "extraInfoPublishArea"),
+          options: this.getCodelistForSelect(3571, "extraInfoPublishArea").pipe(
+            // sort by ID, which defines hierarchy
+            map((items) => items.sort((a, b) => a.value.localeCompare(b.value)))
+          ),
           codelistId: 3571,
           required: true,
           defaultValue: {
@@ -704,15 +819,15 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
-              this.addRepeatChip("languages", "Sprache der Ressource", {
+              this.addRepeatList("languages", "Sprache der Ressource", {
+                view: "chip",
                 options: this.getCodelistForSelect(
                   99999999,
                   "extraInfoLangData"
                 ),
                 codelistId: 99999999,
-                useDialog: true,
                 required: true,
-                // defaultValue: ["150"], // TODO: does not work
+                defaultValue: [{ key: "150" }],
                 expressions: {
                   "props.required":
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
@@ -1290,5 +1405,43 @@ export abstract class IngridShared extends BaseDoctype {
       item.disabled = true;
     }
     return item;
+  }
+
+  private checkInThemes(
+    formState: any,
+    item: string,
+    withThesaurusTopics: boolean
+  ): ThesaurusResult {
+    const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
+    if (id) {
+      const exists = formState.mainModel.themes.some(
+        (entry) => entry.key === id
+      );
+      if (!exists) {
+        const itemTheme = { key: id };
+        formState.mainModel.themes.push(itemTheme);
+        if (withThesaurusTopics) {
+          this.updateIsoCategory(itemTheme, formState);
+        }
+      }
+      return {
+        thesaurus: "INSPIRE-Themen",
+        found: true,
+        alreadyExists: exists,
+        value: item,
+      };
+    }
+    return { thesaurus: "INSPIRE-Themen", found: false, value: item };
+  }
+
+  private addFreeKeyword(model, item: string): ThesaurusResult {
+    const exists = model.keywords.some((entry) => entry === item);
+    if (!exists) model.keywords.push(item);
+    return {
+      found: true,
+      value: item,
+      thesaurus: "Optionale Schlagworte",
+      alreadyExists: exists,
+    };
   }
 }

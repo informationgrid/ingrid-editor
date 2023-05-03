@@ -29,15 +29,19 @@
                 svgIcon="language-24px"
             ></mat-icon>
 
-            <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
+            <ng-container *ngIf="type === 'codelist'">
                 <div class="label">
                     {{ model[i] | codelist : props.codelistId | async }}
                 </div>
             </ng-container>
 
-            <ng-template #simpleLabel>
+            <ng-container *ngIf="type === 'simple'">
                 <div class="label">{{ model[i] }}</div>
-            </ng-template>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'object'">
+                <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
 
             <button
                 *ngIf="formControl.enabled"
@@ -73,7 +77,36 @@
     "
 ></ige-add-button>
 
-<ng-container *ngIf="!props.useDialog && formControl.enabled">
+<ng-container *ngIf="type === 'object'">
+    <ige-search-input
+        [autocompleteRef]="searchAuto"
+        [withWhiteBorder]="false"
+        [searchSub]="searchSub"
+        [query]="inputControl"
+        [flexWidth]="true"
+        placeholder="Im Umweltthesaurus suchen"
+        showSearchIcon="true"
+    ></ige-search-input>
+
+    <mat-autocomplete
+        #searchAuto="matAutocomplete"
+        class="denseX"
+        (optionSelected)="addValueObject($event.option.value)"
+    >
+        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
+            {{ doc[props.labelField] }}
+        </mat-option>
+    </mat-autocomplete>
+</ng-container>
+
+<ng-container
+    *ngIf="
+        type !== 'object' &&
+        type !== 'codelist' &&
+        !props.useDialog &&
+        formControl.enabled
+    "
+>
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput
@@ -97,6 +130,26 @@
             >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
             trennen</mat-hint
         >
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    </mat-form-field>
+</ng-container>
+
+<ng-container
+    *ngIf="type === 'codelist' && !props.useDialog && formControl.enabled"
+>
+    <mat-form-field class="width-100" appearance="outline">
+        <mat-select
+            placeholder="Bitte auswählen"
+            [formControl]="inputControl"
+            [required]="showError && props.required && formControl.invalid"
+            (valueChange)="addValueObject($event)"
+            ><mat-option
+                *ngFor="let codelist of codelistOptions | async"
+                [value]="codelist"
+            >
+                {{ codelist.label }} ({{ codelist.value }})
+            </mat-option>
+        </mat-select>
         <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
 </ng-container>
