@@ -10,7 +10,7 @@
         <span>{{ type.message }}</span>
     </span>
     <ng-container *ngIf="type.severity === 'error'">
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <button mat-icon-button (click)="resetMessage(type)">
             <mat-icon>close</mat-icon>
         </button>

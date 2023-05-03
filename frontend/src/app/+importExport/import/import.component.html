@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <section main-content fxFlex>
+    <section main-content>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
@@ -76,7 +76,7 @@
                     </div>
                 </ng-template>
 
-                <div class="action-bar">
+                <div class="action-bar flex-row">
                     <button
                         *ngIf="step1Complete"
                         color="primary"
@@ -85,7 +85,7 @@
                     >
                         Abbrechen
                     </button>
-                    <div fxFlex></div>
+                    <div class="flex-1"></div>
                     <button
                         mat-flat-button
                         color="primary"
@@ -119,7 +119,7 @@
                         </mat-form-field>-->
 
                         <div class="section-title">Optionen</div>
-                        <div class="space-bottom display-flex flex-column">
+                        <div class="space-bottom flex-col">
                             <mat-checkbox formControlName="overwriteAddresses"
                                 >Vorhandene Adressen überschreiben
                             </mat-checkbox>
@@ -161,11 +161,11 @@
                     </div>
                 </form>
 
-                <div class="action-bar">
+                <div class="action-bar flex-row">
                     <button mat-button color="primary" (click)="cancel()">
                         Abbrechen
                     </button>
-                    <div fxFlex></div>
+                    <div class="flex-1"></div>
                     <button mat-button color="primary" matStepperPrevious>
                         Zurück
                     </button>
@@ -191,10 +191,7 @@
                         <mat-spinner diameter="50"></mat-spinner>
                     </ng-container>
 
-                    <div
-                        *ngIf="message?.endTime !== null"
-                        class="display-flex flex-column"
-                    >
+                    <div *ngIf="message?.endTime !== null" class="flex-col">
                         <div class="section-title">Import abgeschlossen</div>
 
                         <mat-icon
@@ -222,7 +219,9 @@
                     </div>
                 </div>
 
-                <div class="action-bar" fxLayoutAlign="end">
+                <div
+                    class="action-bar flex-row justify-content-end align-items-stretch"
+                >
                     <button mat-flat-button color="primary" (click)="cancel()">
                         Neuer Import
                     </button>

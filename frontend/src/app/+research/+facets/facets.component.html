@@ -2,12 +2,11 @@
     <div
         *ngFor="let group of filterGroup"
         [formGroupName]="group.id"
-        fxLayout="column"
-        fxLayoutGap="10px"
+        class="flex-col gap-12"
     >
-        <div class="section">
+        <div class="section flex-row">
             <div class="section-title">{{ group.label }}</div>
-            <div fxFlex></div>
+            <div class="flex-1"></div>
             <button
                 *ngIf="group.label"
                 mat-icon-button
@@ -25,8 +24,7 @@
         <ng-container *ngIf="group.viewComponent === 'RADIO'">
             <mat-radio-group
                 [name]="group.label"
-                fxLayout="column"
-                fxLayoutGap="10px"
+                class="flex-col gap-12"
                 [class.invisible]="notExpanded[group.id]"
             >
                 <mat-radio-button
@@ -41,8 +39,7 @@
         <div
             *ngIf="group.viewComponent === 'CHECKBOX'"
             [class.invisible]="notExpanded[group.id]"
-            fxLayout="column"
-            fxLayoutGap="10px"
+            class="flex-col gap-12"
         >
             <mat-checkbox
                 *ngFor="let filter of group.filter"
@@ -54,12 +51,12 @@
         </div>
 
         <div
+            class="flex-col"
             *ngIf="group.viewComponent === 'SPATIAL'"
             [class.invisible]="notExpanded[group.id]"
-            style="flex-direction: column"
         >
-            <div #leafletDlg fxFlex></div>
-            <div *ngIf="location" class="location">
+            <div #leafletDlg class="flex-1"></div>
+            <div *ngIf="location" class="location flex-row">
                 <div>
                     <span>{{ location.title }}</span>
                     <p>
@@ -71,7 +68,7 @@
                         B2: {{ location.value.lon2 | number : ".6" : "en-US" }}°
                     </p>
                 </div>
-                <div fxFlex></div>
+                <div class="flex-1"></div>
                 <div>
                     <button
                         mat-icon-button
@@ -102,8 +99,7 @@
         <div
             *ngIf="group.viewComponent === 'TIMESPAN'"
             [class.invisible]="notExpanded[group.id]"
-            fxLayout="column"
-            fxLayoutGap="10px"
+            class="flex-col gap-12"
         >
             <div *ngFor="let filter of group.filter" class="timespan">
                 <mat-form-field>
@@ -153,8 +149,7 @@
         <div
             *ngIf="group.viewComponent === 'SELECT'"
             [class.invisible]="notExpanded[group.id]"
-            fxLayout="column"
-            fxLayoutGap="10px"
+            class="flex-col gap-12"
             [attr.data-cy]="group.label"
         >
             <mat-form-field appearance="outline">

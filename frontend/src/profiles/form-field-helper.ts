@@ -114,7 +114,7 @@ export class FormFieldHelper {
       key: id,
       id: options?.id,
       className: options?.className,
-      fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
       wrappers: options?.wrappers ?? ["panel"],
       props: {
         externalLabel: label,
@@ -294,7 +294,7 @@ export class FormFieldHelper {
         hasExtendedGap: options?.hasExtendedGap,
       },
       fieldArray: {
-        fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+        fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
         fieldGroup: options?.fields,
       },
       expressions: expressions,

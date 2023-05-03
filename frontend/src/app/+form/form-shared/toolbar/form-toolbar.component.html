@@ -36,8 +36,8 @@
                         >{{ button.matIconVariable }}</mat-icon
                     >
                     <mat-icon class="animated" [class.flipIt]="menu[button.id]"
-                        >arrow_drop_down</mat-icon
-                    >
+                        >arrow_drop_down
+                    </mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
                     <button
@@ -57,7 +57,8 @@
                 [vertical]="true"
             ></mat-divider>
         </ng-container>
-        <div fxFlex></div>
+
+        <div class="flex-1"></div>
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">

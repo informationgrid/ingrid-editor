@@ -12,8 +12,8 @@
         (resetQuery)="resetSearchField()"
     ></ige-facets>
 
-    <div main-header fxFlex fxLayout="column">
-        <div fxLayout="row" class="white-bg">
+    <div main-header class="flex-col">
+        <div class="white-bg flex-row">
             <mat-form-field
                 appearance="outline"
                 style="max-width: 240px"
@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <div main-content fxFlex>
+    <div main-content>
         <ige-result-table
             [result]="result"
             [isLoading]="isSearching"

@@ -10,8 +10,12 @@
     ></dashboard-docs-header>
 </ng-template>
 
-<div *ngIf="(childDocs$ | async)?.length > 0">
-    <ige-card-box fxFlex label="Zuletzt bearbeitet" data-cy="card-latest-docs">
+<div class="flex-row" *ngIf="(childDocs$ | async)?.length > 0">
+    <ige-card-box
+        class="flex-1"
+        label="Zuletzt bearbeitet"
+        data-cy="card-latest-docs"
+    >
         <ige-document-list-item
             [docs]="childDocs$"
             [hideDate]="false"

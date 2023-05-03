@@ -29,8 +29,8 @@
         </div>
     </div>
 
-    <section main-content fxFlex>
-        <div class="info-header-row" fxLayout="row">
+    <section main-content>
+        <div class="info-header-row flex-row">
             <h3>Persönliche Daten</h3>
             <button
                 data-cy="change-full-name-id"
@@ -41,18 +41,20 @@
                 Ändern
             </button>
         </div>
-        <div class="info-row" fxLayout="row">
+        <div class="info-row flex-row">
             <div>Vorname</div>
             <div>{{ userInfo.firstName }}</div>
         </div>
-        <div class="info-row" fxLayout="row">
+        <div class="info-row flex-row">
             <div>Nachname</div>
             <div>{{ userInfo.lastName }}</div>
         </div>
 
         <h3>Kontakt</h3>
 
-        <div class="info-row" fxLayout="row" fxLayoutAlign="start">
+        <div
+            class="info-row flex-row justify-content-start align-items-stretch"
+        >
             <div>E-Mail Adresse</div>
             <ige-emailform
                 *ngIf="editingEmail; else editMail"
@@ -74,7 +76,7 @@
         </div>
 
         <h3>Sicherheit</h3>
-        <div class="info-row" fxLayout="row">
+        <div class="info-row flex-row">
             <div>Passwort</div>
             <div>••••••</div>
             <button

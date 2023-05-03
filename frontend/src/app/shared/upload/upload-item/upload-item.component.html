@@ -48,8 +48,8 @@
     [value]="file.transfer.progress * 100"
 ></mat-progress-bar>
 
-<div *ngIf="file.error" fxLayout="column">
-    <div fxFlex fxFlexAlign="end">
+<div *ngIf="file.error" class="flex-col">
+    <div class="flex-1 align-self-end">
         <ng-container *ngIf="file.error.status === 409; else retryButton">
             <button mat-button color="primary" (click)="overwrite()">
                 Überschreiben

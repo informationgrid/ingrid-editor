@@ -982,7 +982,7 @@ export abstract class IngridShared extends BaseDoctype {
   addLinksSection() {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
-        fieldGroupClassName: "display-flex flex-column",
+        fieldGroupClassName: "flex-col",
         fields: [this.urlRefFields()],
         className: "optional",
         hasExtendedGap: true,
@@ -1050,7 +1050,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
           }),
         ],
-        { fieldGroupClassName: "display-flex" }
+        { fieldGroupClassName: "flex-row" }
       ),
       this.addInputInline("url", "URL", {
         required: true,

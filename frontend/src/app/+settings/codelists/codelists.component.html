@@ -14,7 +14,7 @@
         >
             <mat-icon class="animated">keyboard_arrow_down</mat-icon>
         </button>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <div>
             <button
                 mat-flat-button
@@ -29,8 +29,8 @@
 
     <div *ngIf="showMore" status class="status">Letzte Information ...</div>
 
-    <div main-content fxFlex>
-        <div fxLayoutAlign="center">
+    <div main-content>
+        <div class="flex-row justify-content-center align-items-stretch">
             <ige-filter-select
                 [options]="codelists"
                 class="white-bg"
@@ -54,7 +54,7 @@
 
         <div
             *ngIf="!selectedCodelist"
-            fxLayoutAlign="center"
+            class="flex-row justify-content-center align-items-stretch"
             style="padding-top: 60px"
         >
             <img
