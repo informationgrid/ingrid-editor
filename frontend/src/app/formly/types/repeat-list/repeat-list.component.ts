@@ -74,9 +74,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       if (!this.props.selectLabelField)
         this.props.selectLabelField = this.props.labelField;
     } else if (
-      this.props.options &&
-      !this.props.asSelect &&
-      !this.props.restCall
+      this.props.asAutocomplete ||
+      (this.props.options && !this.props.asSelect && !this.props.restCall)
     ) {
       this.type = "autocomplete";
       if (!this.props.hint) this.props.hint = "Eingabe mit RETURN bestätigen";

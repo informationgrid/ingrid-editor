@@ -51,6 +51,7 @@ export interface RepeatListOptions extends Options {
   labelField?: string;
   selectLabelField?: string | ((item) => string);
   hint?: string;
+  asAutocomplete?: boolean;
 }
 
 export interface RepeatChipOptions extends Options {
@@ -275,6 +276,7 @@ export class FormFieldHelper {
         restCall: options?.restCall,
         labelField: options?.labelField,
         selectLabelField: options?.selectLabelField ?? options?.labelField,
+        asAutocomplete: options?.asAutocomplete ?? false,
       },
       expressions: expressions,
     };
