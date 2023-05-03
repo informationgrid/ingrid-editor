@@ -86,6 +86,13 @@ class DocumentWrapper {
 
     @Column(name = "deleted")
     var deleted = 0
+    
+    @Type(type = "list-array")
+    @Column(
+        name = "tags",
+        columnDefinition = "text[]"
+    )
+    var tags: List<String>? = null
 
 
     /**

@@ -28,6 +28,9 @@ export class FormularService {
   sections$ = new BehaviorSubject<string[]>([]);
   private profileSections: string[] = [];
 
+  private datasetsOptions = [];
+  private addressOptions = [];
+
   constructor(
     private dialog: MatDialog,
     private profiles: ProfileService,
@@ -71,7 +74,9 @@ export class FormularService {
     doc: IgeDocument,
     isAddress: boolean
   ): HeaderMenuOption[] {
-    const moreOptions = [];
+    const moreOptions = isAddress
+      ? [...this.addressOptions]
+      : [...this.datasetsOptions];
 
     const isFolder = doc._type === "FOLDER";
     const query = isAddress ? this.addressTreeQuery : this.treeQuery;
@@ -162,6 +167,12 @@ export class FormularService {
     setTimeout(() =>
       this.sections$.next([...this.profileSections, ...sections])
     );
+  }
+
+  addExtraOption(option: any, forAddress: boolean) {
+    forAddress
+      ? this.addressOptions.push(option)
+      : this.datasetsOptions.push(option);
   }
 }
 

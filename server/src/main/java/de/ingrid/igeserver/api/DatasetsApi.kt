@@ -193,4 +193,14 @@ interface DatasetsApi {
         @PathVariable source: String,
         @PathVariable target: String
     ): ResponseEntity<Unit>
+
+    @Operation
+    @PutMapping(value = ["/datasets/{id}/tags"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun setTags(
+        principal: Principal,
+        @PathVariable id: Int,
+        @RequestBody tags: TagRequest
+    ): ResponseEntity<Unit>
 }
+
+data class TagRequest(val add: List<String>?, val remove: List<String>?)

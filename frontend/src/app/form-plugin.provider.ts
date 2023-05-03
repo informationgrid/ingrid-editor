@@ -11,6 +11,7 @@ import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-j
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 import { IsoViewPlugin } from "./+form/dialogs/iso-view/iso-view.plugin";
+import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -25,6 +26,7 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
   { provide: FormPluginToken, useClass: IsoViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
+  { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
   {
     provide: FormPluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

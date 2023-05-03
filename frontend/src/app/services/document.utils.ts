@@ -1,7 +1,14 @@
 import { DocumentState } from "../models/ige-document";
 
 export class DocumentUtils {
-  static getStateClass(state: DocumentState, type: string) {
+  static getStateClass(state: DocumentState, type: string, tags: string) {
+    let mappedState = this.mapState(state, type);
+
+    const mappedTags = tags?.replaceAll(",", " ") ?? "";
+    return `${mappedState} ${mappedTags}`;
+  }
+
+  private static mapState(state: DocumentState, type: string) {
     switch (state) {
       case "W":
         return type === "FOLDER" ? "published" : "working";

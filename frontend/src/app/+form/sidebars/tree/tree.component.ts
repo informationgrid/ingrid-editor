@@ -409,7 +409,7 @@ export class TreeComponent implements OnInit {
   }
 
   getStateClass(node: TreeNode) {
-    return DocumentUtils.getStateClass(node.state, node.type);
+    return DocumentUtils.getStateClass(node.state, node.type, node.tags);
   }
 
   async jumpToNode(

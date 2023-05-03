@@ -45,6 +45,8 @@ export class IgeDocument {
   // the date when the document will be published next
   _pendingDate?: string;
 
+  _tags?: string;
+
   hasOnlySubtreeWritePermission?: boolean;
 
   // profile specific fields

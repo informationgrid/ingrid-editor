@@ -4,6 +4,7 @@ import { IgeDocument } from "../../models/ige-document";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
+import { TagRequest } from "../../models/tag-request.model";
 
 @Injectable({
   providedIn: "root",
@@ -130,6 +131,13 @@ export class DocumentDataService {
     return this.http.post(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/move",
       body
+    );
+  }
+
+  updateTags(id: number, data: TagRequest) {
+    return this.http.put(
+      `${this.configuration.backendUrl}datasets/${id}/tags`,
+      data
     );
   }
 

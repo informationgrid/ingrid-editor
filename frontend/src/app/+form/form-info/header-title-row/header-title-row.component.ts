@@ -74,7 +74,7 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   private getStateClass(model) {
-    return DocumentUtils.getStateClass(model._state, model._type);
+    return DocumentUtils.getStateClass(model._state, model._type, model._tags);
   }
 
   private updateHeaderMenuOptions() {

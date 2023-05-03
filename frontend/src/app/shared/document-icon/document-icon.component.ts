@@ -24,7 +24,9 @@ export class DocumentIconComponent implements OnInit {
   getStateClass(doc: DocumentAbstract | TreeNode) {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
     const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
+    const publicationType =
+      (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags;
 
-    return DocumentUtils.getStateClass(state, type);
+    return DocumentUtils.getStateClass(state, type, publicationType);
   }
 }

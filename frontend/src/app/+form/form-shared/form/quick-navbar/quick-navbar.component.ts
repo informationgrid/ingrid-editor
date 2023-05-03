@@ -32,7 +32,11 @@ export class QuickNavbarComponent implements AfterViewInit {
   @Input() set model(value: IgeDocument) {
     this.title = value.title;
     this.docIcon = this.profileService.getDocumentIcon(value);
-    this.state = DocumentUtils.getStateClass(value._state, value._type);
+    this.state = DocumentUtils.getStateClass(
+      value._state,
+      value._type,
+      value._tags
+    );
   }
 
   @Output() toggleOptionalFields = new EventEmitter<boolean>();

@@ -16,6 +16,7 @@ export class TreeNode {
     public iconClass: string = "Fachaufgabe",
     public isLoading = false,
     public hasWritePermission = false,
-    public hasOnlySubtreeWritePermission = false
+    public hasOnlySubtreeWritePermission = false,
+    public tags: string = null
   ) {}
 }
