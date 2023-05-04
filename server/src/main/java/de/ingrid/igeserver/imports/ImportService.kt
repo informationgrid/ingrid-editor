@@ -269,6 +269,7 @@ class ImportService constructor(
         try {
             documentService.getLastPublishedDocument(catalogId, uuid).also { 
                 it.state = DOCUMENT_STATE.ARCHIVED
+                it.wrapperId = wrapperId
                 documentService.docRepo.save(it)
             }
             documentService.getDocumentFromCatalog(catalogId, wrapperId).also { 
