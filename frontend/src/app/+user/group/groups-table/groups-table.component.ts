@@ -15,6 +15,13 @@ import { Group } from "../../../models/user-group";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
+import { saveAs } from "file-saver";
+import { GroupService } from "../../../services/role/group.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "groups-table",
@@ -53,7 +60,7 @@ export class GroupsTableComponent
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
 
-  constructor() {
+  constructor(public groupService: GroupService, public dialog: MatDialog) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
@@ -87,5 +94,56 @@ export class GroupsTableComponent
   select(element) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
+  }
+
+  exportTable() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        hasBackdrop: true,
+        data: <ConfirmDialogData>{
+          title: "Exportieren",
+          message:
+            "Möchten Sie die Gruppendaten aus der Tabelle als csv-Datei herunterladen?",
+          confirmButtonText: "Herunterladen",
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) this.downloadTable();
+      });
+  }
+
+  private async downloadTable() {
+    // Create the header row.
+    const headerColumns = [
+      "Gruppe eingerichtet am",
+      "Gruppenname",
+      "Gruppenbeschreibung",
+      "Anzahl zugeordneter Benutzer",
+    ];
+    let fileText = this.createRow(headerColumns);
+
+    // Create rows by groups.
+    for (const group of this.dataSource.filteredData) {
+      const users = await this.groupService
+        .getUsersOfGroup(group.id)
+        .toPromise();
+      const groupColumns = [
+        group.data.creationDate,
+        group.name,
+        group.description,
+        users.length,
+      ];
+      fileText += this.createRow(groupColumns);
+    }
+
+    const blob = new Blob([fileText], {
+      type: "text/plain;charset=utf-8",
+    });
+    saveAs(blob, "groups.csv");
+  }
+
+  private createRow(values: string[]) {
+    return `${values.join(";")}\n`;
   }
 }

@@ -69,6 +69,9 @@
         "keywords": {
           "$ref": "refs/general.schema.json#/definitions/keywords"
         },
+        "keywordsUmthes": {
+          "$ref": "refs/general.schema.json#/definitions/keywordsUmthes"
+        },
         "digitalTransferOptions": {
           "$ref": "refs/general.schema.json#/definitions/digitalTransferOptions"
         },

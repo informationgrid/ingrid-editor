@@ -58,14 +58,26 @@
         (click)="select(row)"
     ></tr>
 </table>
+
 <div *ngIf="isLoading" class="table-spinner">
     <mat-spinner> </mat-spinner>
 </div>
-<mat-paginator
-    [pageSize]="10"
-    [hidePageSize]="true"
-    showFirstLastButtons
-></mat-paginator>
+
+<div class="table-footer">
+    <button
+        *ngIf="dataSource.data?.length"
+        mat-flat-button
+        (click)="exportTable()"
+    >
+        CSV
+    </button>
+    <mat-paginator
+        [pageSize]="10"
+        [hidePageSize]="true"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>
+
 <!-- Legend is removed as only one icon is used for now-->
 <!--<div class="legend">
     <mat-icon svgIcon="group"></mat-icon>

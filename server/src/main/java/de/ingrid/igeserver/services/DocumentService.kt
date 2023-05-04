@@ -128,6 +128,9 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
+            
+            // always add wrapper id which is needed when saving documents for authorization check
+            doc.wrapperId = id
 
             return if (expandReferences) DocumentData(
                 wrapper,
@@ -479,6 +482,7 @@ class DocumentService @Autowired constructor(
             val lastPublishedDoc =
                 getLastPublishedDocument(docData.document.catalog!!.identifier, docData.document.uuid)
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            lastPublishedDoc.wrapperId = docData.wrapper.id
             docRepo.save(lastPublishedDoc)
         }
         docData.document.modified = dateService.now()
@@ -711,6 +715,7 @@ class DocumentService @Autowired constructor(
 
         val latestPublishedDoc = getLastPublishedDocument(catalogId, docData.wrapper.uuid)
         latestPublishedDoc.isLatest = true
+        latestPublishedDoc.wrapperId = id
         docRepo.save(latestPublishedDoc)
 
         // since we're within a transaction the expandInternalReferences-function would modify the db-document
@@ -738,6 +743,7 @@ class DocumentService @Autowired constructor(
         // remove publish
         val currentDoc = getDocumentFromCatalog(catalogId, id)
         val lastPublished = getLastPublishedDocument(catalogId, currentDoc.document.uuid)
+        lastPublished.wrapperId = id
 
         // run pre-unpublish pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
@@ -781,6 +787,7 @@ class DocumentService @Autowired constructor(
         // if no draft version exists, move pending version to draft
         val updatedDoc = if (pendingDoc.isLatest) {
             pendingDoc.state = if (wasPublishedBefore) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+            pendingDoc.wrapperId = id
             docRepo.save(pendingDoc)
         } else {
             docData.document

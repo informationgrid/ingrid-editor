@@ -75,6 +75,11 @@ class ACLContext {
         return expressionHandler
     }
 
+    @Bean
+    open fun igeAclPermissionEvaluator(): IgeAclPermissionEvaluator {
+        return IgeAclPermissionEvaluator(aclService())
+    }
+
 
     @Bean
     fun lookupStrategy(): LookupStrategy {

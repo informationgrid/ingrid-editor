@@ -90,6 +90,15 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
     ): Boolean {
         // Obtain the SIDs applicable to the principal
         val sids = sidRetrievalStrategy.getSids(authentication)
+        return checkPermissionForSids(sids, oid, permission, domainObject)
+    }
+
+    fun checkPermissionForSids(
+        sids: List<Sid>,
+        oid: ObjectIdentity,
+        permission: Any,
+        domainObject: Any? = null
+    ): Boolean {
         val requiredPermission = resolvePermission(permission)
         logger.debug(LogMessage.of { "Checking permission '$permission' for object '$oid'" })
 
