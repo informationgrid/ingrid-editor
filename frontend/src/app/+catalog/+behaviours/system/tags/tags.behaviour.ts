@@ -5,6 +5,9 @@ import { DocEventsService } from "../../../../services/event/doc-events.service"
 import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../../../services/document/document.service";
+import { MatDialog } from "@angular/material/dialog";
+import { PublicationTypeDialog } from "./publication-type/publication-type.dialog";
+import { filter, switchMap } from "rxjs/operators";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -20,7 +23,8 @@ export class TagsBehaviour extends Plugin {
     private docEvents: DocEventsService,
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private dialog: MatDialog
   ) {
     super();
   }
@@ -47,20 +51,45 @@ export class TagsBehaviour extends Plugin {
   }
 
   private showTagsDialog() {
-    console.log("show tags");
-
     const store = this.forAddress ? this.addressTreeStore : this.treeStore;
     const currentDocument = store.getValue().openedDocument;
 
-    this.documentService
-      .updateTags(
-        currentDocument.id as number,
-        {
-          add: ["intranet"],
-          remove: ["internet", "amtsintern"],
-        },
-        this.forAddress
+    this.dialog
+      .open(PublicationTypeDialog, {
+        data: currentDocument._tags,
+      })
+      .afterClosed()
+      .pipe(
+        filter((item) => item),
+        switchMap((item) =>
+          this.updatePublicationType(currentDocument.id as number, item)
+        )
       )
-      .subscribe();
+      .subscribe(() => {
+        this.documentService.reload$.next({
+          uuid: currentDocument._uuid,
+          forAddress: this.forAddress,
+        });
+      });
+  }
+
+  /*
+   * We handle the "internet"-type as null-value, which is the default value and to be consistent
+   */
+  private updatePublicationType(id: number, result: string) {
+    const values = ["intranet", "amtsintern"];
+    let tagToAdd = [result];
+    if (result === "internet") {
+      tagToAdd = [];
+    }
+
+    return this.documentService.updateTags(
+      id,
+      {
+        add: tagToAdd,
+        remove: values.filter((item) => item !== result),
+      },
+      this.forAddress
+    );
   }
 }

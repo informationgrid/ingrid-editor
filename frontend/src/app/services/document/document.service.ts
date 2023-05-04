@@ -206,9 +206,9 @@ export class DocumentService {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.updateTags(id, data).pipe(
-      tap(() => {
+      tap((newTags: string[]) => {
         store.update(id, {
-          _tags: "intranet",
+          _tags: newTags?.join(","),
         });
         const info = store.getValue().entities[id];
         store.update({

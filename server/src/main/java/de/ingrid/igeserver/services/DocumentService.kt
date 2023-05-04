@@ -154,7 +154,7 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             
-            entityManager.detach(doc);
+            entityManager.detach(doc)
             // add metadata
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
@@ -850,11 +850,12 @@ class DocumentService @Autowired constructor(
         docRepo.replaceReference(source, target, refIds)
     }
 
-    fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest) {
+    fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): Array<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
-        val cleanedTags = wrapper.tags?.filter { tags.add?.contains(it) ?: false || tags.remove?.contains(it) ?: false } ?: emptyList()
-        wrapper.tags = cleanedTags + (tags.add ?: emptyList())
+        val cleanedTags = wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+        wrapper.tags = (cleanedTags + (tags.add ?: emptyList())).toTypedArray()
         docWrapperRepo.save(wrapper)
+        return wrapper.tags
     }
 }
 

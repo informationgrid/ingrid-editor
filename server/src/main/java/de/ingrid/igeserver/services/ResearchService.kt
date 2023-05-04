@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.services
 
+import com.vladmihalcea.hibernate.type.array.StringArrayType
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
@@ -27,7 +28,8 @@ data class Result(
     val _state: String?,
     val _category: String?,
     var hasWritePermission: Boolean?,
-    var hasOnlySubtreeWritePermission: Boolean?
+    var hasOnlySubtreeWritePermission: Boolean?,
+    var _tags: String?
 )
 
 @Service
@@ -104,7 +106,7 @@ class ResearchService {
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid
+                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid, document_wrapper.tags as tags
                 FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
@@ -241,6 +243,7 @@ class ResearchService {
             .addScalar("category")
             .addScalar("wrapperid")
             .addScalar("state")
+            .addScalar("tags", StringArrayType.INSTANCE)
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
@@ -289,7 +292,8 @@ class ResearchService {
                         principal,
                         item[7] as Int
                     ).canOnlyWriteSubtree,
-                    _id = item[7] as Int
+                    _id = item[7] as Int,
+                    _tags = (item[9] as? Array<*>)?.joinToString(",")
                 )
             }
     }

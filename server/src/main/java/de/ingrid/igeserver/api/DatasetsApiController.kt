@@ -171,10 +171,10 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<Unit> {
+    override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<Array<String>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        this.documentService.updateTags(catalogId, id, tags)
-        return ResponseEntity(HttpStatus.OK)
+        val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyArray()
+        return ResponseEntity.ok(updatedTags)
     }
 
     private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): JsonNode {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.vladmihalcea.hibernate.type.array.ListArrayType
+import com.vladmihalcea.hibernate.type.array.StringArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import org.hibernate.annotations.*
@@ -18,6 +19,10 @@ import javax.persistence.Table
 @TypeDef(
     name = "list-array",
     typeClass = ListArrayType::class
+)
+@TypeDef(
+    name = "string-array",
+    typeClass = StringArrayType::class
 )
 @Where(clause = "deleted = 0")
 class DocumentWrapper {
@@ -87,12 +92,12 @@ class DocumentWrapper {
     @Column(name = "deleted")
     var deleted = 0
     
-    @Type(type = "list-array")
-    @Column(
+    /*@Column(
         name = "tags",
         columnDefinition = "text[]"
-    )
-    var tags: List<String>? = null
+    )*/
+    @Type(type = "string-array")
+    var tags: Array<String>? = null
 
 
     /**
