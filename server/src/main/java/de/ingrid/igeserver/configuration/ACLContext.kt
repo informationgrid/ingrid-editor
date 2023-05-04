@@ -28,33 +28,17 @@ class ACLContext {
     @Autowired
     var dataSource: DataSource? = null
 
-    @Autowired lateinit var cacheManager: CacheManager
+    @Autowired
+    lateinit var cacheManager: CacheManager
 
     @Bean
     fun aclCache(): SpringCacheBasedAclCache {
         return SpringCacheBasedAclCache(
-            cacheManager.getCache("aclCache"),
-            permissionGrantingStrategy(),
-            aclAuthorizationStrategy()
+                cacheManager.getCache("aclCache"),
+                permissionGrantingStrategy(),
+                aclAuthorizationStrategy()
         )
     }
-
-/*
-    @Bean
-    open fun aclEhCacheFactoryBean(): SpCacFac {
-        val ehCacheFactoryBean = EhCacheFactoryBean()
-        ehCacheFactoryBean.setCacheManager(aclCacheManager().getObject()!!)
-        ehCacheFactoryBean.setCacheName("aclCache")
-        return ehCacheFactoryBean
-    }
-*/
-
-/*
-    @Bean
-    open fun aclCacheManager(): EhCacheManagerFactoryBean {
-        return EhCacheManagerFactoryBean()
-    }
-*/
 
     @Bean
     fun permissionGrantingStrategy(): PermissionGrantingStrategy {
@@ -76,8 +60,8 @@ class ACLContext {
     }
 
     @Bean
-    open fun igeAclPermissionEvaluator(): IgeAclPermissionEvaluator {
-        return IgeAclPermissionEvaluator(aclService())
+    fun igeAclPermissionEvaluator(authUtils: AuthUtils): IgeAclPermissionEvaluator {
+        return IgeAclPermissionEvaluator(aclService(), authUtils)
     }
 
 
@@ -86,7 +70,7 @@ class ACLContext {
         val strategy = BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), ConsoleAuditLogger())
         strategy.setPermissionFactory(CustomPermissionFactory())
         strategy.setAclClassIdSupported(true)
-        return strategy;
+        return strategy
     }
 
     @Bean
