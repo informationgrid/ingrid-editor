@@ -10,11 +10,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -29,10 +25,10 @@ const val PAGE_SIZE: Int = 100
 @Service
 class IndexService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
-    private val docWrapperRepo: DocumentWrapperRepository,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
     private val researchService: ResearchService,
+    private val behaviourService: BehaviourService,
 ) {
 
     private val log = logger()
@@ -95,10 +91,30 @@ class IndexService @Autowired constructor(
 
         uuid?.let { conditions.add("document_wrapper.uuid = '$it'") }
 
+        // add system specific conditions
+        conditions.addAll(getSystemSpecificConditions(catalogId))
+        
         // add profile specific conditions
         conditions.addAll(profile.additionalPublishConditions(catalogId))
 
         return BoolFilter("AND", conditions, null, null, false)
+    }
+
+    private fun getSystemSpecificConditions(catalogId: String): Collection<String> {
+        var publicationTypesActive = false
+        var publicationTypes: List<String>? = null
+        behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
+            publicationTypesActive = it.active != null && it.active == true
+            publicationTypes = (it.data?.get("publicationTypes") as LinkedHashMap<*,*>).get("key") as List<String>?
+        }
+        
+        return if (publicationTypesActive) {
+            val conditions: String = publicationTypes
+                ?.joinToString(" OR ") { "'{$it}' && document_wrapper.tags" } ?: ""
+            listOf("($conditions)")
+        } else {
+            emptyList()
+        }
     }
 
     fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter =

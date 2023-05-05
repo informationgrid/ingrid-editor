@@ -16,7 +16,7 @@ export class IndexingTagsPlugin extends Plugin {
     super();
 
     this.fields.push({
-      key: "template",
+      key: "publicationTypes",
       type: "select",
       defaultValue: "internet",
       props: {
