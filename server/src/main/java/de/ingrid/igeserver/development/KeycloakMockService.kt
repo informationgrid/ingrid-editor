@@ -2,7 +2,7 @@ package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.services.UserManagementService
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.security.acls.model.NotFoundException
@@ -21,9 +21,7 @@ class DummyClient : Closeable {
 @Service
 @Profile("dev")
 class KeycloakMockService : UserManagementService {
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     @Autowired
     lateinit var config: DevelopmentProperties

@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.JobCommand
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
 import org.quartz.Trigger.DEFAULT_PRIORITY
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     private val scheduler = factory.scheduler
 

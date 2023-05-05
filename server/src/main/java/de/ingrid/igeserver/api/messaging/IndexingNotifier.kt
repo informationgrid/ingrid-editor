@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.api.messaging
 
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
@@ -16,9 +16,7 @@ data class IndexMessage(
 
 @Service
 class IndexingNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"
 

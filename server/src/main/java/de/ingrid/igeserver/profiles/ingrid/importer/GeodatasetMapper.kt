@@ -4,14 +4,12 @@ import de.ingrid.igeserver.exports.iso.DQReport
 import de.ingrid.igeserver.exports.iso.DQReportElement
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.CodelistHandler
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 
 class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
     GeneralMapper(metadata, codeListService, catalogId) {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
 
     fun getTopicCategories(): List<KeyValue> {

@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.api.messaging
 
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
@@ -32,9 +32,7 @@ class MessageTarget(val type: NotificationType, var catalogId : String? = null) 
 
 @Service
 class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/jobs"
 

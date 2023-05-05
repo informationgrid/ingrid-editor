@@ -27,9 +27,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableCaching
 class IgeServer
 
-//private companion object {
-//        private val log = LogManager.getLogger()
-//    }
+//private val log = logger()
 
 fun main(args: Array<String>) {
 //    log.info("Starting application")

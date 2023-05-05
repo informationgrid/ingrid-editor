@@ -13,7 +13,7 @@ import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,9 +32,7 @@ class ImportTask @Autowired constructor(
     val catalogService: CatalogService,
 ) : IgeJob() {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    override val log = logger()
 
     enum class Stage { ANALYZE, IMPORT, UNKNOWN }
 

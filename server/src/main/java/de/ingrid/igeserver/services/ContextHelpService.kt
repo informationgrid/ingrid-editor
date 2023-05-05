@@ -5,15 +5,13 @@ import de.ingrid.igeserver.model.HelpMessage
 import de.ingrid.igeserver.utils.markdown.MarkdownContextHelpItem
 import de.ingrid.igeserver.utils.markdown.MarkdownContextHelpItemKey
 import de.ingrid.igeserver.utils.markdown.MarkdownContextHelpUtils
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
 class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
     val defaultLanguage = "de"
 
     private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = helpUtils.availableMarkdownHelpFiles

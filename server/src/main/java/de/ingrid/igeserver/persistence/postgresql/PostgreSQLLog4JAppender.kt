@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement
 import org.apache.logging.log4j.core.config.plugins.PluginFactory
 import org.apache.logging.log4j.core.impl.Log4jContextFactory
 import org.apache.logging.log4j.core.selector.ContextSelector
+import org.apache.logging.log4j.kotlin.logger
 import org.apache.logging.log4j.spi.LoggerContextFactory
 import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,8 +49,6 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
         AbstractAppender(name, filter, null, false, null) {
 
     companion object {
-        private val log = LogManager.getLogger()
-        
         // type column name used ot define the EmbeddedData type in the database
         private const val TYPE = "type"
 
@@ -118,6 +117,8 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
     private val queue = mutableListOf<SqlParameterSource>()
 
     private val mapper = jacksonObjectMapper()
+
+    private val log = logger()
 
     /**
      * This method is called during Spring initialization

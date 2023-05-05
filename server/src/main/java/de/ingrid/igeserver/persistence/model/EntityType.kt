@@ -6,7 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_UUID
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.dao.EmptyResultDataAccessException
@@ -17,8 +17,9 @@ import org.springframework.dao.EmptyResultDataAccessException
  */
 abstract class EntityType {
 
+    private val logger = logger()
+
     companion object {
-        private val logger = LogManager.getLogger()
         private val CATEGORY = DocumentCategory.DATA
     }
 

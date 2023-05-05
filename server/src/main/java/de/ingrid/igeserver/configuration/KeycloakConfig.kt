@@ -11,7 +11,7 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -40,7 +40,8 @@ import java.util.*
 @Configuration
 @EnableWebSecurity
 //@EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
-class KeycloakConfig() {
+internal class KeycloakConfig {
+    val log = logger()
 
     @Autowired
     lateinit var generalProperties: GeneralProperties
@@ -50,10 +51,6 @@ class KeycloakConfig() {
 
     @Autowired
     lateinit var roleRepository: RoleRepository
-
-    companion object {
-        val log = LogManager.getLogger()
-    }
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {

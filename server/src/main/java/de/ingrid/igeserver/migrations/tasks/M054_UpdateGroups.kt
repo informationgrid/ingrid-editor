@@ -6,7 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -21,9 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class M054_UpdateGroups : MigrationBase("0.54") {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    private var log = logger()
 
     @Autowired
     lateinit var groupService: GroupService

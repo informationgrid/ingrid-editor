@@ -3,7 +3,7 @@ package de.ingrid.igeserver.zabbix
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.tasks.quartz.IgeJob
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -19,9 +19,10 @@ class ZabbixJob @Autowired constructor(
 ) : IgeJob() {
 
     companion object {
-        private val log = LogManager.getLogger()
         const val jobKey: String = "zabbix-job"
     }
+
+    override val log = logger()
 
     override fun run(context: JobExecutionContext) {
         log.debug("Starting Task: ZabbixJob")

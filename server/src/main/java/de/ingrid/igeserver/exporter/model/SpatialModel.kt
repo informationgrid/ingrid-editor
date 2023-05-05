@@ -2,14 +2,12 @@ package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import de.ingrid.igeserver.utils.convertWktToGml32
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?) {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     data class BoundingBoxModel(val lat1: Float, val lon1: Float, val lat2: Float, val lon2: Float)
 

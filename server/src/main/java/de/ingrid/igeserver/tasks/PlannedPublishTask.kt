@@ -2,7 +2,7 @@ package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Scheduled
@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PlannedPublishTask(val documentService: DocumentService, val catalogService: CatalogService) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     // this ensures that the post migration task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)

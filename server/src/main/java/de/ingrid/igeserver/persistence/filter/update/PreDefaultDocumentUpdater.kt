@@ -8,7 +8,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.AuthUtils
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -23,9 +23,7 @@ class PreDefaultDocumentUpdater @Autowired constructor(
     var authUtils: AuthUtils
 ) : Filter<PreUpdatePayload> {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     override val profiles = arrayOf<String>()
 

@@ -2,7 +2,7 @@ package de.ingrid.igeserver.tasks
 
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -14,9 +14,7 @@ class UploadCleanupTask(
     val fileSystemStorage: FileSystemStorage,
     val entityManager: EntityManager
 ) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
     fun cleanup() {

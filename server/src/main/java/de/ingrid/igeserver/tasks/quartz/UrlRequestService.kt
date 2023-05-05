@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.tasks.quartz
 
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.net.URI
@@ -14,9 +14,7 @@ import java.util.concurrent.Executors
 @Service
 class UrlRequestService {
 
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     fun getStatus(url: String): Int {
         return try {

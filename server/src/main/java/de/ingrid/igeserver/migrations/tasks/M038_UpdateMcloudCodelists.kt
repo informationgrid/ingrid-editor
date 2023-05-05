@@ -6,7 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -14,9 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class M038_UpdateMcloudCodelists : MigrationBase("0.38") {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    private var log = logger()
 
     @Autowired
     lateinit var catalogRepo: CatalogRepository

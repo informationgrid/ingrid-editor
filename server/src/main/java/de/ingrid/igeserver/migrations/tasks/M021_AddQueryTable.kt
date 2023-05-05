@@ -4,7 +4,7 @@ import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.DocumentService
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -12,9 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class M021_AddQueryTable : MigrationBase("0.21") {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    private var log = logger()
 
     @Autowired
     lateinit var docService: DocumentService

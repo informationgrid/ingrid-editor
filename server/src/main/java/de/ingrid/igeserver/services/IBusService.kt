@@ -10,7 +10,7 @@ import de.ingrid.utils.query.IngridQuery
 import jakarta.annotation.PostConstruct
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service
 @Profile("ibus & elasticsearch")
 class IBusService @Autowired constructor(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     private var iBusClient: BusClient? = null
 

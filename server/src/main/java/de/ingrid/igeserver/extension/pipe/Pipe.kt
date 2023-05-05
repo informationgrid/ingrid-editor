@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.extension.pipe
 
 import de.ingrid.igeserver.extension.ExtensionPoint
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 
@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Value
  */
 open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
     
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     /**
      * Optional configuration value for defining the filter sequences

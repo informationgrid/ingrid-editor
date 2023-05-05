@@ -6,7 +6,7 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.FIELD_UUID
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import java.net.URLDecoder
 
@@ -15,9 +15,7 @@ class MCloudType : EntityType() {
     override val className = "mCloudDoc"
     override val profiles = arrayOf("mcloud")
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     override val jsonSchema = "/mcloud/schemes/mcloud.schema.json"
 

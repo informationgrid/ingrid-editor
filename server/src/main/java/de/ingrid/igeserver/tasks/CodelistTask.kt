@@ -3,7 +3,7 @@ package de.ingrid.igeserver.tasks
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import jakarta.annotation.PostConstruct
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component
 @Profile("codelist-repo")
 @Component
 class CodelistTask(val codeListService: CodeListService) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     @PostConstruct
     fun onStartup() = codelistTask()

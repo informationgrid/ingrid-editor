@@ -13,7 +13,7 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.info.BuildProperties
@@ -33,9 +33,7 @@ import java.util.*
 @RequestMapping(path = ["/api"])
 class UsersApiController : UsersApi {
 
-    companion object {
-        private val logger = LogManager.getLogger()
-    }
+    private val logger = logger()
 
     @Autowired
     private lateinit var catalogService: CatalogService

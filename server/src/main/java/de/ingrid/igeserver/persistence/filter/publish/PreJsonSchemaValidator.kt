@@ -6,16 +6,14 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import net.pwall.json.schema.JSONSchema
 import net.pwall.json.schema.output.BasicOutput
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
 
 @Component
 class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     override val profiles: Array<String>
         get() = emptyArray()

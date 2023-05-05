@@ -3,7 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import jakarta.annotation.Generated
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,10 +15,8 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class ProfileApiController : ProfileApi {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
-    
+    private val log = logger()
+
     @Autowired
     private lateinit var catalogService: CatalogService
 

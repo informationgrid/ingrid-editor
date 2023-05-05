@@ -12,7 +12,7 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.UserRepository
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.security.acls.domain.BasePermission
@@ -40,9 +40,7 @@ class GroupService @Autowired constructor(
     private var keycloakService: UserManagementService
 ) {
 
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     @Transactional
     fun create(catalogId: String, group: Group, manager: UserInfo?): Group {

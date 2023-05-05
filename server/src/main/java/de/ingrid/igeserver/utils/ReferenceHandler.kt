@@ -2,16 +2,14 @@ package de.ingrid.igeserver.utils
 
 import de.ingrid.igeserver.api.messaging.UrlReport
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 abstract class ReferenceHandler(val entityManager: EntityManager) {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
 

@@ -7,7 +7,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -19,9 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class M043_MigrateCodelist20003 : MigrationBase("0.43") {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     @Autowired
     lateinit var entityManager: EntityManager

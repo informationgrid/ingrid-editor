@@ -29,7 +29,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.utils.ElasticDocument
 import jakarta.annotation.PostConstruct
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.elasticsearch.common.Strings
 import org.elasticsearch.xcontent.XContentBuilder
@@ -74,9 +74,7 @@ class IndexingTask @Autowired constructor(
     private val postIndexPipe: PostIndexPipe
 ) : SchedulingConfigurer, DisposableBean {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
     val executor = Executors.newSingleThreadScheduledExecutor()
     private val scheduler: TaskScheduler = initScheduler()
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()

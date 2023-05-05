@@ -5,8 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.AuditLogRecord
 import de.ingrid.igeserver.repository.AuditLogRepository
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.kotlin.KotlinLogger
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -71,8 +71,8 @@ class AuditLogger {
     /**
      * Get the logger with the given name
      */
-    private fun getLogger(name: String?): Logger {
-        return if (!name.isNullOrBlank()) LogManager.getLogger(name) else LogManager.getLogger(DEFAULT_LOGGER)
+    private fun getLogger(name: String?): KotlinLogger {
+        return if (!name.isNullOrBlank()) logger(name) else logger(DEFAULT_LOGGER)
     }
 
     /**

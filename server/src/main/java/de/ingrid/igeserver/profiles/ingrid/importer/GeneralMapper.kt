@@ -11,14 +11,12 @@ import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 
 
 open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
 
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     val uuid = metadata.fileIdentifier?.value
     val type =

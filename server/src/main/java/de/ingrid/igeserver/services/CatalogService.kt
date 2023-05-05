@@ -12,7 +12,7 @@ import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -33,9 +33,7 @@ class CatalogService @Autowired constructor(
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
-    private companion object {
-        private val log = LogManager.getLogger()
-    }
+    private val log = logger()
 
     fun getCurrentCatalogForPrincipal(principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)

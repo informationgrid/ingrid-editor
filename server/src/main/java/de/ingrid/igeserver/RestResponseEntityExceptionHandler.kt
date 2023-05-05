@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.InvalidParameterException
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
@@ -25,9 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    val log = logger()
 
     private val mapper: ObjectMapper by lazy {
         val mapper = ObjectMapper()

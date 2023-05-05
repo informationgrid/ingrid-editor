@@ -3,7 +3,7 @@ package de.ingrid.igeserver.migrations
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.repository.VersionInfoRepository
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -13,9 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager
 @Service
 class Migration : ApplicationRunner {
 
-    companion object {
-        private val log = LogManager.getLogger()
-    }
+    private var log = logger()
 
     @Autowired
     lateinit var migrationStrategies: List<MigrationStrategy>

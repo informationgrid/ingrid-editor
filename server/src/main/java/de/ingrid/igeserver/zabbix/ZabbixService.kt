@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.ZabbixProperties
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -21,10 +21,7 @@ const val JSONRPC = "2.0"
 class ZabbixService @Autowired constructor(
     zabbixProperties: ZabbixProperties
 ) {
-    companion object {
-        private val log = LogManager.getLogger()
-    }
-    
+    private var log = logger()
     private val apiKey = zabbixProperties.apiKey
     private val apiURL = zabbixProperties.apiURL
     private val checkDelay = zabbixProperties.checkDelay
