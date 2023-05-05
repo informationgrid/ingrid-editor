@@ -41,6 +41,7 @@ export class InformationSystemDoctype extends IngridShared {
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
             hasInlineContextHelp: true,
+            asAutocomplete: true,
             wrappers: ["panel", "inline-help"],
             className: "optional",
           }),

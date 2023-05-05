@@ -17,7 +17,7 @@ import javax.validation.Valid
 
 @Tag(name = "Datasets", description = "the datasets API")
 interface DatasetsApi {
-    
+
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Create a complete dataset")
     @ApiResponses(
@@ -193,6 +193,13 @@ interface DatasetsApi {
         @PathVariable source: String,
         @PathVariable target: String
     ): ResponseEntity<Unit>
+
+    @Operation(description = "Get all users with access to the document")
+    @PostMapping(value = ["/datasets/{id}/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getUsersWithAccessToDocument(
+        principal: Principal,
+        @PathVariable id: Int,
+    ): ResponseEntity<DatasetsApiController.UserAccessResponse>
 
     @Operation
     @PutMapping(value = ["/datasets/{id}/tags"], produces = [MediaType.APPLICATION_JSON_VALUE])

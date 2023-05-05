@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -34,6 +35,7 @@ class DatasetsApiController @Autowired constructor(
     private val docWrapperRepo: DocumentWrapperRepository,
     private val docRepo: DocumentRepository,
     private val documentService: DocumentService,
+    private val groupService: GroupService,
     private val aclService: IgeAclService,
     private val storage: Storage,
 ) : DatasetsApi {
@@ -354,6 +356,21 @@ class DatasetsApiController @Autowired constructor(
         }
 
         return documentService.getDocumentsFromWrappers(actualRoots)
+    }
+
+
+    data class UserAccessResponse(val canOnlyRead: Set<User>, val canWrite: Set<User>)
+
+    override fun getUsersWithAccessToDocument(
+        principal: Principal,
+        id: Int,
+    ): ResponseEntity<UserAccessResponse> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        // TODO: change structure to show permissions
+        val canWriteUsers = groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.WRITE)
+        val canOnlyReadUsers =
+            groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.READ).minus(canWriteUsers)
+        return ResponseEntity.ok(UserAccessResponse(canOnlyReadUsers, canWriteUsers))
     }
 
     override fun getByUUID(
