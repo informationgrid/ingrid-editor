@@ -48,8 +48,7 @@
 }
 
 .save-buttons {
-  /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
-  .toolbar-save-button:not(.mat-button-disabled) {
+  .toolbar-save-button:not([disabled]) {
     color: $ige-secondary;
     background: white;
   }
