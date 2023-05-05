@@ -109,8 +109,13 @@ class IndexService @Autowired constructor(
         }
         
         return if (publicationTypesActive) {
-            val conditions: String = publicationTypes
+            var conditions: String = publicationTypes
+                ?.filter { it != "internet" }
                 ?.joinToString(" OR ") { "'{$it}' && document_wrapper.tags" } ?: ""
+            if (publicationTypes?.contains("internet") == true) {
+                if (conditions.isNotEmpty()) conditions += " OR"
+                conditions += " document_wrapper.tags is null"
+            }
             listOf("($conditions)")
         } else {
             emptyList()
