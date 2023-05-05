@@ -53,6 +53,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { ActionButtonModule } from "../../shared/action-button/action-button.module";
 import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
+import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
     BreadcrumbModule,
     TranslocoModule,
     ActionButtonModule,
+    DocumentIconModule,
   ],
   providers: [
     FormToolbarService,

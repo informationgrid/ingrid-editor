@@ -1,13 +1,9 @@
 <div class="navigation-bar-wrapper">
     <div class="navigation-bar">
-        <div class="document-type">
-            <mat-icon
-                [svgIcon]="docIcon"
-                [title]="title"
-                [matTooltip]="title"
-                [ngClass]="['document-icon', state ?? '']"
-            ></mat-icon>
-        </div>
+        <ige-document-icon
+            [doc]="model"
+            [explicitTooltip]="model.title"
+        ></ige-document-icon>
 
         <ige-header-navigation
             fxFlex

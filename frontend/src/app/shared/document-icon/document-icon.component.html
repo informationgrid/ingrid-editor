@@ -1,5 +1,7 @@
 <mat-icon
     *ngIf="_doc"
+    [matTooltip]="explicitTooltip ?? tooltip"
+    [matTooltipShowDelay]="showDelay"
     [ngClass]="['document-icon', documentState]"
-    [svgIcon]="_doc.icon || _doc.iconClass"
+    [svgIcon]="iconClass"
 ></mat-icon>

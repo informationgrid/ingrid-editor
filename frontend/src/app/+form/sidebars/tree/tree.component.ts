@@ -19,7 +19,6 @@ import { DynamicDataSource } from "./dynamic.datasource";
 import { DynamicDatabase } from "./dynamic.database";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeService } from "./tree.service";
-import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ConfigService } from "../../../services/config/config.service";
@@ -406,10 +405,6 @@ export class TreeComponent implements OnInit {
     } else {
       return Promise.resolve();
     }
-  }
-
-  getStateClass(node: TreeNode) {
-    return DocumentUtils.getStateClass(node.state, node.type, node.tags);
   }
 
   async jumpToNode(
