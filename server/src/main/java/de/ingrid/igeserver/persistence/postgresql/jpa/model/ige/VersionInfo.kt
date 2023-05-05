@@ -2,7 +2,7 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
-import javax.persistence.*
+import jakarta.persistence.*
 
 @NoArgs
 @Entity

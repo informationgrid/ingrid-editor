@@ -3,8 +3,6 @@ package de.ingrid.igeserver.exporter
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import org.apache.logging.log4j.kotlin.logger
-import org.locationtech.jts.io.WKTReader
-import org.locationtech.jts.io.gml2.GMLWriter
 import java.util.*
 
 class TransformationTools {

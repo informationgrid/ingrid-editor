@@ -4,22 +4,17 @@ import IntegrationTest
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
-
+@WithMockUser(username = "test-user", authorities = ["GROUP_WRITESUBTREE"])
 class WriteSubTreePermissionTests : IntegrationTest() {
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    private val GROUP_WRITE_SUBTREE_PERMISSION: String = "GROUP_WRITESUBTREE"
 
     private val rootUuid = "e80b856b-dbea-4f88-99e6-c554bf18480e"
     private val childUuid = "e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d"
@@ -27,10 +22,6 @@ class WriteSubTreePermissionTests : IntegrationTest() {
     private val subChildUuidNoParentRead = "17cafb6e-3356-4225-8040-a62b11a5a8eb"
     private val excludedUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
 
-    @BeforeEach
-    fun beforeEach() {
-        mockUser(GROUP_WRITE_SUBTREE_PERMISSION)
-    }
 
     @Test
     fun readAllowedToRootDocumentInGroup() {
@@ -114,13 +105,4 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         docWrapperRepo.deleteById(doc.id!!)
     }
 
-
-    private fun mockUser(group: String = "GROUP_NULL") {
-        SecurityContextHolder.getContext().authentication =
-            PreAuthenticatedAuthenticationToken(
-                BasicUserPrincipal("meier"),
-                null,
-                listOf(SimpleGrantedAuthority(group))
-            )
-    }
 }

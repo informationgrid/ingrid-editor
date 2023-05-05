@@ -2,15 +2,13 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType
+import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.persistence.postgresql.model.meta.AuditLogRecordData
+import jakarta.persistence.*
 import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
-import javax.persistence.*
 
 @Entity
 @Table(name = "audit_log")
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
 class AuditLogRecord {
 
     @Id
@@ -18,11 +16,11 @@ class AuditLogRecord {
     @JsonIgnore
     var id: Int? = null
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @JsonProperty("_type")
     var type: String? = null
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(name = "message", columnDefinition = "jsonb")
     var message: AuditLogRecordData? = null
 

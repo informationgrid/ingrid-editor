@@ -33,7 +33,7 @@ class UrlRequestService {
             500
         }
     }
-    
+
     fun request(url: String): InputStream? {
         return try {
             val requestHead = createHttpRequest("GET", url)

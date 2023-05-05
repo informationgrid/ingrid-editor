@@ -1,12 +1,12 @@
 package de.ingrid.igeserver.profiles.ingrid
 
-import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 @Service
 class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
@@ -33,8 +33,8 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     }
 
     private fun mapQueryResults(
-        result: List<Array<Any>>,
-        onlyLinks: Boolean = true
+            result: List<Array<Any>>,
+            onlyLinks: Boolean = true
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
         result.forEach {
@@ -43,28 +43,35 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
             if (existingDoc == null) {
                 uniqueList.add(
-                    DocumentLinks(
-                        catalogId,
-                        docUuid,
-                        getUrlsFromJsonField(it[2] as ArrayNode, onlyLinks),
-                        it[3].toString(),
-                        it[4].toString()
-                    )
+                        DocumentLinks(
+                                catalogId,
+                                docUuid,
+                                getUrlsFromJsonField(it[2] as List<*>?, onlyLinks),
+                                it[3].toString(),
+                                it[4].toString()
+                        )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as ArrayNode, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as List<*>?, onlyLinks))
             }
         }
 
         return uniqueList
     }
 
-    private fun getUrlsFromJsonField(graphicOverviews: ArrayNode, onlyLinks: Boolean): MutableList<UploadInfo> {
+    private fun getUrlsFromJsonField(graphicOverviews: List<*>?, onlyLinks: Boolean): MutableList<UploadInfo> {
+        if (graphicOverviews == null) return mutableListOf()
+
         return graphicOverviews
-            .filter { it.get("fileName").get("asLink").asBoolean() }
-            .map { it.get("fileName").get("uri").asText() }
-            .map { UploadInfo("graphicOverviews", it, null) }
-            .toMutableList()
+                .asSequence()
+                .map { jacksonObjectMapper().convertValue(it, LinkItem::class.java) }
+                .filter { it.fileName.asLink }
+                .map { it.fileName.uri }
+                .map { UploadInfo("graphicOverviews", it, null) }
+                .toMutableList()
     }
+
+    private data class LinkItem(val fileName: FileInfo, val fileDescription: String?)
+    private data class FileInfo(val uri: String, val value: String, val asLink: Boolean)
 
 }

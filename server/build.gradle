@@ -3,30 +3,25 @@ import gg.jte.ContentType
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '1.8.10' // Required for Kotlin integration
-    ext.spring_boot_version = '2.7.10'
-    ext.hibernate_version = '5.6.15.Final' // Hibernate 6 is only supported by Spring Boot 3
+    ext.kotlin_version = '1.8.21'
+    ext.spring_boot_version = '3.0.6'
+    ext.hibernate_version = '6.2.1.Final'
     ext.jackson_version = '2.14.2'
     ext.kotest_version = '5.5.5'
-    ext.jte_version = '2.2.6'
-    ext.elastic_version = '7.17.6'
+    ext.jte_version = '2.3.2'
+    ext.elastic_version = '7.17.9'
     ext.geotools_version = '28.2'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
-        // See https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-        classpath "org.hibernate:hibernate-gradle-plugin:$hibernate_version"
-    }
 }
 
 plugins {
     id 'base'
     id 'java'
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
+    id "org.springframework.boot" version "$spring_boot_version"
+    id "io.spring.dependency-management" version "1.1.0"
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.3.1'
@@ -34,16 +29,8 @@ plugins {
     id 'io.kotest' version '0.3.9'
     id "com.github.ben-manes.versions" version "0.46.0"
     id "gg.jte.gradle" version "$jte_version"
+    id "org.hibernate.orm" version "$hibernate_version"
 }
-
-apply plugin: 'kotlin' // Required for Kotlin integration
-apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-plugins.html#spring-support
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.hibernate.orm'
-apply plugin: 'kotlin-noarg'
-//apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-allopen'
 
 repositories {
     maven {
@@ -51,14 +38,13 @@ repositories {
     }
     maven {
         url "https://repo.osgeo.org/repository/release/"
-//            url "https://nexus.terrestris.de/repository/public/"
     }
     mavenCentral()
 }
 
 configurations {
     webapp
-    all {
+    configureEach {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
         exclude group: 'com.sun.mail', module: 'javax.mail'
@@ -86,7 +72,7 @@ if (hasProperty('buildProfile')) {
         dependsOn(unzip)
     }
 
-    bootJarMainClassName {
+    resolveMainClassName {
         dependsOn(unzip)
     }
 
@@ -134,7 +120,10 @@ dependencies {
     implementation 'net.pwall.json:json-kotlin-schema:0.39'
 
     // Keycloak
-    implementation 'org.keycloak:keycloak-spring-boot-starter:19.0.3'
+//    implementation 'org.keycloak:keycloak-spring-boot-starter:19.0.3'
+    // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.keycloak:keycloak-admin-client:19.0.3'
 
     // Markdown
@@ -145,15 +134,17 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.11' // Attention: also update SwaggerDocumentationConfig.kt
     implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.11'
 
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+
+
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.5.4'
-    implementation "org.hibernate:hibernate-core:$hibernate_version"
-    implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
+    implementation "org.hibernate.orm:hibernate-core"
+    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation('de.ingrid:ingrid-codelist-service:6.0.1') {
-        exclude group: 'log4j', module: 'log4j'
-    }
+    implementation 'de.ingrid:ingrid-codelist-service:6.1.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
@@ -198,6 +189,7 @@ dependencies {
     }
 
     // template engine jte
+    implementation "gg.jte:jte-spring-boot-starter-3:$jte_version"
     implementation "gg.jte:jte:$jte_version"
     implementation "gg.jte:jte-kotlin:$jte_version"
 }
@@ -321,11 +313,11 @@ noArg {
 }
 
 hibernate {
-    enhance {
-        enableLazyInitialization= true
-        enableDirtyTracking = true
-        enableAssociationManagement = true
-        enableExtendedEnhancement = false
+    enhancement {
+        lazyInitialization = true
+        dirtyTracking = true
+//        associationManagement = true
+//        extendedEnhancement = false
     }
 }
 
@@ -335,8 +327,6 @@ if (hasProperty('buildDockerImage')) {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-//    options.deprecation = true
-//    options.compilerArgs << "-Xlint:unchecked"
 }
 
 def isNonStable = { String version ->

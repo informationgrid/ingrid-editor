@@ -9,6 +9,9 @@ import de.ingrid.mdek.upload.UploadResponse
 import de.ingrid.mdek.upload.storage.ConflictHandling
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.StorageItem
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,9 +27,6 @@ import java.net.URLDecoder
 import java.security.Principal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 @RestController
 @RequestMapping(path = ["/api"])

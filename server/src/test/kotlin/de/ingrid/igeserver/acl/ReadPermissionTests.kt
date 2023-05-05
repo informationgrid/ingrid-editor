@@ -4,20 +4,15 @@ import IntegrationTest
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
+import org.springframework.security.test.context.support.WithMockUser
 
-
+@WithMockUser(username = "test-user", authorities = ["GROUP_READTREE"])
 class ReadPermissionTests : IntegrationTest() {
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    private val GROUP_READ_PERMISSION: String = "GROUP_READTREE"
 
     private val rootUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
     private val childUuid = "8f891e4e-161e-4d2c-6869-03f02ab352dc"
@@ -25,11 +20,6 @@ class ReadPermissionTests : IntegrationTest() {
     private val childUuidNoParentRead = "5c065bb7-ec46-4cab-bb02-8de2a814230b"
     private val excludedUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
 
-
-    @BeforeEach
-    fun beforeEach() {
-        mockUser(GROUP_READ_PERMISSION)
-    }
 
     @Test
     fun readAllowedToRootDocumentInGroup() {
@@ -101,13 +91,4 @@ class ReadPermissionTests : IntegrationTest() {
         docWrapperRepo.deleteById(doc.id!!)
     }
 
-
-    private fun mockUser(group: String = "GROUP_NULL") {
-        SecurityContextHolder.getContext().authentication =
-            PreAuthenticatedAuthenticationToken(
-                BasicUserPrincipal("meier"),
-                null,
-                listOf(SimpleGrantedAuthority(group))
-            )
-    }
 }

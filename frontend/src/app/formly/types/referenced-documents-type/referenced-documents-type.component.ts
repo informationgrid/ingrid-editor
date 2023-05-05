@@ -48,7 +48,7 @@ export class ReferencedDocumentsTypeComponent
   docs: DocumentAbstract[];
 
   // TODO-dw: check sql
-  private sql = `SELECT document1.*, document_wrapper.*
+  private sql = `SELECT document1.*, document_wrapper.category
                  FROM document_wrapper
                         JOIN document document1 ON document_wrapper.uuid=document1.uuid
                  WHERE document1.is_latest = true AND document_wrapper.deleted = 0
