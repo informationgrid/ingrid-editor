@@ -4,6 +4,7 @@ import { AddressTitleBehaviour } from "./+catalog/+behaviours/system/AddressTitl
 import { DeleteReferenceHandlerPlugin } from "./+catalog/+behaviours/system/DeleteReferenceHandler/delete-reference-handler.plugin";
 import { InheritContactDataHandler } from "./+catalog/+behaviours/system/InheritContactDataHandler/inherit-contactdata-handler";
 import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.plugin";
+import { IndexingTagsPlugin } from "./+catalog/+behaviours/system/IndexingTags/indexing-tags.plugin";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: SortTreeByTypeBehaviour, multi: true },
@@ -11,4 +12,5 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: DeleteReferenceHandlerPlugin, multi: true },
   { provide: PluginToken, useClass: InheritContactDataHandler, multi: true },
   { provide: PluginToken, useClass: AutosavePlugin, multi: true },
+  { provide: PluginToken, useClass: IndexingTagsPlugin, multi: true },
 ];
