@@ -4,6 +4,7 @@ import IntegrationTest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import io.mockk.every
 import io.mockk.mockk
+import jakarta.persistence.EntityManager
 import org.hamcrest.Matchers.`is`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
-import javax.persistence.EntityManager
 
 
 @Sql(scripts = ["/uvp/test_data_uvp-report.sql"], config = SqlConfig(encoding = "UTF-8"))

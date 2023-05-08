@@ -6,19 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.*
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
-import javax.persistence.Entity
-import javax.persistence.Table
 
 @Entity
 @Table(name = "document_wrapper")
-@TypeDef(
-    name = "list-array",
-    typeClass = ListArrayType::class
-)
 @Where(clause = "deleted = 0")
 class DocumentWrapper {
 
@@ -72,7 +67,7 @@ class DocumentWrapper {
         return this.parentUuid
     }
 
-    @Type(type = "list-array")
+    @Type(ListArrayType::class)
     @Column(
         name = "path",
         columnDefinition = "text[]"

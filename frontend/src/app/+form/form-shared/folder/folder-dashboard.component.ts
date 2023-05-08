@@ -21,10 +21,12 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
   styleUrls: ["./folder-dashboard.component.scss"],
 })
 export class FolderDashboardComponent {
-  @Input() isAddress = false;
-
-  @Input() set model(value: IgeDocument) {
-    this.updateChildren(value);
+  query: TreeQuery | AddressTreeQuery;
+  @Input() set isAddress(value: boolean) {
+    this.query = value ? this.addressTreeQuery : this.treeQuery;
+    this.query.openedDocument$.pipe(untilDestroyed(this)).subscribe((doc) => {
+      if (doc) this.updateChildren(doc);
+    });
   }
 
   canCreateAddress: boolean;
@@ -47,7 +49,7 @@ export class FolderDashboardComponent {
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
   }
 
-  updateChildren(model) {
+  updateChildren(model: DocumentAbstract) {
     const query = this.isAddress ? this.addressTreeQuery : this.treeQuery;
     // TODO switch to user specific query
 
@@ -56,10 +58,12 @@ export class FolderDashboardComponent {
       .selectAll()
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const childrenFromStore = query.getChildren(model._id);
+        const childrenFromStore = query.getChildren(model.id as number);
         if (childrenFromStore.length === 0 && model._hasChildren) {
           // load children, as they are not in store yet
-          this.docService.getChildren(model._id, this.isAddress).subscribe();
+          this.docService
+            .getChildren(model.id as number, this.isAddress)
+            .subscribe();
         }
         this.numChildren = childrenFromStore.length;
         const latestChildren = childrenFromStore

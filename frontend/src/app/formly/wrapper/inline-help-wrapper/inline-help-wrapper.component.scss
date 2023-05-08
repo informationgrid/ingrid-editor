@@ -6,6 +6,7 @@
 // style for info button, when suffix is unsupported.
 :host > button {
   top: 6px;
+  position: absolute;
   margin-left: 8px;
   margin-right: unset;
 }

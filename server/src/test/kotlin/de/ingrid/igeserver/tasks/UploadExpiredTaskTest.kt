@@ -2,21 +2,20 @@ package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
-import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import javax.persistence.EntityManager
 
 class UploadExpiredTaskTest : FunSpec({
     val tomorrow = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -35,7 +34,7 @@ class UploadExpiredTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("step", JsonNodeBinaryType.INSTANCE)
+                .addScalar("step")
                 .addScalar("title")
                 .addScalar("type").resultList
         } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
@@ -43,7 +42,7 @@ class UploadExpiredTaskTest : FunSpec({
             entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
                 .addScalar("uuid")
                 .addScalar("catalogId")
-                .addScalar("negativeDocs", JsonNodeBinaryType.INSTANCE)
+                .addScalar("negativeDocs")
                 .addScalar("title")
                 .addScalar("type").resultList
         } returns emptyList()

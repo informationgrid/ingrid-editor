@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.api
 
-import javax.xml.bind.annotation.XmlRootElement
-import javax.xml.bind.annotation.XmlTransient
+import jakarta.xml.bind.annotation.XmlRootElement
+import jakarta.xml.bind.annotation.XmlTransient
 
 @XmlRootElement
 class ApiResponseMessage(@get:XmlTransient var code: Int, var message: String?) {

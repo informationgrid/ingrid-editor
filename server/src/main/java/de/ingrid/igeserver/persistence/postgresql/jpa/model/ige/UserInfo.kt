@@ -1,10 +1,11 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
+import com.vladmihalcea.hibernate.type.json.JsonType
+import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
-import javax.persistence.*
 
 @Entity
 @Table(name = "user_info")
@@ -84,7 +85,7 @@ class UserInfo {
         return this.curCatalogId
     }
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
 

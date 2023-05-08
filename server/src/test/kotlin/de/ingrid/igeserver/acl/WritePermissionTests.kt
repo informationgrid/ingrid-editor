@@ -2,28 +2,19 @@ package de.ingrid.igeserver.acl
 
 import IntegrationTest
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.GroupService
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
-
+@WithMockUser(username = "test-user", authorities = ["GROUP_WRITETREE"])
 class WritePermissionTests : IntegrationTest() {
 
     @Autowired
     private lateinit var docWrapperRepo: DocumentWrapperRepository
-
-    @Autowired
-    private lateinit var groupService: GroupService
-
-    private val GROUP_WRITE_PERMISSION: String = "GROUP_WRITETREE"
 
     private val rootUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
     private val childUuid = "3fae0d5e-087f-4c26-a580-f59e54296b38"
@@ -31,11 +22,6 @@ class WritePermissionTests : IntegrationTest() {
     private val subChildUuidNoParentRead = "0516d6de-9043-4439-a1e6-6b5b9c7bd6d5"
     private val excludedUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
 
-
-    @BeforeEach
-    fun beforeEach() {
-        mockUser(GROUP_WRITE_PERMISSION)
-    }
 
     @Test
     fun readAllowedToRootDocumentInGroup() {
@@ -125,13 +111,4 @@ class WritePermissionTests : IntegrationTest() {
         docWrapperRepo.deleteById(doc.id!!)
     }
 
-
-    private fun mockUser(group: String = "GROUP_NULL") {
-        SecurityContextHolder.getContext().authentication =
-            PreAuthenticatedAuthenticationToken(
-                BasicUserPrincipal("meier"),
-                null,
-                listOf(SimpleGrantedAuthority(group))
-            )
-    }
 }

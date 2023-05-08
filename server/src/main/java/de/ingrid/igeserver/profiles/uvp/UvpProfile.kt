@@ -119,7 +119,7 @@ class UvpProfile @Autowired constructor(
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isAdmin = authUtils.isAdmin(principal)
-        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
+        val isMdAdmin = authUtils.containsRole(principal, "md-admin")
 
         return if (isAdmin)
         // catalog and super admins can create uvp report

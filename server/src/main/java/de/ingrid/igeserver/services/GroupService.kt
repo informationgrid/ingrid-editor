@@ -19,6 +19,7 @@ import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
+import org.springframework.security.acls.model.AclService
 import org.springframework.security.acls.model.MutableAcl
 import org.springframework.security.acls.model.Permission
 import org.springframework.security.acls.model.Sid
@@ -33,7 +34,7 @@ class GroupService @Autowired constructor(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,
-    private val aclService: IgeAclService,
+    private val aclService: AclService,
     private val catalogService: CatalogService,
     private val igeAclPermissionEvaluator: IgeAclPermissionEvaluator,
     private var keycloakService: UserManagementService
