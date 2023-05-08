@@ -111,6 +111,31 @@ export class DocumentService {
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
       )
       .subscribe();
+
+    // only published
+    this.researchService
+      .search(
+        "",
+        {
+          type: "selectDocuments",
+          ignoreFolders: "exceptFolders",
+          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+        },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        },
+        ["selectOnlyPublished"]
+      )
+      .pipe(
+        map((result) => this.mapSearchResults(result)),
+        tap((docs) =>
+          this.sessionStore.update({ latestPublishedDocuments: docs.hits })
+        )
+      )
+      .subscribe();
   }
 
   findRecentAddresses(): void {

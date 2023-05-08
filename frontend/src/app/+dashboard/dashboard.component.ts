@@ -51,9 +51,10 @@ export class DashboardComponent implements OnInit {
     this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
       map((docs) => docs.slice(0, 5))
     );
-    this.recentPublishedDocs$ = this.recentDocs$.pipe(
-      map((docs) => docs.filter((el) => el._state === "P").slice(0, 5))
-    );
+    this.recentPublishedDocs$ =
+      this.sessionQuery.latestPublishedDocuments$.pipe(
+        map((docs) => docs.slice(0, 5))
+      );
     this.fetchStatistic();
     this.fetchData();
     this.messageService.loadStoredMessages();

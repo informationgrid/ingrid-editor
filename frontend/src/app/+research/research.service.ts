@@ -99,7 +99,8 @@ export class ResearchService {
     pagination?: {
       page: number;
       pageSize: number;
-    }
+    },
+    isNotFacetKeys: string[] = []
   ): Observable<ResearchResponse> {
     // Remove leading and trailing whitespace
     term = term?.trim();
@@ -109,7 +110,8 @@ export class ResearchService {
       this.filters,
       orderByField,
       orderByDirection,
-      pagination
+      pagination,
+      isNotFacetKeys
     );
     return this.http
       .post<ResearchResponse>(
