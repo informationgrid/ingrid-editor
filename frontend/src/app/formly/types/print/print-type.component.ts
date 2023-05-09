@@ -21,7 +21,7 @@ export class PrintTypeComponent
   getFromOption(value: any): string {
     if (value === null) return "";
     const options = this.props.options as any[];
-    return options.find((option) => option.value === value.key).label;
+    return options?.find((option) => option.value === value.key)?.label ?? "";
   }
 
   replaceNewLines(value: string) {
