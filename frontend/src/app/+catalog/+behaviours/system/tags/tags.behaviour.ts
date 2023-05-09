@@ -56,7 +56,7 @@ export class TagsBehaviour extends Plugin {
 
     this.dialog
       .open(PublicationTypeDialog, {
-        data: currentDocument._tags,
+        data: currentDocument._tags ?? "",
       })
       .afterClosed()
       .pipe(

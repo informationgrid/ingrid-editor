@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_TAGS
 import de.ingrid.igeserver.services.FIELD_UUID
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -110,22 +111,25 @@ abstract class EntityType {
         return emptyList()
     }
 
-    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
-        return fileList
-            ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
-            ?.map { it.get(field).get("uri").textValue() }
-            ?: emptyList()
-    }
-
-    fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
+    private fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val document = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
-        val latestDocumentJson = documentService.convertToJsonNode(document)
+        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also { 
+            it.document.data.put(FIELD_TAGS, wrapper.tags?.joinToString(","))
+        }
+        
+        val latestDocumentJson = documentService.convertToJsonNode(documentData.document)
 
         if (options.forExport) {
             documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
         }
         return latestDocumentJson
+    }
+
+    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
+        return fileList
+            ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
+            ?.map { it.get(field).get("uri").textValue() }
+            ?: emptyList()
     }
 
     fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {

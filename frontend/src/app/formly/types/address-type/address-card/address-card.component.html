@@ -7,11 +7,7 @@
 >
     <mat-card-content>
         <div class="header flex-row">
-            <mat-icon
-                class="avatar"
-                [svgIcon]="content.iconClass"
-                [ngClass]="['document-icon', content.iconState]"
-            ></mat-icon>
+            <ige-document-icon [doc]="address.ref"></ige-document-icon>
             <div class="title">
                 {{ address.type | codelist : "505" | async }}
             </div>
