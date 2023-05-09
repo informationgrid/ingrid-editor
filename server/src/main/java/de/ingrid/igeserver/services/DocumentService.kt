@@ -399,6 +399,9 @@ class DocumentService @Autowired constructor(
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
             .forEach { wrapper ->
                 try {
+                    // move last published to archive if any
+                    moveLastPublishedDocumentToArchive(catalogId, wrapper)
+                    
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
                     latestDoc.document.state = DOCUMENT_STATE.PUBLISHED
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
@@ -460,11 +463,15 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    private fun handleUpdateOnPublishedOnlyDocument(docData: DocumentData, nextStateIsDraft: Boolean = true) {
+    private fun handleUpdateOnPublishedOnlyDocument(
+        docData: DocumentData,
+        nextStateIsDraft: Boolean = true,
+        delayedPublication: Boolean = false
+    ) {
 
         if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
             docData.document.isLatest = false
-            if (!nextStateIsDraft) docData.document.state = DOCUMENT_STATE.ARCHIVED
+            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
             docRepo.save(docData.document)
 
             // prepare new document
@@ -475,15 +482,19 @@ class DocumentService @Autowired constructor(
             docData.document.state = if (nextStateIsDraft)
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
             else DOCUMENT_STATE.PUBLISHED
-        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft) {
-
-            val lastPublishedDoc =
-                getLastPublishedDocument(docData.document.catalog!!.identifier, docData.document.uuid)
-            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
-            lastPublishedDoc.wrapperId = docData.wrapper.id
-            docRepo.save(lastPublishedDoc)
+        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
+            moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
         }
         docData.document.modified = dateService.now()
+    }
+
+    private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
+        try {
+            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
+            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            lastPublishedDoc.wrapperId = wrapper.id
+            docRepo.save(lastPublishedDoc)
+        } catch (_: NotFoundException) { /* do nothing */ }
     }
 
     @Transactional(noRollbackFor = [PostSaveException::class])
@@ -501,7 +512,7 @@ class DocumentService @Autowired constructor(
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
 
-        handleUpdateOnPublishedOnlyDocument(docData, false)
+        handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
         docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
 
