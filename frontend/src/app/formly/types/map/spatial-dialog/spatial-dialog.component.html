@@ -7,13 +7,8 @@
     </h2>
 </div>
 <mat-dialog-content>
-    <div
-        fxLayout="row"
-        fxLayoutGap="24px"
-        class="spatial-wrapper"
-        [ngSwitch]="view"
-    >
-        <div fxLayout="column" style="width: 400px">
+    <div class="spatial-wrapper flex-row gap-24" [ngSwitch]="view">
+        <div class="flex-col" style="width: 400px">
             <ng-container *ngIf="types.length > 1">
                 <div class="dlg-field-label required">Typ*</div>
                 <mat-form-field
@@ -49,7 +44,7 @@
             ></ige-wkt-spatial>
         </div>
 
-        <div fxLayout="column" fxFlex>
+        <div class="flex-1 flex-col">
             <div class="dlg-field-label" [class.required]="view === 'geo-name'">
                 Titel<span *ngIf="view === 'geo-name'">*</span>
             </div>
@@ -62,8 +57,8 @@
                 />
                 <mat-hint *ngIf="view === 'geo-name'"
                     >Geben Sie dem Raumbezug eine geographische Bezeichnung oder
-                    auch Eigennamen.</mat-hint
-                >
+                    auch Eigennamen.
+                </mat-hint>
             </mat-form-field>
 
             <div
@@ -91,7 +86,7 @@
     >
         Abbrechen
     </button>
-    <div fxFlex></div>
+    <div class="flex-1"></div>
     <button
         mat-flat-button
         color="primary"

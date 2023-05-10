@@ -1,7 +1,6 @@
 <div
     *ngIf="multiSelectionModeEnabled"
-    class="multi-select-area"
-    fxLayoutAlign="space-between center"
+    class="multi-select-area justify-content-space-between align-items-center"
 >
     <mat-checkbox
         data-cy="toggle-all-selection"
@@ -21,12 +20,10 @@
     </button>
 </div>
 
-<div class="header" fxLayout="column">
+<div class="header flex-col">
     <div
         *ngIf="showOptions && !multiSelectionModeEnabled"
-        class="options"
-        fxLayout="row wrap-reverse"
-        fxLayoutAlign="space-between"
+        class="options flex-row flex-wrap-reverse justify-content-space-between align-items-stretch"
     >
         <div class="multi-select" *ngIf="showMultiSelectButton">
             <mat-checkbox
@@ -38,8 +35,7 @@
             </mat-checkbox>
         </div>
 
-        <div fxFlex fxLayout="row">
-            <div fxFlex="3 1 auto"></div>
+        <div class="flex-1 flex-row justify-content-end align-items-center">
             <!--            <mat-slide-toggle
                 class="show-all"
                 checked

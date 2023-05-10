@@ -20,7 +20,6 @@ import { MatInputModule } from "@angular/material/input";
 import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { FlexModule } from "@angular/flex-layout";
 import { MatSelectModule } from "@angular/material/select";
 import { TableDialogComponent } from "../app/shared/table-dialog/table-dialog.component";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
@@ -88,7 +87,6 @@ class InGridComponent {
     NgForOf,
     MatDatepickerModule,
     MatCheckboxModule,
-    FlexModule,
     JsonPipe,
     NgIf,
     MatAutocompleteModule,

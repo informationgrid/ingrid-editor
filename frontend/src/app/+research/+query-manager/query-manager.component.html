@@ -13,7 +13,7 @@
                     let query of type.queries | async;
                     trackBy: getIdentifier
                 "
-                class="item clickable"
+                class="item clickable flex-row"
                 (click)="load(query.id)"
             >
                 <mat-icon>star_outline</mat-icon>
@@ -23,7 +23,8 @@
                         {{ query.description }}
                     </div>
                 </div>
-                <div fxFlex></div>
+
+                <div class="flex-1"></div>
 
                 <span [title]="query.modified | date : 'long'">{{
                     query.modified | dateAgo : "DE"

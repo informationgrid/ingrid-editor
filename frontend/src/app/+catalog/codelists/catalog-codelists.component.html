@@ -21,7 +21,10 @@
         </div>
     </ng-container>
 
-    <div main-header fxLayout="column" fxLayoutAlign="center center" fxFlex>
+    <div
+        main-header
+        class="flex-1 flex-col justify-content-center align-items-center"
+    >
         <ng-container
             *ngIf="(hasCatalogCodelists | async) === false; else showSelector"
         >
@@ -53,15 +56,15 @@
 
     <div
         main-content
+        class="flex-1"
         *ngIf="(hasCatalogCodelists | async) === true; else showLogo"
-        fxFlex
     >
         <div *ngIf="selectedCodelist?.description" class="description">
             <div class="section-title">Beschreibung</div>
             <div>{{ selectedCodelist?.description }}</div>
         </div>
 
-        <div fxLayoutAlign="end end" fxLayoutGap="12px">
+        <div class="flex-row justify-content-end align-items-end gap-12">
             <button
                 mat-flat-button
                 mat-stroked-button
@@ -83,7 +86,10 @@
     </div>
 
     <ng-template #showLogo>
-        <div *ngIf="!selectedCodelist" fxFlex fxLayoutAlign="center center">
+        <div
+            *ngIf="!selectedCodelist"
+            class="flex-1 flex-row justify-content-center align-items-center"
+        >
             <img src="assets/icons/catalog-codelist.png" alt="codelist-repo" />
         </div>
     </ng-template>

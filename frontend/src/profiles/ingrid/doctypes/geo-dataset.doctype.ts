@@ -386,7 +386,7 @@ export class GeoDatasetDoctype extends IngridShared {
               },
             }),
           ],
-          { fieldGroupClassName: "display-flex" }
+          { fieldGroupClassName: "flex-row" }
         ),
         this.addRepeat("qualities", "Qualitätsinformationen", {
           className: "optional",
@@ -493,7 +493,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addInputInline("parameter", "Beschreibung"),
       ],
-      { fieldGroupClassName: "display-flex" }
+      { fieldGroupClassName: "flex-row" }
     );
   }
 }

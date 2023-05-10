@@ -28,7 +28,7 @@ export class PersonDoctype extends AddressShared {
             },
             fieldGroup: [
               {
-                fieldGroupClassName: "display-flex width-50",
+                fieldGroupClassName: "flex-row width-50",
                 fieldGroup: [
                   this.addAutoCompleteInline("salutation", "Anrede", {
                     wrappers: ["inline-help", "form-field"],
@@ -62,7 +62,7 @@ export class PersonDoctype extends AddressShared {
             },
             fieldGroup: [
               {
-                fieldGroupClassName: "display-flex",
+                fieldGroupClassName: "flex-row",
                 fieldGroup: [
                   this.addInput("firstName", null, {
                     fieldLabel: "Vorname",

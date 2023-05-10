@@ -46,9 +46,9 @@
         {{ button.text }}
     </button>
     <mat-checkbox *ngIf="data.cookieId" (change)="updateCookie($event)"
-        >nicht erneut anzeigen</mat-checkbox
-    >
-    <div fxFlex></div>
+        >nicht erneut anzeigen
+    </mat-checkbox>
+    <div class="flex-1"></div>
     <ng-container *ngFor="let button of rightAlignedButtons">
         <button
             *ngIf="!button.emphasize"

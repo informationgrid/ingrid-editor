@@ -5,7 +5,7 @@
     class="more-info"
     [formGroup]="form"
 >
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Zuletzt eingeloggt am</div>
         <div *ngIf="user.latestLogin; else neverLoggedIn">
             <span
@@ -18,7 +18,7 @@
             <div data-cy="latest-login">Nie</div>
         </ng-template>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Erstellt am</div>
         <div *ngIf="user.creationDate">
             <span
@@ -28,7 +28,7 @@
             >
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Geändert am</div>
         <div *ngIf="user.modificationDate">
             <span
@@ -38,7 +38,7 @@
             >
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>ID/login</div>
         <div data-cy="login">{{ user.login }}</div>
     </div>

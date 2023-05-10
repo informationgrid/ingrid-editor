@@ -31,9 +31,7 @@
             </mat-tab>
             <mat-tab>
                 <div
-                    class="padding"
-                    fxLayoutAlign="center center"
-                    fxLayout="column"
+                    class="padding flex-col justify-content-center align-items-center"
                 >
                     <div class="section-title">
                         Die Adresse wurde erfolgreich ersetzt.
@@ -54,7 +52,7 @@
         >
             Abbrechen
         </button>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <button
             *ngIf="showInfo && page === 0"
             mat-flat-button
