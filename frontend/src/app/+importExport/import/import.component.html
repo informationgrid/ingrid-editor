@@ -32,7 +32,12 @@
     </div>
 
     <section main-content>
-        <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
+        <mat-horizontal-stepper
+            #stepper
+            *ngIf="initialized; else waiting"
+            [linear]="true"
+            labelPosition="bottom"
+        >
             <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
 
@@ -228,6 +233,9 @@
                 </div>
             </mat-step>
         </mat-horizontal-stepper>
+        <ng-template #waiting>
+            <div>Lade letzte Information ...</div>
+        </ng-template>
     </section>
 </page-template>
 
