@@ -1,5 +1,5 @@
-<div fxLayout="column" class="tab-padding">
-    <div fxLayout="row" class="header">
+<div class="tab-padding flex-col">
+    <div class="header flex-row">
         <div class="page-title left-side">{{ label }}<br />{{ subLabel }}</div>
         <div class="main-header">
             <ng-content select="[main-header]"></ng-content>
@@ -8,7 +8,7 @@
 
     <ng-content select="[status]"></ng-content>
 
-    <div fxLayout="row" class="content" fxFlex>
+    <div class="content flex-1 flex-row">
         <div class="left-side">
             <ng-content select="[left-side]"></ng-content>
         </div>

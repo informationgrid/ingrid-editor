@@ -1,7 +1,7 @@
 <div class="wrapper">
     <ige-main-header></ige-main-header>
     <div *ngIf="showTestBadge" class="test-instance">TEST</div>
-    <mat-drawer-container [autosize]="true" fxFlex>
+    <mat-drawer-container class="flex-1" [autosize]="true">
         <mat-drawer mode="side" [opened]="true" disableClose>
             <ige-side-menu></ige-side-menu>
         </mat-drawer>

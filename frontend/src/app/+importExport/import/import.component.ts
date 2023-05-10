@@ -76,7 +76,8 @@ export class ImportComponent implements OnInit {
       tap(
         (info: ImportLogInfo) =>
           (this.errorInAnalysis = info?.errors?.length > 0)
-      )
+      ),
+      tap((info) => (this.initialized = info !== undefined))
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
@@ -92,6 +93,7 @@ export class ImportComponent implements OnInit {
     documentPath: [],
     addressPath: [],
   };
+  initialized: boolean = false;
 
   constructor(
     private exchangeService: ExchangeService,

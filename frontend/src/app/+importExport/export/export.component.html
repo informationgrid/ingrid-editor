@@ -1,7 +1,10 @@
 <page-template label="Export" *transloco="let t; read: 'export'">
     <div left-side>Hier können Sie ein oder mehrere Dateien exportieren.</div>
 
-    <section main-header fxLayoutAlign="center center">
+    <section
+        main-header
+        class="flex-row justify-content-center align-items-center"
+    >
         <div *featureFlag="'AP4'">
             Letzter Export erfolgt am xx.xx.xxxx, xx:xx:xx (xx Datensätze)
 
@@ -16,7 +19,7 @@
         </div>
     </section>
 
-    <section main-content fxFlex>
+    <section main-content>
         <mat-horizontal-stepper #stepper [linear]="true" labelPosition="bottom">
             <mat-step [completed]="datasetSelected">
                 <ng-template matStepLabel>{{ t("formSingular") }}</ng-template>
@@ -27,7 +30,9 @@
 
                 <mat-divider></mat-divider>
 
-                <div class="action-bar" fxLayoutAlign="end">
+                <div
+                    class="action-bar flex-row justify-content-end align-items-stretch"
+                >
                     <button
                         mat-flat-button
                         color="primary"
@@ -69,11 +74,11 @@
                         </mat-select>
                     </mat-form-field>
                 </form>
-                <div class="action-bar" fxLayoutGap="12px">
+                <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">
                         Abbrechen
                     </button>
-                    <div fxFlex></div>
+                    <div class="flex-1"></div>
                     <button mat-button color="primary" matStepperPrevious>
                         Zurück
                     </button>
@@ -92,9 +97,8 @@
                 <ng-template matStepLabel>Vorschau</ng-template>
 
                 <div
+                    class="flex-col justify-content-center align-items-center"
                     *ngIf="exportResult; else waitForResponse"
-                    fxLayoutAlign="center center"
-                    fxLayout="column"
                 >
                     <div class="section-title">Exportdatei erstellt:</div>
                     <mat-icon
@@ -117,16 +121,18 @@
                 </div>
 
                 <ng-template #waitForResponse>
-                    <div fxLayoutAlign="center center">
+                    <div
+                        class="flex-row justify-content-center align-items-center"
+                    >
                         <mat-spinner></mat-spinner>
                     </div>
                 </ng-template>
 
-                <div class="action-bar" fxLayoutGap="12px">
+                <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">
                         Abbrechen
                     </button>
-                    <div fxFlex></div>
+                    <div class="flex-1"></div>
                     <button mat-button color="primary" matStepperPrevious>
                         Zurück
                     </button>
@@ -144,17 +150,17 @@
             <mat-step>
                 <ng-template matStepLabel>Fertig</ng-template>
 
-                <div fxLayoutAlign="center center" fxLayout="column">
+                <div class="flex-col justify-content-center align-items-center">
                     <div class="section-title">Datei exportiert</div>
                     <mat-icon class="big-icon success-color"
-                        >check_circle_outline</mat-icon
-                    >
+                        >check_circle_outline
+                    </mat-icon>
                     <div>
                         Die Datei wurde in Ihrem Download-Ordner abgelegt.
                     </div>
                 </div>
-                <div class="action-bar">
-                    <div fxFlex></div>
+                <div class="action-bar flex-row">
+                    <div class="flex-1"></div>
                     <button mat-flat-button color="primary" (click)="cancel()">
                         Neuer Export
                     </button>

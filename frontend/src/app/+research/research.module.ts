@@ -6,7 +6,6 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatTableModule } from "@angular/material/table";
-import { FlexModule } from "@angular/flex-layout";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -60,7 +59,6 @@ import { Angular2CsvModule } from "angular2-csv";
     MatRadioModule,
     FormsModule,
     MatTableModule,
-    FlexModule,
     MatFormFieldModule,
     MatInputModule,
     MatTabsModule,

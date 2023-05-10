@@ -1,4 +1,4 @@
-<div fxFlex fxLayout="column" *ngIf="dataMap | async as dataSeq">
+<div class="flex-1 flex-col" *ngIf="dataMap | async as dataSeq">
     <svg viewBox="0 0 36 36" class="circular-chart">
         <path
             *ngIf="dataSeq.first != null"
@@ -37,11 +37,8 @@
     </svg>
 
     <div
-        class="wrapper"
-        fxFlex
-        fxLayout="row"
+        class="wrapper flex-1 flex-row justify-content-space-between align-items-stretch"
         [class.inline]="showPercentages && total > 0"
-        fxLayoutAlign="space-between"
     >
         <div class="box working">
             <div data-cy="editModeDocument" class="count">

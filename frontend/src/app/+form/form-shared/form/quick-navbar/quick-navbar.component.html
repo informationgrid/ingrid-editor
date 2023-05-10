@@ -1,5 +1,5 @@
 <div class="navigation-bar-wrapper">
-    <div class="navigation-bar">
+    <div class="navigation-bar flex-row">
         <div class="document-type">
             <mat-icon
                 [svgIcon]="docIcon"
@@ -10,7 +10,7 @@
         </div>
 
         <ige-header-navigation
-            fxFlex
+            class="flex-1"
             [sections]="sections ?? []"
         ></ige-header-navigation>
     </div>

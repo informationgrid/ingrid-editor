@@ -7,7 +7,6 @@ import { routing } from "./settings.routing";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { FlexModule } from "@angular/flex-layout";
 import { CodelistsComponent } from "./codelists/codelists.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
@@ -36,6 +35,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
+
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -55,7 +55,6 @@ import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignm
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
-    FlexModule,
     MatCardModule,
     MatSlideToggleModule,
     MatButtonModule,

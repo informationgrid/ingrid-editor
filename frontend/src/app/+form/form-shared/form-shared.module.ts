@@ -9,7 +9,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { FormPluginsService } from "./form-plugins.service";
 import { CreateDocumentPlugin } from "../dialogs/create/create-doc.plugin";
 import { SavePlugin } from "../dialogs/save/save.plugin";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { CreateFolderPlugin } from "../dialogs/create/create-folder.plugin";
 import { DeleteDocsPlugin } from "../dialogs/delete-docs/delete-docs.plugin";
 import { CopyCutPastePlugin } from "../dialogs/copy-cut-paste/copy-cut-paste.plugin";
@@ -85,7 +84,6 @@ import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    FlexLayoutModule,
     IgeFormlyModule,
     MatTabsModule,
     SharedModule,
@@ -119,7 +117,6 @@ import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
   ],
   exports: [
     FormToolbarComponent,
-    FlexLayoutModule,
     IgeFormlyModule,
     FormInfoComponent,
     DynamicFormComponent,

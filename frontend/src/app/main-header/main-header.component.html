@@ -9,7 +9,7 @@
         >
         <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
 
-        <div fxFlex="grow" class="center-header">
+        <div class="center-header flex-grow">
             <ige-session-timeout-info
                 *ngIf="timeout$ | async as timer"
                 [timeout]="timer"
@@ -19,8 +19,7 @@
 
         <div
             *ngIf="currentCatalog$ | async as currentCatalog"
-            fxFlex="grow"
-            class="header-info"
+            class="header-info flex-grow"
         >
             Katalog:
             <span
@@ -45,7 +44,7 @@
             </mat-menu>
         </div>
 
-        <span *ngIf="userInfo$ | async as userInfo" class="display-flex">
+        <span *ngIf="userInfo$ | async as userInfo" class="flex-row">
             <button
                 type="button"
                 class="user-popup pad-right"

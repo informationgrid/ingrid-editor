@@ -7,17 +7,15 @@
 
 <div
     *ngIf="addresses.length > 0"
-    fxLayout="row wrap"
-    fxLayoutGap="24px grid"
-    class="address-cards"
+    class="address-cards flex-row flex-wrap gap-24"
     cdkDropList
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)"
 >
     <div
         *ngFor="let address of addresses; let i = index"
-        fxFlex="50"
         class="address-card-wrapper"
+        style="max-width: 50%"
         [class.draggable]="formControl.enabled"
         cdkDrag
         [cdkDragDisabled]="formControl.disabled"

@@ -1,4 +1,4 @@
-<div fxLayout="column">
+<div class="flex-col">
     <div class="dlg-field-label required">Begrenzungspolygon als WKT*</div>
     <mat-form-field class="width-100 top-align-suffix" appearance="outline">
         <textarea
@@ -20,7 +20,7 @@
             </mat-icon>
         </button>
     </mat-form-field>
-    <div class="display-flex align-items-center gap btn-analyze space-bottom">
+    <div class="flex-row align-items-center gap-6 btn-analyze space-bottom">
         <mat-spinner *ngIf="isAnalyzing" diameter="16"></mat-spinner>
         <button
             mat-stroked-button

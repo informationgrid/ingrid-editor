@@ -15,12 +15,7 @@
     <mat-dialog-content class="hide-tab-header create-dlg-content">
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
             <mat-tab label="Titel">
-                <div
-                    class="first-tab-wrapper"
-                    fxFlex
-                    fxLayout="column"
-                    [formGroup]="formGroup"
-                >
+                <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
                     <ige-document-template
                         *ngIf="isFolder || !forAddress; else addressForm"
                         [isFolder]="isFolder"
@@ -81,7 +76,7 @@
             <span>Zurück</span>
         </button>
 
-        <div fxFlex></div>
+        <div class="flex-1"></div>
 
         <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
         <button

@@ -11,8 +11,8 @@
         Setzen Sie hier das "Gültig bis"-Datum für alle ausgewählten Zeilen der
         Tabelle.
     </p>
-    <div>
-        <div fxFlex></div>
+    <div class="flex-row">
+        <div class="flex-1"></div>
         <mat-form-field appearance="outline" class="width-date-medium">
             <mat-label>Gültig bis</mat-label>
             <input
@@ -33,7 +33,7 @@
     <button mat-button color="primary" [mat-dialog-close]="undefined">
         Abbrechen
     </button>
-    <div fxFlex></div>
+    <div class="flex-1"></div>
     <button color="primary" mat-flat-button [mat-dialog-close]="getDate()">
         Setzen
     </button>

@@ -96,6 +96,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
             }
             log.info("No published version of ${doc.uuid} found. Will not be exported.")
             ""
+        } catch (ex2: java.lang.IllegalArgumentException) {
+            // TODO handle more elegantly
+            log.error("Error while exporting ${doc.uuid}", ex2)
+            "Error while exporting. Make sure the document can be published."
         }
     }
 

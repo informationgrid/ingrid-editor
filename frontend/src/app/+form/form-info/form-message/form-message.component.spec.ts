@@ -6,7 +6,6 @@ import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { MatIconModule } from "@angular/material/icon";
 import { fakeAsync, tick } from "@angular/core/testing";
 import { FormMessageService } from "../../../services/form-message.service";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatButtonModule } from "@angular/material/button";
 
 describe("FormMessageComponent", () => {
@@ -24,7 +23,7 @@ describe("FormMessageComponent", () => {
   // const db: SpyObject<DynamicDatabase>;
   const createHost = createComponentFactory({
     component: FormMessageComponent,
-    imports: [MatIconModule, MatButtonModule, FlexLayoutModule],
+    imports: [MatIconModule, MatButtonModule],
   });
 
   beforeEach(() => {

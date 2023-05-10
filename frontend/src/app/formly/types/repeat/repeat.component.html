@@ -22,7 +22,7 @@
 
         <div
             *ngFor="let fieldRef of groupedFields[key]; let i = index"
-            class="display-flex"
+            class="flex-row"
             cdkDrag
             [class.extended-gap]="props.hasExtendedGap"
             [cdkDragDisabled]="!canBeDragged"

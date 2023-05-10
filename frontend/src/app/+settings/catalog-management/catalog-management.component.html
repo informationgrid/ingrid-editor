@@ -1,7 +1,7 @@
 <page-template label="Katalogverwaltung">
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
-    <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
+    <div main-header class="flex-col justify-content-start align-items-stretch">
         <div *ngIf="profiles">
             <ige-add-button
                 buttonType="flat"
@@ -16,10 +16,9 @@
 
     <div main-content>
         <div class="section-title">Aktiver Katalog</div>
-        <div fxLayout="row" style="padding-bottom: 48px">
+        <div class="flex-row" style="padding-bottom: 48px">
             <div
                 *ngIf="activeCatalog | async as catalog"
-                fxFlex="25"
                 class="catalog-wrapper"
             >
                 <ng-container
@@ -30,7 +29,7 @@
         </div>
 
         <div class="section-title">Weitere Kataloge</div>
-        <div fxLayout="row wrap" fxLayoutGap="48px grid">
+        <div class="flex-row flex-wrap gap-36">
             <div
                 *ngFor="
                     let cat of nonActiveCatalogs | async;
@@ -59,7 +58,7 @@
                 <div class="header">
                     <mat-icon>article</mat-icon>
                     <div class="profile">{{ cat.type }}</div>
-                    <div fxFlex></div>
+                    <div class="flex-1"></div>
                     <button
                         mat-icon-button
                         class="menu dark menu-button"

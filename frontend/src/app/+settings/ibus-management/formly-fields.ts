@@ -20,7 +20,7 @@ export const iBusFields: FormlyFieldConfig[] = [
           },
         },
         {
-          fieldGroupClassName: "display-flex gap",
+          fieldGroupClassName: "flex-row gap-6",
           fieldGroup: [
             {
               key: "ip",

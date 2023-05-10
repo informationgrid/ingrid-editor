@@ -33,7 +33,7 @@
     >
         Schließen
     </button>
-    <div fxFlex></div>
+    <div class="flex-1"></div>
     <a
         *ngIf="errors[0].unhandledException"
         mat-stroked-button
@@ -63,9 +63,8 @@
                 *ngIf="error.showDetails"
                 class="hover-elevate"
             >
-                <mat-card-header>
-                    <div fxFlex></div>
-                    <div>
+                <mat-card-content>
+                    <div class="clipboard-btn">
                         <button
                             [cdkCopyToClipboard]="
                                 error.detail + error.stacktrace
@@ -76,9 +75,6 @@
                             <mat-icon class="mat-icon">content_copy</mat-icon>
                         </button>
                     </div>
-                </mat-card-header>
-
-                <mat-card-content>
                     <ng-container>
                         <pre *ngIf="error.detail">
                             {{ error.detail?.trim() }}

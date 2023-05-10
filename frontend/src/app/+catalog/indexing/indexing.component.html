@@ -107,7 +107,7 @@
         </div>
     </div>
 
-    <div main-content fxFlex>
+    <div main-content>
         <section>Ausführungsintervall</section>
         <div class="padding section">
             <mat-form-field class="width-100" appearance="outline">
@@ -119,7 +119,7 @@
                 />
                 <mat-hint>{{ hint }}</mat-hint>
             </mat-form-field>
-            <div class="button-bar">
+            <div class="button-bar flex-row justify-content-space-between">
                 <button
                     mat-stroked-button
                     (click)="deactivateIndexing()"
@@ -127,7 +127,6 @@
                 >
                     Keine zeitliche Indizierung
                 </button>
-                <div fxFlex></div>
                 <button
                     mat-stroked-button
                     color="primary"

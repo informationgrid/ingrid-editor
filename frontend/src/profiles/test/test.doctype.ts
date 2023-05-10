@@ -189,7 +189,7 @@ export class TestDoctype extends BaseDoctype {
               minLength: 1,
             },
             fieldArray: {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 {
                   key: "date",

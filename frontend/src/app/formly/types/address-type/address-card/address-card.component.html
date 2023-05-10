@@ -6,7 +6,7 @@
     [matTooltip]="stateInfo"
 >
     <mat-card-content>
-        <div class="header">
+        <div class="header flex-row">
             <mat-icon
                 class="avatar"
                 [svgIcon]="content.iconClass"
@@ -15,7 +15,7 @@
             <div class="title">
                 {{ address.type | codelist : "505" | async }}
             </div>
-            <div fxFlex></div>
+            <div class="flex-1"></div>
             <button
                 mat-icon-button
                 type="button"

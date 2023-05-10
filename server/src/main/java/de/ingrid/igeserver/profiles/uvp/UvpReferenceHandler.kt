@@ -64,8 +64,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     }
 
     private fun mapQueryResults(
-        result: List<Array<Any>>,
-        resultNegativeDocs: List<Array<Any>>,
+        result: List<Array<Any?>>,
+        resultNegativeDocs: List<Array<Any?>>,
         onlyLinks: Boolean = false
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()

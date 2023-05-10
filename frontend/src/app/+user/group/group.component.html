@@ -1,4 +1,4 @@
-<div class="page-wrapper" fxLayout="column">
+<div class="page-wrapper flex-col">
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
@@ -12,7 +12,8 @@
                         placeholder="Suchen"
                         [withWhiteBorder]="false"
                     ></ige-search-input>
-                    <div fxFlex></div>
+
+                    <div class="flex-1"></div>
 
                     <span class="save-buttons">
                         <button
@@ -64,24 +65,20 @@
         <as-split-area
             [size]="100 - tableWidth"
             id="formRoles"
-            class="split-pane-content-secondary container-fluid"
-            style="display: block"
+            class="split-pane-content-secondary container-fluid flex-row"
         >
             <ng-container *ngIf="!isLoading; else loading">
                 <ng-container *ngIf="selectedGroup; else noGroupSelected">
                     <form
-                        fxLayout="column"
-                        fxLayoutGap="12px"
-                        fxFill
                         [formGroup]="form"
-                        class="detail-role"
+                        class="detail-role flex-col gap-12"
                     >
                         <div class="user-title">
                             <div class="document-type">
                                 <mat-icon svgIcon="group"></mat-icon>
                             </div>
 
-                            <span fxFlex class="label" [class.editable]="false">
+                            <span class="label flex-1" [class.editable]="false">
                                 <span>{{
                                     form.get("name")?.value || "Kein Titel"
                                 }}</span>
@@ -193,10 +190,7 @@
                 <ng-template #noGroupSelected>
                     <div
                         *ngIf="(groups | async)?.length > 0"
-                        fxFlex
-                        fxLayout="column"
-                        fxLayoutAlign="center center"
-                        class="detail-role no-selection-placeholder"
+                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                     >
                         <div>
                             <img
@@ -211,10 +205,7 @@
                     </div>
                     <div
                         *ngIf="(groups | async)?.length === 0"
-                        fxFlex
-                        fxLayout="column"
-                        fxLayoutAlign="center center"
-                        class="detail-role no-selection-placeholder"
+                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                     >
                         <div>
                             <img

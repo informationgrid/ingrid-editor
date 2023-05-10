@@ -61,9 +61,10 @@ export abstract class SaveBase extends Plugin {
         "Es trat ein Fehler bei der JSON-Schema Validierung auf."
       );
       igeError.detail = error?.error?.data?.error
-        ?.map((item) => item.error)
-        ?.filter((item) => item.indexOf("A subschema had errors") === -1)
+        ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
+        ?.map((item) => `${item.instanceLocation}: ${item.error}`)
         ?.join("\n");
+      igeError.unhandledException = true;
       throw igeError;
 
       // TODO: update store to show backend validation errors in form

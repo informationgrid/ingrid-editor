@@ -1,8 +1,6 @@
 <div
-    fxFlex
-    fxLayout="column"
     *transloco="let t; read: 'dashboard'"
-    class="allPageScroll"
+    class="allPageScroll flex-1 flex-col"
 >
     <div class="welcome" data-cy="welcome-message">
         <div class="greetings">{{ t("welcome") }}</div>
@@ -45,9 +43,9 @@
             ></ige-action-button>
         </div>
 
-        <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
-            <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-                <ige-card-box fxFlex label="{{ t('application') }} Datensätze">
+        <div class="info-cards flex-col gap-24">
+            <div class="info-box flex-row gap-36">
+                <ige-card-box label="{{ t('application') }} Datensätze">
                     <ige-chart
                         [data]="chartDataPublished.asObservable()"
                     ></ige-chart>
@@ -55,8 +53,6 @@
             </div>
 
             <ige-card-box
-                fxFlex
-                data-cy="recent-docs"
                 label="{{ t('mostRecent') }}"
                 data-cy="card-latest-docs"
             >
@@ -67,7 +63,6 @@
                 ></ige-document-list-item>
             </ige-card-box>
             <ige-card-box
-                fxFlex
                 data-cy="recent-published-docs"
                 label="{{ t('mostRecentPublished') }}"
             >
