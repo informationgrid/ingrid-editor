@@ -8,16 +8,16 @@
       "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isOpenData": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireIdentified": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireConform": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "subType": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -322,7 +322,7 @@
               "type": "string"
             },
             "hasAccessConstraints": {
-              "type": "boolean"
+              "type": ["null", "boolean"]
             },
             "implementationHistory": {
               "type": "string"

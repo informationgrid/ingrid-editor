@@ -8,13 +8,13 @@
       "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isOpenData": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireIdentified": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "_uuid": {
           "type": "string",
@@ -33,7 +33,7 @@
           "type": "string"
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",
@@ -155,7 +155,7 @@
               "$ref": "refs/general.schema.json#/definitions/systemEnvironment"
             },
             "hasAccessConstraints": {
-              "type": "boolean"
+              "type": ["null", "boolean"]
             },
             "implementationHistory": {
               "type": "string"
