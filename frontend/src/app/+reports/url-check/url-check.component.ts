@@ -84,7 +84,7 @@ export class UrlCheckComponent implements OnInit {
   }
 
   private handleReport(data: UrlLogResult) {
-    if (!data) return;
+    if (!data?.progress) return;
 
     data.endTime ? this.setCompletedReport(data) : this.setRunningReport(data);
   }

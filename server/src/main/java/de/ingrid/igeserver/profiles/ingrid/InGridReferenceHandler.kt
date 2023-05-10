@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.profiles.ingrid
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
@@ -33,7 +35,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     }
 
     private fun mapQueryResults(
-            result: List<Array<Any>>,
+            result: List<Array<Any?>>,
             onlyLinks: Boolean = true
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
@@ -41,25 +43,26 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            val data = if (it[2] == null) null else jacksonObjectMapper().readTree(it[2].toString())
             if (existingDoc == null) {
                 uniqueList.add(
                         DocumentLinks(
                                 catalogId,
                                 docUuid,
-                                getUrlsFromJsonField(it[2] as List<*>?, onlyLinks),
+                                getUrlsFromJsonField(data, onlyLinks),
                                 it[3].toString(),
                                 it[4].toString()
                         )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as List<*>?, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
             }
         }
 
         return uniqueList
     }
 
-    private fun getUrlsFromJsonField(graphicOverviews: List<*>?, onlyLinks: Boolean): MutableList<UploadInfo> {
+    private fun getUrlsFromJsonField(graphicOverviews: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
         if (graphicOverviews == null) return mutableListOf()
 
         return graphicOverviews
@@ -71,7 +74,9 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
                 .toMutableList()
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private data class LinkItem(val fileName: FileInfo, val fileDescription: String?)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private data class FileInfo(val uri: String, val value: String, val asLink: Boolean)
 
 }
