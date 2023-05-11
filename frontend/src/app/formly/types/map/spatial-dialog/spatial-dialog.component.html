@@ -49,7 +49,7 @@
             <ige-wkt-spatial
                 *ngSwitchCase="'wkt'"
                 [map]="leafletReference"
-                [wktString]="data?.wkt"
+                [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
             <ige-draw-spatial *ngSwitchCase="'draw'"></ige-draw-spatial>
