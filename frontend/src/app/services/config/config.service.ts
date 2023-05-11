@@ -56,6 +56,8 @@ export interface UserInfo {
 export class ConfigService {
   public static catalogId: string;
 
+  public static backendApiUrl: string;
+
   private config: Configuration;
 
   defaultConfig: Partial<Configuration> = {
@@ -125,6 +127,7 @@ export class ConfigService {
     return this.dataService.load().then((json) => {
       this.config = { ...this.defaultConfig, ...json };
       this.config.backendUrl = this.config.contextPath + "api/";
+      ConfigService.backendApiUrl = this.config.backendUrl;
       this.dataService.config = this.config;
       return this.config;
     });

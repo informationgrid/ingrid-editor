@@ -23,6 +23,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
 import { ThesaurusResult } from "../components/thesaurus-result";
+import { ConfigService } from "../../../app/services/config/config.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -380,7 +381,9 @@ export abstract class IngridShared extends BaseDoctype {
           view: "chip",
           placeholder: "Im Umweltthesaurus suchen",
           restCall: (query: string) =>
-            this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+            this.http.get<any[]>(
+              `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`
+            ),
           labelField: "label",
           selectLabelField: (item) => {
             return item.alternativeLabel
@@ -515,7 +518,11 @@ export abstract class IngridShared extends BaseDoctype {
     item
   ): Promise<ThesaurusResult> {
     const response = await http
-      .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
+      .get<any[]>(
+        `${ConfigService.backendApiUrl}keywords/umthes?q=${encodeURI(
+          item
+        )}&type=EXACT`
+      )
       .toPromise();
     if (response.length > 0) {
       const exists = model.keywordsUmthes.some(

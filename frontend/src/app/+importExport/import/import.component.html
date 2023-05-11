@@ -43,7 +43,9 @@
 
                 <div *ngIf="!step1Complete; else uploadFinished">
                     <ige-file-upload
-                        target="/api/jobs/import/analyze?command=start"
+                        target="{{
+                            ConfigService.backendApiUrl
+                        }}jobs/import/analyze?command=start"
                         (complete)="onUploadComplete()"
                         (chosenFiles)="chosenFiles = $event"
                     ></ige-file-upload>
