@@ -951,6 +951,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       model._type !== "InGridGeoDataset" ||
+                      !model.isInspireIdentified ||
                       model.isInspireConform ||
                       !this.conformityExists(ctrl, "12", "1")
                     );
