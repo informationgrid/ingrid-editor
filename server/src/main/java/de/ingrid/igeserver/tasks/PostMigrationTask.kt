@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
@@ -355,21 +354,8 @@ class PostMigrationTask(
     ) = listOf(DOCUMENT_STATE.PUBLISHED, DOCUMENT_STATE.DRAFT, DOCUMENT_STATE.DRAFT_AND_PUBLISHED, DOCUMENT_STATE.PENDING)
         .map {documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)}
         .flatMap {
-            getReferencedDocumentIds(it, catalogIdentifier)
+            documentService.getReferencedWrapperIds(catalogIdentifier, it)
         }
-
-    private fun getReferencedDocumentIds(
-        document: Document?,
-        catalogIdentifier: String
-    ): Set<Int> {
-        if (document == null) return setOf()
-
-        val docType = documentService.getDocumentType(document.type)
-        return docType.getReferenceIds(document).map {
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!!
-        }.toSet()
-
-    }
 
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type

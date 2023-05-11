@@ -121,6 +121,7 @@ class DocumentService @Autowired constructor(
     /**
      * This function gets the latest document version with its wrapper element. This function implicitly checks
      * permission when getting the wrapper.
+     * TODO: very similar to function "getDocumentByWrapperId(...)" -> refactor
      */
     fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
         try {
@@ -879,6 +880,18 @@ class DocumentService @Autowired constructor(
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags
+    }
+
+    fun getReferencedWrapperIds(
+        catalogIdentifier: String,
+        document: Document?
+    ): Set<Int> {
+        if (document == null) return setOf()
+
+        val docType = getDocumentType(document.type)
+        return docType.getReferenceIds(document)
+            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }
+            .toSet()
     }
 }
 
