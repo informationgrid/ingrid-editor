@@ -92,7 +92,7 @@
           }
         },
         "description": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "spatialSystems": {
           "type": "array",
@@ -115,10 +115,10 @@
               ]
             },
             "maximumValue": {
-              "type": "number"
+              "type": ["null", "number"]
             },
             "minimumValue": {
-              "type": "number"
+              "type": ["null", "number"]
             },
             "unitOfMeasure": {
               "anyOf": [
@@ -348,19 +348,19 @@
       }
     },
     "explanation": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "methodText": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "systemEnvironment": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "baseDataText": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "orderInfo": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "temporal": {
       "type": "object",

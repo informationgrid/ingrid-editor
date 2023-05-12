@@ -30,7 +30,7 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "serviceType": {
           "anyOf": [
@@ -87,31 +87,31 @@
           "additionalProperties": false,
           "properties": {
             "isbn": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "pages": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "author": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "volume": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "location": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "publisher": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "explanation": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "publishedIn": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "baseDataText": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "documentType": {
               "anyOf": [
@@ -120,16 +120,16 @@
               ]
             },
             "publicationDate": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "publishingHouse": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "bibliographicData": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "placeOfPublication": {
-              "type": "string"
+              "type": ["null", "string"]
             }
           }
         },

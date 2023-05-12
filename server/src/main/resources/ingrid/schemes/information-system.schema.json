@@ -30,7 +30,7 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "serviceType": {
           "anyOf": [
@@ -146,7 +146,7 @@
           "$ref": "refs/general.schema.json#/definitions/baseDataText"
         },
         "history": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "orderInfo": {
           "$ref": "refs/general.schema.json#/definitions/orderInfo"

@@ -30,7 +30,7 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "parentIdentifier": {
           "type": ["null", "string"]
