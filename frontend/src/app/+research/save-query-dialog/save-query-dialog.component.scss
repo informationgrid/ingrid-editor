@@ -1,3 +1,10 @@
+:host {
+  .mat-mdc-dialog-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .description {
   padding-bottom: 24px;
 }
