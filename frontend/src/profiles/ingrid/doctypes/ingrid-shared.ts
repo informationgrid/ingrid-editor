@@ -194,39 +194,8 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             { className: "optional" }
           ),
-          this.addTable("graphicOverviews", "Vorschaugrafik", {
+          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
-            columns: [
-              {
-                key: "fileName",
-                type: "upload",
-                label: "URI",
-                props: {
-                  label: "URI",
-                  appearance: "outline",
-                  onClick: (docUuid, uri, $event) => {
-                    this.uploadService.downloadFile(docUuid, uri, $event);
-                  },
-                  formatter: (link: any) => {
-                    if (link.asLink) {
-                      return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
-                    } else {
-                      return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
-                    }
-                  },
-                },
-              },
-              {
-                key: "fileDescription",
-                type: "input",
-                label: "Beschreibung",
-                props: {
-                  label: "Beschreibung",
-                  appearance: "outline",
-                },
-              },
-            ],
           }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],

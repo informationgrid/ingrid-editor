@@ -1,0 +1,40 @@
+<div class="image-container flex-row gap-12">
+    <mat-card *ngFor="let field of field.fieldGroup; let i = index">
+        <div class="content">
+            <img
+                [src]="imageLinks[i]"
+                [alt]="model[i]?.fileName?.uri"
+                height="250"
+            />
+            <button mat-icon-button class="btn-edit" (click)="edit(i)">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="btn-close" (click)="remove(i)">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-card-footer *ngIf="model[i]?.fileDescription">
+            <div>{{ model[i]?.fileDescription }}</div>
+        </mat-card-footer>
+    </mat-card>
+</div>
+
+<div class="button-wrapper">
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="showUploadFilesDialog()"
+    >
+        Dateien hochladen
+    </button>
+    oder
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="showAddLinkDialog()"
+    >
+        Link angeben
+    </button>
+</div>
