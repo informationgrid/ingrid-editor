@@ -31,7 +31,7 @@ INSERT INTO document VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, false, 'PUBLISHED'
 );
 -- archived version 1
 INSERT INTO document VALUES (1002, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document', '{
@@ -52,23 +52,13 @@ INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 
     0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 
-INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
+INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data', 0);
 
-INSERT INTO document_wrapper VALUES (2001, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address',
-    NULL, NULL, 0
-);
+INSERT INTO document_wrapper VALUES (2001, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'AddressDoc', 'address', 0);
 
-INSERT INTO document_wrapper VALUES (2002, 100, 2001, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
-    1000, 1001, 0
-);
+INSERT INTO document_wrapper VALUES (2002, 100, 2001, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address', 0);
 
-INSERT INTO document_wrapper VALUES (2003, 100, 2001, 'e8f891e4-c4d2-61e1-8669-b350203fadc2', 'AddressDoc', 'address',
-    NULL, NULL, 0
-);
-
-INSERT INTO document_archive VALUES (2002, 1002);
+INSERT INTO document_wrapper VALUES (2003, 100, 2001, 'e8f891e4-c4d2-61e1-8669-b350203fadc2', 'AddressDoc', 'address', 0);
 
 -- behaviours
 INSERT INTO behaviour VALUES (200, 100, 'plugin.session.timeout', true, '{

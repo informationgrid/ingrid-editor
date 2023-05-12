@@ -35,14 +35,14 @@ INSERT INTO document VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, false, 'PUBLISHED'
 );
 -- archived version 1
 INSERT INTO document VALUES (1002, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document', '{
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, false, 'ARCHIVED'
 );
 -- folder
 INSERT INTO document VALUES (1003, 100, 'bc365545-e4b5-4359-bfb5-84367513752e', 'FOLDER', 'Test Folder', null,
@@ -56,56 +56,24 @@ INSERT INTO document VALUES (1005, 100, '365545bc-5e4b-3954-5bfb-72e584361375', 
     0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
 );
 
-INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2100, 100, NULL, 'c689240d-e7a9-45cc-b761-44eda0cda1f1', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
+INSERT INTO document_wrapper VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2100, 100, NULL, 'c689240d-e7a9-45cc-b761-44eda0cda1f1', 'FOLDER', 'data', 0);
 
-INSERT INTO document_wrapper VALUES (2110, 100, 2100, '3fae0d5e-087f-4c26-a580-f59e54296b38', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2200, 100, NULL, 'e80b856b-dbea-4f88-99e6-c554bf18480e', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2210, 100, 2200, 'e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2300, 100, NULL, '3ce4cf2e-2baf-4ec9-9439-9a9b7afee087', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2310, 100, 2300, '7289c68d-f036-4d61-932c-855ac408bde1', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2320, 100, 2310, '5c065bb7-ec46-4cab-bb02-8de2a814230b', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2400, 100, NULL, 'a211c074-6952-41ed-846c-824ed630a4e9', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2410, 100, 2400, '7a97b378-b01c-4da7-88e3-623a092d83c1', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2420, 100, 2410, '0516d6de-9043-4439-a1e6-6b5b9c7bd6d5', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2500, 100, NULL, '96c339ea-5caa-487a-a35d-4129f2fb9e06', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2510, 100, 2500, 'b304f85d-b8ff-470c-828c-700f384e3bcd', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
-INSERT INTO document_wrapper VALUES (2520, 100, 2510, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 'FOLDER', 'data',
-    NULL, NULL, 0
-);
+INSERT INTO document_wrapper VALUES (2110, 100, 2100, '3fae0d5e-087f-4c26-a580-f59e54296b38', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2200, 100, NULL, 'e80b856b-dbea-4f88-99e6-c554bf18480e', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2210, 100, 2200, 'e3b3ba5a-29e0-428e-96b2-20c2b1c92f7d', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2300, 100, NULL, '3ce4cf2e-2baf-4ec9-9439-9a9b7afee087', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2310, 100, 2300, '7289c68d-f036-4d61-932c-855ac408bde1', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2320, 100, 2310, '5c065bb7-ec46-4cab-bb02-8de2a814230b', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2400, 100, NULL, 'a211c074-6952-41ed-846c-824ed630a4e9', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2410, 100, 2400, '7a97b378-b01c-4da7-88e3-623a092d83c1', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2420, 100, 2410, '0516d6de-9043-4439-a1e6-6b5b9c7bd6d5', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2500, 100, NULL, '96c339ea-5caa-487a-a35d-4129f2fb9e06', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2510, 100, 2500, 'b304f85d-b8ff-470c-828c-700f384e3bcd', 'FOLDER', 'data', 0);
+INSERT INTO document_wrapper VALUES (2520, 100, 2510, '17cafb6e-3356-4225-8040-a62b11a5a8eb', 'FOLDER', 'data', 0);
 
-INSERT INTO document_wrapper VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address',
-    1000, 1001, 0
-);
+INSERT INTO document_wrapper VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'address', 0);
 
 INSERT INTO document_archive VALUES (2002, 1002);
 

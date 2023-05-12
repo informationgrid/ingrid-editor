@@ -24,5 +24,4 @@ VALUES (1014, 100, '222-approval-222', 'UvpApprovalProcedureDoc', 'Approval1', '
 
 
 INSERT INTO document_wrapper
-VALUES (2012, 100, NULL, '222-approval-222', 'UvpApprovalProcedureDoc', 'data',
-        NULL, null, 0);
+VALUES (2012, 100, NULL, '222-approval-222', 'UvpApprovalProcedureDoc', 'data', 0);
