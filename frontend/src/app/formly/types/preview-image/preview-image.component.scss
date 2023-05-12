@@ -12,17 +12,18 @@ mat-card {
   .content {
     position: relative;
     height: 250px;
-    overflow: auto;
+    overflow: hidden;
   }
 
   button {
     background-color: white;
     opacity: 0.4;
-
-    &:hover {
-      opacity: 1;
-    }
   }
+
+  &:hover button {
+    opacity: 1;
+  }
+
   .btn-close {
     position: absolute;
     bottom: 10px;

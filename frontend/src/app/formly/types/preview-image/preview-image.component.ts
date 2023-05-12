@@ -18,6 +18,7 @@ import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @UntilDestroy()
 @Component({
@@ -33,6 +34,7 @@ import { UploadService } from "../../../shared/upload/upload.service";
     MatIconModule,
     AsyncPipe,
     NgIf,
+    MatTooltipModule,
   ],
 })
 export class PreviewImageComponent extends FieldArrayType implements OnInit {
@@ -70,7 +72,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     },
   ];
 
-  imageLinks = [];
+  imageLinks: any = {};
 
   ngOnInit(): void {
     this.formControl.valueChanges
@@ -132,8 +134,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          console.log(result);
-          console.log(this.model[index]);
+          this.imageLinks = {};
           this.remove(index);
           this.add(index, result);
         }
@@ -149,28 +150,27 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   }
 
   private createImageLinkUris(value: any[]) {
-    this.imageLinks = [];
-
     value?.map((item, index) => {
       const uri = item.fileName?.uri;
-      if (!uri) return;
+      if (!uri || this.imageLinks[uri] !== undefined) return;
 
       if (item.fileName?.asLink) {
-        this.imageLinks.push(uri);
+        this.imageLinks[uri] = uri;
         return;
       }
 
       const docUuid = this.formControl.root.value._uuid;
       return this.uploadService
         .getFile(docUuid, uri)
-        .pipe(
-          tap((hash) =>
-            this.imageLinks.push(
-              `${ConfigService.backendApiUrl}upload/download/${hash}`
-            )
-          )
-        )
+        .pipe(tap((hash) => this.addUploadUri(uri, hash)))
         .subscribe(() => this.cdr.detectChanges());
     });
+    this.cdr.detectChanges();
+  }
+
+  private addUploadUri(uri: string, hash: String) {
+    return (this.imageLinks[
+      uri
+    ] = `${ConfigService.backendApiUrl}upload/download/${hash}`);
   }
 }

@@ -2,14 +2,24 @@
     <mat-card *ngFor="let field of field.fieldGroup; let i = index">
         <div class="content">
             <img
-                [src]="imageLinks[i]"
+                [src]="imageLinks[model[i]?.fileName?.uri]"
                 [alt]="model[i]?.fileName?.uri"
                 height="250"
             />
-            <button mat-icon-button class="btn-edit" (click)="edit(i)">
+            <button
+                mat-icon-button
+                class="btn-edit"
+                matTooltip="Bearbeiten"
+                (click)="edit(i)"
+            >
                 <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="btn-close" (click)="remove(i)">
+            <button
+                mat-icon-button
+                class="btn-close"
+                matTooltip="Entfernen"
+                (click)="remove(i)"
+            >
                 <mat-icon>close</mat-icon>
             </button>
         </div>
