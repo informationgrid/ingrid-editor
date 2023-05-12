@@ -23,7 +23,7 @@ INSERT INTO document VALUES (1000, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 
         "lastName": "Mustermann",
         "firstName": "Petra"
     }',
-    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT'
+    0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'DRAFT_AND_PUBLISHED'
 );
 -- published version
 INSERT INTO document VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test Document Published', '{
