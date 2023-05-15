@@ -24,12 +24,11 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 @Service
-class ImportService constructor(
-    val notifier: JobsNotifier,
-    val factory: ImporterFactory,
-    val documentService: DocumentService,
-
-    ) {
+class ImportService(
+        val notifier: JobsNotifier,
+        val factory: ImporterFactory,
+        val documentService: DocumentService,
+) {
     private val log = logger()
 
     companion object {
@@ -37,16 +36,16 @@ class ImportService constructor(
     }
 
     fun analyzeFile(
-        catalogId: String,
-        fileLocation: String,
-        message: Message,
-        forceImporter: String? = null
+            catalogId: String,
+            fileLocation: String,
+            message: Message,
+            forceImporter: String? = null
     ): OptimizedImportAnalysis {
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
         val file = File(fileLocation)
         val contentType = file.toURI().toURL().openConnection().contentType
         val type =
-            if (contentType == null || contentType == "content/unknown") ContentType.TEXT_PLAIN.mimeType else contentType
+                if (contentType == null || contentType == "content/unknown") ContentType.TEXT_PLAIN.mimeType else contentType
 
         notifier.sendMessage(notificationType, message.apply { this.message = "Start analysis" })
 
@@ -54,16 +53,16 @@ class ImportService constructor(
             val totalFiles: Int
             val importers: List<String>
             return handleZipImport(catalogId, file)
-                .also { totalFiles = it.documents.size }
-                .also { importers = it.importers }
-                .documents
-                .mapIndexed { index, fileContent ->
-                    val progress = ((index + 1f) / totalFiles) * 100
-                    notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    val result = if (fileContent is ArrayNode) fileContent[0] else fileContent
-                    analyzeDoc(catalogId, result)
-                }
-                .toList().let { prepareForImport(importers, it) }
+                    .also { totalFiles = it.documents.size }
+                    .also { importers = it.importers }
+                    .documents
+                    .mapIndexed { index, fileContent ->
+                        val progress = ((index + 1f) / totalFiles) * 100
+                        notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
+                        val result = if (fileContent is ArrayNode) fileContent[0] else fileContent
+                        analyzeDoc(catalogId, result)
+                    }
+                    .toList().let { prepareForImport(importers, it) }
         }
 
         val fileContent = file.readText(Charsets.UTF_8)
@@ -82,17 +81,17 @@ class ImportService constructor(
         val sortedListOfAllReferences = prepareDocuments(analysis)
 
         return OptimizedImportAnalysis(
-            importers,
-            sortedListOfAllReferences,
-            analysis.size,
-            analysis.flatMap { it.references.map { it.document.uuid } }.distinct().size,
-            analysis.filter { it.exists }
-                .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
-            analysis.flatMap {
-                it.references
-                    .filter { it.exists }
-                    .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
-            }.distinctBy { it.uuid }
+                importers,
+                sortedListOfAllReferences,
+                analysis.size,
+                analysis.flatMap { it.references.map { it.document.uuid } }.distinct().size,
+                analysis.filter { it.exists }
+                        .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
+                analysis.flatMap {
+                    it.references
+                            .filter { it.exists }
+                            .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
+                }.distinctBy { it.uuid }
         )
 
     }
@@ -100,9 +99,9 @@ class ImportService constructor(
     private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> {
 
         return analysis
-            .flatMap { it.references + it }
-            .distinctBy { it.document.uuid }
-            .sortedWith(ReferenceComparator)
+                .flatMap { it.references + it }
+                .distinctBy { it.document.uuid }
+                .sortedWith(ReferenceComparator)
 
     }
 
@@ -152,25 +151,25 @@ class ImportService constructor(
         val refType = documentService.getDocumentType(document.type)
 
         val references = refType.pullReferences(document)
-            .map {
-                val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
-                it.state = DOCUMENT_STATE.DRAFT
-                document.isLatest = true
-                DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null, wrapper?.deleted == 1)
-            }
+                .map {
+                    val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
+                    it.state = DOCUMENT_STATE.DRAFT
+                    document.isLatest = true
+                    DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null && wrapper.deleted == 0, wrapper?.deleted == 1)
+                }
 
         return DocumentAnalysis(
-            document,
-            documentWrapper?.id,
-            isAddress(document.type),
-            documentWrapper != null,
-            documentWrapper?.deleted == 1,
-            references
+                document,
+                documentWrapper?.id,
+                isAddress(document.type),
+                documentWrapper != null && documentWrapper.deleted == 0,
+                documentWrapper?.deleted == 1,
+                references
         )
     }
 
     private fun isAddress(documentType: String) =
-        documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
+            documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
 
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
@@ -206,11 +205,11 @@ class ImportService constructor(
 
     @Transactional
     fun importAnalyzedDatasets(
-        principal: Authentication,
-        catalogId: String,
-        analysis: OptimizedImportAnalysis,
-        options: ImportOptions,
-        message: Message
+            principal: Authentication,
+            catalogId: String,
+            analysis: OptimizedImportAnalysis,
+            options: ImportOptions,
+            message: Message
     ): ImportCounter {
 
         val counter = ImportCounter()
@@ -228,29 +227,22 @@ class ImportService constructor(
     }
 
     private fun importReference(
-        principal: Authentication,
-        catalogId: String,
-        ref: DocumentAnalysis,
-        options: ImportOptions,
-        counter: ImportCounter
+            principal: Authentication,
+            catalogId: String,
+            ref: DocumentAnalysis,
+            options: ImportOptions,
+            counter: ImportCounter
     ) {
 
-        if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
-            val data = ref.document.data
-            ref.document.title = if (data.has("organization")) 
-                data.get("organization").asText() 
-            else "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
-        }
+        handleAddressTitle(ref)
 
-        if (!ref.exists) {
+        if (!ref.exists && !ref.deleted) {
             val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
             documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, options.publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
-        } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            // special case when document with uuid has been deleted
-            if (ref.deleted) removeDeletedFlag(ref.wrapperId!!)
-
-            setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
+        } else if (ref.deleted) {
+            removeDeletedFlag(ref.wrapperId!!)
+            setVersionInfo(catalogId, ref.wrapperId, ref.document)
             if (options.publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
@@ -258,11 +250,31 @@ class ImportService constructor(
 
                 // special case when document was deleted and had published version
                 // => after import in draft state, we don't want to see the deleted published version
-                if (ref.deleted) handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
+                handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
             }
+
+            if (ref.isAddress) counter.addresses++ else counter.documents++
+
+        } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
+            setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
+            if (options.publish) {
+                documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
+            } else {
+                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
+            }
+
             counter.overwritten++
         } else {
             counter.skipped++
+        }
+    }
+
+    private fun handleAddressTitle(ref: DocumentAnalysis) {
+        if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
+            val data = ref.document.data
+            ref.document.title = if (data.has("organization"))
+                data.get("organization").asText()
+            else "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
         }
     }
 
@@ -271,7 +283,7 @@ class ImportService constructor(
      * if and only if we import a document with the same UUID in draft-state.
      *
      * In that case the published version will be marked as archived and the draft version, which had
-     * the state DRAFT_ADN_PUBLISHED will be set to DRAFT, so that the new imported version has no
+     * the state DRAFT_AND_PUBLISHED will be set to DRAFT, so that the new imported version has no
      * knowledge of the published version. However, it's still possible to access this version internally.
      */
     private fun handleDeletedPublishedVersion(catalogId: String, uuid: String, wrapperId: Int) {
@@ -296,7 +308,7 @@ class ImportService constructor(
 
     private fun setVersionInfo(catalogId: String, wrapperId: Int, document: Document) {
         document.version =
-            documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
+                documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
     }
 
     private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions) {
@@ -309,32 +321,32 @@ class ImportService constructor(
 }
 
 data class DocumentAnalysis(
-    val document: Document,
-    val wrapperId: Int?,
-    val isAddress: Boolean,
-    val exists: Boolean,
-    val deleted: Boolean,
-    val references: List<DocumentAnalysis> = emptyList()
+        val document: Document,
+        val wrapperId: Int?,
+        val isAddress: Boolean,
+        val exists: Boolean,
+        val deleted: Boolean,
+        val references: List<DocumentAnalysis> = emptyList()
 )
 
 data class OptimizedImportAnalysis(
-    val importers: List<String>,
-    val references: List<DocumentAnalysis>,
-    val numDatasets: Int,
-    val numAddresses: Int,
-    val existingDatasets: List<DatasetInfo>,
-    val existingAddresses: List<DatasetInfo>,
-    var importResult: ImportCounter? = null
+        val importers: List<String>,
+        val references: List<DocumentAnalysis>,
+        val numDatasets: Int,
+        val numAddresses: Int,
+        val existingDatasets: List<DatasetInfo>,
+        val existingAddresses: List<DatasetInfo>,
+        var importResult: ImportCounter? = null
 )
 
 data class ExtractedZip(
-    val importers: List<String>,
-    val documents: List<JsonNode>
+        val importers: List<String>,
+        val documents: List<JsonNode>
 )
 
 data class ImportCounter(
-    var documents: Int = 0,
-    var addresses: Int = 0,
-    var overwritten: Int = 0,
-    var skipped: Int = 0
+        var documents: Int = 0,
+        var addresses: Int = 0,
+        var overwritten: Int = 0,
+        var skipped: Int = 0
 )
