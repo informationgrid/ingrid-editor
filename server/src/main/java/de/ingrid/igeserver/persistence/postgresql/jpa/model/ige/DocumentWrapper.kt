@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -88,9 +89,14 @@ class DocumentWrapper {
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    var fingerprint: MutableList<FingerprintInfo>? = null
+
     @Transient
     var hasWritePermission: Boolean = true
 
     @Transient
     var hasOnlySubtreeWritePermission: Boolean = false
 }
+
+data class FingerprintInfo(val exportType: String, val fingerprint: String, val date: OffsetDateTime)

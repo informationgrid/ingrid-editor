@@ -112,6 +112,9 @@ class DatasetsApiController @Autowired constructor(
             data.put(FIELD_CREATED_USER_EXISTS, createdByUser != null)
             data.put(FIELD_MODIFIED_USER_EXISTS, modifiedByUser != null)
             data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
+            wrapper.fingerprint?.let { 
+                data.put(FIELD_METADATA_DATE, it[0].date.toString())
+            }
             hasWritePermission = wrapper.hasWritePermission
             hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             wrapperId = wrapper.id
