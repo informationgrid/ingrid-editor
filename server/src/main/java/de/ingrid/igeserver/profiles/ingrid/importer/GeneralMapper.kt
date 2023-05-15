@@ -142,17 +142,23 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     private fun extractPersonInfo(value: String?): PersonInfo? {
         value?.split(",")?.let { nameSplit ->
-            val salutationKey = nameSplit[2].trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
-            val salutationKeyValue = if (salutationKey == null) null else KeyValue(salutationKey)
-            return PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), salutationKeyValue)
+            return when (nameSplit.size) {
+                1 -> PersonInfo(null, nameSplit[0].trim(), null)
+                2 -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), null)
+                else -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), getSalutationKeyValue(nameSplit[2]))
+            }
         }
         return null
+    }
+
+    private fun getSalutationKeyValue(value: String): KeyValue? {
+        val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
+        return if (salutationKey == null) null else KeyValue(salutationKey)
     }
 
     private fun mapRoleToContactType(role: RoleCode): KeyValue {
         val value = role.codelist?.codeListValue
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
-
         return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
 
