@@ -70,8 +70,8 @@ class DocumentWrapper {
 
     @Type(ListArrayType::class)
     @Column(
-        name = "path",
-        columnDefinition = "text[]"
+            name = "path",
+            columnDefinition = "text[]"
     )
     var path: List<String> = emptyList()
         get() = if (field == null) emptyList() else field // field can actually be null if in db table null
@@ -90,7 +90,7 @@ class DocumentWrapper {
     var pending_date: OffsetDateTime? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
-    var fingerprint: MutableList<FingerprintInfo>? = null
+    var fingerprint: List<FingerprintInfo>? = null
 
     @Transient
     var hasWritePermission: Boolean = true
