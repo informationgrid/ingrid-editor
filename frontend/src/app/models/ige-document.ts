@@ -22,6 +22,8 @@ export class IgeDocument {
   // the last modified date
   _modified?: string;
 
+  _metadataDate?: string;
+
   // the name of the creator
   _createdBy?: string;
 
