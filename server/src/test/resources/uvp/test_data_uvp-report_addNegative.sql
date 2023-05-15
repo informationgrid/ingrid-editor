@@ -5,5 +5,4 @@ VALUES (1012, 100, '111-negative-111', 'UvpNegativePreliminaryAssessmentDoc', 'N
         0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', 'PUBLISHED');
 
 INSERT INTO document_wrapper
-VALUES (2011, 100, 2000, '111-negative-111', 'UvpNegativePreliminaryAssessmentDoc', 'data',
-        NULL, NULL, 0);
+VALUES (2011, 100, 2000, '111-negative-111', 'UvpNegativePreliminaryAssessmentDoc', 'data', 0);

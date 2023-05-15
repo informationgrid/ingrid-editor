@@ -82,19 +82,6 @@ class DocumentWrapper {
     @Column(name = "deleted")
     var deleted = 0
 
-
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "pending", nullable = true)
-    @JsonAlias("pending") // hint for model registry
-    @JsonIgnore
-    @Deprecated("Use state in document")
-    var pending: Document? = null
-
     @Column
     @JsonSerialize(using = DateSerializer::class)
     @JsonDeserialize(using = DateDeserializer::class)

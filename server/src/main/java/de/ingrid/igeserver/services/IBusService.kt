@@ -7,12 +7,13 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.services.ibus.HeartBeatPlug
 import de.ingrid.utils.*
 import de.ingrid.utils.query.IngridQuery
-import jakarta.annotation.PostConstruct
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Profile
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,7 +24,8 @@ class IBusService @Autowired constructor(val settingsService: SettingsService, v
 
     private var iBusClient: BusClient? = null
 
-    @PostConstruct
+    // this ensures that the service is started after the migration tasks
+    @EventListener(ApplicationReadyEvent::class)
     fun init() = setupConnections()
 
     fun setupConnections() {

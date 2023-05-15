@@ -44,10 +44,9 @@ class ResearchTest : ShouldSpec() {
 
         should("find by term (like)") {
             @Language("PostgreSQL") val sql = """
-            SELECT document1.*
-            FROM document_wrapper
-            LEFT JOIN document document1 ON document_wrapper.draft = document1.id
-            WHERE document1.data ->> 'company' LIKE '%verwaltung%';
+            SELECT *
+            FROM document document1
+            WHERE document1.is_latest = true AND document1.data ->> 'company' LIKE '%verwaltung%';
         """
 
             val list = execQuery(sql)

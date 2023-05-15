@@ -460,6 +460,20 @@ export class FormFieldHelper {
     };
   }
 
+  addPreviewImage(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "previewImage",
+      wrappers: options?.wrappers ?? ["panel"],
+      expressions: expressions,
+      props: {
+        required: options?.required,
+        externalLabel: label,
+      },
+    };
+  }
+
   addSpatial(id, label, options?) {
     const expressions = this.initExpressions(options?.expressions);
     return {

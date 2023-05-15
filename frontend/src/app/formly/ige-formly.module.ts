@@ -88,6 +88,7 @@ import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordina
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 import { TranslocoModule } from "@ngneat/transloco";
+import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -174,6 +175,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "updateGetCapabilities",
           component: UpdateGetCapabilitiesComponent,
+        },
+        {
+          name: "previewImage",
+          component: PreviewImageComponent,
         },
         /* FOR PREVIEW */
         {

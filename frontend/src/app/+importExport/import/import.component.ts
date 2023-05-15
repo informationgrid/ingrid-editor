@@ -37,8 +37,6 @@ export class ImportComponent implements OnInit {
   file: File;
   droppedFiles: FileUploadModel[] = [];
 
-  uploadUrl: string;
-
   step1Complete: any;
   optionsFormGroup = new FormGroup({
     importer: new FormControl<string>(
@@ -97,16 +95,13 @@ export class ImportComponent implements OnInit {
 
   constructor(
     private exchangeService: ExchangeService,
-    config: ConfigService,
     private router: Router,
     private documentService: DocumentService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private rxStompService: RxStompService,
     private dialog: MatDialog
-  ) {
-    this.uploadUrl = config.getConfiguration().backendUrl + "/upload";
-  }
+  ) {}
 
   ngOnInit(): void {
     this.exchangeService
@@ -202,4 +197,6 @@ export class ImportComponent implements OnInit {
         }
       });
   }
+
+  protected readonly ConfigService = ConfigService;
 }

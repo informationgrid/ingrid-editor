@@ -23,6 +23,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
 import { ThesaurusResult } from "../components/thesaurus-result";
+import { ConfigService } from "../../../app/services/config/config.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -193,39 +194,8 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             { className: "optional" }
           ),
-          this.addTable("graphicOverviews", "Vorschaugrafik", {
+          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
-            columns: [
-              {
-                key: "fileName",
-                type: "upload",
-                label: "URI",
-                props: {
-                  label: "URI",
-                  appearance: "outline",
-                  onClick: (docUuid, uri, $event) => {
-                    this.uploadService.downloadFile(docUuid, uri, $event);
-                  },
-                  formatter: (link: any) => {
-                    if (link.asLink) {
-                      return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
-                    } else {
-                      return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
-                    }
-                  },
-                },
-              },
-              {
-                key: "fileDescription",
-                type: "input",
-                label: "Beschreibung",
-                props: {
-                  label: "Beschreibung",
-                  appearance: "outline",
-                },
-              },
-            ],
           }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],
@@ -380,7 +350,9 @@ export abstract class IngridShared extends BaseDoctype {
           view: "chip",
           placeholder: "Im Umweltthesaurus suchen",
           restCall: (query: string) =>
-            this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+            this.http.get<any[]>(
+              `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`
+            ),
           labelField: "label",
           selectLabelField: (item) => {
             return item.alternativeLabel
@@ -515,7 +487,11 @@ export abstract class IngridShared extends BaseDoctype {
     item
   ): Promise<ThesaurusResult> {
     const response = await http
-      .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
+      .get<any[]>(
+        `${ConfigService.backendApiUrl}keywords/umthes?q=${encodeURI(
+          item
+        )}&type=EXACT`
+      )
       .toPromise();
     if (response.length > 0) {
       const exists = model.keywordsUmthes.some(
@@ -944,6 +920,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       model._type !== "InGridGeoDataset" ||
+                      !model.isInspireIdentified ||
                       model.isInspireConform ||
                       !this.conformityExists(ctrl, "12", "1")
                     );

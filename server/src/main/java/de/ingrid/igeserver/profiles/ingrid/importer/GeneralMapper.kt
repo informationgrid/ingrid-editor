@@ -676,7 +676,7 @@ data class ConformanceResult(
 )
 
 data class Operation(
-    val name: String?,
+    val name: KeyValue?,
     val description: String?,
     val methodCall: String?,
 )

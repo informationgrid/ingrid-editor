@@ -27,10 +27,10 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",

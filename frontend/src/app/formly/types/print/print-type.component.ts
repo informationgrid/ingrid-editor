@@ -27,7 +27,9 @@ export class PrintTypeComponent
     return options?.find((option) => option.value === value.key)?.label ?? "";
   }
 
-  replaceNewLines(value: string) {
-    return value?.replace(/\n/g, "<br>");
+  replaceNewLines(value: any) {
+    return typeof value?.replace === "function"
+      ? value?.replace(/\n/g, "<br>")
+      : "";
   }
 }

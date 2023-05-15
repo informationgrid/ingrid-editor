@@ -330,7 +330,9 @@
     ],
     "operations": [
       {
-        "name": "GetCapabilities",
+        "name": {
+          "key": "1"
+        },
         "description": "Eine URL für die getCapabilities",
         "methodCall": "https://my-getcapabilities"
       }

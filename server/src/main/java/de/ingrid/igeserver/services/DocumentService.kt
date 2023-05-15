@@ -410,7 +410,7 @@ class DocumentService @Autowired constructor(
                     val docType = getDocumentType(updatedWrapper.type)
                     runPostUpdatePipes(docType, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
-                    log.error("Error during publishing pending document: ${wrapper.id}", e)
+                    log.error("Error during publishing pending document: ${wrapper.uuid}", e)
                 }
             }
 

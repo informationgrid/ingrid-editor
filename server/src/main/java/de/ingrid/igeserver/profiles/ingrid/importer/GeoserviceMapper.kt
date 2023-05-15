@@ -25,11 +25,26 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         return info?.containsOperations
             ?.map {
                 Operation(
-                    it.svOperationMetadata?.operationName?.value,
+                    getOperationName(it.svOperationMetadata?.operationName?.value),
                     it.svOperationMetadata?.operationDescription?.value,
                     it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url
                 )
             } ?: emptyList()
+    }
+
+    private fun getOperationName(value: String?): KeyValue? {
+        if (value == null) return null
+        
+        val serviceType = getServiceType()
+        val codelistId = when (serviceType.key) {
+            "1" -> "5105"
+            "2" -> "5110"
+            "3" -> "5120"
+            "4" -> "5130"
+            else -> null
+        }
+        val id = if (codelistId == null) null else codeListService.getCodeListEntryId(codelistId, value, "de")
+        return if (id == null) KeyValue(null, value) else KeyValue(id)
     }
 
     fun getServiceType(): KeyValue {

@@ -30,13 +30,13 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "manager": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "participants": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "serviceType": {
           "anyOf": [
@@ -79,7 +79,7 @@
           }
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",
