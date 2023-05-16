@@ -18,7 +18,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.w3c.dom.Document
 import org.w3c.dom.Node
-import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 
 /**
@@ -55,6 +54,7 @@ class PostDocumentIndexingFingerprint(val documentWrapperRepository: DocumentWra
 
         updateFingerprintIfChanged(context, exporterType, isoFingerprint, idfDoc)
 
+        payload.indexDoc.replace("idf", XMLUtils.toString(idfDoc))
         return payload
     }
 
@@ -71,18 +71,19 @@ class PostDocumentIndexingFingerprint(val documentWrapperRepository: DocumentWra
         val fingerprintList = if (wrapper.fingerprint == null) mutableListOf() else wrapper.fingerprint!!
 
         val previousFingerprint = fingerprintList.find { it.exportType == exporterType }
+        var publishDate = previousFingerprint?.date
         if (previousFingerprint?.fingerprint != isoFingerprint) {
             log.debug("Fingerprint changed. Updating metadata-date")
-            val publishDate = OffsetDateTime.now()
+            publishDate = OffsetDateTime.now()
             wrapper.fingerprint = (fingerprintList.filter { it.exportType != exporterType }) + FingerprintInfo(exporterType, isoFingerprint, publishDate)
             documentWrapperRepository.save(wrapper)
-            
-            addPublishDateToIndexDocument(idfDoc, publishDate)
         }
+        
+        if (publishDate != null) addPublishDateToIndexDocument(idfDoc, publishDate)
     }
 
     private fun addPublishDateToIndexDocument(idf: Document, publishDate: OffsetDateTime) {
-        val date = SimpleDateFormat("yyyy-MM-dd").format(publishDate)
+        val date = publishDate.toLocalDate().toString()
         if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date")) {
             XMLUtils.createOrReplaceTextNode(
                 xpathUtils.getNode(
