@@ -261,6 +261,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "repeatList",
       // "table",
     ];
+    const excludedTypes = ["updateGetCapabilities"];
     fields?.forEach((field) => {
       if (field.fieldGroup) {
         this.createFieldsForPrint(field.fieldGroup);
@@ -296,7 +297,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.type += "Print";
       }
     });
-    return fields;
+    return fields.filter(
+      (field) => !excludedTypes.includes(<string>field.type)
+    );
   }
 
   private calcIsDifferent(field, diffObj): boolean {
