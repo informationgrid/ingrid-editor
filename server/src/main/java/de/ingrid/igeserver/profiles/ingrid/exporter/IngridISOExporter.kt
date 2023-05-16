@@ -1,11 +1,12 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.mdek.upload.Config
+import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -14,10 +15,10 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("ingrid")
 class IngridISOExporter @Autowired constructor(
-        codelistHandler: CodelistHandler,
-        config: Config,
-        catalogService: CatalogService,
-) : IngridIDFExporter(codelistHandler, config, catalogService) {
+    idfExporter: IngridIDFExporter,
+    luceneExporter: IngridLuceneExporter,
+    documentWrapperRepository: DocumentWrapperRepository
+) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
             DocumentCategory.DATA,
@@ -30,8 +31,9 @@ class IngridISOExporter @Autowired constructor(
     )
 
     override fun run(doc: Document, catalogId: String): String {
-        val idfString = super.run(doc, catalogId)
-        val idfDoc = convertStringToDocument(idfString)
+        val indexString = super.run(doc, catalogId) as String
+        val elasticDoc = jacksonObjectMapper().readValue<ElasticDocument>(indexString)
+        val idfDoc = convertStringToDocument(elasticDoc["idf"] as String)
         val isoDoc = transformIDFtoIso(idfDoc!!)
         return XMLUtils.toString(isoDoc)
     }
