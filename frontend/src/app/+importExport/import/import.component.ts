@@ -60,6 +60,7 @@ export class ImportComponent implements OnInit {
 
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
+      filter((log) => log?.info !== undefined),
       tap((data) =>
         data?.isRunning || data?.info?.stage === "ANALYZE"
           ? (this.step1Complete = true)
@@ -74,7 +75,8 @@ export class ImportComponent implements OnInit {
       tap(
         (info: ImportLogInfo) =>
           (this.errorInAnalysis = info?.errors?.length > 0)
-      )
+      ),
+      tap(() => (this.lastLogReceived = true))
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
@@ -90,7 +92,9 @@ export class ImportComponent implements OnInit {
     documentPath: [],
     addressPath: [],
   };
-  initialized: boolean = false;
+
+  lastLogReceived: boolean = false;
+  websocketConnected: boolean = false;
 
   constructor(
     private exchangeService: ExchangeService,
@@ -105,7 +109,7 @@ export class ImportComponent implements OnInit {
   ngOnInit(): void {
     // wait for websocket connection to be ready to receive import state
     this.rxStompService.connected$.pipe(take(1)).subscribe(() => {
-      this.initialized = true;
+      this.websocketConnected = true;
     });
 
     this.exchangeService

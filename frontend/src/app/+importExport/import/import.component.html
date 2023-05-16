@@ -34,7 +34,7 @@
     <section main-content>
         <mat-horizontal-stepper
             #stepper
-            *ngIf="initialized; else waiting"
+            *ngIf="websocketConnected && lastLogReceived; else waiting"
             [linear]="true"
             labelPosition="bottom"
         >
