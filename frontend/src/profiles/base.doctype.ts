@@ -252,11 +252,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     fields: FormlyFieldConfig[]
   ): FormlyFieldConfig[] {
     const supportedTypes = [
+      "input",
       "textarea",
       "address-card",
       "select",
       "autocomplete",
-      // "datepicker",
+      "datepicker",
       "repeatList",
       // "table",
     ];
