@@ -46,8 +46,8 @@ mat-spinner {
 }
 
 .multi-select-area {
+  display: flex;
   background-color: $ige-mark-color;
-  width: 100%;
   padding: 8px 12px 8px 24px;
   font-size: 14px;
   margin-bottom: 6px;
