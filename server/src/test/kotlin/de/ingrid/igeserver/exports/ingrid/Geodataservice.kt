@@ -25,7 +25,7 @@ class Geodataservice : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val config = mockk<Config>()
 
     private lateinit var exporter: IngridIDFExporter

@@ -28,7 +28,7 @@ class Geodataset : AnnotationSpec() {
     private lateinit var exporter: IngridIDFExporter
     private lateinit var indexExporter: IngridIndexExporter
     private lateinit var luceneExporter: IngridLuceneExporter
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val codelistHandler = mockk<CodelistHandler>()
     private val config = mockk<Config>()
 
