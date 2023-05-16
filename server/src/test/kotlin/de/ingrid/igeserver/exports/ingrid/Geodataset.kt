@@ -6,6 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -27,6 +28,7 @@ class Geodataset : AnnotationSpec() {
     private lateinit var exporter: IngridIDFExporter
     private lateinit var indexExporter: IngridIndexExporter
     private lateinit var luceneExporter: IngridLuceneExporter
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>()
     private val codelistHandler = mockk<CodelistHandler>()
     private val config = mockk<Config>()
 
@@ -34,7 +36,7 @@ class Geodataset : AnnotationSpec() {
     fun beforeAll() {
         this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
         mockCodelists(codelistHandler)
 
