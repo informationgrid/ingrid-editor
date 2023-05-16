@@ -297,7 +297,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.type += "Print";
       }
     });
-    return fields.filter(
+    return fields?.filter(
       (field) => !excludedTypes.includes(<string>field.type)
     );
   }
