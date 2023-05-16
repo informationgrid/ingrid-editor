@@ -18,6 +18,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.w3c.dom.Document
 import org.w3c.dom.Node
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 
 /**
@@ -52,12 +53,17 @@ class PostDocumentIndexingFingerprint(val documentWrapperRepository: DocumentWra
                 transformIDFtoIso(idfDoc!!).also { prepareIsoForFingerprinting(it) }
         )
 
-        updateFingerprintIfChanged(context, exporterType, isoFingerprint)
+        updateFingerprintIfChanged(context, exporterType, isoFingerprint, idfDoc)
 
         return payload
     }
 
-    private fun updateFingerprintIfChanged(context: Context, exporterType: String, isoFingerprint: String) {
+    private fun updateFingerprintIfChanged(
+        context: Context,
+        exporterType: String,
+        isoFingerprint: String,
+        idfDoc: Document
+    ) {
         val catalogIdentifier = context.catalogId
         val uuid = (context as SimpleContext).uuid
         val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
@@ -67,9 +73,32 @@ class PostDocumentIndexingFingerprint(val documentWrapperRepository: DocumentWra
         val previousFingerprint = fingerprintList.find { it.exportType == exporterType }
         if (previousFingerprint?.fingerprint != isoFingerprint) {
             log.debug("Fingerprint changed. Updating metadata-date")
-            wrapper.fingerprint = (fingerprintList.filter { it.exportType != exporterType }) + FingerprintInfo(exporterType, isoFingerprint, OffsetDateTime.now())
+            val publishDate = OffsetDateTime.now()
+            wrapper.fingerprint = (fingerprintList.filter { it.exportType != exporterType }) + FingerprintInfo(exporterType, isoFingerprint, publishDate)
             documentWrapperRepository.save(wrapper)
+            
+            addPublishDateToIndexDocument(idfDoc, publishDate)
         }
+    }
+
+    private fun addPublishDateToIndexDocument(idf: Document, publishDate: OffsetDateTime) {
+        val date = SimpleDateFormat("yyyy-MM-dd").format(publishDate)
+        if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date")) {
+            XMLUtils.createOrReplaceTextNode(
+                xpathUtils.getNode(
+                    idf,
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date"
+                ), date
+            )
+        } else if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime")) {
+            XMLUtils.createOrReplaceTextNode(
+                xpathUtils.getNode(
+                    idf,
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime"
+                ), date
+            )
+        }
+        
     }
 
     private fun prepareIsoForFingerprinting(doc: Document) {
