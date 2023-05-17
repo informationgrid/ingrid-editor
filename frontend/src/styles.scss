@@ -1308,54 +1308,10 @@ table.big-font {
   max-width: 400px;
 }
 
-// top level deep selector acceptable as ige-inline-help-wrapper is unique
-/*ige-inline-help-wrapper {
-  display: flex;
-  align-items: center;
-  position: relative;
-  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
-  formly-field-mat-input,
-  formly-field-mat-textarea,
-  ige-repeat-list {
-    flex: 1;
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of input that may no longer apply for the MDC version.*!
-  formly-field-mat-input + .mat-mdc-icon-button.menu-button {
-    margin-top: -3px;
-    margin-bottom: -3px;
-    margin-left: 0.75em;
-  }
+.dialog-title-wrapper mat-button-toggle-group {
+  height: 30px;
 
-  formly-field-mat-textarea + .mat-mdc-icon-button.menu-button {
-    position: absolute;
-    right: 0;
+  .mat-button-toggle-label-content {
+    line-height: 30px;
   }
-
-  ige-repeat-list {
-    margin-top: 0 !important;
-
-    & + .mat-mdc-icon-button.menu-button {
-      position: absolute;
-      right: 10px;
-      bottom: 28px;
-    }
-  }
-
-  .mat-mdc-icon-button.menu-button {
-    width: 24px;
-    height: 24px;
-    margin-left: 12px;
-    background-color: $ige-background;
-    margin-top: 0.15em;
-    !*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*!
-    .mat-button-wrapper {
-      * {
-        vertical-align: unset;
-      }
-    }
-  }
-  !*TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*!
-  formly-field-mat-radio {
-    margin-top: 0.2em;
-  }
-}*/
+}
