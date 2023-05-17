@@ -78,6 +78,7 @@ import { FlowInjectionToken, NgxFlowModule } from "@flowjs/ngx-flow";
 import Flow from "@flowjs/flow.js";
 import { TranslocoRootModule } from "./transloco-root.module";
 import { ReplaceAddressDialogComponent } from "./+catalog/+behaviours/system/DeleteReferenceHandler/replace-address-dialog/replace-address-dialog.component";
+import { PermissionsDialogComponent } from "./+catalog/+behaviours/system/ShowDocumentPermissions/permissions-dialog/permissions-dialog.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { SharedModule } from "./shared/shared.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
@@ -86,6 +87,11 @@ import { Catalog } from "./+catalog/services/catalog.model";
 import { rxStompServiceFactory } from "./rx-stomp-service-factory";
 import { RxStompService } from "./rx-stomp.service";
 import { AddonsWrapperComponent } from "./formly/wrapper/addons/addons-wrapper.component";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { UserModule } from "./+user/user.module";
 
 registerLocaleData(de);
 
@@ -203,6 +209,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     ErrorDialogComponent,
     ConfirmDialogComponent,
     ReplaceAddressDialogComponent,
+    PermissionsDialogComponent,
     OneColumnWrapperComponent,
     FullWidthWrapperComponent,
     SectionWrapper,
@@ -270,6 +277,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     MatInputModule,
     MatCardModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
     // IGE-Modules
     routing,
     FormsModule,
@@ -280,6 +291,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     TranslocoRootModule,
     SharedModule,
     ClipboardModule,
+    UserModule,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap

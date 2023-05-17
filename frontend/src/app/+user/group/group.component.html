@@ -179,7 +179,7 @@
                         <mat-divider></mat-divider>
                         <user-table
                             [users]="groupUsers"
-                            [simple]="true"
+                            tableType="simple"
                             (onUserSelect)="switchToUser($event)"
                         ></user-table>
                     </form>

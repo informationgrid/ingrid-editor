@@ -7,7 +7,12 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { FrontendUser, User } from "../../user";
+import {
+  FrontendUser,
+  PermissionLevel,
+  User,
+  UserWithDocPermission,
+} from "../../user";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
@@ -24,6 +29,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: "user-table",
@@ -34,7 +40,7 @@ export class UserTableComponent
   extends GeneralTable
   implements OnInit, AfterViewInit
 {
-  @Input() simple = false;
+  @Input() tableType: "default" | "simple" | "permission" = "default";
 
   @Input()
   set users(val: User[]) {
@@ -51,12 +57,18 @@ export class UserTableComponent
     this.dataSource.filter = filter;
   }
 
+  // if the table data can be exported
+  @Input() canExport = true;
+
+  @Input() defaultSort: string;
   @Input() selectedUser: Subject<User>;
 
   @Output() onUserSelect = new EventEmitter<User>();
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  PERMISSION_LEVEL = PermissionLevel;
 
   displayedColumns: string[];
   dataSource = new MatTableDataSource<User>([]);
@@ -65,7 +77,8 @@ export class UserTableComponent
   constructor(
     public userService: UserService,
     public groupDataService: GroupDataService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private transloco: TranslocoService
   ) {
     super();
     const initialSelection = [];
@@ -75,27 +88,44 @@ export class UserTableComponent
       initialSelection
     );
     this.dataSource.filterPredicate = (user: User, filterValue: string) => {
-      let searchIn = [
+      // collect values from attributes
+      let searchInValues = [
         user.login ?? "",
         user.firstName ?? "",
         user.lastName ?? "",
         user.email ?? "",
         user.organisation ?? "",
         user.department ?? "",
-      ]
-        .join(" ")
-        .trim()
-        .toLowerCase();
-      return searchIn.includes(filterValue.trim().toLowerCase());
+        this.getSearchKeyByRole(user.role),
+      ];
+
+      // append permission value
+      if (user instanceof UserWithDocPermission) {
+        searchInValues = [
+          ...searchInValues,
+          this.getSearchKeyByPermission(user.permission),
+        ];
+      }
+
+      const combined = searchInValues.join(" ").trim().toLowerCase();
+      return combined.includes(filterValue.trim().toLowerCase());
     };
   }
 
   ngOnInit() {
-    this.displayedColumns = this.simple
-      ? ["role-icon", "firstName"]
-      : ["role-icon", "login", "firstName", "organisation"];
-
+    this.displayedColumns = this.getColumnsByViewType();
     this.updateUserOnSelectionBehaviour();
+  }
+
+  private getColumnsByViewType(): string[] {
+    switch (this.tableType) {
+      case "simple":
+        return ["role-icon", "firstName"];
+      case "permission":
+        return ["login", "firstName", "role", "permission"];
+      default:
+        return ["role-icon", "login", "firstName", "organisation"];
+    }
   }
 
   private updateUserOnSelectionBehaviour() {
@@ -198,5 +228,21 @@ export class UserTableComponent
 
   private createRow(values: string[]) {
     return `${values.join(";")}\n`;
+  }
+
+  private getSearchKeyByRole(role?: string) {
+    if (role == undefined) return "";
+    return this.transloco.translate(`roles.${role}`);
+  }
+
+  private getSearchKeyByPermission(permission: PermissionLevel): string {
+    switch (permission) {
+      case PermissionLevel.WRITE:
+        return "Schreibrecht";
+      case PermissionLevel.READ:
+        return "Leserecht";
+      case PermissionLevel.WRITE_EXCEPT_PARENT:
+        return "Nur Unterordner";
+    }
   }
 }
