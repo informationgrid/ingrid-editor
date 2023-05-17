@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -10,9 +9,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
 import jakarta.persistence.*
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
+import jakarta.persistence.Table
+import org.hibernate.annotations.*
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -32,7 +30,7 @@ class Catalog {
     // TODO: make type non null
     @Column(nullable = false)
     var type: String = "n/a"
-    
+
     @Column(nullable = false)
     var name: String = "n/a"
 
@@ -49,13 +47,7 @@ class Catalog {
     @JsonDeserialize(using = DateDeserializer::class)
     var modified: OffsetDateTime? = null
 
-    @ManyToMany(mappedBy = "catalogs", fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    var users: MutableSet<UserInfo> = LinkedHashSet<UserInfo>()
-
     @Type(JsonType::class)
-    @Column(name = "settings", columnDefinition = "jsonb")
     var settings: CatalogSettings? = CatalogSettings()
 
     @PrePersist

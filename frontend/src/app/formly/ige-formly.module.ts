@@ -182,6 +182,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         },
         /* FOR PREVIEW */
         {
+          name: "inputPrint",
+          component: PrintTypeComponent,
+        },
+        {
           name: "textareaPrint",
           component: PrintTypeComponent,
         },
@@ -207,6 +211,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         },
         {
           name: "autocompletePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "previewImagePrint",
           component: PrintTypeComponent,
         },
       ],

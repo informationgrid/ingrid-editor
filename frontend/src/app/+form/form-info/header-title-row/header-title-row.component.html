@@ -53,7 +53,7 @@
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
     <button
-        *ngIf="showMoreActions && _model._type !== 'FOLDER'"
+        *ngIf="showMoreActions && moreActions.length"
         data-cy="more-actions"
         mat-icon-button
         class="menu dark menu-button"

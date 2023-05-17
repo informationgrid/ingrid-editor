@@ -34,7 +34,7 @@
     <section main-content>
         <mat-horizontal-stepper
             #stepper
-            *ngIf="initialized; else waiting"
+            *ngIf="websocketConnected && lastLogReceived; else waiting"
             [linear]="true"
             labelPosition="bottom"
         >
@@ -236,7 +236,9 @@
             </mat-step>
         </mat-horizontal-stepper>
         <ng-template #waiting>
-            <div>Lade letzte Information ...</div>
+            <div class="flex-row justify-content-center">
+                <mat-spinner></mat-spinner>
+            </div>
         </ng-template>
     </section>
 </page-template>

@@ -7,6 +7,7 @@
                 height="250"
             />
             <button
+                *ngIf="!formControl.disabled"
                 type="button"
                 mat-icon-button
                 class="btn-edit"
@@ -16,6 +17,7 @@
                 <mat-icon>edit</mat-icon>
             </button>
             <button
+                *ngIf="!formControl.disabled"
                 type="button"
                 mat-icon-button
                 class="btn-close"
@@ -31,7 +33,7 @@
     </mat-card>
 </div>
 
-<div class="button-wrapper">
+<div *ngIf="!formControl.disabled" class="button-wrapper">
     <button
         type="button"
         mat-stroked-button

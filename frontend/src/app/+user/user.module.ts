@@ -34,6 +34,7 @@ import { GroupsTableComponent } from "./group/groups-table/groups-table.componen
 import { GroupHeaderMoreComponent } from "./group/group-header-more/group-header-more.component";
 import { PermissionTableComponent } from "./permissions/permission-table/permission-table.component";
 import { PermissionAddDialogComponent } from "./permissions/permission-add-dialog/permission-add-dialog.component";
+import { PermissionLegendsComponent } from "./permissions/permission-legends/permission-legends.component";
 import { IgeSearchField } from "./ige-search-field/ige-search-field.component";
 import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
@@ -87,9 +88,10 @@ import { TranslocoModule } from "@ngneat/transloco";
     HeaderMoreComponent,
     PermissionTableComponent,
     PermissionAddDialogComponent,
+    PermissionLegendsComponent,
     IgeSearchField,
   ],
-  exports: [RouterModule],
+  exports: [RouterModule, UserTableComponent],
   providers: [
     UserManagementService,
     {

@@ -33,6 +33,11 @@
   "group": {
     "form": "Daten"
   },
+  "roles": {
+    "cat-admin": "Katalog-Administrator",
+    "md-admin": "Metadaten-Administrator",
+    "author": "Autor"
+  },
   "export": {
     "form": "Daten",
     "formSingular": "Datensatz"

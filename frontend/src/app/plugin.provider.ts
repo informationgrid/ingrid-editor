@@ -4,6 +4,7 @@ import { AddressTitleBehaviour } from "./+catalog/+behaviours/system/AddressTitl
 import { DeleteReferenceHandlerPlugin } from "./+catalog/+behaviours/system/DeleteReferenceHandler/delete-reference-handler.plugin";
 import { InheritContactDataHandler } from "./+catalog/+behaviours/system/InheritContactDataHandler/inherit-contactdata-handler";
 import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.plugin";
+import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: SortTreeByTypeBehaviour, multi: true },
@@ -11,4 +12,9 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: DeleteReferenceHandlerPlugin, multi: true },
   { provide: PluginToken, useClass: InheritContactDataHandler, multi: true },
   { provide: PluginToken, useClass: AutosavePlugin, multi: true },
+  {
+    provide: PluginToken,
+    useClass: ShowDocumentPermissionsHandlerPlugin,
+    multi: true,
+  },
 ];

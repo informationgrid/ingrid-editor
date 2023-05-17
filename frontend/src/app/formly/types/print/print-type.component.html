@@ -1,7 +1,7 @@
 <div [ngSwitch]="field.type">
-    <!--<ng-container *ngSwitchCase="'datepickerPrint'">{{
-        formControl.value | date: "dd.MM.yyyy"
-    }}</ng-container>-->
+    <ng-container *ngSwitchCase="'datepickerPrint'">{{
+        formControl.value | date : "dd.MM.yyyy"
+    }}</ng-container>
     <ng-container *ngSwitchCase="'repeatListPrint'">
         <div *ngFor="let item of formControl.value">
             {{ item | codelist : props.codelistId | async }}

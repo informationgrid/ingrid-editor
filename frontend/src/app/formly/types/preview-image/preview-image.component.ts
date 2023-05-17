@@ -6,7 +6,7 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "../table/upload-files-dialog/upload-files-dialog.component";
-import { distinctUntilChanged, filter, tap } from "rxjs/operators";
+import { distinctUntilChanged, filter, startWith, tap } from "rxjs/operators";
 import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component";
 import {
   FormDialogComponent,
@@ -78,6 +78,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        startWith(this.formControl.value),
         distinctUntilChanged((a: any[], b: any[]) => {
           const aLinks = a?.map((item) => item.fileName?.uri).join("");
           const bLinks = b?.map((item) => item.fileName?.uri).join("");

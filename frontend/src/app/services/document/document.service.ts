@@ -903,7 +903,7 @@ export class DocumentService {
     );
   }
 
-  getUsersWithAccess(id: number): Observable<any> {
+  getUsersWithPermission(id: number): Observable<any> {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${id}/users`,
       null

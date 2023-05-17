@@ -7,7 +7,7 @@ import {
 } from "../exchange.service";
 import { ConfigService } from "../../services/config/config.service";
 import { MatStepper } from "@angular/material/stepper";
-import { filter, map, tap } from "rxjs/operators";
+import { filter, map, take, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
@@ -60,6 +60,7 @@ export class ImportComponent implements OnInit {
 
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
+      filter((log) => log?.info !== undefined),
       tap((data) =>
         data?.isRunning || data?.info?.stage === "ANALYZE"
           ? (this.step1Complete = true)
@@ -75,7 +76,7 @@ export class ImportComponent implements OnInit {
         (info: ImportLogInfo) =>
           (this.errorInAnalysis = info?.errors?.length > 0)
       ),
-      tap((info) => (this.initialized = info !== undefined))
+      tap(() => (this.lastLogReceived = true))
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
@@ -91,7 +92,9 @@ export class ImportComponent implements OnInit {
     documentPath: [],
     addressPath: [],
   };
-  initialized: boolean = false;
+
+  lastLogReceived: boolean = false;
+  websocketConnected: boolean = false;
 
   constructor(
     private exchangeService: ExchangeService,
@@ -104,6 +107,11 @@ export class ImportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // wait for websocket connection to be ready to receive import state
+    this.rxStompService.connected$.pipe(take(1)).subscribe(() => {
+      this.websocketConnected = true;
+    });
+
     this.exchangeService
       .getImportTypes()
       .pipe(tap((response) => (this.importers = response)))
@@ -150,7 +158,6 @@ export class ImportComponent implements OnInit {
   }
 
   private handleRunningInfo(data: any) {
-    console.log("Handle Running Info");
     this.importIsRunning = !data.endTime;
     if (data?.stage === "ANALYZE") {
       this.showMore = true;
