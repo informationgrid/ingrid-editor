@@ -10,6 +10,14 @@ interface IDeepMerge {
   (target: IObject, ...sources: Array<IObject>): IObject;
 }
 
+export const UUID = function () {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    let r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 /**
  * @description Method to check if an item is an object. Date and Function are considered
  * an object, so if you need to exclude those, please update the method accordingly.

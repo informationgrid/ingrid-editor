@@ -12,6 +12,7 @@ import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { UUID } from "../../../app/services/utils";
 
 @Injectable({
   providedIn: "root",
@@ -24,6 +25,11 @@ export class GeoDatasetDoctype extends IngridShared {
   iconClass = "Geodatensatz";
 
   hasOptionalFields = true;
+
+  handleSuffixClick(suffix: any, field: any) {
+    field.formControl.setValue(UUID());
+    console.log("Suffix button clicked!");
+  }
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -52,9 +58,15 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
         ]),
 
+        ,
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
-          wrappers: ["panel", "form-field"],
+          wrappers: ["panel", "form-field", "addons"],
+          className: "flex-3 ",
+          suffix: {
+            icon: "autorenew",
+            onClick: (suffix, field) => this.handleSuffixClick(suffix, field),
+          },
         }),
         this.addRepeatList(
           "spatialRepresentationType",

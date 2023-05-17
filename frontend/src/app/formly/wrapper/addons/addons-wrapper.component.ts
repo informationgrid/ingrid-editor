@@ -21,13 +21,19 @@ export class AddonsWrapperComponent
 
   ngAfterViewInit() {
     if (this.matPrefix) {
-      // Note: for text use `textPrefix` property (only in Angular Material >= 15)
-      this.props.textPrefix = this.matPrefix;
+      if (this.props?.addonLeft?.icon != undefined) {
+        this.props.prefix = this.matSuffix;
+      } else {
+        this.props.textPrefix = this.matPrefix;
+      }
     }
 
     if (this.matSuffix) {
-      // Note: for text use `textSuffix` property (only in Angular Material >= 15)
-      this.props.textSuffix = this.matSuffix;
+      if (this.props?.addonRight?.icon != undefined) {
+        this.props.suffix = this.matSuffix;
+      } else {
+        this.props.textSuffix = this.matSuffix;
+      }
     }
   }
 
