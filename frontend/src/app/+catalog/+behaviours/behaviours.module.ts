@@ -15,6 +15,7 @@ import { FormSharedModule } from "../../+form/form-shared/form-shared.module";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.component";
+import { PermissionsDialogComponent } from "../../+user/permissions/permissions-dialog.component";
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.componen
     FormSharedModule,
     PageTemplateModule,
     MatSlideToggleModule /*to get form behaviours*/,
+    PermissionsDialogComponent,
   ],
   declarations: [BehavioursComponent, BehaviourItemComponent],
   exports: [BehavioursComponent],
