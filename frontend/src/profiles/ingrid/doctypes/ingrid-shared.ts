@@ -166,33 +166,13 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
-          this.addGroup(
-            null,
-            "Info",
-            [
-              this.addInputInline(
-                "parentIdentifier",
-                "Identifikator des übergeordneten Metadatensatzes",
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                }
-              ),
-              this.addInputInline(
-                "modifiedMetadata",
-                "Metadaten-Datum (veröffentlichte Version)",
-                {
-                  expressions: {
-                    // since whole form will be disabled/enabled by application
-                    // depending on write access, we need to set disabled state dynamically
-                    "props.disabled": () => true,
-                  },
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                }
-              ),
-            ],
-            { className: "optional" }
+          this.addInput(
+            "parentIdentifier",
+            "Identifikator des übergeordneten Metadatensatzes",
+            {
+              wrappers: ["panel", "form-field"],
+              className: "optional",
+            }
           ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
