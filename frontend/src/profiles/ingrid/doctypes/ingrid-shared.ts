@@ -528,7 +528,10 @@ export abstract class IngridShared extends BaseDoctype {
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
-            required: true,
+            expressions: {
+              "props.required":
+                "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            },
           }),
           this.addGroup(
             "verticalExtent",

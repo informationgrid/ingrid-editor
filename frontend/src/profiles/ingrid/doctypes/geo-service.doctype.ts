@@ -177,16 +177,6 @@ export class GeoServiceDoctype extends IngridShared {
                 className: "flex-1",
                 props: {
                   label: "Dargestellte Daten",
-                  required: true,
-                  /*change: (field) => {
-                  field.model.couplingType = { key: "tight" };
-                  field.options.formState.updateModel();
-                },*/
-                },
-                expressions: {
-                  "props.required":
-                    "formState.mainModel?.couplingType?.key === 'tight'",
-                  className: "field.props.required ? '' : 'optional'",
                 },
                 hooks: {
                   onInit: (field) =>
@@ -208,7 +198,14 @@ export class GeoServiceDoctype extends IngridShared {
                 wrappers: ["inline-help", "form-field"],
               }),
             ],
-            { contextHelpId: "shownData" }
+            {
+              contextHelpId: "shownData",
+              expressions: {
+                "props.required": (field) =>
+                  field.model?.couplingType?.key === "tight",
+                className: (field) => (field.props.required ? "" : "optional"),
+              },
+            }
           ),
           this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
             className: "optional",
