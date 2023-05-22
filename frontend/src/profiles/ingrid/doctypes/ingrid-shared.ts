@@ -766,18 +766,6 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "150",
                 },
               }),
-              options.extraInfoCharSetData
-                ? this.addSelectInline(
-                    "characterSet",
-                    "Zeichensatz des Datensatzes",
-                    {
-                      showSearch: true,
-                      options: this.getCodelistForSelect(510, "characterSet"),
-                      codelistId: 510,
-                      className: "optional",
-                    }
-                  )
-                : null,
             ].filter(Boolean),
             { hasInlineContextHelp: true, contextHelpId: "languageInfo" }
           ),
@@ -813,6 +801,14 @@ export abstract class IngridShared extends BaseDoctype {
                 },
               }),
             ])
+          : null,
+        options.extraInfoCharSetData
+          ? this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
+              showSearch: true,
+              options: this.getCodelistForSelect(510, "characterSet"),
+              codelistId: 510,
+              className: "optional",
+            })
           : null,
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {

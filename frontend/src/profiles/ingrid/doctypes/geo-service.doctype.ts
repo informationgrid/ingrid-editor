@@ -138,35 +138,6 @@ export class GeoServiceDoctype extends IngridShared {
               },
             },
           }),
-          this.addResolutionFields(),
-          this.addGroup(
-            null,
-            null,
-            [
-              this.addTextAreaInline(
-                "systemEnvironment",
-                "Systemumgebung",
-                this.id,
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                }
-              ),
-              this.addTextAreaInline(
-                "implementationHistory",
-                "Historie",
-                this.id,
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                }
-              ),
-            ],
-            { className: "optional" }
-          ),
-          this.addTextArea("explanation", "Erläuterungen", this.id, {
-            className: "optional flex-1",
-          }),
           this.addGroup(
             null,
             "Dargestellte Daten",
@@ -210,6 +181,35 @@ export class GeoServiceDoctype extends IngridShared {
             ],
             { contextHelpId: "shownData" }
           ),
+          this.addResolutionFields(),
+          this.addGroup(
+            null,
+            null,
+            [
+              this.addTextAreaInline(
+                "systemEnvironment",
+                "Systemumgebung",
+                this.id,
+                {
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
+                }
+              ),
+              this.addTextAreaInline(
+                "implementationHistory",
+                "Historie",
+                this.id,
+                {
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
+                }
+              ),
+            ],
+            { className: "optional" }
+          ),
+          this.addTextArea("explanation", "Erläuterungen", this.id, {
+            className: "optional flex-1",
+          }),
           this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
             className: "optional",
           }),
