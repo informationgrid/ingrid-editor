@@ -132,7 +132,7 @@
     </button>
     <div class="flex-1"></div>
     <mat-paginator
-        *ngIf="tableType != 'simple' && dataSource.data?.length < 10"
+        *ngIf="tableType != 'simple' || dataSource.data?.length > 10"
         [pageSize]="10"
         [hidePageSize]="true"
         showFirstLastButtons

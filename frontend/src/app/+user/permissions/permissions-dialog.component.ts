@@ -1,10 +1,25 @@
 import { Component, Inject } from "@angular/core";
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import { Permissions } from "../user";
-import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from "@angular/forms";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
+import { PermissionsComponent } from "./permissions.component";
 
 @Component({
   templateUrl: "./permissions-dialog.component.html",
+  imports: [
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    PermissionsComponent,
+  ],
+  standalone: true,
 })
 export class PermissionsDialogComponent {
   form = new UntypedFormGroup({ permissions: new UntypedFormControl() });
