@@ -97,6 +97,7 @@ export class DocumentReferenceTypeComponent
             type: "InGridGeoDataset",
             icon: "Geodatensatz",
           });
+          this.props.change?.(this.field);
         }
       });
   }
@@ -112,6 +113,7 @@ export class DocumentReferenceTypeComponent
             url: item.url,
             isExternalRef: true,
           });
+          this.props.change?.(this.field);
         }
       });
   }
@@ -141,6 +143,7 @@ export class DocumentReferenceTypeComponent
   removeItem(index: number, event: MouseEvent) {
     event.stopImmediatePropagation();
     this.remove(index);
+    this.props.change?.(this.field, event);
   }
 
   private async buildModel() {
