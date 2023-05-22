@@ -148,24 +148,14 @@ export class GeoServiceDoctype extends IngridShared {
                 className: "flex-1",
                 props: {
                   label: "Dargestellte Daten",
-                  required: true,
-                  /*change: (field) => {
-                  field.model.couplingType = { key: "tight" };
-                  field.options.formState.updateModel();
-                },*/
+                  change: (field) => {
+                    this.handleCoupledDatasetsChange(field, field.model);
+                  },
                 },
                 expressions: {
                   "props.required":
-                    "formState.mainModel?.couplingType?.key === 'tight'",
+                    "formState.mainModel?.service?.couplingType?.key === 'tight'",
                   className: "field.props.required ? '' : 'optional'",
-                },
-                hooks: {
-                  onInit: (field) =>
-                    field.formControl.valueChanges.pipe(
-                      tap((value) =>
-                        this.handleCoupledDatasetsChange(field, value)
-                      )
-                    ),
                 },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {

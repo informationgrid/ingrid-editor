@@ -803,12 +803,14 @@ export abstract class IngridShared extends BaseDoctype {
             ])
           : null,
         options.extraInfoCharSetData
-          ? this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
-              showSearch: true,
-              options: this.getCodelistForSelect(510, "characterSet"),
-              codelistId: 510,
-              className: "optional",
-            })
+          ? this.addGroupSimple("metadata", [
+              this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
+                showSearch: true,
+                options: this.getCodelistForSelect(510, "characterSet"),
+                codelistId: 510,
+                className: "optional",
+              }),
+            ])
           : null,
         options.conformity
           ? this.addTable("conformanceResult", "Konformität", {
