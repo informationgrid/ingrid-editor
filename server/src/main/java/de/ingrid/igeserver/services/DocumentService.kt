@@ -126,7 +126,7 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
-            
+
             // always add wrapper id which is needed when saving documents for authorization check
             doc.wrapperId = id
 
@@ -155,7 +155,7 @@ class DocumentService @Autowired constructor(
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
-            
+
             entityManager.detach(doc);
             // add metadata
             doc.hasWritePermission = wrapper.hasWritePermission
@@ -315,7 +315,7 @@ class DocumentService @Autowired constructor(
         // since we're within a transaction the expandInternalReferences-function would modify the db-document
         docRepo.flush()
         entityManager.detach(newDocument)
-        
+
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
@@ -363,8 +363,9 @@ class DocumentService @Autowired constructor(
             FIELD_MODIFIED_USER_EXISTS,
             FIELD_CREATED,
             FIELD_MODIFIED,
+            FIELD_CONTENT_MODIFIED,
             FIELD_CREATED_BY,
-            FIELD_MODIFIED_BY,
+            FIELD_CONTENT_MODIFIED_BY,
             FIELD_UUID,
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
@@ -401,7 +402,7 @@ class DocumentService @Autowired constructor(
                 try {
                     // move last published to archive if any
                     moveLastPublishedDocumentToArchive(catalogId, wrapper)
-                    
+
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
                     latestDoc.document.state = DOCUMENT_STATE.PUBLISHED
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
@@ -449,7 +450,7 @@ class DocumentService @Autowired constructor(
             // since we're within a transaction the expandInternalReferences-function would modify the db-document
             docRepo.flush()
             entityManager.detach(updatedDoc)
-            
+
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -543,7 +544,7 @@ class DocumentService @Autowired constructor(
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
-            
+
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -558,6 +559,7 @@ class DocumentService @Autowired constructor(
     }
 
     private fun prepareDocBeforeUpdate(newDocument: Document, dbDocument: Document, principal: Principal): Document {
+        val actualUser = catalogService.getDbUserFromPrincipal(principal)
         with(dbDocument) {
             title = newDocument.title
             data = newDocument.data
@@ -568,7 +570,9 @@ class DocumentService @Autowired constructor(
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
-            modifiedByUser = catalogService.getDbUserFromPrincipal(principal)
+            contentModifiedByUser = actualUser ?: contentModifiedByUser
+            contentmodifiedby = if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else contentmodifiedby
+            contentmodified = if (actualUser != null) dateService.now() else contentmodified
         }
         return dbDocument
     }
@@ -705,7 +709,7 @@ class DocumentService @Autowired constructor(
     fun recoverDocument(wrapperId: Int) {
         docWrapperRepo.undeleteDocument(wrapperId)
     }
-    
+
     fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
 
         val docData = getDocumentFromCatalog(catalogId, id)

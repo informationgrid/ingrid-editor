@@ -62,7 +62,7 @@
     ],
     "location": ["${page.handleContent(page.getSpatialTitle())}"],
     "created": "${page.formatDate(page.getFormatterISO(), page.get_created())}",
-    "modified": "${page.formatDate(page.getFormatterISO(), page.get_modified())}",
+    "modified": "${page.formatDate(page.getFormatterISO(), page.get_contentModified())}",
     "areaid": [],
     "partner": [
         "${partner}"
@@ -88,7 +88,7 @@
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_modified())}",
+    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
     @if(page.getPointOfContact() != null)

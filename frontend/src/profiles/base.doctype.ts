@@ -42,12 +42,15 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
     {
       key: "_modified",
+    },
+    {
+      key: "_contentModified",
       props: {
         label: "Aktualität",
       },
     },
     {
-      key: "_modifiedBy",
+      key: "_contentModifiedBy",
     },
     {
       key: "_version",
@@ -67,10 +70,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         className: "flex-1",
         wrappers: ["panel", "form-field"],
       }),
-      this.addDatepicker("_modified", "Geändert am", {
+      this.addDatepicker("_contentModified", "Geändert am", {
         className: "flex-1",
       }),
-      this.addTextArea("_modifiedBy", "Bearbeiter", {
+      this.addTextArea("_contentModifiedBy", "Bearbeiter", {
         className: "flex-1",
         wrappers: ["panel", "form-field"],
       }),

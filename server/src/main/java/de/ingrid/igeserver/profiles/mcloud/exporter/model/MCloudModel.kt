@@ -24,6 +24,8 @@ data class MCloudModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val _contentModified: OffsetDateTime,
     override val distributions: List<DownloadModel>?,
     override val license: String?,
 ) : DCAT {
@@ -135,7 +137,7 @@ data class MCloudModel(
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val modified: String
     get(){
-        return _modified.format(formatter)
+        return _contentModified.format(formatter)
     }
     val created: String
         get(){
