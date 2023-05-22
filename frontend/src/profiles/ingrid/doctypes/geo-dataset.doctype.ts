@@ -12,7 +12,7 @@ import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
 import { CookieService } from "../../../app/services/cookie.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { UUID } from "../../../app/services/utils";
+import { generateUUID } from "../../../app/services/utils";
 
 @Injectable({
   providedIn: "root",
@@ -27,7 +27,7 @@ export class GeoDatasetDoctype extends IngridShared {
   hasOptionalFields = true;
 
   handleSuffixClick(suffix: any, field: any) {
-    field.formControl.setValue(UUID());
+    field.formControl.setValue(generateUUID());
     console.log("Suffix button clicked!");
   }
 
