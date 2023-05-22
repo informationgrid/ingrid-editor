@@ -10,6 +10,8 @@ import {
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../../../services/document/document.service";
 import { DocumentDataService } from "../../../../services/document/document-data.service";
+import { FormUtils } from "../../../../+form/form.utils";
+import { FormStateService } from "../../../../+form/form-state.service";
 
 @Injectable()
 export class InheritContactDataHandler extends Plugin {
@@ -24,6 +26,7 @@ export class InheritContactDataHandler extends Plugin {
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private documentDataService: DocumentDataService,
+    private formStateService: FormStateService,
     private documentService: DocumentService
   ) {
     super();
@@ -36,10 +39,18 @@ export class InheritContactDataHandler extends Plugin {
       .onEvent("INHERIT_CONTACT_DATA")
       .subscribe((event) => {
         console.log("INHERIT_CONTACT_DATA", event);
-        this.openConfirmDialog().subscribe((confirmed) => {
-          if (confirmed) {
-            this.inheritContactData(event.data.docId, event.data.parentId);
-          }
+        FormUtils.handleDirtyForm(
+          this.formStateService.getForm(),
+          this.documentService,
+          this.dialog,
+          this.forAddress
+        ).then((handled) => {
+          if (handled)
+            this.openConfirmDialog().subscribe((confirmed) => {
+              if (confirmed) {
+                this.inheritContactData(event.data.docId, event.data.parentId);
+              }
+            });
         });
       });
 
@@ -65,7 +76,7 @@ export class InheritContactDataHandler extends Plugin {
         data: (<ConfirmDialogData>{
           title: "Kontaktangaben übernehmen",
           message:
-            "Achtung! Eventuell vorhandene Kontaktangaben werden durch die übergeordneten ersetzt.",
+            "Achtung! Eventuell vorhandene Kontaktangaben werden durch die Angaben der übergeordneten Organisation ersetzt.",
           buttons: [
             { text: "Abbrechen" },
             {
