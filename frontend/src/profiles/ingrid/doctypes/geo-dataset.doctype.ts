@@ -289,27 +289,6 @@ export class GeoDatasetDoctype extends IngridShared {
           }
         ),
         this.addResolutionFields(),
-        this.addGroupSimple("portrayalCatalogueInfo", [
-          this.addRepeat("citation", "Symbolkatalog", {
-            className: "optional",
-            fields: this.titleDateEditionFields(3555),
-          }),
-        ]),
-        this.addGroupSimple("featureCatalogueDescription", [
-          this.addRepeat("citation", "Schlüsselkatalog", {
-            fields: this.titleDateEditionFields(3535),
-            expressions: {
-              "props.required":
-                "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
-              className: "field.props.required ? '' : 'optional'",
-            },
-            contextHelpId: "citation_2",
-          }),
-          this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
-            className: "optional",
-            asAutocomplete: true,
-          }),
-        ]),
         this.addReferencesForAddress(
           "service.coupledResources",
           "uuid",
@@ -343,6 +322,27 @@ export class GeoDatasetDoctype extends IngridShared {
               ]),
             ]),
           ]),
+        ]),
+        this.addGroupSimple("portrayalCatalogueInfo", [
+          this.addRepeat("citation", "Symbolkatalog", {
+            className: "optional",
+            fields: this.titleDateEditionFields(3555),
+          }),
+        ]),
+        this.addGroupSimple("featureCatalogueDescription", [
+          this.addRepeat("citation", "Schlüsselkatalog", {
+            fields: this.titleDateEditionFields(3535),
+            expressions: {
+              "props.required":
+                "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+              className: "field.props.required ? '' : 'optional'",
+            },
+            contextHelpId: "citation_2",
+          }),
+          this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
+            className: "optional",
+            asAutocomplete: true,
+          }),
         ]),
       ]),
       this.addSection("Datenqualität", [
