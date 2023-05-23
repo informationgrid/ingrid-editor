@@ -177,7 +177,12 @@
             }
           ],
           "processStep": {
-            "description": "Herstellungsprozess text"
+            "description": [
+              {
+                "key": null,
+                "value": "Herstellungsprozess, text"
+              }
+            ]
           }
         }
       }
