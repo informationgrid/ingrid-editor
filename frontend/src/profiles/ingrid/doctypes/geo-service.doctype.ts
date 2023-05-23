@@ -169,7 +169,14 @@ export class GeoServiceDoctype extends IngridShared {
                 wrappers: ["inline-help", "form-field"],
               }),
             ],
-            { contextHelpId: "shownData" }
+            {
+              contextHelpId: "shownData",
+              expressions: {
+                "props.required":
+                  "formState.mainModel?.service?.couplingType?.key === 'tight'",
+                className: "field.props.required ? '' : 'optional'",
+              },
+            }
           ),
           this.addResolutionFields(),
           this.addGroup(
