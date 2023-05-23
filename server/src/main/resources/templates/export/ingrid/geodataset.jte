@@ -52,7 +52,7 @@
             "source": {
                 "descriptions": @template.ingrid.partial.key-values(list = model.getSourceDescriptions()),
                 "processStep": {
-                    "description":  @template.ingrid.partial.key-values(list = model.getProcessStep()),
+                    "description":  @template.ingrid.partial.key-values(list = model.getProcessStep())
                 }
             }
        }
