@@ -52,6 +52,7 @@
     *ngIf="!formState.disabled && formControl.enabled"
     (add)="addItem($event)"
     [options]="props.menuOptions"
+    [buttonTitle]="props.addButtonTitle ? props.addButtonTitle : 'Hinzufügen'"
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "

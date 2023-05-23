@@ -133,6 +133,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 }),
               ],
               wrappers: [],
+              addButtonTitle: "Dimensionseigenschaften hinzufügen",
             }),
             this.addGroup(
               null,
