@@ -365,6 +365,7 @@ class DocumentService @Autowired constructor(
             FIELD_MODIFIED,
             FIELD_CONTENT_MODIFIED,
             FIELD_CREATED_BY,
+            FIELD_MODIFIED_BY,
             FIELD_CONTENT_MODIFIED_BY,
             FIELD_UUID,
             FIELD_ID,
