@@ -55,13 +55,13 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.map { KeyValue(null, it) } ?: emptyList()
     }
 
-    fun getProcessStep(): String {
+    fun getProcessStep(): List<KeyValue> {
         return metadata.dataQualityInfo
             ?.flatMap { dqi ->
                 dqi.dqDataQuality?.lineage?.liLinage?.processStep
                     ?.mapNotNull { it.liProcessStep.description.value } ?: emptyList()
             }
-            ?.joinToString(";") ?: ""
+            ?.map { KeyValue(null, it) } ?: emptyList()
     }
 
     fun getCompletenessOmissionValue(): Number? {
@@ -102,12 +102,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             else if (report.dqFormatConsistency != null) QualityInfo("formatConsistency", "7114", report.dqFormatConsistency)
             else if (report.dqDomainConsistency != null) QualityInfo("domainConsistency", "7113", report.dqDomainConsistency)
             else if (report.dqConceptualConsistency != null) QualityInfo("conceptualConsistency", "7112", report.dqConceptualConsistency)
-//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.) 
+//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
             else if (report.dqCompletenessCommission != null) QualityInfo("completenessComission", "7109", report.dqCompletenessCommission)
             else return null
 
         if (info.element.nameOfMeasure == null) return null
-        
+
         val name = info.element.nameOfMeasure.map { it.value }.joinToString(";")
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = if (nameId == null) KeyValue(null, name) else KeyValue(nameId)
@@ -115,7 +115,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toInt()
         return Quality(info.type, nameKeyValue, value, parameter)
     }
-    
+
     fun getLineageStatement(): String {
         return metadata.dataQualityInfo
             ?.map { it.dqDataQuality?.lineage?.liLinage?.statement?.value }
@@ -196,7 +196,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             getGriddedDataPositionalAccuracy()
         )
     }
-    
+
     private fun getVerticalAbsoluteExternalPositionalAccuracy(): Int? {
         return metadata.dataQualityInfo
             ?.flatMap { it.dqDataQuality?.report

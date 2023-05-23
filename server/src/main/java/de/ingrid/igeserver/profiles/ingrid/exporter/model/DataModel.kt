@@ -110,7 +110,7 @@ data class DataQualityLineageSource(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ProcessStep(
-    val description: String?,
+    val description: List<KeyValueModel>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

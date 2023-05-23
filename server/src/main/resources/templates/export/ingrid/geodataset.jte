@@ -1,6 +1,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 @import gg.jte.support.ForSupport
-@param GeodatasetMapper model 
+@param GeodatasetMapper model
 
 {
     @template.ingrid.base(model = model)
@@ -52,7 +52,7 @@
             "source": {
                 "descriptions": @template.ingrid.partial.key-values(list = model.getSourceDescriptions()),
                 "processStep": {
-                    "description": "${model.getProcessStep()}"
+                    "description":  @template.ingrid.partial.key-values(list = model.getProcessStep()),
                 }
             }
        }

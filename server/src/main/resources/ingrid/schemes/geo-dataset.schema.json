@@ -210,7 +210,10 @@
                       "additionalProperties": false,
                       "properties": {
                         "description": {
-                          "type": "string"
+                          "type": "array",
+                          "items": {
+                            "$ref": "../../general.schema.json#/definitions/KeyValue"
+                          }
                         }
                       }
                     },
