@@ -751,25 +751,19 @@ export abstract class IngridShared extends BaseDoctype {
       "Zusatzinformation",
       [
         this.addGroupSimple("metadata", [
-          this.addGroup(
-            null,
-            "Sprache / Zeichensatz",
-            [
-              this.addSelectInline("language", "Sprache des Metadatensatzes", {
-                showSearch: true,
-                options: this.getCodelistForSelect(
-                  99999999,
-                  "extraInfoLangMetaData"
-                ),
-                codelistId: 99999999,
-                required: true,
-                defaultValue: {
-                  key: "150",
-                },
-              }),
-            ].filter(Boolean),
-            { hasInlineContextHelp: true, contextHelpId: "languageInfo" }
-          ),
+          this.addSelect("language", "Sprache des Metadatensatzes", {
+            showSearch: true,
+            options: this.getCodelistForSelect(
+              99999999,
+              "extraInfoLangMetaData"
+            ),
+            codelistId: 99999999,
+            required: true,
+            defaultValue: {
+              key: "150",
+            },
+            contextHelpId: "languageInfo",
+          }),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea").pipe(

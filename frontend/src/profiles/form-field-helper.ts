@@ -427,6 +427,7 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
+        contextHelpId: options?.contextHelpId,
       },
       expressions: expressions,
       hooks: options?.hooks,
