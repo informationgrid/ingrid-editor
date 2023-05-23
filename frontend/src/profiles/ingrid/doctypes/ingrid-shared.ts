@@ -1075,7 +1075,6 @@ export abstract class IngridShared extends BaseDoctype {
       this.addRepeat("references", "Verweise", {
         fieldGroupClassName: "flex-col",
         fields: [this.urlRefFields()],
-        className: "optional",
         hasExtendedGap: true,
         validators: {
           downloadLinkWhenOpenData: {
