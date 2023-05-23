@@ -1,7 +1,7 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
         <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
+            <button mat-icon-button (click)="cancel.next()">
                 <mat-icon>close</mat-icon>
             </button>
             <span class="text">{{ label }}</span>
