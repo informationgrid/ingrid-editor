@@ -769,18 +769,6 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "150",
                 },
               }),
-              options.extraInfoCharSetData
-                ? this.addSelectInline(
-                    "characterSet",
-                    "Zeichensatz des Datensatzes",
-                    {
-                      showSearch: true,
-                      options: this.getCodelistForSelect(510, "characterSet"),
-                      codelistId: 510,
-                      className: "optional",
-                    }
-                  )
-                : null,
             ].filter(Boolean),
             { hasInlineContextHelp: true, contextHelpId: "languageInfo" }
           ),
@@ -814,6 +802,16 @@ export abstract class IngridShared extends BaseDoctype {
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
                   className: "field.props.required ? '' : 'optional'",
                 },
+              }),
+            ])
+          : null,
+        options.extraInfoCharSetData
+          ? this.addGroupSimple("metadata", [
+              this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
+                showSearch: true,
+                options: this.getCodelistForSelect(510, "characterSet"),
+                codelistId: 510,
+                className: "optional",
               }),
             ])
           : null,

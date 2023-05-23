@@ -117,7 +117,6 @@ export class UserTableComponent
         user.email ?? "",
         user.organisation ?? "",
         user.department ?? "",
-        this.getSearchKeyByRole(user.role),
       ];
 
       // append permission value
@@ -249,11 +248,6 @@ export class UserTableComponent
 
   private createRow(values: string[]) {
     return `${values.join(";")}\n`;
-  }
-
-  private getSearchKeyByRole(role?: string) {
-    if (role == undefined) return "";
-    return this.transloco.translate(`roles.${role}`);
   }
 
   private getSearchKeyByPermission(permission: PermissionLevel): string {

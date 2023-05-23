@@ -31,8 +31,8 @@
             <span
                 *ngIf="!hideDate"
                 class="date"
-                [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
-                >{{ doc._modified | dateAgo : "DE" }}</span
+                [matTooltip]="doc._contentModified | date : 'dd.LL.yyyy HH:mm'"
+                >{{ doc._contentModified | dateAgo : "DE" }}</span
             >
         </h3>
         <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
@@ -61,8 +61,8 @@
         <span
             *ngIf="!hideDate"
             class="date"
-            [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
-            >{{ doc._modified | dateAgo : "DE" }}</span
+            [matTooltip]="doc._contentModified | date : 'dd.LL.yyyy HH:mm'"
+            >{{ doc._contentModified | dateAgo : "DE" }}</span
         >
     </span>
 </div>

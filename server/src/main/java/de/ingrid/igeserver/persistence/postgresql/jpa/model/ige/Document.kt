@@ -71,12 +71,22 @@ class Document {
     }
 
     @Column
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonProperty("_contentModified")
+    var contentmodified: OffsetDateTime? = null
+
+    @Column
     @JsonProperty("_createdBy")
     var createdby: String? = null
 
     @Column
     @JsonProperty("_modifiedBy")
     var modifiedby: String? = null
+
+    @Column
+    @JsonProperty("_contentModifiedBy")
+    var contentmodifiedby: String? = null
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -87,7 +97,7 @@ class Document {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifiedbyuser", nullable = true)
     @JsonIgnore
-    var modifiedByUser: UserInfo? = null
+    var contentModifiedByUser: UserInfo? = null
 
     @JsonIgnore
     var isLatest: Boolean = false

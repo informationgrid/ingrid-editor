@@ -138,6 +138,39 @@ export class GeoServiceDoctype extends IngridShared {
               },
             },
           }),
+          this.addGroup(
+            null,
+            "Dargestellte Daten",
+            [
+              <FormlyFieldConfig>{
+                key: "coupledResources",
+                type: "couplingService",
+                className: "flex-1",
+                props: {
+                  label: "Dargestellte Daten",
+                  change: (field) => {
+                    this.handleCoupledDatasetsChange(field, field.model);
+                  },
+                },
+                expressions: {
+                  "props.required":
+                    "formState.mainModel?.service?.couplingType?.key === 'tight'",
+                  className: "field.props.required ? '' : 'optional'",
+                },
+              },
+              this.addSelectInline("couplingType", "Kopplungstyp", {
+                showSearch: true,
+                options: <SelectOptionUi[]>[
+                  { label: "loose", value: "loose" },
+                  { label: "mixed", value: "mixed" },
+                  { label: "tight", value: "tight" },
+                ],
+                hasInlineContextHelp: true,
+                wrappers: ["inline-help", "form-field"],
+              }),
+            ],
+            { contextHelpId: "shownData" }
+          ),
           this.addResolutionFields(),
           this.addGroup(
             null,
@@ -167,46 +200,6 @@ export class GeoServiceDoctype extends IngridShared {
           this.addTextArea("explanation", "Erläuterungen", this.id, {
             className: "optional flex-1",
           }),
-          this.addGroup(
-            null,
-            "Dargestellte Daten",
-            [
-              <FormlyFieldConfig>{
-                key: "coupledResources",
-                type: "couplingService",
-                className: "flex-1",
-                props: {
-                  label: "Dargestellte Daten",
-                },
-                hooks: {
-                  onInit: (field) =>
-                    field.formControl.valueChanges.pipe(
-                      tap((value) =>
-                        this.handleCoupledDatasetsChange(field, value)
-                      )
-                    ),
-                },
-              },
-              this.addSelectInline("couplingType", "Kopplungstyp", {
-                showSearch: true,
-                options: <SelectOptionUi[]>[
-                  { label: "loose", value: "loose" },
-                  { label: "mixed", value: "mixed" },
-                  { label: "tight", value: "tight" },
-                ],
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              }),
-            ],
-            {
-              contextHelpId: "shownData",
-              expressions: {
-                "props.required": (field) =>
-                  field.model?.couplingType?.key === "tight",
-                className: (field) => (field.props.required ? "" : "optional"),
-              },
-            }
-          ),
           this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
             className: "optional",
           }),

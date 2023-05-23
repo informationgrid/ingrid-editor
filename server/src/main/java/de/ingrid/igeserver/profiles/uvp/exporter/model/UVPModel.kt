@@ -24,6 +24,8 @@ data class UVPModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val _contentModified: OffsetDateTime,
 ) {
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")

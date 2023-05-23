@@ -23,7 +23,7 @@ data class Result(
         val _uuid: String?,
         val _type: String?,
         val _created: Date?,
-        val _modified: Date?,
+        val _contentModified: Date?,
         val _state: String?,
         val _category: String?,
         var hasWritePermission: Boolean?,
@@ -235,7 +235,7 @@ class ResearchService {
                 .addScalar("uuid")
                 .addScalar("type")
                 .addScalar("created")
-                .addScalar("modified")
+                .addScalar("contentmodified")
                 .addScalar("category")
                 .addScalar("wrapperid")
                 .addScalar("state")
@@ -276,7 +276,7 @@ class ResearchService {
                             _uuid = item[2] as? String,
                             _type = item[3] as? String,
                             _created = Date.from(item[4] as Instant),
-                            _modified = Date.from(item[5] as Instant),
+                            _contentModified = Date.from(item[5] as Instant),
                             _state = determineDocumentState(item[8] as String),
                             _category = (item[6] as? String),
                             hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(

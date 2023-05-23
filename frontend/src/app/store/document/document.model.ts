@@ -10,6 +10,7 @@ export interface DocumentAbstract {
   _parent: number;
   _hasChildren: boolean;
   _modified: any;
+  _contentModified: any;
   _pendingDate: any;
   _uuid: any;
   hasWritePermission?: boolean;
