@@ -8,6 +8,7 @@
     <mat-list-option
         *ngFor="let doc of docs | async as allDocs; let i = index"
         (click)="makeSelection(doc)"
+        (keydown.enter)="makeSelection(doc)"
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
         [class.disabled]="doc.hasWritePermission === false"
