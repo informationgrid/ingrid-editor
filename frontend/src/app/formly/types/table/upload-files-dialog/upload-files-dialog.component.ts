@@ -12,7 +12,7 @@ import {
 } from "../../../../shared/upload/upload.service";
 import { forkJoin, Observable } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { catchError, filter, map, mapTo, switchMap, tap } from "rxjs/operators";
+import { catchError, filter, map, mapTo, tap } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -34,8 +34,12 @@ export class UploadFilesDialogComponent implements OnInit {
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: string;
   docUuid = null;
-  extractZipFiles = false;
   uploadComplete = false;
+  allowedUploadTypes: string[];
+
+  // zip extraction
+  hasExtractZipOption: boolean;
+  extractZipFiles = false;
   extractInProgress = false;
 
   constructor(
@@ -45,12 +49,19 @@ export class UploadFilesDialogComponent implements OnInit {
     private uploadService: UploadService,
     configService: ConfigService,
     @Inject(MAT_DIALOG_DATA)
-    public data: { currentItems: any[]; uploadFieldKey: string }
+    private data: {
+      currentItems: any[];
+      uploadFieldKey: string;
+      allowedUploadTypes?: string[];
+      hasExtractZipOption?: boolean;
+    }
   ) {
     this.docUuid = formStateService.getForm().get("_uuid").value;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
       this.docUuid
     }`;
+    this.allowedUploadTypes = data.allowedUploadTypes;
+    this.hasExtractZipOption = data.hasExtractZipOption;
   }
 
   ngOnInit(): void {}

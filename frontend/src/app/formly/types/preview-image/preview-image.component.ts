@@ -94,8 +94,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         minWidth: 700,
         restoreFocus: true,
         data: {
+          allowedUploadTypes: ["png", "jpeg", "svg+xml", "gif"],
           // currentItems: this.dataSource.data,
           // uploadFieldKey: this.getUploadFieldKey(),
+          // hasExtractZipOption: true,
         },
       })
       .afterClosed()
