@@ -276,6 +276,7 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
                 className: "field.props.required ? '' : 'optional'",
+                hide: "!formState.mainModel?.isInspireIdentified",
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
@@ -302,13 +303,11 @@ export abstract class IngridShared extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 showSearch: true,
+                className: "optional",
                 options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
-                  className: (model) =>
-                    model.options.formState.mainModel?.isInspireIdentified
-                      ? ""
-                      : "optional",
+                  hide: "!formState.mainModel?.isInspireIdentified",
                 },
               }
             )
@@ -324,12 +323,8 @@ export abstract class IngridShared extends BaseDoctype {
                 expressions: {
                   "props.required":
                     "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-                  className: (model) =>
-                    !model.options.formState.mainModel?.isInspireIdentified &&
-                    model.options.formState.mainModel?._type ===
-                      "InGridGeoService"
-                      ? "optional"
-                      : "",
+                  className: "field.props.required ? '' : 'optional'",
+                  hide: "!formState.mainModel?.isInspireIdentified",
                 },
               }
             )
@@ -348,6 +343,7 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
           view: "chip",
+          className: "optional",
           placeholder: "Im Umweltthesaurus suchen",
           restCall: (query: string) =>
             this.http.get<any[]>(
@@ -362,9 +358,11 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",
+          className: "optional",
           hint: this.keywordFieldHint,
         }),
         this.addInput(null, null, {
+          className: "optional",
           wrappers: ["panel", "form-field"],
           fieldLabel: "Analyse",
           updateOn: "change",
