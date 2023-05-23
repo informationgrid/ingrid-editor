@@ -1025,6 +1025,7 @@ export abstract class IngridShared extends BaseDoctype {
               this.addAutoCompleteInline("name", "Name", {
                 options: this.getCodelistForSelect(1320, "specification"),
                 codelistId: 1320,
+                required: true,
               }),
               this.addInputInline("version", "Version"),
               this.addInputInline("compression", "Kompressionstechnik"),
