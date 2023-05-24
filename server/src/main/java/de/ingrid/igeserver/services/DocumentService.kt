@@ -496,7 +496,7 @@ class DocumentService @Autowired constructor(
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
-        } catch (_: NotFoundException) { /* do nothing */ }
+        } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */ }
     }
 
     @Transactional(noRollbackFor = [PostSaveException::class])
