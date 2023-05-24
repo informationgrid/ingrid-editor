@@ -59,8 +59,6 @@ export abstract class IngridShared extends BaseDoctype {
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
   private inspireDeleteMessage =
     "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
-  private openDataMessage =
-    "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
   private inspireToIsoMapping = {
     "101": "13",
@@ -212,10 +210,7 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private handleOpenDataClick(field) {
-    const isChecked = field.formControl.value;
-    if (!isChecked) return;
-
+  private handleActivateOpenData(field) {
     const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
 
@@ -233,9 +228,9 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const message = isInspire
-      ? "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'Es gelten keine Zugriffsbeschränkungen' ersetzt. Möchten Sie fortfahren?"
-      : "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    const message =
+      "Wird dieses Auswahl gewählt, so:" +
+      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "Opendata" hinzugefügt</li></ul> ';
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -249,6 +244,37 @@ export abstract class IngridShared extends BaseDoctype {
         if (decision === "ok") executeAction();
         else field.formControl.setValue(false);
       });
+  }
+
+  private handleDeactivateOpenData(field) {
+    const cookieId = "HIDE_OPEN_DATA_INFO";
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      field.options.formState.updateModel();
+    }
+    const message =
+      'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision != "ok") field.formControl.setValue(true);
+        return;
+      });
+  }
+
+  private handleOpenDataClick(field) {
+    const isChecked = field.formControl.value;
+    if (!isChecked) {
+      this.handleDeactivateOpenData(field);
+    } else {
+      this.handleActivateOpenData(field);
+    }
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
@@ -1210,10 +1236,7 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const openDataMessage =
-      "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'keine' ersetzt. Möchten Sie fortfahren?";
-    const message =
-      this.inspireChangeMessage + (isOpenData ? openDataMessage : "");
+    const message = this.inspireChangeMessage;
 
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -1250,8 +1273,7 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const message =
-      this.inspireDeleteMessage + (isOpenData ? this.openDataMessage : "");
+    const message = this.inspireDeleteMessage;
 
     this.dialog
       .open(ConfirmDialogComponent, {
