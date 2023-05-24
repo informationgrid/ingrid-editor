@@ -13,9 +13,9 @@ import {
   User,
   UserWithDocPermission,
 } from "../../user";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatPaginator } from "@angular/material/paginator";
+import { MatSort, MatSortModule } from "@angular/material/sort";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
+import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
@@ -29,12 +29,33 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoModule, TranslocoService } from "@ngneat/transloco";
+import { MatIconModule } from "@angular/material/icon";
+import { NgIf, NgSwitch, NgSwitchCase } from "@angular/common";
+import { MatButtonModule } from "@angular/material/button";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { PermissionLegendsComponent } from "../../permissions/permission-legends/permission-legends.component";
 
 @Component({
   selector: "user-table",
   templateUrl: "./user-table.component.html",
   styleUrls: ["../../table.styles.scss"],
+  imports: [
+    MatTableModule,
+    MatIconModule,
+    MatSortModule,
+    NgSwitch,
+    MatButtonModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    NgIf,
+    PermissionLegendsComponent,
+    TranslocoModule,
+    NgSwitchCase,
+  ],
+  standalone: true,
 })
 export class UserTableComponent
   extends GeneralTable
@@ -96,7 +117,6 @@ export class UserTableComponent
         user.email ?? "",
         user.organisation ?? "",
         user.department ?? "",
-        this.getSearchKeyByRole(user.role),
       ];
 
       // append permission value
@@ -228,11 +248,6 @@ export class UserTableComponent
 
   private createRow(values: string[]) {
     return `${values.join(";")}\n`;
-  }
-
-  private getSearchKeyByRole(role?: string) {
-    if (role == undefined) return "";
-    return this.transloco.translate(`roles.${role}`);
   }
 
   private getSearchKeyByPermission(permission: PermissionLevel): string {

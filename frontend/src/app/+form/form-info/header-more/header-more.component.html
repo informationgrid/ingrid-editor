@@ -35,13 +35,13 @@
     <div *ngIf="!hideFields.modified" class="flex-row">
         <div>Geändert am</div>
         <div>
-            <span [matTooltip]="model._modified | date : 'long'">{{
-                model._modified | date : "dd.MM.yyyy"
+            <span [title]="model._contentModified | date : 'long'">{{
+                model._contentModified | date : "dd.MM.yyyy"
             }}</span>
-            <span *ngIf="model._modifiedBy">
+            <span *ngIf="model._contentModifiedBy">
                 von
                 {{
-                    model._modifiedBy +
+                    model._contentModifiedBy +
                         (!model._modifierExists && !this.migrated
                             ? " (ausgeschieden)"
                             : "")

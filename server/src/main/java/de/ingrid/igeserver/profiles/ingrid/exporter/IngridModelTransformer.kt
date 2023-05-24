@@ -278,7 +278,7 @@ open class IngridModelTransformer constructor(
 
 
     val parentIdentifier: String? = data.parentIdentifier
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._modified)
+    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact =
         data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
 

@@ -45,6 +45,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
@@ -98,6 +99,7 @@ class JpaTest : IntegrationTest() {
             data = addressJson as ObjectNode
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
@@ -153,6 +155,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)

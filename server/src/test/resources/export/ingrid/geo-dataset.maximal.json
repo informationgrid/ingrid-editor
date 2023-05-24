@@ -84,7 +84,14 @@
   "dataQualityInfo": {
     "lineage": {
       "source": {
-        "processStep": { "description": "production process" },
+        "processStep": {
+          "description": [
+            {
+              "key": null,
+              "value": "production process"
+            }
+          ]
+        },
         "descriptions": [{ "key": null, "value": "data-basis" }]
       }
     }

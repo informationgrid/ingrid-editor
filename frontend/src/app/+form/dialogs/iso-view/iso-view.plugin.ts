@@ -43,7 +43,7 @@ export class IsoViewPlugin extends Plugin {
     this.formToolbarService.addButton({
       id: "toolBtnIso",
       tooltip: "ISO Ansicht",
-      matIconVariable: "remove_red_eye",
+      matSvgVariable: "ISO-Ansicht",
       eventId: "ISO",
       pos: 80,
       active: false,

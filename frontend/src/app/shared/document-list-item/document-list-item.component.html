@@ -8,6 +8,7 @@
     <mat-list-option
         *ngFor="let doc of docs | async as allDocs; let i = index"
         (click)="makeSelection(doc)"
+        (keydown.enter)="makeSelection(doc)"
         [class.selected]="currentSelection && doc.id === currentSelection.id"
         [class.hide-bg-selection]="showSelection"
         [class.disabled]="doc.hasWritePermission === false"
@@ -31,8 +32,8 @@
             <span
                 *ngIf="!hideDate"
                 class="date"
-                [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
-                >{{ doc._modified | dateAgo : "DE" }}</span
+                [matTooltip]="doc._contentModified | date : 'dd.LL.yyyy HH:mm'"
+                >{{ doc._contentModified | dateAgo : "DE" }}</span
             >
         </h3>
         <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
@@ -61,8 +62,8 @@
         <span
             *ngIf="!hideDate"
             class="date"
-            [matTooltip]="doc._modified | date : 'dd.LL.yyyy HH:mm'"
-            >{{ doc._modified | dateAgo : "DE" }}</span
+            [matTooltip]="doc._contentModified | date : 'dd.LL.yyyy HH:mm'"
+            >{{ doc._contentModified | dateAgo : "DE" }}</span
         >
     </span>
 </div>

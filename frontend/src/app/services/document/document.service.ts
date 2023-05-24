@@ -692,6 +692,7 @@ export class DocumentService {
         _parent: doc._parent ?? null,
         _type: doc._type,
         _modified: doc._modified,
+        _contentModified: doc._contentModified,
         _pendingDate: doc._pendingDate,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:

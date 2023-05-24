@@ -6,7 +6,7 @@
 @if(page.getParentUuid() != null)
     <parent_id>${page.getParentUuid()}</parent_id>
 @endif
-<date>${page.formatDate(page.getFormatterOnlyDate(), page.get_modified())}</date>
+<date>${page.formatDate(page.getFormatterOnlyDate(), page.get_contentModified())}</date>
 <name>${page.getTitle()}</name>
 <descr>${page.getData().getDescription()}</descr>
 <type>${page.getDocumentType()}</type>

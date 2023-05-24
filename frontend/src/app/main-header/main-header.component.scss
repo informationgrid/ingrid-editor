@@ -163,3 +163,17 @@ mat-card-title {
 .last-login {
   margin-bottom: 0;
 }
+
+// usability css on mobile devices
+@media (max-width: 420px) {
+  .page-title-general,
+  .center-header {
+    display: none;
+  }
+  .main-page-title {
+    padding-left: unset;
+  }
+  .header-info {
+    margin-left: unset;
+  }
+}

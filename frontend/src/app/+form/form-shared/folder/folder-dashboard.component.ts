@@ -69,8 +69,8 @@ export class FolderDashboardComponent {
         const latestChildren = childrenFromStore
           .sort(
             (c1, c2) =>
-              new Date(c2._modified).getTime() -
-              new Date(c1._modified).getTime()
+              new Date(c2._contentModified).getTime() -
+              new Date(c1._contentModified).getTime()
           )
           .slice(0, 5);
         this.childDocs$.next(latestChildren);

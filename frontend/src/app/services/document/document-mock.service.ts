@@ -10,6 +10,7 @@ export class DocumentMockService {
       _state: "W",
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
+      _contentModified: new Date().toDateString(),
       _hasChildren: false,
       title: "UVP Testdokument 1",
     };
@@ -28,6 +29,7 @@ export class DocumentMockService {
       _state: "W",
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
+      _contentModified: new Date().toDateString(),
       _hasChildren: false,
       title: "UVP Testdokument 1",
     };
@@ -64,6 +66,7 @@ export class DocumentMockService {
       _state: "P",
       _created: new Date().toDateString(),
       _modified: new Date().toDateString(),
+      _contentModified: new Date().toDateString(),
       _hasChildren: false,
       title: "UVP Testdokument 1",
     };

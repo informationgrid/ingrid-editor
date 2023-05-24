@@ -140,7 +140,14 @@
               "type": ["null", "string"]
             },
             "couplingType": {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
+              "anyOf": [
+                {
+                  "$ref": "../../general.schema.json#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "classification": {
               "type": "array",

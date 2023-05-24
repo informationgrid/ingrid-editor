@@ -53,16 +53,19 @@ class PreDefaultDocumentInitializer @Autowired constructor(
     protected fun initializeDocument(payload: PreCreatePayload, context: Context, catalogRef: Catalog) {
         val now = dateService.now()
         val fullName = authUtils.getFullNameFromPrincipal(context.principal!!)
+        val actualUser = catalogService.getDbUserFromPrincipal(context.principal!!)
 
         with(payload.document) {
             catalog = catalogRef
 //            data.put(FIELD_HAS_CHILDREN, false)
             created = now
             modified = now
+            contentmodified = now
             createdby = fullName
-            createdByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
+            createdByUser = actualUser
             modifiedby = fullName
-            modifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
+            contentmodifiedby = if (actualUser != null) fullName else null
+            contentModifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
             state = DOCUMENT_STATE.DRAFT
             isLatest = true
         }

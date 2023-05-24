@@ -6,7 +6,8 @@
   "_created": "2022-11-10T16:23:35.089213+01:00",
   "_createdBy": "Torsten Wolff",
   "_modified": "2023-01-27T12:03:33.127887+01:00",
-  "_modifiedBy": "Super User",
+  "_contentModified": "2023-01-27T12:03:33.127887+01:00",
+  "_contentModifiedBy": "Super User",
   "_version": 3,
   "_state": "P",
   "data": {
@@ -26,8 +27,9 @@
           "_version": 1,
           "_created": "2022-10-28T10:46:46.900941+02:00",
           "_modified": "2022-12-16T12:52:09.060888+01:00",
+          "_contentModified": "2022-12-16T12:52:09.060888+01:00",
           "_createdBy": "Mike Cat-Miller",
-          "_modifiedBy": "Mike Cat-Miller",
+          "_contentModifiedBy": "Mike Cat-Miller",
           "_state": "W",
           "_id": "12331",
           "address": {

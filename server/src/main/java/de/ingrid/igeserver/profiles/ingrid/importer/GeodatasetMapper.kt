@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
-import de.ingrid.igeserver.exports.iso.DQReport
-import de.ingrid.igeserver.exports.iso.DQReportElement
-import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.exports.iso.*
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 
@@ -55,13 +53,13 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.map { KeyValue(null, it) } ?: emptyList()
     }
 
-    fun getProcessStep(): String {
+    fun getProcessStep(): List<KeyValue> {
         return metadata.dataQualityInfo
             ?.flatMap { dqi ->
                 dqi.dqDataQuality?.lineage?.liLinage?.processStep
                     ?.mapNotNull { it.liProcessStep.description.value } ?: emptyList()
             }
-            ?.joinToString(";") ?: ""
+            ?.map { KeyValue(null, it) } ?: emptyList()
     }
 
     fun getCompletenessOmissionValue(): Number? {
@@ -80,6 +78,120 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.flatMap { it.dqDataQuality?.report ?: emptyList() }
             ?.mapNotNull { mapQuality(it) } ?: emptyList()
     }
+
+    fun getVectorSpatialRepresentation(): List<VectorSpatialRepresentation> {
+        return metadata.spatialRepresentationInfo
+            ?.mapNotNull { it.mdVectorSpatialRepresentation }
+            ?.map { mapVectorSpatialRepreseantation(it) } ?: emptyList()
+    }
+    
+    private fun mapVectorSpatialRepreseantation(vector: MDVectorSpatialRepresentation): VectorSpatialRepresentation {
+        val topologyLevelValue = vector.topologyLevel?.value?.codeListValue
+        val entryIdTopologyLevel = codeListService.getCodeListEntryId("528", topologyLevelValue, "iso")
+        val objectTypeValue = vector.geometricObjects?.get(0)?.value?.geometricObjectType?.value?.codeListValue
+        val entryIdObjectType = codeListService.getCodeListEntryId("515", objectTypeValue, "iso")
+        val objectCount = vector.geometricObjects?.get(0)?.value?.geometricObjectCount?.value
+                
+        return VectorSpatialRepresentation(KeyValue(entryIdTopologyLevel), KeyValue(entryIdObjectType), objectCount)
+    }
+    
+    fun getGridSpatialRepresentation(): GridSpatialRepresentation? {
+        val isGeneral = metadata.spatialRepresentationInfo?.filter { it.mdGridSpatialRepresentation != null }
+        val isGeoReferenced = metadata.spatialRepresentationInfo?.filter { it.mdGeoreferenceable != null }
+        val isGeoRectified = metadata.spatialRepresentationInfo?.filter { it.mdGeorectified != null }
+
+        return if (!isGeoReferenced.isNullOrEmpty()) mapGeoReferencedRepresentation(isGeoReferenced[0].mdGeoreferenceable!!)
+        else if (!isGeoRectified.isNullOrEmpty()) mapGeoRectifiedRepresentation(isGeoRectified[0].mdGeorectified!!)
+        else if (!isGeneral.isNullOrEmpty()) mapGeneralRepresentation(isGeneral[0].mdGridSpatialRepresentation!!)
+        else null
+    }
+
+    private fun mapGeneralRepresentation(node: MDGridSpatialRepresentation): GridSpatialRepresentation {
+        return GridSpatialRepresentation(
+            KeyValue("basis"),
+            getAxesDimProperties(node.axisDimensionProperties),
+            node.transformationParameterAvailability.boolean?.value ?: false,
+            node.numberOfDimensions.value ?: 0,
+            getCellGeometryId(node.cellGeometry),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    }
+
+    private fun mapGeoRectifiedRepresentation(node: MDGeorectified): GridSpatialRepresentation {
+        val pointValue = node.pointInPixel.mdPixelOrientationCode
+        val pointId = codeListService.getCodeListEntryId("2100", pointValue, "iso")
+        return GridSpatialRepresentation(
+            KeyValue("rectified"),
+            getAxesDimProperties(node.axisDimensionProperties),
+            node.transformationParameterAvailability.boolean?.value ?: false,
+            node.numberOfDimensions.value ?: 0,
+            getCellGeometryId(node.cellGeometry),
+            node.checkPointAvailability?.boolean?.value ?: false,
+            node.checkPointDescription?.value,
+            node.cornerPoints[0].point.coordinates ?: "",
+            KeyValue(pointId),
+            null,
+            null,
+            null
+        )
+    }
+
+    private fun mapGeoReferencedRepresentation(node: MDGeoreferenceable): GridSpatialRepresentation {
+        return GridSpatialRepresentation(
+            KeyValue("referenced"),
+            getAxesDimProperties(node.axisDimensionProperties),
+            node.transformationParameterAvailability.boolean?.value ?: false,
+            node.numberOfDimensions.value ?: 0,
+            getCellGeometryId(node.cellGeometry),
+            null,
+            null,
+            null,
+            null,
+            node.controlPointAvailability.boolean?.value ?: false,
+            node.orientationParameterAvailability.boolean?.value ?: false,
+            node.georeferencedParameters.value?.value
+        )
+    }
+    
+    private fun getCellGeometryId(cellGeometry: CellGeometry): KeyValue {
+        val cellGeometryId = codeListService.getCodeListEntryId("509", cellGeometry.mdCellGeometryCode?.codeListValue, "iso")
+        return KeyValue(cellGeometryId)
+    }
+    
+    private fun getAxesDimProperties(properties: List<AxisDimensionProperty>): List<AxesDimProperty> {
+        return properties.map {
+            val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
+            val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
+            AxesDimProperty(KeyValue(nameId), it.mdDimension?.dimensionSize?.value ?: 0, it.mdDimension?.resolution?.scale?.value ?: 0f)
+        }
+    }
+
+    data class GridSpatialRepresentation(
+        val type: KeyValue?,
+        val axesDimensionProperties: List<AxesDimProperty>,
+        val transformationParameterAvailability: Boolean,
+        val numberOfDimensions: Int?,
+        val cellGeometry: KeyValue?,
+        val checkPointAvailability: Boolean?,
+        val checkPointDescription: String?,
+        val cornerPoints: String?,
+        val pointInPixel: KeyValue?,
+        val controlPointAvailability: Boolean?,
+        val orientationParameterAvailability: Boolean?,
+        val geoRefParameters: String?
+    )
+    
+    data class AxesDimProperty(
+        val name: KeyValue?,
+        val size: Int?,
+        val resolution: Float,
+    )
 
     fun getSubtype(): KeyValue? {
         val value = metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue ?: return null
@@ -102,12 +214,12 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             else if (report.dqFormatConsistency != null) QualityInfo("formatConsistency", "7114", report.dqFormatConsistency)
             else if (report.dqDomainConsistency != null) QualityInfo("domainConsistency", "7113", report.dqDomainConsistency)
             else if (report.dqConceptualConsistency != null) QualityInfo("conceptualConsistency", "7112", report.dqConceptualConsistency)
-//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.) 
+//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
             else if (report.dqCompletenessCommission != null) QualityInfo("completenessComission", "7109", report.dqCompletenessCommission)
             else return null
 
         if (info.element.nameOfMeasure == null) return null
-        
+
         val name = info.element.nameOfMeasure.map { it.value }.joinToString(";")
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = if (nameId == null) KeyValue(null, name) else KeyValue(nameId)
@@ -115,7 +227,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toInt()
         return Quality(info.type, nameKeyValue, value, parameter)
     }
-    
+
     fun getLineageStatement(): String {
         return metadata.dataQualityInfo
             ?.map { it.dqDataQuality?.lineage?.liLinage?.statement?.value }
@@ -196,7 +308,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             getGriddedDataPositionalAccuracy()
         )
     }
-    
+
     private fun getVerticalAbsoluteExternalPositionalAccuracy(): Int? {
         return metadata.dataQualityInfo
             ?.flatMap { it.dqDataQuality?.report
@@ -245,6 +357,12 @@ data class Quality(
     val measureType: KeyValue?,
     val value: Number?,
     val parameter: String?
+)
+
+data class VectorSpatialRepresentation(
+    val topologyLevel: KeyValue?,
+    val objectType: KeyValue?,
+    val objectCount: Number?,
 )
 
 data class PositionalAccuracy(

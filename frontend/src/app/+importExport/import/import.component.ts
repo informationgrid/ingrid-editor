@@ -61,11 +61,11 @@ export class ImportComponent implements OnInit {
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
       filter((log) => log?.info !== undefined),
-      tap((data) =>
-        data?.isRunning || data?.info?.stage === "ANALYZE"
-          ? (this.step1Complete = true)
-          : null
-      ),
+      tap((data) => {
+        this.step1Complete = !!(
+          data?.isRunning || data?.info?.stage === "ANALYZE"
+        );
+      }),
       map((data) => data?.info),
       tap((info: ImportLogInfo) =>
         this.optionsFormGroup

@@ -36,6 +36,7 @@ export interface RepeatOptions extends Options {
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
+  addButtonTitle?: string;
 }
 
 export interface RepeatListOptions extends Options {
@@ -318,6 +319,7 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
+        addButtonTitle: options?.addButtonTitle,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -425,6 +427,7 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
+        contextHelpId: options?.contextHelpId,
       },
       expressions: expressions,
       hooks: options?.hooks,

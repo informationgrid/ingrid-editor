@@ -6,6 +6,7 @@
   "_created": "2023-02-21T11:16:50.178911+01:00",
   "_createdBy": "Max Muster",
   "_modified": "2023-02-21T11:35:51.9208592+01:00",
+  "_contentModified": "2023-02-21T11:35:51.9208592+01:00",
   "_modifiedBy": "Max Muster",
   "_state": "P",
   "_version": 7,
@@ -43,8 +44,9 @@
           "_version": 2,
           "_created": "2023-02-15T10:48:26.838301+01:00",
           "_modified": "2023-02-15T10:48:44.484899+01:00",
+          "_contentModified": "2023-02-15T10:48:44.484899+01:00",
           "_createdBy": "Max Muster",
-          "_modifiedBy": "Max Muster",
+          "_contentModifiedBy": "Max Muster",
           "_state": "P",
           "_id": "1",
           "address": {
@@ -175,7 +177,12 @@
             }
           ],
           "processStep": {
-            "description": "Herstellungsprozess text"
+            "description": [
+              {
+                "key": null,
+                "value": "Herstellungsprozess, text"
+              }
+            ]
           }
         }
       }
