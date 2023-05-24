@@ -873,10 +873,10 @@ class DocumentService @Autowired constructor(
         docRepo.replaceReference(source, target, refIds)
     }
 
-    fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): Array<String>? {
+    fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
         val cleanedTags = wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
-        wrapper.tags = (cleanedTags + (tags.add ?: emptyList())).toTypedArray()
+        wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags
     }

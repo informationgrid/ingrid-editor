@@ -1,7 +1,5 @@
 package de.ingrid.igeserver.services
 
-import com.vladmihalcea.hibernate.type.array.StringArrayType
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -242,7 +240,7 @@ class ResearchService {
                 .addScalar("category")
                 .addScalar("wrapperid")
                 .addScalar("state")
-            .addScalar("tags", StringArrayType.INSTANCE)
+                .addScalar("tags")
                 .setFirstResult((paging.page - 1) * paging.pageSize)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>

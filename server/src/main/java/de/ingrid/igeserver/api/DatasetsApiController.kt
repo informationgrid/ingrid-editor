@@ -112,7 +112,7 @@ class DatasetsApiController @Autowired constructor(
             data.put(FIELD_CREATED_USER_EXISTS, createdByUser != null)
             data.put(FIELD_MODIFIED_USER_EXISTS, contentModifiedByUser != null)
             data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-            data.put(FIELD_TAGS, wrapper.tags?.joinToString(","))
+            data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
             hasWritePermission = wrapper.hasWritePermission
             hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             wrapperId = wrapper.id
@@ -173,9 +173,9 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity(HttpStatus.OK)
     }
 
-    override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<Array<String>> {
+    override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyArray()
+        val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
         return ResponseEntity.ok(updatedTags)
     }
 

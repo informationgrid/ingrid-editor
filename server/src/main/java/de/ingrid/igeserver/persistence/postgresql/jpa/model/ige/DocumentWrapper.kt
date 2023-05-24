@@ -3,10 +3,9 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.vladmihalcea.hibernate.type.array.ListArrayType
-import com.vladmihalcea.hibernate.type.array.StringArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import io.hypersistence.utils.hibernate.type.array.ListArrayType
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
@@ -15,14 +14,6 @@ import java.util.*
 
 @Entity
 @Table(name = "document_wrapper")
-@TypeDef(
-    name = "list-array",
-    typeClass = ListArrayType::class
-)
-@TypeDef(
-    name = "string-array",
-    typeClass = StringArrayType::class
-)
 @Where(clause = "deleted = 0")
 class DocumentWrapper {
 
@@ -91,9 +82,12 @@ class DocumentWrapper {
     @Column(name = "deleted")
     var deleted = 0
 
-    @Type(type = "string-array")
-    var tags: Array<String>? = null
-    
+    @Type(ListArrayType::class)
+    @Column(name = "tags", columnDefinition = "text[]")
+    var tags: List<String> = emptyList()
+        get() = if (field == null) emptyList() else field // field can actually be null if in db table null
+
+
     @Column
     @JsonSerialize(using = DateSerializer::class)
     @JsonDeserialize(using = DateDeserializer::class)

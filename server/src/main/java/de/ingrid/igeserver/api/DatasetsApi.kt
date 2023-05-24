@@ -207,7 +207,7 @@ interface DatasetsApi {
         principal: Principal,
         @PathVariable id: Int,
         @RequestBody tags: TagRequest
-    ): ResponseEntity<Array<String>>
+    ): ResponseEntity<List<String>>
 }
 
 data class TagRequest(val add: List<String>?, val remove: List<String>?)
