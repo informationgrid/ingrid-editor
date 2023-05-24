@@ -137,31 +137,33 @@ export class UploadComponent implements OnInit {
     });
 
     this.flow.flowJs.on("filesAdded", (files) => {
-      if (!this.validateFileName(files)) {
+      if (!this.validateFileNames(files)) {
         throw new IgeError("Der Dateiname darf kein '%' enthalten!");
       }
-      if (!this.validateUploadTypes(files)) {
-        const types = this.allowedUploadTypes.join(", ");
+      const invalidFormat = this.validateUploadTypes(files);
+      if (invalidFormat != undefined) {
+        const allowedTypes = this.allowedUploadTypes.join(", ");
         throw new IgeError(
-          `Nur die Datenformate von [ ${types} ] können akzeptiert werden.`
+          `Das Hochladen von Dateien im [${invalidFormat}] Format ist nicht erlaubt.
+           Zugelassene Dateiformate sind: ${allowedTypes}.`
         );
       }
       return true;
     });
   }
 
-  private validateFileName(files: flowjs.FlowFile[]): boolean {
+  private validateFileNames(files: flowjs.FlowFile[]): boolean {
     return !files.some((file) => file.name.indexOf("%") !== -1);
   }
 
-  private validateUploadTypes(files: flowjs.FlowFile[]): boolean {
-    if (this.allowedUploadTypes == undefined) return true;
+  // it returns an invalid upload type when identified
+  private validateUploadTypes(files: flowjs.FlowFile[]): string {
+    if (this.allowedUploadTypes == undefined) return;
     for (const file of files) {
       const type = file.getType();
       const isTypeAllowed = this.allowedUploadTypes.includes(type);
-      if (!isTypeAllowed) return false;
+      if (!isTypeAllowed) return type;
     }
-    return true;
   }
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
