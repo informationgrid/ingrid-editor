@@ -8,6 +8,15 @@ import { DocumentService } from "../../../services/document/document.service";
 import { ShortTreeNode } from "../../../+form/sidebars/tree/tree.types";
 import { IgeDocument } from "../../../models/ige-document";
 import { ProfileService } from "../../../services/profile.service";
+import { PermissionLegendsComponent } from "../permission-legends/permission-legends.component";
+import { MatTableModule } from "@angular/material/table";
+import { MatIconModule } from "@angular/material/icon";
+import { BreadcrumbModule } from "../../../+form/form-info/breadcrumb/breadcrumb.module";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatButtonModule } from "@angular/material/button";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { TranslocoModule } from "@ngneat/transloco";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "permission-table",
@@ -21,6 +30,18 @@ import { ProfileService } from "../../../services/profile.service";
     },
     DynamicDatabase,
   ],
+  imports: [
+    PermissionLegendsComponent,
+    MatTableModule,
+    MatIconModule,
+    BreadcrumbModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatTooltipModule,
+    TranslocoModule,
+    NgIf,
+  ],
+  standalone: true,
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;

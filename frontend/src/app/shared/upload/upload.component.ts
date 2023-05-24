@@ -55,6 +55,9 @@ export class UploadComponent implements OnInit {
   /* hide everything except the progressed files */
   @Input() showOnlyProgress = false;
 
+  /* allow only specific file types when given */
+  @Input() allowedUploadTypes: string[];
+
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
   @Output() removeFile = new EventEmitter<string>();
@@ -134,13 +137,31 @@ export class UploadComponent implements OnInit {
     });
 
     this.flow.flowJs.on("filesAdded", (files) => {
-      const allowed = !files.some((file) => file.name.indexOf("%") !== -1);
-      if (allowed) {
-        return true;
-      } else {
+      if (!this.validateFileName(files)) {
         throw new IgeError("Der Dateiname darf kein '%' enthalten!");
       }
+      if (!this.validateUploadTypes(files)) {
+        const types = this.allowedUploadTypes.join(", ");
+        throw new IgeError(
+          `Nur die Datenformate von [ ${types} ] können akzeptiert werden.`
+        );
+      }
+      return true;
     });
+  }
+
+  private validateFileName(files: flowjs.FlowFile[]): boolean {
+    return !files.some((file) => file.name.indexOf("%") !== -1);
+  }
+
+  private validateUploadTypes(files: flowjs.FlowFile[]): boolean {
+    if (this.allowedUploadTypes == undefined) return true;
+    for (const file of files) {
+      const type = file.getType();
+      const isTypeAllowed = this.allowedUploadTypes.includes(type);
+      if (!isTypeAllowed) return false;
+    }
+    return true;
   }
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {

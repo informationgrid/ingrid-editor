@@ -26,7 +26,7 @@
         "hoursOfService": ""
       },
       "type": {
-        "key": "7"
+        "key": "12"
       }
     },
     {
@@ -377,7 +377,12 @@
           }
         ],
         "processStep": {
-          "description": "Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert."
+          "description": [
+            {
+              "key": null,
+              "value": "Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert."
+            }
+          ]
         }
       }
     }
@@ -477,7 +482,6 @@
   "dataset": {
     "languages": ["150", "134"]
   },
-  "isInspireConform": true,
   "vectorSpatialRepresentation": [
     {
       "topologyLevel": {
@@ -493,16 +497,24 @@
     "type": {
       "key": "rectified"
     },
-    "axisDimensionsProperties": [],
+    "axesDimensionProperties": [
+      {
+        "name": {
+          "key": "6"
+        },
+        "size": 6,
+        "resolution": 3
+      }
+    ],
     "transformationParameterAvailability": true,
-    "numberOfDimenstions": 3,
+    "numberOfDimensions": 3,
     "cellGeometry": {
       "key": "2"
     },
     "georectified": {
       "checkPointAvailability": true,
-      "checkPointDescription": "KT Beschreibung",
-      "cornerPoints": "4",
+      "checkPointDescription": "ctrl description",
+      "cornerPoints": "2",
       "pointInPixel": {
         "key": "2"
       }

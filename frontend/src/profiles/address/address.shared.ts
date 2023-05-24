@@ -115,7 +115,7 @@ export abstract class AddressShared extends BaseDoctype {
             model.inheritAddress,
           fieldGroup: [
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
@@ -126,7 +126,7 @@ export abstract class AddressShared extends BaseDoctype {
               ],
             },
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
@@ -142,7 +142,7 @@ export abstract class AddressShared extends BaseDoctype {
               ],
             },
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("zip-po-box", null, {
                   fieldLabel: "PLZ (Postfach)",
@@ -191,7 +191,7 @@ export abstract class AddressShared extends BaseDoctype {
     return options.hideAdministrativeArea
       ? country
       : {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "flex-row",
           fieldGroup: [administrativeArea, country],
         };
   }

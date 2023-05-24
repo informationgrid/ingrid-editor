@@ -185,7 +185,7 @@ export class McloudDoctype extends BaseDoctype {
             externalLabel: "Zeitbezug der Ressource",
           },
           fieldArray: {
-            fieldGroupClassName: "display-flex",
+            fieldGroupClassName: "flex-row",
             fieldGroup: [
               this.addDatepicker("date", null, {
                 fieldLabel: "Datum",

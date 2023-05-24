@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import {
   MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatAutocompleteModule,
@@ -89,6 +88,7 @@ import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordina
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 import { TranslocoModule } from "@ngneat/transloco";
+import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -100,7 +100,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatInputModule,
     ReactiveFormsModule,
     FormsModule,
-    FlexLayoutModule,
     MatDialogModule,
     MatButtonModule,
     MatAutocompleteModule,
@@ -177,7 +176,15 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "updateGetCapabilities",
           component: UpdateGetCapabilitiesComponent,
         },
+        {
+          name: "previewImage",
+          component: PreviewImageComponent,
+        },
         /* FOR PREVIEW */
+        {
+          name: "inputPrint",
+          component: PrintTypeComponent,
+        },
         {
           name: "textareaPrint",
           component: PrintTypeComponent,
@@ -204,6 +211,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         },
         {
           name: "autocompletePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "previewImagePrint",
           component: PrintTypeComponent,
         },
       ],

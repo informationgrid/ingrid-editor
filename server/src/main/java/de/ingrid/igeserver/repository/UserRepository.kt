@@ -1,14 +1,13 @@
 package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement caching
-    @Cacheable(value = ["user"])
+//    @Cacheable(value = ["user"])
     fun findByUserId(userId: String): UserInfo?
 
     @Query("SELECT u.userId FROM UserInfo u")

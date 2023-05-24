@@ -53,7 +53,12 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = ["_type", "title", "_modified", "settings"];
+  displayedColumns: string[] = [
+    "_type",
+    "title",
+    "_contentModified",
+    "settings",
+  ];
   columnsMap: SelectOptionUi[];
   showSaveButton: boolean;
 

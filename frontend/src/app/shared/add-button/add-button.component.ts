@@ -9,6 +9,7 @@ export class AddButtonComponent implements OnInit {
   @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";
   @Input() showRequiredError = false;
   @Input() showLabel = true;
+  @Input() buttonTitle = "Hinzufügen";
   @Input() set options(value: any[]) {
     if (value) this._options = value;
   }

@@ -3,7 +3,7 @@
     [submitDisabled]="form.invalid"
     (submit)="submit()"
 >
-    <form [formGroup]="form" fxLayout="column">
+    <form class="flex-col" [formGroup]="form">
         <mat-checkbox
             style="padding-bottom: 24px"
             formControlName="isInspire"

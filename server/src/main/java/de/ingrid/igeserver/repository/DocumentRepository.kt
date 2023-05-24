@@ -42,7 +42,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
      * an author does not have access to.
      */
     @Modifying
-    @PreAuthorize("hasAnyAuthority('cat-admin', 'ROLE_ige-super-admin')")
+    @PreAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin')")
     @Query(
         value = """
         UPDATE document

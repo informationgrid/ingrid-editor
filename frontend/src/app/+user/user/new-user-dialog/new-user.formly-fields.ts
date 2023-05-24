@@ -45,7 +45,7 @@ export const getNewUserFormFields = (
       },
       fieldGroup: [
         {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "flex-row",
           fieldGroup: [
             {
               key: "firstName",

@@ -31,4 +31,9 @@ abstract class InGridBaseType : EntityType() {
         return replaceUuidWithReferenceData(doc, "pointOfContact", options)
     }
 
+    override fun getUploads(doc: Document): List<String> {
+        return doc.data.get("graphicOverviews")?.let {
+            getUploadsFromFileList(it, "fileName")
+        } ?: emptyList()
+    }
 }

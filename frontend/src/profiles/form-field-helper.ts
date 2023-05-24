@@ -36,6 +36,7 @@ export interface RepeatOptions extends Options {
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
+  addButtonTitle?: string;
 }
 
 export interface RepeatListOptions extends Options {
@@ -128,7 +129,7 @@ export class FormFieldHelper {
       key: id,
       id: options?.id,
       className: options?.className,
-      fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
       wrappers: options?.wrappers ?? ["panel"],
       props: {
         externalLabel: label,
@@ -318,9 +319,10 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
+        addButtonTitle: options?.addButtonTitle,
       },
       fieldArray: {
-        fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+        fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
         fieldGroup: options?.fields,
       },
       expressions: expressions,
@@ -425,6 +427,7 @@ export class FormFieldHelper {
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
+        contextHelpId: options?.contextHelpId,
       },
       expressions: expressions,
       hooks: options?.hooks,
@@ -457,6 +460,20 @@ export class FormFieldHelper {
       },
       validators: options?.validators,
       expressions: expressions,
+    };
+  }
+
+  addPreviewImage(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "previewImage",
+      wrappers: options?.wrappers ?? ["panel"],
+      expressions: expressions,
+      props: {
+        required: options?.required,
+        externalLabel: label,
+      },
     };
   }
 

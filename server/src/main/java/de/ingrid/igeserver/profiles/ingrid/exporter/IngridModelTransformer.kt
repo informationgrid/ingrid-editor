@@ -155,10 +155,17 @@ open class IngridModelTransformer constructor(
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
-        val epsgLink =
-            if (referenceSystem.startsWith("EPSG") == true)
-                "http://www.opengis.net/def/crs/EPSG/0/" + referenceSystem.substring(5, referenceSystem.indexOf(":"))
-            else null
+        val epsgLink = when {
+            // string like "EPSG:25832"
+            referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5)}"
+            // string like "EPSG 3857: WGS 84 / Pseudo-Mercator"
+            referenceSystem.startsWith("EPSG") -> {
+                val endIndex = referenceSystem.indexOf(":")
+                if (endIndex > 0) "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5, endIndex)}" else null
+            }
+            // could not match string
+            else -> null
+        }
         CharacterStringModel(referenceSystem, epsgLink)
     }
     open val description = data.description
@@ -271,7 +278,7 @@ open class IngridModelTransformer constructor(
 
 
     val parentIdentifier: String? = data.parentIdentifier
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._modified)
+    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact =
         data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
 

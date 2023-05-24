@@ -8,16 +8,16 @@
       "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isOpenData": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireIdentified": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireConform": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "subType": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -65,10 +65,10 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",
@@ -210,7 +210,10 @@
                       "additionalProperties": false,
                       "properties": {
                         "description": {
-                          "type": "string"
+                          "type": "array",
+                          "items": {
+                            "$ref": "../../general.schema.json#/definitions/KeyValue"
+                          }
                         }
                       }
                     },
@@ -304,10 +307,17 @@
               "$ref": "refs/general.schema.json#/definitions/resolution"
             },
             "explanation": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "couplingType": {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
+              "anyOf": [
+                {
+                  "$ref": "../../general.schema.json#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "classification": {
               "type": "array",
@@ -319,13 +329,13 @@
               "$ref": "#/definitions/coupledResources"
             },
             "systemEnvironment": {
-              "type": "string"
+              "type": ["null", "string"]
             },
             "hasAccessConstraints": {
-              "type": "boolean"
+              "type": ["null", "boolean"]
             },
             "implementationHistory": {
-              "type": "string"
+              "type": ["null", "string"]
             }
           }
         },

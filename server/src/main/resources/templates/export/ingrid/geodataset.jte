@@ -1,6 +1,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 @import gg.jte.support.ForSupport
-@param GeodatasetMapper model 
+@param GeodatasetMapper model
 
 {
     @template.ingrid.base(model = model)
@@ -52,7 +52,7 @@
             "source": {
                 "descriptions": @template.ingrid.partial.key-values(list = model.getSourceDescriptions()),
                 "processStep": {
-                    "description": "${model.getProcessStep()}"
+                    "description":  @template.ingrid.partial.key-values(list = model.getProcessStep())
                 }
             }
        }
@@ -85,35 +85,47 @@
         @endfor
         ]
     },
-    "isInspireConform": true,
+<%--    "isInspireConform": ${model.isInspireConform()},--%>
     "vectorSpatialRepresentation": [
+    @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {
-            "topologyLevel": {
-                "key": "4"
-            },
-            "geometricObjectType": {
-                "key": "5"
-            },
-            "geometricObjectCount": 8
-        }
+        "topologyLevel": @template.ingrid.partial.key-value(item = vector.get().getTopologyLevel()),
+        "geometricObjectType": @template.ingrid.partial.key-value(item = vector.get().getObjectType()),
+        "geometricObjectCount": ${vector.get().getObjectCount()}
+        }@if (!vector.isLast()),@endif
+    @endfor
     ],
+    !{var gridSpatial = model.getGridSpatialRepresentation();}
+    @if (gridSpatial != null)
     "gridSpatialRepresentation": {
-        "type": {
-            "key": "rectified"
-        },
-        "axisDimensionsProperties": [],
-        "transformationParameterAvailability": true,
-        "numberOfDimenstions": 3,
-        "cellGeometry": {
-            "key": "2"
-        },
-        "georectified": {
-            "checkPointAvailability": true,
-            "checkPointDescription": "KT Beschreibung",
-            "cornerPoints": "4",
-            "pointInPixel": {
-                "key": "2"
-            }
+        "type": @template.ingrid.partial.key-value(item = gridSpatial.getType()),
+        "axesDimensionProperties": [
+        @for(var property : ForSupport.of(gridSpatial.getAxesDimensionProperties()))
+            {
+            "name": @template.ingrid.partial.key-value(item = property.get().getName()),
+            "size": ${property.get().getSize()},
+            "resolution": ${property.get().getResolution()}
+            }@if (!property.isLast()),@endif
+        @endfor
+        ],
+        "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
+        "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
+        "cellGeometry": @template.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
+        @if (gridSpatial.getType().getKey().equals("rectified"))
+        , "georectified": {
+            "checkPointAvailability": ${gridSpatial.getCheckPointAvailability()},
+            "checkPointDescription": "${gridSpatial.getCheckPointDescription()}",
+            "cornerPoints": "${gridSpatial.getCornerPoints()}",
+            "pointInPixel": @template.ingrid.partial.key-value(item = gridSpatial.getPointInPixel())
         }
+        @endif
+        @if (gridSpatial.getType().getKey().equals("referenced"))
+        , "georeferenceable": {
+            "orientationParameterAvailability": ${gridSpatial.getOrientationParameterAvailability()},
+            "controlPointAvaliability": ${gridSpatial.getControlPointAvailability()},
+            "parameters": "${gridSpatial.getGeoRefParameters()}"
+        }
+        @endif
     }
+    @endif
 }

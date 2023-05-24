@@ -265,6 +265,7 @@ export class TableTypeComponent
         data: {
           currentItems: this.dataSource.data,
           uploadFieldKey: this.getUploadFieldKey(),
+          hasExtractZipOption: true,
         },
       })
       .afterClosed()

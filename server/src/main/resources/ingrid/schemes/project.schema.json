@@ -8,13 +8,13 @@
       "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isOpenData": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "isInspireIdentified": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "_uuid": {
           "type": "string",
@@ -30,13 +30,13 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "manager": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "participants": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "serviceType": {
           "anyOf": [
@@ -79,7 +79,7 @@
           }
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",

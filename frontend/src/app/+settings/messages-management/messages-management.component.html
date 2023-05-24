@@ -4,7 +4,7 @@
         verwaltet werden
     </div>
 
-    <div main-header fxFlex fxLayoutAlign="start" fxLayout="column">
+    <div main-header class="flex-col justify-content-start align-items-stretch">
         <ige-add-button
             buttonType="flat"
             data-cy="open-add-notification"
@@ -13,29 +13,25 @@
     </div>
 
     <div main-content>
-        <div>
-            <ige-card-box fxFlex label="Für alle Kataloge">
-                <ng-container
-                    [ngTemplateOutlet]="messageContent"
-                    [ngTemplateOutletContext]="{
-                        messages: dataSourceAllCatalog
-                    }"
-                >
-                </ng-container>
-            </ige-card-box>
-        </div>
+        <ige-card-box label="Für alle Kataloge">
+            <ng-container
+                [ngTemplateOutlet]="messageContent"
+                [ngTemplateOutletContext]="{
+                    messages: dataSourceAllCatalog
+                }"
+            >
+            </ng-container>
+        </ige-card-box>
 
-        <div>
-            <ige-card-box fxFlex label="Für diesen Katalog">
-                <ng-container
-                    [ngTemplateOutlet]="messageContent"
-                    [ngTemplateOutletContext]="{
-                        messages: dataSourceCurrentCatalog
-                    }"
-                >
-                </ng-container>
-            </ige-card-box>
-        </div>
+        <ige-card-box label="Für diesen Katalog">
+            <ng-container
+                [ngTemplateOutlet]="messageContent"
+                [ngTemplateOutletContext]="{
+                    messages: dataSourceCurrentCatalog
+                }"
+            >
+            </ng-container>
+        </ige-card-box>
     </div>
 
     <ng-template #messageContent let-messages="messages">

@@ -45,7 +45,7 @@ export const getUserFormFields = (
       },
       fieldGroup: [
         {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "flex-row",
           fieldGroup: [
             {
               key: "firstName",
@@ -121,12 +121,14 @@ export const getUserFormFields = (
           "Bitte weisen Sie dem Benutzer mindestens eine Gruppe zu.",
         externalLabel: "Gruppen",
         placeholder: "Gruppe wählen...",
-        options: groups.map((group) => {
-          return {
-            label: group.name,
-            value: group.id + "",
-          };
-        }),
+        options: groups
+          .map((group) => {
+            return {
+              label: group.name,
+              value: group.id + "",
+            };
+          })
+          .sort((a, b) => a.label.localeCompare(b.label)),
         onItemClick: groupClickCallback,
         noDrag: true,
         elementIcon: "group",

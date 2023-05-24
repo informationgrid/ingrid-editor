@@ -25,7 +25,7 @@
             [refreshView]="facetViewRefresher"
         ></ige-facets>
     </div>
-    <div main-content fxLayout="column" fxLayoutGap="36px">
+    <div main-content class="flex-col gap-36">
         <div class="chart-container">
             <ige-chart
                 [data]="chartDataPublished"
@@ -33,7 +33,7 @@
             ></ige-chart>
         </div>
         <ige-card-box
-            fxFlex
+            class="flex-1"
             label="{{
                 form.get('type').value === 'selectAddresses'
                     ? 'Adressen'

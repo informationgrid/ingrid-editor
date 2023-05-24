@@ -1,12 +1,12 @@
 <div class="navigation-bar-wrapper">
-    <div class="navigation-bar">
+    <div class="navigation-bar flex-row">
         <ige-document-icon
             [doc]="model"
             [explicitTooltip]="model.title"
         ></ige-document-icon>
 
         <ige-header-navigation
-            fxFlex
+            class="flex-1"
             [sections]="sections ?? []"
         ></ige-header-navigation>
     </div>

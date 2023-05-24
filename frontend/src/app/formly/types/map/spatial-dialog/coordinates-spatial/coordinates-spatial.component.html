@@ -1,6 +1,6 @@
-<div [formGroup]="form" class="display-flex gap wrapper">
+<div [formGroup]="form" class="wrapper flex-row gap-6">
     <mat-form-field appearance="outline">
-        <mat-label>Längengrad (Süd)</mat-label>
+        <mat-label>Breitengrad (Süd)</mat-label>
         <input
             formControlName="lat1"
             type="number"
@@ -11,7 +11,7 @@
         />
     </mat-form-field>
     <mat-form-field appearance="outline">
-        <mat-label>Breitengrad (West)</mat-label>
+        <mat-label>Längengrad (West)</mat-label>
         <input
             formControlName="lon1"
             type="number"
@@ -24,7 +24,7 @@
     <span>/</span>
 
     <mat-form-field appearance="outline">
-        <mat-label>Längengrad (Nord)</mat-label>
+        <mat-label>Breitengrad (Nord)</mat-label>
         <input
             formControlName="lat2"
             type="number"
@@ -34,7 +34,7 @@
         />
     </mat-form-field>
     <mat-form-field appearance="outline">
-        <mat-label>Breitengrad (Ost)</mat-label>
+        <mat-label>Längengrad (Ost)</mat-label>
         <input
             formControlName="lon2"
             type="number"

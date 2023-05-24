@@ -92,7 +92,7 @@
           }
         },
         "description": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "spatialSystems": {
           "type": "array",
@@ -105,13 +105,20 @@
           "additionalProperties": false,
           "properties": {
             "Datum": {
-              "$ref": "#/definitions/KeyValue"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "maximumValue": {
-              "type": "number"
+              "type": ["null", "number"]
             },
             "minimumValue": {
-              "type": "number"
+              "type": ["null", "number"]
             },
             "unitOfMeasure": {
               "anyOf": [
@@ -193,13 +200,20 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "$ref": "#/definitions/KeyValue"
+            "anyOf": [
+              {
+                "$ref": "#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "mediumNote": {
-            "type": "string"
+            "type": ["null", "string"]
           },
           "transferSize": {
-            "type": ["number", "null"]
+            "type": ["null", "number"]
           }
         }
       }
@@ -334,19 +348,19 @@
       }
     },
     "explanation": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "methodText": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "systemEnvironment": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "baseDataText": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "orderInfo": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "temporal": {
       "type": "object",

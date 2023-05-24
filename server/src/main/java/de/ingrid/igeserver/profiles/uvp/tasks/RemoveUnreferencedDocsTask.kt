@@ -1,18 +1,18 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import de.ingrid.mdek.upload.storage.impl.Scope
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import javax.persistence.EntityManager
 
 @Profile("uvp")
 @Component
@@ -36,12 +36,16 @@ class RemoveUnreferencedDocsTask(
         val docs = queryDocs(sqlStepsWithDrafts, "step")
         val negativeDocs = queryDocs(sqlNegativeDecisionDocsWithDraft, "negativeDocs")
 
-        val uploads = docs.map { DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(it[2] as JsonNode)) }
+        val uploads = docs.map {
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(data))
+        }
         val uploadsNegative = negativeDocs.map {
+            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
             DocUrls(
                 it[1] as String,
                 it[0] as String,
-                getUrlsFromJsonFieldTable(it[2] as JsonNode, "uvpNegativeDecisionDocs")
+                getUrlsFromJsonFieldTable(data, "uvpNegativeDecisionDocs")
             )
         }
         val allUploads = uploads + uploadsNegative
@@ -89,7 +93,7 @@ class RemoveUnreferencedDocsTask(
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
+            .addScalar(jsonbField)
             .resultList as List<Array<Any>>
     }
 

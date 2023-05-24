@@ -21,6 +21,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
@@ -32,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.time.ZoneOffset
 import java.util.*
-import javax.persistence.EntityManager
 
 @Service
 class DocumentService @Autowired constructor(
@@ -127,7 +127,7 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
             entityManager.detach(doc)
-            
+
             // always add wrapper id which is needed when saving documents for authorization check
             doc.wrapperId = id
 
@@ -156,7 +156,7 @@ class DocumentService @Autowired constructor(
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
-            
+
             entityManager.detach(doc)
             // add metadata
             doc.hasWritePermission = wrapper.hasWritePermission
@@ -316,7 +316,7 @@ class DocumentService @Autowired constructor(
         // since we're within a transaction the expandInternalReferences-function would modify the db-document
         docRepo.flush()
         entityManager.detach(newDocument)
-        
+
         // run post-create pipe(s)
         val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
@@ -364,8 +364,10 @@ class DocumentService @Autowired constructor(
             FIELD_MODIFIED_USER_EXISTS,
             FIELD_CREATED,
             FIELD_MODIFIED,
+            FIELD_CONTENT_MODIFIED,
             FIELD_CREATED_BY,
             FIELD_MODIFIED_BY,
+            FIELD_CONTENT_MODIFIED_BY,
             FIELD_UUID,
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
@@ -401,6 +403,9 @@ class DocumentService @Autowired constructor(
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
             .forEach { wrapper ->
                 try {
+                    // move last published to archive if any
+                    moveLastPublishedDocumentToArchive(catalogId, wrapper)
+
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
                     latestDoc.document.state = DOCUMENT_STATE.PUBLISHED
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
@@ -409,7 +414,7 @@ class DocumentService @Autowired constructor(
                     val docType = getDocumentType(updatedWrapper.type)
                     runPostUpdatePipes(docType, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
-                    log.error("Error during publishing pending document: ${wrapper.id}", e)
+                    log.error("Error during publishing pending document: ${wrapper.uuid}", e)
                 }
             }
 
@@ -448,7 +453,7 @@ class DocumentService @Autowired constructor(
             // since we're within a transaction the expandInternalReferences-function would modify the db-document
             docRepo.flush()
             entityManager.detach(updatedDoc)
-            
+
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -462,11 +467,15 @@ class DocumentService @Autowired constructor(
         }
     }
 
-    private fun handleUpdateOnPublishedOnlyDocument(docData: DocumentData, nextStateIsDraft: Boolean = true) {
+    private fun handleUpdateOnPublishedOnlyDocument(
+        docData: DocumentData,
+        nextStateIsDraft: Boolean = true,
+        delayedPublication: Boolean = false
+    ) {
 
         if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
             docData.document.isLatest = false
-            if (!nextStateIsDraft) docData.document.state = DOCUMENT_STATE.ARCHIVED
+            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
             docRepo.save(docData.document)
 
             // prepare new document
@@ -477,15 +486,19 @@ class DocumentService @Autowired constructor(
             docData.document.state = if (nextStateIsDraft)
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
             else DOCUMENT_STATE.PUBLISHED
-        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft) {
-
-            val lastPublishedDoc =
-                getLastPublishedDocument(docData.document.catalog!!.identifier, docData.document.uuid)
-            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
-            lastPublishedDoc.wrapperId = docData.wrapper.id
-            docRepo.save(lastPublishedDoc)
+        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
+            moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
         }
         docData.document.modified = dateService.now()
+    }
+
+    private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
+        try {
+            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
+            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            lastPublishedDoc.wrapperId = wrapper.id
+            docRepo.save(lastPublishedDoc)
+        } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */ }
     }
 
     @Transactional(noRollbackFor = [PostSaveException::class])
@@ -503,7 +516,7 @@ class DocumentService @Autowired constructor(
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
 
-        handleUpdateOnPublishedOnlyDocument(docData, false)
+        handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
         docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
 
@@ -534,7 +547,7 @@ class DocumentService @Autowired constructor(
 
             val postWrapper =
                 runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
-            
+
             return DocumentData(
                 postWrapper,
                 expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
@@ -549,6 +562,7 @@ class DocumentService @Autowired constructor(
     }
 
     private fun prepareDocBeforeUpdate(newDocument: Document, dbDocument: Document, principal: Principal): Document {
+        val actualUser = catalogService.getDbUserFromPrincipal(principal)
         with(dbDocument) {
             title = newDocument.title
             data = newDocument.data
@@ -559,7 +573,9 @@ class DocumentService @Autowired constructor(
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
-            modifiedByUser = catalogService.getDbUserFromPrincipal(principal)
+            contentModifiedByUser = actualUser ?: contentModifiedByUser
+            contentmodifiedby = if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else contentmodifiedby
+            contentmodified = if (actualUser != null) dateService.now() else contentmodified
         }
         return dbDocument
     }
@@ -696,7 +712,7 @@ class DocumentService @Autowired constructor(
     fun recoverDocument(wrapperId: Int) {
         docWrapperRepo.undeleteDocument(wrapperId)
     }
-    
+
     fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
 
         val docData = getDocumentFromCatalog(catalogId, id)

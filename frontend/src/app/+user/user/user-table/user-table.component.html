@@ -1,5 +1,12 @@
-<table mat-table [dataSource]="dataSource" matSort class="width-100">
-    <!-- Role Column -->
+<table
+    mat-table
+    [dataSource]="dataSource"
+    class="width-100"
+    matSort
+    [matSortActive]="defaultSort"
+    matSortDirection="asc"
+>
+    <!-- role icon -->
     <ng-container matColumnDef="role-icon" class="thin-column">
         <th
             class="thin-column"
@@ -11,6 +18,16 @@
         </th>
         <td class="thin-column" mat-cell *matCellDef="let element">
             <mat-icon [svgIcon]="userService.roleIcon[element.role]"></mat-icon>
+        </td>
+    </ng-container>
+
+    <!-- role text -->
+    <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rolle</th>
+        <td mat-cell *matCellDef="let element">
+            <ng-container *transloco="let t">
+                {{ t("roles." + element.role) }}
+            </ng-container>
         </td>
     </ng-container>
 
@@ -28,6 +45,34 @@
         <td mat-cell *matCellDef="let element">
             <div>{{ element.firstName + " " + element.lastName }}</div>
             <div class="td-subtitle">{{ element.email }}</div>
+        </td>
+    </ng-container>
+
+    <!-- Permission -->
+    <ng-container matColumnDef="permission">
+        <th
+            class="thin-column"
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+        >
+            Berechtigung
+        </th>
+        <td
+            mat-cell
+            *matCellDef="let element"
+            [ngSwitch]="element.permission"
+            style="text-align: center"
+        >
+            <mat-icon *ngSwitchCase="PERMISSION_LEVEL.READ"
+                >visibility
+            </mat-icon>
+            <mat-icon *ngSwitchCase="PERMISSION_LEVEL.WRITE">edit</mat-icon>
+            <mat-icon
+                *ngSwitchCase="PERMISSION_LEVEL.WRITE_EXCEPT_PARENT"
+                class="wide-icon-26px"
+                svgIcon="edit-lock-folder"
+            ></mat-icon>
         </td>
     </ng-container>
 
@@ -72,25 +117,30 @@
         [class.readonly]="row.readOnly"
     ></tr>
 </table>
+
 <div *ngIf="isLoading" class="table-spinner">
-    <mat-spinner> </mat-spinner>
+    <mat-spinner></mat-spinner>
 </div>
+
 <div class="table-footer">
     <button
-        *ngIf="dataSource.data?.length"
+        *ngIf="canExport && dataSource.data?.length"
         mat-flat-button
         (click)="exportTable()"
     >
         CSV
     </button>
+    <div class="flex-1"></div>
     <mat-paginator
-        [class.hide]="simple && dataSource.data?.length < 10"
+        *ngIf="tableType != 'simple' || dataSource.data?.length > 10"
         [pageSize]="10"
         [hidePageSize]="true"
         showFirstLastButtons
     ></mat-paginator>
 </div>
-<div *ngIf="!simple" class="legend">
+
+<!-- role legends -->
+<div *ngIf="tableType == 'default'" class="legend">
     <mat-icon svgIcon="author"></mat-icon>
     <span> Autor,</span>
     <mat-icon svgIcon="meta-admin"></mat-icon>
@@ -98,3 +148,9 @@
     <mat-icon svgIcon="catalog-admin"></mat-icon>
     <span> Katalog-Admin</span>
 </div>
+
+<!-- permission legends-->
+<permission-legends
+    *ngIf="tableType == 'permission'"
+    [showSubdirectoryLegend]="false"
+></permission-legends>

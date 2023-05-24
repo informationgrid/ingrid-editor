@@ -26,7 +26,7 @@
         "hoursOfService": ""
       },
       "type": {
-        "key": "7"
+        "key": "12"
       }
     },
     {
@@ -330,7 +330,9 @@
     ],
     "operations": [
       {
-        "name": "GetCapabilities",
+        "name": {
+          "key": "1"
+        },
         "description": "Eine URL für die getCapabilities",
         "methodCall": "https://my-getcapabilities"
       }

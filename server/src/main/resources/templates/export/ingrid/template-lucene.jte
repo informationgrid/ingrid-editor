@@ -22,7 +22,7 @@
     "y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
     "location":  $unsafe{page.getSpatialReferenceLocationNames()},
     "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
-    "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_modified())}",
+    "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
     "areaid": [],
     "partner": [
         "${partner}"
@@ -48,7 +48,7 @@
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_modified())}",
+    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)

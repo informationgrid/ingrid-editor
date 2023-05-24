@@ -1,0 +1,13 @@
+<div class="legend">
+    <ng-container *ngFor="let legend of legends; let isLast = last">
+        <!-- icon -->
+        <mat-icon *ngIf="legend.icon">{{ legend.icon }}</mat-icon>
+        <mat-icon
+            *ngIf="legend.svgIcon"
+            class="wide-icon-26px"
+            [svgIcon]="legend.svgIcon"
+        ></mat-icon>
+        <!-- text -->
+        <span>{{ isLast ? legend.text : legend.text + "," }}</span>
+    </ng-container>
+</div>

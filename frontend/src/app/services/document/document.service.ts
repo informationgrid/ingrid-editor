@@ -112,6 +112,31 @@ export class DocumentService {
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
       )
       .subscribe();
+
+    // only published
+    this.researchService
+      .search(
+        "",
+        {
+          type: "selectDocuments",
+          ignoreFolders: "exceptFolders",
+          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+        },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        },
+        ["selectOnlyPublished"]
+      )
+      .pipe(
+        map((result) => this.mapSearchResults(result)),
+        tap((docs) =>
+          this.sessionStore.update({ latestPublishedDocuments: docs.hits })
+        )
+      )
+      .subscribe();
   }
 
   findRecentAddresses(): void {
@@ -687,6 +712,7 @@ export class DocumentService {
         _parent: doc._parent ?? null,
         _type: doc._type,
         _modified: doc._modified,
+        _contentModified: doc._contentModified,
         _pendingDate: doc._pendingDate,
         _tags: doc._tags,
         hasWritePermission: doc.hasWritePermission ?? false,
@@ -899,7 +925,7 @@ export class DocumentService {
     );
   }
 
-  getUsersWithAccess(id: number): Observable<any> {
+  getUsersWithPermission(id: number): Observable<any> {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${id}/users`,
       null

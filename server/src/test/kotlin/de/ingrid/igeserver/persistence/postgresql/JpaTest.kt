@@ -10,13 +10,13 @@ import de.ingrid.igeserver.services.DOCUMENT_STATE
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 
 @Transactional
@@ -45,6 +45,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
@@ -98,6 +99,7 @@ class JpaTest : IntegrationTest() {
             data = addressJson as ObjectNode
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
@@ -153,6 +155,7 @@ class JpaTest : IntegrationTest() {
             data = address
             catalog = cat
             created = OffsetDateTime.now()
+            contentmodified = OffsetDateTime.now()
             state = DOCUMENT_STATE.DRAFT
         }
         em.persist(doc)
@@ -187,7 +190,7 @@ class JpaTest : IntegrationTest() {
         addressData.get("company").asText() shouldBe "LWL-Schulverwaltung Münster"
 
         val q2 =
-            em.createNativeQuery("SELECT * FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
+            em.createNativeQuery("SELECT d.* FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
                 .unwrap(NativeQuery::class.java)
                 .addEntity("doc", Document::class.java)
                 //.addJoin("c", "doc.catalog")

@@ -7,7 +7,8 @@
   "_created": "2023-03-21T14:51:23.039288+01:00",
   "_createdBy": "Max Muster",
   "_modified": "2023-03-21T15:14:01.985356+01:00",
-  "_modifiedBy": "Max Muster",
+  "_contentModified": "2023-03-21T15:14:01.985356+01:00",
+  "_contentModifiedBy": "Max Muster",
   "_version": 15,
   "data": {
     "isInspireIdentified": true,
@@ -37,8 +38,9 @@
           "_version": 4,
           "_created": "2023-03-21T14:50:32.112956+01:00",
           "_modified": "2023-03-21T14:51:11.38827+01:00",
+          "_contentModified": "2023-03-21T14:51:11.38827+01:00",
           "_createdBy": "Max Muster",
-          "_modifiedBy": "Max Muster",
+          "_contentModifiedBy": "Max Muster",
           "_state": "P",
           "_id": 2,
           "address": {

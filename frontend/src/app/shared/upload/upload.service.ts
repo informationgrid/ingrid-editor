@@ -112,7 +112,7 @@ export class UploadService {
     downloadLink.remove();
   }
 
-  private getFile(docUuid: string, uri: string): Observable<String> {
+  getFile(docUuid: string, uri: string): Observable<String> {
     return this.http.get(`${this.backendUrl}upload/${docUuid}/${uri}`, {
       responseType: "text",
     });

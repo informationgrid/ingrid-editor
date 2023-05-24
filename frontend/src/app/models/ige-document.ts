@@ -19,8 +19,11 @@ export class IgeDocument {
   // the creation date
   _created?: string;
 
-  // the last modified date
+  // the database object modification date
   _modified?: string;
+
+  // the content modification by an actual user date
+  _contentModified?: string;
 
   // the name of the creator
   _createdBy?: string;
@@ -32,7 +35,7 @@ export class IgeDocument {
   _modifierExists?: boolean;
 
   // the name of the last modifier
-  _modifiedBy?: string;
+  _contentModifiedBy?: string;
 
   // shows if the document has child documents
   _hasChildren?: boolean;

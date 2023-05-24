@@ -33,7 +33,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { ErrorDialogComponent } from "./dialogs/error/error-dialog.component";
 import { IgeError } from "./models/ige-error";
 import { FormsModule } from "@angular/forms";
@@ -87,6 +86,10 @@ import { Catalog } from "./+catalog/services/catalog.model";
 import { rxStompServiceFactory } from "./rx-stomp-service-factory";
 import { RxStompService } from "./rx-stomp.service";
 import { AddonsWrapperComponent } from "./formly/wrapper/addons/addons-wrapper.component";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatPaginatorModule } from "@angular/material/paginator";
 
 registerLocaleData(de);
 
@@ -230,8 +233,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     NgxFlowModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    // Flex layout
-    FlexLayoutModule,
     FormlyModule.forRoot({
       types: [
         {
@@ -273,6 +274,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     MatInputModule,
     MatCardModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
     // IGE-Modules
     routing,
     FormsModule,
@@ -337,6 +342,7 @@ export function animationExtension(field: FormlyFieldConfig) {
         panelClass: "mat-dialog-override",
         autoFocus: "dialog",
         hasBackdrop: true,
+        maxWidth: "min(950px, 90vw)",
       },
     },
     {

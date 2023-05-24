@@ -529,25 +529,84 @@ ige-one-column-wrapper formly-group {
   }*/
 }
 
-/* ngx-formly layout classes */
-.display-flex {
+// migration css from [flex-layout]
+.flex-col {
   display: flex;
-  flex: 1;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+}
+
+.flex-fill {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
 }
 
 .align-items-center {
   align-items: center;
 }
 
-.gap {
-  gap: 8px;
+// default cross axis
+.align-items-stretch {
+  align-items: stretch;
+  align-content: stretch;
 }
 
-.flex-column {
-  flex-direction: column;
+.align-items-end {
+  align-items: flex-end;
+  align-content: flex-end;
 }
 
-//.ige-formly-wrapper {
+.align-self-end {
+  align-self: flex-end;
+}
+
+.justify-content-space-between {
+  justify-content: space-between;
+}
+
+.justify-content-start {
+  justify-content: start;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.gap-6 {
+  gap: 6px;
+}
+
+.gap-12 {
+  gap: 12px;
+}
+
+.gap-24 {
+  gap: 24px;
+}
+
+.gap-36 {
+  gap: 36px;
+}
 
 .flex-1 {
   flex: 1;
@@ -556,21 +615,12 @@ ige-one-column-wrapper formly-group {
 .flex-2 {
   flex: 2;
 }
-
 .flex-3 {
   flex: 3;
 }
 
-.flex-4 {
-  flex: 4;
-}
-
-.flex-5 {
-  flex: 5;
-}
-
-.flex-6 {
-  flex: 6;
+.flex-grow {
+  flex: 1 1 100%;
 }
 
 .right-align input {

@@ -15,7 +15,7 @@
         "operations": [
         @for(var operation : ForSupport.of(model.getOperations()))
             {
-            "name": "${operation.get().getName()}",
+            "name": @template.ingrid.partial.key-value(item = operation.get().getName()),
             "description": "${operation.get().getDescription()}",
             "methodCall": "${operation.get().getMethodCall()}"
             }@if (!operation.isLast()),@endif

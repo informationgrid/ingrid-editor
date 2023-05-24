@@ -1,0 +1,57 @@
+<div class="image-container flex-row gap-12">
+    <mat-card *ngFor="let field of field.fieldGroup; let i = index">
+        <!-- when switching between same datasets, the model might not be initialized for a short time -->
+        <ng-container *ngIf="model">
+            <div class="content">
+                <img
+                    [src]="imageLinks[model[i]?.fileName?.uri]"
+                    [alt]="model[i]?.fileName?.uri"
+                    height="250"
+                />
+                <button
+                    *ngIf="!formControl.disabled"
+                    type="button"
+                    mat-icon-button
+                    class="btn-edit"
+                    matTooltip="Bearbeiten"
+                    (click)="edit(i)"
+                >
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                    *ngIf="!formControl.disabled"
+                    type="button"
+                    mat-icon-button
+                    class="btn-close"
+                    matTooltip="Entfernen"
+                    (click)="remove(i)"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <mat-card-footer *ngIf="model[i]?.fileDescription">
+                <div>{{ model[i]?.fileDescription }}</div>
+            </mat-card-footer>
+        </ng-container>
+    </mat-card>
+</div>
+
+<div *ngIf="!formControl.disabled" class="button-wrapper">
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="showUploadFilesDialog()"
+    >
+        Dateien hochladen
+    </button>
+    oder
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="showAddLinkDialog()"
+    >
+        Link angeben
+    </button>
+</div>

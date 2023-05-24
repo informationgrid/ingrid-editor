@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { RouterModule } from "@angular/router";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -38,7 +37,6 @@ import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler
   imports: [
     CommonModule,
     FormsModule,
-    FlexLayoutModule,
     CodelistPresenterModule,
     MatSnackBarModule,
     MatCardModule,

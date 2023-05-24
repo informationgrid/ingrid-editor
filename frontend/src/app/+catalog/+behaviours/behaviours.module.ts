@@ -18,6 +18,7 @@ import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.componen
 import { PublicationTypeDialog } from "./system/tags/publication-type/publication-type.dialog";
 import { MatRadioModule } from "@angular/material/radio";
 import { DialogTemplateModule } from "../../shared/dialog-template/dialog-template.module";
+import { PermissionsDialogComponent } from "../../+user/permissions/permissions-dialog.component";
 
 @NgModule({
   imports: [
@@ -40,6 +41,8 @@ import { DialogTemplateModule } from "../../shared/dialog-template/dialog-templa
     MatRadioModule,
     DialogTemplateModule,
     /*to get form behaviours*/
+    MatSlideToggleModule /*to get form behaviours*/,
+    PermissionsDialogComponent,
   ],
   declarations: [
     BehavioursComponent,

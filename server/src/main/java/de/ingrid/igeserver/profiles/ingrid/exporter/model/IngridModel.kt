@@ -17,4 +17,6 @@ data class IngridModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val _contentModified: OffsetDateTime,
 )

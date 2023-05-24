@@ -110,6 +110,13 @@ abstract class EntityType {
         return emptyList()
     }
 
+    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
+        return fileList
+            ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
+            ?.map { it.get(field).get("uri").textValue() }
+            ?: emptyList()
+    }
+
     fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         val document = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)

@@ -1,12 +1,11 @@
 package de.ingrid.igeserver.utils
 
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.api.messaging.UrlReport
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.persistence.EntityManager
 
 abstract class ReferenceHandler(val entityManager: EntityManager) {
 
@@ -51,7 +50,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         jsonbField: String,
         filterByDocId: Int?,
         catalogId: String? = null
-    ): List<Array<Any>> {
+    ): List<Array<Any?>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
 
@@ -59,10 +58,10 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
+            .addScalar(jsonbField)
             .addScalar("title")
             .addScalar("type")
-            .resultList as List<Array<Any>>
+            .resultList as List<Array<Any?>>
     }
 
     private val replaceUrlSql = """

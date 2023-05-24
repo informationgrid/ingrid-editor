@@ -77,16 +77,13 @@ VALUES (1001, 100, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'AddressDoc', 'Test D
 
 
 INSERT INTO document_wrapper
-VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'UvpApprovalProcedureDoc', 'data',
-        NULL, null, 0);
+VALUES (2000, 100, NULL, '5d2ff598-45fd-4516-b843-0b1787bd8264', 'UvpApprovalProcedureDoc', 'data', 0);
 INSERT INTO document_wrapper
-VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'UvpApprovalProcedureDoc', 'data',
-        NULL, null, 0);
+VALUES (2010, 100, 2000, '8f891e4e-161e-4d2c-6869-03f02ab352dc', 'UvpApprovalProcedureDoc', 'data', 0);
 
 
 INSERT INTO document_wrapper
-VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'UvpAddressDoc', 'address',
-        null, null, 0);
+VALUES (2002, 100, 2000, '4e91e8f8-1e16-c4d2-6689-02adc03fb352', 'UvpAddressDoc', 'address', 0);
 
 -- INSERT INTO document_wrapper
 -- VALUES (2003, 100, NULL, '', 'UvpAddressDoc', 'data', null, null, 0);

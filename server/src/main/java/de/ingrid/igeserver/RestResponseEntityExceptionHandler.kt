@@ -8,6 +8,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.lang.Nullable
 import org.springframework.security.access.AccessDeniedException
@@ -82,7 +83,7 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      * Overrides for exceptions that can be converted to application specific exceptions
      */
     override fun handleMissingServletRequestParameter(
-            ex: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+        ex: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any>? {
         val igeException = InvalidParameterException.withInvalidParameters(ex.parameterName)
         return handleIgeException(igeException, request)
     }
@@ -91,10 +92,11 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      * Override of parent handler for adding error body content
      */
     override fun handleExceptionInternal(
-            ex: java.lang.Exception, @Nullable body: Any?, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+            ex: java.lang.Exception, @Nullable body: Any?, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any> {
         return if (ex !is IgeException) {
             // wrap into server exception
-            val igeException = IgeException(status, status.name, status.reasonPhrase, null, ex)
+            val httpStatus = HttpStatus.valueOf(status.value())
+            val igeException = IgeException(httpStatus, httpStatus.name, httpStatus.reasonPhrase, null, ex)
             handleIgeException(igeException, request)
         }
         else {

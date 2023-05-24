@@ -106,6 +106,18 @@ export class FormularService {
         });
     }
 
+    if (this.isUserPrivileged()) {
+      moreOptions.push({
+        title: "Berechtigungen anzeigen",
+        name: "show-document-permissions",
+        action: () =>
+          this.docEventsService.sendEvent({
+            type: "SHOW_DOCUMENT_PERMISSIONS",
+            data: { id: doc._id },
+          }),
+      });
+    }
+
     return moreOptions;
   }
 

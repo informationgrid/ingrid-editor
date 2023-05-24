@@ -233,15 +233,15 @@
                     <gco:CharacterString>${page.getLineageStatement()}</gco:CharacterString>
                 </gmd:statement>
                 @endif
-                @if( page.getLineageProcessStepDescription() != null)
+                @for( String processDescription : page.getLineageProcessStepDescriptions())
                 <gmd:processStep>
                     <gmd:LI_ProcessStep>
                         <gmd:description>
-                            <gco:CharacterString>${page.getLineageProcessStepDescription()}</gco:CharacterString>
+                            <gco:CharacterString>${processDescription}</gco:CharacterString>
                         </gmd:description>
                     </gmd:LI_ProcessStep>
                 </gmd:processStep>
-                @endif
+                @endfor
                 @for( String description : page.getLineageSourceDescriptions())
                 <gmd:source>
                     <gmd:LI_Source>

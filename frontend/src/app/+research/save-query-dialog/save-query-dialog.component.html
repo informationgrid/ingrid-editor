@@ -6,7 +6,7 @@
         <span class="text">Suche speichern</span>
     </h2>
 </div>
-<mat-dialog-content fxLayout="column">
+<mat-dialog-content class="flex-col">
     <div class="description">
         Sie können hier Ihre Suche mit den angegebenen Parametern speichern. Sie
         finden sie unter dem Tab "Gespeicherte Suchen" wieder.
@@ -37,7 +37,7 @@
 
 <mat-dialog-actions>
     <button mat-flat-button mat-dialog-close>Abbrechen</button>
-    <div fxFlex></div>
+    <div class="flex-1"></div>
     <button mat-flat-button color="primary" [matDialogClose]="model">
         Speichern
     </button>

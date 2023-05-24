@@ -23,6 +23,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
 import { ThesaurusResult } from "../components/thesaurus-result";
+import { ConfigService } from "../../../app/services/config/config.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -58,8 +59,6 @@ export abstract class IngridShared extends BaseDoctype {
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
   private inspireDeleteMessage =
     "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
-  private openDataMessage =
-    "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
 
   private inspireToIsoMapping = {
     "101": "13",
@@ -193,39 +192,8 @@ export abstract class IngridShared extends BaseDoctype {
             ],
             { className: "optional" }
           ),
-          this.addTable("graphicOverviews", "Vorschaugrafik", {
+          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
-            columns: [
-              {
-                key: "fileName",
-                type: "upload",
-                label: "URI",
-                props: {
-                  label: "URI",
-                  appearance: "outline",
-                  onClick: (docUuid, uri, $event) => {
-                    this.uploadService.downloadFile(docUuid, uri, $event);
-                  },
-                  formatter: (link: any) => {
-                    if (link.asLink) {
-                      return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
-                    } else {
-                      return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
-                    }
-                  },
-                },
-              },
-              {
-                key: "fileDescription",
-                type: "input",
-                label: "Beschreibung",
-                props: {
-                  label: "Beschreibung",
-                  appearance: "outline",
-                },
-              },
-            ],
           }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],
@@ -242,10 +210,7 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private handleOpenDataClick(field) {
-    const isChecked = field.formControl.value;
-    if (!isChecked) return;
-
+  private handleActivateOpenData(field) {
     const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
 
@@ -263,9 +228,9 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const message = isInspire
-      ? "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'Es gelten keine Zugriffsbeschränkungen' ersetzt. Möchten Sie fortfahren?"
-      : "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
+    const message =
+      "Wird dieses Auswahl gewählt, so:" +
+      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li></ul> ';
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -279,6 +244,37 @@ export abstract class IngridShared extends BaseDoctype {
         if (decision === "ok") executeAction();
         else field.formControl.setValue(false);
       });
+  }
+
+  private handleDeactivateOpenData(field) {
+    const cookieId = "HIDE_OPEN_DATA_INFO";
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      field.options.formState.updateModel();
+    }
+    const message =
+      'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision != "ok") field.formControl.setValue(true);
+        return;
+      });
+  }
+
+  private handleOpenDataClick(field) {
+    const isChecked = field.formControl.value;
+    if (!isChecked) {
+      this.handleDeactivateOpenData(field);
+    } else {
+      this.handleActivateOpenData(field);
+    }
   }
 
   addKeywordsSection(options: KeywordSectionOptions = {}): FormlyFieldConfig {
@@ -306,6 +302,7 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
                 className: "field.props.required ? '' : 'optional'",
+                hide: "!formState.mainModel?.isInspireIdentified",
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
@@ -332,13 +329,11 @@ export abstract class IngridShared extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 showSearch: true,
+                className: "optional",
                 options: this.getPriorityDatasets(),
                 codelistId: 6350,
                 expressions: {
-                  className: (model) =>
-                    model.options.formState.mainModel?.isInspireIdentified
-                      ? ""
-                      : "optional",
+                  hide: "!formState.mainModel?.isInspireIdentified",
                 },
               }
             )
@@ -354,12 +349,8 @@ export abstract class IngridShared extends BaseDoctype {
                 expressions: {
                   "props.required":
                     "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-                  className: (model) =>
-                    !model.options.formState.mainModel?.isInspireIdentified &&
-                    model.options.formState.mainModel?._type ===
-                      "InGridGeoService"
-                      ? "optional"
-                      : "",
+                  className: "field.props.required ? '' : 'optional'",
+                  hide: "!formState.mainModel?.isInspireIdentified",
                 },
               }
             )
@@ -378,9 +369,12 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
           view: "chip",
+          className: "optional",
           placeholder: "Im Umweltthesaurus suchen",
           restCall: (query: string) =>
-            this.http.get<any[]>(`/api/keywords/umthes?q=${query}`),
+            this.http.get<any[]>(
+              `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`
+            ),
           labelField: "label",
           selectLabelField: (item) => {
             return item.alternativeLabel
@@ -390,9 +384,11 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addRepeatList("keywords", "Optionale Schlagworte", {
           view: "chip",
+          className: "optional",
           hint: this.keywordFieldHint,
         }),
         this.addInput(null, null, {
+          className: "optional",
           wrappers: ["panel", "form-field"],
           fieldLabel: "Analyse",
           updateOn: "change",
@@ -515,7 +511,11 @@ export abstract class IngridShared extends BaseDoctype {
     item
   ): Promise<ThesaurusResult> {
     const response = await http
-      .get<any[]>(`/api/keywords/umthes?q=${encodeURI(item)}&type=EXACT`)
+      .get<any[]>(
+        `${ConfigService.backendApiUrl}keywords/umthes?q=${encodeURI(
+          item
+        )}&type=EXACT`
+      )
       .toPromise();
     if (response.length > 0) {
       const exists = model.keywordsUmthes.some(
@@ -552,7 +552,10 @@ export abstract class IngridShared extends BaseDoctype {
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
-            required: true,
+            expressions: {
+              "props.required":
+                "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            },
           }),
           this.addGroup(
             "verticalExtent",
@@ -774,37 +777,19 @@ export abstract class IngridShared extends BaseDoctype {
       "Zusatzinformation",
       [
         this.addGroupSimple("metadata", [
-          this.addGroup(
-            null,
-            "Sprache / Zeichensatz",
-            [
-              this.addSelectInline("language", "Sprache des Metadatensatzes", {
-                showSearch: true,
-                options: this.getCodelistForSelect(
-                  99999999,
-                  "extraInfoLangMetaData"
-                ),
-                codelistId: 99999999,
-                required: true,
-                defaultValue: {
-                  key: "150",
-                },
-              }),
-              options.extraInfoCharSetData
-                ? this.addSelectInline(
-                    "characterSet",
-                    "Zeichensatz des Datensatzes",
-                    {
-                      showSearch: true,
-                      options: this.getCodelistForSelect(510, "characterSet"),
-                      codelistId: 510,
-                      className: "optional",
-                    }
-                  )
-                : null,
-            ].filter(Boolean),
-            { hasInlineContextHelp: true, contextHelpId: "languageInfo" }
-          ),
+          this.addSelect("language", "Sprache des Metadatensatzes", {
+            showSearch: true,
+            options: this.getCodelistForSelect(
+              99999999,
+              "extraInfoLangMetaData"
+            ),
+            codelistId: 99999999,
+            required: true,
+            defaultValue: {
+              key: "150",
+            },
+            contextHelpId: "languageInfo",
+          }),
         ]),
         this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
           options: this.getCodelistForSelect(3571, "extraInfoPublishArea").pipe(
@@ -835,6 +820,16 @@ export abstract class IngridShared extends BaseDoctype {
                     "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
                   className: "field.props.required ? '' : 'optional'",
                 },
+              }),
+            ])
+          : null,
+        options.extraInfoCharSetData
+          ? this.addGroupSimple("metadata", [
+              this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
+                showSearch: true,
+                options: this.getCodelistForSelect(510, "characterSet"),
+                codelistId: 510,
+                className: "optional",
               }),
             ])
           : null,
@@ -944,6 +939,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       model._type !== "InGridGeoDataset" ||
+                      !model.isInspireIdentified ||
                       model.isInspireConform ||
                       !this.conformityExists(ctrl, "12", "1")
                     );
@@ -1055,6 +1051,7 @@ export abstract class IngridShared extends BaseDoctype {
               this.addAutoCompleteInline("name", "Name", {
                 options: this.getCodelistForSelect(1320, "specification"),
                 codelistId: 1320,
+                required: true,
               }),
               this.addInputInline("version", "Version"),
               this.addInputInline("compression", "Kompressionstechnik"),
@@ -1097,9 +1094,8 @@ export abstract class IngridShared extends BaseDoctype {
   addLinksSection() {
     return this.addSection("Verweise", [
       this.addRepeat("references", "Verweise", {
-        fieldGroupClassName: "display-flex flex-column",
+        fieldGroupClassName: "flex-col",
         fields: [this.urlRefFields()],
-        className: "optional",
         hasExtendedGap: true,
         validators: {
           downloadLinkWhenOpenData: {
@@ -1165,7 +1161,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
           }),
         ],
-        { fieldGroupClassName: "display-flex" }
+        { fieldGroupClassName: "flex-row" }
       ),
       this.addInputInline("url", "URL", {
         required: true,
@@ -1240,10 +1236,7 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const openDataMessage =
-      "<br><br>Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt und durch 'keine' ersetzt. Möchten Sie fortfahren?";
-    const message =
-      this.inspireChangeMessage + (isOpenData ? openDataMessage : "");
+    const message = this.inspireChangeMessage;
 
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -1280,8 +1273,7 @@ export abstract class IngridShared extends BaseDoctype {
       return;
     }
 
-    const message =
-      this.inspireDeleteMessage + (isOpenData ? this.openDataMessage : "");
+    const message = this.inspireDeleteMessage;
 
     this.dialog
       .open(ConfirmDialogComponent, {

@@ -6,15 +6,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.services.ExportPostProcessors
+import jakarta.xml.bind.JAXBContext
+import jakarta.xml.bind.JAXBException
+import jakarta.xml.bind.Marshaller
 import org.apache.logging.log4j.LogManager
 import java.io.StringWriter
 import javax.script.ScriptContext
 import javax.script.ScriptEngineManager
 import javax.script.ScriptException
 import javax.script.SimpleScriptContext
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.JAXBException
-import javax.xml.bind.Marshaller
 
 // @Service
 class IsoXmlPostProcessor : ExportPostProcessors {

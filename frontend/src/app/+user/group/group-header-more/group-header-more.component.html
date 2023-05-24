@@ -1,5 +1,5 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Erstellt am</div>
         <div *ngIf="group?.data?.creationDate">
             <span [title]="group.data.creationDate | date : 'long'">{{
@@ -7,7 +7,7 @@
             }}</span>
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Geändert am</div>
         <div *ngIf="group?.data?.modificationDate">
             <span [title]="group.data.modificationDate | date : 'long'">{{
@@ -15,7 +15,7 @@
             }}</span>
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>ID</div>
         <div>{{ group?.id }}</div>
     </div>

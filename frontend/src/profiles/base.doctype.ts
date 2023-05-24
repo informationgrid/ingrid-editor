@@ -42,12 +42,15 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
     {
       key: "_modified",
+    },
+    {
+      key: "_contentModified",
       props: {
         label: "Aktualität",
       },
     },
     {
-      key: "_modifiedBy",
+      key: "_contentModifiedBy",
     },
     {
       key: "_version",
@@ -67,10 +70,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         className: "flex-1",
         wrappers: ["panel", "form-field"],
       }),
-      this.addDatepicker("_modified", "Geändert am", {
+      this.addDatepicker("_contentModified", "Geändert am", {
         className: "flex-1",
       }),
-      this.addTextArea("_modifiedBy", "Bearbeiter", {
+      this.addTextArea("_contentModifiedBy", "Bearbeiter", {
         className: "flex-1",
         wrappers: ["panel", "form-field"],
       }),
@@ -252,14 +255,16 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     fields: FormlyFieldConfig[]
   ): FormlyFieldConfig[] {
     const supportedTypes = [
+      "input",
       "textarea",
       "address-card",
       "select",
       "autocomplete",
-      // "datepicker",
+      "datepicker",
       "repeatList",
       // "table",
     ];
+    const excludedTypes = ["updateGetCapabilities"];
     fields?.forEach((field) => {
       if (field.fieldGroup) {
         this.createFieldsForPrint(field.fieldGroup);
@@ -295,7 +300,9 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.type += "Print";
       }
     });
-    return fields;
+    return fields?.filter(
+      (field) => !excludedTypes.includes(<string>field.type)
+    );
   }
 
   private calcIsDifferent(field, diffObj): boolean {

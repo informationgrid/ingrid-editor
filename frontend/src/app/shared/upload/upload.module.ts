@@ -8,7 +8,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatButtonModule } from "@angular/material/button";
-import { FlexModule } from "@angular/flex-layout";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 
 @NgModule({
@@ -19,7 +18,6 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    FlexModule,
     NgxFlowModule,
   ],
   declarations: [UploadComponent, UploadItemComponent, SizePipe],

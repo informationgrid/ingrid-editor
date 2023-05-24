@@ -8,7 +8,7 @@
       "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": "boolean"
+          "type": ["null", "boolean"]
         },
         "_uuid": {
           "type": "string",
@@ -24,10 +24,10 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "parentIdentifier": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",

@@ -9,7 +9,7 @@
             svgIcon="download-link"
         ></mat-icon>
         <ng-template #showDocumentIcon>
-            <ige-document-icon [doc]="item" mat-list-icon></ige-document-icon>
+            <ige-document-icon [doc]="item"></ige-document-icon>
         </ng-template>
         <span>{{ item.title ?? "???" }}</span>
     </div>
@@ -27,7 +27,8 @@
 <mat-spinner *ngIf="refreshing" diameter="30"></mat-spinner>
 
 <ige-add-button
-    [mat-menu-trigger-for]="menu"
+    *ngIf="!formControl.disabled"
+    [matMenuTriggerFor]="menu"
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "

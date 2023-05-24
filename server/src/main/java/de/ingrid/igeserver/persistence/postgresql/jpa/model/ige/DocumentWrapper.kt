@@ -7,12 +7,11 @@ import com.vladmihalcea.hibernate.type.array.ListArrayType
 import com.vladmihalcea.hibernate.type.array.StringArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.*
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
-import javax.persistence.Entity
-import javax.persistence.Table
 
 @Entity
 @Table(name = "document_wrapper")
@@ -77,7 +76,7 @@ class DocumentWrapper {
         return this.parentUuid
     }
 
-    @Type(type = "list-array")
+    @Type(ListArrayType::class)
     @Column(
         name = "path",
         columnDefinition = "text[]"
@@ -91,27 +90,10 @@ class DocumentWrapper {
 
     @Column(name = "deleted")
     var deleted = 0
-    
-    /*@Column(
-        name = "tags",
-        columnDefinition = "text[]"
-    )*/
+
     @Type(type = "string-array")
     var tags: Array<String>? = null
-
-
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "pending", nullable = true)
-    @JsonAlias("pending") // hint for model registry
-    @JsonIgnore
-    @Deprecated("Use state in document")
-    var pending: Document? = null
-
+    
     @Column
     @JsonSerialize(using = DateSerializer::class)
     @JsonDeserialize(using = DateDeserializer::class)

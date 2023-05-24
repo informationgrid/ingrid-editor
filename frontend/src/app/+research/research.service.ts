@@ -57,7 +57,7 @@ export class ResearchService {
   sqlExamples = [
     {
       label: 'Adressen, mit Titel "test"',
-      value: `SELECT document1.*, document_wrapper.*
+      value: `SELECT document1.*, document_wrapper.category
               FROM document_wrapper
                      JOIN document document1 ON document_wrapper.uuid=document1.uuid
               WHERE document1.is_latest = true AND document_wrapper.category = 'address'
@@ -65,7 +65,7 @@ export class ResearchService {
     },
     {
       label: 'Dokumente "Luft- und Raumfahrt"',
-      value: `SELECT document1.*, document_wrapper.*
+      value: `SELECT document1.*, document_wrapper.category
               FROM document_wrapper
                      JOIN document document1 ON document_wrapper.uuid=document1.uuid
               WHERE document1.is_latest = true AND document1.type = 'mCloudDoc'
@@ -99,7 +99,8 @@ export class ResearchService {
     pagination?: {
       page: number;
       pageSize: number;
-    }
+    },
+    isNotFacetKeys: string[] = []
   ): Observable<ResearchResponse> {
     // Remove leading and trailing whitespace
     term = term?.trim();
@@ -109,7 +110,8 @@ export class ResearchService {
       this.filters,
       orderByField,
       orderByDirection,
-      pagination
+      pagination,
+      isNotFacetKeys
     );
     return this.http
       .post<ResearchResponse>(

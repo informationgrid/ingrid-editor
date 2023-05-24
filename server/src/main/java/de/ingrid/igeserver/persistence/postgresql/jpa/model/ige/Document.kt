@@ -10,12 +10,13 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
+import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
 
 @Entity
 @Table(name = "document")
@@ -43,8 +44,9 @@ class Document {
     @Column(nullable = false)
     var title: String? = null
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+//    @Type(JsonType::class)
+//    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     lateinit var data: ObjectNode
 
     @Version
@@ -69,12 +71,22 @@ class Document {
     }
 
     @Column
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonProperty("_contentModified")
+    var contentmodified: OffsetDateTime? = null
+
+    @Column
     @JsonProperty("_createdBy")
     var createdby: String? = null
 
     @Column
     @JsonProperty("_modifiedBy")
     var modifiedby: String? = null
+
+    @Column
+    @JsonProperty("_contentModifiedBy")
+    var contentmodifiedby: String? = null
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -85,7 +97,7 @@ class Document {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifiedbyuser", nullable = true)
     @JsonIgnore
-    var modifiedByUser: UserInfo? = null
+    var contentModifiedByUser: UserInfo? = null
 
     @JsonIgnore
     var isLatest: Boolean = false

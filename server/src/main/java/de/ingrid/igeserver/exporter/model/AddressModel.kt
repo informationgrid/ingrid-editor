@@ -31,6 +31,8 @@ data class AddressModel(
     @JsonProperty("_created") val created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     @JsonProperty("_modified") val modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonProperty("_contentModified") val contentmodified: OffsetDateTime,
     @JsonProperty("_parent") val parent: Int?,
 ) {
 
@@ -81,6 +83,7 @@ data class AddressModel(
             put("_uuid", publishedParent.uuid)
             put("_created", publishedParent.created.toString())
             put("_modified", publishedParent.modified.toString())
+            put("_contentModified", publishedParent.contentmodified.toString())
             put("_parent", wrapper.parent?.id)
         }
 

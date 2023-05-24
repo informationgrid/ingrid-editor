@@ -1,7 +1,7 @@
-<div fxLayout="column" class="tab-padding-no-header">
+<div class="tab-padding-no-header flex-col">
     <ng-content select="[status]"></ng-content>
 
-    <div fxLayout="row" class="content" fxFlex>
+    <div class="content flex-1 flex-row">
         <div class="left-side">
             <div *ngIf="label" class="page-title">
                 {{ label }}<br />{{ subLabel }}

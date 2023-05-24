@@ -18,7 +18,8 @@ export class BackendQuery {
     pagination?: {
       page: number;
       pageSize: number;
-    }
+    },
+    isNotFacetKeys = []
   ) {
     this.term = term;
     this.orderByField = orderByField;
@@ -26,10 +27,14 @@ export class BackendQuery {
     this.pagination = pagination;
 
     const allFacetGroups = filters?.documents?.concat(filters?.addresses);
-    this.convert(model, allFacetGroups);
+    this.convert(model, allFacetGroups, isNotFacetKeys);
   }
 
-  private convert(model: any, allFacetGroups: FacetGroup[]) {
+  private convert(
+    model: any,
+    allFacetGroups: FacetGroup[],
+    isNotFacetKeys: string[]
+  ) {
     let activeFilterIds = { op: "AND", clauses: [] };
 
     Object.keys(model).map((groupKey) => {
@@ -64,6 +69,7 @@ export class BackendQuery {
         activeFilterIds.clauses.push({
           op: groupOperator,
           value: [groupValue],
+          isFacet: isNotFacetKeys.indexOf(groupKey) === -1,
         });
       }
     });

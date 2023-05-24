@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.profiles.uvp.types
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -57,12 +56,5 @@ abstract class UvpBaseType @Autowired constructor() : EntityType() {
                 }
             } ?: emptyList())
         return uploads
-    }
-
-    private fun getUploadsFromFileList(fileList: JsonNode?): List<String> {
-        return fileList
-            ?.filter { it.get("downloadURL")?.get("asLink")?.asBoolean()?.not() ?: true }
-            ?.map { it.get("downloadURL").get("uri").textValue() }
-            ?: emptyList()
     }
 }

@@ -1,10 +1,10 @@
 <div
     [formGroup]="formGroup"
-    fxLayout="column"
+    class="flex-col"
     style="max-height: unset"
     *transloco="let t; read: 'group'"
 >
-    <div fxFlex fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="end end">
+    <div class="flex-1 flex-col justify-content-end align-items-end gap-12">
         <mat-slide-toggle
             [disabled]="disabled"
             *ngIf="showRootReadSlider"

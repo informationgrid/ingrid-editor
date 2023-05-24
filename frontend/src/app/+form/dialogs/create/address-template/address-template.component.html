@@ -1,12 +1,9 @@
-<div [formGroup]="form" fxFlex fxLayout="column">
+<div [formGroup]="form" class="flex-col">
     <div
         *ngIf="isPerson; else organization"
-        fxFlex
-        fxLayout="row"
-        fxLayoutGap="24px"
-        class="space-bottom"
+        class="space-bottom flex-1 flex-row gap-24"
     >
-        <div fxFlex>
+        <div class="flex-1">
             <div class="dlg-field-label required">Vorname</div>
             <mat-form-field appearance="outline" class="width-100">
                 <input
@@ -19,7 +16,7 @@
                 />
             </mat-form-field>
         </div>
-        <div fxFlex>
+        <div class="flex-1">
             <div class="dlg-field-label required">Nachname</div>
             <mat-form-field appearance="outline" class="width-100">
                 <input
