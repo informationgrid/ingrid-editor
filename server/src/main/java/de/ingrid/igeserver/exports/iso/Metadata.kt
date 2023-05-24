@@ -23,7 +23,7 @@ data class Metadata(
     val metadataStandardVersion: CharacterString = CharacterString("2005/PDAM 1"),
     val dataSetURI: String? = null,
     val locale: List<String>? = null,
-    val spatialRepresentationInfo: List<String>? = null,
+    val spatialRepresentationInfo: List<SpatialRepresentationInfo>? = null,
     val referenceSystemInfo: List<ReferenceSystem>? = null,
     val metadataExtensionInfo: List<String>? = null,
     val identificationInfo: List<IdentificationInfo>,
@@ -195,6 +195,102 @@ data class DataQualityInfo(
     @JacksonXmlProperty(localName = "DQ_DataQuality") val dqDataQuality: DQDataQuality?
 )
 
+data class SpatialRepresentationInfo(
+    @JacksonXmlProperty(localName = "MD_VectorSpatialRepresentation") val mdVectorSpatialRepresentation: MDVectorSpatialRepresentation?,
+    @JacksonXmlProperty(localName = "MD_GridSpatialRepresentation") val mdGridSpatialRepresentation: MDGridSpatialRepresentation?,
+    @JacksonXmlProperty(localName = "MD_Georeferenceable") val mdGeoreferenceable: MDGeoreferenceable?,
+    @JacksonXmlProperty(localName = "MD_Georectified") val mdGeorectified: MDGeorectified?
+)
+
+data class MDGeoreferenceable(
+    val numberOfDimensions: MDInteger,
+    val axisDimensionProperties: List<AxisDimensionProperty>,
+    val cellGeometry: CellGeometry,
+    val transformationParameterAvailability: MDBoolean,
+    val controlPointAvailability: MDBoolean,
+    val orientationParameterAvailability: MDBoolean,
+    val orientationParameterDescription: CharacterString?,
+    val georeferencedParameters: RecordAsCharacterString,
+    val parameterCitation: List<Citation>?,
+)
+
+data class MDGeorectified(
+    val numberOfDimensions: MDInteger,
+    val axisDimensionProperties: List<AxisDimensionProperty>,
+    val cellGeometry: CellGeometry,
+    val transformationParameterAvailability: MDBoolean,
+    val checkPointAvailability: MDBoolean?,
+    val checkPointDescription: CharacterString?,
+    val cornerPoints: List<Point>,
+    val centerPoint: MDDistance?,
+    val pointInPixel: PointInPixel,
+    val transformationDimensionDescription: CharacterString?,
+    val transformationDimensionMapping: CharacterString?,
+)
+
+data class PointInPixel(
+    @JacksonXmlProperty(localName = "MD_PixelOrientationCode") val mdPixelOrientationCode: String?
+)
+
+data class MDVectorSpatialRepresentation(
+    val topologyLevel: TopologyLevel?,
+    val geometricObjects: List<GeometricObject>?
+)
+
+data class MDGridSpatialRepresentation(
+    val numberOfDimensions: MDInteger,
+    val axisDimensionProperties: List<AxisDimensionProperty>,
+    val cellGeometry: CellGeometry,
+    val transformationParameterAvailability: MDBoolean
+)
+
+data class AxisDimensionProperty(
+    @JacksonXmlProperty(localName = "MD_Dimension") val mdDimension: MDDimension? 
+)
+
+data class MDDimension(
+    val dimensionName: DimensionName,
+    val dimensionSize: MDInteger,
+    val resolution: Scale?
+)
+
+data class Scale(
+    @JacksonXmlProperty(localName = "Scale") val scale: MDScale?
+)
+
+data class DimensionName(
+    @JacksonXmlProperty(localName = "MD_DimensionNameTypeCode") val mdDimensionNameTypeCode: CodelistAttributes
+)
+
+data class CellGeometry(
+    @JacksonXmlProperty(localName = "MD_CellGeometryCode") val mdCellGeometryCode: CodelistAttributes?
+)
+
+data class TopologyLevel(
+    @JacksonXmlProperty(localName = "MD_TopologyLevelCode") val value: CodelistAttributes?
+)
+
+data class GeometricObject(
+    @JacksonXmlProperty(localName = "MD_GeometricObjects") val value: MDGeometricObject?
+)
+
+data class MDGeometricObject(
+    val geometricObjectType: GeometricObjectType,
+    val geometricObjectCount: MDInteger?,
+)
+
+data class GeometricObjectType(
+    @JacksonXmlProperty(localName = "MD_GeometricObjectTypeCode") val value: CodelistAttributes?
+)
+
+data class Point(
+    @JacksonXmlProperty(localName = "Point", namespace = "http://www.opengis.net/gml/3.2") val point: Coordinates
+)
+
+data class Coordinates(
+    @JacksonXmlProperty(localName = "coordinates", namespace = "http://www.opengis.net/gml/3.2") val coordinates: String?
+)
+
 data class DQDataQuality(
     val scope: Scope,
     val report: List<DQReport>?,
@@ -280,6 +376,9 @@ data class UnitDefinition(
 
 data class Record(
     @JacksonXmlProperty(localName = "Record") val value: String?
+)
+data class RecordAsCharacterString(
+    @JacksonXmlProperty(localName = "Record") val value: CharacterString?
 )
 
 data class ValueType(

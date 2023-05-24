@@ -63,6 +63,12 @@ data class MDDistance(
     @JacksonXmlText val value: Int? = null
 }
 
+data class MDScale(
+    @JacksonXmlProperty(isAttribute = true) val uom: String?
+) {
+    @JacksonXmlText val value: Float? = null
+}
+
 data class EquivalentScale(
     @JacksonXmlProperty(localName = "MD_RepresentativeFraction") val mdRepresentativeFraction: MDRepresentativeFraction?
 )
