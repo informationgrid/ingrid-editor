@@ -230,7 +230,7 @@ export abstract class IngridShared extends BaseDoctype {
 
     const message =
       "Wird dieses Auswahl gewählt, so:" +
-      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "Opendata" hinzugefügt</li></ul> ';
+      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li></ul> ';
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
