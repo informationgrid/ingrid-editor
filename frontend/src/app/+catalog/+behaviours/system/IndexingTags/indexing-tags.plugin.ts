@@ -18,12 +18,13 @@ export class IndexingTagsPlugin extends Plugin {
     this.fields.push({
       key: "publicationTypes",
       type: "select",
-      defaultValue: "internet",
+      defaultValue: ["internet"],
       props: {
         placeholder: "",
         appearance: "outline",
         required: true,
         multiple: true,
+        simple: true,
         options: [
           { value: "internet", label: "Internet" },
           { value: "intranet", label: "Intranet" },

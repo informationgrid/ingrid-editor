@@ -105,7 +105,7 @@ class IndexService @Autowired constructor(
         var publicationTypes: List<String>? = null
         behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
             publicationTypesActive = it.active != null && it.active == true
-            publicationTypes = (it.data?.get("publicationTypes") as LinkedHashMap<*,*>).get("key") as List<String>?
+            publicationTypes = it.data?.get("publicationTypes") as List<String>?
         }
         
         return if (publicationTypesActive) {
