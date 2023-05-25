@@ -3,11 +3,11 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*

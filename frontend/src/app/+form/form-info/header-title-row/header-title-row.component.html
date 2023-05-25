@@ -1,11 +1,5 @@
 <div class="title flex-row" *transloco="let t">
-    <div class="document-type">
-        <mat-icon
-            [matTooltip]="t('docType.' + _model._type)"
-            [svgIcon]="icon"
-            [ngClass]="['document-icon', stateClass]"
-        ></mat-icon>
-    </div>
+    <ige-document-icon [doc]="_model"></ige-document-icon>
 
     <span
         *ngIf="!showTitleInput"

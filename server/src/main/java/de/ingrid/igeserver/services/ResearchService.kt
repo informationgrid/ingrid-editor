@@ -27,7 +27,8 @@ data class Result(
         val _state: String?,
         val _category: String?,
         var hasWritePermission: Boolean?,
-        var hasOnlySubtreeWritePermission: Boolean?
+    var hasOnlySubtreeWritePermission: Boolean?,
+    var _tags: String?
 )
 
 @Service
@@ -104,7 +105,7 @@ class ResearchService {
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
 
         return """
-                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid
+                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid, document_wrapper.tags as tags
                 FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
@@ -239,6 +240,7 @@ class ResearchService {
                 .addScalar("category")
                 .addScalar("wrapperid")
                 .addScalar("state")
+                .addScalar("tags")
                 .setFirstResult((paging.page - 1) * paging.pageSize)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
@@ -287,7 +289,8 @@ class ResearchService {
                                     principal,
                                     item[7] as Int
                             ).canOnlyWriteSubtree,
-                            _id = item[7] as Int
+                    _id = item[7] as Int,
+                    _tags = (item[9] as? Array<*>)?.joinToString(",")
                     )
                 }
     }
@@ -305,8 +308,8 @@ class ResearchService {
         var finalQuery = ""
         try {
             assertValidQuery(sqlQuery)
-            val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
-            finalQuery = addWrapperIdToQuery(catalogQuery)
+            val catalogQuery = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
+            finalQuery = addWrapperIdAndTagsToQuery(catalogQuery)
 
             val termAsParameters = emptyList<String>()
             val result = sendQuery(finalQuery, termAsParameters, paging)
@@ -336,28 +339,29 @@ class ResearchService {
         // TODO: UPDATE AND DELETE IS NOT ALLOWED!
     }
 
-    private fun addWrapperIdToQuery(query: String): String {
+    private fun addWrapperIdAndTagsToQuery(query: String): String {
         val fromIndex = query.indexOf("FROM")
         return """
-            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid ${query.substring(fromIndex)}
+            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid, document_wrapper.tags as tags ${query.substring(fromIndex)}
         """.trimIndent()
     }
 
-    private fun restrictQueryOnCatalog(catalogId: String, sqlQuery: String): String {
+    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
 
         val catalogFilter = createCatalogFilter(catalogId)
+        val notDeletedFilter = "document_wrapper.deleted = 0"
 
         val fromIndex = sqlQuery.indexOf("FROM")
 
         return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter
+                WHERE $catalogFilter AND $notDeletedFilter
                 """.trimIndent()
 
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND 
+                $catalogFilter AND $notDeletedFilter AND
                 ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
         }
 

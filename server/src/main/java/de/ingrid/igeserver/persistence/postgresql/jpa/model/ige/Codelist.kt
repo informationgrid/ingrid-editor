@@ -3,7 +3,7 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonType
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction

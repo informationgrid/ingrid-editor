@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction

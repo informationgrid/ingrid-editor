@@ -100,7 +100,6 @@ class Document {
     @JsonIgnore
     var isLatest: Boolean = false
 
-    //    @JsonIgnore
     @Convert(converter = StateEnumConverter::class)
     @JsonProperty("_state")
     lateinit var state: DOCUMENT_STATE

@@ -62,7 +62,8 @@ export class AddressCardComponent implements OnInit {
       iconState:
         DocumentUtils.getStateClass(
           this.address.ref._state,
-          this.address.ref._type
+          this.address.ref._type,
+          this.address.ref._tags
         ) ?? "",
       role: this.address.type,
       title: this.getTitle(this.address.ref),

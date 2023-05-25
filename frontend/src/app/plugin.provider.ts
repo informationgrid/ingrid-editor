@@ -5,6 +5,7 @@ import { DeleteReferenceHandlerPlugin } from "./+catalog/+behaviours/system/Dele
 import { InheritContactDataHandler } from "./+catalog/+behaviours/system/InheritContactDataHandler/inherit-contactdata-handler";
 import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.plugin";
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
+import { IndexingTagsPlugin } from "./+catalog/+behaviours/system/IndexingTags/indexing-tags.plugin";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: SortTreeByTypeBehaviour, multi: true },
@@ -17,4 +18,5 @@ export const pluginProvider = [
     useClass: ShowDocumentPermissionsHandlerPlugin,
     multi: true,
   },
+  { provide: PluginToken, useClass: IndexingTagsPlugin, multi: true },
 ];

@@ -36,6 +36,7 @@ import {
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { TagRequest } from "../../models/tag-request.model";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -223,6 +224,25 @@ export class DocumentService {
         this.postSaveActions(saveOptions);
       }),
       finalize(() => this.documentOperationFinished$.next(true))
+    );
+  }
+
+  updateTags(id: number, data: TagRequest, forAddress: boolean) {
+    const store = forAddress ? this.addressTreeStore : this.treeStore;
+
+    return this.dataService.updateTags(id, data).pipe(
+      tap((newTags: string[]) => {
+        store.update(id, {
+          _tags: newTags?.join(","),
+        });
+        const info = store.getValue().entities[id];
+        store.update({
+          datasetsChanged: {
+            type: UpdateType.Update,
+            data: [info],
+          },
+        });
+      })
     );
   }
 
@@ -694,6 +714,7 @@ export class DocumentService {
         _modified: doc._modified,
         _contentModified: doc._contentModified,
         _pendingDate: doc._pendingDate,
+        _tags: doc._tags,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,

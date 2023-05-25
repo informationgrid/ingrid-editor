@@ -15,6 +15,9 @@ import { FormSharedModule } from "../../+form/form-shared/form-shared.module";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.component";
+import { PublicationTypeDialog } from "./system/tags/publication-type/publication-type.dialog";
+import { MatRadioModule } from "@angular/material/radio";
+import { DialogTemplateModule } from "../../shared/dialog-template/dialog-template.module";
 import { PermissionsDialogComponent } from "../../+user/permissions/permissions-dialog.component";
 
 @NgModule({
@@ -34,10 +37,18 @@ import { PermissionsDialogComponent } from "../../+user/permissions/permissions-
     MatCardModule,
     FormSharedModule,
     PageTemplateModule,
+    MatSlideToggleModule,
+    MatRadioModule,
+    DialogTemplateModule,
+    /*to get form behaviours*/
     MatSlideToggleModule /*to get form behaviours*/,
     PermissionsDialogComponent,
   ],
-  declarations: [BehavioursComponent, BehaviourItemComponent],
+  declarations: [
+    BehavioursComponent,
+    BehaviourItemComponent,
+    PublicationTypeDialog,
+  ],
   exports: [BehavioursComponent],
 })
 export class BehavioursModule {}

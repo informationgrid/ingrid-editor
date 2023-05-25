@@ -9,9 +9,7 @@ import {
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { UntypedFormGroup } from "@angular/forms";
-import { ProfileService } from "../../../services/profile.service";
 import { IgeDocument } from "../../../models/ige-document";
-import { DocumentUtils } from "../../../services/document.utils";
 import { FormularService, HeaderMenuOption } from "../../formular.service";
 
 @Component({
@@ -27,8 +25,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   @Input() set model(value: IgeDocument) {
     this._model = value;
-    this.stateClass = this.getStateClass(value);
-    this.icon = this.getIcon(value);
     this.updateHeaderMenuOptions();
   }
 
@@ -40,8 +36,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   _form: UntypedFormGroup;
   _model: IgeDocument;
-  stateClass: string;
-  icon: string;
   showTitleInput = false;
   showMore = false;
   showMoreActions = false;
@@ -50,7 +44,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private profileService: ProfileService,
     private formularService: FormularService
   ) {}
 
@@ -67,14 +60,6 @@ export class HeaderTitleRowComponent implements OnInit {
 
   toggleMoreInfo() {
     this.showMore = !this.showMore;
-  }
-
-  private getIcon(doc: IgeDocument) {
-    return this.profileService.getDocumentIcon(doc);
-  }
-
-  private getStateClass(model) {
-    return DocumentUtils.getStateClass(model._state, model._type);
   }
 
   private updateHeaderMenuOptions() {

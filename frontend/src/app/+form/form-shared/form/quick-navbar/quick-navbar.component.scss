@@ -15,22 +15,17 @@
     padding: 0 24px 0 36px;
   }
 
-  .document-type {
+  ige-document-icon {
     opacity: 0;
     transition: opacity 0.2s linear;
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
     background-color: white;
     border-radius: 50%;
-    height: 28px;
-    width: 28px;
-
-    mat-icon {
-      line-height: 32px;
-      color: $state-working-color;
-      font-size: 16px;
-      padding-left: 2px;
-      padding-top: 2px;
-    }
+    height: 26px;
+    width: 26px;
   }
 
   .optional-fields-toggle mat-slide-toggle ::ng-deep .mdc-form-field {
@@ -43,7 +38,7 @@
   top: 0;
   z-index: 2000;
 
-  .document-type {
+  ige-document-icon {
     opacity: 1;
   }
 

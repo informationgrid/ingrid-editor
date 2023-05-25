@@ -5,7 +5,7 @@
   padding-top: 7px;
   align-items: center;
 
-  .document-type {
+  ige-document-icon {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,11 +15,6 @@
     height: 26px;
     width: 26px;
     margin-right: 6px;
-    //margin-top: 10px;
-
-    mat-icon {
-      color: $state-working-color;
-    }
   }
 
   .label {

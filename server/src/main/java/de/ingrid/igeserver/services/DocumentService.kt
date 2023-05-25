@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
@@ -120,6 +121,7 @@ class DocumentService @Autowired constructor(
     /**
      * This function gets the latest document version with its wrapper element. This function implicitly checks
      * permission when getting the wrapper.
+     * TODO: very similar to function "getDocumentByWrapperId(...)" -> refactor
      */
     fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
         try {
@@ -156,7 +158,7 @@ class DocumentService @Autowired constructor(
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
 
-            entityManager.detach(doc);
+            entityManager.detach(doc)
             // add metadata
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
@@ -370,6 +372,7 @@ class DocumentService @Autowired constructor(
             FIELD_UUID,
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
+            FIELD_TAGS,
             "title",
             "hasWritePermission",
             "hasOnlySubtreeWritePermission",
@@ -868,8 +871,27 @@ class DocumentService @Autowired constructor(
     @Transactional
     fun replaceAddress(catalogId: String, source: String, target: String) {
         val refIds = docRepo.getDocIdsWithReferenceTo(catalogId, """\: \"$source\"""")
-//        println(refIds.joinToString(", "))
         docRepo.replaceReference(source, target, refIds)
+    }
+
+    fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
+        val wrapper = docWrapperRepo.getReferenceById(wrapperId)
+        val cleanedTags = wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+        wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
+        docWrapperRepo.save(wrapper)
+        return wrapper.tags
+    }
+
+    fun getReferencedWrapperIds(
+        catalogIdentifier: String,
+        document: Document?
+    ): Set<Int> {
+        if (document == null) return setOf()
+
+        val docType = getDocumentType(document.type)
+        return docType.getReferenceIds(document)
+            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }
+            .toSet()
     }
 }
 

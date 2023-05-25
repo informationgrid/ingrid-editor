@@ -200,4 +200,14 @@ interface DatasetsApi {
         principal: Principal,
         @PathVariable id: Int,
     ): ResponseEntity<DatasetsApiController.UserAccessResponse>
+
+    @Operation
+    @PutMapping(value = ["/datasets/{id}/tags"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun setTags(
+        principal: Principal,
+        @PathVariable id: Int,
+        @RequestBody tags: TagRequest
+    ): ResponseEntity<List<String>>
 }
+
+data class TagRequest(val add: List<String>?, val remove: List<String>?)

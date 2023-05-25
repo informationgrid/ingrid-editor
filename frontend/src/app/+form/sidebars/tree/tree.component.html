@@ -91,14 +91,13 @@
                     (click)="$event.stopImmediatePropagation()"
                     (change)="selection.nodeSelectionToggle(node, $event)"
                 ></mat-checkbox>
-                <mat-icon
-                    [svgIcon]="node.iconClass"
-                    [ngClass]="['document-icon', getStateClass(node)]"
-                    [matTooltipShowDelay]="1000"
-                    [matTooltip]="t('docType.' + node.type)"
-                ></mat-icon>
-                <!-- TODO: replace with matTooltip and matTooltipShowDelay when https://github.com/angular/components/pull/24652 is merged -->
-                <span title="{{ node.title }}">{{ node.title }}</span>
+                <ige-document-icon
+                    [doc]="node"
+                    showDelay="1000"
+                ></ige-document-icon>
+                <span [matTooltipShowDelay]="1000" [matTooltip]="node.title">{{
+                    node.title
+                }}</span>
             </div>
         </div>
     </mat-tree-node>

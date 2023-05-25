@@ -580,7 +580,7 @@ describe("TreeComponent", () => {
       // @ts-ignore
       db.treeUpdates.next({
         type: UpdateType.Delete,
-        data: [
+        data: <DocumentAbstract[]>[
           {
             id: 1,
             _uuid: "1",
@@ -595,6 +595,7 @@ describe("TreeComponent", () => {
             _parent: null,
             hasWritePermission: true,
             isRoot: true,
+            _tags: null,
           },
           {
             id: 2,
@@ -610,6 +611,7 @@ describe("TreeComponent", () => {
             _parent: null,
             hasWritePermission: true,
             isRoot: true,
+            _tags: null,
           },
         ],
       });
@@ -788,6 +790,7 @@ describe("TreeComponent", () => {
           _contentModified: null,
           icon: "",
           isRoot: !options.parent,
+          _tags: null,
         },
       ],
       parent: options.parent || null,

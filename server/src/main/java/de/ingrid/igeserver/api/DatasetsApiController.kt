@@ -112,6 +112,7 @@ class DatasetsApiController @Autowired constructor(
             data.put(FIELD_CREATED_USER_EXISTS, createdByUser != null)
             data.put(FIELD_MODIFIED_USER_EXISTS, contentModifiedByUser != null)
             data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
+            data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
             wrapper.fingerprint?.let { 
                 data.put(FIELD_METADATA_DATE, it[0].date.toString())
             }
@@ -173,6 +174,12 @@ class DatasetsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         this.documentService.replaceAddress(catalogId, source, target)
         return ResponseEntity(HttpStatus.OK)
+    }
+
+    override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
+        return ResponseEntity.ok(updatedTags)
     }
 
     private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): JsonNode {

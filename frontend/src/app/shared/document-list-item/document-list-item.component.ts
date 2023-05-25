@@ -10,7 +10,6 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { DocumentUtils } from "../../services/document.utils";
 import { MatSelectionList } from "@angular/material/list";
 
 @UntilDestroy()
@@ -67,12 +66,5 @@ export class DocumentListItemComponent implements OnInit {
       this.currentSelection = doc;
     }
     this.select.next(doc);
-  }
-
-  getStateClass(doc: DocumentAbstract | TreeNode) {
-    const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
-    const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
-
-    return DocumentUtils.getStateClass(state, type);
   }
 }

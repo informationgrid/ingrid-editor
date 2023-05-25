@@ -160,6 +160,7 @@ export class GeoServiceDoctype extends IngridShared {
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {
                 showSearch: true,
+                defaultValue: { key: "loose" },
                 options: <SelectOptionUi[]>[
                   { label: "loose", value: "loose" },
                   { label: "mixed", value: "mixed" },

@@ -730,6 +730,14 @@ ige-root .mat-drawer-container {
     &.workingWithPublished svg .coloring {
       fill: url("#myGradient");
     }
+
+    &.intranet {
+      border-bottom: 1px dashed red;
+    }
+
+    &.amtsintern {
+      border-bottom: 1px dashed blue;
+    }
   }
 }
 

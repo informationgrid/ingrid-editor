@@ -3,9 +3,9 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import io.hypersistence.utils.hibernate.type.array.ListArrayType
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
@@ -82,6 +82,12 @@ class DocumentWrapper {
 
     @Column(name = "deleted")
     var deleted = 0
+
+    @Type(ListArrayType::class)
+    @Column(name = "tags", columnDefinition = "text[]")
+    var tags: List<String> = emptyList()
+        get() = if (field == null) emptyList() else field // field can actually be null if in db table null
+
 
     @Column
     @JsonSerialize(using = DateSerializer::class)

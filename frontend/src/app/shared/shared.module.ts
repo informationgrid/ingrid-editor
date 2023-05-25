@@ -33,6 +33,7 @@ import { DndDirective } from "../directives/dnd.directive";
 import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "./search-input/search-input.component";
+import { DocumentIconModule } from "./document-icon/document-icon.module";
 
 @NgModule({
   imports: [
@@ -58,6 +59,7 @@ import { SearchInputComponent } from "./search-input/search-input.component";
     MatMenuModule,
     MatSelectModule,
     TranslocoModule,
+    DocumentIconModule,
   ],
   declarations: [
     TreeComponent,

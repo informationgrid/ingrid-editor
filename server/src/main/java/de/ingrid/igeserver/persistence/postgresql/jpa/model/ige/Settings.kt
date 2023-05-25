@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.vladmihalcea.hibernate.type.json.JsonType
 import de.ingrid.igeserver.annotations.NoArgs
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import org.hibernate.annotations.Type
 

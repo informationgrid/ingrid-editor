@@ -109,7 +109,8 @@ export class DynamicDatabase {
           doc.icon,
           false,
           doc.hasWritePermission,
-          doc.hasOnlySubtreeWritePermission
+          doc.hasOnlySubtreeWritePermission,
+          doc._tags
         )
     );
   }
