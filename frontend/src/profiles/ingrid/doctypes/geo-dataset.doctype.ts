@@ -65,6 +65,7 @@ export class GeoDatasetDoctype extends IngridShared {
           className: "flex-3 ",
           suffix: {
             icon: "autorenew",
+            isButton: true,
             onClick: (suffix, field) => this.handleSuffixClick(suffix, field),
           },
         }),

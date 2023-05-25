@@ -14,8 +14,17 @@
 <ng-container #fieldComponent></ng-container>
 
 <ng-template #matSuffix>
+    <button
+        *ngIf="props.addonRight?.isButton"
+        mat-icon-button
+        (click)="addonRightClick($event)"
+    >
+        <mat-icon *ngIf="props.addonRight.icon">{{
+            props.addonRight.icon
+        }}</mat-icon>
+    </button>
     <span
-        *ngIf="props.addonRight"
+        *ngIf="!props.addonRight?.isButton"
         [ngStyle]="{ cursor: props.addonRight.onClick ? 'pointer' : 'inherit' }"
         (click)="addonRightClick($event)"
     >
