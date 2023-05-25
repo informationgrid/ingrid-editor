@@ -27,7 +27,7 @@ class PostDocumentIndexingFingerprint(
 
     override fun invoke(payload: PostIndexPayload, context: Context): PostIndexPayload {
         val exporterType = payload.exportType
-        val exporter = exporterFactory.getExporter(DocumentCategory.DATA, exporterType)
+        val exporter = exporterFactory.getExporter(DocumentCategory.valueOf(payload.category), exporterType)
 
         val isoFingerprint = exporter.calculateFingerprint(payload.indexDoc)
         updateFingerprintIfChanged(context, exporterType, isoFingerprint)
