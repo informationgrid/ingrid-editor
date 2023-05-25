@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 @Service
-class M061_FingerprintColumn : MigrationBase("0.61") {
+class M063_FingerprintColumn : MigrationBase("0.63") {
 
     @Autowired
     lateinit var entityManager: EntityManager
