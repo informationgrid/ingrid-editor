@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exports
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import org.apache.commons.codec.digest.DigestUtils
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.XMLConstants
@@ -39,5 +40,9 @@ interface IgeExporter {
         } catch (e: Exception) {
             throw RuntimeException(e) // simple exception handling, please review it
         }
+    }
+
+    fun calculateFingerprint(doc: Any): String {
+        return DigestUtils.sha256Hex(doc.toString())
     }
 }

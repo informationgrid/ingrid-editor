@@ -22,6 +22,8 @@ export class IgeDocument {
   // the database object modification date
   _modified?: string;
 
+  _metadataDate?: string;
+
   // the content modification by an actual user date
   _contentModified?: string;
 

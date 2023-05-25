@@ -18,10 +18,10 @@
     <div *ngIf="!hideFields.created" class="flex-row">
         <div>Erstellt am</div>
         <div>
-            <span [title]="model._created | date : 'long'">{{
+            <span [matTooltip]="model._created | date : 'long'">{{
                 model._created | date : "dd.MM.yyyy"
             }}</span>
-            <span *ngIf="model._createdBy" [title]="model._createdBy">
+            <span *ngIf="model._createdBy">
                 von
                 {{
                     model._createdBy +
@@ -38,10 +38,7 @@
             <span [title]="model._contentModified | date : 'long'">{{
                 model._contentModified | date : "dd.MM.yyyy"
             }}</span>
-            <span
-                *ngIf="model._contentModifiedBy"
-                [title]="model._contentModifiedBy"
-            >
+            <span *ngIf="model._contentModifiedBy">
                 von
                 {{
                     model._contentModifiedBy +
@@ -50,6 +47,20 @@
                             : "")
                 }}
             </span>
+        </div>
+    </div>
+    <div
+        *ngIf="!hideFields.metadataDate && model._metadataDate"
+        class="flex-row"
+    >
+        <div>Metadaten-Datum</div>
+        <div>
+            <span [matTooltip]="model._metadataDate | date : 'long'"
+                >{{
+                    model._metadataDate | date : "dd.MM.yyyy"
+                }}
+                (veröffentlichte Version)</span
+            >
         </div>
     </div>
 </div>

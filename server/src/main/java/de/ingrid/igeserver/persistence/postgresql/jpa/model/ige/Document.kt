@@ -44,8 +44,6 @@ class Document {
     @Column(nullable = false)
     var title: String? = null
 
-//    @Type(JsonType::class)
-//    @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     lateinit var data: ObjectNode
 

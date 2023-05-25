@@ -221,7 +221,6 @@ class IndexingTask @Autowired constructor(
         indexInfo: IndexInfo
     ) {
         val catalogType = catalogService.getCatalogById(catalogId).type
-        val simpleContext = SimpleContext(catalogId, catalogType)
 
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
@@ -229,7 +228,7 @@ class IndexingTask @Autowired constructor(
                 sendNotification(category, message, index + (page * PAGE_SIZE))
                 log.debug("export ${doc.uuid}")
                 try {
-                    exporter.run(doc, catalogId)
+                    Pair(doc.uuid, exporter.run(doc, catalogId))
                 } catch (ex: Exception) {
                     val errorMessage = "Error exporting document '${doc.uuid}' in catalog '$catalogId': ${ex.message}"
                     log.error(errorMessage, ex)
@@ -238,10 +237,11 @@ class IndexingTask @Autowired constructor(
                     null
                 }
             }
-            .onEach {
-                val elasticDocument = convertToElasticDocument(it)
+            .onEach { (uuid, exportedDoc) ->
+                val elasticDocument = convertToElasticDocument(exportedDoc)
                 indexManager.update(indexInfo, elasticDocument, false)
-                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name), simpleContext)
+                val simpleContext = SimpleContext(catalogId, catalogType, uuid)
+                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
             }
     }
 
@@ -309,7 +309,7 @@ class IndexingTask @Autowired constructor(
 
 
             val elasticDoc = convertToElasticDocument(export)
-            postIndexPipe.runFilters(PostIndexPayload(elasticDoc, category.name), SimpleContext(catalogId, catalogProfile.identifier))
+            postIndexPipe.runFilters(PostIndexPayload(elasticDoc, category.name, exporter.typeInfo.type), SimpleContext(catalogId, catalogProfile.identifier, docId))
 
             indexManager.update(indexInfo, elasticDoc, false)
             log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")
