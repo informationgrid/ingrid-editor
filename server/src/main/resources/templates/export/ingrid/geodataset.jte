@@ -94,10 +94,10 @@
         "geometricObjectCount": ${vector.get().getObjectCount()}
         }@if (!vector.isLast()),@endif
     @endfor
-    ],
+    ]
     !{var gridSpatial = model.getGridSpatialRepresentation();}
     @if (gridSpatial != null)
-    "gridSpatialRepresentation": {
+    , "gridSpatialRepresentation": {
         "type": @template.ingrid.partial.key-value(item = gridSpatial.getType()),
         "axesDimensionProperties": [
         @for(var property : ForSupport.of(gridSpatial.getAxesDimensionProperties()))
