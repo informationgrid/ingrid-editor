@@ -307,7 +307,7 @@ class ResearchService {
         var finalQuery = ""
         try {
             assertValidQuery(sqlQuery)
-            val catalogQuery = restrictQueryOnCatalog(catalogId, sqlQuery)
+            val catalogQuery = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
             finalQuery = addWrapperIdToQuery(catalogQuery)
 
             val termAsParameters = emptyList<String>()
@@ -345,21 +345,22 @@ class ResearchService {
         """.trimIndent()
     }
 
-    private fun restrictQueryOnCatalog(catalogId: String, sqlQuery: String): String {
+    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
 
         val catalogFilter = createCatalogFilter(catalogId)
+        val notDeletedFilter = "document_wrapper.deleted = 0"
 
         val fromIndex = sqlQuery.indexOf("FROM")
 
         return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter
+                WHERE $catalogFilter AND $notDeletedFilter
                 """.trimIndent()
 
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND 
+                $catalogFilter AND $notDeletedFilter AND
                 ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
         }
 
