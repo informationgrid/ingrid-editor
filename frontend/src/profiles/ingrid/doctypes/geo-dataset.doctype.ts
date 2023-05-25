@@ -26,11 +26,6 @@ export class GeoDatasetDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
-  handleSuffixClick(suffix: any, field: any) {
-    field.formControl.setValue(generateUUID());
-    console.log("Suffix button clicked!");
-  }
-
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection({
@@ -66,7 +61,8 @@ export class GeoDatasetDoctype extends IngridShared {
           suffix: {
             icon: "autorenew",
             isButton: true,
-            onClick: (suffix, field) => this.handleSuffixClick(suffix, field),
+            onClick: (suffix, field) =>
+              field.formControl.setValue(generateUUID()),
           },
         }),
         this.addRepeatList(
