@@ -16,6 +16,7 @@ data class CatalogConfig(
     val provider: String? = null,
     val elasticsearchAlias: String? = null,
     var namespace: String? = null,
+    var atomDownloadUrl: String? = null,
     val ibus: IBusConfig? = IBusConfig()
 )
 @JsonIgnoreProperties(ignoreUnknown = true)

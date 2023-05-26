@@ -68,4 +68,13 @@ export const fields = (codelistService: CodelistService) =>
         appearance: "outline",
       },
     },
+    {
+      key: "atomDownloadUrl",
+      type: "input",
+      wrappers: ["panel", "form-field"],
+      props: {
+        externalLabel: "ATOM-Downloadservice-URL",
+        appearance: "outline",
+      },
+    },
   ];
