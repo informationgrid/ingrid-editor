@@ -106,6 +106,9 @@
             "type": {
               "$ref": "../../general.schema.json#/definitions/KeyValue"
             },
+            "isAtomDownload": {
+              "type": ["null", "boolean"]
+            },
             "version": {
               "type": "array",
               "items": {
