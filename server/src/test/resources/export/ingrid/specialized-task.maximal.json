@@ -67,7 +67,6 @@
     }
   ],
   "parentIdentifier": "identificator",
-  "extraInfoPublishArea": { "key": "3" },
   "maintenanceInformation": {
     "description": "info",
     "maintenanceAndUpdateFrequency": { "key": "1" },

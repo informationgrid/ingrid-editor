@@ -109,9 +109,6 @@
         "metadata": {
           "$ref": "refs/general.schema.json#/definitions/metadata"
         },
-        "extraInfoPublishArea": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        },
         "resource": {
           "$ref": "refs/general.schema.json#/definitions/resource"
         },
@@ -160,8 +157,7 @@
         "pointOfContact",
         "spatial",
         "temporal",
-        "metadata",
-        "extraInfoPublishArea"
+        "metadata"
       ],
       "title": "Project"
     }

@@ -78,7 +78,6 @@
     }
   ],
   "parentIdentifier": "identificator",
-  "extraInfoPublishArea": {"key": "1"},
   "digitalTransferOptions": [
     { "name": { "key": "2" }, "mediumNote": "where", "transferSize": 100 }
   ],

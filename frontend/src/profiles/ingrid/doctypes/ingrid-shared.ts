@@ -771,17 +771,6 @@ export abstract class IngridShared extends BaseDoctype {
             contextHelpId: "languageInfo",
           }),
         ]),
-        this.addSelect("extraInfoPublishArea", "Veröffentlichung", {
-          options: this.getCodelistForSelect(3571, "extraInfoPublishArea").pipe(
-            // sort by ID, which defines hierarchy
-            map((items) => items.sort((a, b) => a.value.localeCompare(b.value)))
-          ),
-          codelistId: 3571,
-          required: true,
-          defaultValue: {
-            key: "1",
-          },
-        }),
         options.extraInfoLangData
           ? this.addGroupSimple("dataset", [
               this.addRepeatList("languages", "Sprache der Ressource", {

@@ -179,9 +179,6 @@
     },
     "description": "Erläuterungen Zeitbezug"
   },
-  "extraInfoPublishArea": {
-    "key": "1"
-  },
   "conformanceResult": [
     {
       "pass": {

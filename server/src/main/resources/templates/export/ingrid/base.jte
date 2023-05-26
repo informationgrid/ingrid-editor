@@ -143,7 +143,6 @@
 },
 "description": "${interval.getDescription()}"
 },
-"extraInfoPublishArea": @template.ingrid.partial.key-value(item = model.getExtraInfoPublishArea()),
 "conformanceResult": [
 @for(var item : ForSupport.of(model.getConformanceResult()))
     {

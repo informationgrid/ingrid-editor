@@ -77,7 +77,6 @@ export class PersonDoctype extends AddressShared {
               },
             ],
           },
-          this.options.publicationArea ? this.addPublicationArea() : null,
           this.addCheckbox("hideAddress", null, {
             fieldLabel:
               "für Anzeige Daten der übergeordneten Organisation verwenden",

@@ -90,7 +90,6 @@
   "parentIdentifier": "ident5",
   "systemEnvironment": "system environm",
   "isInspireIdentified": false,
-  "extraInfoPublishArea": { "key": "2" },
   "digitalTransferOptions": [
     { "name": { "key": "17" }, "mediumNote": "where", "transferSize": 34 }
   ],

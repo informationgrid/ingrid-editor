@@ -343,11 +343,6 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return KeyValue(languageKey)
     }
 
-    fun getExtraInfoPublishArea(): KeyValue {
-        // always map to "Internet" by default, since this information is InGrid-specific
-        return KeyValue("1")
-    }
-
     fun getLegalDescriptions(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Further legal basis" }

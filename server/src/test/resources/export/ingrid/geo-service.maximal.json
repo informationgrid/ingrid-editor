@@ -125,7 +125,6 @@
     }
   ],
   "isInspireIdentified": false,
-  "extraInfoPublishArea": { "key": "2" },
   "digitalTransferOptions": [
     { "name": { "key": "1" }, "mediumNote": "archive", "transferSize": 200 }
   ],

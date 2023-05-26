@@ -25,7 +25,6 @@ export abstract class OrganisationDoctype extends AddressShared {
             className: "width-100 organization",
             wrappers: ["panel", "form-field"],
           }),
-          this.options.publicationArea ? this.addPublicationArea() : null,
         ].filter(Boolean)
       ),
       this.addSection(
