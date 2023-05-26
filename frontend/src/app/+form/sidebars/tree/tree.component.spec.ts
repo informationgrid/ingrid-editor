@@ -47,6 +47,8 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
+import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -87,11 +89,13 @@ describe("TreeComponent", () => {
       HttpClientTestingModule,
       MatSnackBarModule,
       TranslocoModule,
+      SharedDocumentItemModule,
     ],
     declarations: [
       TreeHeaderComponent,
       EmptyNavigationComponent,
       SearchInputComponent,
+      DocumentIconComponent,
     ],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     componentMocks: [DynamicDatabase, ConfigService],
