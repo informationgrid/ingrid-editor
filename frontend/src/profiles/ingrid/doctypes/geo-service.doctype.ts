@@ -93,7 +93,7 @@ export class GeoServiceDoctype extends IngridShared {
                   {
                     className: "optional",
                     expressions: {
-                      hide: "formState.mainModel?.service?.serviceType?.key !== '3'",
+                      hide: "formState.mainModel?.service?.type?.key !== '3'",
                     },
                   }
                 ),
