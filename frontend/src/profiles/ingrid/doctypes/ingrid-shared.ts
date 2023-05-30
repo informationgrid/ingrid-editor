@@ -172,15 +172,15 @@ export abstract class IngridShared extends BaseDoctype {
               className: "optional",
             }
           ),
-          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
-            className: "optional",
-          }),
           this.addInput("alternateTitle", "Kurzbezeichnung", {
             wrappers: ["panel", "form-field"],
             className: "optional",
           }),
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
+          }),
+          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
+            className: "optional",
           }),
           this.addAddressCard("pointOfContact", "Adressen", {
             required: true,
