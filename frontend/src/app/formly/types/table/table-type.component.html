@@ -106,12 +106,6 @@
                     *matCellDef="let element; let rowIndex = index"
                     class="select-controls"
                 >
-                    <mat-checkbox
-                        (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(element) : null"
-                        [checked]="selection.isSelected(element)"
-                    >
-                    </mat-checkbox>
                     <mat-icon
                         cdkDragHandle
                         (touchstart)="dragDisabled = false"
@@ -121,6 +115,12 @@
                     >
                         drag_indicator
                     </mat-icon>
+                    <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(element) : null"
+                        [checked]="selection.isSelected(element)"
+                    >
+                    </mat-checkbox>
                 </mat-cell>
             </ng-container>
 
