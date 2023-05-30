@@ -258,6 +258,8 @@ export class GeoServiceDoctype extends IngridShared {
   }
 
   private showAtomFeedInfo(field) {
+    if (!field.model.isAtomDownload) return;
+
     const cookieId = "HIDE_ATOM_FEED_INFO";
 
     if (this.cookieService.getCookie(cookieId) === "true") return;
