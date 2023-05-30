@@ -10,8 +10,12 @@ import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
 import { clone } from "../app/shared/utils";
+import { inject } from "@angular/core";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
+  protected codelistService = inject(CodelistService);
+  protected codelistQuery = inject(CodelistQuery);
+
   fields = <FormlyFieldConfig[]>[
     {
       key: "title",
@@ -93,13 +97,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
   cleanFields: FormlyFieldConfig[];
-
-  constructor(
-    private codelistService?: CodelistService,
-    protected codelistQuery?: CodelistQuery
-  ) {
-    super();
-  }
 
   abstract documentFields(): FormlyFieldConfig[];
 

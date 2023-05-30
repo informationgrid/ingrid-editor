@@ -1,12 +1,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { DocumentService } from "../../app/services/document/document.service";
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../app/services/codelist/codelist.service";
+import { SelectOptionUi } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { of } from "rxjs";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
@@ -23,6 +18,9 @@ export class TestDoctype extends BaseDoctype {
   label = "Test-Document";
 
   iconClass = "Geodatendienst";
+
+  private uploadService = inject(UploadService);
+  private configService = inject(ConfigService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -429,14 +427,4 @@ export class TestDoctype extends BaseDoctype {
         ],
       },
     ];
-
-  constructor(
-    storageService?: DocumentService,
-    codelistService?: CodelistService,
-    codelistQuery?: CodelistQuery,
-    private uploadService?: UploadService,
-    private configService?: ConfigService
-  ) {
-    super(codelistService, codelistQuery);
-  }
 }

@@ -4,8 +4,6 @@ import {
   CodelistService,
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { MatDialog } from "@angular/material/dialog";
@@ -54,6 +52,9 @@ export abstract class IngridShared extends BaseDoctype {
   private keywordFieldHint =
     "Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma trennen";
   http = inject(HttpClient);
+  dialog = inject(MatDialog);
+  cookieService = inject(CookieService);
+  private snack: MatSnackBar;
 
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
@@ -94,17 +95,6 @@ export abstract class IngridShared extends BaseDoctype {
     "320": "5",
     "321": "5",
   };
-
-  protected constructor(
-    private codelistServiceIngrid: CodelistService,
-    codelistQuery: CodelistQuery,
-    private uploadService: UploadService,
-    private dialog: MatDialog,
-    private cookieService: CookieService,
-    private snack: MatSnackBar
-  ) {
-    super(codelistServiceIngrid, codelistQuery);
-  }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addGroupSimple(
@@ -1342,7 +1332,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private getPriorityDatasets(): Observable<SelectOptionUi[]> {
-    return this.codelistServiceIngrid.observeRaw("6350").pipe(
+    return this.codelistService.observeRaw("6350").pipe(
       map((codelist) => {
         return CodelistService.mapToSelect(codelist, "de", false)
           .map((item, index) =>

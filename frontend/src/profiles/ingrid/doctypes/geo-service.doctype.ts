@@ -1,18 +1,13 @@
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
+import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { BehaviorSubject } from "rxjs";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../app/dialogs/confirm/confirm-dialog.component";
 
 @Injectable({
   providedIn: "root",
@@ -230,25 +225,6 @@ export class GeoServiceDoctype extends IngridShared {
     // update model to reflect changes
     // TODO: maybe use formOptions.detectChanges(field)?
     field.options.formState.updateModel();
-  }
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService,
-    snack: MatSnackBar
-  ) {
-    super(
-      codelistService,
-      codelistQuery,
-      uploadService,
-      dialog,
-      cookieService,
-      snack
-    );
   }
 
   private handleServiceTypeChange(field) {

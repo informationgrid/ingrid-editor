@@ -1,7 +1,5 @@
 import { DocumentService } from "../../app/services/document/document.service";
-import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { AddressOptions, AddressShared } from "./address.shared";
 
 export abstract class OrganisationDoctype extends AddressShared {
@@ -43,11 +41,9 @@ export abstract class OrganisationDoctype extends AddressShared {
 
   protected constructor(
     storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
     fieldWithAddressReferences: string
   ) {
-    super(codelistService, codelistQuery);
+    super();
     this.fieldWithAddressReferences = fieldWithAddressReferences;
   }
 }

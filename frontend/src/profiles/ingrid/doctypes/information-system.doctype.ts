@@ -1,13 +1,6 @@
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -97,23 +90,4 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService,
-    snack: MatSnackBar
-  ) {
-    super(
-      codelistService,
-      codelistQuery,
-      uploadService,
-      dialog,
-      cookieService,
-      snack
-    );
-  }
 }

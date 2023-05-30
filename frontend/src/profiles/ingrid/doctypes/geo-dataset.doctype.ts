@@ -1,17 +1,8 @@
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
+import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
 import { isNotEmptyObject } from "../../../app/shared/utils";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { generateUUID } from "../../../app/services/utils";
 
 @Injectable({
@@ -52,8 +43,6 @@ export class GeoDatasetDoctype extends IngridShared {
             required: true,
           }),
         ]),
-
-        ,
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
           wrappers: ["panel", "form-field", "addons"],
@@ -461,25 +450,6 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService,
-    snack: MatSnackBar
-  ) {
-    super(
-      codelistService,
-      codelistQuery,
-      uploadService,
-      dialog,
-      cookieService,
-      snack
-    );
-  }
 
   private getQualityFields(codelistId: number) {
     return this.addGroupSimple(
