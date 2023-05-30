@@ -87,6 +87,7 @@ export class GeoServiceDoctype extends IngridShared {
                   "Als ATOM-Download Dienst bereitstellen",
                   {
                     className: "optional",
+                    click: (field) => this.showAtomFeedInfo(field),
                     expressions: {
                       hide: "formState.mainModel?.service?.type?.key !== '3'",
                     },
@@ -254,5 +255,22 @@ export class GeoServiceDoctype extends IngridShared {
     this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
       this.getServiceOperationNameOptions.next(value)
     );
+  }
+
+  private showAtomFeedInfo(field) {
+    const cookieId = "HIDE_ATOM_FEED_INFO";
+
+    if (this.cookieService.getCookie(cookieId) === "true") return;
+
+    const message =
+      "Bitte stellen Sie sicher, dass in den extern verkoppelten dargestellten Daten ein Downloadlink vorhanden ist.";
+    this.dialog.open(ConfirmDialogComponent, {
+      data: <ConfirmDialogData>{
+        title: "Hinweis",
+        message: message,
+        cookieId: cookieId,
+        hideCancelButton: true,
+      },
+    });
   }
 }

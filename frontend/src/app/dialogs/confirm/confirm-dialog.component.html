@@ -30,21 +30,23 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button
-        *ngFor="let button of leftAlignedButtons"
-        mat-button
-        color="primary"
-        [class.mat-stroked-button]="button.emphasize"
-        [disabled]="
-            button.disabledWhenNotConfirmed &&
-            data.confirmText &&
-            textConfirmed !== data.confirmText
-        "
-        [mat-dialog-close]="button.id || false"
-        [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
-    >
-        {{ button.text }}
-    </button>
+    <ng-container *ngIf="!data.hideCancelButton">
+        <button
+            *ngFor="let button of leftAlignedButtons"
+            mat-button
+            color="primary"
+            [class.mat-stroked-button]="button.emphasize"
+            [disabled]="
+                button.disabledWhenNotConfirmed &&
+                data.confirmText &&
+                textConfirmed !== data.confirmText
+            "
+            [mat-dialog-close]="button.id || false"
+            [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+        >
+            {{ button.text }}
+        </button>
+    </ng-container>
     <mat-checkbox *ngIf="data.cookieId" (change)="updateCookie($event)"
         >nicht erneut anzeigen
     </mat-checkbox>

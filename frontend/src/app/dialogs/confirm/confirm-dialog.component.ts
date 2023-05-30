@@ -12,6 +12,7 @@ export interface ConfirmDialogData {
   buttons?: ConfirmDialogButton[];
   preformatted?: boolean;
   cookieId?: string;
+  hideCancelButton?: boolean;
 }
 
 export interface ConfirmDialogButton {
