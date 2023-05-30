@@ -12,16 +12,16 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
-import { saveAs } from "file-saver";
 import { GroupService } from "../../../services/role/group.service";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { CsvExportService } from "../../../services/csv-export.service";
 
 @Component({
   selector: "groups-table",
@@ -60,7 +60,11 @@ export class GroupsTableComponent
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
 
-  constructor(public groupService: GroupService, public dialog: MatDialog) {
+  constructor(
+    public groupService: GroupService,
+    public dialog: MatDialog,
+    private csvExportService: CsvExportService
+  ) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
@@ -114,36 +118,29 @@ export class GroupsTableComponent
   }
 
   private async downloadTable() {
-    // Create the header row.
-    const headerColumns = [
+    const rows: string[][] = [];
+    const headerCol = [
       "Gruppe eingerichtet am",
       "Gruppenname",
       "Gruppenbeschreibung",
       "Anzahl zugeordneter Benutzer",
     ];
-    let fileText = this.createRow(headerColumns);
-
-    // Create rows by groups.
+    rows.push(headerCol);
     for (const group of this.dataSource.filteredData) {
-      const users = await this.groupService
-        .getUsersOfGroup(group.id)
-        .toPromise();
-      const groupColumns = [
-        group.data.creationDate,
-        group.name,
-        group.description,
-        users.length,
-      ];
-      fileText += this.createRow(groupColumns);
+      rows.push(await this.buildRowByGroup(group));
     }
-
-    const blob = new Blob([fileText], {
-      type: "text/plain;charset=utf-8",
-    });
-    saveAs(blob, "groups.csv");
+    this.csvExportService.export(rows, { exportName: "groups" });
   }
 
-  private createRow(values: string[]) {
-    return `${values.join(";")}\n`;
+  private async buildRowByGroup(group): Promise<string[]> {
+    const users = await firstValueFrom(
+      this.groupService.getUsersOfGroup(group.id)
+    );
+    return [
+      group.data.creationDate,
+      group.name,
+      group.description,
+      users.length,
+    ];
   }
 }

@@ -24,7 +24,7 @@ import {
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
-import { Options } from "angular2-csv";
+import { CsvExportService } from "../../services/csv-export.service";
 
 @Component({
   selector: "ige-result-table",
@@ -64,26 +64,14 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   totalHits = 0;
   profileIconsMap: {};
-  csvOptions: Options = {
-    filename: "",
-    fieldSeparator: ",",
-    quoteStrings: "",
-    decimalseparator: ".",
-    showLabels: false,
-    headers: ["Typ", "Titel", "Aktualität"],
-    showTitle: false,
-    title: "CSV Export",
-    useBom: false,
-    removeNewLines: true,
-    keys: this.displayedColumns.filter((col) => col !== "settings"),
-  };
 
   constructor(
     private router: Router,
     private profileService: ProfileService,
     private profileQuery: ProfileQuery,
     private documentService: DocumentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private csvExportService: CsvExportService
   ) {}
 
   ngOnInit(): void {
@@ -147,5 +135,16 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
             .subscribe(() => this.updated.next());
         }
       });
+  }
+
+  downloadTable() {
+    const rows: string[][] = [];
+    rows.push(["Typ", "Titel", "Aktualität"]);
+    for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
+    this.csvExportService.export(rows, { exportName: "research" });
+  }
+
+  private buildRowByDoc(doc: IgeDocument) {
+    return [doc._type, doc.title, doc._contentModified];
   }
 }

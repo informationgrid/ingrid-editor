@@ -11,7 +11,7 @@
                 </button>
                 <mat-divider [vertical]="true"></mat-divider>
             </ng-container>
-            <button mat-button color="primary" (click)="csv.generateCsv()">
+            <button mat-button color="primary" (click)="downloadTable()">
                 CSV
             </button>
         </div>
@@ -100,12 +100,4 @@
         [pageSizeOptions]="[10, 20, 50]"
         showFirstLastButtons
     ></mat-paginator>
-
-    <angular2csv
-        #csv
-        class="hide"
-        [data]="dataSource.data"
-        filename="research"
-        [options]="csvOptions"
-    ></angular2csv>
 </ng-container>

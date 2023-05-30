@@ -17,11 +17,10 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
-import { Subject } from "rxjs";
+import { firstValueFrom, Subject } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
-import { saveAs } from "file-saver";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -36,6 +35,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { PermissionLegendsComponent } from "../../permissions/permission-legends/permission-legends.component";
+import { CsvExportService } from "../../../services/csv-export.service";
 
 @Component({
   selector: "user-table",
@@ -99,7 +99,7 @@ export class UserTableComponent
     public userService: UserService,
     public groupDataService: GroupDataService,
     public dialog: MatDialog,
-    private transloco: TranslocoService
+    private csvExportService: CsvExportService
   ) {
     super();
     const initialSelection = [];
@@ -187,8 +187,8 @@ export class UserTableComponent
   }
 
   private async downloadTable() {
-    // Create the header row.
-    const headerColumns = [
+    const rows: string[][] = [];
+    const headerCols = [
       "Account eingerichtet am",
       "Benutzername",
       "Rolle",
@@ -200,26 +200,23 @@ export class UserTableComponent
       "Telefon-Nr.",
       "Zugeordnete Gruppe(n)",
     ];
-    let fileText = this.createRow(headerColumns);
+    rows.push(headerCols);
 
     // Get groups for [Zugeordnete Gruppe(n)].
-    const groups = (await this.groupDataService.getGroups().toPromise()).map(
-      (group) => group.backendGroup
-    );
+    const groups = (
+      await firstValueFrom(this.groupDataService.getGroups())
+    ).map((group) => group.backendGroup);
 
     // Create rows by existing users.
     for (const user of this.dataSource.filteredData) {
-      fileText += this.createRowByUser(user, groups);
+      rows.push(this.buildRowByUser(user, groups));
     }
 
-    const blob = new Blob([fileText], {
-      type: "text/plain;charset=utf-8",
-    });
-    saveAs(blob, "users.csv");
+    this.csvExportService.export(rows, { exportName: "user" });
   }
 
-  private createRowByUser(user: FrontendUser, groups: Group[]): string {
-    const userColumns = [
+  private buildRowByUser(user: FrontendUser, groups: Group[]): string[] {
+    const columns = [
       user.creationDate.toString(),
       user.login,
       user.role,
@@ -230,7 +227,6 @@ export class UserTableComponent
       user.department,
       user.phoneNumber,
     ];
-
     // Add group names if assigned.
     if (user.groups?.length) {
       let groupNames = [];
@@ -240,14 +236,9 @@ export class UserTableComponent
         );
         if (group != undefined) groupNames.push(group.name);
       }
-      if (groupNames.length) userColumns.push(groupNames.join(" | "));
+      if (groupNames.length) columns.push(groupNames.join(" | "));
     }
-
-    return this.createRow(userColumns);
-  }
-
-  private createRow(values: string[]) {
-    return `${values.join(";")}\n`;
+    return columns;
   }
 
   private getSearchKeyByPermission(permission: PermissionLevel): string {

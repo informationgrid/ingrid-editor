@@ -41,7 +41,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
 import { TranslocoModule } from "@ngneat/transloco";
-import { Angular2CsvModule } from "angular2-csv";
 
 @NgModule({
   declarations: [
@@ -84,7 +83,6 @@ import { Angular2CsvModule } from "angular2-csv";
     MatProgressSpinnerModule,
     MatSnackBarModule,
     TranslocoModule,
-    Angular2CsvModule,
   ],
   providers: [
     {

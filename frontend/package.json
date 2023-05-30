@@ -45,7 +45,6 @@
     "@stomp/rx-stomp": "^1.2.0",
     "angular-mixed-cdk-drag-drop": "^2.0.0",
     "angular-split": "^15.0.0",
-    "angular2-csv": "^0.2.9",
     "cronstrue": "^2.26.0",
     "diff": "^5.1.0",
     "file-saver": "^2.0.5",
