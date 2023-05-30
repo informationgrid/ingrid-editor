@@ -54,7 +54,7 @@ export abstract class IngridShared extends BaseDoctype {
   http = inject(HttpClient);
   dialog = inject(MatDialog);
   cookieService = inject(CookieService);
-  private snack: MatSnackBar;
+  private snack = inject(MatSnackBar);
 
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
@@ -364,7 +364,7 @@ export abstract class IngridShared extends BaseDoctype {
           updateOn: "change",
           hintStart: this.keywordFieldHint,
           keydown: async (field, event: KeyboardEvent) => {
-            await this.analyzeKeywords(event, field, options.thesaurusTopics);
+            await this.analyzeKeywords(event, field, options);
           },
         }),
       ].filter(Boolean)
@@ -374,7 +374,7 @@ export abstract class IngridShared extends BaseDoctype {
   private async analyzeKeywords(
     event: KeyboardEvent,
     field: FormlyFieldConfig,
-    thesaurusTopicsEnabled: boolean
+    options: KeywordSectionOptions
   ) {
     if (event.key !== "Enter") return;
 
@@ -389,10 +389,7 @@ export abstract class IngridShared extends BaseDoctype {
       value
         .split(",")
         .map((item) => item.trim())
-        .map(
-          async (item) =>
-            await this.assignKeyword(formState, item, thesaurusTopicsEnabled)
-        )
+        .map(async (item) => await this.assignKeyword(formState, item, options))
     );
 
     field.options.formState.updateModel();
@@ -402,13 +399,11 @@ export abstract class IngridShared extends BaseDoctype {
     field.props.hintStart = this.keywordFieldHint;
   }
 
-  private async assignKeyword(formState, item, withThesaurusTopics: boolean) {
-    const resultTheme = this.checkInThemes(
-      formState,
-      item,
-      withThesaurusTopics
-    );
-    if (resultTheme.found) return resultTheme;
+  private async assignKeyword(formState, item, options: KeywordSectionOptions) {
+    if (options.inspireTopics && formState.mainModel.isInspireIdentified) {
+      const resultTheme = this.checkInThemes(formState, item, options);
+      if (resultTheme.found) return resultTheme;
+    }
     const umthesResult = await this.checkInUmthes(
       this.http,
       formState.mainModel,
@@ -1363,7 +1358,7 @@ export abstract class IngridShared extends BaseDoctype {
   private checkInThemes(
     formState: any,
     item: string,
-    withThesaurusTopics: boolean
+    options: KeywordSectionOptions
   ): ThesaurusResult {
     const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
     if (id) {
@@ -1373,7 +1368,7 @@ export abstract class IngridShared extends BaseDoctype {
       if (!exists) {
         const itemTheme = { key: id };
         formState.mainModel.themes.push(itemTheme);
-        if (withThesaurusTopics) {
+        if (options.thesaurusTopics) {
           this.updateIsoCategory(itemTheme, formState);
         }
       }

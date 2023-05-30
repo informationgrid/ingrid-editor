@@ -8,7 +8,7 @@ import { ThesaurusResult } from "./thesaurus-result";
 
 @Component({
   template: `
-    <div class="display-flex">
+    <div class="display-flex flex-row">
       <span
         >Die Schlagwörter wurden wie folgt zugeordnet:
         <div *ngFor="let item of report">
