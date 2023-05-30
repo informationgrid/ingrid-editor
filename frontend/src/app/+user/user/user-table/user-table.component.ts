@@ -28,7 +28,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
-import { TranslocoModule, TranslocoService } from "@ngneat/transloco";
+import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconModule } from "@angular/material/icon";
 import { NgIf, NgSwitch, NgSwitchCase } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
@@ -212,7 +212,7 @@ export class UserTableComponent
       rows.push(this.buildRowByUser(user, groups));
     }
 
-    this.csvExportService.export(rows, { exportName: "user" });
+    this.csvExportService.export(rows, { exportName: "users" });
   }
 
   private buildRowByUser(user: FrontendUser, groups: Group[]): string[] {
