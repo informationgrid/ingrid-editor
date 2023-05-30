@@ -29,7 +29,9 @@
     }
   },
   "subType": { "key": "5" },
-  "keywords": ["optional"],
+  "keywords": {
+    "free": [{ "label": "optional" }]
+  },
   "metadata": { "language": { "key": "103" }, "characterSet": null },
   "resource": {
     "purpose": "production purpose",

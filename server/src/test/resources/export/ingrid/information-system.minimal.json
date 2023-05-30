@@ -20,7 +20,9 @@
     "spatialSystems": [{ "key": "9000001" }],
     "verticalExtent": { "unitOfMeasure": null }
   },
-  "keywords": [],
+  "keywords": {
+    "free": []
+  },
   "metadata": { "language": { "key": "103" } },
   "resource": { "useConstraints": [], "accessConstraints": [] },
   "temporal": {

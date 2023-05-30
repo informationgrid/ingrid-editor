@@ -9,6 +9,8 @@ import java.net.URLEncoder
 @Service
 class SNSUbaUmthesThesaurus : ThesaurusService() {
 
+    override val id = "umthes"
+
     val searchUrlTemplate = "https://sns.uba.de/umthes/de/search.rdf?q="
 
     override fun search(term: String, options: ThesaurusSearchOptions): List<Keyword> {

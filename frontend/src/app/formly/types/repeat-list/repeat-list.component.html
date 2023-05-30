@@ -26,13 +26,13 @@
                 svgIcon="language-24px"
             ></mat-icon>
 
-            <ng-container *ngIf="type !== 'search'">
+            <ng-container *ngIf="!props.labelField">
                 <div class="label">
                     {{ getParameter(model[i]) }}
                 </div>
             </ng-container>
 
-            <ng-container *ngIf="type === 'search'">
+            <ng-container *ngIf="props.labelField">
                 <div class="label">{{ model[i][props.labelField] }}</div>
             </ng-container>
 

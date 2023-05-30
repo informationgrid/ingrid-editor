@@ -22,7 +22,9 @@
     "verticalExtent": { "unitOfMeasure": null }
   },
   "subType": { "key": "5" },
-  "keywords": [],
+  "keywords": {
+    "free": []
+  },
   "metadata": { "language": { "key": "306" }, "characterSet": null },
   "resource": {
     "useConstraints": [{ "title": { "key": "22" }, "source": "source4" }],

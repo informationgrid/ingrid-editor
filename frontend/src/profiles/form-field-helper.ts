@@ -54,6 +54,7 @@ export interface RepeatListOptions extends Options {
   hint?: string;
   asAutocomplete?: boolean;
   asSimpleValues?: boolean;
+  convert?: (value) => any;
 }
 
 export interface RepeatChipOptions extends Options {
@@ -280,6 +281,7 @@ export class FormFieldHelper {
         selectLabelField: options?.selectLabelField ?? options?.labelField,
         asAutocomplete: options?.asAutocomplete ?? false,
         asSimpleValues: options?.asSimpleValues,
+        convert: options?.convert,
       },
       expressions: expressions,
     };

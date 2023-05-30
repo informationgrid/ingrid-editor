@@ -20,7 +20,7 @@ data class DataModel(
     val advProductGroups: List<KeyValueModel>?,
     val alternateTitle: String?,
     val themes: List<KeyValueModel>?,
-    val keywords: List<String>?,
+    val keywords: Keywords?,
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
@@ -304,4 +304,16 @@ data class VerticalExtent(
     val minimumValue: Float?,
     val maximumValue: Float?,
     val unitOfMeasure: KeyValueModel?,
+)
+
+data class Keywords(
+    val free: List<Keyword>?,
+    val umthes: List<Keyword>?,
+    val gemet: List<Keyword>?,
+)
+
+data class Keyword(
+    val id: String?,
+    val label: String,
+    val alternativeLabel: String?
 )

@@ -29,7 +29,9 @@
     "spatialSystems": [{ "key": "9000003" }],
     "verticalExtent": { "unitOfMeasure": null }
   },
-  "keywords": [],
+  "keywords": {
+    "free": []
+  },
   "metadata": { "language": { "key": "134" } },
   "resource": {
     "useConstraints": [{ "title": { "key": "10" } }],

@@ -92,7 +92,9 @@
     "spatialScope": {
       "key": "1339931727"
     },
-    "keywords": [],
+    "keywords": {
+      "free": []
+    },
     "service": {
       "classification": [
         {

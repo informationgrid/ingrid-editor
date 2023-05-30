@@ -428,9 +428,24 @@
       "required": ["events"]
     },
     "keywords": {
-      "type": "array",
-      "items": {
-        "type": "string"
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "free": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "umthes": {
+          "$ref": "#/definitions/keywordsUmthes"
+        }
       }
     },
     "keywordsUmthes": {

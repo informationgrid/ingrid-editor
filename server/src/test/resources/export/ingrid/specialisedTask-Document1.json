@@ -59,7 +59,9 @@
     ],
     "advProductGroups": [],
     "themes": [],
-    "keywords": [],
+    "keywords": {
+      "free": []
+    },
     "spatial": {
       "references": [
         {

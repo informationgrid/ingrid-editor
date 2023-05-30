@@ -107,10 +107,16 @@
         "key": "17"
       }
     ],
-    "keywords": [
-      "Frei1",
-      "Frei2"
-    ],
+    "keywords": {
+      "free": [
+        {
+          "label": "Frei1"
+        },
+        {
+          "label": "Frei2"
+        }
+      ]
+    },
     "lineage": {
       "statement": "Fachliche Grundlage Text"
     },
@@ -380,10 +386,7 @@
       }
     },
     "dataset": {
-      "languages": [
-        "150",
-        "103"
-      ]
+      "languages": ["150", "103"]
     },
     "conformanceResult": [
       {

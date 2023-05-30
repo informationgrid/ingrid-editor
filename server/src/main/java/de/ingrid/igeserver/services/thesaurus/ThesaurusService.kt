@@ -10,6 +10,8 @@ import java.util.concurrent.Executors
 
 abstract class ThesaurusService {
 
+    abstract val id: String
+    
     abstract fun search(term: String, options: ThesaurusSearchOptions): List<Keyword>
 
     fun sendRequest(method: String, url: String): String {

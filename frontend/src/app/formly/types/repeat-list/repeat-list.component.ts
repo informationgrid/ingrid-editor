@@ -354,8 +354,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private addValueAndDetermineDuplicates(value: string) {
     const duplicates = [];
     value.split(",").forEach((item) => {
-      const trimmed = item.trim();
+      let trimmed: any = item.trim();
       if (trimmed == "") return;
+
+      if (this.props?.convert) {
+        trimmed = this.props.convert(trimmed);
+      }
 
       if (this.model.indexOf(trimmed) === -1) {
         this.add(null, trimmed);

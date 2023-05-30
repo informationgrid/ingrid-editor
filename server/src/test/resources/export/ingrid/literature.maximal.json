@@ -26,7 +26,13 @@
       "unitOfMeasure": { "key": "4" }
     }
   },
-  "keywords": ["optional-term"],
+  "keywords": {
+    "free": [
+      {
+        "label": "optional-term"
+      }
+    ]
+  },
   "metadata": { "language": { "key": "182" } },
   "resource": {
     "purpose": "purpose1",

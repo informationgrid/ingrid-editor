@@ -337,26 +337,30 @@ export abstract class IngridShared extends BaseDoctype {
                 this.checkConnectedIsoCategory(event, field),
             })
           : null,
-        this.addRepeatList("keywordsUmthes", "Umthes Schlagworte", {
-          view: "chip",
-          className: "optional",
-          placeholder: "Im Umweltthesaurus suchen",
-          restCall: (query: string) =>
-            this.http.get<any[]>(
-              `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`
-            ),
-          labelField: "label",
-          selectLabelField: (item) => {
-            return item.alternativeLabel
-              ? `${item.label} (${item.alternativeLabel})`
-              : item.label;
-          },
-        }),
-        this.addRepeatList("keywords", "Optionale Schlagworte", {
-          view: "chip",
-          className: "optional",
-          hint: this.keywordFieldHint,
-        }),
+        this.addGroupSimple("keywords", [
+          this.addRepeatList("umthes", "Umthes Schlagworte", {
+            view: "chip",
+            className: "optional",
+            placeholder: "Im Umweltthesaurus suchen",
+            restCall: (query: string) =>
+              this.http.get<any[]>(
+                `${ConfigService.backendApiUrl}keywords/umthes?q=${query}`
+              ),
+            labelField: "label",
+            selectLabelField: (item) => {
+              return item.alternativeLabel
+                ? `${item.label} (${item.alternativeLabel})`
+                : item.label;
+            },
+          }),
+          this.addRepeatList("free", "Optionale Schlagworte", {
+            view: "chip",
+            className: "optional",
+            hint: this.keywordFieldHint,
+            convert: (val) => (val ? { label: val } : null),
+            labelField: "label",
+          }),
+        ]),
         this.addInput(null, null, {
           className: "optional",
           wrappers: ["panel", "form-field"],

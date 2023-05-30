@@ -27,7 +27,13 @@
       "unitOfMeasure": { "key": "9001" }
     }
   },
-  "keywords": ["optional info"],
+  "keywords": {
+    "free": [
+      {
+        "label": "optional info"
+      }
+    ]
+  },
   "metadata": { "language": { "key": "103" } },
   "resource": {
     "purpose": "production purpose",

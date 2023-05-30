@@ -180,7 +180,7 @@ open class IngridModelTransformer constructor(
         name = "GEMET - INSPIRE themes, version 1.0"
     )
     val freeKeywords = Thesaurus(
-        keywords = data.keywords?.map { Keyword(name = it, link = null) } ?: emptyList(),
+        keywords = data.keywords?.free?.map { Keyword(name = it.label, link = null) } ?: emptyList(),
         date = null,
         name = null,
     )

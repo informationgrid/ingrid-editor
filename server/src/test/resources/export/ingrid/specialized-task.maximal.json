@@ -26,7 +26,13 @@
       "unitOfMeasure": { "key": "9001" }
     }
   },
-  "keywords": ["any keyword"],
+  "keywords": {
+    "free": [
+      {
+        "label": "any keyword"
+      }
+    ]
+  },
   "metadata": { "language": { "key": "126" } },
   "resource": { "purpose": "zweck1", "specificUsage": "nutzung1" },
   "temporal": {

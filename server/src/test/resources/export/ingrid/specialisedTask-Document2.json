@@ -87,12 +87,22 @@
         "key": "313"
       }
     ],
-    "keywords": [
-      "Frei1",
-      "Frei2",
-      "Wasser",
-      "Luft"
-    ],
+    "keywords": {
+      "free": [
+        {
+          "label": "Frei1"
+        },
+        {
+          "label": "Frei2"
+        },
+        {
+          "label": "Wasser"
+        },
+        {
+          "label": "Luft"
+        }
+      ]
+    },
     "spatial": {
       "references": [
         {
@@ -196,10 +206,7 @@
       }
     },
     "dataset": {
-      "languages": [
-        "123",
-        "150"
-      ]
+      "languages": ["123", "150"]
     },
     "extraInfo": {
       "legalBasicsDescriptions": [

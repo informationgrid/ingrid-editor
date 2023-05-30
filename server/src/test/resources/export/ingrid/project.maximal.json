@@ -27,7 +27,13 @@
       "unitOfMeasure": { "key": "9001" }
     }
   },
-  "keywords": ["optional"],
+  "keywords": {
+    "free": [
+      {
+        "label": "optional"
+      }
+    ]
+  },
   "metadata": { "language": { "key": "126" } },
   "resource": {
     "purpose": "asb",
