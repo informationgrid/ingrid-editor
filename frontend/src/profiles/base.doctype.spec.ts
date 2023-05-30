@@ -29,7 +29,7 @@ describe("Document Type", () => {
   let doctype;
 
   beforeEach(async () => {
-    doctype = new DummyDocType(null, null);
+    doctype = new DummyDocType();
     initialFieldLength = doctype.fields.length;
     await doctype.init(helpIds);
   });
