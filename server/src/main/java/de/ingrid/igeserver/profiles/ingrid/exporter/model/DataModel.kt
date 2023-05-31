@@ -117,10 +117,14 @@ data class ProcessStep(
 data class ConformanceResult(
     val pass: KeyValueModel,
     val isInspire: Boolean?,
-    val explanation: String?,
     val specification: KeyValueModel?,
     val publicationDate: String,
-)
+) {
+    val explanation: String? = null
+        get() {
+            return if (field.isNullOrEmpty()) "see the referenced specification" else field
+        }
+}
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
