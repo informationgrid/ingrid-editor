@@ -68,11 +68,13 @@
 "priorityDatasets": @template.ingrid.partial.key-values(list = model.getPriorityDatasets()),
 "openDataCategories": @template.ingrid.partial.key-values(list = model.getOpenDataCategories()),
 "spatialScope": @template.ingrid.partial.key-value(item = model.getSpatialScope()),
-"keywords": [
-@for(var keyword : ForSupport.of(model.getKeywords()))
-    "${keyword.get()}"@if (!keyword.isLast()),@endif
-@endfor
-],
+"keywords": {
+    "free": [
+    @for(var keyword : ForSupport.of(model.getKeywords()))
+        { "label": "${keyword.get()}" }@if (!keyword.isLast()),@endif
+    @endfor
+    ]
+},
 "spatial": {
 "references": [
 @for(var ref : ForSupport.of(model.getSpatialReferences()))
