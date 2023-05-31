@@ -116,6 +116,9 @@ export class GeoServiceDoctype extends IngridShared {
               this.addInputInline("description", "Beschreibung"),
               this.addInputInline("methodCall", "Zugriffs-URL", {
                 required: true,
+                validators: {
+                  validation: ["url"],
+                },
               }),
             ],
             validators: {

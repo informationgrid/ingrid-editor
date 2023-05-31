@@ -16,9 +16,6 @@ import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
   styleUrls: ["./link-dialog.component.scss"],
 })
 export class LinkDialogComponent implements OnInit, AfterViewInit {
-  private URL_REGEXP =
-    "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?;&//=]*)";
-
   form = new UntypedFormGroup({});
 
   options: FormlyFormOptions = {};
@@ -62,10 +59,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
       type: "input",
       props: field.props,
       validators: {
-        url: {
-          expression: (c) => new RegExp(this.URL_REGEXP).test(c.value),
-          message: "Verwenden Sie bitte eine gültige URL",
-        },
+        validation: ["url"],
       },
     };
   }

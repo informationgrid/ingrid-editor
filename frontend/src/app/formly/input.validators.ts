@@ -27,6 +27,10 @@ export function UrlValidator(control: UntypedFormControl): ValidationErrors {
   return regExp.test(control.value?.trim()) ? null : { url: true };
 }
 
+export function UrlValidatorMessage(error: any, field: FormlyFieldConfig) {
+  return "Verwenden Sie bitte eine gültige URL";
+}
+
 export function LowercaseValidator(
   control: UntypedFormControl
 ): ValidationErrors {

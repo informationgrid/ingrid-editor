@@ -62,6 +62,8 @@ import {
   maxValidationMessage,
   minValidationMessage,
   NotEmptyArrayValidator,
+  UrlValidator,
+  UrlValidatorMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -223,6 +225,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
         { name: "notEmptyArray", validation: NotEmptyArrayValidator },
+        { name: "url", validation: UrlValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
@@ -237,6 +240,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "lowercase",
           message: "Dieses Feld darf keine Großbuchstaben enthalten",
+        },
+        {
+          name: "url",
+          message: UrlValidatorMessage,
         },
         {
           name: "matDatepickerMin",
