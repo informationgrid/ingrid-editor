@@ -129,7 +129,16 @@
   "spatialScope": {
     "key": "-673152846"
   },
-  "keywords": ["Wasser", "Unbekannt"],
+  "keywords": {
+    "free": [
+      {
+        "label": "Wasser"
+      },
+      {
+        "label": "Unbekannt"
+      }
+    ]
+  },
   "spatial": {
     "references": [
       {
