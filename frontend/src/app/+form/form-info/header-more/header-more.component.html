@@ -35,7 +35,7 @@
     <div *ngIf="!hideFields.modified" class="flex-row">
         <div>Geändert am</div>
         <div>
-            <span [title]="model._contentModified | date : 'long'">{{
+            <span [matTooltip]="model._contentModified | date : 'long'">{{
                 model._contentModified | date : "dd.MM.yyyy"
             }}</span>
             <span *ngIf="model._contentModifiedBy">

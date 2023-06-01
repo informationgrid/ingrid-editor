@@ -26,7 +26,7 @@
 
                 <div class="flex-1"></div>
 
-                <span [title]="query.modified | date : 'long'">{{
+                <span [matTooltip]="query.modified | date : 'long'">{{
                     query.modified | dateAgo : "DE"
                 }}</span>
                 <ng-container *ngIf="query.canDelete; else placeholder">
