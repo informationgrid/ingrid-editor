@@ -105,8 +105,8 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
     this.drawAndZoom(value);
 
-    this.result.next(value);
-    this.updateTitle.next(item.display_name);
+    this.result.emit(value);
+    this.updateTitle.emit(item.display_name);
   }
 
   private drawAndZoom(value: SpatialBoundingBox) {
@@ -138,7 +138,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   }
 
   private updateSelectedArea(bounds: LatLngBounds) {
-    this.result.next({
+    this.result.emit({
       lat1: bounds.getSouthWest().lat,
       lon1: bounds.getSouthWest().lng,
       lat2: bounds.getNorthEast().lat,

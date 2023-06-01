@@ -39,4 +39,12 @@
             </mat-list>
         </div>
     </div>
+    <div *ngIf="spatialSelection?.ars">
+        <mat-checkbox checked="true" [(ngModel)]="useArs">
+            ARS übernehmen: {{ spatialSelection.ars }}
+        </mat-checkbox>
+    </div>
+    <div *ngIf="spatialSelection && !spatialSelection.ars">
+        Kein ARS vorhanden
+    </div>
 </div>

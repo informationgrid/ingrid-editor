@@ -45,6 +45,8 @@
             <ige-geothesaurus-wfsgnde
                 *ngSwitchCase="'wfsgnde'"
                 [map]="leafletReference"
+                [value]="result"
+                (updateTitle)="titleInput.setValue($event)"
                 (result)="updateBoundingBox($event)"
             ></ige-geothesaurus-wfsgnde>
         </div>

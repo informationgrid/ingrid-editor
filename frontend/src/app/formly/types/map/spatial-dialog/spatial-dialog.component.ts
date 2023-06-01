@@ -39,6 +39,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     value: null,
     title: null,
     type: "free",
+    ars: null,
   };
 
   titleInput: FormControl<string>;
@@ -74,6 +75,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
         value: this.data?.value,
         title: this.data?.title,
         type: this.data?.type ?? "free",
+        ars: this.data?.ars,
       };
     } else {
       this.titleInput = new FormControl("Neuer Raumbezug");
@@ -95,12 +97,15 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   updateView(viewType: SpatialLocationType) {
     this.view = viewType;
     this.result.type = viewType;
+    this.titleInput.enable();
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }
     } else {
-      this.result.value = null;
+      if (viewType !== "wfsgnde") {
+        this.result.value = null;
+      } else this.titleInput.disable();
       if (this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }

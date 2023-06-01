@@ -75,6 +75,12 @@
         "AX_Insel": "Insel",
         "AX_SchutzgebietNachNaturUmweltOderBodenschutzrecht": "Schutzgebiet"
       }
+    },
+    "types": {
+      "free": "Freier Raumbezug",
+      "wkt": "Raumbezug (WKT)",
+      "geo-name": "Geographischer Name",
+      "wfsgnde": "Geo-Thesaurus (wfs_gnde)"
     }
   }
 }
