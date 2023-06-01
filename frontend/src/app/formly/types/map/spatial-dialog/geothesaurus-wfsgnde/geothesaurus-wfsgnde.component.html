@@ -1,0 +1,42 @@
+<div class="free-spatial-wrapper flex-col">
+    <div class="dlg-field-label">Ort</div>
+    <ige-search-input
+        placeholder="Suchen"
+        [query]="searchInput"
+        [searchSub]="searchSubscribe"
+        [withWhiteBorder]="false"
+        minWidth="100%"
+    ></ige-search-input>
+
+    <div *ngIf="showWelcome" class="comment">
+        Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
+        Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
+        zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
+    </div>
+
+    <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+
+    <div class="result-wrapper">
+        <div class="list-wrapper">
+            <mat-list dense style="overflow: auto" ngDefaultControl>
+                <ng-container *ngFor="let entry of nominatimResult">
+                    <mat-list-item
+                        (click)="handleSelection(entry)"
+                        class="clickable"
+                        [title]="entry.display_name"
+                    >
+                        <mat-radio-button
+                            matListItemIcon
+                            [value]="entry"
+                            [checked]="spatialSelection === entry"
+                        ></mat-radio-button>
+                        <div matListItemLine>
+                            {{ entry.display_name }}
+                        </div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </ng-container>
+            </mat-list>
+        </div>
+    </div>
+</div>

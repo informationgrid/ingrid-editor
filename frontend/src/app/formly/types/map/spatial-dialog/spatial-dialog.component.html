@@ -42,6 +42,9 @@
                 [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
+            <ige-geothesaurus-wfsgnde
+                *ngSwitchCase="'wfsgnde'"
+            ></ige-geothesaurus-wfsgnde>
         </div>
 
         <div class="flex-1 flex-col">

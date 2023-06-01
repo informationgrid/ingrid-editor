@@ -67,4 +67,9 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun export(principal: Principal): ResponseEntity<Any>
 
+    @Operation
+    @PostMapping(value = ["/geothesaurus/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<Any>
+
 }

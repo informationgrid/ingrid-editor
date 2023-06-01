@@ -50,6 +50,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     { id: "free", label: "Freier Raumbezug" },
     { id: "wkt", label: "Raumbezug (WKT)" },
     { id: "geo-name", label: "Nur Titel" },
+    { id: "wfsgnde", label: "Geothesaurus (wfs_gnde)" },
   ];
   view: SpatialLocationType;
 

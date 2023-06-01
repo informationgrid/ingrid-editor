@@ -60,6 +60,7 @@ import { DocumentIconModule } from "./document-icon/document-icon.module";
     MatSelectModule,
     TranslocoModule,
     DocumentIconModule,
+    SearchInputComponent,
   ],
   declarations: [
     TreeComponent,
@@ -71,7 +72,6 @@ import { DocumentIconModule } from "./document-icon/document-icon.module";
     SpatialListComponent,
     FeatureFlagDirective,
     DndDirective,
-    SearchInputComponent,
   ],
   exports: [
     TreeComponent,

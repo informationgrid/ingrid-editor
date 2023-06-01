@@ -8,7 +8,7 @@ import {
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 
-export type SpatialLocationType = "free" | "wkt" | "geo-name";
+export type SpatialLocationType = "free" | "wkt" | "geo-name" | "wfsgnde";
 
 export interface SpatialLocation {
   title: string;
