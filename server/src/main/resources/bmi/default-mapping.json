@@ -101,7 +101,7 @@
     "accrual_periodicity": {
       "type": "keyword"
     },
-    "access_rights": {
+    "legal_basis": {
       "type": "text"
     },
     "distribution": {

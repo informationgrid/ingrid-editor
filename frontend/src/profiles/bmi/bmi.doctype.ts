@@ -66,7 +66,11 @@ export class BmiDoctype extends BaseDoctype {
         this.addRepeatChip("keywords", "Schlagworte"),
       ]),
       this.addSection("Open Data", [
-        this.addTextArea("accessRights", "Nutzungshinweise", this.id),
+        this.addTextArea(
+          "legalBasis",
+          "Rechtsgrundlage für die Zugangseröffnung",
+          this.id
+        ),
         this.addRepeatChip("DCATThemes", "Open Data Kategorie", {
           required: true,
           useDialog: true,

@@ -9,7 +9,7 @@ data class DataModel(
     val description: String?,
     val DCATThemes: List<String>?, val origin: String?,
     val addresses: List<AddressRefModel>?,
-    val accessRights: String?,
+    val legalBasis: String?,
     val distributions: List<DownloadModel>?,
     val license: KeyValueModel?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,

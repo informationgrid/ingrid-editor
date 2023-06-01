@@ -31,8 +31,8 @@
         "organization": "{{ model.getPublisher().organization.trim() }}",
         "homepage": "{{ model.getPublisher().getHomepage() }}"
     },
-    {% if model.data.accessRights %}
-        "access_rights": ["{{ model.data.accessRights }}"],
+    {% if model.data.legalBasis %}
+        "legal_basis": ["{{ model.data.legalBasis }}"],
     {% endif %}
     "distribution": [
     {% for download in model.data.distributions %}

@@ -87,7 +87,7 @@
             }
           ]
         },
-        "accessRights": {
+        "legalBasis": {
           "type": [
             "string",
             "null"
