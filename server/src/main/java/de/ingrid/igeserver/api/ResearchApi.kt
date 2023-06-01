@@ -4,6 +4,7 @@ import de.ingrid.igeserver.model.Facets
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
+import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -70,6 +71,6 @@ interface ResearchApi {
     @Operation
     @PostMapping(value = ["/geothesaurus/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<Any>
+    fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<SpatialResponse>>
 
 }

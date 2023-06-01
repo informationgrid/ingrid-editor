@@ -18,12 +18,12 @@
 
     <div class="result-wrapper">
         <div class="list-wrapper">
-            <mat-list dense style="overflow: auto" ngDefaultControl>
-                <ng-container *ngFor="let entry of nominatimResult">
+            <mat-list dense style="overflow: auto">
+                <ng-container *ngFor="let entry of geoThesaurusResults">
                     <mat-list-item
                         (click)="handleSelection(entry)"
                         class="clickable"
-                        [title]="entry.display_name"
+                        [title]="entry.displayTitle"
                     >
                         <mat-radio-button
                             matListItemIcon
@@ -31,7 +31,7 @@
                             [checked]="spatialSelection === entry"
                         ></mat-radio-button>
                         <div matListItemLine>
-                            {{ entry.display_name }}
+                            {{ entry.displayTitle }}
                         </div>
                     </mat-list-item>
                     <mat-divider></mat-divider>

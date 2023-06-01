@@ -10,6 +10,8 @@ import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusFactory
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusSearchOptions
+import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
+import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -84,9 +86,9 @@ class ResearchApiController @Autowired constructor(
         TODO("Not yet implemented")
     }
 
-    override fun geoSearch(principal: Principal, query: String): ResponseEntity<Any> {
-        val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions("contains"))
-        return ResponseEntity.ok().build()
+    override fun geoSearch(principal: Principal, query: String): ResponseEntity<List<SpatialResponse>> {
+        val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
+        return ResponseEntity.ok(response)
         
     }
 

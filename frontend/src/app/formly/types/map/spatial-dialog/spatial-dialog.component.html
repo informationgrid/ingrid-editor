@@ -44,6 +44,8 @@
             ></ige-wkt-spatial>
             <ige-geothesaurus-wfsgnde
                 *ngSwitchCase="'wfsgnde'"
+                [map]="leafletReference"
+                (result)="updateBoundingBox($event)"
             ></ige-geothesaurus-wfsgnde>
         </div>
 
@@ -57,6 +59,7 @@
                     data-cy="spatial-dialog-title"
                     [formControl]="titleInput"
                     placeholder="Eingeben..."
+                    tabindex="0"
                 />
                 <mat-hint *ngIf="view === 'geo-name'"
                     >Geben Sie dem Raumbezug eine geographische Bezeichnung oder

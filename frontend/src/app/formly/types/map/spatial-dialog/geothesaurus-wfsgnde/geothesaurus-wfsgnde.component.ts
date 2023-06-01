@@ -1,4 +1,11 @@
-import { Component, inject, OnInit } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
@@ -6,19 +13,30 @@ import { NgForOf, NgIf } from "@angular/common";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { UntypedFormControl } from "@angular/forms";
-import { NominatimResult } from "../../nominatim.service";
-import { Map } from "leaflet";
+import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
 import { Subscription } from "rxjs";
 import { GeothesaurusWfsGndeService } from "./geothesaurus-wfs-gnde.service";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
+import { SpatialBoundingBox } from "../spatial-result.model";
+import { TranslocoService } from "@ngneat/transloco";
 
-interface GeoThesaurusResult {}
+interface GeoThesaurusResult {
+  id: string;
+  name: string;
+  displayTitle: string;
+  ars: string;
+  type: string;
+  bbox: SpatialBoundingBox;
+}
 
 @UntilDestroy()
 @Component({
   selector: "ige-geothesaurus-wfsgnde",
   templateUrl: "./geothesaurus-wfsgnde.component.html",
-  styleUrls: ["./geothesaurus-wfsgnde.component.scss"],
+  styleUrls: [
+    "../free-spatial/free-spatial.component.scss",
+    "./geothesaurus-wfsgnde.component.scss",
+  ],
   standalone: true,
   imports: [
     MatDividerModule,
@@ -30,11 +48,20 @@ interface GeoThesaurusResult {}
   ],
 })
 export class GeothesaurusWfsgndeComponent implements OnInit {
+  @Input() map: Map;
+
+  @Output() result = new EventEmitter<SpatialBoundingBox>();
+
+  private transloco = inject(TranslocoService);
+
   searchInput = new UntypedFormControl();
   showWelcome = true;
   showNoResult = false;
-  nominatimResult: GeoThesaurusResult[] = [];
+  geoThesaurusResults: GeoThesaurusResult[] = [];
   searchSubscribe: Subscription;
+
+  drawnBBox: Rectangle;
+  spatialSelection: GeoThesaurusResult = null;
 
   private thesaurus = inject(GeothesaurusWfsGndeService);
 
@@ -51,21 +78,62 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   private searchLocation(query: string) {
     if (query.trim().length === 0) {
       this.showWelcome = true;
-      this.nominatimResult = [];
+      this.geoThesaurusResults = [];
       return;
     }
     this.showWelcome = false;
 
     this.searchSubscribe = this.thesaurus
       .search(query)
-      .subscribe((response: NominatimResult[]) => {
-        response = response.filter((item) => item.type !== "city");
-        // .map((item) => FreeSpatialComponent.addTypeToDisplayName(item));
-        this.nominatimResult = response;
-        console.log("Nominatim:", response);
+      .subscribe((response: GeoThesaurusResult[]) => {
+        this.applyDisplayTitle(response);
+        this.geoThesaurusResults = response;
         this.showNoResult = response.length === 0;
         // @ts-ignore
         setTimeout(() => (<Map>this.map)._onResize());
       });
+  }
+
+  handleSelection(entry: GeoThesaurusResult) {
+    this.result.next(entry.bbox);
+
+    this.drawAndZoom(entry.bbox);
+  }
+
+  private drawAndZoom(value: SpatialBoundingBox) {
+    const bounds = new LatLngBounds(
+      new LatLng(value.lat1, value.lon1),
+      new LatLng(value.lat2, value.lon2)
+    );
+    this.drawBoundingBox(bounds);
+
+    this.map.fitBounds(bounds);
+  }
+
+  private drawBoundingBox(latLonBounds: LatLngBounds) {
+    this.removeDrawnBoundingBox();
+    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map);
+
+    this.drawnBBox.on("pm:edit", (e) =>
+      // @ts-ignore
+      this.updateSelectedArea(e.layer.getBounds())
+    );
+  }
+
+  private removeDrawnBoundingBox() {
+    if (this.drawnBBox) {
+      const bbox = this.drawnBBox;
+      setTimeout(() => this.map.removeLayer(bbox), 100);
+      this.drawnBBox = null;
+    }
+  }
+
+  private applyDisplayTitle(response: GeoThesaurusResult[]) {
+    response.forEach(
+      (item) =>
+        (item.displayTitle = `${item.name}, ${this.transloco.translate(
+          `spatial.geothesaurus.wfsgnde.${item.type}`
+        )}`)
+    );
   }
 }

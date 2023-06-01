@@ -1,5 +1,7 @@
 package de.ingrid.igeserver.services.geothesaurus
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -9,12 +11,23 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 data class GeoThesaurusSearchOptions(
-    val searchType: String
+    val searchType: ThesaurusSearchType
 )
 
 data class SpatialResponse(
     val id: String,
-    val name: String
+    var type: String,
+    @JsonIgnore val typeId: String?,
+    val name: String?,
+    val bbox: BoundingBox,
+    val ars: String?
+)
+
+data class BoundingBox(
+    val lat1: Number,
+    val lon1: Number,
+    val lat2: Number,
+    val lon2: Number,
 )
 
 abstract class GeoThesaurusService {
