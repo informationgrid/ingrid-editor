@@ -90,11 +90,11 @@ describe("TreeComponent", () => {
       MatSnackBarModule,
       TranslocoModule,
       SharedDocumentItemModule,
+      SearchInputComponent,
     ],
     declarations: [
       TreeHeaderComponent,
       EmptyNavigationComponent,
-      SearchInputComponent,
       DocumentIconComponent,
     ],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
