@@ -6,7 +6,7 @@
 
 .more-info {
   padding: 10px 0 20px;
-  overflow: hidden;
+  //overflow: hidden; // need to show help icon
   line-height: 22px;
 
   > div > div:nth-child(1) {
@@ -28,5 +28,14 @@
     &.working {
       color: $state-working-color;
     }
+  }
+
+  ::ng-deep .contextHelpIcon {
+    background-color: #ffffff !important;
+    margin-top: 0 !important;
+  }
+
+  ::ng-deep .label-wrapper {
+    padding-top: 0 !important;
   }
 }

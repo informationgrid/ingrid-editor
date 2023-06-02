@@ -3,24 +3,22 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from "@angular/core";
-import { ContextHelpService } from "../../../services/context-help/context-help.service";
+import { NgIf } from "@angular/common";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "ige-form-label",
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
+  imports: [NgIf, MatIconModule],
+  standalone: true,
 })
-export class FormLabelComponent implements OnInit {
+export class FormLabelComponent {
   @Input() hasContextHelp = false;
 
   @Output() contextHelp = new EventEmitter<HTMLElement>();
-
-  constructor(public contextHelpService: ContextHelpService) {}
-
-  ngOnInit(): void {}
 
   showContextHelp(evt: MouseEvent) {
     if (!this.hasContextHelp) {
@@ -29,6 +27,6 @@ export class FormLabelComponent implements OnInit {
 
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
-    this.contextHelp.next(infoElement);
+    this.contextHelp.emit(infoElement);
   }
 }

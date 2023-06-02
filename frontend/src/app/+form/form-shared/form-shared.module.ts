@@ -53,6 +53,7 @@ import { ActionButtonModule } from "../../shared/action-button/action-button.mod
 import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
 import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
+import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.component";
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { DocumentIconModule } from "../../shared/document-icon/document-icon.mod
     TranslocoModule,
     ActionButtonModule,
     DocumentIconModule,
+    FormLabelComponent,
   ],
   providers: [
     FormToolbarService,

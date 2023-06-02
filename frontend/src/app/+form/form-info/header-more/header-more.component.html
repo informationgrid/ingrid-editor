@@ -49,18 +49,18 @@
             </span>
         </div>
     </div>
-    <div
-        *ngIf="!hideFields.metadataDate && model._metadataDate"
-        class="flex-row"
-    >
-        <div>Metadaten-Datum</div>
-        <div>
-            <span [matTooltip]="model._metadataDate | date : 'long'"
-                >{{
-                    model._metadataDate | date : "dd.MM.yyyy"
-                }}
-                (veröffentlichte Version)</span
-            >
-        </div>
+    <div class="flex-row hasContextHelp">
+        <ige-form-label
+            *ngIf="!hideFields.metadataDate && model._metadataDate"
+            class="flex-row"
+            [hasContextHelp]="true"
+            (contextHelp)="showHelp()"
+        >
+            Metadaten-Datum
+        </ige-form-label>
+        <span [matTooltip]="model._metadataDate | date : 'long'">
+            {{ model._metadataDate | date : "dd.MM.yyyy" }} (veröffentlichte
+            Version)
+        </span>
     </div>
 </div>
