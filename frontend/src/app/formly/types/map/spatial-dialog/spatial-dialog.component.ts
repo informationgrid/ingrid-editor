@@ -2,11 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  inject,
   Inject,
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {
@@ -16,6 +17,8 @@ import {
 import { FormControl } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
+import { TranslocoService } from "@ngneat/transloco";
+import { debounceTime } from "rxjs/operators";
 
 interface LocationType {
   id: SpatialLocationType;
@@ -31,6 +34,8 @@ interface LocationType {
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
   @ViewChild("leafletDlg") leaflet: ElementRef;
 
+  private transloco = inject(TranslocoService);
+
   dialogTitle = this.data?.value
     ? "Raumbezug bearbeiten"
     : "Raumbezug hinzufügen";
@@ -39,17 +44,18 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     value: null,
     title: null,
     type: "free",
+    ars: null,
   };
 
-  titleInput: FormControl<string>;
+  titleInput = new FormControl<string>("");
 
   leafletReference: Map;
 
   _bbox: any = null;
   types: LocationType[] = [
-    { id: "free", label: "Freier Raumbezug" },
-    { id: "wkt", label: "Raumbezug (WKT)" },
-    { id: "geo-name", label: "Nur Titel" },
+    { id: "free", label: this.transloco.translate("spatial.types.free") },
+    { id: "wkt", label: this.transloco.translate("spatial.types.wkt") },
+    { id: "wfsgnde", label: this.transloco.translate("spatial.types.wfsgnde") },
   ];
   view: SpatialLocationType;
 
@@ -66,16 +72,21 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.titleInput.valueChanges
+      .pipe(untilDestroyed(this), debounceTime(500))
+      .subscribe((title) => (this.result.title = title));
+
     if (this.data) {
       this._bbox = this.data.value;
-      this.titleInput = new FormControl(this.data.title);
+      this.titleInput.setValue(this.data.title);
       this.result = {
         value: this.data?.value,
         title: this.data?.title,
         type: this.data?.type ?? "free",
+        ars: this.data?.ars,
       };
     } else {
-      this.titleInput = new FormControl("Neuer Raumbezug");
+      this.titleInput.setValue("Neuer Raumbezug");
     }
   }
 
@@ -94,12 +105,15 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   updateView(viewType: SpatialLocationType) {
     this.view = viewType;
     this.result.type = viewType;
+    this.titleInput.enable();
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }
     } else {
-      this.result.value = null;
+      if (viewType !== "wfsgnde") {
+        this.result.value = null;
+      } else this.titleInput.disable();
       if (this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();
       }
@@ -110,7 +124,6 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   }
 
   returnResult() {
-    this.result.title = this.titleInput.value ?? "";
     this.dialogRef.close(this.result);
   }
 }

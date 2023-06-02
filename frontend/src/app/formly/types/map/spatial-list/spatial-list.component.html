@@ -5,24 +5,34 @@
         (click)="selectLocation.next(location.indexNumber)"
     >
         <mat-icon
-            *ngIf="type !== 'geo-name'"
+            *ngIf="location.value"
             [style.background-color]="location.color + '40'"
             [style.color]="location.color"
             ><div></div>
         </mat-icon>
-        <mat-icon *ngIf="type === 'geo-name'" svgIcon="tag"></mat-icon>
+        <mat-icon *ngIf="!location.value" svgIcon="tag"></mat-icon>
 
-        <div class="description flex-row">
+        <div
+            class="description flex-row"
+            *transloco="let t; read: 'spatial.types'"
+        >
             <div class="list-item-content">
                 <div matLine class="spatial-type">
-                    <span>{{ getTypeName(type) }}</span>
+                    <span>{{ t(type) }}</span>
                 </div>
                 <div matLine class="spatial-title">
                     <span>{{ location.title }}</span>
+                    <span *ngIf="location.type === 'wfsgnde' && location.ars">
+                        (ARS: {{ location.ars }})
+                    </span>
                 </div>
 
                 <div
-                    *ngIf="location.type === 'free' && location.value"
+                    *ngIf="
+                        (location.type === 'free' ||
+                            location.type === 'wfsgnde') &&
+                        location.value
+                    "
                     matLine
                     class="coordinates"
                 >

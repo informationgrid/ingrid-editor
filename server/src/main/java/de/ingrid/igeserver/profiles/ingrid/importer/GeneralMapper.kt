@@ -301,12 +301,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 }
             }
 
-        // if a spatial value has no bounding box, then convert it to a geo name
-        return references.map {
-            if (it.type == "free" && it.coordinates == null) {
-                SpatialReference("geo-name", it.title)
-            } else it
-        }
+        return references
     }
 
     val spatialDescription =

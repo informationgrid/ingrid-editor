@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
@@ -15,6 +15,7 @@ import "@geoman-io/leaflet-geoman-free";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
 import { Subscription } from "rxjs";
+import { SpatialLocation } from "../../spatial-list/spatial-list.component";
 
 @UntilDestroy()
 @Component({
@@ -24,11 +25,7 @@ import { Subscription } from "rxjs";
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
-
-  @Input() set coordinates(value: SpatialBoundingBox) {
-    if (!value) return;
-    setTimeout(() => this.drawAndZoom(value));
-  }
+  @Input() value: SpatialLocation;
 
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
@@ -42,6 +39,8 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   spatialSelection: NominatimResult = null;
   searchSubscribe: Subscription;
 
+  arsControl = new FormControl<string>("");
+
   constructor(
     private nominatimService: NominatimService,
     private leafletService: LeafletService
@@ -52,9 +51,17 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
-    if (!this.drawnBBox) {
+    this.arsControl.valueChanges
+      .pipe(untilDestroyed(this), debounceTime(500))
+      .subscribe((ars) => (this.value.ars = ars));
+
+    if (this.value.value) {
+      this.drawAndZoom(this.value.value);
+    } else if (!this.drawnBBox) {
       this.leafletService.zoomToInitialBox(this.map);
     }
+
+    if (this.value.ars) this.arsControl.setValue(this.value.ars);
 
     this.addDrawControls();
   }
@@ -105,8 +112,8 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
     this.drawAndZoom(value);
 
-    this.result.next(value);
-    this.updateTitle.next(item.display_name);
+    this.result.emit(value);
+    this.updateTitle.emit(item.display_name);
   }
 
   private drawAndZoom(value: SpatialBoundingBox) {
@@ -138,7 +145,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   }
 
   private updateSelectedArea(bounds: LatLngBounds) {
-    this.result.next({
+    this.result.emit({
       lat1: bounds.getSouthWest().lat,
       lon1: bounds.getSouthWest().lng,
       lat2: bounds.getNorthEast().lat,

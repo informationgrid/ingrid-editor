@@ -32,7 +32,7 @@
             <ige-free-spatial
                 *ngSwitchCase="'free'"
                 [map]="leafletReference"
-                [coordinates]="result.value"
+                [value]="result"
                 (updateTitle)="titleInput.setValue($event)"
                 (result)="updateBoundingBox($event)"
             ></ige-free-spatial>
@@ -42,31 +42,28 @@
                 [wktString]="data?.wkt ?? ''"
                 (result)="this.result.wkt = $event"
             ></ige-wkt-spatial>
+            <ige-geothesaurus-wfsgnde
+                *ngSwitchCase="'wfsgnde'"
+                [map]="leafletReference"
+                [value]="result"
+                (updateTitle)="titleInput.setValue($event)"
+                (result)="updateBoundingBox($event)"
+            ></ige-geothesaurus-wfsgnde>
         </div>
 
         <div class="flex-1 flex-col">
-            <div class="dlg-field-label" [class.required]="view === 'geo-name'">
-                Titel<span *ngIf="view === 'geo-name'">*</span>
-            </div>
+            <div class="dlg-field-label">Titel</div>
             <mat-form-field appearance="outline">
                 <input
                     matInput
                     data-cy="spatial-dialog-title"
                     [formControl]="titleInput"
                     placeholder="Eingeben..."
+                    tabindex="0"
                 />
-                <mat-hint *ngIf="view === 'geo-name'"
-                    >Geben Sie dem Raumbezug eine geographische Bezeichnung oder
-                    auch Eigennamen.
-                </mat-hint>
             </mat-form-field>
 
-            <div
-                class="map"
-                [class.invisible]="view === 'geo-name'"
-                #leafletDlg
-                data-cy="spatial-dialog-map"
-            ></div>
+            <div class="map" #leafletDlg data-cy="spatial-dialog-map"></div>
             <div class="coordinates" *ngIf="view === 'free'">
                 <ige-coordinates-spatial
                     [map]="leafletReference"
@@ -86,15 +83,17 @@
     >
         Abbrechen
     </button>
-    <div class="flex-1"></div>
+    <div class="flex-1">{{ result | json }}</div>
     <button
         mat-flat-button
         color="primary"
         data-cy="confirm-dialog-save"
         [disabled]="
-            (view === 'free' && !result.value) ||
-            (view === 'wkt' && !result.wkt) ||
-            (view === 'geo-name' && !titleInput.value)
+            (view === 'free' &&
+                !result.value &&
+                !result.ars &&
+                !result.title) ||
+            (view === 'wkt' && !result.wkt)
         "
         (click)="returnResult()"
     >

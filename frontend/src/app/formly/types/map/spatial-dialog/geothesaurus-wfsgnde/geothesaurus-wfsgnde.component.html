@@ -5,6 +5,7 @@
         [query]="searchInput"
         [searchSub]="searchSubscribe"
         [withWhiteBorder]="false"
+        hint="Für eine breitere Suche können Sie Wildcards verwenden, z.B. Harz* oder *Talsperre"
         minWidth="100%"
     ></ige-search-input>
 
@@ -18,12 +19,12 @@
 
     <div class="result-wrapper">
         <div class="list-wrapper">
-            <mat-list dense style="overflow: auto" ngDefaultControl>
-                <ng-container *ngFor="let entry of nominatimResult">
+            <mat-list dense style="overflow: auto">
+                <ng-container *ngFor="let entry of geoThesaurusResults">
                     <mat-list-item
                         (click)="handleSelection(entry)"
                         class="clickable"
-                        [title]="entry.display_name"
+                        [title]="entry.displayTitle"
                     >
                         <mat-radio-button
                             matListItemIcon
@@ -31,7 +32,7 @@
                             [checked]="spatialSelection === entry"
                         ></mat-radio-button>
                         <div matListItemLine>
-                            {{ entry.display_name }}
+                            {{ entry.displayTitle }}
                         </div>
                     </mat-list-item>
                     <mat-divider></mat-divider>
@@ -39,9 +40,16 @@
             </mat-list>
         </div>
     </div>
-    <mat-form-field appearance="outline" class="ars-input">
-        <mat-label>ARS</mat-label>
-        <input matInput [formControl]="arsControl" data-cy="free-spatial-ars" />
-        <mat-error>Die ID ist bereits vergeben</mat-error>
-    </mat-form-field>
+    <div *ngIf="spatialSelection?.ars">
+        <mat-checkbox
+            checked="true"
+            [(ngModel)]="useArs"
+            (change)="updateArsUsage($event)"
+        >
+            ARS übernehmen: {{ spatialSelection.ars }}
+        </mat-checkbox>
+    </div>
+    <div *ngIf="spatialSelection && !spatialSelection.ars">
+        Kein ARS vorhanden
+    </div>
 </div>

@@ -69,7 +69,7 @@ export class LeafletTypeComponent
       .pipe(
         untilDestroyed(this),
         distinctUntilChanged(),
-        tap((value) => (this.locations = value || []))
+        tap((value: SpatialLocation[]) => (this.locations = value || []))
       )
       .subscribe(() => this.updateBoundingBox());
 
@@ -125,9 +125,7 @@ export class LeafletTypeComponent
       this.drawnSpatialRefs
     );
 
-    const hasCoordinates = this.locations.some(
-      (location) => location.type !== "geo-name"
-    );
+    const hasCoordinates = this.locations.some((location) => !location.value);
 
     if (this.locations.length === 0 || !hasCoordinates) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
@@ -213,9 +211,7 @@ export class LeafletTypeComponent
 
   highlightLocation(index: number) {
     if (index !== null) {
-      if (this.locations[index].type === "geo-name") {
-        return;
-      }
+      if (!this.locations[index].value) return;
 
       const bounds = this.leafletService.getBoundingBoxFromLayers([
         this.drawnSpatialRefs[index],

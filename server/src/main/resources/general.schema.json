@@ -84,23 +84,6 @@
           },
           "required": [],
           "title": "Spatial"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "type": {
-              "const": "geo-name"
-            },
-            "title": {
-              "type": ["null", "string"]
-            },
-            "value": {
-              "type": "null"
-            }
-          },
-          "required": [],
-          "title": "Spatial"
         }
       ]
     },
