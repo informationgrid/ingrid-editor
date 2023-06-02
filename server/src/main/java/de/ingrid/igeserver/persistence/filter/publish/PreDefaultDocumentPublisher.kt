@@ -5,6 +5,7 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before publish
  */
 @Component
-class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService): Filter<PrePublishPayload> {
+class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, val behaviourService: BehaviourService): Filter<PrePublishPayload> {
 
     override val profiles = arrayOf<String>()
 
@@ -24,7 +25,9 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService): F
 
         context.addMessage(Message(this, "Process document data '$docId' before publish"))
 
-        checkAllPublishedWithPublicationType(context.catalogId, payload)
+        if (isPublicationTypeBehaviourActive(context.catalogId)) {
+            checkAllPublishedWithPublicationType(context.catalogId, payload)
+        }
 
         // call entity type specific hook
         payload.type.onPublish(payload.document)
@@ -32,8 +35,18 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService): F
         return payload
     }
 
+    private fun isPublicationTypeBehaviourActive(catalogId: String): Boolean {
+        behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
+            val publicationTypesActive = it.active != null && it.active == true
+            if (publicationTypesActive) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun checkAllPublishedWithPublicationType(catalogId: String, payload: PrePublishPayload) {
-        val publicationDocTags = payload.wrapper.tags?.filter { it == "intranet" || it == "amtsintern" } ?: emptyList()
+        val publicationDocTags = payload.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
         documentService.getReferencedWrapperIds(catalogId, payload.document)
             .map { ref -> documentService.getDocumentFromCatalog(catalogId, ref) }
             .forEach { refData: DocumentData ->
@@ -47,7 +60,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService): F
         publicationDocTags: List<String>
     ) {
         val refPublicationDocTags =
-            refData.wrapper.tags?.filter { it == "intranet" || it == "amtsintern" } ?: emptyList()
+            refData.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
         val bothInternetWide = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
         val bothAtLeastOne = publicationDocTags.intersect(refPublicationDocTags.toSet()).isNotEmpty()
         
