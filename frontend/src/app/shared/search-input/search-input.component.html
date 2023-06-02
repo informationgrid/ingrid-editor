@@ -11,6 +11,7 @@
     <input
         *ngIf="autocompleteRef; else noAutocomplete"
         matInput
+        igeFocus
         [placeholder]="placeholder"
         data-cy="search"
         aria-label="Search"
@@ -20,6 +21,7 @@
     <ng-template #noAutocomplete>
         <input
             matInput
+            igeFocus
             [placeholder]="placeholder"
             data-cy="search"
             aria-label="Search"
