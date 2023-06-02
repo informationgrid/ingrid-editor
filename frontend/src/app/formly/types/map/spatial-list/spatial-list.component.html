@@ -5,12 +5,12 @@
         (click)="selectLocation.next(location.indexNumber)"
     >
         <mat-icon
-            *ngIf="type !== 'geo-name'"
+            *ngIf="location.value"
             [style.background-color]="location.color + '40'"
             [style.color]="location.color"
             ><div></div>
         </mat-icon>
-        <mat-icon *ngIf="type === 'geo-name'" svgIcon="tag"></mat-icon>
+        <mat-icon *ngIf="!location.value" svgIcon="tag"></mat-icon>
 
         <div
             class="description flex-row"

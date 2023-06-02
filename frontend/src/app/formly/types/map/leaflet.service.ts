@@ -112,7 +112,9 @@ export class LeafletService {
       (location) => location.type === "wkt" && location.wkt
     );
     const boxLocations = locations.filter(
-      (location) => location.type === "free" || location.type === "wfsgnde"
+      (location) =>
+        (location.type === "free" && location.value) ||
+        location.type === "wfsgnde"
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);

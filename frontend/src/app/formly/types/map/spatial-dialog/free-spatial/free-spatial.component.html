@@ -39,4 +39,9 @@
             </mat-list>
         </div>
     </div>
+    <mat-form-field appearance="outline" class="ars-input">
+        <mat-label>ARS</mat-label>
+        <input matInput [formControl]="arsControl" data-cy="free-spatial-ars" />
+        <mat-error>Die ID ist bereits vergeben</mat-error>
+    </mat-form-field>
 </div>

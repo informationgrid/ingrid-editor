@@ -77,9 +77,8 @@
       }
     },
     "types": {
-      "free": "Freier Raumbezug",
+      "free": "Freie Eingabe",
       "wkt": "Raumbezug (WKT)",
-      "geo-name": "Geographischer Name",
       "wfsgnde": "Geo-Thesaurus (wfs_gnde)"
     }
   }
