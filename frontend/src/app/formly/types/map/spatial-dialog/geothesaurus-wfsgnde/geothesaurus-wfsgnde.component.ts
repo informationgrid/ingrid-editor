@@ -19,7 +19,10 @@ import { GeothesaurusWfsGndeService } from "./geothesaurus-wfs-gnde.service";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { TranslocoService } from "@ngneat/transloco";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import {
+  MatCheckboxChange,
+  MatCheckboxModule,
+} from "@angular/material/checkbox";
 import { SpatialLocation } from "../../spatial-list/spatial-list.component";
 import { LeafletService } from "../../leaflet.service";
 
@@ -155,5 +158,10 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
           `spatial.geothesaurus.wfsgnde.${item.type}`
         )}`)
     );
+  }
+
+  updateArsUsage($event: MatCheckboxChange) {
+    if ($event.checked) this.value.ars = this.spatialSelection.ars;
+    else this.value.ars = null;
   }
 }

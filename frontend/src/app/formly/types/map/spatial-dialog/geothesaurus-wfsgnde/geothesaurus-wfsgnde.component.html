@@ -5,6 +5,7 @@
         [query]="searchInput"
         [searchSub]="searchSubscribe"
         [withWhiteBorder]="false"
+        hint="Für eine breitere Suche können Sie Wildcards verwenden, z.B. Harz* oder *Talsperre"
         minWidth="100%"
     ></ige-search-input>
 
@@ -40,7 +41,11 @@
         </div>
     </div>
     <div *ngIf="spatialSelection?.ars">
-        <mat-checkbox checked="true" [(ngModel)]="useArs">
+        <mat-checkbox
+            checked="true"
+            [(ngModel)]="useArs"
+            (change)="updateArsUsage($event)"
+        >
             ARS übernehmen: {{ spatialSelection.ars }}
         </mat-checkbox>
     </div>

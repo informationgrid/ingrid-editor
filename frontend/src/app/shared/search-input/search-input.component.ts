@@ -10,6 +10,7 @@ import { NgIf } from "@angular/common";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
+import { SharedPipesModule } from "../../directives/shared-pipes.module";
 
 @Component({
   selector: "ige-search-input",
@@ -23,6 +24,7 @@ import { MatButtonModule } from "@angular/material/button";
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    SharedPipesModule,
   ],
   standalone: true,
 })
