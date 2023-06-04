@@ -211,7 +211,7 @@ export class LeafletTypeComponent
 
   highlightLocation(index: number) {
     if (index !== null) {
-      if (!this.locations[index].value) return;
+      if (!this.locations[index].value && !this.locations[index].wkt) return;
 
       const bounds = this.leafletService.getBoundingBoxFromLayers([
         this.drawnSpatialRefs[index],

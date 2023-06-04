@@ -5,12 +5,15 @@
         (click)="selectLocation.next(location.indexNumber)"
     >
         <mat-icon
-            *ngIf="location.value"
+            *ngIf="location.value || location.wkt"
             [style.background-color]="location.color + '40'"
             [style.color]="location.color"
             ><div></div>
         </mat-icon>
-        <mat-icon *ngIf="!location.value" svgIcon="tag"></mat-icon>
+        <mat-icon
+            *ngIf="!location.value && !location.wkt"
+            svgIcon="tag"
+        ></mat-icon>
 
         <div
             class="description flex-row"
