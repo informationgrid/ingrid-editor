@@ -280,3 +280,11 @@ mat-tree-node {
 ige-document-icon {
   margin-right: 6px;
 }
+
+.folder.intranet .label {
+  color: red;
+}
+
+.folder.amtsintern .label {
+  color: blue;
+}

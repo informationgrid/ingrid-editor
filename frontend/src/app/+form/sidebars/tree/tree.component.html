@@ -121,6 +121,7 @@
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
         [class.folder]="node.type === 'FOLDER'"
+        [class]="node.tags"
     >
         <div style="width: 100%">
             <div class="flex-row">
