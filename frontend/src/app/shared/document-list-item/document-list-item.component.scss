@@ -85,3 +85,12 @@ mat-divider {
 ige-document-icon {
   margin-right: 16px !important;
 }
+
+::ng-deep mat-option {
+  .doc-item {
+    flex-direction: row !important;
+  }
+  .mat-icon {
+    margin-right: 0 !important;
+  }
+}
