@@ -8,7 +8,7 @@ export interface Catalog {
   modified?: string;
   countDocuments?: number;
   lastDocModification?: string;
-  settings: Settings;
+  settings?: Settings;
 }
 
 export interface Settings {
