@@ -41,6 +41,7 @@ export class SearchInputComponent {
   @Input() showSearchIcon = false;
   @Input() hint: string;
   @Input() withWhiteBorder = true;
+  @Input() focus = true;
   @Output() buttonClick = new EventEmitter<string>();
 
   resetSearch() {
