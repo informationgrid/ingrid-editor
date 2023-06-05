@@ -12,9 +12,9 @@
     "resolution": [
     @for(var resolution : ForSupport.of(model.getResolutions()))
         {
-        "denominator": ${resolution.get().getDenominator()},
-        "distanceMeter": ${resolution.get().getDistanceMeter()},
-        "distanceDPI": ${resolution.get().getDistanceDPI()}
+        "denominator": @template.ingrid.partial.value-or-null(item = resolution.get().getDenominator()),
+        "distanceMeter": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceMeter()),
+        "distanceDPI": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceDPI())
         }@if (!resolution.isLast()),@endif
     @endfor
     ],
@@ -64,16 +64,16 @@
     },
     !{var positionalAccuracy = model.getPositionalAccuracy();}
     "absoluteExternalPositionalAccuracy": {
-        "vertical": @if(positionalAccuracy.getVertical() != null)${positionalAccuracy.getVertical()}@else null@endif,
-        "horizontal": @if(positionalAccuracy.getHorizontal() != null)${positionalAccuracy.getHorizontal()}@else null@endif,
-        "griddedDataPositionalAccuracy": @if(positionalAccuracy.getGriddedDataPositionalAccuracy() != null)${positionalAccuracy.getGriddedDataPositionalAccuracy()}@else null@endif
+        "vertical": @template.ingrid.partial.value-or-null(item = positionalAccuracy.getVertical()),
+        "horizontal": @template.ingrid.partial.value-or-null(item = positionalAccuracy.getHorizontal()),
+        "griddedDataPositionalAccuracy": @template.ingrid.partial.value-or-null(item = positionalAccuracy.getGriddedDataPositionalAccuracy())
     },
     "qualities": [
     @for(var quality : ForSupport.of(model.getQualities()))
         {
         "_type": "${quality.get().getType()}",
         "measureType": @template.ingrid.partial.key-value(item = quality.get().getMeasureType()),
-        "value": ${quality.get().getValue()},
+        "value": @template.ingrid.partial.value-or-null(item = quality.get().getValue()),
         "parameter": "${quality.get().getParameter()}"
         }@if (!quality.isLast()),@endif
     @endfor
@@ -91,7 +91,7 @@
         {
         "topologyLevel": @template.ingrid.partial.key-value(item = vector.get().getTopologyLevel()),
         "geometricObjectType": @template.ingrid.partial.key-value(item = vector.get().getObjectType()),
-        "geometricObjectCount": ${vector.get().getObjectCount()}
+        "geometricObjectCount": @template.ingrid.partial.value-or-null(item = vector.get().getObjectCount())
         }@if (!vector.isLast()),@endif
     @endfor
     ]
@@ -103,8 +103,8 @@
         @for(var property : ForSupport.of(gridSpatial.getAxesDimensionProperties()))
             {
             "name": @template.ingrid.partial.key-value(item = property.get().getName()),
-            "size": ${property.get().getSize()},
-            "resolution": ${property.get().getResolution()}
+            "size": @template.ingrid.partial.value-or-null(item = property.get().getSize()),
+            "resolution": @template.ingrid.partial.value-or-null(item = property.get().getResolution())
             }@if (!property.isLast()),@endif
         @endfor
         ],

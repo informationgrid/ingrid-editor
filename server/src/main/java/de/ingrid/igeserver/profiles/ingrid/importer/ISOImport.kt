@@ -48,6 +48,8 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
         val output = createISO(catalogId, finalObject)
+        
+        log.debug("Created JSON from imported file: $output")
 
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
     }

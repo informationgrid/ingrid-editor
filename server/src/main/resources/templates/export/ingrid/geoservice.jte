@@ -1,5 +1,4 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
-@import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
 @import gg.jte.support.ForSupport
 @param GeoserviceMapper model 
 
@@ -24,9 +23,9 @@
         "resolution": [
         @for(var resolution : ForSupport.of(model.getResolutions()))
             {
-            "denominator": ${resolution.get().getDenominator()},
-            "distanceMeter": ${resolution.get().getDistanceMeter()},
-            "distanceDPI": ${resolution.get().getDistanceDPI()}
+            "denominator": @template.ingrid.partial.value-or-null(item = resolution.get().getDenominator()),
+            "distanceMeter": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceMeter()),
+            "distanceDPI": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceDPI())
             }@if (!resolution.isLast()),@endif
         @endfor
         ],
