@@ -125,7 +125,9 @@ export class LeafletTypeComponent
       this.drawnSpatialRefs
     );
 
-    const hasCoordinates = this.locations.some((location) => location.value);
+    const hasCoordinates = this.locations.some(
+      (location) => location.value || location.wkt
+    );
 
     if (this.locations.length === 0 || !hasCoordinates) {
       this.leafletService.zoomToInitialBox(this.leafletReference);

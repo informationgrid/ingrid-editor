@@ -6,7 +6,6 @@
   "dataset": { "languages": ["134"] },
   "lineage": { "statement": "basis" },
   "spatial": {
-    "regionKey": "1389283743",
     "references": [
       {
         "type": "free",
@@ -17,6 +16,10 @@
           "lon1": 11.7449969,
           "lon2": 11.8477633
         }
+      },
+      {
+        "type": "free",
+        "ars": "1389283743"
       }
     ],
     "description": "erlaeuterung",

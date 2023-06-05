@@ -322,9 +322,12 @@
           },
           "title": "Hannover",
           "type": "free"
+        },
+        {
+          "type": "free",
+          "ars": "12"
         }
       ],
-      "regionKey": 12,
       "spatialSystems": [
         {
           "key": "5676"

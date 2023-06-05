@@ -58,6 +58,29 @@
             "title": {
               "type": ["null", "string"]
             },
+            "ars": {
+              "type": ["null", "string"]
+            },
+            "value": {
+              "$ref": "#/definitions/BoundingBox"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "wfsgnde"
+            },
+            "title": {
+              "type": ["null", "string"]
+            },
+            "ars": {
+              "type": ["null", "string"]
+            },
             "value": {
               "$ref": "#/definitions/BoundingBox"
             }

@@ -92,13 +92,14 @@ open class IngridModelTransformer constructor(
     }
 
 
-    val regionKey = if (data.spatial.regionKey != null) KeyValueModel(
-        data.spatial.regionKey,
-        data.spatial.regionKey.padEnd(12, '0')
-    ) else null
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val cellGeometry = codelists.getValue("509", gridSpatialRepresentation?.cellGeometry, "iso")
     val spatialReferences = data.spatial.references ?: emptyList()
+    private val arsSpatial = spatialReferences.find { it.ars != null }
+    val regionKey = if (arsSpatial == null) null else KeyValueModel(
+        arsSpatial.ars,
+        arsSpatial.ars!!.padEnd(12, '0')
+    )
 
     fun getSpatialReferenceComponents(type: COORD_TYPE): String {
         return spatialReferences

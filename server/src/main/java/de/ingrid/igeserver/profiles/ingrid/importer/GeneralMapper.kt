@@ -272,13 +272,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.forEach {
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
-                val title = geoIdentifierCode?.value
-                if (title != null) {
+                val titleOrArs = geoIdentifierCode?.value
+                
+                if (titleOrArs != null) {
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
-                    if (isAnchorAndRegionKey) return@forEach
-
-                    references.add(SpatialReference("free", title))
+                    if (isAnchorAndRegionKey) {
+                        references.add(SpatialReference("free", title = null, ars = titleOrArs))
+                    } else {
+                        references.add(SpatialReference("free", title = titleOrArs))
+                    }
                     return@forEach
                 }
 
@@ -731,7 +734,8 @@ data class SpatialReference(
     val type: String,
     val title: String?,
     var coordinates: BoundingBox? = null,
-    var wkt: String? = null
+    var wkt: String? = null,
+    var ars: String? = null
 )
 
 data class BoundingBox(

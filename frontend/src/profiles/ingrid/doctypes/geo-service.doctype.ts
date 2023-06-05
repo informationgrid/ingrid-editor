@@ -213,7 +213,7 @@ export class GeoServiceDoctype extends IngridShared {
         ]),
       ]),
 
-      this.addSpatialSection({ regionKey: true }),
+      this.addSpatialSection(),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),

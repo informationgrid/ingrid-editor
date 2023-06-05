@@ -259,7 +259,6 @@ data class IngridSpatial(
     val spatialSystems: List<KeyValueModel>?,
     val verticalExtent: VerticalExtent?,
     val description: String?,
-    val regionKey: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

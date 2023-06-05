@@ -37,9 +37,7 @@ interface KeywordSectionOptions {
   inspireTopics?: boolean;
 }
 
-interface SpatialOptions {
-  regionKey?: boolean;
-}
+interface SpatialOptions {}
 
 interface AdditionalInformationSectionOptions {
   conformity?: boolean;
@@ -510,12 +508,6 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             hasInlineContextHelp: true,
           }),
-          options.regionKey
-            ? this.addInput("regionKey", "Amtlicher Regionalschlüssel", {
-                className: "optional flex-1",
-                wrappers: ["panel", "form-field"],
-              })
-            : null,
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
             asSelect: false,
             showSearch: true,

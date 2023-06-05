@@ -8,6 +8,7 @@
   "isOpenData": true,
   "description": "siehe Originalplan",
   "alternateTitle": "Short",
+  "parentIdentifier": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
   "pointOfContact": [
     {
       "ref": {
@@ -135,9 +136,13 @@
           "lat2": 50.226444,
           "lon2": 8.801178
         }
+      },
+      {
+        "type": "free",
+        "title": "",
+        "ars": "054352000000"
       }
     ],
-    "regionKey": "054352000000",
     "spatialSystems": [
       {
         "key": "3068"
@@ -485,10 +490,7 @@
     }
   ],
   "dataset": {
-    "languages": [
-      "150",
-      "134"
-    ]
+    "languages": ["150", "134"]
   },
   "vectorSpatialRepresentation": [
     {

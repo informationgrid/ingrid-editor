@@ -31,7 +31,6 @@
     "implementationHistory": "history"
   },
   "spatial": {
-    "regionKey": "12AB",
     "references": [
       {
         "type": "free",
@@ -42,6 +41,10 @@
           "lon1": 11.8930983,
           "lon2": 11.941834
         }
+      },
+      {
+        "type": "free",
+        "ars": "12AB"
       }
     ],
     "description": "some infos",

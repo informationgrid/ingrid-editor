@@ -8,6 +8,7 @@
   "isOpenData": true,
   "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
   "alternateTitle": "Short",
+  "parentIdentifier": "my-specified-parent",
   "pointOfContact": [
     {
       "ref": {
@@ -150,9 +151,13 @@
           "lat2": 52.678265,
           "lon2": 10.309714
         }
+      },
+      {
+        "type": "free",
+        "title": "",
+        "ars": "054854700000"
       }
     ],
-    "regionKey": "054854700000",
     "spatialSystems": [
       {
         "key": "3068"

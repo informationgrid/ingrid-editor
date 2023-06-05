@@ -416,20 +416,20 @@
                             </gmd:EX_BoundingPolygon>
                         </gmd:geographicElement>
                     @endif
+                    @if(ref.getArs() != null)
+                        <gmd:geographicElement>
+                            <gmd:EX_GeographicDescription>
+                                <gmd:geographicIdentifier>
+                                    <gmd:MD_Identifier>
+                                        <gmd:code>
+                                            <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${ref.getArs()}</gmx:Anchor>
+                                        </gmd:code>
+                                    </gmd:MD_Identifier>
+                                </gmd:geographicIdentifier>
+                            </gmd:EX_GeographicDescription>
+                        </gmd:geographicElement>
+                    @endif
                 @endfor
-                @if(page.getRegionKey() != null)
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicDescription>
-                            <gmd:geographicIdentifier>
-                                <gmd:MD_Identifier>
-                                    <gmd:code>
-                                        <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}">${page.getRegionKey().getValue()}</gmx:Anchor>
-                                    </gmd:code>
-                                </gmd:MD_Identifier>
-                            </gmd:geographicIdentifier>
-                        </gmd:EX_GeographicDescription>
-                    </gmd:geographicElement>
-                @endif
                 @if(page.getResourceDateType() != null)
                     <gmd:temporalElement>
                         <gmd:EX_TemporalExtent>

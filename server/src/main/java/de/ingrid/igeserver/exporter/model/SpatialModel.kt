@@ -5,7 +5,7 @@ import de.ingrid.igeserver.utils.convertWktToGml32
 import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?) {
+data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?, val ars: String?) {
 
     val log = logger()
 

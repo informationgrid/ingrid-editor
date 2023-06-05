@@ -448,7 +448,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
       ]),
 
-      this.addSpatialSection({ regionKey: true }),
+      this.addSpatialSection(),
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({
         extraInfoCharSetData: true,

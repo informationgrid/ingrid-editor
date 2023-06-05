@@ -11,6 +11,7 @@
 "isOpenData": ${model.isOpenData()},
 "description": "${model.getDescription()}",
 "alternateTitle": "${model.getAlternateTitle()}",
+"parentIdentifier": "${model.getParentUuid()}",
 "pointOfContact": [
 @for(var contact : ForSupport.of(model.getPointOfContacts()))
     {
@@ -81,13 +82,15 @@
     {
         "type": "${ref.get().getType()}",
         "title": "${ref.get().getTitle()}"
-        @if(ref.get().getType().equals("free"))
+        @if(ref.get().getType().equals("free") && ref.get().getCoordinates() != null)
         , "value": {
             "lat1": ${ref.get().getCoordinates().getLat1()},
             "lon1": ${ref.get().getCoordinates().getLon1()},
             "lat2": ${ref.get().getCoordinates().getLat2()},
             "lon2": ${ref.get().getCoordinates().getLon2()}
         }
+        @elseif(ref.get().getType().equals("free") && ref.get().getArs() != null)
+        , "ars": "${ref.get().getArs()}"
         @elseif(ref.get().getType().equals("wkt"))
         , "wkt": "${ref.get().getWkt()}"
         @endif
@@ -95,7 +98,6 @@
     }@if (!ref.isLast()),@endif
 @endfor
 ],
-"regionKey": "${model.getRegionKey()}",
 "spatialSystems": @template.ingrid.partial.key-values(list = model.getSpatialSystems()),
 @if(model.getVerticalExtent() != null)
     "verticalExtent": {
