@@ -46,7 +46,7 @@
                     <ige-quick-navbar
                         *ngIf="formInfoModel !== null"
                         [class.sticky-header]="isStickyHeader"
-                        [model]="model"
+                        [model]="formInfoModel"
                         [sections]="sections | async"
                         [numberOfErrors]="numberOfErrors"
                         [hasOptionalFields]="hasOptionalFields"
