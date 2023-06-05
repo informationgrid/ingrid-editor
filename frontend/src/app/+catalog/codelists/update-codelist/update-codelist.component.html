@@ -8,8 +8,8 @@
         </h2>
     </div>
     <mat-dialog-content class="flex-col" [formGroup]="formGroup">
-        <div class="flex-row gap-24">
-            <div class="flex-col">
+        <div class="flex-col">
+            <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Id</mat-label>
                     <input
@@ -20,18 +20,9 @@
                     />
                     <mat-error>Die ID ist bereits vergeben</mat-error>
                 </mat-form-field>
-                <mat-form-field appearance="outline">
-                    <mat-label>Data</mat-label>
-                    <input
-                        matInput
-                        placeholder='{"url":"https://xxx"}'
-                        formControlName="data"
-                        data-cy="codelist-entry-data"
-                    />
-                </mat-form-field>
             </div>
 
-            <mat-form-field appearance="outline" class="flex-1">
+            <mat-form-field appearance="outline">
                 <mat-label>Beschreibung</mat-label>
                 <textarea
                     matInput
@@ -39,7 +30,19 @@
                     data-cy="codelist-entry-description"
                 ></textarea>
             </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Data</mat-label>
+                <input
+                    matInput
+                    placeholder='{"url":"https://xxx"}'
+                    formControlName="data"
+                    data-cy="codelist-entry-data"
+                />
+            </mat-form-field>
         </div>
+
+        <mat-divider *ngIf="fields.length"></mat-divider>
 
         <div formArrayName="fields">
             <div
