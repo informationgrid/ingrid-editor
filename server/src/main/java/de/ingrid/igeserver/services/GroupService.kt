@@ -137,6 +137,24 @@ class GroupService @Autowired constructor(
 
     }
 
+    fun hasAnyGroupAccess(
+        catalogId: String,
+        groups: List<Group>,
+        datasetId: Int,
+        permission: Permission = BasePermission.READ,
+    ): Boolean {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, datasetId)
+
+        return groups.any { group: Group ->
+            igeAclPermissionEvaluator.checkPermissionForSids(
+                this.getSidsForGroup(group),
+                objIdentity,
+                permission
+            )
+        }
+
+    }
+
     fun getUsersWithAccess(
         principal: Principal,
         catalogId: String,

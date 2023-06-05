@@ -51,6 +51,16 @@ export class UserDataService {
     return this.http.delete(this.configuration.backendUrl + "users/" + userId);
   }
 
+  transferResponsibility(
+    oldUserId: number,
+    newUserId: number
+  ): Observable<any> {
+    return this.http.get(
+      this.configuration.backendUrl +
+        `users/transferResponsibilities/${oldUserId}/${newUserId}`
+    );
+  }
+
   getUser(id: number): Observable<BackendUser> {
     return this.http.get<BackendUser>(
       this.configuration.backendUrl + "users/" + id

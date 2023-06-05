@@ -24,6 +24,8 @@ export class IgeDocument {
 
   _metadataDate?: string;
 
+  _responsibleUser?: string;
+
   // the content modification by an actual user date
   _contentModified?: string;
 

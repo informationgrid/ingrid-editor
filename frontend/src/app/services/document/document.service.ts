@@ -931,6 +931,13 @@ export class DocumentService {
       null
     );
   }
+
+  setResponsibleUser(datasetId: number, userId: number) {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${datasetId}/responsibleUser/${userId}`,
+      null
+    );
+  }
 }
 
 export class SaveOptions {

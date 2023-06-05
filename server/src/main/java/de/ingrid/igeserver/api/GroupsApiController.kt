@@ -59,7 +59,7 @@ class GroupsApiController @Autowired constructor(
 
     override fun listGroups(principal: Principal): ResponseEntity<List<FrontendGroup>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val userId = authUtils.getUsernameFromPrincipal(principal)
+        val principalId = authUtils.getUsernameFromPrincipal(principal)
         var groups = groupService.getAll(catalogId)
 
         val isCatAdmin = authUtils.isAdmin(principal)
@@ -67,22 +67,22 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups.map { FrontendGroup(it, false) })
         }
 
-        val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
+        val userGroupIds = catalogService.getUser(principalId)?.groups?.map { it.id!! } ?: emptyList()
 
         // user is only allowed to see and edit groups he has rights for
         groups = groups
-            .filter { userHasRightsForGroupsPermissions(userId, principal, it) }
+            .filter { principalHasRightsForGroupsPermissions(principalId, principal, it) }
 
         return ResponseEntity.ok(groups.map {
             FrontendGroup(it, userBelongsToGroup(userGroupIds, it))
         })
     }
 
-    private fun userHasRightsForGroupsPermissions(
-        userId: String,
+    private fun principalHasRightsForGroupsPermissions(
+        principalId: String,
         principal: Principal,
         group: Group
-    ) = group.manager?.userId == userId || igeAclService.hasRightsForGroup(
+    ) = group.manager?.userId == principalId || igeAclService.hasRightsForGroup(
         principal as Authentication,
         group
     )

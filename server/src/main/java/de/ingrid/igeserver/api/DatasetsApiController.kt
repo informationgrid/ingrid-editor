@@ -113,7 +113,8 @@ class DatasetsApiController @Autowired constructor(
             data.put(FIELD_MODIFIED_USER_EXISTS, contentModifiedByUser != null)
             data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
             data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
-            wrapper.fingerprint?.let { 
+            data.put(FIELD_RESPONSIBLE_USER, wrapper.responsibleUser?.userId)
+            wrapper.fingerprint?.let {
                 data.put(FIELD_METADATA_DATE, it[0].date.toString())
             }
             hasWritePermission = wrapper.hasWritePermission
@@ -163,6 +164,18 @@ class DatasetsApiController @Autowired constructor(
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         ids.forEach { id -> handleMove(catalogId, id, options) }
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    @Transactional
+    override fun setResponsibleUser(principal: Principal, datasetId: Int, userId: Int): ResponseEntity<Void> {
+      this.docWrapperRepo.findById(datasetId).ifPresent { wrapper ->
+            val user = this.catalogService.getUser(userId)
+            if (user != null) {
+                wrapper.responsibleUser = user
+                docWrapperRepo.save(wrapper)
+            }
+        }
         return ResponseEntity(HttpStatus.OK)
     }
 

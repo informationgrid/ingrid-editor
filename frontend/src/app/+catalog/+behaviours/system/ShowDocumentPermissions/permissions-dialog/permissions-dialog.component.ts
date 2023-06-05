@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
+  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
@@ -18,6 +19,11 @@ import { MatIconModule } from "@angular/material/icon";
 import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../../../dialogs/confirm/confirm-dialog.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "ige-access-dialog",
@@ -38,13 +44,16 @@ import { NgIf } from "@angular/common";
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;
+  selectedUser: User;
   users: UserWithDocPermission[];
   query = new FormControl<string>("");
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private documentService: DocumentService,
-    private dialogRef: MatDialogRef<PermissionsDialogComponent>
+    private dialogRef: MatDialogRef<PermissionsDialogComponent>,
+    private dialog: MatDialog,
+    private toast: MatSnackBar
   ) {
     this.id = data.id;
   }
@@ -53,8 +62,20 @@ export class PermissionsDialogComponent implements OnInit {
     this.loadPermissionById(this.id);
   }
 
-  switchToUser($event: User) {
-    this.dialogRef.close($event);
+  switchToUser() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: "Zur Nutzerverwaltung wechseln?",
+          message: `Benutzer "${this.selectedUser.login}" in der Nutzerverwaltung anzeigen?`,
+        } as ConfirmDialogData,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.dialogRef.close(this.selectedUser);
+        }
+      });
   }
 
   private loadPermissionById(id: number) {
@@ -86,5 +107,13 @@ export class PermissionsDialogComponent implements OnInit {
       output.push(createdUser);
     }
     return output;
+  }
+
+  setAsResponsible() {
+    this.documentService
+      .setResponsibleUser(this.id, this.selectedUser.id)
+      .subscribe(() => {
+        this.toast.open("Verantwortlicher aktualisert.");
+      });
   }
 }

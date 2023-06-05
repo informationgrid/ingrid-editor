@@ -49,9 +49,20 @@
             </span>
         </div>
     </div>
-    <div class="flex-row hasContextHelp">
+    <div
+        *ngIf="!hideFields._responsibleUser && model._responsibleUser"
+        class="flex-row"
+    >
+        <div>Verantwortlich</div>
+        <div>
+            <span> {{ model._responsibleUser }} </span>
+        </div>
+    </div>
+    <div
+        *ngIf="!hideFields._metadataDate && model._metadataDate"
+        class="flex-row hasContextHelp"
+    >
         <ige-form-label
-            *ngIf="!hideFields.metadataDate && model._metadataDate"
             class="flex-row"
             [hasContextHelp]="true"
             (contextHelp)="showHelp()"

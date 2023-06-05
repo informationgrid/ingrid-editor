@@ -5,7 +5,7 @@
             <button mat-icon-button mat-dialog-close>
                 <mat-icon>close</mat-icon>
             </button>
-            <span class="text">Berechtigungsübersicht</span>
+            <span class="text">Verantwortung übertragen</span>
         </h2>
     </div>
 
@@ -25,30 +25,21 @@
             [query]="query.value"
             [canExport]="false"
             (onUserSelect)="selectedUser = $event"
-            tableType="permission"
-            defaultSort="permission"
+            tableType="simple"
         ></user-table>
     </mat-dialog-content>
 
     <!-- dialog action buttons -->
     <mat-dialog-actions>
-        <button
-            mat-flat-button
-            [disabled]="!selectedUser"
-            (click)="setAsResponsible()"
-        >
-            Als Verantwortlichen festlegen
-        </button>
-        <button
-            mat-flat-button
-            [disabled]="!selectedUser"
-            (click)="switchToUser()"
-        >
-            In Nutzerverwaltung anzeigen
-        </button>
+        <button mat-flat-button mat-dialog-close>Schließen</button>
         <div class="flex-1"></div>
-        <button mat-flat-button color="primary" mat-dialog-close="true">
-            Schließen
+        <button
+            [disabled]="!selectedUser"
+            mat-flat-button
+            color="primary"
+            (click)="transferResponsibility()"
+        >
+            An ausgewählten Nutzer Übertragen
         </button>
     </mat-dialog-actions>
 </div>

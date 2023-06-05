@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @Service
@@ -85,6 +86,11 @@ class CatalogService @Autowired constructor(
 
     fun getUserOfCatalog(catalogId: String): List<UserInfo> =
         userRepo.findAllByCatalogId(catalogId)
+
+
+    fun getUser(id: Int): UserInfo? {
+        return userRepo.findById(id).getOrNull()
+    }
 
     fun getUser(userId: String): UserInfo? {
         return userRepo.findByUserId(userId)
@@ -277,7 +283,7 @@ class CatalogService @Autowired constructor(
     )
 
     fun getPermissions(principal: Authentication): List<String> {
-        
+
         val isMdAdmin = authUtils.containsRole(principal, "md-admin")
         val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")

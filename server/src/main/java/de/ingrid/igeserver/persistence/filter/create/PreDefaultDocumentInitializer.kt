@@ -98,6 +98,7 @@ class PreDefaultDocumentInitializer @Autowired constructor(
             category = payload.category
 //            archive = mutableSetOf()
             path = newPath
+            responsibleUser = catalogService.getDbUserFromPrincipal(context.principal!!)
         }
     }
 }

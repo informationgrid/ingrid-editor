@@ -38,6 +38,7 @@ import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { IgeError } from "../../models/ige-error";
+import { TransferResponsibilityDialogComponent } from "./transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -361,6 +362,23 @@ export class UserComponent
           .subscribe(() => {
             this.toast.open("Passwort wurde zurückgesetzt");
           });
+      });
+  }
+
+  openTransferResponsibilityDialog(oldUser: User) {
+    this.dialog
+      .open(TransferResponsibilityDialogComponent, {
+        width: "780px",
+        data: {
+          users: this.users,
+          oldUser: oldUser,
+        },
+      })
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe((result) => {
+        console.log(result);
+        this.toast.open("Verantwortung übertragen.");
       });
   }
 }

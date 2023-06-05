@@ -115,6 +115,16 @@
                                 </button>
                                 <button
                                     mat-menu-item
+                                    (click)="
+                                        openTransferResponsibilityDialog(
+                                            selectedUser
+                                        )
+                                    "
+                                >
+                                    Verantwortung übertragen
+                                </button>
+                                <button
+                                    mat-menu-item
                                     (click)="deleteUser(selectedUser)"
                                 >
                                     Löschen

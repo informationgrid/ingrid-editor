@@ -88,6 +88,31 @@ interface UsersApi {
         principal: Principal
     ): ResponseEntity<List<User>>
 
+
+    @GetMapping(
+        value = ["/users/{id}/responsibilities"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Get all datasets the user is responsible for.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the dataset ids")])
+    fun getResponsibilities(
+        principal: Principal,
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
+    ): ResponseEntity<List<Int>>
+
+
+    @GetMapping(
+        value = ["/users/transferResponsibilities/{oldUserId}/{newUserId}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Reassign all datasets from one user to another.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets successfully reassigned")])
+    fun reassignResponsibilities(
+        principal: Principal,
+        @Parameter(description = "The ID of the user currently having the responsibility.", required = true) @PathVariable("oldUserId") oldUserId: Int,
+        @Parameter(description = "The ID of the user receiving the responsibility.", required = true) @PathVariable("newUserId") newUserId: Int
+    ): ResponseEntity<Void>
+
     @GetMapping(
         value = ["/users/admins/{catalogId}"],
         produces = [MediaType.APPLICATION_JSON_VALUE]

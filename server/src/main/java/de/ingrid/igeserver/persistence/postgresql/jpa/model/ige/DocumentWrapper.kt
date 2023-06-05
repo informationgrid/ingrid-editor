@@ -98,6 +98,11 @@ class DocumentWrapper {
     @JdbcTypeCode(SqlTypes.JSON)
     var fingerprint: List<FingerprintInfo>? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsible_user", nullable = true)
+    @JsonIgnore
+    var responsibleUser: UserInfo? = null
+
     @Transient
     var hasWritePermission: Boolean = true
 

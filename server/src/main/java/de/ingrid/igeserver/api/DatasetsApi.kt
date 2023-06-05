@@ -201,6 +201,16 @@ interface DatasetsApi {
         @PathVariable id: Int,
     ): ResponseEntity<DatasetsApiController.UserAccessResponse>
 
+
+
+    @Operation(description = "Set the responsible user for a dataset")
+    @PostMapping(value = ["/datasets/{datasetId}/responsibleUser/{userId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun setResponsibleUser(
+        principal: Principal,
+        @PathVariable datasetId: Int,
+        @PathVariable userId: Int,
+    ): ResponseEntity<Void>
+
     @Operation
     @PutMapping(value = ["/datasets/{id}/tags"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setTags(
