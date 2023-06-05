@@ -82,9 +82,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "regionKey": {
-          "type": "string"
-        },
         "references": {
           "type": "array",
           "items": {
