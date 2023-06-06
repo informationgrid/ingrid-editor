@@ -893,6 +893,15 @@ class DocumentService @Autowired constructor(
             .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }
             .toSet()
     }
+
+    fun validate(principal: Principal, catalogId: String, docId: Int) {
+        val filterContext = DefaultContext(catalogId, null, principal)
+
+        val docData = getDocumentFromCatalog(catalogId, docId)
+        val docType = getDocumentType(docData.wrapper.type)
+        val prePublishPayload = PrePublishPayload(docType, docData.document, docData.wrapper)
+        prePublishPipe.runFilters(prePublishPayload, filterContext)
+    }
 }
 
 class DocumentData(val wrapper: DocumentWrapper, val document: Document)

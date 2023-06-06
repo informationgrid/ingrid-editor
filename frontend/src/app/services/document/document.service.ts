@@ -938,6 +938,13 @@ export class DocumentService {
       null
     );
   }
+
+  validateDocument(id: number) {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${id}/validate`,
+      null
+    );
+  }
 }
 
 export class SaveOptions {

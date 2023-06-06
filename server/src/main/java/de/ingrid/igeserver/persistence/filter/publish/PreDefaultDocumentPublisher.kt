@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.persistence.filter.publish
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -65,12 +66,13 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
         val bothAtLeastOne = publicationDocTags.intersect(refPublicationDocTags.toSet()).isNotEmpty()
         
         if (!(bothInternetWide || bothAtLeastOne)) {
-            throw ServerException.withReason(
+            val tags = refPublicationDocTags.joinToString(",").run { ifEmpty { "internet" } }
+            throw ValidationException.withReason(
                 "Reference has wrong publication type condition: ${
                     publicationDocTags.joinToString(
                         ","
                     )
-                } => ${refPublicationDocTags.joinToString(",")}"
+                } => $tags"
             )
         }
     }

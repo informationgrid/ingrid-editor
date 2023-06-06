@@ -56,30 +56,7 @@ export abstract class SaveBase extends Plugin {
       error?.status === 400 &&
       error?.error.errorCode === "VALIDATION_ERROR"
     ) {
-      console.error("JSON schema error:", error.error.data);
-      const igeError = new IgeError(
-        "Es trat ein Fehler bei der JSON-Schema Validierung auf."
-      );
-      igeError.detail = error?.error?.data?.error
-        ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
-        ?.map((item) => `${item.instanceLocation}: ${item.error}`)
-        ?.join("\n");
-      igeError.unhandledException = true;
-      throw igeError;
-
-      // TODO: update store to show backend validation errors in form
-      /*this.sessionStore.update({
-        serverValidationErrors: ServerValidation.prepareServerValidationErrors(
-          error.error.data
-        ),
-      });
-      this.dialog.open(ErrorDialogComponent, {
-        data: new IgeError(
-          "Beim Veröffentlichen wurden Fehler im Formular entdeckt"
-          // error: {message: ServerValidation.prepareServerError(error?.error)})
-        ),
-      });
-      */
+      throw this.prepareValidationError(error);
     } else {
       this.messageService.sendError(
         `Der Datensatz wurde nicht erfolgreich ${
@@ -89,6 +66,28 @@ export abstract class SaveBase extends Plugin {
       throw error;
     }
     return of();
+  }
+
+  protected prepareValidationError(error) {
+    console.error("JSON schema error:", error.error.data);
+    const isJsonSchemaError = error?.error?.data?.error instanceof Array;
+
+    const igeError = new IgeError(
+      isJsonSchemaError
+        ? "Es trat ein Fehler bei der JSON-Schema Validierung auf."
+        : "Es trat ein Fehler bei der Validierung auf."
+    );
+
+    if (isJsonSchemaError) {
+      igeError.detail = error?.error?.data?.error
+        ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
+        ?.map((item) => `${item.instanceLocation}: ${item.error}`)
+        ?.join("\n");
+    } else {
+      igeError.detail = error?.error?.data?.error;
+    }
+    igeError.unhandledException = true;
+    return igeError;
   }
 
   abstract saveWithData(data: IgeDocument);

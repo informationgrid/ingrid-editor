@@ -218,6 +218,13 @@ interface DatasetsApi {
         @PathVariable id: Int,
         @RequestBody tags: TagRequest
     ): ResponseEntity<List<String>>
+
+    @Operation
+    @PostMapping(value = ["/datasets/{id}/validate"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun validate(
+        principal: Principal,
+        @PathVariable id: Int,
+    ): ResponseEntity<Unit>
 }
 
 data class TagRequest(val add: List<String>?, val remove: List<String>?)

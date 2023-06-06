@@ -169,7 +169,7 @@ class DatasetsApiController @Autowired constructor(
 
     @Transactional
     override fun setResponsibleUser(principal: Principal, datasetId: Int, userId: Int): ResponseEntity<Void> {
-      this.docWrapperRepo.findById(datasetId).ifPresent { wrapper ->
+        this.docWrapperRepo.findById(datasetId).ifPresent { wrapper ->
             val user = this.catalogService.getUser(userId)
             if (user != null) {
                 wrapper.responsibleUser = user
@@ -193,6 +193,15 @@ class DatasetsApiController @Autowired constructor(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
         return ResponseEntity.ok(updatedTags)
+    }
+
+    /*
+     * Validation errors are thrown as exceptions
+     */
+    override fun validate(principal: Principal, id: Int): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        documentService.validate(principal, catalogId, id)
+        return ResponseEntity.ok().build()
     }
 
     private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): JsonNode {

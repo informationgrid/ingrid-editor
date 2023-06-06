@@ -73,7 +73,6 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     DelayedPublishDialogComponent,
     PublishPendingComponent,
     QuickNavbarComponent,
-    ErrorPanelComponent,
   ],
   imports: [
     CommonModule,
@@ -100,6 +99,7 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     ActionButtonModule,
     DocumentIconModule,
     FormLabelComponent,
+    ErrorPanelComponent,
   ],
   providers: [
     FormToolbarService,

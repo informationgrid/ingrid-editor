@@ -1,5 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, inject, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
+import { DocumentService } from "../../../../services/document/document.service";
 
 @Component({
   selector: "ige-error-panel",
@@ -13,6 +16,8 @@ import { animate, style, transition, trigger } from "@angular/animations";
       ]),
     ]),
   ],
+  imports: [MatIconModule, MatButtonModule],
+  standalone: true,
 })
 export class ErrorPanelComponent implements OnInit {
   @Input() numErrors = 0;
@@ -20,6 +25,8 @@ export class ErrorPanelComponent implements OnInit {
   currentError = 0;
 
   private specialElements = ["ige-add-button", "ige-formly-leaflet-type"];
+
+  private documentService = inject(DocumentService);
 
   ngOnInit() {
     this.jumpToCurrentError();
@@ -62,5 +69,9 @@ export class ErrorPanelComponent implements OnInit {
         ))?.focus(),
       300
     );
+  }
+
+  closeErrorView() {
+    this.documentService.publishState$.next(false);
   }
 }
