@@ -10,10 +10,13 @@ import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -25,7 +28,9 @@ import org.springframework.stereotype.Service
 class InGridProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val codelistHandler: CodelistHandler,
-    @JsonIgnore @Lazy val documentService: DocumentService
+    @JsonIgnore @Lazy val documentService: DocumentService,
+    @JsonIgnore val query: QueryRepository,
+    @JsonIgnore val dateService: DateService
 ) : CatalogProfile {
     companion object {
         const val id = "ingrid"
@@ -193,7 +198,25 @@ class InGridProfile @Autowired constructor(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-
+        val queryTest = Query().apply {
+            this.catalog = catalogRepo.findByIdentifier(catalogId)
+            category = "sql"
+            name = "Alle Dokumente ohne Adressreferenzen"
+            description = "Zeigt alle Dokumente an, die keine Adresse angegeben haben"
+            data = jacksonObjectMapper().createObjectNode().apply {
+                put("sql", """
+                SELECT document1.*, document_wrapper.category
+                FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid
+                WHERE document1.is_latest = true AND document_wrapper.category = 'data'
+                  AND document_wrapper.type <> 'FOLDER'
+                  AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)
+            """.trimIndent()
+                )
+            }
+            global = true
+            modified = dateService.now()
+        }
+        query.save(queryTest)
     }
 
     override fun getElasticsearchMapping(format: String): String {
