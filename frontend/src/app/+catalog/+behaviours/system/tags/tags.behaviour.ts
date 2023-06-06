@@ -50,6 +50,11 @@ export class TagsBehaviour extends Plugin {
     this.subscriptions.push(toolbarEventSubscription);
   }
 
+  unregister() {
+    super.unregister();
+    this.formularService.removeExtraOption("set-tags", this.forAddress);
+  }
+
   private showTagsDialog() {
     const store = this.forAddress ? this.addressTreeStore : this.treeStore;
     const currentDocument = store.getValue().openedDocument;

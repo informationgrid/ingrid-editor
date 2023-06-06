@@ -17,6 +17,13 @@ import { IgeDocument } from "../models/ige-document";
 import { ConfigService } from "../services/config/config.service";
 import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 
+export interface FormularMenuItem {
+  name: string;
+  title: string;
+  action: () => void;
+  disabled?: boolean;
+}
+
 @Injectable()
 export class FormularService {
   data = {};
@@ -28,8 +35,8 @@ export class FormularService {
   sections$ = new BehaviorSubject<string[]>([]);
   private profileSections: string[] = [];
 
-  private datasetsOptions = [];
-  private addressOptions = [];
+  private datasetsOptions: FormularMenuItem[] = [];
+  private addressOptions: FormularMenuItem[] = [];
 
   constructor(
     private dialog: MatDialog,
@@ -181,10 +188,20 @@ export class FormularService {
     );
   }
 
-  addExtraOption(option: any, forAddress: boolean) {
+  addExtraOption(option: FormularMenuItem, forAddress: boolean) {
     forAddress
       ? this.addressOptions.push(option)
       : this.datasetsOptions.push(option);
+  }
+
+  removeExtraOption(id: string, forAddress: boolean) {
+    forAddress
+      ? (this.addressOptions = this.addressOptions.filter(
+          (option) => option.name !== id
+        ))
+      : (this.datasetsOptions = this.datasetsOptions.filter(
+          (option) => option.name !== id
+        ));
   }
 }
 
