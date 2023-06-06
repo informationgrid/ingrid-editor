@@ -336,6 +336,21 @@ export abstract class IngridShared extends BaseDoctype {
             })
           : null,
         this.addGroupSimple("keywords", [
+          this.addRepeatList("gemet", "Gemet Schlagworte", {
+            view: "chip",
+            className: "optional",
+            placeholder: "Im Gemet suchen",
+            restCall: (query: string) =>
+              this.http.get<any[]>(
+                `${ConfigService.backendApiUrl}keywords/gemet?q=${query}`
+              ),
+            labelField: "label",
+            selectLabelField: (item) => {
+              return item.alternativeLabel
+                ? `${item.label} (${item.alternativeLabel})`
+                : item.label;
+            },
+          }),
           this.addRepeatList("umthes", "Umthes Schlagworte", {
             view: "chip",
             className: "optional",
@@ -406,10 +421,20 @@ export abstract class IngridShared extends BaseDoctype {
       const resultTheme = this.checkInThemes(formState, item, options);
       if (resultTheme.found) return resultTheme;
     }
-    const umthesResult = await this.checkInUmthes(
+
+    const gemetResult = await this.checkInThesaurus(
       this.http,
       formState.mainModel,
-      item
+      item,
+      "gemet"
+    );
+    if (gemetResult.found) return gemetResult;
+
+    const umthesResult = await this.checkInThesaurus(
+      this.http,
+      formState.mainModel,
+      item,
+      "umthes"
     );
     if (umthesResult.found) return umthesResult;
     else return this.addFreeKeyword(formState.mainModel, item);
@@ -472,31 +497,34 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private async checkInUmthes(
+  private async checkInThesaurus(
     http: HttpClient,
     model,
-    item
+    item,
+    thesaurus: string
   ): Promise<ThesaurusResult> {
     const response = await http
       .get<any[]>(
-        `${ConfigService.backendApiUrl}keywords/umthes?q=${encodeURI(
+        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
           item
         )}&type=EXACT`
       )
       .toPromise();
+    const thesaurusName =
+      thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
     if (response.length > 0) {
-      const exists = model.keywordsUmthes.some(
+      const exists = model.keywords[thesaurus].some(
         (item) => item.label === response[0].label
       );
-      if (!exists) model.keywordsUmthes.push(response[0]);
+      if (!exists) model.keywords[thesaurus].push(response[0]);
       return {
-        thesaurus: "Umthes Schlagworte",
+        thesaurus: thesaurusName,
         found: true,
         alreadyExists: exists,
         value: response[0].label,
       };
     }
-    return { thesaurus: "Umthes Schlagworte", found: false, value: item };
+    return { thesaurus: thesaurusName, found: false, value: item };
   }
 
   addSpatialSection(options: SpatialOptions = {}) {
@@ -1382,8 +1410,8 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private addFreeKeyword(model, item: string): ThesaurusResult {
-    const exists = model.keywords.some((entry) => entry === item);
-    if (!exists) model.keywords.push(item);
+    const exists = model.keywords.free.some((entry) => entry === item);
+    if (!exists) model.keywords.free.push({ label: item });
     return {
       found: true,
       value: item,
