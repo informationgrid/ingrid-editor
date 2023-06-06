@@ -97,6 +97,7 @@ export interface InputOptions extends Options {
   validators?: any;
   suffix?: any;
   prefix?: any;
+  buttonConfig?: any;
   min?: number;
   max?: number;
   hintStart?: string;
@@ -384,6 +385,7 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         addonRight: options?.suffix,
         addonLeft: options?.prefix,
+        buttonConfig: options?.buttonConfig,
         min: options?.min,
         max: options?.max,
         hintStart: options?.hintStart,

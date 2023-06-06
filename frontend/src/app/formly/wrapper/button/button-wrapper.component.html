@@ -1,0 +1,12 @@
+<div>
+    <ng-container #fieldComponent></ng-container>
+    <button
+        class="buttonConfig"
+        (click)="addonRightClick($event)"
+        type="button"
+        mat-stroked-button
+        color="primary"
+    >
+        <span>{{ props.buttonConfig?.text }}</span>
+    </button>
+</div>
