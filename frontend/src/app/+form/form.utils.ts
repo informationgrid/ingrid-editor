@@ -46,7 +46,7 @@ export class FormUtils {
           .save({ data: value, isNewDoc: false, isAddress: isAddress })
           .toPromise();
       } else if (decision === "discard") {
-        form.reset();
+        form.reset(undefined, { emitEvent: false });
       } else {
         //decision is 'Abbrechen'
         return false;
