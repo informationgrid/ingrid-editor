@@ -441,11 +441,14 @@
           }
         },
         "umthes": {
-          "$ref": "#/definitions/keywordsUmthes"
+          "$ref": "#/definitions/keywordsThesaurus"
+        },
+        "gemet": {
+          "$ref": "#/definitions/keywordsThesaurus"
         }
       }
     },
-    "keywordsUmthes": {
+    "keywordsThesaurus": {
       "type": "array",
       "items": {
         "type": "object",

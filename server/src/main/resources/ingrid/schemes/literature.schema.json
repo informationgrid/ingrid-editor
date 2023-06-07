@@ -160,9 +160,6 @@
         "keywords": {
           "$ref": "refs/general.schema.json#/definitions/keywords"
         },
-        "keywordsUmthes": {
-          "$ref": "refs/general.schema.json#/definitions/keywordsUmthes"
-        },
         "maintenanceInformation": {
           "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
         },
