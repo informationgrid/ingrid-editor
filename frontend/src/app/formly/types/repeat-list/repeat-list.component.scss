@@ -72,6 +72,21 @@
   }
 }
 
+// Enable line break when the content of option is too long.
+// Issue ref: https://github.com/angular/components/issues/26584
+:host ::ng-deep {
+  .mdc-evolution-chip__cell--primary,
+  .mdc-evolution-chip__action--primary,
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
+}
+
+// Help to determine when to line break.
+.cdk-drop-list {
+  max-width: 100%;
+}
+
 .list-display-element {
   display: flex;
   align-items: center;
@@ -92,6 +107,7 @@ mat-icon.search-icon {
 
 mat-chip-listbox {
   padding-bottom: 10px;
+
   ige-add-button {
     margin-left: 8px;
     line-height: 42px;
