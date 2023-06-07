@@ -299,12 +299,20 @@ class DatasetsApiController @Autowired constructor(
         }
 
         // updateWrapper
-        val docWrapper = documentService.getWrapperByDocumentId(id)
-        docWrapper.parent =
-            if (options.destId == null) null else docWrapperRepo.findById(options.destId).get()
-        docWrapper.path = newPath
+        val docData = documentService.getDocumentFromCatalog(catalogId, id)
+        val parent = if (options.destId == null) null else documentService.getDocumentFromCatalog(catalogId, options.destId)
+        
+        // check parent is published if moved dataset also has been published
+        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
+            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
+                throw ValidationException.withReason("Parent must be published, since moved dataset is also published", errorCode = "PARENT_IS_NOT_PUBLISHED")
+            }
+        }
+        
+        docData.wrapper.parent = parent?.wrapper
+        docData.wrapper.path = newPath
 
-        docWrapperRepo.save(docWrapper)
+        docWrapperRepo.save(docData.wrapper)
 
         updatePathForAllChildren(catalogId, newPath, id)
     }

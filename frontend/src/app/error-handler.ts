@@ -81,6 +81,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         return error.errorText === "Conflicting email address"
           ? "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
           : null;
+      case "PARENT_IS_NOT_PUBLISHED":
+        return "Der Datensatz liegt veröffentlicht vor und darf nicht unter einem unveröffentlichten Datensatz verschoben werden.";
       default:
         return null;
     }
