@@ -683,8 +683,11 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               wrappers: ["form-field"],
               options: [
-                { label: "bis: unbekannter Zeitpunkt", value: "unknown" },
-                { label: "bis: Zeitpunkt des Abrufs", value: "requestTime" },
+                {
+                  label: "bis: gegenwärtige Aktualität unklar",
+                  value: "unknown",
+                },
+                { label: "bis: gegenwärtig aktuell", value: "requestTime" },
                 { label: "bis: genaues Datum", value: "exactDate" },
               ],
               expressions: {
@@ -726,7 +729,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addGroup(
           "userDefinedMaintenanceFrequency",
-          "Im Intervall",
+          "Intervall der Erhebung",
           [
             this.addInputInline("number", "Anzahl", {
               type: "number",
