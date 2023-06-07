@@ -1,8 +1,10 @@
-<div>
-    <ng-container #fieldComponent></ng-container>
+<div class="container">
+    <span class="input-coverage">
+        <ng-container #fieldComponent></ng-container>
+    </span>
     <button
-        class="buttonConfig"
-        (click)="addonRightClick($event)"
+        class="button-config"
+        (click)="onClick($event)"
         type="button"
         mat-stroked-button
         color="primary"

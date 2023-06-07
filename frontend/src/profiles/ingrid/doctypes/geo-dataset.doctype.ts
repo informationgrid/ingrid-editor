@@ -48,8 +48,8 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
-          wrappers: ["button", "panel", "form-field"],
-          className: "flex-3 single-field with-side-button",
+          wrappers: ["panel", "button", "form-field", "addons"],
+          className: "flex-3 ",
           prefix: {
             text: this.configService.$userInfo.value.currentCatalog.settings
               .config.namespace,

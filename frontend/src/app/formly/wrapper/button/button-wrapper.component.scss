@@ -2,7 +2,15 @@
   position: relative;
 }
 
-.buttonConfig {
-  float: right;
-  margin-top: -67px;
+.container {
+  display: flex;
+}
+
+.input-coverage {
+  flex: 70;
+}
+
+.button-config {
+  margin-left: 8px;
+  margin-top: 2px;
 }
