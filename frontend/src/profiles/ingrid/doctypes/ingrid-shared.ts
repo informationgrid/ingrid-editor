@@ -37,8 +37,6 @@ interface KeywordSectionOptions {
   inspireTopics?: boolean;
 }
 
-interface SpatialOptions {}
-
 interface AdditionalInformationSectionOptions {
   conformity?: boolean;
   extraInfoCharSetData?: boolean;
@@ -53,6 +51,7 @@ export abstract class IngridShared extends BaseDoctype {
   dialog = inject(MatDialog);
   cookieService = inject(CookieService);
   private snack = inject(MatSnackBar);
+  protected configService = inject(ConfigService);
 
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
@@ -527,7 +526,10 @@ export abstract class IngridShared extends BaseDoctype {
     return { thesaurus: thesaurusName, found: false, value: item };
   }
 
-  addSpatialSection(options: SpatialOptions = {}) {
+  addSpatialSection() {
+    const defaultSpatial =
+      this.configService.$userInfo.value.currentCatalog.settings.config
+        .spatialReference;
     return this.addSection("Raumbezug", [
       this.addGroupSimple(
         "spatial",
@@ -535,6 +537,7 @@ export abstract class IngridShared extends BaseDoctype {
           this.addSpatial("references", "Raumbezug", {
             required: true,
             hasInlineContextHelp: true,
+            defaultValue: defaultSpatial ? defaultSpatial : undefined,
           }),
           this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
             asSelect: false,

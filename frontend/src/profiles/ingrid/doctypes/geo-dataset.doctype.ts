@@ -1,10 +1,9 @@
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
-import { ConfigService } from "../../../app/services/config/config.service";
 
 @Injectable({
   providedIn: "root",
@@ -17,8 +16,6 @@ export class GeoDatasetDoctype extends IngridShared {
   iconClass = "Geodatensatz";
 
   hasOptionalFields = true;
-
-  configService = inject(ConfigService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[

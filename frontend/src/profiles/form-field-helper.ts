@@ -486,6 +486,7 @@ export class FormFieldHelper {
       type: "leaflet",
       wrappers: [],
       expressions: expressions,
+      defaultValue: options?.defaultValue,
       props: {
         required: options?.required,
         mapOptions: {},

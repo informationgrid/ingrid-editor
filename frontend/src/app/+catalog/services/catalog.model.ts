@@ -21,4 +21,5 @@ export interface CatalogSettingsConfig {
   partner: string;
   provider: string;
   elasticsearchAlias: string;
+  spatialReference: any;
 }

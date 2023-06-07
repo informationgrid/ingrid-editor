@@ -77,4 +77,14 @@ export const fields = (codelistService: CodelistService) =>
         appearance: "outline",
       },
     },
+    {
+      key: "spatialReference",
+      type: "leaflet",
+      wrappers: ["panel"],
+      props: {
+        externalLabel: "Raumbezug",
+        max: 1,
+        height: 200,
+      },
+    },
   ];
