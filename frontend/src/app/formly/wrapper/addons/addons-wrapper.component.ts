@@ -1,11 +1,10 @@
 import {
+  AfterViewInit,
   Component,
   TemplateRef,
   ViewChild,
-  AfterViewInit,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
-import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: "ige-addons",
@@ -39,13 +38,13 @@ export class AddonsWrapperComponent
 
   addonRightClick($event: any) {
     if (this.props.addonRight.onClick) {
-      this.props.addonRight?.onClick(this.to, this, $event);
+      this.props.addonRight.onClick(this.props, this, $event);
     }
   }
 
   addonLeftClick($event: any) {
     if (this.props.addonLeft.onClick) {
-      this.props.addonLeft?.onClick(this.to, this, $event);
+      this.props.addonLeft.onClick(this.props, this, $event);
     }
   }
 }

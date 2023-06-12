@@ -20,6 +20,7 @@ export interface Options {
     "props.disabled"?;
   };
   hooks?: { onInit: (field) => void };
+  buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
 }
 
 export interface DatePickerOptions extends Options {
@@ -97,7 +98,6 @@ export interface InputOptions extends Options {
   validators?: any;
   suffix?: any;
   prefix?: any;
-  buttonConfig?: any;
   min?: number;
   max?: number;
   hintStart?: string;

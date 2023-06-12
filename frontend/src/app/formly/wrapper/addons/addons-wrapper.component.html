@@ -4,11 +4,11 @@
         [ngStyle]="{ cursor: props.addonLeft?.onClick ? 'pointer' : 'inherit' }"
         (click)="addonLeftClick($event)"
     >
-        <mat-icon *ngIf="props.addonLeft?.icon">{{
+        <mat-icon *ngIf="props.addonLeft.icon">{{
             props.addonLeft.icon
         }}</mat-icon>
         <span
-            *ngIf="props.addonLeft?.text"
+            *ngIf="props.addonLeft.text"
             [class.comment-field]="props.addonLeft.asComment"
             >{{ props.addonLeft.text }}</span
         >
@@ -24,20 +24,20 @@
         mat-icon-button
         (click)="addonRightClick($event)"
     >
-        <mat-icon *ngIf="props.addonRight?.icon">{{
+        <mat-icon *ngIf="props.addonRight.icon">{{
             props.addonRight.icon
         }}</mat-icon>
     </button>
     <span
-        *ngIf="!props.addonRight?.isButton"
+        *ngIf="props.addonRight && !props.addonRight.isButton"
         [ngStyle]="{
-            cursor: props.addonRight?.onClick ? 'pointer' : 'inherit'
+            cursor: props.addonRight.onClick ? 'pointer' : 'inherit'
         }"
         (click)="addonRightClick($event)"
     >
-        <mat-icon *ngIf="props.addonRight?.icon">{{
+        <mat-icon *ngIf="props.addonRight.icon">{{
             props.addonRight.icon
         }}</mat-icon>
-        <span *ngIf="props.addonRight?.text">{{ props.addonRight.text }}</span>
+        <span *ngIf="props.addonRight.text">{{ props.addonRight.text }}</span>
     </span>
 </ng-template>
