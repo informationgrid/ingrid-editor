@@ -54,8 +54,10 @@ export class GeoDatasetDoctype extends IngridShared {
           },
           buttonConfig: {
             text: "Erzeuge Id",
-            onClick: (buttonConfig, field) =>
-              field.formControl.setValue(generateUUID()),
+            onClick: (buttonConfig, field) => {
+              field.formControl.setValue(generateUUID());
+              field.formControl.markAsDirty();
+            },
           },
         }),
         this.addRepeatList(
