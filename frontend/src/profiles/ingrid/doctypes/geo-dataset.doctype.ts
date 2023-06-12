@@ -45,17 +45,16 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
-          wrappers: ["panel", "form-field", "addons"],
+          wrappers: ["panel", "button", "form-field", "addons"],
           className: "flex-3 ",
           prefix: {
             text: this.configService.$userInfo.value.currentCatalog.settings
               .config.namespace,
             asComment: true,
           },
-          suffix: {
-            icon: "autorenew",
-            isButton: true,
-            onClick: (suffix, field) =>
+          buttonConfig: {
+            text: "Erzeuge Id",
+            onClick: (buttonConfig, field) =>
               field.formControl.setValue(generateUUID()),
           },
         }),

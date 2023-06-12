@@ -1,0 +1,16 @@
+:host {
+  position: relative;
+}
+
+.container {
+  display: flex;
+}
+
+.input-coverage {
+  flex: 70;
+}
+
+.button-config {
+  margin-left: 8px;
+  margin-top: 2px;
+}

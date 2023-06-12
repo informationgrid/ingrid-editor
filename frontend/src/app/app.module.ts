@@ -90,6 +90,7 @@ import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatPaginatorModule } from "@angular/material/paginator";
+import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
 
 registerLocaleData(de);
 
@@ -217,6 +218,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     SessionTimeoutInfoComponent,
     InitCatalogComponent,
     AddonsWrapperComponent,
+    ButtonWrapperComponent,
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
@@ -249,6 +251,7 @@ export function animationExtension(field: FormlyFieldConfig) {
         { name: "panel", component: OneColumnWrapperComponent },
         { name: "full-panel", component: FullWidthWrapperComponent },
         { name: "section", component: SectionWrapper },
+        { name: "button", component: ButtonWrapperComponent },
         // { name: "animation", component: AnimationWrapperComponent },
       ],
       // TODO: this animation is too slow especially when there are a lot of tables in form
