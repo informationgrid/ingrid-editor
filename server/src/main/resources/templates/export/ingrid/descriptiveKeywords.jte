@@ -1,5 +1,4 @@
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exports.iso19139.Keyword
 @import de.ingrid.igeserver.exports.iso19139.Thesaurus
 

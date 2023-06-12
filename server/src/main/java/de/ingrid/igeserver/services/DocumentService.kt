@@ -581,45 +581,6 @@ class DocumentService @Autowired constructor(
         return dbDocument
     }
 
-    /*    private fun updateWrapper(
-        documentWrapper: DocumentWrapper,
-        publish: Boolean,
-        publishDate: Date? = null,
-        updatedDoc: Document
-    ) {
-        with(documentWrapper) {
-            if (publish && publishDate == null) {
-                // move published version to archive
-                if (published != null) {
-                    archive.add(published!!)
-                }
-
-                // if no draft then manually increase version
-                if (draft == null) {
-                    updatedDoc.version = updatedDoc.version?.inc()
-                }
-
-                // set published version
-                published = updatedDoc
-
-                // remove draft version
-                draft = null
-                pending = null
-                pending_date = null
-            } else if (publish && publishDate != null) {
-                // add delayed publishing
-                pending = updatedDoc
-                pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
-            } else {
-                // update draft version
-                if (draft == null) {
-                    // since new document we update version manually
-                    updatedDoc.version = updatedDoc.version?.inc()
-                    draft = updatedDoc
-                }
-            }
-        }*/
-
     private fun runPostUpdatePipes(
         docType: EntityType,
         updatedDocument: Document,
