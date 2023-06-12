@@ -1,8 +1,4 @@
-import {
-  ActivatedRouteSnapshot,
-  CanDeactivate,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 import { Injectable } from "@angular/core";
 import {
   ConfirmDialogComponent,
@@ -22,7 +18,7 @@ import { ConfigService } from "../services/config/config.service";
 @Injectable({
   providedIn: "root",
 })
-export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
+export class FormChangeDeactivateGuard {
   private static prefixLength: number;
 
   constructor(

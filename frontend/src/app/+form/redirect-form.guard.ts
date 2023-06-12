@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
-  CanActivate,
   Router,
   RouterStateSnapshot,
 } from "@angular/router";
@@ -14,7 +13,7 @@ import { ConfigService } from "../services/config/config.service";
 @Injectable({
   providedIn: "root",
 })
-export class RedirectFormGuard implements CanActivate {
+export class RedirectFormGuard {
   constructor(
     private router: Router,
     private treeQuery: TreeQuery,
