@@ -11,7 +11,7 @@ import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -115,15 +115,15 @@ class KeycloakService : UserManagementService {
         roleName: String,
         ignoreUsers: Set<User> = emptySet()
     ): List<User> {
-        try {
+        return try {
             val users = roles[roleName].getRoleUserMembers(0, 10000)
                 .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
-            return users
+            users
         } catch (e: jakarta.ws.rs.NotFoundException) {
             log.warn("No users found with role '$roleName'")
-            return emptyList()
+            emptyList()
         }
     }
 
@@ -144,7 +144,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun buildResteasyClient(): ResteasyClient? {
-        val client = ResteasyClientBuilder()
+        val client = ResteasyClientBuilderImpl()
         if (this.keycloakProxyUrl != null) {
             client.defaultProxy(proxyHost, proxyPort)
         }

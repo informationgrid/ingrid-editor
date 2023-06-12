@@ -6895,17 +6895,17 @@ karma@~6.4.1:
     ua-parser-js "^0.7.30"
     yargs "^16.1.1"
 
-keycloak-angular@^13.0.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/keycloak-angular/-/keycloak-angular-13.1.0.tgz#7d0edb2d1aea5a408712757b0e06acebdfd86c7e"
-  integrity sha512-IMiCzO6eWzA8dacmGAa+ckgsj1bB9Eww9CaKgnj9qsTw1V/GHn88IG242XPRwiVWRzeTWk2BOgu6abLC2fsP8g==
+keycloak-angular@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/keycloak-angular/-/keycloak-angular-14.0.0.tgz#bf2672462a19c8781d2e6f29a9cc12531ce0eed7"
+  integrity sha512-MbXdOz0omPkwzTpKTtaLPrbEoWiNM9zY/qi3JnVepV6zGRRFrzPu3uvz/1nsU+fio0lHcjkjPVLmp/06+kBWZg==
   dependencies:
     tslib "^2.3.1"
 
-keycloak-js@^19.0.3:
-  version "19.0.3"
-  resolved "https://registry.yarnpkg.com/keycloak-js/-/keycloak-js-19.0.3.tgz#f70e988b799054957e47c981b7e962c9874da00e"
-  integrity sha512-mzCBxrzfl+vB551Q7MB+T9+40IHU4i0a6g1eTatzeEGrQMis5m/BqvPC3kxTsI+/LxHbB9XYQE3u9SlWKDHQCw==
+keycloak-js@^20.0.5:
+  version "20.0.5"
+  resolved "https://registry.yarnpkg.com/keycloak-js/-/keycloak-js-20.0.5.tgz#8dd94d2c813170db5381dabfbe3a3327ce5ed6db"
+  integrity sha512-7+M5Uni4oNlAmbjM/lDJzFHu2+PGqU6/bvmTBuQssE1fJ7ZyNeCRHgFoaVfFpIU3m6aAFwPUko4lVcn4kPXP5Q==
   dependencies:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
