@@ -1,7 +1,7 @@
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.exporter.model.KeyValueModel
-@import de.ingrid.igeserver.exports.iso19115.Keyword
-@import de.ingrid.igeserver.exports.iso19115.Thesaurus
+@import de.ingrid.igeserver.exports.iso19139.Keyword
+@import de.ingrid.igeserver.exports.iso19139.Thesaurus
 
 @param Thesaurus thesaurus
         <%-- only show template if keywords exist  --%>

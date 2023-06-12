@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.exports.iso19115
+package de.ingrid.igeserver.exports.iso19139
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.mitchellbosecke.pebble.PebbleEngine
@@ -12,7 +12,7 @@ import java.io.Writer
 import java.util.*
 
 @Service
-class Iso19115Exporter : IgeExporter {
+class Iso19139Exporter : IgeExporter {
     private val info: ExportTypeInfo
 
     override val typeInfo: ExportTypeInfo
@@ -82,6 +82,6 @@ class Iso19115Exporter : IgeExporter {
     }
 
     init {
-        info = ExportTypeInfo(DocumentCategory.DATA, "iso19115", "ISO-19115", "Export in das ISO-19115 Format", "text/xml", "xml", listOf("ingrid"))
+        info = ExportTypeInfo(DocumentCategory.DATA, "iso19139", "ISO/TS 19139:2007", "Export in das ISO/TS 19139:2007 Format", "text/xml", "xml", listOf("ingrid"))
     }
 }
