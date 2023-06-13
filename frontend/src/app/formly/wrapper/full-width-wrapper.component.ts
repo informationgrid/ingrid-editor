@@ -41,7 +41,7 @@ export class FullWidthWrapperComponent
     this.contextHelpService.showContextHelp(
       this.profile,
       this.docType,
-      this.fieldId,
+      this.field.props.contextHelpId || this.fieldId,
       this.props.externalLabel,
       infoElement
     );

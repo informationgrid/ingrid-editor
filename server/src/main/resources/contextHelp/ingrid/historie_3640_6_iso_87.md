@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
-id: history
+id: implementationHistory
 docType: InGridInformationSystem
 profile: ingrid
-
-
 
 # title, used as window title
 title: Historie

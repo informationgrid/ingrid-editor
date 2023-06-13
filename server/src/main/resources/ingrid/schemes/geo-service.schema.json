@@ -162,7 +162,7 @@
               "type": ["null", "boolean"]
             },
             "implementationHistory": {
-              "type": "string"
+              "type": ["null", "string"]
             }
           }
         },

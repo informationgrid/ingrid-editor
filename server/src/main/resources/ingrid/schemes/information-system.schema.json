@@ -139,7 +139,7 @@
         "baseDataText": {
           "$ref": "refs/general.schema.json#/definitions/baseDataText"
         },
-        "history": {
+        "implementationHistory": {
           "type": ["null", "string"]
         },
         "orderInfo": {

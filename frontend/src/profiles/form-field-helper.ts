@@ -273,6 +273,7 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
         change: options?.change,
         remove: options?.remove,
         view: options?.view,

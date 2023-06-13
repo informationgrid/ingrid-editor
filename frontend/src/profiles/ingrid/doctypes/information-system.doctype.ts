@@ -52,10 +52,15 @@ export class InformationSystemDoctype extends IngridShared {
                 wrappers: ["inline-help", "form-field"],
               }
             ),
-            this.addTextAreaInline("history", "Historie", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
+            this.addTextAreaInline(
+              "implementationHistory",
+              "Historie",
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["inline-help", "form-field"],
+              }
+            ),
           ],
           { className: "optional" }
         ),

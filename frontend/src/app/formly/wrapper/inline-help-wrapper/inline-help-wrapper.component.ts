@@ -55,7 +55,7 @@ export class InlineHelpWrapperComponent
     this.contextHelpService.showContextHelp(
       this.profile,
       this.formState.mainModel?._type,
-      this.fieldId,
+      this.field.props.contextHelpId || this.fieldId,
       title,
       infoElement
     );

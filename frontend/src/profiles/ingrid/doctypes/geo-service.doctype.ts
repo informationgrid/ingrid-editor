@@ -103,6 +103,7 @@ export class GeoServiceDoctype extends IngridShared {
               showSearch: true,
               fieldGroupClassName: "flex-1",
               hasInlineContextHelp: true,
+              contextHelpId: "serviceVersion",
               wrappers: ["inline-help"],
               className: "optional flex-1",
             }),
