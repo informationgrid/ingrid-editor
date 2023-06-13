@@ -38,19 +38,18 @@ export class InheritContactDataHandler extends Plugin {
     const onEvent = this.docEvents
       .onEvent("INHERIT_CONTACT_DATA")
       .subscribe((event) => {
-        console.log("INHERIT_CONTACT_DATA", event);
-        FormUtils.handleDirtyForm(
-          this.formStateService.getForm(),
-          this.documentService,
-          this.dialog,
-          this.forAddress
-        ).then((handled) => {
-          if (handled)
-            this.openConfirmDialog().subscribe((confirmed) => {
-              if (confirmed) {
+        this.openConfirmDialog().subscribe((confirmed) => {
+          if (confirmed) {
+            FormUtils.handleDirtyForm(
+              this.formStateService.getForm(),
+              this.documentService,
+              this.dialog,
+              this.forAddress
+            ).then((handled) => {
+              if (handled)
                 this.inheritContactData(event.data.docId, event.data.parentId);
-              }
             });
+          }
         });
       });
 
