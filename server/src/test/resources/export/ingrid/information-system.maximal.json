@@ -4,7 +4,7 @@
   "_type": "InGridInformationSystem",
   "themes": [{ "key": "108" }],
   "dataset": { "languages": ["142"] },
-  "history": "history4",
+  "implementationHistory": "history4",
   "spatial": {
     "references": [
       {
