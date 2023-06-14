@@ -36,7 +36,9 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
     this.subscriptions.push(
       this.eventService
         .respondToEvent(IgeEvent.DELETE)
-        .subscribe((resultObserver) => this.handleEvent(resultObserver))
+        .subscribe((resultObserver) =>
+          this.handleEvent(resultObserver.eventResponseHandler)
+        )
     );
   }
 

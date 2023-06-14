@@ -12,6 +12,8 @@ import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarS
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 import { IsoViewPlugin } from "./+form/dialogs/iso-view/iso-view.plugin";
 import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
+import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
+import { AssignedUserBehaviour } from "./+catalog/+behaviours/system/AssignedUser/assigned-user.behaviour";
 import { GetCapabilititesWizardPlugin } from "../profiles/ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
 
 export const formPluginProvider = [
@@ -27,6 +29,12 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: IsoViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
+  { provide: FormPluginToken, useClass: AssignedUserBehaviour, multi: true },
+  {
+    provide: FormPluginToken,
+    useClass: ShowDocumentPermissionsHandlerPlugin,
+    multi: true,
+  },
   {
     provide: FormPluginToken,
     useClass: GetCapabilititesWizardPlugin,

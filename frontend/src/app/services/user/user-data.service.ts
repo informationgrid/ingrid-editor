@@ -73,6 +73,12 @@ export class UserDataService {
     );
   }
 
+  getAssignedDatasets(userId: number): Observable<number[]> {
+    return this.http.get<number[]>(
+      this.configuration.backendUrl + `users/${userId}/responsibilities`
+    );
+  }
+
   getExternalUsers() {
     return this.http.get<BackendUser[]>(
       this.configuration.backendUrl + "externalUsers"

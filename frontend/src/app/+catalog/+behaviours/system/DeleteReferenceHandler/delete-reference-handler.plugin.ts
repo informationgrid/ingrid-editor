@@ -10,6 +10,7 @@ import {
 import { ConfigService } from "../../../../services/config/config.service";
 import { Observable } from "rxjs";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
+import { FormMenuService } from "../../../../+form/form-menu.service";
 
 @Injectable()
 export class DeleteReferenceHandlerPlugin extends Plugin {
@@ -20,18 +21,21 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   defaultActive = true;
   forAddress = true;
   private disabled = false;
+  isPrivileged: boolean;
 
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private tree: AddressTreeQuery,
-    configService: ConfigService
+    private docEventsService: DocEventsService,
+    private formMenuService: FormMenuService,
+    private configService: ConfigService
   ) {
     super();
 
     let role = configService.$userInfo.getValue().role;
-    const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
-    if (!isPrivileged) this.disabled = true;
+    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    if (!this.isPrivileged) this.disabled = true;
   }
 
   register() {
@@ -69,6 +73,25 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       });
 
     this.subscriptions.push(subscription, onEvent);
+
+    if (this.isPrivileged) {
+      const onDocChange = this.tree.openedDocument$.subscribe((doc) => {
+        // refresh menu item
+        this.formMenuService.removeMenuItem("address", "replace-address");
+        if (doc && doc._type !== "FOLDER") {
+          this.formMenuService.addMenuItem("address", {
+            title: "Adresse ersetzen",
+            name: "replace-address",
+            action: () =>
+              this.docEventsService.sendEvent({
+                type: "REPLACE_ADDRESS",
+                data: { uuid: doc._uuid },
+              }),
+          });
+        }
+      });
+      this.subscriptions.push(onDocChange);
+    }
   }
 
   private showDialog(source: string, showInfo = true): Observable<any> {

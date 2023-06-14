@@ -19,10 +19,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../../../../dialogs/confirm/confirm-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
@@ -44,6 +40,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;
+  forResponsibility = false;
   selectedUser: User;
   users: UserWithDocPermission[];
   query = new FormControl<string>("");
@@ -56,6 +53,7 @@ export class PermissionsDialogComponent implements OnInit {
     private toast: MatSnackBar
   ) {
     this.id = data.id;
+    this.forResponsibility = data.forResponsibility;
   }
 
   ngOnInit() {
@@ -63,19 +61,7 @@ export class PermissionsDialogComponent implements OnInit {
   }
 
   switchToUser() {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: "Zur Nutzerverwaltung wechseln?",
-          message: `Benutzer "${this.selectedUser.login}" in der Nutzerverwaltung anzeigen?`,
-        } as ConfirmDialogData,
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.dialogRef.close(this.selectedUser);
-        }
-      });
+    this.dialogRef.close(this.selectedUser);
   }
 
   private loadPermissionById(id: number) {
@@ -114,6 +100,7 @@ export class PermissionsDialogComponent implements OnInit {
       .setResponsibleUser(this.id, this.selectedUser.id)
       .subscribe(() => {
         this.toast.open("Verantwortlicher aktualisert.");
+        this.dialogRef.close();
       });
   }
 }

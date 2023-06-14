@@ -23,22 +23,18 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import {
-  catchError,
-  filter,
-  finalize,
-  map,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import { filter, finalize, map, switchMap, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { IgeError } from "../../models/ige-error";
-import { TransferResponsibilityDialogComponent } from "./transfer-responsibility-dialog/transfer-responsibility-dialog.component";
+import { EventService, IgeEvent } from "../../services/event/event.service";
+import {
+  FormMenuService,
+  FormularMenuItem,
+} from "../../+form/form-menu.service";
 
 @UntilDestroy()
 @Component({
@@ -51,6 +47,7 @@ export class UserComponent
 {
   users: User[];
   form = new UntypedFormGroup({});
+  menuItems: FormularMenuItem[];
 
   selectedUser: User;
   showMore = false;
@@ -68,8 +65,10 @@ export class UserComponent
     private groupService: GroupService,
     private groupQuery: GroupQuery,
     private configService: ConfigService,
+    private eventService: EventService,
     private router: Router,
     public userManagementService: UserManagementService,
+    private formMenuService: FormMenuService,
     private session: SessionQuery,
     private toast: MatSnackBar,
     private cdRef: ChangeDetectorRef
@@ -121,11 +120,18 @@ export class UserComponent
   }
 
   ngOnInit() {
-    this.fetchUsers().subscribe(() => {
+    this.menuItems = this.formMenuService.getMenuItems("user");
+    this.userService.users$
+      .pipe(untilDestroyed(this))
+      .subscribe((users) => (this.users = users));
+    this.userService.getUsers().subscribe(() => {
       // select group after groups are fetched, otherwise table has no data
       // to select from
       this.userService.selectedUser$
         .pipe(
+          tap((user) => {
+            if (user == null) this.selectedUser = null;
+          }),
           filter((user) => !!user),
           tap((user) => {
             const previousId = this.selectedUser?.login;
@@ -144,22 +150,6 @@ export class UserComponent
     if (this.userService.selectedUser$.value) {
       this.loadUser(this.userService.selectedUser$.value.id);
     }
-  }
-
-  // TODO: the belongs in the service
-  fetchUsers(): Observable<FrontendUser[]> {
-    return this.userService.getUsers().pipe(
-      map((users: FrontendUser[]) =>
-        users
-          .filter(
-            // remove current user from list
-            (u) => u.login !== this.configService.$userInfo.getValue().userId
-          )
-          .sort((a, b) => a.login.localeCompare(b.login))
-      ),
-      tap((users) => (this.users = users ? users : [])),
-      untilDestroyed(this)
-    );
   }
 
   loadUser(id: number) {
@@ -187,19 +177,23 @@ export class UserComponent
         this.dialog
           .open(NewUserDialogComponent, { hasBackdrop: true })
           .afterClosed()
-          .subscribe((result) => this.updateUsersAndLoad(result));
+          .subscribe((result) => {
+            if (result?.id) this.updateUsersAndLoad(result.id);
+          });
     });
   }
 
-  private updateUsersAndLoad(result: User) {
-    if (result) {
-      this.fetchUsers().subscribe(() => this.loadUser(result.id));
-    } else {
-      this.fetchUsers().subscribe();
-    }
+  private updateUsersAndLoad(userId: number) {
+    this.userService.getUsers().subscribe(() => this.loadUser(userId));
   }
 
   deleteUser(user: User) {
+    this.eventService
+      .sendEventAndContinueOnSuccess(IgeEvent.DELETE_USER, user)
+      .subscribe(() => this.openDeleteUserDialog(user));
+  }
+
+  private openDeleteUserDialog(user: User) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
@@ -215,7 +209,7 @@ export class UserComponent
       .subscribe(() => {
         this.userService.selectedUser$.next(null);
         this.selectedUser = null;
-        this.fetchUsers().subscribe();
+        this.userService.fetchUsers();
       });
   }
 
@@ -229,9 +223,8 @@ export class UserComponent
       .pipe(finalize(() => this.hideLoading()))
       .subscribe(() => {
         if (loadUser) {
-          this.fetchUsers().subscribe();
           this.form.markAsPristine();
-          this.loadUser(user.id);
+          this.updateUsersAndLoad(user.id);
         }
       });
   }
@@ -241,13 +234,9 @@ export class UserComponent
 
     user = user ?? this.model;
 
-    this.fetchUsers().subscribe();
     this.form.markAsPristine();
-    this.loadUser(user.id);
+    this.updateUsersAndLoad(user.id);
   }
-
-  // on error:
-  // this.userService.selectedUser$.next(null);
 
   getEmailErrorMessage() {
     const email = this.form.get("email");
@@ -328,57 +317,5 @@ export class UserComponent
   private hideLoading() {
     this.enableForm();
     this.isLoading = false;
-  }
-
-  resetPassword(login: string) {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: "Passwort zurücksetzen",
-          message:
-            "Möchten Sie das Passwort für den Benutzer " +
-            login +
-            " zurücksetzen? \n Ein neues Passwort wird generiert und an den Benutzer gesendet.",
-        } as ConfirmDialogData,
-      })
-      .afterClosed()
-      .pipe(filter((result) => result))
-      .subscribe(() => {
-        this.userService
-          .resetPassword(login)
-          .pipe(
-            catchError((err) => {
-              if (
-                err.error.errorText.includes("Mail server connection failed")
-              ) {
-                throw new IgeError(
-                  "Es gab ein Problem beim Versenden der Email"
-                );
-              } else {
-                throw err;
-              }
-            })
-          )
-          .subscribe(() => {
-            this.toast.open("Passwort wurde zurückgesetzt");
-          });
-      });
-  }
-
-  openTransferResponsibilityDialog(oldUser: User) {
-    this.dialog
-      .open(TransferResponsibilityDialogComponent, {
-        width: "780px",
-        data: {
-          users: this.users,
-          oldUser: oldUser,
-        },
-      })
-      .afterClosed()
-      .pipe(filter((result) => result))
-      .subscribe((result) => {
-        console.log(result);
-        this.toast.open("Verantwortung übertragen.");
-      });
   }
 }

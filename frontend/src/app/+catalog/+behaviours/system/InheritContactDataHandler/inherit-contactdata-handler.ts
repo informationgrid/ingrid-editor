@@ -12,6 +12,8 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { DocumentDataService } from "../../../../services/document/document-data.service";
 import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
+import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
+import { FormMenuService } from "../../../../+form/form-menu.service";
 
 @Injectable()
 export class InheritContactDataHandler extends Plugin {
@@ -27,7 +29,9 @@ export class InheritContactDataHandler extends Plugin {
     private dialog: MatDialog,
     private documentDataService: DocumentDataService,
     private formStateService: FormStateService,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private addressTreeQuery: AddressTreeQuery,
+    private formMenuService: FormMenuService
   ) {
     super();
   }
@@ -53,7 +57,30 @@ export class InheritContactDataHandler extends Plugin {
         });
       });
 
-    this.subscriptions.push(onEvent);
+    const onDocLoad = this.addressTreeQuery.openedDocument$.subscribe((doc) => {
+      // refresh menu item
+      this.formMenuService.removeMenuItem("address", "inherit-contact-data");
+      if (doc && doc._type !== "FOLDER") {
+        const parent = this.addressTreeQuery.getEntity(doc._parent);
+        this.formMenuService.addMenuItem("address", {
+          title: "Kontaktangaben der übergeordneten Adresse übernehmen",
+          name: "inherit-contact-data",
+          disabled: !parent || parent._type === "FOLDER",
+          action: () =>
+            this.docEvents.sendEvent({
+              type: "INHERIT_CONTACT_DATA",
+              data: { docId: doc.id, parentId: parent.id },
+            }),
+        });
+      }
+    });
+
+    this.subscriptions.push(onEvent, onDocLoad);
+  }
+
+  unregister() {
+    super.unregister();
+    this.formMenuService.removeMenuItem("address", "inherit-contact-data");
   }
 
   private inheritContactData(docId: number, parentId: number) {

@@ -8,7 +8,7 @@ import { routes } from "../app.router";
 @Injectable({
   providedIn: "root",
 })
-export class MenuService {
+export class MainMenuService {
   private _mainRoutes = routes;
 
   menu$ = new BehaviorSubject<Route[]>(this.mainRoutes);

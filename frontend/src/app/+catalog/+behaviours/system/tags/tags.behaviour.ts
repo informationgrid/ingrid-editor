@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
-import { FormularService } from "../../../../+form/formular.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
@@ -8,6 +7,7 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { MatDialog } from "@angular/material/dialog";
 import { PublicationTypeDialog } from "./publication-type/publication-type.dialog";
 import { filter, switchMap } from "rxjs/operators";
+import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -19,7 +19,7 @@ export class TagsBehaviour extends Plugin {
   eventAddTags = "ADD_TAGS";
 
   constructor(
-    private formularService: FormularService,
+    private formMenuService: FormMenuService,
     private docEvents: DocEventsService,
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
@@ -29,20 +29,21 @@ export class TagsBehaviour extends Plugin {
     super();
   }
 
+  private menuId: MenuId;
+  private menuItemId = "set-tags";
+
   register() {
     super.register();
 
-    this.formularService.addExtraOption(
-      {
-        title: "Veröffentlichungsrecht setzen ...",
-        name: "set-tags",
-        action: () =>
-          this.docEvents.sendEvent({
-            type: this.eventAddTags,
-          }),
-      },
-      this.forAddress
-    );
+    this.menuId = this.forAddress ? "address" : "dataset";
+    this.formMenuService.addMenuItem(this.menuId, {
+      title: "Veröffentlichungsrecht setzen ...",
+      name: this.menuItemId,
+      action: () =>
+        this.docEvents.sendEvent({
+          type: this.eventAddTags,
+        }),
+    });
     const toolbarEventSubscription = this.docEvents
       .onEvent(this.eventAddTags)
       .subscribe(() => this.showTagsDialog());
@@ -52,7 +53,7 @@ export class TagsBehaviour extends Plugin {
 
   unregister() {
     super.unregister();
-    this.formularService.removeExtraOption("set-tags", this.forAddress);
+    this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
   }
 
   private showTagsDialog() {

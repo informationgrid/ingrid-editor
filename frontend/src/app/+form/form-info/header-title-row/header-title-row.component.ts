@@ -10,7 +10,7 @@ import {
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
-import { FormularService, HeaderMenuOption } from "../../formular.service";
+import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
 
 @Component({
   selector: "ige-header-title-row",
@@ -40,11 +40,11 @@ export class HeaderTitleRowComponent implements OnInit {
   showMore = false;
   showMoreActions = false;
 
-  moreActions: HeaderMenuOption[];
+  moreActions: FormularMenuItem[];
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private formularService: FormularService
+    private formMenuService: FormMenuService
   ) {}
 
   ngOnInit() {
@@ -63,9 +63,8 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   private updateHeaderMenuOptions() {
-    this.moreActions = this.formularService.getHeaderMenuOptions(
-      this._model,
-      this.address
+    this.moreActions = this.formMenuService.getMenuItems(
+      this.address ? "address" : "dataset"
     );
     this.showMoreActions = this.moreActions.length > 0;
   }
