@@ -10,8 +10,11 @@ import { DocumentService } from "../../../../app/services/document/document.serv
 import { IgeDocument } from "../../../../app/models/ige-document";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
+import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class GetCapabilititesWizardPlugin extends Plugin {
   id = "plugin.getCapWizard";
   defaultActive = true;
@@ -29,6 +32,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private getCapService = inject(GetCapabilitiesService);
   private documentService = inject(DocumentService);
   private router = inject(Router);
+
+  constructor() {
+    super();
+    inject(FormPluginsService).registerPlugin(this);
+  }
 
   register() {
     super.register();

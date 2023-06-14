@@ -146,8 +146,8 @@ export class BehaviourService {
       found.data = behaviour.data;
     });
 
-    activate.forEach((a) => a.register());
-    deactivate.forEach((a) => a.unregister());
+    // activate.forEach((a) => a.register());
+    // deactivate.forEach((a) => a.unregister());
     update.forEach((a) => a.update());
 
     this.theSystemBehaviours$.next(this.systemBehaviours);

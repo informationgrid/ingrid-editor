@@ -30,6 +30,8 @@ import { MatListModule } from "@angular/material/list";
 import { SharedPipesModule } from "../app/directives/shared-pipes.module";
 import { ThesaurusReportComponent } from "./ingrid/components/thesaurus-report.component";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
+import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolbar.service";
 
 @Component({
   template: "",
@@ -46,7 +48,8 @@ class InGridComponent {
     dataCollection: DataCollectionDoctype,
     informationSystem: InformationSystemDoctype,
     person: IngridPersonDoctype,
-    organisation: IngridOrganisationDoctype
+    organisation: IngridOrganisationDoctype,
+    getCapWizard: GetCapabilititesWizardPlugin
   ) {
     profileService.setProfileId("ingrid");
     profileService.registerProfiles([
@@ -74,6 +77,7 @@ class InGridComponent {
     GetCapabilitiesDialogComponent,
     ThesaurusReportComponent,
   ],
+  providers: [GetCapabilititesWizardPlugin, FormToolbarService],
   imports: [
     MatIconModule,
     MatDialogModule,

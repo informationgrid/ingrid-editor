@@ -1,20 +1,17 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Plugin } from "../../+catalog/+behaviours/plugin";
 import { Router } from "@angular/router";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
-import { FormPluginToken } from "../../tokens/plugin.token";
 import { filter } from "rxjs/operators";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class FormPluginsService {
   plugins: Plugin[] = [];
-  private registered = false;
+  // private registered = false;
 
-  constructor(
-    private behaviourService: BehaviourService,
-    @Inject(FormPluginToken) private autoPlugins: Plugin[],
-    router: Router
-  ) {
+  constructor(private behaviourService: BehaviourService, router: Router) {
     const forAddress = router.url.indexOf("/address") !== -1;
 
     behaviourService.registerState$
@@ -22,15 +19,16 @@ export class FormPluginsService {
       .subscribe((value) =>
         value.register ? this.init(forAddress) : this.unregisterAll()
       );
+  }
 
-    this.init(forAddress);
+  registerPlugin(plugin: Plugin) {
+    this.plugins.push(plugin);
   }
 
   private init(forAddress: boolean) {
-    if (this.registered) return;
+    // if (this.registered) return;
 
-    this.behaviourService.applyActiveStates(this.autoPlugins);
-    this.plugins = [...this.autoPlugins];
+    this.behaviourService.applyActiveStates(this.plugins);
 
     if (forAddress) {
       this.plugins.forEach((p) => p.setForAddress());
@@ -41,7 +39,7 @@ export class FormPluginsService {
       .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
       .forEach((p) => p.register());
 
-    this.registered = true;
+    // this.registered = true;
   }
 
   // on destroy must be called manually from provided component since it may not be
@@ -52,6 +50,6 @@ export class FormPluginsService {
 
   private unregisterAll() {
     this.plugins.forEach((p) => p.unregister());
-    this.registered = false;
+    // this.registered = false;
   }
 }

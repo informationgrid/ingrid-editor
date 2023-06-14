@@ -6,7 +6,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatButtonModule } from "@angular/material/button";
-import { FormPluginsService } from "./form-plugins.service";
 import { CreateDocumentPlugin } from "../dialogs/create/create-doc.plugin";
 import { SavePlugin } from "../dialogs/save/save.plugin";
 import { CreateFolderPlugin } from "../dialogs/create/create-folder.plugin";
@@ -36,7 +35,6 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
 import { FolderDashboardComponent } from "./folder/folder-dashboard.component";
 import { AngularSplitModule } from "angular-split";
 import { FormComponent } from "../form/form.component";
-import { FormToolbarService } from "./toolbar/form-toolbar.service";
 import { formPluginProvider } from "../../form-plugin.provider";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
@@ -102,8 +100,6 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     ErrorPanelComponent,
   ],
   providers: [
-    FormToolbarService,
-    FormPluginsService,
     CreateDocumentPlugin,
     SavePlugin,
     CreateFolderPlugin,
