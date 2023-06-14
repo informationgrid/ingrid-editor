@@ -54,7 +54,8 @@ export class GetCapabilitiesService {
       if (key === "accessConstraints") model.resource.accessConstraints = value;
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
-      if (key === "keywords") model.keywords = value;
+      if (key === "keywords")
+        model.keywords.free = (value as any[]).map((item) => ({ label: item }));
       if (key === "address")
         model.pointOfContact = await this.handleAddress(value);
       if (key === "boundingBoxes")

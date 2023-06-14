@@ -12,6 +12,7 @@ import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarS
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 import { IsoViewPlugin } from "./+form/dialogs/iso-view/iso-view.plugin";
 import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
+import { GetCapabilititesWizardPlugin } from "../profiles/ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -20,13 +21,17 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: SavePlugin, multi: true },
   { provide: FormPluginToken, useClass: CreateFolderPlugin, multi: true },
   { provide: FormPluginToken, useClass: CopyCutPastePlugin, multi: true },
-  // {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
   { provide: FormPluginToken, useClass: HistoryPlugin, multi: true },
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
   { provide: FormPluginToken, useClass: IsoViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
+  {
+    provide: FormPluginToken,
+    useClass: GetCapabilititesWizardPlugin,
+    multi: true,
+  },
   {
     provide: FormPluginToken,
     useClass: DeleteEmptyFoldersBehaviour,
