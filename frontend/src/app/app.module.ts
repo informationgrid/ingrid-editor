@@ -91,6 +91,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
+import { formPluginProvider } from "./form-plugin.provider";
 
 registerLocaleData(de);
 
@@ -365,6 +366,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     },
 
     // PLUGINS
+    formPluginProvider,
     pluginProvider,
   ], // additional providers
   bootstrap: [AppComponent],

@@ -35,7 +35,6 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
 import { FolderDashboardComponent } from "./folder/folder-dashboard.component";
 import { AngularSplitModule } from "angular-split";
 import { FormComponent } from "../form/form.component";
-import { formPluginProvider } from "../../form-plugin.provider";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { SharedPipesModule } from "../../directives/shared-pipes.module";
@@ -113,7 +112,7 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     HistoryPlugin,
 
     // FORM-PLUGINS
-    formPluginProvider,
+    // formPluginProvider,
   ],
   exports: [
     FormToolbarComponent,

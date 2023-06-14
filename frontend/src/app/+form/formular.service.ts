@@ -24,7 +24,9 @@ export interface FormularMenuItem {
   disabled?: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class FormularService {
   data = {};
 

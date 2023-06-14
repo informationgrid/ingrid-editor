@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
@@ -24,6 +24,7 @@ import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { IgeDocument } from "../../../models/ige-document";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -53,6 +54,7 @@ export class CopyCutPastePlugin extends Plugin {
     private router: Router
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { FormularService } from "../../../../+form/formular.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
@@ -8,6 +8,7 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { MatDialog } from "@angular/material/dialog";
 import { PublicationTypeDialog } from "./publication-type/publication-type.dialog";
 import { filter, switchMap } from "rxjs/operators";
+import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -27,6 +28,7 @@ export class TagsBehaviour extends Plugin {
     private dialog: MatDialog
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {
