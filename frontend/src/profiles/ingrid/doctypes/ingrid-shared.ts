@@ -385,7 +385,11 @@ export abstract class IngridShared extends BaseDoctype {
           validators: {
             mustBeEmptyBeforeSave: {
               expression: (ctrl) => {
-                return ctrl.value === null || ctrl.value === "";
+                return (
+                  ctrl.value === null ||
+                  ctrl.value === undefined ||
+                  ctrl.value === ""
+                );
               },
               message: "Der Inhalt muss noch mit 'Return' bestätigt werden",
             },
