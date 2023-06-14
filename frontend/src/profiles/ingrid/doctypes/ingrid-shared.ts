@@ -382,6 +382,14 @@ export abstract class IngridShared extends BaseDoctype {
           keydown: async (field, event: KeyboardEvent) => {
             await this.analyzeKeywords(event, field, options);
           },
+          validators: {
+            mustBeEmptyBeforeSave: {
+              expression: (ctrl) => {
+                return ctrl.value === null || ctrl.value === "";
+              },
+              message: "Der Inhalt muss noch mit 'Return' bestätigt werden",
+            },
+          },
         }),
       ].filter(Boolean)
     );

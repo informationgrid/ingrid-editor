@@ -157,6 +157,9 @@
             [formControl]="inputControl"
             (keydown.enter)="addFreeEntry(inputControl.value)"
             [matAutocomplete]="auto"
+            [errorStateMatcher]="matcher"
+            (focusin)="hasFocus = true"
+            (focusout)="hasFocus = false"
         />
         <mat-autocomplete
             #auto="matAutocomplete"
@@ -191,7 +194,11 @@
         ></ng-container>
 
         <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
-        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+        <mat-error>{{
+            inputControl.errors?.mustBeEmpty
+                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                : "Bitte erstellen Sie mindestens einen Eintrag"
+        }}</mat-error>
     </mat-form-field>
 </ng-container>
 
@@ -204,6 +211,11 @@
         [flexWidth]="true"
         [placeholder]="props.placeholder"
         [focus]="false"
+        [errorText]="
+            inputControl.errors?.mustBeEmpty
+                ? 'Der Inhalt muss noch mit \'Return\' bestätigt werden'
+                : null
+        "
         showSearchIcon="true"
     ></ige-search-input>
 
@@ -227,6 +239,9 @@
             [formControl]="inputControl"
             [required]="showError && props.required && formControl.invalid"
             (keydown.enter)="addSimpleValues(inputControl.value)"
+            [errorStateMatcher]="matcher"
+            (focusin)="hasFocus = true"
+            (focusout)="hasFocus = false"
         />
         <div matSuffix>
             <mat-spinner
@@ -244,6 +259,10 @@
             </button>
         </div>
         <mat-hint>{{ props.hint }} </mat-hint>
-        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+        <mat-error>{{
+            inputControl.errors?.mustBeEmpty
+                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                : "Bitte erstellen Sie mindestens einen Eintrag"
+        }}</mat-error>
     </mat-form-field>
 </ng-container>

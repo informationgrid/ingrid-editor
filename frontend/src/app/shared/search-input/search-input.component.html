@@ -17,6 +17,9 @@
         aria-label="Search"
         [formControl]="query"
         [matAutocomplete]="autocompleteRef"
+        [errorStateMatcher]="matcher"
+        (focusin)="hasFocus = true"
+        (focusout)="hasFocus = false"
     />
     <ng-template #noAutocomplete>
         <input
@@ -49,6 +52,7 @@
         </mat-icon>
     </div>
     <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
+    <mat-error *ngIf="errorText">{{ errorText }}</mat-error>
 </mat-form-field>
 
 <button
