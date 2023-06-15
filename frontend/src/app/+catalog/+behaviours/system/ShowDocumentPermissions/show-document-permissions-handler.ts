@@ -41,7 +41,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
   }
 
-  private menuId: MenuId;
+  private menuId: MenuId = "dataset";
   private menuItemId = "show-document-permissions";
 
   register() {
