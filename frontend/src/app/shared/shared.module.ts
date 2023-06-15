@@ -34,6 +34,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "./search-input/search-input.component";
 import { DocumentIconModule } from "./document-icon/document-icon.module";
+import { FullNamePipe } from "../directives/full-name.pipe";
 
 @NgModule({
   imports: [
@@ -72,6 +73,7 @@ import { DocumentIconModule } from "./document-icon/document-icon.module";
     SpatialListComponent,
     FeatureFlagDirective,
     DndDirective,
+    FullNamePipe,
   ],
   exports: [
     TreeComponent,
@@ -88,6 +90,7 @@ import { DocumentIconModule } from "./document-icon/document-icon.module";
     FeatureFlagDirective,
     DndDirective,
     SearchInputComponent,
+    FullNamePipe,
   ],
 })
 export class SharedModule {}

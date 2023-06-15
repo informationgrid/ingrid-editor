@@ -162,6 +162,19 @@ class UsersApiController : UsersApi {
 
     }
 
+
+    override fun getFullName(principal: Principal, userId: Int): ResponseEntity<String> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+
+        keycloakService.getClient(principal).use { client ->
+            val login = frontendUser.userId
+            val user = keycloakService.getUser(client, login)
+            return ResponseEntity.ok(user.firstName + " " + user.lastName)
+        }
+
+    }
+
     private fun getSingleUser(principal: Principal, userId: String): User? {
         keycloakService.getClient(principal).use { client ->
 

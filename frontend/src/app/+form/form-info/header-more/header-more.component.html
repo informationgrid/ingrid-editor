@@ -55,7 +55,7 @@
     >
         <div>Verantwortlich</div>
         <div>
-            <span> {{ model._responsibleUser }} </span>
+            <span> {{ model._responsibleUser | fullName | async }} </span>
         </div>
     </div>
     <div

@@ -76,6 +76,17 @@ interface UsersApi {
         @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<User>
 
+    @GetMapping(
+        value = ["/users/{id}/fullname"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Get the full name of the user with the given ID.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the name")])
+    fun getFullName(
+        principal: Principal,
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
+    ): ResponseEntity<String>
+
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation
     @ApiResponses(
