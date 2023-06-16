@@ -18,7 +18,7 @@ title: Anwendungseinschränkungen
 
 # Anwendungseinschränkungen
 
-Einschränkungen, die die Eignung der Ressource oder Metadaten betreffen (ISO: useLimitation)
+Einschränkungen, die die Eignung der Ressource oder Metadaten betreffen.
 
 ## Beispiel:
 

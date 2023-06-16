@@ -18,6 +18,6 @@ Feldkartierung
 
 # ISO Abbildung
 
-Beschreibung des Bearbeitungsschritts einschließlichwichtiger Parameter oder Toleranzen
+Beschreibung des Bearbeitungsschritts einschließlich wichtiger Parameter oder Toleranzen
 
 Domain: 87 (gmd:description)

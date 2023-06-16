@@ -11,7 +11,11 @@ title: Zeichensatz des Datensatzes
 
 # Zeichensatz des Datensatzes
 
-Angaben zu dem im beschriebenen Datensatz benutzten Zeichensatz z.B. UTF-8
+Angaben zu dem im beschriebenen Datensatz benutzten Zeichensatz.
+
+## Beispiel
+
+UTF-8
 
 # ISO Abbildung
 

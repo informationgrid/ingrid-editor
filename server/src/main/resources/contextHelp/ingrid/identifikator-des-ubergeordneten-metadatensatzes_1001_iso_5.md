@@ -18,7 +18,7 @@ title: Identifikator des übergeordneten Metadatensatzes
 
 # Identifikator des übergeordneten Metadatensatzes
 
-Für Datensätze in der obersten Ebene oder direkt unter einem Ordner, kann eine zusätzliche Referenz auf einen übergeordneten Metadatensatz vergeben werden. Dadurch ist es möglich, auch auf externe Datensätze zu verweisen.
+Für Datensätze in der obersten Ebene oder direkt unter einem Ordner kann eine zusätzliche Referenz auf einen übergeordneten Metadatensatz vergeben werden. Dadurch ist es möglich, auch auf externe Datensätze zu verweisen.
 
 ## Beispiel:
 
@@ -26,7 +26,7 @@ Für Datensätze in der obersten Ebene oder direkt unter einem Ordner, kann eine
 
 # ISO Abbildung
 
-eindeutiger Identifikator des übergeordneten Metadatensatzes (Elternobjekt), auf den sich der aktuelle Metadatensatz (Kindobjekt) bezieht
+Eindeutiger Identifikator des übergeordneten Metadatensatzes (Elternobjekt), auf den sich der aktuelle Metadatensatz (Kindobjekt) bezieht
 
 Domain: 5 (gmd:parentIdentifier)
 

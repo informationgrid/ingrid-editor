@@ -12,7 +12,7 @@ title: Objektartenkatalog
 
 # Objektartenkatalog
 
-An dieser Stelle besteht die Möglichkeit, den Daten zugrunde liegende Klassifizierungsschlüssel zu benennen. Dabei ist die Eingabe mehrerer Kataloge mit zugehörigem Datum (Pflichteintrag) und Version (Optional) möglich.
+An dieser Stelle besteht die Möglichkeit, den Klassifizierungsschlüssel zu benennen, der den Daten zugrunde liegt. Dabei ist die Eingabe mehrerer Kataloge mit zugehörigem Datum (Pflichteintrag) und Version (Optional) möglich.
 
 ## Beispiel:
 
