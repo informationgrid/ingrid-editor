@@ -88,6 +88,7 @@ export class IsoViewPlugin extends Plugin {
     ]).subscribe(async ([current, published]) => {
       this.dialog.open(IsoViewComponent, {
         data: {
+          uuid: this.treeQuery.getOpenedDocument()._uuid,
           isoText: await current.body.text(),
           isoTextPublished: await published?.body.text(),
         },

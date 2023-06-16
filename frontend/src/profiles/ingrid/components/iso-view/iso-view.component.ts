@@ -5,6 +5,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
+import { ExportService } from "../../../services/export.service";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -23,7 +24,10 @@ export class IsoViewComponent implements OnInit {
   isoTextPublished: any;
   compareView = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private exportService: ExportService
+  ) {}
 
   ngOnInit() {
     this.isoText = this.data.isoText;
@@ -48,5 +52,13 @@ export class IsoViewComponent implements OnInit {
       fragment.appendChild(pre);
     });
     diffView.appendChild(fragment);
+  }
+
+  copy() {
+    navigator.clipboard.writeText(this.isoText);
+  }
+
+  download() {
+    this.exportService.exportXml(this.isoText, { exportName: this.data.uuid });
   }
 }

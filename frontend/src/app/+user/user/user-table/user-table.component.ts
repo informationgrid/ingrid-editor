@@ -35,7 +35,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { PermissionLegendsComponent } from "../../permissions/permission-legends/permission-legends.component";
-import { CsvExportService } from "../../../services/csv-export.service";
+import { ExportService } from "../../../services/export.service";
 
 @Component({
   selector: "user-table",
@@ -99,7 +99,7 @@ export class UserTableComponent
     public userService: UserService,
     public groupDataService: GroupDataService,
     public dialog: MatDialog,
-    private csvExportService: CsvExportService
+    private exportService: ExportService
   ) {
     super();
     const initialSelection = [];
@@ -212,7 +212,7 @@ export class UserTableComponent
       rows.push(this.buildRowByUser(user, groups));
     }
 
-    this.csvExportService.export(rows, { exportName: "users" });
+    this.exportService.exportCsv(rows, { exportName: "users" });
   }
 
   private buildRowByUser(user: FrontendUser, groups: Group[]): string[] {

@@ -4,10 +4,10 @@ import { saveAs } from "file-saver";
 @Injectable({
   providedIn: "root",
 })
-export class CsvExportService {
+export class ExportService {
   constructor() {}
 
-  export(
+  exportCsv(
     rows: string[][],
     opts?: {
       exportName?: string;
@@ -17,9 +17,21 @@ export class CsvExportService {
     let fileText = "\uFEFF";
     for (const row of rows) fileText += this.buildFileRow(row);
     const blob = new Blob([fileText], {
-      type: "text/plain;charset=utf-8",
+      type: "text/xml",
     });
     saveAs(blob, `${opts?.exportName ?? "data"}.csv`);
+  }
+
+  exportXml(
+    xmlText: string,
+    opts?: {
+      exportName?: string;
+    }
+  ) {
+    const blob = new Blob([xmlText], {
+      type: "text/xml",
+    });
+    saveAs(blob, `${opts?.exportName ?? "data"}.xml`);
   }
 
   private buildFileRow(values: string[]): string {

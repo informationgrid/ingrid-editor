@@ -24,7 +24,7 @@ import {
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
-import { CsvExportService } from "../../services/csv-export.service";
+import { ExportService } from "../../services/export.service";
 
 @Component({
   selector: "ige-result-table",
@@ -71,7 +71,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     private profileQuery: ProfileQuery,
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private csvExportService: CsvExportService
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -141,7 +141,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     const rows: string[][] = [];
     rows.push(["Typ", "Titel", "Aktualität"]);
     for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
-    this.csvExportService.export(rows, { exportName: "research" });
+    this.exportService.exportCsv(rows, { exportName: "research" });
   }
 
   private buildRowByDoc(doc: IgeDocument) {
