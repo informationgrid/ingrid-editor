@@ -17,7 +17,7 @@ export class ExportService {
     let fileText = "\uFEFF";
     for (const row of rows) fileText += this.buildFileRow(row);
     const blob = new Blob([fileText], {
-      type: "text/xml",
+      type: "text/plain;charset=utf-8",
     });
     saveAs(blob, `${opts?.exportName ?? "data"}.csv`);
   }
