@@ -12,7 +12,7 @@ title: Datensatz/Datenserie
 
 # Datensatz/Datenserie
 
-Bei den beschriebenen Daten der Klasse Geo-Information/Karte handelt es sich um einen einzelnen Datensatz mit bestimmtem räumlichen Bezug oder um eine Datenserie mit einheitlichem thematischen Bezug und mehreren Datensätzen mit unterschiedlichem räumlichen Bezug (z.B. Datenserie: DTK25)
+Auswahl, ob es sich bei den beschriebenen Daten um einen einzelnen Datensatz mit bestimmtem räumlichen Bezug oder um eine Datenserie mit einheitlichem thematischen Bezug und mehreren Datensätzen mit unterschiedlichem räumlichen Bezug (z.B. Datenserie: DTK25) handelt.
 
 ## Beispiel:
 

@@ -99,6 +99,7 @@
                                 </mat-icon>
                             </button>
                             <button
+                                *ngIf="menuItems.length > 0"
                                 data-cy="more-actions"
                                 mat-icon-button
                                 class="menu-button"
@@ -108,26 +109,12 @@
                             </button>
                             <mat-menu #userMoreMenu="matMenu">
                                 <button
+                                    *ngFor="let menuItem of menuItems"
                                     mat-menu-item
-                                    (click)="resetPassword(selectedUser.login)"
+                                    (click)="menuItem.action()"
+                                    [name]="menuItem.name"
                                 >
-                                    Passwort zurücksetzen
-                                </button>
-                                <button
-                                    mat-menu-item
-                                    (click)="
-                                        openTransferResponsibilityDialog(
-                                            selectedUser
-                                        )
-                                    "
-                                >
-                                    Verantwortung übertragen
-                                </button>
-                                <button
-                                    mat-menu-item
-                                    (click)="deleteUser(selectedUser)"
-                                >
-                                    Löschen
+                                    {{ menuItem.title }}
                                 </button>
                             </mat-menu>
                         </div>

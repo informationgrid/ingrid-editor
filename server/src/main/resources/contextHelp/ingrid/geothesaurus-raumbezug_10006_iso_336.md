@@ -18,7 +18,7 @@ title: Geothesaurus-Raumbezug
 
 # Geothesaurus-Raumbezug
 
-Informationen über die räumliche Zuordnung des in dem Objekt beschriebenen Datenbestand. Über den Geothesaurus-Navigator kann nach den Koordinaten der räumlichen Einheit gesucht werden.
+Informationen über die räumliche Zuordnung des in dem Objekt beschriebenen Datenbestandes. Über den Geothesaurus-Navigator kann nach den Koordinaten der räumlichen Einheit gesucht werden.
 
 # ISO Abbildung
 

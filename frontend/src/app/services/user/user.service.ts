@@ -33,6 +33,7 @@ export class UserService {
   };
 
   selectedUser$ = new BehaviorSubject<User>(null);
+  users$ = new BehaviorSubject<User[]>([]);
 
   constructor(
     private dataService: UserDataService,
@@ -48,10 +49,23 @@ export class UserService {
     }
   }
 
+  fetchUsers(): void {
+    this.getUsers().subscribe();
+  }
+
   getUsers(): Observable<FrontendUser[]> {
-    return this.dataService
-      .getUsers()
-      .pipe(map((json: any[]) => json.map((item) => new FrontendUser(item))));
+    return this.dataService.getUsers().pipe(
+      map((json: any[]) => json.map((item) => new FrontendUser(item))),
+      map((users: FrontendUser[]) =>
+        users
+          .filter(
+            // remove current user from list
+            (u) => u.login !== this.configService.$userInfo.getValue().userId
+          )
+          .sort((a, b) => a.login.localeCompare(b.login))
+      ),
+      tap((users) => this.users$.next(users ? users : []))
+    );
   }
 
   getUserIdsFromAllCatalogs(): Observable<String[]> {
@@ -128,6 +142,10 @@ export class UserService {
 
   deleteUser(userId: number): Observable<any> {
     return this.dataService.deleteUser(userId);
+  }
+
+  getAssignedDatasets(userId: number): Observable<number[]> {
+    return this.dataService.getAssignedDatasets(userId);
   }
 
   getAssignedUsers(dbId: string) {

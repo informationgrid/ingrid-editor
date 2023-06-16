@@ -12,7 +12,7 @@ title: Straße/Hausnummer
 
 # Straße/Hausnummer
 
-Angabe der Hausadresse. Bei der Straße und Hausnummer der Einheit sollte es sich um die Adresse des Dienstgebäudes dieser Einheit handeln. Für die zuzuordnenden Personen können eigene Adressen eingetragen werden. Die Angabe einer Hausadresse ist Pflicht, sofern kein Postfach angegeben wird.
+Angabe der Hausadresse. Bei der Straße und Hausnummer der Organisation bzw. Einheit sollte es sich um die Adresse des Dienstgebäudes dieser Organisation bzw. Einheit handeln. Für die zuzuordnenden Personen können eigene Adressen eingetragen werden. Die Angabe einer Hausadresse ist Pflicht, sofern kein Postfach angegeben wird.
 
 ## Beispiel:
 

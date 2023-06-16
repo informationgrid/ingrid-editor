@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { ConfigService } from "../services/config/config.service";
-import { MenuService } from "../menu/menu.service";
+import { MainMenuService } from "../menu/main-menu.service";
 import { NavigationEnd, Route, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { animate, style, transition, trigger } from "@angular/animations";
@@ -40,7 +40,7 @@ export class SideMenuComponent implements OnInit {
   constructor(
     private router: Router,
     private configService: ConfigService,
-    private menuService: MenuService,
+    private menuService: MainMenuService,
     private session: SessionQuery
   ) {}
 

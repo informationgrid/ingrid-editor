@@ -43,11 +43,3 @@ Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 Ausgabe: Ausgabe, Auflage oder Version der Ressource
 
 Domain: 363 (gmd:edition)
-
-## Verweise (Objekt)
-
-gmd:contentInfo
-
-Domain: 16 (gmd:contentInfo@uuidref)
-
-

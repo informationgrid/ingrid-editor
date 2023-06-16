@@ -22,12 +22,28 @@ import {
 } from "../../../services/codelist/codelist.service";
 import {
   FormControl,
+  FormGroupDirective,
+  NgForm,
   UntypedFormControl,
   ValidationErrors,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ErrorStateMatcher } from "@angular/material/core";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
+
+class MyErrorStateMatcher implements ErrorStateMatcher {
+  constructor(private component: RepeatListComponent) {}
+
+  isErrorState(
+    control: FormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
+    if (control?.invalid) return control.invalid && !this.component.hasFocus;
+    else return false;
+  }
+}
 
 @UntilDestroy()
 @Component({
@@ -43,6 +59,17 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
   onItemClick: (id: number) => void = () => {};
 
+  mustBeEmptyValidator = (otherControl) => {
+    return (ctrl): ValidationErrors => {
+      const validateCtrl = otherControl ?? ctrl;
+      return validateCtrl.value === null || validateCtrl.value === ""
+        ? null
+        : {
+            mustBeEmpty: true,
+          };
+    };
+  };
+
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
@@ -54,8 +81,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private manualUpdate = new Subject<string>();
   private currentStateRequired = false;
   type: "simple" | "select" | "autocomplete" | "search" = "simple";
+  hasFocus = false;
+  matcher = new MyErrorStateMatcher(this);
 
-  constructor(private snack: MatSnackBar, private cdr: ChangeDetectorRef) {
+  constructor(
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private codelistQuery: CodelistQuery
+  ) {
     super();
   }
 
@@ -111,6 +144,15 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
+
+    if (this.type !== "select") {
+      this.formControl.addValidators(
+        this.mustBeEmptyValidator(this.inputControl)
+      );
+      this.inputControl.addValidators(
+        this.mustBeEmptyValidator(this.inputControl)
+      );
+    }
 
     this.formControl.statusChanges
       .pipe(untilDestroyed(this))
@@ -255,7 +297,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         (item) => item.value === option.value
       ).disabled;
       const optionAlreadySelected = (<{ key; value? }[]>this.model)?.some(
-        (modelOption) => modelOption && modelOption.key === option.value
+        (modelOption) =>
+          modelOption && (modelOption.key ?? modelOption) === option.value
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
       return option;
@@ -266,7 +309,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     const item = this.model[index];
     this.remove(index);
     this.props.remove?.(this.field, item);
-    this.manualUpdate.next("");
+    // delay, otherwise removed item will appear in input box
+    setTimeout(() => this.manualUpdate.next(""));
 
     if (this.props.asSelect && this.inputControl.disabled) {
       this.inputControl.enable();
@@ -378,6 +422,14 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   }
 
   private prepareDuplicatesForView(duplicates: any[]) {
+    if (this.props.codelistId) {
+      duplicates = duplicates.map((dup) =>
+        this.codelistQuery.getCodelistEntryValueByKey(
+          this.props.codelistId,
+          dup
+        )
+      );
+    }
     duplicates = duplicates.map((dup) => "'" + dup + "'");
     let formatedDuplicates: string;
     if (duplicates.length == 1) {

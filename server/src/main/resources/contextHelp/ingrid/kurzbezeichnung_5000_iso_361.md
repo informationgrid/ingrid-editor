@@ -18,7 +18,7 @@ title: Kurzbezeichnung
 
 # Kurzbezeichnung
 
-Angabe einer Kurzbezeichnung für ein Objekt. (Wird insbes. von GeoMIS.Bund unterstützt)
+Angabe einer Kurzbezeichnung für ein Objekt. (Wird insbesondere von GeoMIS.Bund unterstützt)
 
 Bei gewünschter Mehrsprachigkeit muss dieses Feld nach dem Schema "Deutscher Text#locale-eng:English text" gefüllt werden. Beispiel: Apfelbaum#locale-eng:apple tree
 

@@ -18,5 +18,5 @@ title: Zeitbezug
 
 # Zeitbezug
 
-Angabe des Zeitbezugs des Datensatzes und des Dateninhalts
+Angaben zum Zeitbezug des Datensatzes und des Dateninhalts
 

@@ -67,9 +67,22 @@ export class UserDataService {
     );
   }
 
+  getUserFullName(id: number): Observable<any> {
+    return this.http.get(
+      this.configuration.backendUrl + `users/${id}/fullname`,
+      { responseType: "text" }
+    );
+  }
+
   getAssignedUsers(dbId: string): Observable<string[]> {
     return this.http.get<string[]>(
       this.configuration.backendUrl + "info/assignedUsers/" + dbId
+    );
+  }
+
+  getAssignedDatasets(userId: number): Observable<number[]> {
+    return this.http.get<number[]>(
+      this.configuration.backendUrl + `users/${userId}/responsibilities`
     );
   }
 

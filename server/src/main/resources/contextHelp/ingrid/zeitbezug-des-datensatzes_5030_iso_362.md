@@ -13,10 +13,10 @@ profile: ingrid
 
 
 # title, used as window title
-title: Zeitbezug der Ressource
+title: Zeitbezug des Datensatzes (der Ressource)
 ---
 
-# Zeitbezug der Ressource
+# Zeitbezug des Datensatzes (der Ressource)
 
 Angabe, wann der Datensatz erstellt, revidiert und/oder publiziert wurde.
 

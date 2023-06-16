@@ -12,7 +12,7 @@ title: Erläuterung
 
 # Erläuterung
 
-zusätzliche Angaben zur Datensammlung bzw. zur Datenbank
+Hier können zusätzliche Angaben zur Datensammlung bzw. zur Datenbank gemacht werden.
 
 ## Beispiel:
 

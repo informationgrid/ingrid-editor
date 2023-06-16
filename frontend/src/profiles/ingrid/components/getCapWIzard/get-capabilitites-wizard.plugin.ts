@@ -11,6 +11,8 @@ import { IgeDocument } from "../../../../app/models/ige-document";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
+import { ProfileService } from "../../../../app/services/profile.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -32,6 +34,8 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private getCapService = inject(GetCapabilitiesService);
   private documentService = inject(DocumentService);
   private router = inject(Router);
+  private snack = inject(MatSnackBar);
+  private profileService = inject(ProfileService);
 
   constructor() {
     super();
@@ -71,6 +75,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   }
 
   private async updateDataset(result: any) {
+    const snackRef = this.snack.open(
+      "Der Geodatendienst wird angelegt und gleich geöffnet ...",
+      null,
+      { duration: 30000 }
+    );
     const newDoc = new IgeDocument("InGridGeoService", null);
     const model: IgeDocument = {
       ...newDoc,
@@ -91,6 +100,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
           `${ConfigService.catalogId}/form`,
           { id: result._uuid },
         ]);
+        snackRef.dismiss();
       });
   }
 

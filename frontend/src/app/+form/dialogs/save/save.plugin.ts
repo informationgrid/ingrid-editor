@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -12,6 +12,8 @@ import { SaveBase } from "./save.base";
 import { SessionStore } from "../../../store/session.store";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
+import { DOCUMENT } from "@angular/common";
+import { IgeError } from "../../../models/ige-error";
 import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
@@ -34,7 +36,8 @@ export class SavePlugin extends SaveBase {
     public formStateService: FormStateService,
     public documentService: DocumentService,
     sessionStore: SessionStore,
-    messageService: FormMessageService
+    messageService: FormMessageService,
+    @Inject(DOCUMENT) private _document: Document
   ) {
     super(sessionStore, messageService);
     inject(FormPluginsService).registerPlugin(this);
@@ -96,6 +99,8 @@ export class SavePlugin extends SaveBase {
   saveWithData(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
+    this.handleValidationOnSave();
+
     return this.documentService
       .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
       .pipe(
@@ -113,5 +118,16 @@ export class SavePlugin extends SaveBase {
     super.unregister();
 
     this.formToolbarService.removeButton("toolBtnSave");
+  }
+
+  private handleValidationOnSave() {
+    const numErrors = this._document.querySelectorAll("mat-error");
+    console.log("Num Errors during save: ", numErrors);
+    if (numErrors.length > 0) {
+      this.formToolbarService.setButtonState("toolBtnSave", true);
+      throw new IgeError(
+        "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben."
+      );
+    }
   }
 }

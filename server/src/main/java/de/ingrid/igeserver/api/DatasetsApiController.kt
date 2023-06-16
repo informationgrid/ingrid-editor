@@ -113,7 +113,7 @@ class DatasetsApiController @Autowired constructor(
             data.put(FIELD_MODIFIED_USER_EXISTS, contentModifiedByUser != null)
             data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
             data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
-            data.put(FIELD_RESPONSIBLE_USER, wrapper.responsibleUser?.userId)
+            data.put(FIELD_RESPONSIBLE_USER, wrapper.responsibleUser?.id)
             wrapper.fingerprint?.let {
                 data.put(FIELD_METADATA_DATE, it[0].date.toString())
             }
@@ -301,14 +301,14 @@ class DatasetsApiController @Autowired constructor(
         // updateWrapper
         val docData = documentService.getDocumentFromCatalog(catalogId, id)
         val parent = if (options.destId == null) null else documentService.getDocumentFromCatalog(catalogId, options.destId)
-        
+
         // check parent is published if moved dataset also has been published
         if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
             if (parent.document.state == DOCUMENT_STATE.DRAFT) {
                 throw ValidationException.withReason("Parent must be published, since moved dataset is also published", errorCode = "PARENT_IS_NOT_PUBLISHED")
             }
         }
-        
+
         docData.wrapper.parent = parent?.wrapper
         docData.wrapper.path = newPath
 

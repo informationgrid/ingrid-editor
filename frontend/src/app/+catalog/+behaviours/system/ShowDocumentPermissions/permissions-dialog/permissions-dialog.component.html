@@ -5,7 +5,11 @@
             <button mat-icon-button mat-dialog-close>
                 <mat-icon>close</mat-icon>
             </button>
-            <span class="text">Berechtigungsübersicht</span>
+            <span class="text">{{
+                forResponsibility
+                    ? "Verantwortlichen Benutzer auswählen"
+                    : "Berechtigungsübersicht"
+            }}</span>
         </h2>
     </div>
 
@@ -32,7 +36,11 @@
 
     <!-- dialog action buttons -->
     <mat-dialog-actions>
+        <button mat-flat-button mat-dialog-close="true">Schließen</button>
+        <div class="flex-1"></div>
         <button
+            *ngIf="forResponsibility"
+            color="primary"
             mat-flat-button
             [disabled]="!selectedUser"
             (click)="setAsResponsible()"
@@ -40,15 +48,13 @@
             Als Verantwortlichen festlegen
         </button>
         <button
+            *ngIf="!forResponsibility"
+            color="primary"
             mat-flat-button
             [disabled]="!selectedUser"
             (click)="switchToUser()"
         >
             In Nutzerverwaltung anzeigen
-        </button>
-        <div class="flex-1"></div>
-        <button mat-flat-button color="primary" mat-dialog-close="true">
-            Schließen
         </button>
     </mat-dialog-actions>
 </div>

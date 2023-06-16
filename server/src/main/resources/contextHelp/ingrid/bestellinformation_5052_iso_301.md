@@ -18,7 +18,7 @@ title: Bestellinformation
 
 # Bestellinformation
 
-Angabe von generellen Informationen wie Bedingungen oder Konditionen zur Bestellung.
+Angabe von generellen Informationen zur Bestellung, wie z.B. Bedingungen oder Konditionen.
 
 ## Beispiel:
 

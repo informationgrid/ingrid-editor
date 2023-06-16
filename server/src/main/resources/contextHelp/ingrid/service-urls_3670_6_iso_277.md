@@ -8,16 +8,16 @@ profile: ingrid
 
 
 # title, used as window title
-title: Service-Urls
+title: Service-URLs
 ---
 
-# Service-Urls
+# Service-URLs
 
 Angaben zu der Zugriffsadresse auf das Informationssystem, den Dienst oder der Anwendung. Es soll der Name und der URL sowie eine kurzen Erläuterung zu der Adresse angegeben werden.
 
 ## Beispiel:
 
-Name: PortalU; URL: http://www.portalu.de; Erläuterung: Umweltportal Deutschland
+Name: MetaVer; URL: http://www.metaver.de; Erläuterung: Zugangspunkt zu Metadaten
 
 # ISO Abbildung
 
