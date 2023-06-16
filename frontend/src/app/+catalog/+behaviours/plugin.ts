@@ -28,10 +28,6 @@ export abstract class Plugin {
   data?: any;
   hideInAddress = false;
 
-  constructor() {
-    // inject(FormPluginsService).registerPlugin(this);
-  }
-
   register(): void {
     console.log("Register: ", this.name);
     this.isActive = true;
