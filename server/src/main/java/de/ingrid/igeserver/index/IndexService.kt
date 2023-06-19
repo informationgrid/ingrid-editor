@@ -115,7 +115,7 @@ class IndexService @Autowired constructor(
             var conditions: String = it
                 ?.filter { it != "internet" }
                 ?.joinToString(" OR ") { "'{$it}' && document_wrapper.tags" } ?: ""
-            if (it?.contains("internet") == true) {
+            if (it?.contains("internet") == true || it?.size == 0) {
                 if (conditions.isNotEmpty()) conditions += " OR"
                 conditions += " document_wrapper.tags is null"
             }
