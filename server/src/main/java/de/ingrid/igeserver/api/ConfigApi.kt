@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
@@ -26,6 +27,9 @@ interface ConfigApi {
     @GetMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getIBus(): ResponseEntity<List<IBusConfig>>
 
+    @GetMapping(value = ["/config/ibus/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun isConnected(@PathVariable index: Int): ResponseEntity<Boolean>
+    
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setIBus(@Parameter(required = true) @RequestBody config: List<IBusConfig>): ResponseEntity<Unit>

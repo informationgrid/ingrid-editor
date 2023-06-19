@@ -45,6 +45,14 @@ class IBusService @Autowired constructor(val settingsService: SettingsService, v
         val communication = StartCommunication.create(clientConfig)
         BusClientFactory.createBusClientOverride(communication)
     }
+    
+    fun isConnected(iBusIndex: Int): Boolean {
+        return try {
+            iBusClient?.nonCacheableIBusses?.get(iBusIndex)?.metadata != null
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     private fun getPlugDescription(urls: List<String>): PlugDescription {
 

@@ -50,11 +50,15 @@ class ConfigApiController @Autowired constructor(
     }
 
     override fun getIBus(): ResponseEntity<List<IBusConfig>> {
-
         return ResponseEntity.ok().body(
             settingsService.getIBusConfig()
         )
+    }
 
+    override fun isConnected(index: Int): ResponseEntity<Boolean> {
+        return ResponseEntity.ok().body(
+            iBusService?.isConnected(index)
+        )
     }
 
     override fun setIBus(config: List<IBusConfig>): ResponseEntity<Unit> {

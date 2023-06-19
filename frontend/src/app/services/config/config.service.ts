@@ -202,4 +202,10 @@ export class ConfigService {
   getIBusConfig() {
     return this.http.get<any>(this.config.backendUrl + "config/ibus");
   }
+
+  isIBusConnected(index: number) {
+    return this.http.get<boolean>(
+      `${this.config.backendUrl}config/ibus/connected/${index}`
+    );
+  }
 }
