@@ -24,5 +24,6 @@ data class CatalogConfig(
 data class IBusConfig(
     val url: String? = null,
     val ip: String = "127.0.0.1",
-    val port: Int = 9200
+    val port: Int = 9200,
+    val publicationTypes: List<String>? = null
 )

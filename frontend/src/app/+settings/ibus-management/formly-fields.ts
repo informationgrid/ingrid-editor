@@ -43,6 +43,27 @@ export const iBusFields: FormlyFieldConfig[] = [
             },
           ],
         },
+        {
+          key: "publicationTypes",
+          type: "select",
+          defaultValue: ["internet"],
+          className: "white-bg",
+          props: {
+            label: "Veröffentlichungsrecht",
+            placeholder: "",
+            appearance: "outline",
+            multiple: true,
+            simple: true,
+            options: [
+              { value: "internet", label: "Internet" },
+              { value: "intranet", label: "Intranet" },
+              { value: "amtsintern", label: "amtsintern" },
+            ],
+          },
+          modelOptions: {
+            updateOn: "blur",
+          },
+        },
       ],
     },
   },

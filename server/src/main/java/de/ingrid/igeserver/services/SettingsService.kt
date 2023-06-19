@@ -16,12 +16,11 @@ class SettingsService @Autowired constructor(
 
     private val objectDataTypes = listOf("default", "dsc_ecs", "metadata", "IDF_1.0")
     private val addressDataTypes = listOf("default", "dsc_ecs", "metadata", "dsc_ecs_address", "address", "IDF_1.0")
-    
+
     fun getIBusConfig(): List<IBusConfig> {
         val iBusJson = repoSettings.findByKey("ibus")?.value ?: return emptyList()
 
-        val config = jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<IBusConfig>>() {})
-        return config
+        return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<IBusConfig>>() {})
     }
 
     fun setIBusConfig(config: List<IBusConfig>) {

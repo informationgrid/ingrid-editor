@@ -11,7 +11,10 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
+import org.hibernate.jpa.AvailableHints
+import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
@@ -22,6 +25,11 @@ import org.springframework.stereotype.Service
 
 const val PAGE_SIZE: Int = 100
 
+data class DocumentIndexInfo(
+    val document: Document,
+    val iBusIndex: List<Int>?
+)
+
 @Service
 class IndexService @Autowired constructor(
     private val catalogRepo: CatalogRepository,
@@ -29,6 +37,8 @@ class IndexService @Autowired constructor(
     @Lazy private val documentService: DocumentService,
     private val researchService: ResearchService,
     private val behaviourService: BehaviourService,
+    private val entityManager: EntityManager,
+    private val settingsService: SettingsService
 ) {
 
     private val log = logger()
@@ -38,22 +48,20 @@ class IndexService @Autowired constructor(
         category: String,
         catalogProfile: CatalogProfile,
         uuid: String
-    ): Document {
-        val filter = createConditionsForDocumentsToPublish(catalogId, category, catalogProfile, uuid)
-        val (_, docsToIndex) = searchAndGetDocuments(catalogId, filter)
-        return docsToIndex.single()
+    ): DocumentIndexInfo {
+        val docs = requestPublishableDocuments(catalogId, category, uuid, catalogProfile)
+        return docs.single()
     }
 
     fun getPublishedDocuments(
         catalogId: String,
         category: String,
         catalogProfile: CatalogProfile,
-        currentPage: Int = 0
-    ): Page<Document> {
-        val filter = createConditionsForDocumentsToPublish(catalogId, category, catalogProfile)
-        val (totalHits, docsToIndex) = searchAndGetDocuments(catalogId, filter, currentPage)
-
-        val pagedDocs = PageImpl(docsToIndex, Pageable.ofSize(PAGE_SIZE), totalHits)
+        currentPage: Int = 0,
+        totalHits: Long
+    ): Page<DocumentIndexInfo> {
+        val docs = requestPublishableDocuments(catalogId, category, null, catalogProfile)
+        val pagedDocs = PageImpl(docs, Pageable.ofSize(PAGE_SIZE), totalHits)
 
         return if (pagedDocs.isEmpty) {
             log.warn("No documents found in category '$category' for indexing")
@@ -92,7 +100,7 @@ class IndexService @Autowired constructor(
         uuid?.let { conditions.add("document_wrapper.uuid = '$it'") }
 
         // add system specific conditions
-        conditions.addAll(getSystemSpecificConditions(catalogId))
+        conditions.addAll(getSystemSpecificConditions())
         
         // add profile specific conditions
         conditions.addAll(profile.additionalPublishConditions(catalogId))
@@ -100,25 +108,18 @@ class IndexService @Autowired constructor(
         return BoolFilter("AND", conditions, null, null, false)
     }
 
-    private fun getSystemSpecificConditions(catalogId: String): Collection<String> {
-        var publicationTypesActive = false
-        var publicationTypes: List<String>? = null
-        behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
-            publicationTypesActive = it.active != null && it.active == true
-            publicationTypes = it.data?.get("publicationTypes") as List<String>?
-        }
-        
-        return if (publicationTypesActive) {
-            var conditions: String = publicationTypes
+    private fun getSystemSpecificConditions(): List<String> {
+        val publicationTypesPerIBus = settingsService.getIBusConfig().map { it.publicationTypes }
+
+        return publicationTypesPerIBus.map { 
+            var conditions: String = it
                 ?.filter { it != "internet" }
                 ?.joinToString(" OR ") { "'{$it}' && document_wrapper.tags" } ?: ""
-            if (publicationTypes?.contains("internet") == true) {
+            if (it?.contains("internet") == true) {
                 if (conditions.isNotEmpty()) conditions += " OR"
                 conditions += " document_wrapper.tags is null"
             }
-            listOf("($conditions)")
-        } else {
-            emptyList()
+            "($conditions)"
         }
     }
 
@@ -138,10 +139,114 @@ class IndexService @Autowired constructor(
 
     }
 
-    fun getLastLog(catalogId: String): IndexMessage? {
+    fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId)
+        .settings?.lastLogSummary
+    
+    fun requestPublishableDocuments(catalogId: String, category: String, uuid: String?, profile: CatalogProfile, paging: ResearchPaging = ResearchPaging(pageSize = PAGE_SIZE)): List<DocumentIndexInfo> {
+        val iBusConditions = getSystemSpecificConditions()
+        val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
 
-        return catalogRepo.findByIdentifier(catalogId)
-            .settings?.lastLogSummary
+        val nativeQuery = entityManager.createNativeQuery(sql)
+        
+        nativeQuery.setParameter(1, catalogId)
+
+        val result = nativeQuery
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .unwrap(NativeQuery::class.java)
+            .addScalar("uuid")
+            .addScalar("id")
+            .addScalar("ibus")
+            .setFirstResult((paging.page - 1) * paging.pageSize)
+            .setMaxResults(paging.pageSize)
+            .resultList as List<Array<out Any?>>
+        
+        return result.map {
+            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String)
+        }.map { 
+            DocumentIndexInfo(
+                documentService.getLastPublishedDocument(catalogId, it.uuid).apply { wrapperId = it.wrapperId } ,
+                it.ibus.split(",").map { it.toInt() }
+            )
+        }
     }
 
+    private fun createSqlForPublishedDocuments(
+        profile: CatalogProfile,
+        catalogId: String,
+        iBusConditions: List<String>,
+        category: String,
+        uuid: String?
+    ): String {
+        val profileConditions = profile.additionalPublishConditions(catalogId)
+        val iBusSelector = getConditionsForIBus(iBusConditions)
+
+        var sql = """
+                SELECT document_wrapper.uuid, document_wrapper.id,
+                CASE 
+                    ${iBusSelector.joinToString(" ")}
+                    ELSE '-1' END AS IBUS
+                FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
+                WHERE document_wrapper.catalog_id = catalog.id AND category = '$category' AND document1.state = 'PUBLISHED' AND deleted = 0 AND catalog.identifier = ? AND 
+                (${iBusConditions.joinToString(" OR ")})
+            """.trimIndent()
+        uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
+        if (profileConditions.isNotEmpty()) sql += " AND ${profileConditions.joinToString(" AND ")}"
+        return sql
+    }
+
+    private fun getConditionsForIBus(
+        iBusConditions: List<String>
+    ): MutableList<String> {
+        val iBusSelector = mutableListOf<String>()
+        for (i in iBusConditions.size downTo 1) {
+            val kombinationen = iBusConditions.combinations(i)
+            for (kombination in kombinationen) {
+                val indexKombination = kombination.map { iBusConditions.indexOf(it) }
+                iBusSelector.add(
+                    "WHEN (" + kombination.joinToString(" AND ") + ") THEN '${
+                        indexKombination.joinToString(
+                            ","
+                        )
+                    }'"
+                )
+            }
+        }
+        return iBusSelector
+    }
+
+    private fun <T> List<T>.combinations(k: Int): List<List<T>> {
+        if (k > size) return emptyList()
+        if (k == 0) return listOf(emptyList())
+
+        val result = mutableListOf<List<T>>()
+
+        for (i in indices) {
+            val element = this[i]
+            val remaining = subList(i + 1, size)
+            val combinations = remaining.combinations(k - 1)
+            for (combination in combinations) {
+                result.add(listOf(element) + combination)
+            }
+        }
+
+        return result
+    }
+
+    fun getNumberOfPublishableDocuments(catalogId: String, category: String, catalogProfile: CatalogProfile): Long {
+        val iBusConditions = getSystemSpecificConditions()
+        val sql = createSqlForPublishedDocuments(catalogProfile, catalogId, iBusConditions, category, null)
+        val regex = Regex("(.|\\n)*?\\bFROM\\b")
+        val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")
+        val nativeQuery = entityManager.createNativeQuery(countSql)
+
+        nativeQuery.setParameter(1, catalogId)
+
+        return (nativeQuery.singleResult as Number).toLong()
+    }
 }
+
+data class IndexDocumentResult(
+    val uuid: String,
+    val wrapperId: Int,
+    val ibus: String
+)

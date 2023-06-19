@@ -14,6 +14,7 @@ import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
+import de.ingrid.igeserver.index.DocumentIndexInfo
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.PAGE_SIZE
 import de.ingrid.igeserver.model.IndexConfigOptions
@@ -21,7 +22,6 @@ import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -147,14 +147,16 @@ class IndexingTask @Autowired constructor(
                 }
 
                 var page = -1
+                val totalHits: Long = indexService.getNumberOfPublishableDocuments(catalogId, category.value, catalogProfile)
+                updateMessageWithDocumentInfo(message, category, totalHits)
+                
                 try {
                     do {
                         page++
-                        val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, catalogProfile, page)
+                        val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, catalogProfile, page, totalHits)
                         // isLast function sometimes delivers the next to last page without a total count, so we write our own
                         val isLast =
-                            (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == docsToPublish.totalElements
-                        updateMessageWithDocumentInfo(message, category, docsToPublish)
+                            (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == totalHits
 
                         exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
                     } while (!isLast)
@@ -202,17 +204,17 @@ class IndexingTask @Autowired constructor(
     private fun updateMessageWithDocumentInfo(
         message: IndexMessage,
         category: DocumentCategory,
-        docsToPublish: Page<Document>
+        totalHits: Long
     ) {
         if (category == DocumentCategory.DATA) {
-            message.numDocuments = docsToPublish.totalElements.toInt()
+            message.numDocuments = totalHits.toInt()
         } else {
-            message.numAddresses = docsToPublish.totalElements.toInt()
+            message.numAddresses = totalHits.toInt()
         }
     }
 
     private fun exportDocuments(
-        docsToPublish: Page<Document>,
+        docsToPublish: Page<DocumentIndexInfo>,
         catalogId: String,
         message: IndexMessage,
         category: DocumentCategory,
@@ -226,21 +228,21 @@ class IndexingTask @Autowired constructor(
             .mapIndexedNotNull { index, doc ->
                 handleCancelation(catalogId, message)
                 sendNotification(category, message, index + (page * PAGE_SIZE))
-                log.debug("export ${doc.uuid}")
+                log.debug("export ${doc.document.uuid}")
                 try {
-                    Pair(doc.uuid, exporter.run(doc, catalogId))
+                    Pair(doc, exporter.run(doc.document, catalogId))
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document '${doc.uuid}' in catalog '$catalogId': ${ex.message}"
+                    val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
                     sendNotification(category, message, index + (page * PAGE_SIZE))
                     null
                 }
             }
-            .onEach { (uuid, exportedDoc) ->
+            .onEach { (docInfo, exportedDoc) ->
                 val elasticDocument = convertToElasticDocument(exportedDoc)
-                indexManager.update(indexInfo, elasticDocument, false)
-                val simpleContext = SimpleContext(catalogId, catalogType, uuid)
+                index(docInfo, indexInfo, elasticDocument)
+                val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
                 postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
             }
     }
@@ -303,7 +305,7 @@ class IndexingTask @Autowired constructor(
         try {
             val doc = indexService.getSinglePublishedDocument(catalogId, category.value, catalogProfile, docId)
 
-            val export = exporter.run(doc, catalogId)
+            val export = exporter.run(doc.document, catalogId)
             log.debug("Exported document: $export")
             val indexInfo = getOrPrepareIndex(catalogProfile, category, format, elasticsearchAlias)
 
@@ -311,10 +313,24 @@ class IndexingTask @Autowired constructor(
             val elasticDoc = convertToElasticDocument(export)
             postIndexPipe.runFilters(PostIndexPayload(elasticDoc, category.name, exporter.typeInfo.type), SimpleContext(catalogId, catalogProfile.identifier, docId))
 
-            indexManager.update(indexInfo, elasticDoc, false)
+            index(doc, indexInfo, elasticDoc)
             log.info("$catalogId/$docId updated in index: ${indexInfo.realIndexName}")
         } catch (ex: NoSuchElementException) {
             log.info("Document not indexed, probably because of profile specific condition: $catalogId -> $docId")
+        }
+    }
+
+    private fun index(
+        doc: DocumentIndexInfo,
+        indexInfo: IndexInfo,
+        elasticDoc: ElasticDocument
+    ) {
+        if (indexThroughIBus) {
+            doc.iBusIndex?.forEach {
+                (indexManager as IBusIndexManager).update(it, indexInfo, elasticDoc, false)
+            }
+        } else {
+            indexManager.update(indexInfo, elasticDoc, false)
         }
     }
 
