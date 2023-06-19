@@ -2,76 +2,36 @@
 
 ige-add-button {
   display: block;
-  margin-top: 3px;
   padding-bottom: 22px;
 }
 
-.mat-mdc-list-base {
-  background-color: $ige-background;
-  padding-top: 0;
-
-  .mat-mdc-list-item {
-    border-bottom: 2px solid #fff;
-    height: auto;
-
-    &.click-draggable {
-      cursor: move;
-    }
-    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
-    ::ng-deep .mat-list-item-content {
-      padding-top: 12px;
-      padding-bottom: 12px;
-      align-items: flex-start;
-    }
-
-    .avatar {
-      align-self: center;
-      width: 48px;
-      height: 48px;
-      .mat-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-
-        ::ng-deep .coloring {
-          fill: $ige-background-bar;
-        }
-      }
-    }
-
-    &.image .avatar {
-      width: 100px;
-      height: 100px;
-      background-color: $ige-background-bar;
-      background-repeat: no-repeat;
-      border-radius: 8px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .type {
-      font-size: 14px;
-    }
-
-    .title {
-      font-size: 16px;
-      font-weight: 500;
-      padding-bottom: 4px;
-    }
-  }
+.cdk-drag {
+  background: $ige-background;
 }
 
-.download-image {
-  display: inline-block;
-  position: relative;
+.cdk-drag-handle {
+  color: $ige-background-bar;
+}
 
-  .overlay {
-    position: absolute;
-    top: 16px;
-    left: 12px;
+.mat-mdc-list-item {
+  height: auto;
+  padding: 6px;
+  border-bottom: 2px solid #fff;
 
-    ::ng-deep .coloring {
-      fill: $ige-icon-color !important;
-    }
+  .type {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .explanation {
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 }

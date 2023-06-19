@@ -571,6 +571,11 @@ ige-one-column-wrapper formly-group {
   align-content: stretch;
 }
 
+.align-items-start {
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
 .align-items-end {
   align-items: flex-end;
   align-content: flex-end;
