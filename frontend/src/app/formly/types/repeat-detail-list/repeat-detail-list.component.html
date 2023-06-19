@@ -33,9 +33,12 @@
                 <div class="type">
                     {{ model[i].type.key | codelist : "2000" | async }}
                 </div>
-                <a class="title" [href]="model[i].url" target="_blank">{{
-                    model[i].title
-                }}</a>
+                <a
+                    class="title no-text-transform"
+                    [href]="model[i].url"
+                    target="_blank"
+                    >{{ model[i].title }}</a
+                >
                 <div *ngIf="model[i].explanation" class="explanation">
                     {{ model[i].explanation }}
                 </div>

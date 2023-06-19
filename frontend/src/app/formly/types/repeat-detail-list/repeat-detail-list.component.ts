@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import {
   FormDialogComponent,
   FormDialogData,
@@ -31,6 +31,7 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
     CdkDrag,
     CdkDropList,
     CdkDragHandle,
+    MatDialogModule,
     MatIconModule,
     MatListModule,
     MatMenuModule,
@@ -69,6 +70,7 @@ export class RepeatDetailListComponent
           fields: [this.field.fieldArray],
           model:
             index === null ? {} : JSON.parse(JSON.stringify(this.model[index])),
+          formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
       })
       .afterClosed()
