@@ -27,7 +27,7 @@ describe("RepeatListComponent", () => {
 
   const createHost = createHostFactory({
     component: FormlyForm,
-    declarations: [RepeatDetailListComponent, AddButtonComponent],
+    declarations: [AddButtonComponent],
     imports: [
       IgeFormlyModule,
       MatIconTestingModule,
@@ -38,6 +38,7 @@ describe("RepeatListComponent", () => {
       MatSelectModule,
       ReactiveFormsModule,
       MatIconTestingModule,
+      RepeatDetailListComponent,
     ],
   });
 
