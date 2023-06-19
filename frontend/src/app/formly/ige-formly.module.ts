@@ -33,7 +33,6 @@ import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialo
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
 import { WktSpatialComponent } from "./types/map/spatial-dialog/wkt-spatial/wkt-spatial.component";
 import { RepeatListComponent } from "./types/repeat-list/repeat-list.component";
-import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { FormDialogComponent } from "./types/table/form-dialog/form-dialog.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { RepeatComponent } from "./types/repeat/repeat.component";
@@ -92,6 +91,7 @@ import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/
 import { TranslocoModule } from "@ngneat/transloco";
 import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
 import { GeothesaurusWfsgndeComponent } from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
+import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -289,6 +289,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MixedCdkDragDropModule,
     TranslocoModule,
     GeothesaurusWfsgndeComponent,
+    FormErrorComponent,
   ],
   providers: [
     {
@@ -323,13 +324,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     WktSpatialComponent,
     RepeatListComponent,
     RepeatComponent,
-    RepeatDetailListComponent,
-    FormErrorComponent,
     FormDialogComponent,
     RepeatChipComponent,
     ChipDialogComponent,
     DateRangeTypeComponent,
-    RepeatDetailListComponent,
     UploadTypeComponent,
     LinkDialogComponent,
     UploadFilesDialogComponent,
@@ -350,7 +348,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
-    FormErrorComponent,
   ],
 })
 export class IgeFormlyModule {}

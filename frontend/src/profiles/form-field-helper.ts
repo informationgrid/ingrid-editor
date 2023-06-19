@@ -40,6 +40,11 @@ export interface RepeatOptions extends Options {
   addButtonTitle?: string;
 }
 
+export interface RepeatDetailListOptions extends Options {
+  fields?: FormlyFieldConfig[];
+  validators?: { [x: string]: { expression: any; message: string } | string[] };
+}
+
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
@@ -286,6 +291,29 @@ export class FormFieldHelper {
         convert: options?.convert,
       },
       expressions: expressions,
+    };
+  }
+
+  addRepeatDetailList(
+    id,
+    label,
+    options?: RepeatDetailListOptions
+  ): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "repeatDetailList",
+      wrappers: options?.wrappers ?? ["panel"],
+      className: options?.className,
+      props: {
+        externalLabel: label,
+        required: options?.required,
+      },
+      fieldArray: {
+        fieldGroup: options?.fields,
+      },
+      expressions: expressions,
+      validators: options?.validators,
     };
   }
 

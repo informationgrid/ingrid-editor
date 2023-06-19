@@ -1089,10 +1089,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   addLinksSection() {
     return this.addSection("Verweise", [
-      this.addRepeat("references", "Verweise", {
-        fieldGroupClassName: "flex-col",
+      this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
-        hasExtendedGap: true,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl, field) =>
@@ -1139,26 +1137,19 @@ export abstract class IngridShared extends BaseDoctype {
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
-      this.addGroupSimple(
-        null,
-        [
-          this.addSelectInline("type", "Typ", {
-            showSearch: true,
-            required: true,
-            options: this.getCodelistForSelect(2000, "type"),
-            codelistId: 2000,
-            wrappers: ["inline-help", "form-field"],
-            hasInlineContextHelp: true,
-          }),
-          this.addInputInline("title", "Titel", {
-            required: true,
-            className: "flex-2",
-            wrappers: ["inline-help", "form-field"],
-            hasInlineContextHelp: true,
-          }),
-        ],
-        { fieldGroupClassName: "flex-row" }
-      ),
+      this.addSelectInline("type", "Typ", {
+        showSearch: true,
+        required: true,
+        options: this.getCodelistForSelect(2000, "type"),
+        codelistId: 2000,
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+      }),
+      this.addInputInline("title", "Titel", {
+        required: true,
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+      }),
       this.addInputInline("url", "URL", {
         required: true,
         wrappers: ["inline-help", "form-field"],

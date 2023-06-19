@@ -1,5 +1,18 @@
+<ige-form-error
+    *ngIf="
+        showError &&
+        formControl.invalid &&
+        formControl.errors &&
+        !formControl.hasError('required')
+    "
+>
+    <div *ngFor="let error of formControl.errors | keyvalue">
+        {{ error.value.message }}
+    </div>
+</ige-form-error>
+
 <mat-list
-    *ngIf="field.fieldGroup.length > 0"
+    *ngIf="field.fieldGroup.length"
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
@@ -8,56 +21,41 @@
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
         [cdkDragDisabled]="formControl.disabled"
-        class="small-padding-right"
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
-        [class.image]="props.asImage"
     >
-        <div
-            *ngIf="props.asImage"
-            matListItemAvatar
-            class="avatar"
-            [style.background-image]="'url(' + model[i].description + ')'"
-        ></div>
-        <div
-            *ngIf="!props.asImage"
-            matListItemAvatar
-            class="avatar"
-            [ngSwitch]="model[i]._type"
-        >
-            <mat-icon
-                *ngSwitchCase="'internal'"
-                svgIcon="download-doc"
-            ></mat-icon>
-            <mat-icon
-                *ngSwitchCase="'external'"
-                svgIcon="download-link"
-            ></mat-icon>
-            <div *ngSwitchCase="'download'" class="download-image">
-                <mat-icon svgIcon="download-doc"></mat-icon>
-                <mat-icon svgIcon="download-arrow" class="overlay"></mat-icon>
+        <div class="flex-row gap-6">
+            <mat-icon *ngIf="formControl.enabled" cdkDragHandle
+                >drag_indicator
+            </mat-icon>
+
+            <div class="flex-1 flex-col align-items-start">
+                <div class="type">
+                    {{ model[i].type.key | codelist : "2000" | async }}
+                </div>
+                <a class="title" [href]="model[i].url" target="_blank">{{
+                    model[i].title
+                }}</a>
+                <div *ngIf="model[i].explanation" class="explanation">
+                    {{ model[i].explanation }}
+                </div>
             </div>
+
+            <button
+                *ngIf="formControl.enabled"
+                mat-icon-button
+                type="button"
+                class="menu-button"
+                [matMenuTriggerFor]="menu"
+            >
+                <mat-icon svgIcon="Mehr"></mat-icon>
+            </button>
+
+            <mat-menu #menu>
+                <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
+                <button mat-menu-item (click)="remove(i)">Entfernen</button>
+            </mat-menu>
         </div>
-
-        <div matLine class="type">{{ model[i].type }}</div>
-        <div matLine class="title">{{ model[i].title }}</div>
-        <div matLine class="description">{{ model[i].description }}</div>
-
-        <button
-            *ngIf="formControl.enabled"
-            mat-icon-button
-            type="button"
-            class="menu-button"
-            [matMenuTriggerFor]="menu"
-        >
-            <mat-icon svgIcon="Mehr"></mat-icon>
-        </button>
-        <mat-menu #menu>
-            <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
-            <button mat-menu-item (click)="remove(i)">Entfernen</button>
-        </mat-menu>
-
-        <div *cdkDragPreview class="drag-preview"></div>
     </mat-list-item>
 </mat-list>
 
