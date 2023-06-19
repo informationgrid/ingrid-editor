@@ -25,10 +25,15 @@ export class IBusManagementComponent implements OnInit {
   }
 
   save() {
-    this.configService.saveIBusConfig(this.form.value.ibus).subscribe();
+    const config = this.form.value.ibus;
+    this.configService
+      .saveIBusConfig(config)
+      .subscribe(() => this.checkConnectionState(config));
   }
 
   private checkConnectionState(configs: any[]) {
+    this.connectionStates = [];
+
     configs.forEach((config, index) => {
       this.connectionStates.push({
         id: config.url,
