@@ -421,7 +421,7 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       props: {
-        placeholder: "Wählen...",
+        placeholder: "Bitte wählen...",
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
