@@ -235,7 +235,7 @@ class IndexService @Autowired constructor(
     fun getNumberOfPublishableDocuments(catalogId: String, category: String, catalogProfile: CatalogProfile): Long {
         val iBusConditions = getSystemSpecificConditions()
         val sql = createSqlForPublishedDocuments(catalogProfile, catalogId, iBusConditions, category, null)
-        val regex = Regex(".*?\\bFROM\\b")
+        val regex = Regex("(.|\\n)*?\\bFROM\\b")
         val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")
         val nativeQuery = entityManager.createNativeQuery(countSql)
 
