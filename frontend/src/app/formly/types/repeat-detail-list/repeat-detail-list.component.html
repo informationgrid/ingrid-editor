@@ -30,9 +30,14 @@
             </mat-icon>
 
             <div class="flex-1 flex-col align-items-start">
-                <div class="type">
-                    {{ model[i].type.key | codelist : "2000" | async }}
+                <div *ngIf="props.codelistId; else simpleType" class="type">
+                    {{
+                        model[i].type.key | codelist : props.codelistId | async
+                    }}
                 </div>
+                <ng-template #simpleType>
+                    <div class="type">{{ model[i].type }}</div>
+                </ng-template>
                 <a
                     class="title no-text-transform"
                     [href]="model[i].url"
