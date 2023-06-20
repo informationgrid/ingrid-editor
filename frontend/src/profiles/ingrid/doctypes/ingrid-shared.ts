@@ -1007,6 +1007,8 @@ export abstract class IngridShared extends BaseDoctype {
           expressions: {
             "props.required":
               "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            "props.minLength": "field.props.required ? 1 : undefined",
+            defaultValue: "field.props.required ? [{}] : null",
             className: "field.props.required ? '' : 'optional'",
           },
           fields: [

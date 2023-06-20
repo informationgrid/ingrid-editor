@@ -16,8 +16,10 @@ export interface Options {
   expressions?: {
     hide?;
     className?;
+    defaultValue?;
     "props.required"?;
     "props.disabled"?;
+    "props.minLength"?;
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
