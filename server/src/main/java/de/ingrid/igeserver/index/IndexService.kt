@@ -109,7 +109,10 @@ class IndexService @Autowired constructor(
     }
 
     private fun getSystemSpecificConditions(): List<String> {
-        val publicationTypesPerIBus = settingsService.getIBusConfig().map { it.publicationTypes }
+        var publicationTypesPerIBus = settingsService.getIBusConfig().map { it.publicationTypes }
+        
+        // provide at least one empty iBus configuration
+        if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = emptyList()
 
         return publicationTypesPerIBus.map { 
             var conditions: String = it
