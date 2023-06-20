@@ -112,7 +112,7 @@ class IndexService @Autowired constructor(
         var publicationTypesPerIBus = settingsService.getIBusConfig().map { it.publicationTypes }
         
         // provide at least one empty iBus configuration
-        if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = emptyList()
+        if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())
 
         return publicationTypesPerIBus.map { 
             var conditions: String = it
