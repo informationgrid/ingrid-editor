@@ -18,7 +18,9 @@
         cdkDropListOrientation="vertical"
         (cdkDropListDropped)="drop($event)"
     >
-        <h5 *ngIf="menuSections">{{ menuSections[key] }}</h5>
+        <div *ngIf="menuSections" class="section-title">
+            {{ menuSections[key] }}
+        </div>
 
         <div
             *ngFor="let fieldRef of groupedFields[key]; let i = index"
