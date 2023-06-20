@@ -18,7 +18,7 @@
     (cdkDropListDropped)="drop($event)"
 >
     <mat-list-item
-        *ngFor="let field of field.fieldGroup; let i = index"
+        *ngFor="let item of field.fieldGroup; let i = index"
         cdkDrag
         [cdkDragDisabled]="formControl.disabled"
         [class.clickable]="formControl.enabled"
@@ -30,9 +30,20 @@
             </mat-icon>
 
             <div class="flex-1 flex-col align-items-start">
-                <div *ngIf="props.codelistId; else simpleType" class="type">
+                <div
+                    *ngIf="
+                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]?.props
+                            ?.codelistId;
+                        else simpleType
+                    "
+                    class="type"
+                >
                     {{
-                        model[i].type.key | codelist : props.codelistId | async
+                        model[i].type.key
+                            | codelist
+                                : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
+                                      ?.props?.codelistId
+                            | async
                     }}
                 </div>
                 <ng-template #simpleType>
