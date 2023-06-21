@@ -21,9 +21,7 @@ export class FormPluginsService {
   private init(forAddress: boolean) {
     this.behaviourService.applyActiveStates(this.plugins);
 
-    if (forAddress) {
-      this.plugins.forEach((p) => p.setForAddress());
-    }
+    this.plugins.forEach((p) => p.setForAddress(forAddress));
 
     this.plugins
       .filter((p) => p.isActive)

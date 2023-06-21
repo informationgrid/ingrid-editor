@@ -42,7 +42,7 @@ export abstract class Plugin {
 
   update(): void {}
 
-  setForAddress(): void {
-    this.forAddress = true;
+  setForAddress(forAddress: boolean): void {
+    this.forAddress = forAddress;
   }
 }

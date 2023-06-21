@@ -29,14 +29,12 @@ export class RedirectFormGuard {
     if (state.url.indexOf(`/${ConfigService.catalogId}/form`) === 0) {
       // in case we come from a different page
       if (this.router.url.indexOf(`/${ConfigService.catalogId}/form`) !== 0) {
-        this.behaviourService.registerState$.next({
-          register: true,
-          address: false,
-        });
         if (route.params.id) {
+          this.registerPluginsForDatasets();
           this.reloadDataset(route.params.id, false);
         } else {
           const previousOpenedDocId = this.getOpenedDocumentId(false);
+          if (!previousOpenedDocId) this.registerPluginsForDatasets();
           return await this.handleNavigation(route, previousOpenedDocId, false);
         }
       }
@@ -45,20 +43,32 @@ export class RedirectFormGuard {
       if (
         this.router.url.indexOf(`/${ConfigService.catalogId}/address`) !== 0
       ) {
-        this.behaviourService.registerState$.next({
-          register: true,
-          address: true,
-        });
         if (route.params.id) {
+          this.registerPluginsForAddress();
           this.reloadDataset(route.params.id, true);
         } else {
           const previousOpenedDocId = this.getOpenedDocumentId(true);
+          if (!previousOpenedDocId) this.registerPluginsForAddress();
           return await this.handleNavigation(route, previousOpenedDocId, true);
         }
       }
     }
 
     return true;
+  }
+
+  private registerPluginsForAddress() {
+    this.behaviourService.registerState$.next({
+      register: true,
+      address: true,
+    });
+  }
+
+  private registerPluginsForDatasets() {
+    this.behaviourService.registerState$.next({
+      register: true,
+      address: false,
+    });
   }
 
   private getOpenedDocumentId(forAddress: boolean): string {

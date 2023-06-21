@@ -92,6 +92,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
 import { formPluginProvider } from "./form-plugin.provider";
+import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
+import { GermanDateAdapter } from "./services/german-date.adapter";
 
 registerLocaleData(de);
 
@@ -311,6 +313,14 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: LOCALE_ID,
       useValue: "de-de",
+    },
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: "de-DE",
+    },
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
     },
     // add authorization header to all requests
     {
