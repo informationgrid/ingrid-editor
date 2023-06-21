@@ -32,6 +32,8 @@ import { ThesaurusReportComponent } from "./ingrid/components/thesaurus-report.c
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
 import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolbar.service";
+import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
+import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
 
 @Component({
   template: "",
@@ -49,7 +51,8 @@ class InGridComponent {
     informationSystem: InformationSystemDoctype,
     person: IngridPersonDoctype,
     organisation: IngridOrganisationDoctype,
-    getCapWizard: GetCapabilititesWizardPlugin
+    getCapWizard: GetCapabilititesWizardPlugin,
+    isoView: IsoViewPlugin
   ) {
     profileService.setProfileId("ingrid");
     profileService.registerProfiles([
@@ -77,7 +80,7 @@ class InGridComponent {
     GetCapabilitiesDialogComponent,
     ThesaurusReportComponent,
   ],
-  providers: [GetCapabilititesWizardPlugin, FormToolbarService],
+  providers: [GetCapabilititesWizardPlugin, IsoViewPlugin, FormToolbarService],
   imports: [
     MatIconModule,
     MatDialogModule,
@@ -100,6 +103,7 @@ class InGridComponent {
     SharedPipesModule,
     DatePipe,
     MatSnackBarModule,
+    IsoViewComponent,
   ],
 })
 export class ProfilePack {

@@ -1,18 +1,18 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
-import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
+import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
-import { DocEventsService } from "../../../services/event/doc-events.service";
+import { DocEventsService } from "../../../../app/services/event/doc-events.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { ExchangeService } from "../../../+importExport/exchange.service";
+import { TreeQuery } from "../../../../app/store/tree/tree.query";
+import { AddressTreeQuery } from "../../../../app/store/address-tree/address-tree.query";
+import { ExchangeService } from "../../../../app/+importExport/exchange.service";
 import { combineLatest, of } from "rxjs";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
 
 @UntilDestroy()
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class IsoViewPlugin extends Plugin {
   id = "plugin.isoView";
   name = "ISO-Ansicht";

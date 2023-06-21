@@ -10,11 +10,9 @@ import { DeleteEmptyFoldersBehaviour } from "./+catalog/+behaviours/system/Delet
 import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-json.behaviour";
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
-import { IsoViewPlugin } from "./+form/dialogs/iso-view/iso-view.plugin";
 import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { AssignedUserBehaviour } from "./+catalog/+behaviours/system/AssignedUser/assigned-user.behaviour";
-import { GetCapabilititesWizardPlugin } from "../profiles/ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -26,8 +24,6 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
   { provide: FormPluginToken, useClass: HistoryPlugin, multi: true },
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
-  // TODO: move to ingrid profile
-  { provide: FormPluginToken, useClass: IsoViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
   { provide: FormPluginToken, useClass: AssignedUserBehaviour, multi: true },

@@ -13,7 +13,6 @@ import { DeleteDocsPlugin } from "../dialogs/delete-docs/delete-docs.plugin";
 import { CopyCutPastePlugin } from "../dialogs/copy-cut-paste/copy-cut-paste.plugin";
 import { PublishPlugin } from "../dialogs/save/publish.plugin";
 import { UndoPlugin } from "../dialogs/undo/undo.plugin";
-import { IsoViewPlugin } from "../dialogs/iso-view/iso-view.plugin";
 import { PrintViewPlugin } from "../dialogs/print-view/print-view.plugin";
 import { FormularService } from "../formular.service";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -106,13 +105,9 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     CopyCutPastePlugin,
     PublishPlugin,
     UndoPlugin,
-    IsoViewPlugin,
     PrintViewPlugin,
     FormularService,
     HistoryPlugin,
-
-    // FORM-PLUGINS
-    // formPluginProvider,
   ],
   exports: [
     FormToolbarComponent,

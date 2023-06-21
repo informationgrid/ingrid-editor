@@ -22,7 +22,6 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { PasteDialogComponent } from "./dialogs/copy-cut-paste/paste-dialog.component";
-import { IsoViewComponent } from "./dialogs/iso-view/iso-view.component";
 import { FormSharedModule } from "./form-shared/form-shared.module";
 import { VersionConflictDialogComponent } from "./dialogs/version-conflict-dialog/version-conflict-dialog.component";
 import { CreateNodeModule } from "./dialogs/create/create-node.module";
@@ -56,7 +55,6 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
   ],
   declarations: [
     PasteDialogComponent,
-    IsoViewComponent,
     ScrollToDirective,
     VersionConflictDialogComponent,
   ],

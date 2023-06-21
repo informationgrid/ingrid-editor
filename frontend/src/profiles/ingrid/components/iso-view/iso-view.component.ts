@@ -1,11 +1,22 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { diffChars } from "diff";
+import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import { diffLines } from "diff";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatButtonModule } from "@angular/material/button";
+import { NgIf } from "@angular/common";
 
 @Component({
   templateUrl: "./iso-view.component.html",
   styleUrls: ["./iso-view.component.scss"],
+  imports: [
+    MatDialogModule,
+    MatIconModule,
+    MatButtonToggleModule,
+    MatButtonModule,
+    NgIf,
+  ],
+  standalone: true,
 })
 export class IsoViewComponent implements OnInit {
   isoText: any;
