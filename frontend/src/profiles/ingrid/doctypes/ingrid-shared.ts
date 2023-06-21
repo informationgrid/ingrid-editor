@@ -365,7 +365,7 @@ export abstract class IngridShared extends BaseDoctype {
                 : item.label;
             },
           }),
-          this.addRepeatList("free", "Optionale Schlagworte", {
+          this.addRepeatList("free", "Freie Schlagworte", {
             view: "chip",
             className: "optional",
             hint: this.keywordFieldHint,
@@ -373,10 +373,10 @@ export abstract class IngridShared extends BaseDoctype {
             labelField: "label",
           }),
         ]),
-        this.addInput(null, null, {
+        this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
           wrappers: ["panel", "form-field"],
-          fieldLabel: "Analyse",
+          placeholder: "Bitte eingeben",
           updateOn: "change",
           hintStart: this.keywordFieldHint,
           keydown: async (field, event: KeyboardEvent) => {

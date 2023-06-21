@@ -110,6 +110,7 @@ export interface InputOptions extends Options {
   hintStart?: string;
   updateOn?: "change" | "blur" | "submit";
   keydown?: (field: FormlyFieldConfig, event) => void;
+  placeholder?: string;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -421,6 +422,7 @@ export class FormFieldHelper {
         max: options?.max,
         hintStart: options?.hintStart,
         keydown: options?.keydown,
+        placeholder: options?.placeholder,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
