@@ -20,6 +20,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
     "props.minLength"?;
+    "props.hintStart"?;
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
@@ -107,7 +108,7 @@ export interface InputOptions extends Options {
   prefix?: any;
   min?: number;
   max?: number;
-  hintStart?: string;
+  hintStart?: string | any;
   updateOn?: "change" | "blur" | "submit";
   keydown?: (field: FormlyFieldConfig, event) => void;
   placeholder?: string;

@@ -45,12 +45,19 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: true,
-          wrappers: ["panel", "button", "form-field", "addons"],
+          wrappers: ["panel", "button", "form-field"],
           className: "flex-3 ",
-          prefix: {
-            text: this.configService.$userInfo.value.currentCatalog.settings
-              .config.namespace,
-            asComment: true,
+          expressions: {
+            "props.hintStart": (field) => {
+              const value = field.formControl.value;
+              if (!value) return "";
+              return value?.indexOf("://") >= 0
+                ? ""
+                : "ISO-Abbildung: " +
+                    this.configService.$userInfo.value.currentCatalog.settings
+                      .config.namespace +
+                    value;
+            },
           },
           buttonConfig: {
             text: "Erzeuge Id",
