@@ -51,7 +51,8 @@ export class InlineHelpWrapperComponent
 
     const target = new ElementRef(evt.currentTarget);
     const infoElement = target.nativeElement as HTMLElement;
-    const title = this.props.label ?? this.props.externalLabel;
+    const title =
+      this.props.fieldLabel ?? this.props.label ?? this.props.externalLabel;
     this.contextHelpService.showContextHelp(
       this.profile,
       this.formState.mainModel?._type,
