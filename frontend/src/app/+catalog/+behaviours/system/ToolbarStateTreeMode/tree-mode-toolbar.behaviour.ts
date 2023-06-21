@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
@@ -6,6 +6,7 @@ import {
   FormToolbarService,
   ToolbarItem,
 } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
+import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
 
 @Injectable({
   providedIn: "root",
@@ -27,6 +28,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
     private addressTreeQuery: AddressTreeQuery
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

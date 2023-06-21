@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
   FormToolbarService,
@@ -16,7 +16,7 @@ import { FormStateService } from "../../form-state.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
 import { combineLatest, of } from "rxjs";
 import { clone, JsonDiffMerge } from "../../../shared/utils";
-import { catchError } from "rxjs/operators";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @UntilDestroy()
 @Injectable()
@@ -41,6 +41,7 @@ export class PrintViewPlugin extends Plugin {
     private formService: FormStateService
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { MatDialog } from "@angular/material/dialog";
@@ -16,6 +16,7 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -42,6 +43,7 @@ export class DeleteDocsPlugin extends Plugin {
   ) {
     super();
     this.isActive = true;
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

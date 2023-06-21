@@ -1,8 +1,9 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { SessionStore } from "../../../../store/session.store";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
+import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
 
 @Injectable()
 export class ShowJsonBehaviour extends Plugin {
@@ -20,6 +21,7 @@ export class ShowJsonBehaviour extends Plugin {
     private sessionStore: SessionStore
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

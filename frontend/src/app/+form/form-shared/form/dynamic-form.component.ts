@@ -55,7 +55,6 @@ import { ProfileService } from "../../../services/profile.service";
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
   // data and addresses need their own configured service
-  providers: [FormPluginsService],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {

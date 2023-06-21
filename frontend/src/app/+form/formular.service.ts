@@ -14,7 +14,9 @@ import { ConfigService } from "../services/config/config.service";
 import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 import { FormularMenuItem } from "./form-menu.service";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class FormularService {
   data = {};
 

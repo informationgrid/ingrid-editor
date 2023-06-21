@@ -26,6 +26,7 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
   { provide: FormPluginToken, useClass: HistoryPlugin, multi: true },
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
+  // TODO: move to ingrid profile
   { provide: FormPluginToken, useClass: IsoViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
@@ -33,11 +34,6 @@ export const formPluginProvider = [
   {
     provide: FormPluginToken,
     useClass: ShowDocumentPermissionsHandlerPlugin,
-    multi: true,
-  },
-  {
-    provide: FormPluginToken,
-    useClass: GetCapabilititesWizardPlugin,
     multi: true,
   },
   {

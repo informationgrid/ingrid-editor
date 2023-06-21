@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
   FormToolbarService,
@@ -20,6 +20,7 @@ import { DocumentService } from "../../../services/document/document.service";
 import { FormStateService } from "../../form-state.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -59,6 +60,7 @@ export class HistoryPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

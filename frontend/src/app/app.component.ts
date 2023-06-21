@@ -1,6 +1,7 @@
 import {
   Component,
   HostListener,
+  Inject,
   OnInit,
   ViewContainerRef,
 } from "@angular/core";
@@ -14,6 +15,8 @@ import { AuthenticationFactory } from "./security/auth.factory";
 import { Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
+import { FormPluginToken } from "./tokens/plugin.token";
+import { Plugin } from "./+catalog/+behaviours/plugin";
 
 @UntilDestroy()
 @Component({
@@ -35,7 +38,8 @@ export class AppComponent implements OnInit {
     private authFactory: AuthenticationFactory,
     private titleService: Title,
     private profileService: ProfileService,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    @Inject(FormPluginToken) private autoPlugins: Plugin[]
   ) {
     this.loadProfile();
 

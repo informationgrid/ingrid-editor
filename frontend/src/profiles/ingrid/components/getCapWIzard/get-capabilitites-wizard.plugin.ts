@@ -10,10 +10,13 @@ import { DocumentService } from "../../../../app/services/document/document.serv
 import { IgeDocument } from "../../../../app/models/ige-document";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
+import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
 import { ProfileService } from "../../../../app/services/profile.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class GetCapabilititesWizardPlugin extends Plugin {
   id = "plugin.getCapWizard";
   defaultActive = true;
@@ -22,6 +25,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     "Es erscheint ein neuer Toolbar-Button über den es möglich ist, einen neuen Geodatendienst hinzuzufügen mit den Daten aus einem getCapabilities Dokument.";
   eventId = "WIZARD_GET_CAPABILITIES";
   hideInAddress = true;
+  group = "Toolbar";
 
   private buttonId = "toolBtnWizardGetCap";
 
@@ -34,10 +38,12 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private snack = inject(MatSnackBar);
   private profileService = inject(ProfileService);
 
-  register() {
-    // this check is still needed until plugin registration is refactored
-    if (this.profileService.getProfileId() !== "ingrid") return;
+  constructor() {
+    super();
+    inject(FormPluginsService).registerPlugin(this);
+  }
 
+  register() {
     super.register();
 
     this.formToolbarService.addButton({

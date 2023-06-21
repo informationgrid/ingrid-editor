@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   BehaviourFormatBackend,
   BehaviourService,
@@ -12,8 +12,8 @@ import { tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Plugin } from "./plugin";
 import { FormlyFormBuilder } from "@ngx-formly/core";
-import { FormPluginToken } from "../../tokens/plugin.token";
 import { ActivatedRoute } from "@angular/router";
+import { FormPluginsService } from "../../+form/form-shared/form-plugins.service";
 
 @UntilDestroy()
 @Component({
@@ -36,11 +36,13 @@ export class BehavioursComponent implements OnInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private builder: FormlyFormBuilder,
-    @Inject(FormPluginToken) formPluginsDef: Plugin[],
     private route: ActivatedRoute,
-    private behaviourService: BehaviourService
+    private behaviourService: BehaviourService,
+    private formPluginsService: FormPluginsService
   ) {
-    this.formPlugins = formPluginsDef.filter((plugin) => !plugin.hide);
+    this.formPlugins = formPluginsService.plugins.filter(
+      (plugin) => !plugin.hide
+    );
   }
 
   ngOnInit() {

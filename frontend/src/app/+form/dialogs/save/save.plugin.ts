@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@angular/core";
+import { inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -14,6 +14,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -39,6 +40,7 @@ export class SavePlugin extends SaveBase {
     @Inject(DOCUMENT) private _document: Document
   ) {
     super(sessionStore, messageService);
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

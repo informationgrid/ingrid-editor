@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
@@ -8,9 +8,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ExchangeService } from "../../../+importExport/exchange.service";
-import { HttpResponse } from "@angular/common/http";
-import { catchError } from "rxjs/operators";
 import { combineLatest, of } from "rxjs";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @UntilDestroy()
 @Injectable()
@@ -34,6 +33,7 @@ export class IsoViewPlugin extends Plugin {
     private exportService: ExchangeService
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

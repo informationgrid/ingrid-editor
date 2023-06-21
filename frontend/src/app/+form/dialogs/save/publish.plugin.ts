@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -21,6 +21,7 @@ import {
 import { SessionStore } from "../../../store/session.store";
 import { FormMessageService } from "../../../services/form-message.service";
 import { IgeError } from "../../../models/ige-error";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -53,6 +54,7 @@ export class PublishPlugin extends SaveBase {
   ) {
     super(sessionStore, messageService);
     this.isActive = true;
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {
