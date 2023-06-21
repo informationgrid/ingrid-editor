@@ -96,6 +96,7 @@ export class ProfileComponent implements OnInit {
           lastName: this.userInfo$.value.lastName,
         },
         hasBackdrop: true,
+        minWidth: 400,
       })
       .afterClosed()
       .pipe(filter((modified) => modified))

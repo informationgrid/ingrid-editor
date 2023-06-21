@@ -7,23 +7,28 @@
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
-    <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>Vorname</mat-label>
-        <input matInput formControlName="firstName" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>Nachname</mat-label>
-        <input matInput formControlName="lastName" />
-    </mat-form-field>
+    <div class="flex-col">
+        <mat-form-field appearance="outline">
+            <mat-label>Vorname</mat-label>
+            <input matInput formControlName="firstName" data-cy="firstName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Nachname</mat-label>
+            <input matInput formControlName="lastName" data-cy="lastName" />
+        </mat-form-field>
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close color="primary">Abbrechen</button>
+    <button mat-button mat-dialog-close color="primary" data-cy="cancel">
+        Abbrechen
+    </button>
     <div class="flex-1"></div>
     <button
         mat-flat-button
         color="primary"
         [disabled]="form.invalid"
         (click)="changeName()"
+        data-cy="submit"
     >
         Ändern
     </button>
