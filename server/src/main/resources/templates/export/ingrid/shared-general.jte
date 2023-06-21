@@ -140,7 +140,7 @@
 @endfor
 
 <gmd:identificationInfo>
-    <${page.getIdentificationType()} uuid="${page.getDatasetURL()}">
+    <${page.getIdentificationType()} uuid="${page.getCitationURL()}">
         <gmd:citation>
             <gmd:CI_Citation>
                 <gmd:title>

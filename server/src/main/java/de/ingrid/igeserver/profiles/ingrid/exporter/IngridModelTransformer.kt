@@ -13,7 +13,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
-import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -170,7 +169,6 @@ open class IngridModelTransformer constructor(
         CharacterStringModel(referenceSystem, epsgLink)
     }
     open val description = data.description
-    var datasetURL: String
     val advProductGroups = data.advProductGroups?.map { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
     val dateEvents = data.temporal.events ?: emptyList()
@@ -308,9 +306,7 @@ open class IngridModelTransformer constructor(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.datasetURL =
-            (if (catalog.settings?.config?.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/${catalogIdentifier}" else catalog.settings?.config?.namespace!!)
-                .suffixIfNot("/") + model.uuid
+        this.citationURL = model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
     }
 
     fun handleContent(value: String?): String? {
