@@ -25,6 +25,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     "Es erscheint ein neuer Toolbar-Button über den es möglich ist, einen neuen Geodatendienst hinzuzufügen mit den Daten aus einem getCapabilities Dokument.";
   eventId = "WIZARD_GET_CAPABILITIES";
   hideInAddress = true;
+  group = "Toolbar";
 
   private buttonId = "toolBtnWizardGetCap";
 
