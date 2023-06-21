@@ -79,7 +79,7 @@
     "types": {
       "free": "Freie Eingabe",
       "wkt": "Raumbezug (WKT)",
-      "wfsgnde": "Geo-Thesaurus (wfs_gnde)"
+      "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)"
     }
   }
 }
