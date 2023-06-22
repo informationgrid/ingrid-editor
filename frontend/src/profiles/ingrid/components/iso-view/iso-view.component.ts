@@ -1,12 +1,12 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
 import { diffLines } from "diff";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
-import { ExportService } from "../../../services/export.service";
-import { copyToClipboardFn } from "../../../services/utils";
+import { ExportService } from "../../../../app/services/export.service";
+import { copyToClipboardFn } from "../../../../app/services/utils";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -25,12 +25,10 @@ export class IsoViewComponent implements OnInit {
   isoTextPublished: any;
   compareView = false;
 
-  copyToClipboardFn = copyToClipboardFn();
+  private exportService: ExportService = inject(ExportService);
+  private copyToClipboardFn = copyToClipboardFn();
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private exportService: ExportService
-  ) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {
     this.isoText = this.data.isoText;
