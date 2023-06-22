@@ -1,8 +1,4 @@
-<input
-    matInput
-    [type]="props.type"
-    [formControl]="field.fieldGroup[0].formControl"
-/>
+<input matInput type="number" [formControl]="field.fieldGroup[0].formControl" />
 <div matSuffix [matMenuTriggerFor]="suffixMenu" class="suffix-wrapper">
     <span>{{ $unit() }}</span> <mat-icon>arrow_drop_down</mat-icon>
 </div>
