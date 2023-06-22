@@ -114,11 +114,11 @@ class IndexService @Autowired constructor(
         // provide at least one empty iBus configuration
         if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())
 
-        return publicationTypesPerIBus.map { 
-            var conditions: String = it
-                ?.filter { it != "internet" }
-                ?.joinToString(" OR ") { "'{$it}' && document_wrapper.tags" } ?: ""
-            if (it?.contains("internet") == true || it?.size == 0) {
+        return publicationTypesPerIBus.map { types ->
+            var conditions: String = types
+                .filter { it != "internet" }
+                .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
+            if (types.contains("internet") || types.isEmpty()) {
                 if (conditions.isNotEmpty()) conditions += " OR"
                 conditions += " document_wrapper.tags is null OR '{}' = document_wrapper.tags"
             }

@@ -283,9 +283,15 @@ class IndexingTask @Autowired constructor(
         index: Int
     ) {
         if (category == DocumentCategory.DATA) {
-            notify.sendMessage(message.apply { this.progressDocuments = index + 1 })
+            notify.sendMessage(message.apply { 
+                this.progressDocuments = index + 1 
+                this.progress = (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt() 
+            })
         } else {
-            notify.sendMessage(message.apply { this.progressAddresses = index + 1 })
+            notify.sendMessage(message.apply { 
+                this.progressAddresses = index + 1
+                this.progress = (((this.progressAddresses + 0f) / this.numDocuments) * 100).toInt()
+            })
         }
     }
 
