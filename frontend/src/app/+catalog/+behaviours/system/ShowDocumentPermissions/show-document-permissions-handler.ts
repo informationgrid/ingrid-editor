@@ -7,15 +7,17 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { UserService } from "../../../../services/user/user.service";
 import { Router } from "@angular/router";
 import { UserWithDocPermission } from "../../../../+user/user";
-import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
+import { FormMenuService } from "../../../../+form/form-menu.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { TreeQuery } from "../../../../store/tree/tree.query";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @Injectable()
 export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
   id = "plugin.show.document.permissions.handler";
   name = "Berechtigungen anzeigen";
-  description = "";
+  description =
+    "Administratoren können die Zugriffsberechtigungen für Dokumente und Adressen anzeigen";
   defaultActive = true;
   isPrivileged: boolean;
 
@@ -38,10 +40,10 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
 
   unregister() {
     super.unregister();
-    this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
+    this.formMenuService.removeMenuItem("dataset", this.menuItemId);
+    this.formMenuService.removeMenuItem("address", this.menuItemId);
   }
 
-  private menuId: MenuId = "dataset";
   private menuItemId = "show-document-permissions";
 
   register() {
@@ -55,28 +57,30 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
         });
       this.subscriptions.push(onEvent);
 
-      this.menuId = this.forAddress ? "address" : "dataset";
-
-      const treeQuery = this.forAddress
-        ? this.addressTreeQuery
-        : this.documentTreeQuery;
-
-      const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
-        const button = {
-          title: "Berechtigungen anzeigen",
-          name: this.menuItemId,
-          action: () =>
-            this.docEventsService.sendEvent({
-              type: "SHOW_DOCUMENT_PERMISSIONS",
-              data: { id: doc.id },
-            }),
-        };
-        // refresh menu item
-        this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
-        this.formMenuService.addMenuItem(this.menuId, button);
-      });
-      this.subscriptions.push(onDocLoad);
+      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
+        (doc) => this.updateShowRightsButton(doc, false)
+      );
+      const onDocLoadAdress = this.addressTreeQuery.openedDocument$.subscribe(
+        (doc) => this.updateShowRightsButton(doc, true)
+      );
+      this.subscriptions.push(onDocLoad, onDocLoadAdress);
     }
+  }
+
+  private updateShowRightsButton(doc: DocumentAbstract, forAddress: boolean) {
+    const button = {
+      title: "Berechtigungen anzeigen",
+      name: this.menuItemId,
+      action: () =>
+        this.docEventsService.sendEvent({
+          type: "SHOW_DOCUMENT_PERMISSIONS",
+          data: { id: doc.id },
+        }),
+    };
+    // refresh menu item
+    const menuId = forAddress ? "address" : "dataset";
+    this.formMenuService.removeMenuItem(menuId, this.menuItemId);
+    this.formMenuService.addMenuItem(menuId, button);
   }
 
   private showDialog(id: number) {

@@ -11,7 +11,6 @@ import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-j
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
-import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { AssignedUserBehaviour } from "./+catalog/+behaviours/system/AssignedUser/assigned-user.behaviour";
 
 export const formPluginProvider = [
@@ -27,11 +26,6 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
   { provide: FormPluginToken, useClass: AssignedUserBehaviour, multi: true },
-  {
-    provide: FormPluginToken,
-    useClass: ShowDocumentPermissionsHandlerPlugin,
-    multi: true,
-  },
   {
     provide: FormPluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

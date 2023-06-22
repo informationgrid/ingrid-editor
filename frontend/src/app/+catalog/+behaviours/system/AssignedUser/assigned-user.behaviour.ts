@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import {
   EventData,
@@ -23,6 +23,7 @@ import { DocEventsService } from "../../../../services/event/doc-events.service"
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { FormPluginsService } from "src/app/+form/form-shared/form-plugins.service";
 
 @Injectable()
 export class AssignedUserBehaviour extends Plugin {
@@ -45,6 +46,7 @@ export class AssignedUserBehaviour extends Plugin {
     private dialog: MatDialog
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   formMenuId: MenuId;
