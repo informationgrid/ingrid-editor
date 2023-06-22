@@ -39,21 +39,22 @@
                     class="type"
                 >
                     {{
-                        model[i].type.key
-                            | codelist
-                                : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
-                                      ?.props?.codelistId
-                            | async
+                    model[i].type.key
+                        | codelist
+                        : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
+                            ?.props?.codelistId
+                        | async
                     }}
                 </div>
                 <ng-template #simpleType>
                     <div class="type">{{ model[i].type }}</div>
                 </ng-template>
+                <div class="title">{{ model[i].title }}</div>
                 <a
-                    class="title no-text-transform"
+                    class="url no-text-transform"
                     [href]="model[i].url"
                     target="_blank"
-                    >{{ model[i].title }}</a
+                    >{{ model[i].url }}</a
                 >
                 <div *ngIf="model[i].explanation" class="explanation">
                     {{ model[i].explanation }}

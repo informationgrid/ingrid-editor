@@ -27,11 +27,20 @@ ige-add-button {
     font-weight: 500;
   }
 
+  .url,
   .explanation {
     white-space: normal;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+  }
+
+  .url {
+    -webkit-line-clamp: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .explanation {
+    -webkit-line-clamp: 2;
   }
 }
