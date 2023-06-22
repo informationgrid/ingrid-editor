@@ -1,3 +1,7 @@
+import { inject } from "@angular/core";
+import { Clipboard } from "@angular/cdk/clipboard";
+import { MatSnackBar } from "@angular/material/snack-bar";
+
 interface IIsObject {
   (item: any): boolean;
 }
@@ -75,4 +79,26 @@ export const deepMerge: IDeepMerge = (
   }
 
   return result;
+};
+
+export const copyToClipboardFn = () => {
+  const clipboard = inject(Clipboard);
+  const snackbar = inject(MatSnackBar);
+
+  return (
+    copyText: string,
+    opts?: {
+      successText?: string;
+      errorText?: string;
+    }
+  ) => {
+    const isCopied = clipboard.copy(copyText);
+    if (isCopied) {
+      snackbar.open(
+        opts?.successText ?? "Der Text wurde in Zwischenablage kopiert."
+      );
+    } else {
+      snackbar.open(opts?.errorText ?? "Der Text konnte nicht kopiert werden.");
+    }
+  };
 };

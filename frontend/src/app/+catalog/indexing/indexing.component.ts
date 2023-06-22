@@ -4,11 +4,11 @@ import cronstrue from "cronstrue/i18n";
 import { UntypedFormControl } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
+import { copyToClipboardFn } from "../../services/utils";
 
 @UntilDestroy()
 @Component({
@@ -40,10 +40,11 @@ export class IndexingComponent implements OnInit {
       )
   );
 
+  copyToClipboardFn = copyToClipboardFn();
+
   constructor(
     private indexService: IndexService,
     private configService: ConfigService,
-    private clipboard: Clipboard,
     private snackBar: MatSnackBar,
     private rxStompService: RxStompService
   ) {
@@ -105,8 +106,9 @@ export class IndexingComponent implements OnInit {
   copyContent(event: MouseEvent) {
     event.preventDefault();
 
-    this.clipboard.copy(this.indexContent.nativeElement.innerText);
-    this.snackBar.open("Log in Zwischenablage kopiert");
+    this.copyToClipboardFn(this.indexContent.nativeElement.innerText, {
+      successText: "Log in Zwischenablage kopiert",
+    });
   }
 
   deactivateIndexing() {

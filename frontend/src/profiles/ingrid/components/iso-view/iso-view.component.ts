@@ -6,6 +6,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
 import { ExportService } from "../../../services/export.service";
+import { copyToClipboardFn } from "../../../services/utils";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -23,6 +24,8 @@ export class IsoViewComponent implements OnInit {
   isoText: any;
   isoTextPublished: any;
   compareView = false;
+
+  copyToClipboardFn = copyToClipboardFn();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -55,7 +58,7 @@ export class IsoViewComponent implements OnInit {
   }
 
   copy() {
-    navigator.clipboard.writeText(this.isoText);
+    this.copyToClipboardFn(this.isoText);
   }
 
   download() {
