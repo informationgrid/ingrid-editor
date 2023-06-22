@@ -174,7 +174,7 @@
                     </gmd:date>
                     @endfor
                 @endif
-                @if( page.getCitationURL() != null )
+                @if( page.getModel().getType().equals("InGridGeoDataset") )
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>

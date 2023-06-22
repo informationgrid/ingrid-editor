@@ -13,6 +13,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
+import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -306,7 +307,8 @@ open class IngridModelTransformer constructor(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.citationURL = model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
+        val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+        this.citationURL = namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
     }
 
     fun handleContent(value: String?): String? {
