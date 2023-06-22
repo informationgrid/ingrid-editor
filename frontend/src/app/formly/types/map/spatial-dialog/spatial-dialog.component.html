@@ -22,6 +22,7 @@
                         <mat-option
                             *ngFor="let menuItem of types"
                             [value]="menuItem.id"
+                            [attr.data-cy]="menuItem.id"
                         >
                             {{ menuItem.label }}
                         </mat-option>
