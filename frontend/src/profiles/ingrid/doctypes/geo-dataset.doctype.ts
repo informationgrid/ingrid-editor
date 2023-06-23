@@ -51,12 +51,12 @@ export class GeoDatasetDoctype extends IngridShared {
             "props.hintStart": (field) => {
               const value = field.formControl.value;
               if (!value) return "";
+              const namespace =
+                this.configService.$userInfo.value.currentCatalog.settings
+                  .config.namespace ?? "";
               return value?.indexOf("://") >= 0
                 ? ""
-                : "ISO-Abbildung: " +
-                    this.configService.$userInfo.value.currentCatalog.settings
-                      .config.namespace +
-                    value;
+                : "ISO-Abbildung: " + namespace + value;
             },
           },
           buttonConfig: {
