@@ -1,80 +1,91 @@
-<ige-table-dialog
-    [isNew]="data?.newEntry"
-    [submitDisabled]="form.invalid"
+<ige-dialog-template
+    [label]="data?.newEntry ? 'Eintrag hinzufügen' : 'Eintrag bearbeiten'"
+    [disabled]="form.invalid"
     (submit)="submit()"
 >
-    <form class="flex-col" [formGroup]="form">
-        <mat-checkbox
-            style="padding-bottom: 24px"
-            formControlName="isInspire"
-            data-cy="conformity-is-inspire-id"
-            >Ist INSPIRE Eintrag</mat-checkbox
-        >
-        <mat-form-field appearance="outline">
-            <mat-label>Spezifikation der Konformität</mat-label>
-            <mat-select
-                *ngIf="form.controls.isInspire.value === true; else freeSpecs"
-                formControlName="specification"
-                data-cy="conformity-specification-id"
-                [compareWith]="selectFn"
+    <ng-container content>
+        <form class="flex-col" [formGroup]="form">
+            <mat-checkbox
+                style="padding-bottom: 24px"
+                formControlName="isInspire"
+                data-cy="conformity-is-inspire-id"
+                >Ist INSPIRE Eintrag</mat-checkbox
             >
-                <mat-option
-                    *ngFor="let item of specifications | async"
-                    [value]="item"
-                >
-                    {{ item.label }}
-                </mat-option>
-            </mat-select>
-            <ng-template #freeSpecs>
-                <input
-                    matInput
-                    [matAutocomplete]="specificationAuto"
+            <mat-form-field appearance="outline">
+                <mat-label>Spezifikation der Konformität</mat-label>
+                <mat-select
+                    *ngIf="
+                        form.controls.isInspire.value === true;
+                        else freeSpecs
+                    "
                     formControlName="specification"
                     data-cy="conformity-specification-id"
-                />
-                <mat-autocomplete #specificationAuto [displayWith]="displayFn">
+                    [compareWith]="selectFn"
+                >
                     <mat-option
-                        *ngFor="let item of specificationsFree | async"
+                        *ngFor="let item of specifications | async"
                         [value]="item"
                     >
                         {{ item.label }}
                     </mat-option>
-                </mat-autocomplete>
-            </ng-template>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Grad der Konformität</mat-label>
-            <mat-select
-                formControlName="pass"
-                data-cy="conformity-level-id"
-                [compareWith]="selectFn"
-            >
-                <mat-option *ngFor="let item of level | async" [value]="item">
-                    {{ item.label }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Datum</mat-label>
-            <input
-                matInput
-                formControlName="date"
-                data-cy="conformity-date-id"
-                [matDatepicker]="picker"
-            />
-            <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>geprüft mit</mat-label>
-            <input
-                matInput
-                formControlName="verifiedBy"
-                data-cy="conformity-verified-id"
-            />
-        </mat-form-field>
-    </form>
-</ige-table-dialog>
+                </mat-select>
+                <ng-template #freeSpecs>
+                    <input
+                        matInput
+                        [matAutocomplete]="specificationAuto"
+                        formControlName="specification"
+                        data-cy="conformity-specification-id"
+                    />
+                    <mat-autocomplete
+                        #specificationAuto
+                        [displayWith]="displayFn"
+                    >
+                        <mat-option
+                            *ngFor="let item of specificationsFree | async"
+                            [value]="item"
+                        >
+                            {{ item.label }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </ng-template>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Grad der Konformität</mat-label>
+                <mat-select
+                    formControlName="pass"
+                    data-cy="conformity-level-id"
+                    [compareWith]="selectFn"
+                >
+                    <mat-option
+                        *ngFor="let item of level | async"
+                        [value]="item"
+                    >
+                        {{ item.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Datum</mat-label>
+                <input
+                    matInput
+                    formControlName="date"
+                    data-cy="conformity-date-id"
+                    [matDatepicker]="picker"
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>geprüft mit</mat-label>
+                <input
+                    matInput
+                    formControlName="verifiedBy"
+                    data-cy="conformity-verified-id"
+                />
+            </mat-form-field>
+        </form>
+    </ng-container>
+</ige-dialog-template>
