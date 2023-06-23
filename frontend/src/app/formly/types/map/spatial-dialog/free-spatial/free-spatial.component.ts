@@ -102,6 +102,14 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   handleSelection(item: NominatimResult) {
     this.spatialSelection = item;
 
+    this.nominatimService
+      .detail(item.osm_id, item.osm_type)
+      .subscribe((result) =>
+        this.arsControl.setValue(
+          result?.extratags?.["de:regionalschluessel"] ?? ""
+        )
+      );
+
     const box = item.boundingbox;
     const value = {
       lat1: +box[0],
