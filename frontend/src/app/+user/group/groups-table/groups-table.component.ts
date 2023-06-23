@@ -21,7 +21,7 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { CsvExportService } from "../../../services/csv-export.service";
+import { ExportService } from "../../../services/export.service";
 
 @Component({
   selector: "groups-table",
@@ -63,7 +63,7 @@ export class GroupsTableComponent
   constructor(
     public groupService: GroupService,
     public dialog: MatDialog,
-    private csvExportService: CsvExportService
+    private exportService: ExportService
   ) {
     super();
     const initialSelection = [];
@@ -129,7 +129,7 @@ export class GroupsTableComponent
     for (const group of this.dataSource.filteredData) {
       rows.push(await this.buildRowByGroup(group));
     }
-    this.csvExportService.export(rows, { exportName: "groups" });
+    this.exportService.exportCsv(rows, { exportName: "groups" });
   }
 
   private async buildRowByGroup(group): Promise<string[]> {
