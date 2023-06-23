@@ -1117,7 +1117,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addInputInline("distanceMeter", "Bodenauflösung", {
           type: "number",
           min: 0,
-          className: "right-align",
+          className: "flex-1 right-align",
           wrappers: ["form-field", "addons"],
           suffix: {
             text: "m",
@@ -1126,7 +1126,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addInputInline("distanceDPI", "Scanauflösung", {
           type: "number",
           min: 0,
-          className: "right-align",
+          className: "flex-1 right-align",
           wrappers: ["form-field", "addons"],
           suffix: {
             text: "DPI",
