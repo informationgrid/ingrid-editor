@@ -95,7 +95,7 @@ export const copyToClipboardFn = () => {
     const isCopied = clipboard.copy(copyText);
     if (isCopied) {
       snackbar.open(
-        opts?.successText ?? "Der Text wurde in Zwischenablage kopiert."
+        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert."
       );
     } else {
       snackbar.open(opts?.errorText ?? "Der Text konnte nicht kopiert werden.");

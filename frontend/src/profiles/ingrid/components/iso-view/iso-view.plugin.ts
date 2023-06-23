@@ -70,25 +70,26 @@ export class IsoViewPlugin extends Plugin {
   }
 
   private showISODialog() {
+    const currentDocument = this.treeQuery.getOpenedDocument();
     const options = {
-      id: this.treeQuery.getOpenedDocument().id as number,
+      id: currentDocument.id as number,
       useDraft: true,
       exportFormat: "ingridISO",
     };
     const optionsOnlyPublished = {
-      id: this.treeQuery.getOpenedDocument().id as number,
+      id: currentDocument.id as number,
       useDraft: false,
       exportFormat: "ingridISO",
     };
     combineLatest([
       this.exportService.export(options),
-      this.treeQuery.getOpenedDocument()._state === "PW"
+      currentDocument._state === "PW"
         ? this.exportService.export(optionsOnlyPublished)
         : of(null),
     ]).subscribe(async ([current, published]) => {
       this.dialog.open(IsoViewComponent, {
         data: {
-          uuid: this.treeQuery.getOpenedDocument()._uuid,
+          uuid: currentDocument._uuid,
           isoText: await current.body.text(),
           isoTextPublished: await published?.body.text(),
         },

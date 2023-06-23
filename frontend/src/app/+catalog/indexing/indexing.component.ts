@@ -40,7 +40,7 @@ export class IndexingComponent implements OnInit {
       )
   );
 
-  copyToClipboardFn = copyToClipboardFn();
+  private copyToClipboardFn = copyToClipboardFn();
 
   constructor(
     private indexService: IndexService,
