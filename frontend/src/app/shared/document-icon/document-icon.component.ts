@@ -24,6 +24,7 @@ export class DocumentIconComponent implements OnInit {
   @Input() explicitTooltip: string;
 
   documentState: string;
+  hasTags = false;
 
   @HostBinding("className") componentClass: string;
 
@@ -45,6 +46,7 @@ export class DocumentIconComponent implements OnInit {
       type,
       publicationType
     );
+    this.hasTags = publicationType?.length > 0;
     this.tooltip = this.getTooltip(type, publicationType);
     this.iconClass =
       (<DocumentAbstract>doc).icon ||

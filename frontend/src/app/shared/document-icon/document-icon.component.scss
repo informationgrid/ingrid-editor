@@ -19,3 +19,16 @@
     fill: $ige-check-color;
   }
 }
+
+.icon-wrapper {
+  display: inline-block;
+  position: relative;
+
+  .document-icon-tag {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    right: 0;
+    top: 12px;
+  }
+}

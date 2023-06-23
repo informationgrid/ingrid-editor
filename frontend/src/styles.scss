@@ -723,6 +723,8 @@ ige-root .mat-drawer-container {
   }
 
   &.document-icon {
+    display: block;
+
     svg {
       height: 24px;
       width: 24px;
@@ -739,13 +741,18 @@ ige-root .mat-drawer-container {
     &.workingWithPublished svg .coloring {
       fill: url("#myGradient");
     }
+  }
+
+  + .document-icon-tag {
+    border-radius: 50%;
+    border: 1px solid $ige-background;
 
     &.intranet {
-      border-bottom: 1px dashed red;
+      background-color: $error-color;
     }
 
     &.amtsintern {
-      border-bottom: 1px dashed blue;
+      background-color: $ige-primary;
     }
   }
 }
