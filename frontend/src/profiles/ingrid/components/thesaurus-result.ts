@@ -3,7 +3,7 @@ export interface ThesaurusResult {
     | "INSPIRE-Themen"
     | "Gemet Schlagworte"
     | "Umthes Schlagworte"
-    | "Optionale Schlagworte";
+    | "Freie Schlagworte";
   value: string;
   found: boolean;
   alreadyExists?: boolean;

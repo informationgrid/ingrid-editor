@@ -9,8 +9,11 @@ import { ThesaurusResult } from "./thesaurus-result";
 @Component({
   template: `
     <div class="display-flex flex-row">
+      <mat-icon class="success-color" style="margin-right: 12px"
+        >check_circle_outline</mat-icon
+      >
       <span
-        >Die Schlagwörter wurden wie folgt zugeordnet:
+        >Die Schlagwörter wurden zugeordnet.
         <div *ngFor="let item of report">
           {{ item }}
         </div>

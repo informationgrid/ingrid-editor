@@ -375,12 +375,14 @@ export abstract class IngridShared extends BaseDoctype {
         ]),
         this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
-          wrappers: ["panel", "form-field"],
+          wrappers: ["panel", "button", "form-field"],
           placeholder: "Bitte eingeben",
-          updateOn: "change",
-          hintStart: this.keywordFieldHint,
-          keydown: async (field, event: KeyboardEvent) => {
-            await this.analyzeKeywords(event, field, options);
+          hintStart: "Mehrere Schlagworte durch Komma trennen",
+          buttonConfig: {
+            text: "Analysieren",
+            onClick: async (buttonConfig, field) => {
+              await this.analyzeKeywords(field, options);
+            },
           },
           validators: {
             mustBeEmptyBeforeSave: {
@@ -400,16 +402,13 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private async analyzeKeywords(
-    event: KeyboardEvent,
     field: FormlyFieldConfig,
     options: KeywordSectionOptions
   ) {
-    if (event.key !== "Enter") return;
-
     const value = field.formControl.value;
     if (!value) return;
 
-    field.props.hintStart = "Schlagworte werden analysiert ...";
+    field.formControl.setValue("Schlagworte werden analysiert ...");
     field.formControl.disable();
     this.snack.dismiss();
     const formState = field.options.formState;
@@ -424,7 +423,6 @@ export abstract class IngridShared extends BaseDoctype {
     field.formControl.enable();
     field.formControl.setValue("");
     this.informUserAboutThesaurusAnalysis(res);
-    field.props.hintStart = this.keywordFieldHint;
   }
 
   private async assignKeyword(formState, item, options: KeywordSectionOptions) {
@@ -1426,7 +1424,7 @@ export abstract class IngridShared extends BaseDoctype {
     return {
       found: true,
       value: item,
-      thesaurus: "Optionale Schlagworte",
+      thesaurus: "Freie Schlagworte",
       alreadyExists: exists,
     };
   }
