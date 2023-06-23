@@ -77,6 +77,7 @@ export class GeoServiceDoctype extends IngridShared {
                   options: this.getCodelistForSelect(5100, "type"),
                   codelistId: 5100,
                   hasInlineContextHelp: true,
+                  contextHelpId: "serviceType",
                   wrappers: ["inline-help", "form-field"],
                   hooks: {
                     onInit: (field) => this.handleServiceTypeChange(field),
