@@ -31,13 +31,13 @@ export class AddressCardComponent implements OnInit {
   @Output() gotoAddress = new EventEmitter<void>();
 
   content: {
-    iconClass: string;
-    iconState: string;
-    role: string | BackendOption;
-    title: string;
-    secondTitle: string;
-    emailOrPhone: string;
-  };
+    iconClass?: string;
+    iconState?: string;
+    role?: string | BackendOption;
+    title?: string;
+    secondTitle?: string;
+    emailOrPhone?: string;
+  } = {};
   invalidAddressReference = false;
   stateInfo: string = "";
 
@@ -46,7 +46,6 @@ export class AddressCardComponent implements OnInit {
   ngOnInit(): void {
     if (!this.address.ref) {
       console.error("Address reference is null!");
-      // @ts-ignore
       this.content = {
         title: "Ungültige Adressreferenz",
         iconState: "",
