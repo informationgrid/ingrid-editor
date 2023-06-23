@@ -5,6 +5,7 @@ import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.utils.ElasticDocument
 import org.springframework.stereotype.Component
 
@@ -47,7 +48,7 @@ open class PostPersistencePayload(action: Action, type: EntityType, document: Do
 /**
  * Payload holding document data before inserting the document
  */
-open class PreCreatePayload(type: EntityType, document: Document, val category: String) :
+open class PreCreatePayload(type: EntityType, document: Document, val category: String, val initiator: InitiatorAction) :
         PrePersistencePayload(Action.CREATE, type, document)
 
 /**

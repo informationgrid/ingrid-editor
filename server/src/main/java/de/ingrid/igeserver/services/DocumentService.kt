@@ -34,6 +34,10 @@ import java.security.Principal
 import java.time.ZoneOffset
 import java.util.*
 
+enum class InitiatorAction {
+    DEFAULT, COPY, IMPORT
+}
+
 @Service
 class DocumentService @Autowired constructor(
     var docRepo: DocumentRepository,
@@ -274,7 +278,8 @@ class DocumentService @Autowired constructor(
         document: Document,
         parentId: Int?,
         address: Boolean = false,
-        publish: Boolean = false
+        publish: Boolean = false,
+        initiator: InitiatorAction = InitiatorAction.DEFAULT
     ): DocumentData {
 
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
@@ -282,7 +287,7 @@ class DocumentService @Autowired constructor(
         val docType = getDocumentType(docTypeName)
 
         // run pre-create pipe(s)
-        val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address))
+        val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address), initiator)
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
         val preUpdatePayload = PreUpdatePayload(docType, preCreatePayload.document, preCreatePayload.wrapper)

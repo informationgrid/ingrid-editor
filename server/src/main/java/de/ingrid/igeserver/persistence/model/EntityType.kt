@@ -3,10 +3,7 @@ package de.ingrid.igeserver.persistence.model
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_TAGS
-import de.ingrid.igeserver.services.FIELD_UUID
+import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -62,7 +59,7 @@ abstract class EntityType {
     /**
      * Persistence hook called when an instance of this type is created
      */
-    open fun onCreate(doc: Document) {}
+    open fun onCreate(doc: Document, initiator: InitiatorAction) {}
 
     /**
      * Persistence hook called when an instance of this type is updated

@@ -45,7 +45,7 @@ class PreDefaultDocumentInitializer @Autowired constructor(
         initializeDocumentWrapper(payload, context, catalogRef)
 
         // call entity type specific hook
-        payload.type.onCreate(payload.document)
+        payload.type.onCreate(payload.document, payload.initiator)
 
         return payload
     }
