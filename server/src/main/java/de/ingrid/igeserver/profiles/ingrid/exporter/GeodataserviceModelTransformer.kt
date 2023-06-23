@@ -1,9 +1,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -45,6 +43,7 @@ class GeodataserviceModelTransformer constructor(
 
     val history = data.service?.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
+    val hasAccessConstraint = model.data.service?.hasAccessConstraints ?: false
 
 
     init {
