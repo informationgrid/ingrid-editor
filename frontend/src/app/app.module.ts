@@ -94,7 +94,6 @@ import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.c
 import { formPluginProvider } from "./form-plugin.provider";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { GermanDateAdapter } from "./services/german-date.adapter";
-import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 
 registerLocaleData(de);
 
@@ -295,7 +294,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     TranslocoRootModule,
     SharedModule,
     ClipboardModule,
-    MixedCdkDragDropModule,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap
