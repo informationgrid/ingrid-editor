@@ -12,8 +12,8 @@ class InGridPersonType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate) {
     override val profiles = arrayOf("ingrid")
 
     override val category = DocumentCategory.ADDRESS.value
-
-    override val referenceFieldInDocuments = "addresses"
+    
+    override val referenceFieldInDocuments = "pointOfContact"
 
     override val jsonSchema = "/ingrid/schemes/address-person.schema.json"
 
