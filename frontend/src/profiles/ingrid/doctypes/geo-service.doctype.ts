@@ -247,9 +247,10 @@ export class GeoServiceDoctype extends IngridShared {
     if (codelistId === undefined) {
       this.getServiceVersionOptions.next([]);
     } else {
-      this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
-        this.getServiceVersionOptions.next(value)
-      );
+      this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
+        this.getServiceVersionOptions.next(value);
+        this.updateServiceVersionInPrintField(value);
+      });
     }
     // TODO: remove all codelist values from version field?
   }
@@ -257,9 +258,27 @@ export class GeoServiceDoctype extends IngridShared {
   private updateOperationNameField(value) {
     const codelistId =
       this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
-    this.getCodelistForSelect(codelistId, "version").subscribe((value) =>
-      this.getServiceOperationNameOptions.next(value)
-    );
+    this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
+      this.getServiceOperationNameOptions.next(value);
+      this.updateOperationNameInPrintField(value);
+    });
+  }
+
+  private updateOperationNameInPrintField(value: SelectOptionUi[]) {
+    const operationsField = this.cleanFields
+      .find((item) => item?.fieldGroup?.[0]?.key === "service")
+      ?.fieldGroup[0].fieldGroup?.find(
+        (item) => item.key === "operations"
+        // @ts-ignore
+      ).fieldArray?.fieldGroup[0]?.props;
+    operationsField.options = value;
+  }
+
+  private updateServiceVersionInPrintField(value: SelectOptionUi[]) {
+    const versionProps = this.cleanFields.find(
+      (item) => item?.fieldGroup?.[0]?.key === "service"
+    )?.fieldGroup[0].fieldGroup[1].fieldGroup[1].props;
+    versionProps.options = value;
   }
 
   private showAtomFeedInfo(field) {
