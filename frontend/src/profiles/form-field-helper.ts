@@ -24,6 +24,7 @@ export interface Options {
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
+  hideInPreview?: boolean;
 }
 
 export interface DatePickerOptions extends Options {
@@ -424,6 +425,7 @@ export class FormFieldHelper {
         hintStart: options?.hintStart,
         keydown: options?.keydown,
         placeholder: options?.placeholder,
+        hideInPreview: options?.hideInPreview ?? false,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",

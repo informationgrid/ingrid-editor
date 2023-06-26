@@ -378,6 +378,7 @@ export abstract class IngridShared extends BaseDoctype {
           wrappers: ["panel", "button", "form-field"],
           placeholder: "Bitte eingeben",
           hintStart: "Mehrere Schlagworte durch Komma trennen",
+          hideInPreview: true,
           buttonConfig: {
             text: "Analysieren",
             onClick: async (buttonConfig, field) => {

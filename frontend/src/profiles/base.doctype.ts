@@ -264,12 +264,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     const excludedTypes = ["updateGetCapabilities"];
     fields?.forEach((field) => {
       if (field.fieldGroup) {
-        this.createFieldsForPrint(field.fieldGroup);
+        field.fieldGroup = this.createFieldsForPrint(field.fieldGroup);
       }
       if (field.fieldArray) {
-        this.createFieldsForPrint(
-          (<FormlyFieldConfig>field.fieldArray).fieldGroup
-        );
+        (<FormlyFieldConfig>field.fieldArray).fieldGroup =
+          this.createFieldsForPrint(
+            (<FormlyFieldConfig>field.fieldArray).fieldGroup
+          );
       }
       if (field.props?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
@@ -297,9 +298,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.type += "Print";
       }
     });
-    return fields?.filter(
-      (field) => !excludedTypes.includes(<string>field.type)
-    );
+    // TODO: remove excludedTypes and use hideInPreview instead
+    return fields
+      ?.filter((field) => !excludedTypes.includes(<string>field.type))
+      ?.filter((field) => !field.props?.hideInPreview);
   }
 
   private calcIsDifferent(field, diffObj): boolean {
