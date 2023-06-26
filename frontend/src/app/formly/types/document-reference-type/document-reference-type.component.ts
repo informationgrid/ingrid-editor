@@ -119,6 +119,8 @@ export class DocumentReferenceTypeComponent
   }
 
   async openReference(item: DocumentReference | UrlReference) {
+    if (this.formControl.disabled) return;
+
     if (item.isExternalRef) {
       window.open((<UrlReference>item).url, "_blank");
     } else {

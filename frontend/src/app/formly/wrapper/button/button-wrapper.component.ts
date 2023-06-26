@@ -1,14 +1,6 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-  ViewChild,
-} from "@angular/core";
+import { Component } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
+
 @Component({
   selector: "ige-button",
   templateUrl: "./button-wrapper.component.html",
