@@ -165,6 +165,7 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addTextArea("description", "Beschreibung", this.id, {
             required: true,
+            rows: 6,
           }),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",

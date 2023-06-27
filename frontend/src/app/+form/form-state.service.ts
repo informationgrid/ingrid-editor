@@ -10,7 +10,7 @@ import { transaction } from "@datorama/akita";
 export class FormStateService {
   private form: UntypedFormGroup;
   private textareaElementsRows: any = {};
-  private readonly fontSize = 16;
+  private readonly lineHeight = 24;
 
   private resizeObserver = new ResizeObserver((entries) =>
     this.storeTextareaElementsHeight(entries)
@@ -51,7 +51,7 @@ export class FormStateService {
       let height = (<HTMLTextAreaElement>entry.target).offsetHeight;
       let styleHeight = (<HTMLTextAreaElement>entry.target).style.height;
       if (styleHeight !== "") {
-        const rows = Math.floor(height / this.fontSize);
+        const rows = Math.round(height / this.lineHeight);
         this.textareaElementsRows[entry.target.id] =
           rows <= 3 ? undefined : rows;
 

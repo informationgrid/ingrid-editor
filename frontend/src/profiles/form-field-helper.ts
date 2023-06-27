@@ -174,7 +174,7 @@ export class FormFieldHelper {
    */
   addTextArea(id, label, elementIdPrefix, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       type: "textarea",
       // className: id,
@@ -185,9 +185,9 @@ export class FormFieldHelper {
         externalLabel: label,
         label: options?.fieldLabel,
         autosize: false,
-        autosizeMinRows: 3,
+        rows: options?.rows ?? "3",
         attributes: {
-          style: "resize:vertical;min-height:54px",
+          style: "resize:vertical;",
         },
         appearance: "outline",
         required: options?.required,
