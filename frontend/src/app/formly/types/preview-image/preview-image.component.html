@@ -1,4 +1,4 @@
-<div class="image-container flex-row gap-12">
+<div *ngIf="field.fieldGroup.length" class="image-container flex-row gap-12">
     <mat-card *ngFor="let field of field.fieldGroup; let i = index">
         <!-- when switching between same datasets, the model might not be initialized for a short time -->
         <ng-container *ngIf="model">
