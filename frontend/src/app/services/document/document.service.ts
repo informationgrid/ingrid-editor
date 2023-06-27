@@ -37,6 +37,7 @@ import {
 import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { TagRequest } from "../../models/tag-request.model";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -56,7 +57,6 @@ export class DocumentService {
 
   private configuration: Configuration;
   private alternateAddressTitle: (IgeDocument) => string = null;
-
   constructor(
     private http: HttpClient,
     private configService: ConfigService,
@@ -70,7 +70,8 @@ export class DocumentService {
     private addressTreeStore: AddressTreeStore,
     private researchService: ResearchService,
     private translocoService: TranslocoService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private snackBar: MatSnackBar
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -255,23 +256,42 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return DocumentService.trimObjectAndRemoveEvilTags(data);
+    return this.trimObjectAndRemoveEvilTags(data);
   }
 
-  private static trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
+  private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
     const trimmed = JSON.stringify(obj, (key, value) => {
       return typeof value === "string"
-        ? DocumentService.removeEvilTags(value.trim())
+        ? this.removeEvilTags(value.trim())
         : value;
     });
     return JSON.parse(trimmed);
   }
 
-  private static removeEvilTags(val: String) {
-    return val.replace(
-      /<(?!b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+  private removeEvilTags(val: String) {
+    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
+    let processed = val.replace(
+      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
       ""
     );
+    // strip anchors with javascript
+    processed = processed.replace(
+      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
+      ""
+    );
+    // remove all event handlers
+    processed = processed.replace(/ on\w+="[^"]*"/g, "");
+
+    if (processed !== val) {
+      this.snackBar.open(
+        "Ihre Eingabe wurde gespeichert. Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
+        "OK",
+        {
+          duration: 5000,
+        }
+      );
+    }
+    return processed;
   }
 
   postSaveActions(saveOptions: SaveOptions) {
