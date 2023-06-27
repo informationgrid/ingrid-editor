@@ -1141,7 +1141,19 @@ export abstract class IngridShared extends BaseDoctype {
       this.addSelectInline("type", "Typ", {
         showSearch: true,
         required: true,
-        options: this.getCodelistForSelect(2000, "type"),
+        options: this.getCodelistForSelect(2000, "type").pipe(
+          map((data) => {
+            const mappedDoctype = this.mapDocumentTypeToClass(this.id);
+            return data.filter((item) => {
+              return (
+                this.codelistQuery
+                  .getCodelistEntryByKey("2000", item.value)
+                  .data?.split(",")
+                  ?.indexOf(mappedDoctype) !== -1
+              );
+            });
+          })
+        ),
         codelistId: 2000,
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
@@ -1428,5 +1440,24 @@ export abstract class IngridShared extends BaseDoctype {
       thesaurus: "Freie Schlagworte",
       alreadyExists: exists,
     };
+  }
+
+  private mapDocumentTypeToClass(id: string) {
+    switch (id) {
+      case "InGridSpecialisedTask":
+        return "0";
+      case "InGridGeoDataset":
+        return "1";
+      case "InGridLiterature":
+        return "2";
+      case "InGridGeoService":
+        return "3";
+      case "InGridProject":
+        return "4";
+      case "InGridDataCollection":
+        return "5";
+      case "InGridInformationSystem":
+        return "6";
+    }
   }
 }
