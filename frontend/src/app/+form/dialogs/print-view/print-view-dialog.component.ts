@@ -1,7 +1,20 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
-import { FormlyFormOptions } from "@ngx-formly/core";
+import { FormlyFormOptions, FormlyModule } from "@ngx-formly/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { AngularSplitModule } from "angular-split";
+import { MatButtonModule } from "@angular/material/button";
+import { NgIf } from "@angular/common";
+import {
+  MixedCdkDragDropModule,
+  MixedDragDropConfig,
+} from "angular-mixed-cdk-drag-drop";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
@@ -12,6 +25,18 @@ import { FormlyFormOptions } from "@ngx-formly/core";
       }
     `,
   ],
+  providers: [MixedDragDropConfig],
+  imports: [
+    MatDialogModule,
+    MatIconModule,
+    MatButtonToggleModule,
+    FormlyModule,
+    AngularSplitModule,
+    MatButtonModule,
+    NgIf,
+    MixedCdkDragDropModule,
+  ],
+  standalone: true,
 })
 export class PrintViewDialogComponent {
   profile: any;

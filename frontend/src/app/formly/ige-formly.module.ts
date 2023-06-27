@@ -290,6 +290,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     GeothesaurusWfsgndeComponent,
     FormErrorComponent,
     MixedCdkDragDropModule,
+    PrintViewDialogComponent,
   ],
   providers: [
     {
@@ -336,7 +337,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
     PrintTypeComponent,
-    PrintViewDialogComponent,
     DocumentReferenceTypeComponent,
     SelectGeoDatasetDialog,
     SelectCswRecordDialog,
