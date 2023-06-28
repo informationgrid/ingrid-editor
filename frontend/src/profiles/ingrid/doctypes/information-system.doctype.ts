@@ -83,7 +83,12 @@ export class InformationSystemDoctype extends IngridShared {
           className: "optional",
           fields: [
             this.addInputInline("name", "Name", { required: true }),
-            this.addInputInline("url", "URL", { required: true }),
+            this.addInputInline("url", "URL", {
+              required: true,
+              validators: {
+                validation: ["url"],
+              },
+            }),
             this.addInputInline("description", "Erläuterung"),
           ],
         }),
