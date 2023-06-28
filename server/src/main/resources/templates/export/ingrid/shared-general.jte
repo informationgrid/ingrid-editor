@@ -72,8 +72,9 @@
                 </gmd:CI_Contact>
             </gmd:contactInfo>
             <gmd:role>
-                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                                 codeListValue="pointOfContact" />
+                <gmd:CI_RoleCode
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                        codeListValue="pointOfContact"/>
             </gmd:role>
         </idf:idfResponsibleParty>
     @endif
@@ -506,13 +507,9 @@
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
                 </srv:operationDescription>
                 @endif
-                <srv:connectPoint>
-                    <gmd:CI_OnlineResource>
-                        <gmd:linkage>
-                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
-                        </gmd:linkage>
-                    </gmd:CI_OnlineResource>
-                </srv:connectPoint>
+                <srv:invocationName>
+                    <gco:CharacterString>${operation.getMethodCall()}</gco:CharacterString>
+                </srv:invocationName>
             </srv:SV_OperationMetadata>
         </srv:containsOperations>
     @endfor

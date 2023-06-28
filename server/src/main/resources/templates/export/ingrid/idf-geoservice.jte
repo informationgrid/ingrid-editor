@@ -99,4 +99,4 @@
         </gmd:DQ_DataQuality>
     </gmd:dataQualityInfo>
     <idf:hasAccessConstraint>${page.getHasAccessConstraint()}</idf:hasAccessConstraint>
-`, abstract_text = page.getDescription())
+`, abstract_text = page.getAbstractText())

@@ -41,6 +41,7 @@ class GeodataserviceModelTransformer constructor(
             return description.removeSuffix(";")
         }
 
+    val abstractText = model.data.description ?: "";
     val history = data.service?.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
     val hasAccessConstraint = model.data.service?.hasAccessConstraints ?: false
