@@ -24,6 +24,7 @@ import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormPluginsService } from "src/app/+form/form-shared/form-plugins.service";
+import { ConfigService } from "../../../../services/config/config.service";
 
 @Injectable()
 export class AssignedUserBehaviour extends Plugin {
@@ -32,6 +33,7 @@ export class AssignedUserBehaviour extends Plugin {
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
+  private isPrivileged: boolean;
 
   constructor(
     private modal: ModalService,
@@ -42,11 +44,15 @@ export class AssignedUserBehaviour extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
+    private configService: ConfigService,
     private toast: MatSnackBar,
     private dialog: MatDialog
   ) {
     super();
     inject(FormPluginsService).registerPlugin(this);
+
+    let role = configService.$userInfo.getValue().role;
+    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
   }
 
   formMenuId: MenuId;
@@ -69,21 +75,24 @@ export class AssignedUserBehaviour extends Plugin {
       ? this.addressTreeQuery
       : this.documentTreeQuery;
 
-    const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
-      const button = {
-        title: "Verantwortlichkeit ändern",
-        name: "assign-user",
-        action: () =>
-          this.docEventsService.sendEvent({
-            type: "OPEN_ASSIGN_USER_DIALOG",
-            data: { id: doc.id },
-          }),
-      };
-      // refresh menu item
-      this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
-      this.formMenuService.addMenuItem(this.formMenuId, button);
-    });
-    this.subscriptions.push(onDocLoad);
+    // only add menu item in form if user is privileged
+    if (this.isPrivileged) {
+      const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
+        const button = {
+          title: "Verantwortlichkeit ändern",
+          name: "assign-user",
+          action: () =>
+            this.docEventsService.sendEvent({
+              type: "OPEN_ASSIGN_USER_DIALOG",
+              data: { id: doc.id },
+            }),
+        };
+        // refresh menu item
+        this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
+        this.formMenuService.addMenuItem(this.formMenuId, button);
+      });
+      this.subscriptions.push(onDocLoad);
+    }
 
     // add menu item for user management
     let selectedUser: User;
