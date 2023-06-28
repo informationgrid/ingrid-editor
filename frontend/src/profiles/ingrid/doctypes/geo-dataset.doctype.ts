@@ -54,7 +54,7 @@ export class GeoDatasetDoctype extends IngridShared {
               const currentCatalog =
                 this.configService.$userInfo.value.currentCatalog;
               const namespace =
-                currentCatalog.settings.config.namespace ??
+                currentCatalog.settings.config?.namespace ??
                 `https://registry.gdi-de.org/id/${currentCatalog.id}/`;
               return value?.indexOf("://") >= 0
                 ? ""

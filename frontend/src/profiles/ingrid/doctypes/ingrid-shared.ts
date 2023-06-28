@@ -541,7 +541,7 @@ export abstract class IngridShared extends BaseDoctype {
   addSpatialSection() {
     const defaultSpatial =
       this.configService.$userInfo.value.currentCatalog.settings.config
-        .spatialReference;
+        ?.spatialReference;
     return this.addSection("Raumbezug", [
       this.addGroupSimple(
         "spatial",
