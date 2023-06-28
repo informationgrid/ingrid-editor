@@ -772,6 +772,7 @@ export abstract class IngridShared extends BaseDoctype {
         ),
         this.addTextArea("description", "Erläuterungen", "dataset", {
           className: "optional flex-1",
+          contextHelpId: "maintenanceNote",
         }),
       ]),
     ]);
