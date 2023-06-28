@@ -318,7 +318,7 @@ open class IngridModelTransformer constructor(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || data.references != null
     }
 
     fun hasCompleteVerticalExtent(): Boolean {

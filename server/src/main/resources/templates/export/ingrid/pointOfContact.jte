@@ -72,7 +72,7 @@
                 <gmd:role>
                     <gmd:CI_RoleCode
                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                            codeListValue="pointOfContact" />
+                            codeListValue="resourceProvider"/>
                 </gmd:role>
                 <idf:hierarchyParty uuid="${address.getModel().getUuid()}">
                     @if(address.getIndividualName() != null )

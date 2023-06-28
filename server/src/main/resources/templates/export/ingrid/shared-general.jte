@@ -227,7 +227,7 @@
         <gmd:graphicOverview>
             <gmd:MD_BrowseGraphic>
                 <gmd:fileName>
-                    <gco:CharacterString>${graphicOverview.getFileName().getValue()}</gco:CharacterString>
+                    <gco:CharacterString>${graphicOverview.getFileName().getUri()}</gco:CharacterString>
                 </gmd:fileName>
                 @if( graphicOverview.getFileDescription() != null)
                 <gmd:fileDescription>
