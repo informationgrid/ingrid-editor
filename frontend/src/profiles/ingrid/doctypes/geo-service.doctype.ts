@@ -129,8 +129,8 @@ export class GeoServiceDoctype extends IngridShared {
                   return (
                     !model ||
                     model._type !== "InGridGeoService" ||
-                    model.service.type?.key !== "2" ||
-                    field.model.some((item) => item?.name?.key === "1")
+                    model.service?.type?.key !== "2" ||
+                    field.model?.some((item) => item?.name?.key === "1")
                   );
                 },
                 message:
