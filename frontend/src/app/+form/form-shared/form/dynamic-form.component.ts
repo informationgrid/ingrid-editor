@@ -411,6 +411,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       }
 
+      this.formOptions.resetModel(data);
       this.model = data;
       this.prepareForm(data.hasWritePermission && !this.readonly);
 
