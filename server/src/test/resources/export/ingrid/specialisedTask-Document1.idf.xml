@@ -83,7 +83,7 @@
                                 </gmd:CI_Contact>
                             </gmd:contactInfo>
                             <gmd:role>
-                                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="resourceProvider"/>
                             </gmd:role>
                             <idf:hierarchyParty uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
