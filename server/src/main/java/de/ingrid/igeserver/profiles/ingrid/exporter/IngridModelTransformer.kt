@@ -76,8 +76,11 @@ open class IngridModelTransformer constructor(
 
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
-    val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(if (it.fileName.asLink) it.fileName.uri else config.uploadExternalUrl + it.fileName.uri, it.fileDescription) }
-        ?: emptyList()
+    val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(
+        if (it.fileName.asLink) it.fileName.uri 
+        else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+        it.fileDescription
+    )} ?: emptyList()
 
     data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
 
