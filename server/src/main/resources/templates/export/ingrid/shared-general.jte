@@ -5,6 +5,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
+@import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
@@ -223,15 +224,15 @@
             </gmd:MD_MaintenanceInformation>
         </gmd:resourceMaintenance>
         @endif
-        @for( GraphicOverview graphicOverview : page.getGraphicOverviews())
+        @for( BrowseGraphic browseGraphic : page.getBrowseGraphics())
         <gmd:graphicOverview>
             <gmd:MD_BrowseGraphic>
                 <gmd:fileName>
-                    <gco:CharacterString>${graphicOverview.getFileName().getUri()}</gco:CharacterString>
+                    <gco:CharacterString>${browseGraphic.getUri()}</gco:CharacterString>
                 </gmd:fileName>
-                @if( graphicOverview.getFileDescription() != null)
+                @if( browseGraphic.getDescription() != null)
                 <gmd:fileDescription>
-                    <gco:CharacterString>${graphicOverview.getFileDescription()}</gco:CharacterString>
+                    <gco:CharacterString>${browseGraphic.getDescription()}</gco:CharacterString>
                 </gmd:fileDescription>
                 @endif
             </gmd:MD_BrowseGraphic>

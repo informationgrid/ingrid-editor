@@ -76,7 +76,10 @@ open class IngridModelTransformer constructor(
 
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
-    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String? )
+    val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(if (it.fileName.asLink) it.fileName.uri else config.uploadExternalUrl + it.fileName.uri, it.fileDescription) }
+        ?: emptyList()
+
+    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
 
     val useConstraints = data.resource?.useConstraints?.map {
         // special case for "Es gelten keine Bedingungen"
@@ -137,7 +140,7 @@ open class IngridModelTransformer constructor(
     open val hierarchyLevelName: String? = "job"
     open val mdStandardName = "ISO19115"
     open val mdStandardVersion = "2003/Cor.1:2006"
-    open val identificationType =  "gmd:MD_DataIdentification"
+    open val identificationType = "gmd:MD_DataIdentification"
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValueModel(it, null)) }
@@ -147,7 +150,8 @@ open class IngridModelTransformer constructor(
     val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
 
 
-    val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso")} ?: emptyList()
+    val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso") }
+        ?: emptyList()
     val spatialResolution = data.resolution ?: emptyList()
 
 
@@ -207,7 +211,8 @@ open class IngridModelTransformer constructor(
     )
 
     val serviceTypeKeywords = Thesaurus(
-        keywords = data.service?.classification?.map { Keyword(name = codelists.getValue("5200", it, "iso"), link = null) } ?: emptyList(),
+        keywords = data.service?.classification?.map { Keyword(name = codelists.getValue("5200", it, "iso"), link = null) }
+            ?: emptyList(),
         date = "2008-06-01",
         name = "Service Classification, version 1.0"
     )
@@ -216,14 +221,16 @@ open class IngridModelTransformer constructor(
         name = "German Environmental Classification - Topic, version 1.0"
     )
     val inspirePriorityKeywords = Thesaurus(
-        keywords = data.priorityDatasets?.map { Keyword(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) } ?: emptyList(),
+        keywords = data.priorityDatasets?.map { Keyword(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) }
+            ?: emptyList(),
         date = "2018-04-04",
         name = "INSPIRE priority data set",
         link = "http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset",
         showType = false
     )
     val spatialScopeKeyword = Thesaurus(
-        keywords = data.spatialScope?.let { listOf(Keyword(name = codelists.getValue("6360", it),link = codelists.getDataField("6360", it.key, "url")))  } ?: emptyList(),
+        keywords = data.spatialScope?.let { listOf(Keyword(name = codelists.getValue("6360", it), link = codelists.getDataField("6360", it.key, "url"))) }
+            ?: emptyList(),
         date = "2019-05-22",
         name = "Spatial scope",
         link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
@@ -273,8 +280,6 @@ open class IngridModelTransformer constructor(
     val couplingType = data.service?.couplingType?.key
     val operations = data.service?.operations ?: emptyList()
     val references = data.references ?: emptyList()
-
-
 
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -329,3 +334,9 @@ open class IngridModelTransformer constructor(
 }
 
 enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }
+
+/**
+ * convert to values that used for displaying preview on portal
+ * @param uri is either an external or internal url.
+ */
+data class BrowseGraphic(val uri: String, val description: String?)
