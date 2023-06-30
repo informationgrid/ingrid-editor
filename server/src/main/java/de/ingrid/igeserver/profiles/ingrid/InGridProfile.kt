@@ -8,13 +8,22 @@ import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.DocumentAnalysis
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.model.Operator
+import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.IndexIdFieldConfig
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.DocumentTypes
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.SpatialInGrid
+import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
@@ -30,7 +39,8 @@ class InGridProfile @Autowired constructor(
     @JsonIgnore val codelistHandler: CodelistHandler,
     @JsonIgnore @Lazy val documentService: DocumentService,
     @JsonIgnore val query: QueryRepository,
-    @JsonIgnore val dateService: DateService
+    @JsonIgnore val dateService: DateService,
+    @JsonIgnore val openDataCategory: OpenDataCategory
 ) : CatalogProfile {
     companion object {
         const val id = "ingrid"
@@ -43,11 +53,53 @@ class InGridProfile @Autowired constructor(
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf()
+        return arrayOf(
+            FacetGroup(
+                "state", "Allgemein", arrayOf(
+                    Published(),
+                    ExceptFolders(),
+                    TitleSearch()
+                ),
+                viewComponent = ViewComponent.CHECKBOX,
+                combine = Operator.AND
+            ),
+            FacetGroup(
+                "spatial", "Raumbezug", arrayOf(
+                    SpatialInGrid()
+                ),
+                viewComponent = ViewComponent.SPATIAL
+            ),
+            FacetGroup(
+                "timeRef", "Zeitbezug", arrayOf(
+                    TimeSpan()
+                ),
+                viewComponent = ViewComponent.TIMESPAN
+            ),
+            FacetGroup(
+                "docType", "Datensatztyp", arrayOf(
+                    DocumentTypes()
+                ),
+                viewComponent = ViewComponent.SELECT
+            ),
+            FacetGroup(
+                "openDataCategory", "OpenData Kategorie", arrayOf(
+                    openDataCategory
+                ),
+                viewComponent = ViewComponent.SELECT
+            ),
+        )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf()
+        return arrayOf(
+            FacetGroup(
+                "state", "Allgemein", arrayOf(
+                    Published(),
+                    ExceptFolders()
+                ),
+                viewComponent = ViewComponent.CHECKBOX
+            )
+        )
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
@@ -204,7 +256,8 @@ class InGridProfile @Autowired constructor(
             name = "Alle Dokumente ohne Adressreferenzen"
             description = "Zeigt alle Dokumente an, die keine Adresse angegeben haben"
             data = jacksonObjectMapper().createObjectNode().apply {
-                put("sql", """
+                put(
+                    "sql", """
                 SELECT document1.*, document_wrapper.category
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid
                 WHERE document1.is_latest = true AND document_wrapper.category = 'data'
@@ -245,16 +298,15 @@ class InGridProfile @Autowired constructor(
                     }
                 }
             }
-        
+
         removeReferencesFromDatasets(report.references, notExistingCoupledResources)
     }
 
     private fun removeReferencesFromDatasets(refs: List<DocumentAnalysis>, uuids: MutableList<String>) {
         refs.forEach { ref ->
-            ref.document.data.get("service")?.let { 
+            ref.document.data.get("service")?.let {
                 val coupledResources = it.get("coupledResources") as ArrayNode
                 coupledResources.removeAll { node -> node.get("uuid")?.asText() in uuids }
-                
             }
         }
     }
