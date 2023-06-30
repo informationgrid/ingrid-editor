@@ -6,7 +6,13 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "../table/upload-files-dialog/upload-files-dialog.component";
-import { distinctUntilChanged, filter, startWith, tap } from "rxjs/operators";
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  startWith,
+  tap,
+} from "rxjs/operators";
 import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component";
 import {
   FormDialogComponent,
@@ -19,6 +25,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { IgeError } from "../../../models/ige-error";
 
 @UntilDestroy()
 @Component({
@@ -177,7 +184,17 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       const docUuid = this.formControl.root.value._uuid;
       return this.uploadService
         .getFile(docUuid, uri)
-        .pipe(tap((hash) => this.addUploadUri(uri, hash)))
+        .pipe(
+          tap((hash) => this.addUploadUri(uri, hash)),
+          catchError((error) => {
+            console.log(error);
+            const igeError = new IgeError(
+              "Das Bild konnte auf dem Server nicht mehr gefunden werden"
+            );
+            igeError.detail = error.message;
+            throw igeError;
+          })
+        )
         .subscribe(() => this.cdr.detectChanges());
     });
     this.cdr.detectChanges();
