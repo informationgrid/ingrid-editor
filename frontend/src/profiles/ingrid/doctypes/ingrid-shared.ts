@@ -174,15 +174,11 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             validators: {
               atLeastOneMD: {
-                expression: (ctrl) => {
-                  if (ctrl.value != undefined) {
-                    for (const address of ctrl.value) {
-                      // equals Ansprechpartner MD
-                      if (address.type?.key === "12") return true;
-                    }
-                  }
-                  return false;
-                },
+                expression: (ctrl) =>
+                  // equals Ansprechpartner MD
+                  ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key === "12")
+                    : false,
                 message: "Es muss mindestens einen Ansprechpartner MD geben.",
               },
             },
