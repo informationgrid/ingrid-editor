@@ -7,23 +7,32 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
 })
 export class FormPluginsService {
   plugins: Plugin[] = [];
+  initWithAddress: boolean = null;
 
   constructor(private behaviourService: BehaviourService) {
     behaviourService.registerState$.subscribe((value) =>
-      value.register ? this.init(value.address) : this.unregisterAll()
+      value.register
+        ? this.init(this.plugins, value.address)
+        : this.unregisterAll()
     );
   }
 
   registerPlugin(plugin: Plugin) {
     this.plugins.push(plugin);
+
+    // register late plugins, which were not ready during initialization
+    if (this.initWithAddress !== null) {
+      this.init([plugin], this.initWithAddress);
+    }
   }
 
-  private init(forAddress: boolean) {
-    this.behaviourService.applyActiveStates(this.plugins);
+  private init(plugins: Plugin[], forAddress: boolean) {
+    this.initWithAddress = forAddress;
+    this.behaviourService.applyActiveStates(plugins);
 
-    this.plugins.forEach((p) => p.setForAddress(forAddress));
+    plugins.forEach((p) => p.setForAddress(forAddress));
 
-    this.plugins
+    plugins
       .filter((p) => p.isActive)
       .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
       .forEach((p) => p.register());
