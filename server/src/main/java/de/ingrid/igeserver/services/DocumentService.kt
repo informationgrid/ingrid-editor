@@ -262,11 +262,12 @@ class DocumentService @Autowired constructor(
         data: JsonNode,
         parentId: Int?,
         address: Boolean = false,
-        publish: Boolean = false
+        publish: Boolean = false,
+        initiator: InitiatorAction = InitiatorAction.DEFAULT
     ): DocumentData {
         (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(data)
-        return createDocument(principal, catalogId, document, parentId, address, publish)
+        return createDocument(principal, catalogId, document, parentId, address, publish, initiator)
 
     }
 

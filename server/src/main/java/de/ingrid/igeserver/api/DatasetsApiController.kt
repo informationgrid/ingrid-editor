@@ -244,7 +244,7 @@ class DatasetsApiController @Autowired constructor(
         ).forEach { objectNode.remove(it) }
 
         val copiedParent =
-            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false)
+            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false, InitiatorAction.COPY)
 
         addMetadataToDocument(copiedParent)
 
