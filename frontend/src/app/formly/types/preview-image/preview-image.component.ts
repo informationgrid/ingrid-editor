@@ -54,7 +54,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       key: "fileName",
       type: "upload",
       props: {
-        label: "URI",
+        label: "URL",
         appearance: "outline",
         onClick: (docUuid, uri, $event) => {
           // this.uploadService.downloadFile(docUuid, uri, $event);
