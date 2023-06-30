@@ -7,7 +7,7 @@
 
 <div
     *ngIf="addresses.length > 0"
-    class="address-cards flex-row flex-wrap gap-24"
+    class="address-cards flex-row flex-wrap gap-24 row-gap-12"
     cdkDropList
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)"

@@ -233,6 +233,18 @@ export class FormFieldHelper {
               : false,
           message: "Alle Adressen müssen veröffentlicht sein",
         },
+        atLeastOneMD: {
+          expression: (ctrl) => {
+            if (ctrl.value != undefined) {
+              for (const address of ctrl.value) {
+                // equals Ansprechpartner MD
+                if (address.type?.key === "12") return true;
+              }
+            }
+            return false;
+          },
+          message: "Es muss mindestens einen Ansprechpartner MD geben.",
+        },
         ...options?.validators,
       },
     };
