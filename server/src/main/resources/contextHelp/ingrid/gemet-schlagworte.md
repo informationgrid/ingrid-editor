@@ -22,7 +22,7 @@ In diesem Feld kann der GEMET (GEneral Multilingual Environmental Thesaurus) dur
 
 ## Beispiel:
 
-Naturschutz, Schmetterling, Kartierung, Artenschutz
+Hochseefischerei, Plankton, Umweltabgaben, Bodenökologie
 
 # ISO Abbildung
 

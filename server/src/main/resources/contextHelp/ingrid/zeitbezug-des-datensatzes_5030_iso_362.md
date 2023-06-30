@@ -18,7 +18,7 @@ title: Zeitbezug des Datensatzes (der Ressource)
 
 # Zeitbezug des Datensatzes (der Ressource)
 
-Angabe, wann der Datensatz erstellt, revidiert und/oder publiziert wurde.
+Angabe, wann der Datensatz erstellt, geändert und/oder publiziert wurde.
 
 ## Beispiel:
 
