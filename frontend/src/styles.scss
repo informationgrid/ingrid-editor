@@ -752,11 +752,11 @@ ige-root .mat-drawer-container {
     border: 1px solid $ige-background;
 
     &.intranet {
-      background-color: $error-color;
+      background-color: $ige-primary;
     }
 
     &.amtsintern {
-      background-color: $ige-primary;
+      background-color: $error-color;
     }
   }
 }
