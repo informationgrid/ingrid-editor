@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
+import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -97,6 +100,8 @@ class DocumentService @Autowired constructor(
     @Autowired
     private lateinit var entityManager: EntityManager
 
+    private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
+
     private var log = logger()
 
     /**
@@ -110,7 +115,11 @@ class DocumentService @Autowired constructor(
 
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
-    fun getWrapperByCatalogAndDocumentUuid(catalogIdentifier: String, uuid: String, includeDeleted: Boolean = false): DocumentWrapper {
+    fun getWrapperByCatalogAndDocumentUuid(
+        catalogIdentifier: String,
+        uuid: String,
+        includeDeleted: Boolean = false
+    ): DocumentWrapper {
         try {
             return if (includeDeleted) {
                 docWrapperRepo.findByCatalogAndUuidIncludingDeleted(catalogIdentifier, uuid)
@@ -169,7 +178,10 @@ class DocumentService @Autowired constructor(
             doc.wrapperId = wrapper.id
             doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
+            return expandInternalReferences(
+                doc,
+                options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
+            )
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
@@ -300,6 +312,16 @@ class DocumentService @Autowired constructor(
         if (parentId != null) {
             val permission = aclService.getPermissionInfo(principal as Authentication, parentId)
             if (!permission.canWrite && !permission.canOnlyWriteSubtree) {
+                throw AccessDeniedException("No rights to create document")
+            }
+        } else {
+            // check for root node permission
+            val isSuperOrCatAdmin = authUtils.isAdmin(principal)
+            val hasRootWrite = checkForRootPermissions(
+                sidRetrievalStrategy.getSids(principal as Authentication),
+                listOf(BasePermission.WRITE)
+            )
+            if (!isSuperOrCatAdmin && !hasRootWrite) {
                 throw AccessDeniedException("No rights to create document")
             }
         }
@@ -505,7 +527,8 @@ class DocumentService @Autowired constructor(
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
-        } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */ }
+        } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */
+        }
     }
 
     @Transactional(noRollbackFor = [PostSaveException::class])
@@ -581,7 +604,8 @@ class DocumentService @Autowired constructor(
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
             contentModifiedByUser = actualUser ?: contentModifiedByUser
-            contentmodifiedby = if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else contentmodifiedby
+            contentmodifiedby =
+                if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else contentmodifiedby
             contentmodified = if (actualUser != null) dateService.now() else contentmodified
         }
         return dbDocument
@@ -716,7 +740,10 @@ class DocumentService @Autowired constructor(
     fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         entityManager.detach(doc)
-        return expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport))
+        return expandInternalReferences(
+            doc,
+            options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
+        )
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {
@@ -843,7 +870,8 @@ class DocumentService @Autowired constructor(
 
     fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
-        val cleanedTags = wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+        val cleanedTags =
+            wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags
