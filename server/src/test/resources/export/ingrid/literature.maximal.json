@@ -1,236 +1,116 @@
 {
-  "title": "Test-Literatur",
-  "_id": 1,
-  "_uuid": "8172829b-fba9-4496-9651-9486bef69316",
+  "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4393a7be",
+  "title": "literatur_maximal_test",
   "_type": "InGridLiterature",
-  "_created": "2023-07-03T12:10:23.023171Z",
-  "_createdBy": "Mike Cat-Miller",
-  "_modified": "2023-07-03T12:47:09.942217Z",
-  "_contentModified": "2023-07-03T12:47:09.945291Z",
-  "_contentModifiedBy": "Mike Cat-Miller",
-  "_version": 25,
-  "_state": "P",
-  "data": {
-    "isOpenData": true,
-    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
-    "alternateTitle": "Hier ist die Kurzbezeichnung.",
-    "description": "Hier ist die Beschreibung.",
-    "graphicOverviews": [
-      {
-        "fileName": {
-          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
-          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
-          "asLink": true
-        },
-        "fileDescription": "Hallo Flutter!"
-      }
-    ],
-    "pointOfContact": [
-      {
-        "ref": {
-          "title": "Test-Organisation",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "e34dc962-a492-4610-b802-25c9aa460225",
-          "_type": "InGridOrganisationDoc",
-          "_version": 3,
-          "_created": "2023-07-03T12:25:40.79299Z",
-          "_modified": "2023-07-03T12:26:28.079139Z",
-          "_contentModified": "2023-07-03T12:26:28.081136Z",
-          "_createdBy": "Mike Cat-Miller",
-          "_modifiedBy": "Mike Cat-Miller",
-          "_contentModifiedBy": "Mike Cat-Miller",
-          "_state": "P",
-          "_id": 3,
-          "address": {
-            "administrativeArea": {
-              "key": "4"
-            }
-          },
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "test@wemove.com"
-            }
-          ],
-          "organization": "Test-Organisation",
-          "_tags": ""
-        },
-        "type": {
-          "key": "12"
-        }
-      }
-    ],
-    "advProductGroups": [
-      {
-        "key": "4"
-      }
-    ],
-    "keywords": {
-      "gemet": [],
-      "umthes": [
-        {
-          "id": "https://sns.uba.de/umthes/TH_00008528",
-          "label": "Erdgas",
-          "alternativeLabel": null
-        }
-      ],
-      "free": [
-        {
-          "label": "Test_Schlagwort"
-        }
-      ]
-    },
-    "publication": {
-      "author": "Test-Autor",
-      "publisher": "Test Herausgeber",
-      "publishedIn": "Jahresberichte zur Abfallwirtschaft",
-      "placeOfPublication": "Hamburg",
-      "volume": "1",
-      "pages": "1",
-      "publicationDate": "2023",
-      "location": "Bibliothek Umweltbundesamt",
-      "isbn": "3-456-7889-X",
-      "publishingHouse": "econ",
-      "documentType": {
-        "key": "1"
-      },
-      "baseDataText": "Deponieüberwachung Berlin-Tegel, Statistikauswertungen seit 1974",
-      "bibliographicData": "Das Kartenwerk ist im DIN A3-Format erschienen.",
-      "explanation": "Der Artikel beruht auf der Diplomarbeit des Autors aus dem Jahr 1995 an der Universität"
-    },
-    "spatial": {
-      "references": [
-        {
-          "type": "free",
-          "title": "Hamburg, Deutschland",
-          "value": {
-            "lat1": 53.398,
-            "lat2": 54.026,
-            "lon1": 8.118,
-            "lon2": 10.344
-          }
-        }
-      ],
-      "spatialSystems": [
-        {
-          "key": "3034"
-        }
-      ],
-      "verticalExtent": {
-        "minimumValue": 1,
-        "maximumValue": 1,
-        "unitOfMeasure": {
-          "key": "9002"
-        },
-        "Datum": {
-          "key": "5105"
-        }
-      },
-      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
-    },
-    "temporal": {
-      "events": [
-        {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
-          "referenceDateType": {
-            "key": "1"
-          }
-        }
-      ],
-      "resourceDateType": {
-        "key": "at"
-      },
-      "resourceDate": "2023-06-30T22:00:00.000Z",
-      "status": {
-        "key": "1"
-      }
-    },
-    "maintenanceInformation": {
-      "maintenanceAndUpdateFrequency": {
-        "key": "9"
-      },
-      "userDefinedMaintenanceFrequency": {
-        "number": 1,
-        "unit": {
-          "key": "6"
-        }
-      },
-      "description": "Die Messungen erfolgten nur tagsüber."
-    },
-    "metadata": {
-      "language": {
-        "key": "150"
-      }
-    },
-    "dataset": {
-      "languages": [
-        "150"
-      ]
-    },
-    "extraInfo": {
-      "legalBasicsDescriptions": [
-        {
-          "key": "5"
-        }
-      ]
-    },
-    "resource": {
-      "purpose": "Grund für die Datenerhebung.",
-      "specificUsage": "Präsentation des Raumordnungsprogramms auf Basis der topografischen Kartenwerke",
-      "accessConstraints": [
-        {
-          "key": "6"
-        }
-      ],
-      "useConstraints": [
-        {
-          "title": {
-            "key": "18"
-          },
-          "source": "Quellenvermerk"
-        }
-      ],
-      "useLimitation": "Nicht für Navigationszwecke geeignet."
-    },
-    "distribution": {
-      "format": [
-        {
-          "name": {
-            "key": "24"
-          },
-          "version": "1",
-          "compression": "Test Kompressionstechnik",
-          "specification": "Test Spezifikation"
-        }
-      ]
-    },
-    "digitalTransferOptions": [
-      {
-        "name": {
-          "key": "18"
-        },
-        "transferSize": 12,
-        "mediumNote": "Test-Ort"
-      }
-    ],
-    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+  "themes": [{ "key": "317" }],
+  "dataset": { "languages": ["113"] },
+  "spatial": {
     "references": [
       {
-        "type": {
-          "key": "9990"
-        },
-        "title": "Titel des Datendownloads",
-        "url": "https://test.com",
-        "explanation": "Erläuterung des Datendownloads"
+        "type": "free",
+        "title": "Hansa, Gremmendorf, Münster-Südost, Münster, Nordrhein-Westfalen, 48155, Deutschland (allotments)",
+        "value": {
+          "lat1": 51.9419043,
+          "lat2": 51.9439881,
+          "lon1": 7.6485776,
+          "lon2": 7.652429
+        }
       }
     ],
-    "openDataCategories": [
+    "description": "location-information",
+    "spatialSystems": [{ "key": "9000002" }],
+    "verticalExtent": {
+      "Datum": { "key": "900005" },
+      "maximumValue": 8,
+      "minimumValue": 7,
+      "unitOfMeasure": { "key": "4" }
+    }
+  },
+  "keywords": {
+    "free": [
       {
-        "key": "9"
+        "label": "optional-term"
       }
     ]
+  },
+  "metadata": { "language": { "key": "182" } },
+  "resource": {
+    "purpose": "purpose1",
+    "specificUsage": "use1",
+    "useLimitation": "use-constraints",
+    "useConstraints": [{ "title": { "key": "2" }, "source": "source-5" }],
+    "accessConstraints": [{ "key": "5" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-09-06T22:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": { "key": "7" },
+    "resourceRange": {
+      "end": "2022-10-30T23:00:00.000Z",
+      "start": "2022-10-04T22:00:00.000Z"
+    },
+    "resourceDateType": { "key": "since" },
+    "resourceDateTypeSince": { "key": "exactDate" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "39" }] },
+  "orderInfo": "order location",
+  "isOpenData": false,
+  "references": [
+    {
+      "url": "https://some-url/there",
+      "type": { "key": "3535" },
+      "title": "keys",
+      "explanation": "info remarks"
+    }
+  ],
+  "description": "full-descr",
+  "publication": {
+    "isbn": "isbn",
+    "pages": "pages",
+    "author": "author",
+    "volume": "vol",
+    "location": "location",
+    "publisher": "hrsg",
+    "explanation": "addition-info",
+    "publishedIn": "which",
+    "baseDataText": "basis data",
+    "documentType": { "key": "2" },
+    "publicationDate": "year",
+    "publishingHouse": "publisher",
+    "bibliographicData": "bibl-info",
+    "placeOfPublication": "where"
+  },
+  "alternateTitle": "short-descr",
+  "pointOfContact": [
+    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "8" } }
+  ],
+  "isAdVCompatible": false,
+  "advProductGroups": [{ "key": "13" }],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "uri": "https://some-link-somewhere.com",
+        "value": "https://some-link-somewhere.com",
+        "asLink": true
+      },
+      "fileDescription": "url-description"
+    }
+  ],
+  "parentIdentifier": "ident3",
+  "digitalTransferOptions": [
+    {
+      "name": { "key": "900005" },
+      "mediumNote": "storage-location",
+      "transferSize": 65
+    }
+  ],
+  "maintenanceInformation": {
+    "description": "remarks",
+    "maintenanceAndUpdateFrequency": { "key": "1" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 3 }
   }
 }

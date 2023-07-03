@@ -1,0 +1,236 @@
+{
+  "title": "Test-Literatur",
+  "_id": 1,
+  "_uuid": "8172829b-fba9-4496-9651-9486bef69316",
+  "_type": "InGridLiterature",
+  "_created": "2023-07-03T12:10:23.023171Z",
+  "_createdBy": "Mike Cat-Miller",
+  "_modified": "2023-07-03T12:47:09.942217Z",
+  "_contentModified": "2023-07-03T12:47:09.945291Z",
+  "_contentModifiedBy": "Mike Cat-Miller",
+  "_version": 25,
+  "_state": "P",
+  "data": {
+    "isOpenData": true,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "asLink": true
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Test-Organisation",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "e34dc962-a492-4610-b802-25c9aa460225",
+          "_type": "InGridOrganisationDoc",
+          "_version": 3,
+          "_created": "2023-07-03T12:25:40.79299Z",
+          "_modified": "2023-07-03T12:26:28.079139Z",
+          "_contentModified": "2023-07-03T12:26:28.081136Z",
+          "_createdBy": "Mike Cat-Miller",
+          "_modifiedBy": "Mike Cat-Miller",
+          "_contentModifiedBy": "Mike Cat-Miller",
+          "_state": "P",
+          "_id": 3,
+          "address": {
+            "administrativeArea": {
+              "key": "4"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "test@wemove.com"
+            }
+          ],
+          "organization": "Test-Organisation",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "4"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/TH_00008528",
+          "label": "Erdgas",
+          "alternativeLabel": null
+        }
+      ],
+      "free": [
+        {
+          "label": "Test_Schlagwort"
+        }
+      ]
+    },
+    "publication": {
+      "author": "Test-Autor",
+      "publisher": "Test Herausgeber",
+      "publishedIn": "Jahresberichte zur Abfallwirtschaft",
+      "placeOfPublication": "Hamburg",
+      "volume": "1",
+      "pages": "1",
+      "publicationDate": "2023",
+      "location": "Bibliothek Umweltbundesamt",
+      "isbn": "3-456-7889-X",
+      "publishingHouse": "econ",
+      "documentType": {
+        "key": "1"
+      },
+      "baseDataText": "Deponieüberwachung Berlin-Tegel, Statistikauswertungen seit 1974",
+      "bibliographicData": "Das Kartenwerk ist im DIN A3-Format erschienen.",
+      "explanation": "Der Artikel beruht auf der Diplomarbeit des Autors aus dem Jahr 1995 an der Universität"
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Hamburg, Deutschland",
+          "value": {
+            "lat1": 53.398,
+            "lat2": 54.026,
+            "lon1": 8.118,
+            "lon2": 10.344
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "3034"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "9002"
+        },
+        "Datum": {
+          "key": "5105"
+        }
+      },
+      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "at"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "1"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "9"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 1,
+        "unit": {
+          "key": "6"
+        }
+      },
+      "description": "Die Messungen erfolgten nur tagsüber."
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "5"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Grund für die Datenerhebung.",
+      "specificUsage": "Präsentation des Raumordnungsprogramms auf Basis der topografischen Kartenwerke",
+      "accessConstraints": [
+        {
+          "key": "6"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "18"
+          },
+          "source": "Quellenvermerk"
+        }
+      ],
+      "useLimitation": "Nicht für Navigationszwecke geeignet."
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "24"
+          },
+          "version": "1",
+          "compression": "Test Kompressionstechnik",
+          "specification": "Test Spezifikation"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "18"
+        },
+        "transferSize": 12,
+        "mediumNote": "Test-Ort"
+      }
+    ],
+    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+    "references": [
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "Titel des Datendownloads",
+        "url": "https://test.com",
+        "explanation": "Erläuterung des Datendownloads"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "9"
+      }
+    ]
+  }
+}
