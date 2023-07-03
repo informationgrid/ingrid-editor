@@ -1,95 +1,260 @@
 {
-  "_uuid": "6fa56623-6def-4438-addf-d2efc1e6ce00",
-  "title": "project_max",
+  "title": "Test-Projekt",
+  "_id": 1633,
+  "_uuid": "aa14bb31-c99b-4463-a108-1935541985f2",
   "_type": "InGridProject",
-  "themes": [{ "key": "105" }],
-  "dataset": { "languages": ["134"] },
-  "manager": "leiter",
-  "spatial": {
-    "references": [
+  "_created": "2023-07-03T15:35:09.269235Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-03T15:59:59.481464Z",
+  "_contentModified": "2023-07-03T15:59:59.481875Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 16,
+  "_state": "P",
+  "data": {
+    "_parent": 1238,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
       {
-        "type": "free",
-        "title": "Gera, Thüringen, Deutschland (administrative)",
-        "value": {
-          "lat1": 50.7986158,
-          "lat2": 50.9765857,
-          "lon1": 11.9981564,
-          "lon2": 12.1695244
+        "fileName": {
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "asLink": true
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 9,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-03T15:47:26.773386Z",
+          "_contentModified": "2023-07-03T15:47:26.7739Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Stra.",
+            "country": {
+              "key": "8"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "4"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
         }
       }
     ],
-    "description": "infos",
-    "spatialSystems": [{ "key": "9000012" }],
-    "verticalExtent": {
-      "Datum": { "key": "900005" },
-      "maximumValue": 4,
-      "minimumValue": 3,
-      "unitOfMeasure": { "key": "9001" }
-    }
-  },
-  "keywords": {
-    "free": [
+    "advProductGroups": [
       {
-        "label": "optional"
-      }
-    ]
-  },
-  "metadata": { "language": { "key": "126" } },
-  "resource": {
-    "purpose": "asb",
-    "specificUsage": "fds",
-    "useLimitation": "einschraenkungen",
-    "useConstraints": [{ "title": { "key": "10" }, "source": "source" }],
-    "accessConstraints": [{ "key": "6" }]
-  },
-  "temporal": {
-    "events": [
-      {
-        "referenceDate": "2023-01-31T23:00:00.000Z",
-        "referenceDateType": { "key": "2" }
+        "key": "4"
       }
     ],
-    "status": { "key": "2" },
-    "resourceDate": "2023-02-12T23:00:00.000Z",
-    "resourceDateType": { "key": "at" }
-  },
-  "extraInfo": { "legalBasicsDescriptions": [{ "key": "61" }] },
-  "orderInfo": "order",
-  "references": [
-    {
-      "url": "https://some-download.com/some",
-      "type": { "key": "9990" },
-      "title": "download",
-      "explanation": "some more infos"
-    }
-  ],
-  "description": "descr",
-  "explanation": "info",
-  "distribution": {},
-  "participants": "teilnehmer",
-  "alternateTitle": "short descr",
-  "pointOfContact": [
-    { "ref": "83f92167-6606-4182-948c-5747ad608b80", "type": { "key": "10" } }
-  ],
-  "isAdVCompatible": true,
-  "advProductGroups": [{ "key": "8" }],
-  "graphicOverviews": [
-    {
-      "fileName": {
-        "uri": "https://some-link.com",
-        "value": "https://some-link.com",
-        "asLink": true
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/TH_00008528",
+          "label": "Erdgas",
+          "alternativeLabel": null
+        }
+      ],
+      "free": [
+        {
+          "label": "Test_Schlagwort"
+        }
+      ]
+    },
+    "participants": "BfN, BMU",
+    "manager": "Dr. Antje Robbe",
+    "explanation": "Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.",
+    "spatial": {
+      "references": [
+        {
+          "ars": "02",
+          "type": "wfsgnde",
+          "title": "Hamburg, Bundesland",
+          "value": {
+            "lat1": 53.39813,
+            "lat2": 54.02584,
+            "lon1": 8.117716,
+            "lon2": 10.344088
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        },
+        {
+          "key": "3034"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "9002"
+        },
+        "Datum": {
+          "key": "5105"
+        }
       },
-      "fileDescription": "descr"
-    }
-  ],
-  "parentIdentifier": "identificator",
-  "digitalTransferOptions": [
-    { "name": { "key": "2" }, "mediumNote": "where", "transferSize": 100 }
-  ],
-  "maintenanceInformation": {
-    "description": "more infos",
-    "maintenanceAndUpdateFrequency": { "key": "8" },
-    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 3 }
+      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "at"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "1"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "8"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 1,
+        "unit": {
+          "key": "6"
+        }
+      },
+      "description": "Die Messungen erfolgten nur tagsüber."
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "58"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Herstellungszweck",
+      "specificUsage": "Eignung/Nutzung",
+      "accessConstraints": [
+        {
+          "key": "6"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "18"
+          },
+          "source": "Quellenvermerk"
+        },
+        {
+          "title": {
+            "key": "17"
+          },
+          "source": "Quellenvermerk"
+        }
+      ],
+      "useLimitation": "Nicht für Navigationszwecke geeignet"
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "23"
+          },
+          "version": "1",
+          "compression": "test",
+          "specification": "test"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "1"
+        },
+        "transferSize": 12,
+        "mediumNote": "test"
+      }
+    ],
+    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+    "references": [
+      {
+        "type": {
+          "key": "5304"
+        },
+        "title": "Titel der Bestellung",
+        "url": "https://bestellung.com",
+        "explanation": "Beschreibung der Bestellung"
+      }
+    ]
   }
 }
