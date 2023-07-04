@@ -18,5 +18,4 @@ title: Verweisziel
 
 # Verweisziel
 
-Auswahl, ob auf Objekte des Katalogs oder auf Webseiten (URLs) verwiesen werden soll.
-
+Angabe der Webseite (URL) oder des Objekts (uuid), auf die bzw. das verwiesen werden soll.
