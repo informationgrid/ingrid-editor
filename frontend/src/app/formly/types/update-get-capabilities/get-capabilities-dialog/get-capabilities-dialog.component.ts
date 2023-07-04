@@ -1,14 +1,24 @@
 import { Component, Inject, ViewChild } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
-import { catchError, filter, finalize } from "rxjs/operators";
-import { Observable, of } from "rxjs";
+import { catchError, filter, finalize, tap } from "rxjs/operators";
+import { Observable, of, Subscription } from "rxjs";
+import { MatSelectionList } from "@angular/material/list";
 import {
-  MatSelectionList,
-  MatSelectionListChange,
-} from "@angular/material/list";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { GetCapabilitiesAnalysis } from "./get-capabilities.model";
+import {
+  PasteDialogComponent,
+  PasteDialogOptions,
+} from "../../../../+form/dialogs/copy-cut-paste/paste-dialog.component";
+import { DocumentService } from "../../../../services/document/document.service";
+import { ShortTreeNode } from "../../../../+form/sidebars/tree/tree.types";
+import { ConfigService } from "../../../../services/config/config.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
@@ -21,14 +31,30 @@ export class GetCapabilitiesDialogComponent {
   error: string;
   isAnalyzing = false;
   allChecked = false;
-  allowSubmit = false;
+  addressPath: ShortTreeNode[] = [];
+  hasWriteRootPermission = this.config.hasWriteRootPermission();
+  private parentAddress = null;
+  validAddressConstraint = true;
+  private selectSubsription: Subscription;
+  addressSelected = false;
 
   constructor(
     private getCapService: GetCapabilitiesService,
     @Inject(MAT_DIALOG_DATA) public initialUrl: string,
-    private dlg: MatDialogRef<GetCapabilitiesDialogComponent>
+    private dlg: MatDialogRef<GetCapabilitiesDialogComponent>,
+    private dialog: MatDialog,
+    private documentService: DocumentService,
+    private config: ConfigService
   ) {
     if (initialUrl) this.analyze(initialUrl);
+  }
+
+  handleSelectionChange() {
+    if (this.selectSubsription) this.selectSubsription.unsubscribe();
+
+    this.selectSubsription = this.selection.selectionChange
+      .pipe(untilDestroyed(this))
+      .subscribe(() => this.handleAddressConstraint());
   }
 
   analyze(url: string) {
@@ -42,10 +68,11 @@ export class GetCapabilitiesDialogComponent {
         filter((report) => report !== null),
         finalize(() => (this.isAnalyzing = false))
       )
-      .subscribe(
-        (report) =>
-          (this.report = this.addOriginalGetCapabilitiesUrl(report, url))
-      );
+      .subscribe((report) => {
+        this.report = this.addOriginalGetCapabilitiesUrl(report, url);
+        // delay to give time for selection-list to be initialized
+        setTimeout(() => this.handleSelectionChange());
+      });
   }
 
   private handleError(error: any): Observable<null> {
@@ -58,11 +85,12 @@ export class GetCapabilitiesDialogComponent {
       (item) => item.value
     );
     selectedValues.push("dataServiceType", "serviceType");
-    const result = Object.fromEntries(
+    let result = Object.fromEntries(
       Object.entries(this.report).filter(
         ([key]) => selectedValues.indexOf(key) !== -1
       )
     );
+    result.addressParent = this.parentAddress;
     this.dlg.close(result);
   }
 
@@ -70,24 +98,53 @@ export class GetCapabilitiesDialogComponent {
     this.allChecked = checked;
     if (checked) this.selection.selectAll();
     else this.selection.deselectAll();
-    this.handleSubmitState(this.selection.selectedOptions.selected.length);
   }
 
-  selectionChange($event: MatSelectionListChange) {
-    this.handleSubmitState($event.source.selectedOptions.selected.length);
-  }
-
-  private handleSubmitState(numOptions: number) {
-    this.allowSubmit = numOptions > 0;
+  private handleAddressConstraint() {
+    this.addressSelected = this.selection.selectedOptions.selected.some(
+      (item) => item.value === "address"
+    );
+    this.validAddressConstraint =
+      !this.addressSelected ||
+      this.report.address.exists ||
+      this.hasWriteRootPermission ||
+      this.parentAddress !== null;
   }
 
   private addOriginalGetCapabilitiesUrl(
     report: GetCapabilitiesAnalysis,
     originalUrl: string
   ) {
-    const getCapOp = report.operations.find((item) => item.name.key === "1");
+    const getCapOp = report.operations.find(
+      (item) => item.name.key === "1" || item.name.value === "GetCapabilities"
+    );
 
     getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
     return report;
+  }
+
+  changeAddressLocation() {
+    this.dialog
+      .open(PasteDialogComponent, {
+        data: <PasteDialogOptions>{
+          forAddress: true,
+          titleText: "Ordner auswählen",
+          typeToInsert: "FOLDER",
+          buttonText: "Auswählen",
+        },
+      })
+      .afterClosed()
+      .subscribe((target) => {
+        this.parentAddress = target.selection ?? null;
+        this.handleAddressConstraint();
+        if (this.parentAddress === null) {
+          this.addressPath = [];
+        } else {
+          this.documentService
+            .getPath(this.parentAddress)
+            .pipe(tap((result) => (this.addressPath = result)))
+            .subscribe();
+        }
+      });
   }
 }

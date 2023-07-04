@@ -57,7 +57,10 @@ export class GetCapabilitiesService {
       if (key === "keywords")
         model.keywords.free = (value as any[]).map((item) => ({ label: item }));
       if (key === "address")
-        model.pointOfContact = await this.handleAddress(value);
+        model.pointOfContact = await this.handleAddress(
+          value,
+          values.addressParent
+        );
       if (key === "boundingBoxes")
         model.spatial.references = this.mapBoundingBox(value);
       if (key === "conformities")
@@ -256,7 +259,7 @@ export class GetCapabilitiesService {
     };
   }
 
-  private async handleAddress(value: Address) {
+  private async handleAddress(value: Address, addressParent: number) {
     const type =
       value.firstName || value.lastName
         ? "InGridPersonDoc"
@@ -282,10 +285,11 @@ export class GetCapabilitiesService {
     const address: IgeDocument = {
       _uuid: value.uuid,
       _type: type,
-      _parent: null,
+      _parent: addressParent,
       _state: value._state,
       firstName: value.firstName,
       lastName: value.lastName,
+      organization: value.organization,
       publishArea: {
         key: "1",
       },

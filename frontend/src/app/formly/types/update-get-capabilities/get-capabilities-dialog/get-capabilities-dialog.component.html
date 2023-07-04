@@ -1,10 +1,18 @@
 <ige-dialog-template
     label="GetCapabilities-Assistent"
     (submit)="submit()"
-    [disabled]="!allowSubmit"
+    [disabled]="
+        !this.selection ||
+        this.selection.selectedOptions.isEmpty() ||
+        !this.validAddressConstraint
+    "
 >
     <ng-container content>
         <div class="flex-col centered">
+            <div *ngIf="!validAddressConstraint" class="error-box">
+                Für das Anlegen einer Adresse müssen Sie einen Ordner mit
+                Schreibrechten auswählen
+            </div>
             <div class="flex-row baselined gap-6">
                 <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>URL</mat-label>
@@ -35,10 +43,7 @@
 
         <div *ngIf="error">{{ error }}</div>
 
-        <mat-selection-list
-            *ngIf="report"
-            (selectionChange)="selectionChange($event)"
-        >
+        <mat-selection-list *ngIf="report">
             <mat-list-option *ngIf="report.title" value="title">
                 <div matListItemTitle>Titel</div>
                 <div matListItemLine>{{ report.title }}</div>
@@ -143,6 +148,15 @@
                     {{ report.address.firstName }} {{ report.address.lastName }}
                     {{ report.address.organization }}
                 </div>
+                <div *ngIf="report.address?.exists === false" matListItemLine>
+                    Wird angelegt unter:
+                    <ige-breadcrumb
+                        [path]="addressPath"
+                        rootName="Adressen"
+                        [selectable]="false"
+                        [disableRoot]="!hasWriteRootPermission"
+                    ></ige-breadcrumb>
+                </div>
             </mat-list-option>
             <mat-list-option
                 *ngIf="report.operations.length > 0"
@@ -220,5 +234,14 @@
         >
             Alles auswählen
         </mat-checkbox>
+
+        <button
+            *ngIf="report.address?.exists === false && addressSelected"
+            mat-stroked-button
+            color="primary"
+            (click)="changeAddressLocation()"
+        >
+            Adressordner wählen ...
+        </button>
     </ng-container>
 </ige-dialog-template>

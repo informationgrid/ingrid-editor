@@ -1,6 +1,8 @@
 import { DocumentState } from "../../../../models/ige-document";
 
 export interface GetCapabilitiesAnalysis {
+  addressParent: number;
+
   title: string;
   description: string;
   versions: KeyValue[];

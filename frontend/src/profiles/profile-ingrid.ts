@@ -33,6 +33,7 @@ import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/g
 import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
+import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
 
 @Component({
   template: "",
@@ -102,6 +103,7 @@ class InGridComponent {
     DatePipe,
     MatSnackBarModule,
     IsoViewComponent,
+    BreadcrumbModule,
   ],
 })
 export class ProfilePack {
