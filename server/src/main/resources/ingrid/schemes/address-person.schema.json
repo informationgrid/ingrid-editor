@@ -68,6 +68,9 @@
         },
         "hoursOfService": {
           "type": "string"
+        },
+        "hideAddress": {
+          "type": "boolean"
         }
       },
       "required": ["_uuid", "_type", "lastName", "contact"],
