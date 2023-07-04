@@ -37,10 +37,10 @@ class Project : AnnotationSpec() {
     }
 
     @Test
-    fun projectExport() {
+    fun maximalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJsonToXML(exporter, "/export/ingrid/project-Document1.json")
+        var result = exportJsonToXML(exporter, "/export/ingrid/project.sample.maximal.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
@@ -48,7 +48,7 @@ class Project : AnnotationSpec() {
 
         result shouldNotBe null
         // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/project-Document1.idf.xml")
+        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/project.expected.maximal.idf.xml")
     }
 
     @Test
