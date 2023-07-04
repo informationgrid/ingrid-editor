@@ -42,10 +42,10 @@ class Wms130CapabilitiesParser(
             // get bounding boxes of each layer and create a union
             val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
             var unionOfBoundingBoxes: LocationBean? = null
-            if (!boundingBoxesFromLayers.isEmpty()) {
+            if (boundingBoxesFromLayers.isNotEmpty()) {
                 unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
 //            TODO: if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
-                unionOfBoundingBoxes.name = "Raumbezug von: " + title
+                unionOfBoundingBoxes.name = "Raumbezug von: $title"
 //            } else {
 //                unionOfBoundingBoxes.name = "spatial extent from: " + title
 //            }
@@ -223,10 +223,10 @@ class Wms130CapabilitiesParser(
         val south = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude")
         val north = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude")
         box = LocationBean()
-        box.latitude1 = west
-        box.longitude1 = south
-        box.latitude2 = east
-        box.longitude2 = north
+        box.latitude1 = south
+        box.longitude1 = west
+        box.latitude2 = north
+        box.longitude2 = east
 
         // add a fallback for the name, since it's mandatory
         var name = xPathUtils.getString(layerNode, "wms:Name")
