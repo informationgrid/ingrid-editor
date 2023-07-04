@@ -1,0 +1,539 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": ["string", "null"]
+        },
+        "value": {
+          "type": ["string", "null"]
+        }
+      },
+      "title": "KeyValue"
+    },
+    "PointOfContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": ["ref", "type"],
+      "title": "PointOfContact"
+    },
+    "graphicOverviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "uri": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "asLink": {
+                "type": "boolean"
+              }
+            }
+          },
+          "fileDescription": {
+            "type": "string"
+          }
+        },
+        "required": ["fileName"]
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "referenceDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "referenceDateType": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "required": ["referenceDateType", "referenceDate"],
+        "title": "events"
+      },
+      "minItems": 1
+    },
+    "Spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/Spatial"
+          }
+        },
+        "description": {
+          "type": ["null", "string"]
+        },
+        "spatialSystems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        },
+        "verticalExtent": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Datum": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "maximumValue": {
+              "type": ["null", "number"]
+            },
+            "minimumValue": {
+              "type": ["null", "number"]
+            },
+            "unitOfMeasure": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/KeyValue"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "required": ["references", "spatialSystems"]
+    },
+    "Date": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [],
+      "title": "Date"
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "specificUsage": {
+          "type": "string"
+        },
+        "accessConstraints": {
+          "$ref": "#/definitions/accessConstraints"
+        },
+        "useConstraints": {
+          "$ref": "#/definitions/useConstraints"
+        },
+        "useLimitation": {
+          "type": "string"
+        }
+      }
+    },
+    "accessConstraints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/KeyValue"
+      }
+    },
+    "useConstraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "digitalTransferOptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mediumNote": {
+            "type": ["null", "string"]
+          },
+          "transferSize": {
+            "type": ["null", "number"]
+          }
+        }
+      }
+    },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/KeyValue"
+              },
+              "version": {
+                "type": "string"
+              },
+              "compression": {
+                "type": "string"
+              },
+              "specification": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "resolution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "denominator": {
+            "type": ["number", "null"]
+          },
+          "distanceDPI": {
+            "type": ["number", "null"]
+          },
+          "distanceMeter": {
+            "type": ["number", "null"]
+          }
+        }
+      }
+    },
+    "databaseContent": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "moreInfo": {
+            "type": "string"
+          },
+          "parameter": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "categoryCatalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "edition": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "extraInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "legalBasicsDescriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
+        }
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "language": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "characterSet": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "explanation": {
+      "type": ["null", "string"]
+    },
+    "methodText": {
+      "type": ["null", "string"]
+    },
+    "systemEnvironment": {
+      "type": ["null", "string"]
+    },
+    "baseDataText": {
+      "type": ["null", "string"]
+    },
+    "orderInfo": {
+      "type": ["null", "string"]
+    },
+    "temporal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "$ref": "#/definitions/events"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceDate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceDateType": {
+          "anyOf": [
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceDateTypeSince": {
+          "anyOf": [
+            {
+              "$ref": "general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceRange": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      },
+      "required": ["events"]
+    },
+    "keywords": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "free": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "umthes": {
+          "$ref": "#/definitions/keywordsThesaurus"
+        },
+        "gemet": {
+          "$ref": "#/definitions/keywordsThesaurus"
+        }
+      }
+    },
+    "keywordsThesaurus": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "alternativeLabel": {
+            "type": ["null", "string"]
+          }
+        }
+      }
+    },
+    "themes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/KeyValue"
+      },
+      "minItems": 0
+    },
+    "advProductGroups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/KeyValue"
+      },
+      "minItems": 0
+    },
+    "maintenanceInformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "maintenanceAndUpdateFrequency": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "userDefinedMaintenanceFrequency": {
+          "unit": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/KeyValue"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "number": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "title": {
+            "type": ["null", "string"]
+          },
+          "explanation": {
+            "type": ["null", "string"]
+          }
+        }
+      }
+    }
+  }
+}

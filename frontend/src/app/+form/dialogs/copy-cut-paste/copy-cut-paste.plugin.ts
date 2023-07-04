@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
@@ -16,12 +16,15 @@ import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter, switchMap } from "rxjs/operators";
+import { delay, filter, switchMap, tap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { Router } from "@angular/router";
+import { IgeDocument } from "../../../models/ige-document";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -47,9 +50,11 @@ export class CopyCutPastePlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private modalService: ModalService,
     private messageService: FormMessageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {
@@ -185,9 +190,21 @@ export class CopyCutPastePlugin extends Plugin {
             includeTree,
             this.forAddress
           )
-        )
+        ),
+        delay(100), // give some time to be available in store to update tree
+        tap((documents) => this.selectCopiedDataset(documents))
       )
       .subscribe();
+  }
+
+  private selectCopiedDataset(documents: IgeDocument[]) {
+    if (documents.length == 1) {
+      const target = this.forAddress ? "address" : "form";
+      this.router.navigate([
+        `${ConfigService.catalogId}/${target}`,
+        { id: documents[0]._uuid },
+      ]);
+    }
   }
 
   async cut() {
@@ -235,10 +252,10 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getSelectedDatasets() {
-    return this.query.getActiveId().map((id) => id.toString());
+    return this.query.getActiveId().map((id) => <number>id);
   }
 
-  private getSelectedDatasetsWithoutChildren() {
+  private getSelectedDatasetsWithoutChildren(): number[] {
     const selection = this.getSelectedDatasets();
 
     const filtered = selection.filter(
@@ -263,10 +280,10 @@ export class CopyCutPastePlugin extends Plugin {
     this.toolbarService.removeButton("toolBtnCopyCutSeparator");
   }
 
-  private isChildOfSelectedParent(id: string, selection: string[]): boolean {
+  private isChildOfSelectedParent(id: number, selection: number[]): boolean {
     const parents = this.query.getParents(id);
     return parents.some(
-      (parent) => selection.indexOf(parent.id.toString()) !== -1
+      (parent) => selection.indexOf(<number>parent.id) !== -1
     );
   }
 }

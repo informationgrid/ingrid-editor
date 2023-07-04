@@ -12,21 +12,26 @@ import {
   Rectangle,
   TileLayer,
 } from "leaflet";
-import { SpatialLocationWithColor } from "./spatial-list/spatial-list.component";
+import {
+  SpatialLocation,
+  SpatialLocationWithColor,
+} from "./spatial-list/spatial-list.component";
 import { WktTools } from "./spatial-dialog/wkt-spatial/wkt-tools";
+import {
+  ConfigService,
+  Configuration,
+} from "../../../services/config/config.service";
+import { HttpClient } from "@angular/common/http";
+
+export interface WktValidateResponse {
+  isValid: boolean;
+  message: string;
+}
 
 @Injectable({
   providedIn: "root",
 })
 export class LeafletService {
-  static optionsNonInteractive: MapOptions = {
-    zoomControl: false,
-    dragging: false,
-    boxZoom: false,
-    scrollWheelZoom: false,
-    keyboard: false,
-  };
-
   private defaultOptions: MapOptions = {};
 
   private colors = [
@@ -39,6 +44,7 @@ export class LeafletService {
     "#2C4EB7",
   ];
   private wktTools: WktTools;
+  private configuration: Configuration;
 
   static getLatLngBoundsFromBox(bbox: any): LatLngBounds {
     if (!bbox) {
@@ -49,19 +55,20 @@ export class LeafletService {
   }
 
   private defaultLayer = () =>
-    new TileLayer("//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png", {
+    new TileLayer(this.config.getConfiguration().mapTileUrl, {
       attribution:
         '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
-  constructor() {
+  constructor(private config: ConfigService, private http: HttpClient) {
+    this.configuration = this.config.getConfiguration();
     this.wktTools = new WktTools();
 
     // fix for marker-icon location
     const iconRetinaUrl = "assets/marker-icon-2x.png";
     const iconUrl = "assets/marker-icon.png";
     const shadowUrl = "assets/marker-shadow.png";
-    const iconDefault = icon({
+    Marker.prototype.options.icon = icon({
       iconRetinaUrl,
       iconUrl,
       shadowUrl,
@@ -71,7 +78,6 @@ export class LeafletService {
       tooltipAnchor: [16, -28],
       shadowSize: [41, 41],
     });
-    Marker.prototype.options.icon = iconDefault;
   }
 
   zoomToInitialBox(map: Map): Map {
@@ -85,12 +91,12 @@ export class LeafletService {
     return box ? map.fitBounds(box, { maxZoom: 13 }) : map;
   }
 
-  initMap(mapElement: any, matOptions: MapOptions) {
+  initMap(mapElement: any, mapOptions: MapOptions) {
     const defaults = { ...this.defaultOptions };
     let map = new Map(mapElement, {
       layers: [this.defaultLayer()],
       ...defaults,
-      ...matOptions,
+      ...mapOptions,
     });
     map.attributionControl.setPrefix(false);
     return map;
@@ -106,7 +112,9 @@ export class LeafletService {
       (location) => location.type === "wkt" && location.wkt
     );
     const boxLocations = locations.filter(
-      (location) => location.type === "free"
+      (location) =>
+        (location.type === "free" && location.value) ||
+        location.type === "wfsgnde"
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -148,6 +156,7 @@ export class LeafletService {
   }
 
   removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
+    if (!boxes) return;
     boxes.forEach((box) => setTimeout(() => map.removeLayer(box), 100));
   }
 
@@ -210,5 +219,22 @@ export class LeafletService {
       }
     });
     return bounds;
+  }
+
+  extendLocationsWithColor(
+    locations: SpatialLocation[]
+  ): SpatialLocationWithColor[] {
+    return locations.map((location, index) => ({
+      ...location,
+      indexNumber: index,
+      color: this.getColor(index),
+    }));
+  }
+
+  validateWkt(value: string) {
+    return this.http.post<WktValidateResponse>(
+      `${this.configuration.backendUrl}tools/validate/wkt`,
+      value
+    );
   }
 }

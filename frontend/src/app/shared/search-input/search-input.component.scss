@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+input {
+  flex: 1;
+}
+
+mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.search-icon {
+  margin-right: 10px;
+}
+
+.search-btn {
+  &.small {
+    height: 40px !important;
+  }
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}

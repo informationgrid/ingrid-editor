@@ -13,10 +13,10 @@ profile: ingrid
 
 
 # title, used as window title
-title: Vertikal Datum
+title: Vertikaldatum
 ---
 
-# Vertikal Datum
+# Vertikaldatum
 
 Angabe des Referenzpegels, zu dem die Höhe relativ gemessen wird. In Deutschland ist dies i.A. der Pegel Amsterdam.
 
@@ -26,7 +26,7 @@ Pegel Amsterdam
 
 # ISO Abbildung
 
-Vertikales Bezugssystem: Angabe des Höhenbezugssystems, in dem der tiefste und der höchste Punkt angegeben sind. DasHöhenbezugssystem beinhaltet die Angabe einer Maßeinheit.
+Vertikales Bezugssystem: Angabe des Höhenbezugssystems, in dem der tiefste und der höchste Punkt angegeben sind. Das Höhenbezugssystem beinhaltet die Angabe einer Maßeinheit.
 
 Domain: 358 (gmd:verticalCRS)
 

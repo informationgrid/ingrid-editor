@@ -16,4 +16,5 @@ export interface TreeState
   isDocLoading: boolean;
   multiSelectMode: boolean;
   datasetsChanged: UpdateDatasetInfo;
+  needsReload: boolean;
 }

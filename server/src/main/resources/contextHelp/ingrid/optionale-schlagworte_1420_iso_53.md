@@ -11,22 +11,22 @@ docType:
   - InGridProject
 profile: ingrid
 
-
 # title, used as window title
-title: Optionale Schlagworte
+title: Freie Schlagworte
 ---
 
-# Optionale Schlagworte
+# Freie Schlagworte
 
-Eingabe von möglichst mindestens drei Schlagworten, die im Thesaurus verzeichnet sind. Die Verschlagwortung dient dem themenbezogenen Wiederauffinden (Retrieval) der Objekte über den Thesaurus-Navigator. Dazu müssen Schlagworte aus dem Thesaurus ausgewählt werden, die das Objekt so genau wie möglich, aber auch so allgemein wie nötig beschreiben. So sollte mindestens ein Schlagwort in der Thesaurushierarchie einen relativ allgemeinen Aspekt des Objektes beschreiben und mindestens ein Schlagwort das Objekt so speziell wie möglich beschreiben. Die Auswahl kann über den "Verschlagwortungsassistenten" oder den "Thesaurus-Navigator" vorgenommen werden - siehe Verlinkung.
+Die Verschlagwortung dient der Klassifizierung und dem einfacheren Wiederauffinden eines Datensatzes.
+Bei den optionalen Schlagworten gibt es zwei Möglichkeiten der Eingabe: im oberen Feld können freie Schlagworte angegeben werden, durch Komma getrennt, die genau so als Schlagworte übernommen werden, z.B. Lärm, Kita. Wortgruppen können in Anführungszeichen angegeben werden.
+Im unteren Feld Analyse können ebenfalls Schlagworte, durch Komma getrennt, oder Wortgruppen in Anführungszeichen, angegeben werden. Diese werden anschließend analysiert und einer Schlagwortklasse (z.B. Thesaurus) automatisch zugeordnet.
 
 ## Beispiel:
 
-Naturschutz; Schmetterling; Kartierung; Artenschutz
+Naturschutz, Schmetterling, Kartierung, Artenschutz
 
 # ISO Abbildung
 
-Schlüsselwortumgangssprachlich verwendete Wörter, Ausdrücke oder formalisierte Fachbegriffe, die den Inhalt beschreiben
+Schlüsselwort: umgangssprachlich verwendete Wörter, Ausdrücke oder formalisierte Fachbegriffe, die den Inhalt beschreiben
 
 Domain: 53 (gmd:keyword)
-

@@ -10,11 +10,11 @@
 !{var catalog = ((Catalog)map.get("catalog"));}
 !{var partner = ((String)map.get("partner"));}
 !{var provider = ((String)map.get("provider"));}
-!{page.getData().convertEiaNumbers(catalog.identifier);}
+!{page.getData().convertEiaNumbers(catalog.getIdentifier());}
 
 {
-    "iPlugId": "ige-ng_${catalog.identifier}",
-    "dataSourceName": "iPlug IGE-NG (${catalog.identifier})",
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
+    "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": [${page.getSpatial("lon1")}],
@@ -62,7 +62,7 @@
     ],
     "location": ["${page.handleContent(page.getSpatialTitle())}"],
     "created": "${page.formatDate(page.getFormatterISO(), page.get_created())}",
-    "modified": "${page.formatDate(page.getFormatterISO(), page.get_modified())}",
+    "modified": "${page.formatDate(page.getFormatterISO(), page.get_contentModified())}",
     "areaid": [],
     "partner": [
         "${partner}"
@@ -88,7 +88,7 @@
     "t012_obj_adr.special_name": "Ansprechpartner",
     "t012_obj_adr.special_ref": "505",
     "t012_obj_adr.typ": "7",
-    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_modified())}",
+    "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getUuid())}",
     @if(page.getPointOfContact() != null)
@@ -123,7 +123,7 @@
         "t02_address.title_key": "",
         "t02_address.typ": "2",
     @endif
-    "t03_catalogue.cat_name": "${catalog.name}",
+    "t03_catalogue.cat_name": "${catalog.getName()}",
     "t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
     "t03_catalogue.cat_uuid": "",
     "t03_catalogue.country_code": "Deutschland",

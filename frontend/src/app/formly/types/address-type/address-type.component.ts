@@ -90,7 +90,7 @@ export class AddressTypeComponent
         self.findIndex((item) => {
           const sameType =
             item.type.key === value.type.key ||
-            item.type.value === value.type.value;
+            (item.type.key === null && item.type.value === value.type.value);
           const sameUuid = item.ref._uuid === value.ref._uuid;
           return sameType && sameUuid;
         })
@@ -115,6 +115,7 @@ export class AddressTypeComponent
             allowedTypes: this.props.allowedTypes,
           },
           hasBackdrop: true,
+          restoreFocus: true,
         })
         .afterClosed()
         .pipe(filter((data) => data));
@@ -122,6 +123,7 @@ export class AddressTypeComponent
       return this.dialog
         .open(ConfirmDialogComponent, {
           hasBackdrop: true,
+          restoreFocus: true,
           data: <ConfirmDialogData>{
             message:
               "Es sind noch keine Adressen vorhanden. Bitte legen Sie eine neue an.",

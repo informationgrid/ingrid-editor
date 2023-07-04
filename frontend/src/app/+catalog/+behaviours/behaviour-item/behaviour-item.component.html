@@ -1,4 +1,4 @@
-<mat-card class="mat-elevation-z0">
+<mat-card appearance="outlined" class="mat-elevation-z0">
     <mat-card-header>
         <mat-card-title>{{ title }}</mat-card-title>
         <div
@@ -7,7 +7,7 @@
             [innerHTML]="description"
         ></div>
 
-        <div fxFlex></div>
+        <div class="flex-1"></div>
 
         <mat-slide-toggle
             [formControl]="control.active"

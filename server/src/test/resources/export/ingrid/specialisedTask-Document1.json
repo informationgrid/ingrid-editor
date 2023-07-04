@@ -1,0 +1,127 @@
+{
+  "title": "aaa",
+  "_id": "1181",
+  "_uuid": "675e1034-e766-4753-99a2-444a6412127d",
+  "_type": "InGridSpecialisedTask",
+  "_created": "2022-11-10T16:23:35.089213+01:00",
+  "_createdBy": "Torsten Wolff",
+  "_modified": "2023-01-27T12:03:33.127887+01:00",
+  "_contentModified": "2023-01-27T12:03:33.127887+01:00",
+  "_contentModifiedBy": "Super User",
+  "_version": 3,
+  "_state": "P",
+  "data": {
+    "isAdVCompatible": false,
+    "description": "Meine Beschreibung",
+    "pointOfContact": [
+      {
+        "type": {
+          "key": "7"
+        },
+        "ref": {
+          "title": "Wemove Test",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "107d5e76-2df1-4c0e-8af6-c57ad13bfe9a",
+          "_type": "InGridOrganisationDoc",
+          "_version": 1,
+          "_created": "2022-10-28T10:46:46.900941+02:00",
+          "_modified": "2022-12-16T12:52:09.060888+01:00",
+          "_contentModified": "2022-12-16T12:52:09.060888+01:00",
+          "_createdBy": "Mike Cat-Miller",
+          "_contentModifiedBy": "Mike Cat-Miller",
+          "_state": "W",
+          "_id": "12331",
+          "address": {
+            "country": {
+              "key": "276"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "adds@fef.fe"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "grgrgrg"
+            }
+          ],
+          "organization": "Wemove Test",
+          "positionName": "Positionsname",
+          "_parent": null
+        }
+      }
+    ],
+    "advProductGroups": [],
+    "themes": [],
+    "keywords": {
+      "free": []
+    },
+    "spatial": {
+      "references": [
+        {
+          "value": {
+            "lat1": 50.0153529,
+            "lon1": 8.4727605,
+            "lat2": 50.2271424,
+            "lon2": 8.8004049
+          },
+          "title": "Frankfurt am Main, Hessen, Deutschland (administrative)",
+          "type": "free"
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 12,
+        "maximumValue": 121212,
+        "unitOfMeasure": {
+          "key": "9002"
+        },
+        "Datum": {
+          "key": "5105"
+        }
+      },
+      "description": "testerl"
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-01-08T23:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      }
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": []
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {},
+    "references": []
+  }
+}

@@ -4,10 +4,11 @@ id: qualities
 docType: InGridGeoDataset
 profile: ingrid
 
-
 # title, used as window title
 title: Datenüberschuss
 ---
+
+Jede Angabe einer quantitativen Qualitätsinformation wird charakterisiert durch die Art der Messung (auch "Kennung einer registrierten Standardprozedur" bezeichnet), einem Ergebnis (aus der angewandten Qualitätsprüfung) und optional einer Beschreibung (z.B. der Bewertungsmethode). Es können verschiedene quantitative Qualitätsinformationen angegeben werden:
 
 # Datenüberschuss
 
@@ -27,7 +28,7 @@ Angaben darüber, wie viele Elemente sich im Konflikt zu der physikalischen Stru
 
 # Topologische Konsistenz
 
-Angaben zu topologischen Fehlern, die zwischen verschiedenen Unterelementen des Datensatzes auftreten; Bsp.: Anzahl  fehlender Verbindungen zwischen Unterelementen aufgrund von Undershoots/Overshoots.
+Angaben zu topologischen Fehlern, die zwischen verschiedenen Unterelementen des Datensatzes auftreten; Bsp.: Anzahl fehlender Verbindungen zwischen Unterelementen aufgrund von Undershoots/Overshoots.
 
 # Zeitliche Genauigkeit
 
@@ -43,7 +44,7 @@ Angabe der Anzahl der inkorrekten nicht-quantitativen Attributwerte im Verhältn
 
 # Genauigkeit quantitativer Attribute
 
-Angabe der Anzahl der quantitativen Attribute, die inkorrekt sind; Bsp.: Anzahl aller quantitativen Werte,  die nicht mit 95% Wahrscheinlichkeit dem wahren Wert entsprechen.
+Angabe der Anzahl der quantitativen Attribute, die inkorrekt sind; Bsp.: Anzahl aller quantitativen Werte, die nicht mit 95% Wahrscheinlichkeit dem wahren Wert entsprechen.
 
 # Relative Positionsgenauigkeit
 

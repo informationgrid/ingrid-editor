@@ -8,6 +8,10 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusFactory
+import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusSearchOptions
+import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
+import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -21,7 +25,8 @@ class ResearchApiController @Autowired constructor(
     val researchService: ResearchService,
     val queryService: QueryService,
     val catalogService: CatalogService,
-    val authUtils: AuthUtils
+    val authUtils: AuthUtils,
+    val geoThesaurusFactory: GeoThesaurusFactory
 ) : ResearchApi {
 
     override fun load(principal: Principal): ResponseEntity<List<Query>> {
@@ -50,10 +55,8 @@ class ResearchApiController @Autowired constructor(
     override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val userName = authUtils.getUsernameFromPrincipal(principal)
-        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
 
-        val result = researchService.query(principal, userGroups, catalogId, query)
+        val result = researchService.query(catalogId, query, principal)
         return ResponseEntity.ok(result)
 
     }
@@ -79,6 +82,12 @@ class ResearchApiController @Autowired constructor(
 
     override fun export(principal: Principal): ResponseEntity<Any> {
         TODO("Not yet implemented")
+    }
+
+    override fun geoSearch(principal: Principal, query: String): ResponseEntity<List<SpatialResponse>> {
+        val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
+        return ResponseEntity.ok(response)
+        
     }
 
 }

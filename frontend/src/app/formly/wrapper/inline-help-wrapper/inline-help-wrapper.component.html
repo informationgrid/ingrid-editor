@@ -1,10 +1,26 @@
 <ng-container #fieldComponent></ng-container>
-<button
-    *ngIf="props.hasInlineContextHelp"
-    type="button"
-    mat-icon-button
-    class="menu-button infoIcon"
-    (click)="showContextHelp($event)"
->
-    <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
-</button>
+
+<!--
+    the suffix is unsupported, when the filed component does not contain an input field.
+    the info button will be directly added after the component instead.
+-->
+<ng-container
+    *ngIf="props.isSuffixUnsupported"
+    [ngTemplateOutlet]="matSuffix"
+></ng-container>
+
+<!-- suffix template for info button that activates context help -->
+<ng-template #matSuffix>
+    <button
+        *ngIf="props.hasInlineContextHelp || props.hasContextHelp"
+        type="button"
+        mat-icon-button
+        class="menu-button infoIcon"
+        (click)="showContextHelp($event)"
+    >
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="info-24px"
+        ></mat-icon>
+    </button>
+</ng-template>

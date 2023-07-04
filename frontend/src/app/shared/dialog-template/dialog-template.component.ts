@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+
 @Component({
   selector: "ige-dialog-template",
   templateUrl: "./dialog-template.component.html",
@@ -6,10 +7,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 })
 export class DialogTemplateComponent implements OnInit {
   @Input() label: string;
+  @Input() submitLabel = "Übernehmen";
   @Input() disabled = false;
   @Input() contentColor = "#ffffff";
-  @Output() submit = new EventEmitter();
-  @Output() cancel = new EventEmitter();
+  @Output() submit = new EventEmitter<void>();
+  @Output() cancel = new EventEmitter<void>();
 
   constructor() {}
 

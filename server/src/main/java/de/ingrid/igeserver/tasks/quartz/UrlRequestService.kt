@@ -2,6 +2,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
+import java.io.InputStream
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -16,19 +17,30 @@ class UrlRequestService {
     private val log = logger()
 
     fun getStatus(url: String): Int {
-        try {
+        return try {
+            log.debug("Check URL '${url}' ...")
             val requestHead = createHttpRequest("HEAD", url)
-            var status = httpRequestSync(requestHead)
+            var status = httpRequestSyncStatusCode(requestHead)
             // if server responds with NOT ALLOWED try with GET request
             if (status == 405) {
                 val requestGet = createHttpRequest("GET", url)
-                status = httpRequestSync(requestGet)
+                status = httpRequestSyncStatusCode(requestGet)
             }
             log.debug("Status of URL '$url' is $status")
-            return status
+            status
         } catch (e: Exception) {
             log.debug("URL seems invalid: $url")
-            return 500
+            500
+        }
+    }
+
+    fun request(url: String): InputStream? {
+        return try {
+            val requestHead = createHttpRequest("GET", url)
+            return httpRequestSync(requestHead).body()
+        } catch (e: Exception) {
+            log.debug("URL seems invalid: $url")
+            null
         }
     }
 
@@ -38,12 +50,23 @@ class UrlRequestService {
         .executor(executor)
         .build()
 
-    private fun httpRequestSync(request: HttpRequest): Int {
+    private fun httpRequestSync(request: HttpRequest): HttpResponse<InputStream> {
         val executor = Executors.newSingleThreadExecutor()
         val httpClient = createHttpClient(executor)
 
         return try {
-            log.debug("Check URL '${request.uri()}' with method '${request.method()}'")
+            httpClient
+                .send(request, HttpResponse.BodyHandlers.ofInputStream())
+        } finally {
+            executor.shutdownNow()
+        }
+    }
+
+    private fun httpRequestSyncStatusCode(request: HttpRequest): Int {
+        val executor = Executors.newSingleThreadExecutor()
+        val httpClient = createHttpClient(executor)
+
+        return try {
             httpClient
                 .send(request, HttpResponse.BodyHandlers.discarding())
                 .statusCode()
@@ -59,6 +82,7 @@ class UrlRequestService {
         return HttpRequest.newBuilder()
             .method(method, HttpRequest.BodyPublishers.noBody())
             .uri(URI.create(url))
+            .timeout(Duration.ofSeconds(5))
             .build()
     }
 

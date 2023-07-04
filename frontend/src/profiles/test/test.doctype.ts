@@ -1,12 +1,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { DocumentService } from "../../app/services/document/document.service";
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../app/services/codelist/codelist.service";
+import { SelectOptionUi } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { of } from "rxjs";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
@@ -23,6 +18,9 @@ export class TestDoctype extends BaseDoctype {
   label = "Test-Document";
 
   iconClass = "Geodatendienst";
+
+  private uploadService = inject(UploadService);
+  private configService = inject(ConfigService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -123,7 +121,6 @@ export class TestDoctype extends BaseDoctype {
           {
             key: "date",
             type: "datepicker",
-            className: "flex-1",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Date",
@@ -132,28 +129,14 @@ export class TestDoctype extends BaseDoctype {
               required: true,
             },
           },
-          {
-            key: "range",
-            type: "date-range",
-            wrappers: ["panel", "form-field"],
-            props: {
-              externalLabel: "Date-Range",
-              placeholder: "Bitte wählen",
-              appearance: "outline",
-              required: true,
-            },
-          },
-          {
-            key: "checkbox",
-            type: "checkbox",
-            wrappers: ["panel", "form-field", "inline-help"],
-            props: {
-              externalLabel: "Checkbox",
-              label: "Open Data",
-              indeterminate: false,
-              required: true,
-            },
-          },
+          this.addDateRange("range", "Date-Range", {
+            required: true,
+            wrappers: ["panel"],
+          }),
+          this.addCheckbox("checkbox", "Checkbox", {
+            wrappers: ["panel", "inline-help"],
+            fieldLabel: "Open Data",
+          }),
         ],
       },
       {
@@ -204,7 +187,7 @@ export class TestDoctype extends BaseDoctype {
               minLength: 1,
             },
             fieldArray: {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 {
                   key: "date",
@@ -444,14 +427,4 @@ export class TestDoctype extends BaseDoctype {
         ],
       },
     ];
-
-  constructor(
-    storageService?: DocumentService,
-    codelistService?: CodelistService,
-    codelistQuery?: CodelistQuery,
-    private uploadService?: UploadService,
-    private configService?: ConfigService
-  ) {
-    super(codelistService, codelistQuery);
-  }
 }

@@ -1,8 +1,8 @@
-export type DocumentState = "P" | "W" | "PW";
+export type DocumentState = "P" | "W" | "PW" | "PENDING";
 
 export class IgeDocument {
   // the ID of the document, which can be undefined for new documents
-  _id?: string;
+  _id?: number;
 
   // the ID of the wrapper document, which contains this document
   _uuid?: string;
@@ -14,13 +14,20 @@ export class IgeDocument {
   _type: string;
 
   // the hierarchical parent of this document
-  _parent: string;
+  _parent: number;
 
   // the creation date
   _created?: string;
 
-  // the last modified date
+  // the database object modification date
   _modified?: string;
+
+  _metadataDate?: string;
+
+  _responsibleUser?: number;
+
+  // the content modification by an actual user date
+  _contentModified?: string;
 
   // the name of the creator
   _createdBy?: string;
@@ -32,7 +39,7 @@ export class IgeDocument {
   _modifierExists?: boolean;
 
   // the name of the last modifier
-  _modifiedBy?: string;
+  _contentModifiedBy?: string;
 
   // shows if the document has child documents
   _hasChildren?: boolean;
@@ -45,12 +52,14 @@ export class IgeDocument {
   // the date when the document will be published next
   _pendingDate?: string;
 
+  _tags?: string;
+
   hasOnlySubtreeWritePermission?: boolean;
 
   // profile specific fields
   [x: string]: any;
 
-  constructor(type: string, parent?: string) {
+  constructor(type: string, parent?: number) {
     this._type = type;
     this._parent = parent ? parent : null;
   }

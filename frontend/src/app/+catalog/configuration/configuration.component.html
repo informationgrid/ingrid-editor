@@ -1,7 +1,12 @@
 <page-template label="Konfiguration" class="white">
-    <ng-container left-side> ... </ng-container>
+    <ng-container left-side>
+        Hier können allgemeine Informationen zu diesem Katalog abgelegt werden.
+        Manche Einstellungen werden auch als Defaultwerte für neue Datensätze
+        verwendet, wie bspw. der Raumbezug. Der Ansprechpartner und Anbieter
+        wird aktuell bei der Indizierung verwendet.
+    </ng-container>
 
-    <div main-header fxFlex>
+    <div main-header>
         <button
             mat-flat-button
             color="primary"
@@ -12,7 +17,7 @@
         </button>
     </div>
 
-    <div main-content fxFlex class="main">
+    <div main-content class="main">
         <div class="scrollable">
             <formly-form
                 [form]="form"

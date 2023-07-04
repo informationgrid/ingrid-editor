@@ -10,6 +10,8 @@ import { DeleteEmptyFoldersBehaviour } from "./+catalog/+behaviours/system/Delet
 import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-json.behaviour";
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
+import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
+import { AssignedUserBehaviour } from "./+catalog/+behaviours/system/AssignedUser/assigned-user.behaviour";
 
 export const formPluginProvider = [
   { provide: FormPluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -18,11 +20,12 @@ export const formPluginProvider = [
   { provide: FormPluginToken, useClass: SavePlugin, multi: true },
   { provide: FormPluginToken, useClass: CreateFolderPlugin, multi: true },
   { provide: FormPluginToken, useClass: CopyCutPastePlugin, multi: true },
-  // {provide: FormPluginToken, useClass: PrintViewPlugin, multi: true},
   { provide: FormPluginToken, useClass: DeleteDocsPlugin, multi: true },
   { provide: FormPluginToken, useClass: HistoryPlugin, multi: true },
   { provide: FormPluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
   { provide: FormPluginToken, useClass: PrintViewPlugin, multi: true },
+  { provide: FormPluginToken, useClass: TagsBehaviour, multi: true },
+  { provide: FormPluginToken, useClass: AssignedUserBehaviour, multi: true },
   {
     provide: FormPluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

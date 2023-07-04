@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.uvp.types.address
+package de.ingrid.igeserver.profiles.ingrid.types.address
 
 import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.services.DocumentCategory
@@ -14,6 +14,8 @@ class InGridOrganisationType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTempl
     override val category = DocumentCategory.ADDRESS.value
 
     override val referenceFieldInDocuments = "pointOfContact"
+
+    override val jsonSchema = "/ingrid/schemes/address-organization.schema.json"
 
     val log = logger()
 }

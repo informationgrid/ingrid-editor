@@ -7,6 +7,7 @@ export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
   newEntry?: boolean;
+  formState?: any;
 }
 
 @Component({
@@ -23,6 +24,7 @@ export class FormDialogComponent implements OnDestroy {
     this.titleText = data?.newEntry
       ? "Eintrag hinzufügen"
       : "Eintrag bearbeiten";
+    this.options.formState = data.formState;
   }
 
   ngOnDestroy(): void {

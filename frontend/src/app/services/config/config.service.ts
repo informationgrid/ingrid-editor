@@ -19,7 +19,9 @@ export class Configuration {
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public menuGroups: any
+    public menuGroups: any,
+    public mapTileUrl: string,
+    public nominatimUrl: string
   ) {}
 }
 
@@ -53,6 +55,8 @@ export interface UserInfo {
 })
 export class ConfigService {
   public static catalogId: string;
+
+  public static backendApiUrl: string;
 
   private config: Configuration;
 
@@ -123,6 +127,7 @@ export class ConfigService {
     return this.dataService.load().then((json) => {
       this.config = { ...this.defaultConfig, ...json };
       this.config.backendUrl = this.config.contextPath + "api/";
+      ConfigService.backendApiUrl = this.config.backendUrl;
       this.dataService.config = this.config;
       return this.config;
     });
@@ -196,5 +201,11 @@ export class ConfigService {
 
   getIBusConfig() {
     return this.http.get<any>(this.config.backendUrl + "config/ibus");
+  }
+
+  isIBusConnected(index: number) {
+    return this.http.get<boolean>(
+      `${this.config.backendUrl}config/ibus/connected/${index}`
+    );
   }
 }

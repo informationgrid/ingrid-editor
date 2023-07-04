@@ -1,21 +1,21 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Erstellt am</div>
         <div *ngIf="group?.data?.creationDate">
-            <span [title]="group.data.creationDate | date : 'long'">{{
+            <span [matTooltip]="group.data.creationDate | date : 'long'">{{
                 group.data.creationDate | date : "dd.MM.yyyy"
             }}</span>
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>Geändert am</div>
         <div *ngIf="group?.data?.modificationDate">
-            <span [title]="group.data.modificationDate | date : 'long'">{{
+            <span [matTooltip]="group.data.modificationDate | date : 'long'">{{
                 group.data.modificationDate | date : "dd.MM.yyyy"
             }}</span>
         </div>
     </div>
-    <div fxLayout="row">
+    <div class="flex-row">
         <div>ID</div>
         <div>{{ group?.id }}</div>
     </div>

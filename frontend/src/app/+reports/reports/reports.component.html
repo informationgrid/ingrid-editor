@@ -1,4 +1,9 @@
-<nav mat-tab-nav-bar class="page-tabs-routing">
+<nav
+    mat-tab-nav-bar
+    class="page-tabs-routing"
+    mat-stretch-tabs="false"
+    [tabPanel]="tabPanel"
+>
     <a
         *ngFor="let tab of tabs; let i = index"
         [attr.data-cy]="tab.path"
@@ -12,4 +17,6 @@
     </a>
 </nav>
 
-<router-outlet></router-outlet>
+<mat-tab-nav-panel #tabPanel>
+    <router-outlet></router-outlet>
+</mat-tab-nav-panel>

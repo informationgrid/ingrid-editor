@@ -19,7 +19,6 @@ import { DynamicDataSource } from "./dynamic.datasource";
 import { DynamicDatabase } from "./dynamic.database";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeService } from "./tree.service";
-import { DocumentUtils } from "../../../services/document.utils";
 import { DragNDropUtils } from "./dragndrop.utils";
 import { TreeSelection } from "./tree-selection";
 import { ConfigService } from "../../../services/config/config.service";
@@ -43,11 +42,11 @@ export enum TreeActionType {
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;
-  @Input() expandNodeIds: Subject<string[]>;
+  @Input() expandNodeIds: Subject<number[]>;
   @Input() showHeader = true;
   @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
-  @Input() setActiveNode: Subject<string>;
+  @Input() setActiveNode: Subject<number>;
   @Input() update: Observable<any>;
   @Input() showHeaderOptions = true;
   @Input() showOnlyFolders = false;
@@ -56,7 +55,7 @@ export class TreeComponent implements OnInit {
   @Input() ignoreTreeUpdates = false;
   @Input() searchSuggestions: Observable<DocumentAbstract[]>;
 
-  @Output() selected = new EventEmitter<string[]>();
+  @Output() selected = new EventEmitter<number[]>();
   @Output() activate = new EventEmitter<string[]>();
   @Output() dropped = new EventEmitter<any>();
   @Output() multiEditMode = new EventEmitter<any>();
@@ -91,7 +90,7 @@ export class TreeComponent implements OnInit {
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
-  activeNodeId: string = null;
+  activeNodeId: number = null;
 
   dataSource: DynamicDataSource;
   hasData: boolean;
@@ -175,7 +174,14 @@ export class TreeComponent implements OnInit {
       return;
     }
 
-    this.setActiveNode.pipe(untilDestroyed(this)).subscribe((id) => {
+    this.setActiveNode.pipe(untilDestroyed(this)).subscribe(async (id) => {
+      if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
+        this.activeNodeId = id;
+        await this.reloadTree(true).toPromise();
+        // reloadTree will jump to node
+        return;
+      }
+
       if (this.activeNodeId === id) {
         return;
       }
@@ -184,7 +190,7 @@ export class TreeComponent implements OnInit {
     });
   }
 
-  private expandOnDataChange(ids: string[]): Promise<void> {
+  private expandOnDataChange(ids: number[]): Promise<void> {
     return new Promise((resolve) => {
       const initialId = ids.shift();
       const expanderSubscription = this.dataSource.nodeExpanded$.subscribe(
@@ -266,7 +272,7 @@ export class TreeComponent implements OnInit {
         this.deleteNode(updateInfo);
         return;
       case UpdateType.Move:
-        const srcDocIds = updateInfo.data.map((doc) => <string>doc.id);
+        const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
         this.moveNodes(srcDocIds, updateInfo.parent);
         return;
       default:
@@ -296,7 +302,7 @@ export class TreeComponent implements OnInit {
 
   private async addNewNodes(updateInfo: UpdateDatasetInfo) {
     if (!updateInfo.doNotSelect) {
-      this.activeNodeId = updateInfo.data[0].id + "";
+      this.activeNodeId = updateInfo.data[0].id as number;
     }
 
     if (updateInfo.parent) {
@@ -318,7 +324,7 @@ export class TreeComponent implements OnInit {
       // TODO: use function jumpToNode
       this.updateChildrenFromServer(
         updateInfo.parent,
-        <string>updateInfo.data[0].id,
+        <number>updateInfo.data[0].id,
         updateInfo.doNotSelect
       );
     } else {
@@ -340,8 +346,8 @@ export class TreeComponent implements OnInit {
   }
 
   private updateChildrenFromServer(
-    parentNodeId: string,
-    id: string,
+    parentNodeId: number,
+    id: number,
     doNotSelect: boolean
   ) {
     if (parentNodeId === null) {
@@ -391,7 +397,7 @@ export class TreeComponent implements OnInit {
     }
   }
 
-  private handleExpandNodes(ids: string[]) {
+  private handleExpandNodes(ids: number[]) {
     ids = this.skipExpandedNodeIDs(ids);
 
     if (ids && ids.length > 0) {
@@ -401,12 +407,8 @@ export class TreeComponent implements OnInit {
     }
   }
 
-  getStateClass(node: TreeNode) {
-    return DocumentUtils.getStateClass(node.state, node.type);
-  }
-
   async jumpToNode(
-    id: string,
+    id: number,
     resetSelection = true,
     emitActive = true
   ): Promise<void> {
@@ -431,7 +433,7 @@ export class TreeComponent implements OnInit {
   }
 
   private selectAndScrollToNode(
-    id: string,
+    id: number,
     resetSelection: boolean,
     emitActive: boolean
   ) {
@@ -479,7 +481,7 @@ export class TreeComponent implements OnInit {
     callback();
   }
 
-  private skipExpandedNodeIDs(ids: string[]): string[] {
+  private skipExpandedNodeIDs(ids: number[]): number[] {
     if (!this.dataSource.data) {
       return ids;
     }
@@ -532,8 +534,8 @@ export class TreeComponent implements OnInit {
     }
   }
 
-  private async moveNodes(srcDocIds: string[], destination: string) {
-    const id = <string>srcDocIds[0];
+  private async moveNodes(srcDocIds: number[], destination: number) {
+    const id = <number>srcDocIds[0];
 
     const treeNodes = srcDocIds.map((docId) =>
       this.dataSource.data.find((item) => item._id === docId)
@@ -598,7 +600,7 @@ export class TreeComponent implements OnInit {
     this.dragManager.handleDragEnd();
   }
 
-  async handleSelection(id: string) {
+  async handleSelection(id: number) {
     if (this.selection.multiSelectionModeEnabled) {
       await this.jumpToNode(id, false);
       const node = this.dataSource.getNode(id);

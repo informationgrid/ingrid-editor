@@ -1,23 +1,14 @@
-<div class="title" *transloco="let t">
-    <div class="document-type">
-        <mat-icon
-            [matTooltip]="t('docType.' + _model._type)"
-            [svgIcon]="icon"
-            [ngClass]="['document-icon', stateClass]"
-        ></mat-icon>
-    </div>
+<div class="title flex-row" *transloco="let t">
+    <ige-document-icon [doc]="_model"></ige-document-icon>
 
-    <!-- TODO: move profile specific text to localisation file -->
     <span
         *ngIf="!showTitleInput"
-        fxFlex
-        class="label"
+        class="label flex-1"
         [matTooltip]="
-            _model._type === 'UvpOrganisationDoc' ||
-            _model._type === 'McloudAddressDoc' ||
-            _model._type === 'BmiAddressDoc'
-                ? 'Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.'
-                : 'Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname.'
+            t(
+                'form.titleTooltip.' +
+                    (_model.firstName ? 'Person' : 'Organisation')
+            )
         "
         [matTooltipDisabled]="!address || !disableEdit"
         [matTooltipShowDelay]="1000"
@@ -48,6 +39,7 @@
 
     <button
         mat-icon-button
+        data-cy="btn-more-header"
         class="dark menu-button btn-toggle-form-header"
         [class.expanded]="showMore"
         (click)="toggleMoreInfo()"
@@ -55,7 +47,7 @@
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
     <button
-        *ngIf="showMoreActions && _model._type !== 'FOLDER'"
+        *ngIf="showMoreActions && moreActions.length"
         data-cy="more-actions"
         mat-icon-button
         class="menu dark menu-button"
@@ -68,6 +60,7 @@
                 mat-menu-item
                 *ngFor="let action of moreActions"
                 (click)="action.action()"
+                [disabled]="action.disabled"
             >
                 {{ action.title }}
             </button>

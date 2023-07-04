@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.services.CatalogService
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
@@ -11,7 +12,6 @@ import java.security.Principal
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import javax.persistence.EntityManager
 
 @RestController
 @RequestMapping(path = ["/api/uvp/report"])

@@ -7,12 +7,13 @@ import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
-import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.KeycloakAuthUtils.Companion.isAdminRole
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -42,7 +43,7 @@ class UsersApiController : UsersApi {
     private lateinit var groupService: GroupService
 
     @Autowired
-    private lateinit var igeAclService: IgeAclService
+    private lateinit var docWrapperRepo: DocumentWrapperRepository
 
     @Autowired
     private lateinit var userRepo: UserRepository
@@ -119,16 +120,20 @@ class UsersApiController : UsersApi {
     }
 
     @Transactional
-    override fun deleteUser(principal: Principal, userId: String): ResponseEntity<Void> {
-        if (!catalogService.canEditUser(principal, userId)) {
+    override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+        val login = frontendUser.userId
+
+        if (!catalogService.canEditUser(principal, login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val deleted = catalogService.deleteUser(catalogId, userId)
+        val deleted = catalogService.deleteUser(catalogId, login)
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
-            keycloakService.deleteUser(principal, userId)
+            keycloakService.deleteUser(principal, login)
         }
 
         return ResponseEntity.ok().build()
@@ -157,10 +162,29 @@ class UsersApiController : UsersApi {
 
     }
 
-    private fun getSingleUser(principal: Principal, userId: String): User {
+
+    override fun getFullName(principal: Principal, userId: Int): ResponseEntity<String> {
+        val frontendUser =
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+
+        keycloakService.getClient(principal).use { client ->
+            val login = frontendUser.userId
+            val user = keycloakService.getUser(client, login)
+            return ResponseEntity.ok(user.firstName + " " + user.lastName)
+        }
+
+    }
+
+    private fun getSingleUser(principal: Principal, userId: String): User? {
         keycloakService.getClient(principal).use { client ->
 
-            val user = keycloakService.getUser(client, userId)
+
+            val user = try {
+                keycloakService.getUser(client, userId)
+            } catch (e: Exception) {
+                logger.error("Couldn't find keycloak user with login: $userId")
+                return null
+            }
 
             val frontendUser =
                 userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
@@ -182,9 +206,44 @@ class UsersApiController : UsersApi {
         val userIds = catalogService.getAllCatalogUserIds(principal)
             .filter { catalogService.canEditUser(principal, it) }
 
-        return ResponseEntity.ok(userIds.map { getSingleUser(principal, it) })
+        return ResponseEntity.ok(userIds.mapNotNull { getSingleUser(principal, it) })
 
     }
+
+    override fun getResponsibilities(principal: Principal, userId: Int): ResponseEntity<List<Int>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        return ResponseEntity.ok(
+            docWrapperRepo.findAllByCatalog_IdentifierAndResponsibleUser_Id(catalogId, userId).map { it.id!! })
+    }
+
+    override fun reassignResponsibilities(principal: Principal, oldUserId: Int, newUserId: Int): ResponseEntity<Void> {
+        val newResponsibleUser =
+            userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUserCatalog(newUserId.toString())
+
+        if (!catalogService.canEditUser(principal, newResponsibleUser.userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val docs = docWrapperRepo.findAllByCatalog_IdentifierAndResponsibleUser_Id(catalogId, oldUserId)
+
+        // check new user has rights on all docs
+        if (!isAdminRole(newResponsibleUser.role?.name)) {
+            val userGroups = newResponsibleUser.groups.toList()
+            val docsWithoutAccess = docs.filter { !groupService.hasAnyGroupAccess(catalogId, userGroups, it.id!!) }
+            if (docsWithoutAccess.isNotEmpty()) {
+                val docIds = docsWithoutAccess.map { it.uuid }
+                throw ClientException.withReason("User ${newResponsibleUser.userId} has no access to documents with ids: $docIds")
+            }
+        }
+
+
+        docs.forEach { it.responsibleUser = newResponsibleUser }
+        docWrapperRepo.saveAll(docs)
+        return ResponseEntity.ok().build()
+    }
+
 
     override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
         val filteredUsers =

@@ -13,18 +13,19 @@ export const iBusFields: FormlyFieldConfig[] = [
         {
           key: "url",
           type: "input",
+          className: "white-bg",
           props: {
             label: "URL",
             appearance: "outline",
           },
         },
         {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "flex-row gap-6",
           fieldGroup: [
             {
               key: "ip",
               type: "input",
-              className: "flex-1",
+              className: "flex-1 white-bg",
               props: {
                 label: "IP",
                 appearance: "outline",
@@ -33,7 +34,7 @@ export const iBusFields: FormlyFieldConfig[] = [
             {
               key: "port",
               type: "input",
-              className: "flex-1",
+              className: "flex-1 white-bg",
               props: {
                 type: "number",
                 label: "Port",
@@ -41,6 +42,27 @@ export const iBusFields: FormlyFieldConfig[] = [
               },
             },
           ],
+        },
+        {
+          key: "publicationTypes",
+          type: "select",
+          defaultValue: ["internet"],
+          className: "white-bg",
+          props: {
+            label: "Veröffentlichungsrecht",
+            placeholder: "",
+            appearance: "outline",
+            multiple: true,
+            simple: true,
+            options: [
+              { value: "internet", label: "Internet" },
+              { value: "intranet", label: "Intranet" },
+              { value: "amtsintern", label: "amtsintern" },
+            ],
+          },
+          modelOptions: {
+            updateOn: "blur",
+          },
         },
       ],
     },

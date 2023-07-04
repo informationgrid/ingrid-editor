@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": ["string", "null"]
+        },
+        "value": {
+          "type": ["string", "null"]
+        }
+      },
+      "title": "KeyValue"
+    },
+    "Date": {
+      "Date": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [],
+        "title": "Date"
+      }
+    },
+    "PointOfContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": ["ref", "type"],
+      "title": "PointOfContact"
+    },
+    "Spatial": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "free"
+            },
+            "title": {
+              "type": ["null", "string"]
+            },
+            "ars": {
+              "type": ["null", "string"]
+            },
+            "value": {
+              "$ref": "#/definitions/BoundingBox"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "wfsgnde"
+            },
+            "title": {
+              "type": ["null", "string"]
+            },
+            "ars": {
+              "type": ["null", "string"]
+            },
+            "value": {
+              "$ref": "#/definitions/BoundingBox"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "wkt"
+            },
+            "title": {
+              "type": ["null", "string"]
+            },
+            "wkt": {
+              "type": ["null", "string"]
+            },
+            "value": {
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "Spatial"
+        }
+      ]
+    },
+    "BoundingBox": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lat1": {
+          "type": "number"
+        },
+        "lat2": {
+          "type": "number"
+        },
+        "lon1": {
+          "type": "number"
+        },
+        "lon2": {
+          "type": "number"
+        }
+      },
+      "required": ["lat1", "lat2", "lon1", "lon2"],
+      "title": "BoundingBox"
+    },
+    "AddressClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "street": {
+          "type": ["string", "null"]
+        },
+        "city": {
+          "type": ["string", "null"]
+        },
+        "po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "zip-code": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "zip-po-box": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "administrativeArea": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [],
+      "title": "AddressClass"
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": ["connection", "type"],
+      "title": "Contact"
+    }
+  }
+}

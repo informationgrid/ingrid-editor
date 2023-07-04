@@ -1,5 +1,8 @@
-:host {
-  padding-top: 11px;
+@import "src/variables";
+
+.section-title {
+  margin: 10px 0;
+  font-weight: normal;
 }
 
 .close {
@@ -8,7 +11,16 @@
 
 .cdk-drag-handle {
   cursor: move;
-  margin-top: 12px;
+  margin-top: 8px;
+  color: $ige-background-bar;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+.extended-gap:not(:last-of-type) {
+  margin-bottom: 10px;
 }
 
 .cdk-drag-preview {
@@ -16,12 +28,17 @@
 }
 
 :host ::ng-deep ige-repeat {
-  .mat-icon-button[disabled][disabled] {
+  .mat-mdc-icon-button[disabled][disabled] {
     opacity: 0;
   }
 }
 
 ige-add-button {
-  margin-bottom: 11px;
   display: block;
+  margin-bottom: 22px;
+}
+
+ige-form-error {
+  display: block;
+  padding-bottom: 24px;
 }

@@ -14,12 +14,12 @@ import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.acls.model.AclService
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @Service
@@ -86,6 +86,11 @@ class CatalogService @Autowired constructor(
 
     fun getUserOfCatalog(catalogId: String): List<UserInfo> =
         userRepo.findAllByCatalogId(catalogId)
+
+
+    fun getUser(id: Int): UserInfo? {
+        return userRepo.findById(id).getOrNull()
+    }
 
     fun getUser(userId: String): UserInfo? {
         return userRepo.findByUserId(userId)
@@ -278,9 +283,10 @@ class CatalogService @Autowired constructor(
     )
 
     fun getPermissions(principal: Authentication): List<String> {
-        val isMdAdmin = principal.authorities.any { it.authority == "md-admin" }
-        val isCatAdmin = principal.authorities.any { it.authority == "cat-admin" }
-        val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
+
+        val isMdAdmin = authUtils.containsRole(principal, "md-admin")
+        val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
+        val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
         val user = userRepo.findByUserId(authUtils.getUsernameFromPrincipal(principal))
 
         val permissions = if (isSuperAdmin) {

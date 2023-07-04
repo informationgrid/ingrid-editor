@@ -1,14 +1,11 @@
-<div fxLayout="column" fxFill>
+<div class="flex-col flex-fill">
     <div class="blocker" [class.show]="showBlocker"></div>
 
     <!-- Toolbar -->
     <form-toolbar></form-toolbar>
 
-    <as-split
-        [useTransition]="true"
-        (dragEnd)="rememberSizebarWidth($event)"
-        [gutterSize]="12"
-    >
+    <!--        [useTransition]="true"-->
+    <as-split (dragEnd)="rememberSizebarWidth($event)" [gutterSize]="12">
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
             <ige-sidebar
@@ -35,40 +32,35 @@
 
                 <div [class.hide]="fields.length === 0">
                     <ige-form-info
+                        #formInfo
                         *ngIf="formInfoModel !== null"
                         [form]="form"
                         [model]="formInfoModel"
                         [forAddress]="address"
-                        [sections]="(sections | async) ?? []"
-                        [parentContainer]="scrollForm"
                         [disableTitleEdit]="
-                            formOptions.formState.disabled ||
+                            formOptions.formState.disabled === true ||
                             (address && model._type !== 'FOLDER')
                         "
-                        (showStickyHeader)="updateContentPadding($event)"
                     >
-                        <div
-                            [class.hide]="!hasOptionalFields"
-                            class="optional-fields-toggle"
-                        >
-                            <div class="diagonal"></div>
-                            <mat-slide-toggle
-                                checked
-                                (change)="
-                                    hideOptionalFields = !hideOptionalFields
-                                "
-                                >Alle
-                            </mat-slide-toggle>
-                            <div class="cover"></div>
-                        </div>
                     </ige-form-info>
+                    <ige-quick-navbar
+                        *ngIf="formInfoModel !== null"
+                        [class.sticky-header]="isStickyHeader"
+                        [model]="formInfoModel"
+                        [sections]="sections | async"
+                        [numberOfErrors]="numberOfErrors"
+                        [hasOptionalFields]="hasOptionalFields"
+                        [optionalButtonState]="!hideOptionalFields"
+                        (toggleOptionalFields)="hideOptionalFields = !$event"
+                    ></ige-quick-navbar>
+
                     <div
                         class="form-inner"
+                        [class.extra-space-toggle-button]="hasOptionalFields"
                         [class.hide]="model._type === 'FOLDER'"
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
-                            [class.hide-validation]="!showValidationErrors"
                             [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
@@ -91,7 +83,6 @@
                     >
                         <ige-folder-dashboard
                             [isAddress]="address"
-                            [model]="model"
                         ></ige-folder-dashboard>
                     </div>
                 </div>
@@ -100,7 +91,7 @@
 
         <as-split-area *ngIf="showJson">
             <pre
-                >{{ model | json }}
+                >{{ form.value | json }}
            </pre
             >
         </as-split-area>

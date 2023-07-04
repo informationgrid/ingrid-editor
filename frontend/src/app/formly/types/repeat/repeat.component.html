@@ -1,5 +1,6 @@
 <ige-form-error
     *ngIf="
+        showError &&
         formControl.invalid &&
         formControl.errors &&
         !formControl.hasError('required')
@@ -17,12 +18,15 @@
         cdkDropListOrientation="vertical"
         (cdkDropListDropped)="drop($event)"
     >
-        <h5 *ngIf="menuSections">{{ menuSections[key] }}</h5>
+        <div *ngIf="menuSections" class="section-title">
+            {{ menuSections[key] }}
+        </div>
 
         <div
             *ngFor="let fieldRef of groupedFields[key]; let i = index"
-            class="display-flex"
+            class="flex-row"
             cdkDrag
+            [class.extended-gap]="props.hasExtendedGap"
             [cdkDragDisabled]="!canBeDragged"
         >
             <mat-icon *ngIf="canBeDragged" cdkDragHandle>
@@ -37,6 +41,7 @@
                 [disabled]="props.minLength && fieldRef < props.minLength"
                 mat-icon-button
                 class="close"
+                type="button"
                 (click)="remove(fieldRef)"
             >
                 <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
@@ -49,5 +54,9 @@
     *ngIf="!formState.disabled && formControl.enabled"
     (add)="addItem($event)"
     [options]="props.menuOptions"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [buttonTitle]="props.addButtonTitle ? props.addButtonTitle : 'Hinzufügen'"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
+    [showLabel]="groupedFieldsKeys.length == 0"
 ></ige-add-button>

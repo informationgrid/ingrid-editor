@@ -1,0 +1,381 @@
+{
+  "title": "Coupling Service",
+  "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
+  "_parent": "my-specified-parent",
+  "_type": "InGridGeoService",
+  "isInspireIdentified": true,
+  "isAdVCompatible": false,
+  "isOpenData": true,
+  "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
+  "alternateTitle": "Short",
+  "parentIdentifier": "my-specified-parent",
+  "pointOfContact": [
+    {
+      "ref": {
+        "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+        "_type": "InGridOrganisationDoc",
+        "organization": "KST PortalU",
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "kst@portalu.de"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "12"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+        "_type": "InGridPersonDoc",
+        "salutation": {
+          "key": "2"
+        },
+        "firstName": "Besitzervorname",
+        "lastName": "Besitzername",
+        "address": {
+          "city": "Nienburg (Weser)",
+          "po-box": "12345",
+          "street": "Brückenstraße 8",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "D-31582",
+          "zip-po-box": "D-31564",
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "besitzer@wemove.com"
+          }
+        ],
+        "positionName": "Liegenschaftsbuch (ALB)",
+        "hoursOfService": "Dies sind die Servicezeiten."
+      },
+      "type": {
+        "key": "1"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
+        "_type": "InGridPersonDoc",
+        "salutation": {
+          "key": "2"
+        },
+        "firstName": "user",
+        "lastName": "test1",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ],
+        "positionName": "Testeinheit, NI TESTADRESSEN\n                            Testeinheit",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": null,
+        "value": "Meister"
+      }
+    }
+  ],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "asLink": true,
+        "value": "https://mein-bild.de/xxx.png",
+        "uri": "https://mein-bild.de/xxx.png"
+      },
+      "fileDescription": "Bildbeschreibung"
+    }
+  ],
+  "advProductGroups": [
+    {
+      "key": "6"
+    }
+  ],
+  "themes": [
+    {
+      "key": "105"
+    }
+  ],
+  "priorityDatasets": [
+    {
+      "key": "-1023933682"
+    }
+  ],
+  "openDataCategories": [
+    {
+      "key": "6"
+    }
+  ],
+  "spatialScope": {
+    "key": "-673152846"
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "Wasser"
+      },
+      {
+        "label": "Unbekannt"
+      }
+    ]
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Hannover",
+        "value": {
+          "lat1": 52.130035,
+          "lon1": 9.235984,
+          "lat2": 52.678265,
+          "lon2": 10.309714
+        }
+      },
+      {
+        "type": "free",
+        "title": "",
+        "ars": "054854700000"
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "3068"
+      }
+    ],
+    "verticalExtent": {
+      "minimumValue": 1.0,
+      "maximumValue": 5.0,
+      "unitOfMeasure": {
+        "key": "9001"
+      },
+      "Datum": {
+        "key": "900002"
+      }
+    },
+    "description": "Erläuterung Raumbezug"
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2015-03-17T00:00:00.000+01:00",
+        "referenceDateType": {
+          "key": "1"
+        }
+      }
+    ],
+    "resourceDateType": {
+      "key": "at"
+    },
+    "status": {
+      "key": "7"
+    },
+    "resourceDate": "2023-02-08T00:00:00.000+01:00",
+    "resourceDateTypeSince": null
+  },
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": {
+      "key": "1"
+    },
+    "userDefinedMaintenanceFrequency": {
+      "number": 12,
+      "unit": {
+        "key": "3"
+      }
+    },
+    "description": "Erläuterung Zeitbezug"
+  },
+  "conformanceResult": [
+    {
+      "pass": {
+        "key": "2"
+      },
+      "isInspire": false,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": null,
+        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+      },
+      "publicationDate": "2013-08-09"
+    },
+    {
+      "pass": {
+        "key": "1"
+      },
+      "isInspire": true,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": "10"
+      },
+      "publicationDate": "2009-10-20"
+    }
+  ],
+  "extraInfo": {
+    "legalBasicsDescriptions": [
+      {
+        "key": "38"
+      }
+    ]
+  },
+  "resource": {
+    "purpose": "Herstellung!",
+    "specificUsage": "Eignung!",
+    "accessConstraints": [
+      {
+        "key": "1"
+      },
+      {
+        "key": null,
+        "value": "freie Zugriffsbeschränkung"
+      }
+    ],
+    "useConstraints": [
+      {
+        "title": {
+          "key": "26"
+        },
+        "source": "Quelle 1"
+      },
+      {
+        "title": {
+          "key": "20"
+        },
+        "source": "Quelle 2"
+      },
+      {
+        "title": {
+          "key": null,
+          "value": "meine Lizenz"
+        },
+        "source": ""
+      }
+    ],
+    "useLimitation": "Es gelten keine Bedingungen"
+  },
+  "distribution": {
+    "format": [
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "5",
+        "compression": "RAR",
+        "specification": "spec 1"
+      }
+    ]
+  },
+  "digitalTransferOptions": [
+    {
+      "name": {
+        "key": "4"
+      },
+      "transferSize": 1.44,
+      "mediumNote": "Home"
+    }
+  ],
+  "orderInfo": "Bestell",
+  "references": [
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Ein Verweis",
+      "url": "http://my-link",
+      "explanation": "Link Erläuterung"
+    },
+    {
+      "type": {
+        "key": "5304"
+      },
+      "title": "Bestell Link",
+      "url": "http://order-me.com",
+      "explanation": "Meine Bestellungen"
+    },
+    {
+      "type": {
+        "key": "5302"
+      },
+      "title": "Dienst \"Coupling Service\" (GetCapabilities)",
+      "url": "https://my-getcapabilities",
+      "explanation": ""
+    }
+  ],
+  "metadata": {
+    "language": {
+      "key": "150"
+    }
+  },
+  "service": {
+    "classification": [
+      {
+        "key": "211"
+      }
+    ],
+    "type": {
+      "key": "3"
+    },
+    "version": [
+      {
+        "key": "1"
+      }
+    ],
+    "operations": [
+      {
+        "name": {
+          "key": "1"
+        },
+        "description": "Eine URL für die getCapabilities",
+        "methodCall": "https://my-getcapabilities"
+      }
+    ],
+    "resolution": [
+      {
+        "denominator": 1213,
+        "distanceMeter": 5435,
+        "distanceDPI": 545
+      }
+    ],
+    "systemEnvironment": "System",
+    "implementationHistory": "Historie",
+    "explanation": "Erläuterung",
+    "coupledResources": [
+      {
+        "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
+        "isExternalRef": false
+      },
+      {
+        "uuid": "93BBCF92-BD74-47A2-9865-BE59ABC90C57",
+        "isExternalRef": false
+      },
+      {
+        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
+        "title": "Extern gekoppelter Datensatz",
+        "isExternalRef": true
+      }
+    ],
+    "couplingType": {
+      "key": "tight"
+    },
+    "hasAccessConstraints": false
+  }
+}

@@ -3,8 +3,9 @@
 .title {
   padding-bottom: 10px;
   padding-top: 7px;
+  align-items: center;
 
-  .document-type {
+  ige-document-icon {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,11 +15,6 @@
     height: 26px;
     width: 26px;
     margin-right: 6px;
-    margin-top: 10px;
-
-    mat-icon {
-      color: $state-working-color;
-    }
   }
 
   .label {
@@ -26,7 +22,7 @@
     justify-content: space-between;
     color: $ige-primary;
     padding: 7px 10px;
-    margin: -5px 10px 4px 1px;
+    //margin: -5px 10px 4px 1px;
     line-height: 38px;
     cursor: not-allowed;
 
@@ -35,6 +31,7 @@
       &:hover {
         box-shadow: inset 0 0 0 2px $ige-comment-color;
         border-radius: 4px;
+        margin-right: 10px;
 
         ::ng-deep mat-icon {
           visibility: visible;
@@ -61,9 +58,9 @@
     margin-top: -3px;
   }
 
-  button {
-    margin-top: 10px;
-  }
+  //button {
+  //  margin-top: 10px;
+  //}
 
   .menu {
     margin-left: 5px;
@@ -79,32 +76,39 @@
     color: $ige-primary;
     font-size: 30px;
 
+    mat-form-field {
+      height: 52px;
+      margin-top: 9px;
+      font-size: 30px;
+      line-height: 30px;
+    }
+
     ::ng-deep textarea {
-      letter-spacing: 0.4px !important;
+      //letter-spacing: 0.4px !important;
     }
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-outline > div {
-    background-color: #ffffff;
+    //background-color: #ffffff;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0 !important;
-    margin: 0 0 9px;
+    //padding-bottom: 0 !important;
+    //margin: 0 0 9px;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-subscript-wrapper {
-    margin: 0 !important;
-    padding: 0 !important;
+    //margin: 0 !important;
+    //padding: 0 !important;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-infix {
-    padding: 10px 0 7px;
-    line-height: 38px;
+    //padding: 10px 0 7px;
+    //line-height: 38px;
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
-    padding: 5px 10px 0;
+    //padding: 5px 10px 0;
   }
 
   span {

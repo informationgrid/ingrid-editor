@@ -3,7 +3,7 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <span class="text">Vorschau</span>
+        <span class="text flex-1">Vorschau</span>
         <mat-button-toggle-group
             *ngIf="data.modelPublished"
             class="pull-right"
@@ -49,6 +49,6 @@
 
 <mat-dialog-actions>
     <button mat-button color="primary" mat-dialog-close>Schließen</button>
-    <div fxFlex></div>
+    <div class="flex-1"></div>
     <button mat-flat-button color="primary" (click)="print()">Drucken</button>
 </mat-dialog-actions>

@@ -35,6 +35,7 @@
                 showSelection="true"
                 [denseMode]="true"
                 [hideDivider]="true"
+                [setActiveItem]="initialActiveAddressType"
                 [showIcons]="false"
                 (select)="setRefType($event)"
             ></ige-document-list-item>
@@ -63,7 +64,7 @@
                 Zurück
             </button>
         </ng-container>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <ng-container *ngIf="typeSelectionEnabled && activeStep == 1">
             <button
                 mat-flat-button

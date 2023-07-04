@@ -8,9 +8,24 @@
     display: flex;
     align-items: center;
 
-    mat-icon,
     ige-document-icon {
-      padding-right: 10px;
+      margin-right: 6px;
+    }
+
+    mat-icon {
+      margin-right: 16px;
     }
   }
+
+  .remove-icon {
+    opacity: 0.4;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+ige-add-button {
+  display: block;
+  margin: 3px 0 22px;
 }

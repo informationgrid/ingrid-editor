@@ -16,7 +16,7 @@ export class DocumentTemplateComponent implements OnInit {
   @Input() form: UntypedFormGroup;
   @Input() isFolder = true;
 
-  @Output() create = new EventEmitter();
+  @Output() create = new EventEmitter<void>();
   documentTypes: DocumentAbstract[];
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null

@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+    <idf:head/>
+    <idf:body>
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+            <gmd:fileIdentifier>
+                <gco:CharacterString>55065077-0D06-4916-855F-F232311D7C07</gco:CharacterString>
+            </gmd:fileIdentifier>
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+            </gmd:language>
+            <gmd:characterSet>
+                <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+            </gmd:characterSet>
+            <gmd:parentIdentifier>
+                <gco:CharacterString>Übergeordneter Identifikator</gco:CharacterString>
+            </gmd:parentIdentifier>
+            <gmd:hierarchyLevel>
+                <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="nonGeographicDataset">nonGeographicDataset</gmd:MD_ScopeCode>
+            </gmd:hierarchyLevel>
+            <gmd:hierarchyLevelName>
+                <gco:CharacterString>job</gco:CharacterString>
+            </gmd:hierarchyLevelName>
+            <gmd:contact>
+                <idf:idfResponsibleParty type="100" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress>
+                                        <gco:CharacterString>test@wemove.com</gco:CharacterString>
+                                    </gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                    </gmd:role>
+                </idf:idfResponsibleParty>
+            </gmd:contact>
+            <gmd:dateStamp>
+                <gco:Date>2023-02-09</gco:Date>
+            </gmd:dateStamp>
+            <gmd:metadataStandardName>
+                <gco:CharacterString>ISO19115</gco:CharacterString>
+            </gmd:metadataStandardName>
+            <gmd:metadataStandardVersion>
+                <gco:CharacterString>2003/Cor.1:2006</gco:CharacterString>
+            </gmd:metadataStandardVersion>
+            <gmd:referenceSystemInfo>
+                <gmd:MD_ReferenceSystem>
+                    <gmd:referenceSystemIdentifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code>
+                                <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/4230">EPSG 4230: ED50 / geographisch</gmx:Anchor>
+                            </gmd:code>
+                        </gmd:RS_Identifier>
+                    </gmd:referenceSystemIdentifier>
+                </gmd:MD_ReferenceSystem>
+            </gmd:referenceSystemInfo>
+            <gmd:referenceSystemInfo>
+                <gmd:MD_ReferenceSystem>
+                    <gmd:referenceSystemIdentifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>DE_DHDN / GK_3_HE100</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:RS_Identifier>
+                    </gmd:referenceSystemIdentifier>
+                </gmd:MD_ReferenceSystem>
+            </gmd:referenceSystemInfo>
+            <gmd:identificationInfo>
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/55065077-0D06-4916-855F-F232311D7C07">
+                    <gmd:citation>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>Komplett Gefüllte Fachaufgabe</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:alternateTitle>
+                                <gco:CharacterString>Digitale Landschaftsmodelle</gco:CharacterString>
+                            </gmd:alternateTitle>
+                            <gmd:alternateTitle>
+                                <gco:CharacterString>Digitale Geländemodelle</gco:CharacterString>
+                            </gmd:alternateTitle>
+                            <gmd:alternateTitle>
+                                <gco:CharacterString>Testkurzbezeichnung</gco:CharacterString>
+                            </gmd:alternateTitle>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:DateTime>2023-02-09T00:00:00.000+01:00</gco:DateTime>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:DateTime>2023-02-28T00:00:00.000+01:00</gco:DateTime>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision"/>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:citation>
+                    <gmd:abstract>
+                        <gco:CharacterString>Komplett Gefüllte Fachaufgabe Beschreibung</gco:CharacterString>
+                    </gmd:abstract>
+                    <gmd:purpose>
+                        <gco:CharacterString>TestHerstellungszweck</gco:CharacterString>
+                    </gmd:purpose>
+                    <gmd:status>
+                        <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="onGoing"/>
+                    </gmd:status>
+                    <gmd:pointOfContact>
+                        <idf:idfResponsibleParty type="12" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                            <gmd:organisationName>
+                                <gco:CharacterString>Wemove Test</gco:CharacterString>
+                            </gmd:organisationName>
+                            <gmd:positionName>
+                                <gco:CharacterString>Positionsname</gco:CharacterString>
+                            </gmd:positionName>
+                            <gmd:contactInfo>
+                                <gmd:CI_Contact>
+                                    <gmd:address>
+                                        <gmd:CI_Address>
+                                            <gmd:deliveryPoint>
+                                                <gco:CharacterString>Postbox 123, P123 Frankfurt</gco:CharacterString>
+                                            </gmd:deliveryPoint>
+                                            <gmd:deliveryPoint>
+                                                <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
+                                            </gmd:deliveryPoint>
+                                            <gmd:city>
+                                                <gco:CharacterString>Frankfurt</gco:CharacterString>
+                                            </gmd:city>
+                                            <gmd:administrativeArea>
+                                                <gco:CharacterString>Hessen</gco:CharacterString>
+                                            </gmd:administrativeArea>
+                                            <gmd:postalCode>
+                                                <gco:CharacterString>60</gco:CharacterString>
+                                            </gmd:postalCode>
+                                            <gmd:country>
+                                                <gco:CharacterString>DEU</gco:CharacterString>
+                                            </gmd:country>
+                                            <gmd:electronicMailAddress>
+                                                <gco:CharacterString>test@wemove.com</gco:CharacterString>
+                                            </gmd:electronicMailAddress>
+                                        </gmd:CI_Address>
+                                    </gmd:address>
+                                </gmd:CI_Contact>
+                            </gmd:contactInfo>
+                            <gmd:role>
+                                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                            </gmd:role>
+                            <idf:hierarchyParty uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                                <idf:addressType>0</idf:addressType>
+                            </idf:hierarchyParty>
+                        </idf:idfResponsibleParty>
+                    </gmd:pointOfContact>
+                    <gmd:resourceMaintenance>
+                        <gmd:MD_MaintenanceInformation>
+                            <gmd:maintenanceAndUpdateFrequency>
+                                <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="continual"/>
+                            </gmd:maintenanceAndUpdateFrequency>
+                            <gmd:userDefinedMaintenanceFrequency>
+                                <gts:TM_PeriodDuration>P2M</gts:TM_PeriodDuration>
+                            </gmd:userDefinedMaintenanceFrequency>
+                            <gmd:updateScope>
+                                <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="nonGeographicDataset"/>
+                            </gmd:updateScope>
+                            <gmd:maintenanceNote>
+                                <gco:CharacterString>Testerläuterung2</gco:CharacterString>
+                            </gmd:maintenanceNote>
+                        </gmd:MD_MaintenanceInformation>
+                    </gmd:resourceMaintenance>
+                    <gmd:graphicOverview>
+                        <gmd:MD_BrowseGraphic>
+                            <gmd:fileName>
+                                <gco:CharacterString>https://test.test</gco:CharacterString>
+                            </gmd:fileName>
+                            <gmd:fileDescription>
+                                <gco:CharacterString>testBildBeschreibung</gco:CharacterString>
+                            </gmd:fileDescription>
+                        </gmd:MD_BrowseGraphic>
+                    </gmd:graphicOverview>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Adressen</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>Atmosphärische Bedingungen</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2008-06-01</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Wasser</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>Luft</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2009-01-15</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Frei1</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>Frei2</gco:CharacterString>
+                            </gmd:keyword>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Construction</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>Soil Pollution</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>German Environmental Classification - Topic, version 1.0</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2006-05-01</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Gesetz über eine Holzstatistik</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>Further legal basis</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2020-05-05</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:resourceSpecificUsage>
+                        <gmd:MD_Usage>
+                            <gmd:specificUsage>
+                                <gco:CharacterString>TestEignung/Nutzung</gco:CharacterString>
+                            </gmd:specificUsage>
+                            <gmd:userContactInfo gco:nilReason="unknown"/>
+                        </gmd:MD_Usage>
+                    </gmd:resourceSpecificUsage>
+                    <gmd:language>
+                        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng"/>
+                    </gmd:language>
+                    <gmd:language>
+                        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+                    </gmd:language>
+                    <gmd:extent>
+                        <gmd:EX_Extent>
+                            <gmd:description>
+                                <gco:CharacterString>Testerläuterung1</gco:CharacterString>
+                            </gmd:description>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>FreierBezug</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>1.0</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>3.0</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>2.0</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>4.0</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>Hannover</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>9.235984</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>10.309714</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>52.130035</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>52.678265</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>8.473561</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>8.801178</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>50.015156</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>50.226444</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_BoundingPolygon>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:polygon>
+                                        <gml:Point>
+                                            <gml:pos>10 10</gml:pos>
+                                        </gml:Point>
+                                    </gmd:polygon>
+                                </gmd:EX_BoundingPolygon>
+                            </gmd:geographicElement>
+                            <gmd:temporalElement>
+                                <gmd:EX_TemporalExtent>
+                                    <gmd:extent>
+                                        <gml:TimePeriod gml:id="timePeriod_ID_00000000-0000-0000-0000-000000000000">
+                                            <gml:beginPosition>2023-02-08T00:00:00.000+01:00</gml:beginPosition>
+                                            <gml:endPosition indeterminatePosition="now"/>
+                                        </gml:TimePeriod>
+                                    </gmd:extent>
+                                </gmd:EX_TemporalExtent>
+                            </gmd:temporalElement>
+                            <gmd:verticalElement>
+                                <gmd:EX_VerticalExtent>
+                                    <gmd:minimumValue>
+                                        <gco:Real>1.1</gco:Real>
+                                    </gmd:minimumValue>
+                                    <gmd:maximumValue>
+                                        <gco:Real>2.2</gco:Real>
+                                    </gmd:maximumValue>
+                                    <gmd:verticalCRS>
+                                        <gml:VerticalCRS gml:id="verticalCRSN_ID_00000000-0000-0000-0000-000000000000">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:scope/>
+                                            <gml:verticalCS>
+                                                <gml:VerticalCS gml:id="verticalCS_ID_00000000-0000-0000-0000-000000000000">
+                                                    <gml:identifier codeSpace=""/>
+                                                    <gml:axis>
+                                                        <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_00000000-0000-0000-0000-000000000000" uom="Kilometre">
+                                                            <gml:identifier codeSpace=""/>
+                                                            <gml:axisAbbrev/>
+                                                            <gml:axisDirection codeSpace=""/>
+                                                        </gml:CoordinateSystemAxis>
+                                                    </gml:axis>
+                                                </gml:VerticalCS>
+                                            </gml:verticalCS>
+                                            <gml:verticalDatum>
+                                                <gml:VerticalDatum gml:id="verticalDatum_ID_00000000-0000-0000-0000-000000000000">
+                                                    <gml:identifier codeSpace=""/>
+                                                    <gml:name>Mean Sea Level</gml:name>
+                                                    <gml:scope/>
+                                                </gml:VerticalDatum>
+                                            </gml:verticalDatum>
+                                        </gml:VerticalCRS>
+                                    </gmd:verticalCRS>
+                                </gmd:EX_VerticalExtent>
+                            </gmd:verticalElement>
+                        </gmd:EX_Extent>
+                    </gmd:extent>
+                </gmd:MD_DataIdentification>
+            </gmd:identificationInfo>
+            <idf:abstract>
+                <gco:CharacterString>Komplett Gefüllte Fachaufgabe Beschreibung</gco:CharacterString>
+            </idf:abstract>
+        </idf:idfMdMetadata>
+    </idf:body>
+</idf:html>

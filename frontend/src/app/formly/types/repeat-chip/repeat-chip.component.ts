@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ChipDialogComponent,
@@ -10,22 +10,75 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { debounceTime, map, startWith } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { CodelistQuery } from "../../../store/codelist/codelist.query";
+import {
+  CodelistService,
+  SelectOption,
+  SelectOptionUi,
+} from "../../../services/codelist/codelist.service";
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
   styleUrls: ["./repeat-chip.component.scss"],
 })
-export class RepeatChipComponent extends FieldArrayType {
+export class RepeatChipComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();
 
-  constructor(private dialog: MatDialog) {
+  type: "simple" | "codelist" | "object" = "simple";
+
+  searchSub: Subscription;
+  searchResult = new BehaviorSubject<any[]>([]);
+  codelistOptions: Observable<SelectOptionUi[]>;
+  filteredOptions: Observable<SelectOptionUi[]>;
+
+  constructor(
+    private dialog: MatDialog,
+    private http: HttpClient,
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private codelistQuery: CodelistQuery
+  ) {
     super();
 
     // show error immediately (on publish)
     this.inputControl.setValue("");
     this.inputControl.markAllAsTouched();
+  }
+
+  ngOnInit() {
+    if (this.props.codelistId) {
+      this.type = "codelist";
+      this.props.labelField = "label";
+      this.codelistOptions = this.codelistQuery
+        .selectEntity(this.props.codelistId)
+        .pipe(map((codelist) => CodelistService.mapToSelect(codelist)));
+    } else if (this.props.restCall) {
+      this.type = "object";
+      this.inputControl.valueChanges
+        .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
+        .subscribe((query) => this.search(query));
+    }
+  }
+
+  search(value) {
+    if (!value || value.length === 0) {
+      this.searchResult.next([]);
+      return;
+    }
+    this.searchSub?.unsubscribe();
+    this.searchSub = this.props
+      .restCall(this.http, value)
+      .subscribe((result) => {
+        this.searchResult.next(result);
+      });
+    this.cdr.detectChanges();
   }
 
   openDialog() {
@@ -35,6 +88,7 @@ export class RepeatChipComponent extends FieldArrayType {
           options: this.props.options,
           model: this.model,
         },
+        restoreFocus: true,
         hasBackdrop: true,
       })
       .afterClosed()
@@ -70,8 +124,50 @@ export class RepeatChipComponent extends FieldArrayType {
     }
   }
 
-  addValues(value: string) {
-    let duplicates = [];
+  async addValues(value: string) {
+    let duplicates = this.addValueAndDetermineDuplicates(value);
+
+    this.inputControl.setValue("");
+
+    if (duplicates.length > 0) this.handleDuplicates(duplicates);
+  }
+
+  addValueObject(value: any) {
+    this.inputControl.setValue("");
+
+    const label = value[this.props.labelField];
+    const alreadyExists = this.model.some(
+      (item) => item[this.props.labelField] == label
+    );
+    if (alreadyExists) {
+      this.snack.open(`Der Begriff '${label}' existiert bereits`);
+      return;
+    }
+
+    if (this.type === "codelist") {
+      const prepared = new SelectOption(value.value, value.label);
+      this.add(null, prepared.forBackend());
+    } else {
+      this.add(null, value);
+    }
+  }
+
+  private handleDuplicates(duplicates: any[]) {
+    let formattedDuplicates = this.prepareDuplicatesForView(duplicates);
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Bitte beachten",
+        message:
+          "Die Eingabe von " +
+          formattedDuplicates +
+          " erfolgte mehrfach, wurde aber nur einmal übernommen.",
+        buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
+      } as ConfirmDialogData,
+    });
+  }
+
+  private addValueAndDetermineDuplicates(value: string) {
+    const duplicates = [];
     value.split(",").forEach((item) => {
       const trimmed = item.trim();
       if (trimmed == "") return;
@@ -82,31 +178,21 @@ export class RepeatChipComponent extends FieldArrayType {
         if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
       }
     });
-    this.inputControl.setValue("");
-    if (duplicates.length > 0) {
-      duplicates = duplicates.map((dup) => "'" + dup + "'");
-      var formatedDuplicates = "";
-      if (duplicates.length == 1) {
-        formatedDuplicates = duplicates[0];
-      } else {
-        formatedDuplicates = duplicates
-          .join(", ")
-          .replace(/,([^,]*)$/, " und$1");
-      }
-      this.dialog.open(ConfirmDialogComponent, {
-        data: {
-          title: "Bitte beachten",
-          message:
-            "Die Eingabe von " +
-            formatedDuplicates +
-            " erfolgte mehrfach, wurde aber nur einmal übernommen.",
-          buttons: [{ text: "Ok", alignRight: true, emphasize: true }],
-        } as ConfirmDialogData,
-      });
-    }
+    return duplicates;
   }
 
-  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+  private prepareDuplicatesForView(duplicates: any[]) {
+    duplicates = duplicates.map((dup) => "'" + dup + "'");
+    let formatedDuplicates: string;
+    if (duplicates.length == 1) {
+      formatedDuplicates = duplicates[0];
+    } else {
+      formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, " und$1");
+    }
+    return formatedDuplicates;
+  }
+
+  drop(event: { previousIndex: number; currentIndex: number }) {
     const item = this.model[event.previousIndex];
     this.remove(event.previousIndex);
     this.add(event.currentIndex, item);

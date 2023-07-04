@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.services.CodelistHandler
@@ -22,6 +24,8 @@ data class MCloudModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val _contentModified: OffsetDateTime,
     override val distributions: List<DownloadModel>?,
     override val license: String?,
 ) : DCAT {
@@ -133,7 +137,7 @@ data class MCloudModel(
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val modified: String
     get(){
-        return _modified.format(formatter)
+        return _contentModified.format(formatter)
     }
     val created: String
         get(){

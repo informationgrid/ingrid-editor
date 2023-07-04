@@ -20,3 +20,8 @@ title: Passpunktverfügbarkeit
 
 Angabe, ob Passpunkte existieren.
 
+# ISO Abbildung
+
+Angabe, ob Passpunkte existieren.
+
+Domain: 171 (gmd:controlPointAvailability)

@@ -49,7 +49,7 @@ export class DocBehavioursService {
       : this.showOnlyFoldersInTree(forAddress);
   }
 
-  filterDocTypesByParent(types: ProfileAbstract[], parent: string) {
+  filterDocTypesByParent(types: ProfileAbstract[], parent: number) {
     /*const parentType = this.tree.getEntity(parent)._type;
     const profile = this.profileService.getProfile(parentType);
     if (profile.addressType === "organization") {

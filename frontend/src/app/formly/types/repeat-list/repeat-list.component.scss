@@ -1,25 +1,20 @@
 @import "src/variables";
 
-:host {
-  margin-top: 1em;
-}
-
 .component-list {
   max-width: 100%;
   //border: solid 1px #ccc;
-  min-height: 36px;
   display: block;
   background: white;
   //border-radius: 4px;
   overflow: hidden;
 
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-top: 1px solid #ccc;
+  //border-left: 1px solid #ccc;
+  //border-right: 1px solid #ccc;
+  //border-top: 1px solid #ccc;
 }
 
 .list-item {
-  height: 36px;
+  min-height: 36px;
   padding: 0 10px 0 15px;
   //color: rgba(0, 0, 0, 0.87);
   display: flex;
@@ -30,6 +25,7 @@
   cursor: move;
   background: white;
   font-size: 16px;
+  line-height: 20px;
 
   &:not(:last-child) {
     border-bottom: 1px solid #eee;
@@ -43,27 +39,52 @@
     }
   }
 
-  .mat-icon-button {
-    display: none;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
+  .close {
+    opacity: 0;
   }
 
-  &:hover {
-    .mat-icon-button {
-      display: block;
+  &:hover,
+  &:focus {
+    .close {
+      opacity: 1;
     }
+  }
+
+  .close:focus {
+    opacity: 1;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 1px 0 #000;
   }
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
+/*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
 :host ::ng-deep .mat-form-field-flex {
   align-items: center;
-
+  /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
   .mat-form-field-prefix,
   .mat-form-field-suffix {
     top: 0.125em;
   }
+}
+
+// Enable line break when the content of option is too long.
+// Issue ref: https://github.com/angular/components/issues/26584
+:host ::ng-deep {
+  .mdc-evolution-chip__cell--primary,
+  .mdc-evolution-chip__action--primary,
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
+}
+
+// Help to determine when to line break.
+.cdk-drop-list {
+  max-width: 100%;
 }
 
 .list-display-element {
@@ -76,6 +97,35 @@
   }
 }
 
-mat-error {
-  margin-top: -14px;
+mat-icon.search-icon {
+  padding: 8px;
+}
+
+.text-wrapper {
+  padding: 6px 0 6px 0;
+}
+
+mat-chip-listbox {
+  padding-bottom: 10px;
+
+  ige-add-button {
+    margin-left: 8px;
+    line-height: 42px;
+  }
+}
+
+.mat-mdc-chip {
+  border-radius: 4px;
+  cursor: move;
+  min-height: 36px;
+
+  .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
 }

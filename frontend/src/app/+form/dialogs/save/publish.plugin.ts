@@ -1,17 +1,16 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { Subscription } from "rxjs";
+import { of, Subscription } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FormStateService } from "../../form-state.service";
-import { AbstractControl } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
@@ -21,6 +20,8 @@ import {
 } from "../../../services/event/doc-events.service";
 import { SessionStore } from "../../../store/session.store";
 import { FormMessageService } from "../../../services/form-message.service";
+import { IgeError } from "../../../models/ige-error";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -36,6 +37,7 @@ export class PublishPlugin extends SaveBase {
   eventRevertId = "REVERT";
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
+  eventValidate = "VALIDATE";
   private tree: TreeQuery | AddressTreeQuery;
 
   constructor(
@@ -52,6 +54,7 @@ export class PublishPlugin extends SaveBase {
   ) {
     super(sessionStore, messageService);
     this.isActive = true;
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {
@@ -75,6 +78,9 @@ export class PublishPlugin extends SaveBase {
       this.docEvents
         .onEvent(this.eventUnpublishId)
         .subscribe(() => this.showUnpublishDialog()),
+      this.docEvents
+        .onEvent(this.eventValidate)
+        .subscribe(() => this.validateDataset()),
     ];
 
     // add behaviour to set active states for toolbar buttons
@@ -128,6 +134,11 @@ export class PublishPlugin extends SaveBase {
           label: "Veröffentlichung zurückziehen",
           active: false,
         },
+        {
+          eventId: this.eventValidate,
+          label: "Veröffentlichung prüfen",
+          active: true,
+        },
       ],
     });
   }
@@ -152,11 +163,9 @@ export class PublishPlugin extends SaveBase {
       return false;
     } else {
       if (formIsInvalid || hasOtherErrors) {
-        const errors = this.calculateErrors(this.getForm().controls).join(",");
-        console.warn("Invalid fields:", errors);
         if (hasOtherErrors) console.warn("Other errors:", validation.errors);
-        this.modalService.showJavascriptError(
-          "Es müssen alle Felder korrekt ausgefüllt werden."
+        this.modalService.showIgeError(
+          new IgeError("Es müssen alle Felder korrekt ausgefüllt werden.")
         );
         return false;
       }
@@ -231,10 +240,6 @@ export class PublishPlugin extends SaveBase {
       .subscribe((date) => {
         this.saveWithData(this.getForm().value, date);
       });
-  }
-
-  private calculateErrors(controls: { [p: string]: AbstractControl }) {
-    return Object.keys(controls).filter((key) => controls[key].invalid);
   }
 
   saveWithData(data, delay: Date = null) {
@@ -325,14 +330,39 @@ export class PublishPlugin extends SaveBase {
     });
   }
 
-  private unpublish(id: string) {
+  private unpublish(id: number) {
     this.documentService.unpublish(id, this.forAddress).subscribe();
   }
 
   private checkForAllParentsPublished() {
-    const id = this.getForm().value._id;
+    const id: number = this.getForm().value._id;
     return this.tree
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
+  }
+
+  private validateDataset() {
+    const isValid = this.validateBeforePublish();
+    this.documentService
+      .validateDocument(this.getForm().value._id)
+      .pipe(
+        catchError((e) => {
+          const error = this.prepareValidationError(e);
+          error.unhandledException = false;
+          this.modalService.showIgeError(error);
+          return of(error);
+        })
+      )
+      .subscribe((result) => {
+        console.log("backendValidation: ", result);
+        if (result instanceof IgeError) return;
+
+        this.modalService.confirmWith({
+          title: "Prüfung",
+          message: "Der Datensatz wurde erfolgreich geprüft.",
+          hideCancelButton: true,
+        });
+      });
+    console.log("isValid: ", isValid);
   }
 }

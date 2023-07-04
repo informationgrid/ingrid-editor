@@ -7,7 +7,7 @@
             [forReports]="true"
         ></ige-facets>
     </div>
-    <div main-content fxLayout="column" fxLayoutGap="24px">
+    <div main-content class="flex-col gap-24">
         <div class="download-button">
             <button
                 mat-stroked-button
@@ -20,7 +20,7 @@
                 <span class="btn-title">Bericht herunterladen</span>
             </button>
         </div>
-        <ige-card-box fxFlex label="Kennzahlen">
+        <ige-card-box class="flex-1" label="Kennzahlen">
             <table
                 mat-table
                 [dataSource]="dataSourceMiscellaneous"
@@ -49,7 +49,7 @@
             </table>
         </ige-card-box>
 
-        <ige-card-box fxFlex label="Verwendete UVP Nummern">
+        <ige-card-box class="flex-1" label="Verwendete UVP Nummern">
             <table
                 mat-table
                 [dataSource]="dataSource"

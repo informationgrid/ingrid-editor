@@ -12,16 +12,18 @@ import {
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { map } from "rxjs/operators";
+import { distinctUntilChanged, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
+import { FormUtils } from "../../../+form/form.utils";
+import { FormStateService } from "../../../+form/form-state.service";
 
 interface Reference {
   isExternalRef: boolean;
 }
 
-interface DocumentReference extends Reference {
+export interface DocumentReference extends Reference {
   title: string;
   uuid: string;
   state: DocumentState;
@@ -33,6 +35,13 @@ interface UrlReference extends Reference {
   title: string;
   url: string;
 }
+
+export const docReferenceTemplate: Partial<DocumentReference> = {
+  isExternalRef: false,
+  state: "W",
+  type: "InGridGeoDataset",
+  icon: "Geodatensatz",
+};
 
 @UntilDestroy()
 @Component({
@@ -53,17 +62,26 @@ export class DocumentReferenceTypeComponent
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
-    private tree: TreeQuery
+    private tree: TreeQuery,
+    private formStateService: FormStateService
   ) {
     super();
   }
 
   ngOnInit() {
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        startWith(<any[]>this.formControl.value),
+        distinctUntilChanged((a, b) => {
+          if (a.length !== b.length) return false;
+          return (
+            JSON.stringify(a.map((item) => item.uuid)) ===
+            JSON.stringify(b.map((item) => item.uuid))
+          );
+        })
+      )
       .subscribe((_) => this.buildModel());
-
-    setTimeout(() => this.buildModel());
   }
 
   showInternalRefDialog() {
@@ -79,6 +97,7 @@ export class DocumentReferenceTypeComponent
             type: "InGridGeoDataset",
             icon: "Geodatensatz",
           });
+          this.props.change?.(this.field);
         }
       });
   }
@@ -94,14 +113,28 @@ export class DocumentReferenceTypeComponent
             url: item.url,
             isExternalRef: true,
           });
+          this.props.change?.(this.field);
         }
       });
   }
 
-  openReference(item: DocumentReference | UrlReference) {
+  async openReference(item: DocumentReference | UrlReference) {
+    if (this.formControl.disabled) return;
+
     if (item.isExternalRef) {
       window.open((<UrlReference>item).url, "_blank");
     } else {
+      // TODO: check for dirty form
+      const handled = await FormUtils.handleDirtyForm(
+        this.formStateService.getForm(),
+        this.docService,
+        this.dialog,
+        false
+      );
+
+      if (!handled) {
+        return;
+      }
       this.router.navigate([
         `${ConfigService.catalogId}/form`,
         { id: (<DocumentReference>item).uuid },
@@ -112,6 +145,7 @@ export class DocumentReferenceTypeComponent
   removeItem(index: number, event: MouseEvent) {
     event.stopImmediatePropagation();
     this.remove(index);
+    this.props.change?.(this.field, event);
   }
 
   private async buildModel() {

@@ -20,7 +20,7 @@
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
                 <button
-                    mat-icon-button
+                    mat-button
                     class="drop-down"
                     [matMenuTriggerFor]="copyMenu"
                     [attr.data-cy]="'toolbar_' + button.eventId"
@@ -35,9 +35,9 @@
                         [svgIcon]="button.matSvgVariable"
                         >{{ button.matIconVariable }}</mat-icon
                     >
-                    <mat-icon>{{
-                        menu[button.id] ? "arrow_drop_up" : "arrow_drop_down"
-                    }}</mat-icon>
+                    <mat-icon class="animated" [class.flipIt]="menu[button.id]"
+                        >arrow_drop_down
+                    </mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
                     <button
@@ -57,7 +57,8 @@
                 [vertical]="true"
             ></mat-divider>
         </ng-container>
-        <div fxFlex></div>
+
+        <div class="flex-1"></div>
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">

@@ -1,0 +1,145 @@
+{
+  "_uuid": "212cebd4-abb4-4d2d-b3f7-da790186aa96",
+  "title": "geodienst_max",
+  "_type": "InGridGeoService",
+  "themes": [{ "key": "105" }],
+  "service": {
+    "type": { "key": "6" },
+    "version": [{ "key": "3" }],
+    "operations": [
+      {
+        "name": { "key": "1" },
+        "methodCall": "op-url",
+        "description": "op-descr"
+      }
+    ],
+    "resolution": [{ "denominator": 2, "distanceDPI": 5, "distanceMeter": 3 }],
+    "explanation": "additional infos",
+    "couplingType": { "key": "tight" },
+    "classification": [{ "key": "509" }],
+    "coupledResources": [
+      {
+        "icon": "Geodatensatz",
+        "type": "InGridGeoDataset",
+        "uuid": "9d6e8a4a-de9c-4809-b4b2-c21721ed5967",
+        "state": "W",
+        "isExternalRef": false
+      }
+    ],
+    "systemEnvironment": "system env",
+    "hasAccessConstraints": true,
+    "implementationHistory": "history"
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Lederhose, Münchenbernsdorf, Greiz, Thüringen, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.7910776,
+          "lat2": 50.8084996,
+          "lon1": 11.8930983,
+          "lon2": 11.941834
+        }
+      },
+      {
+        "type": "free",
+        "ars": "12AB"
+      }
+    ],
+    "description": "some infos",
+    "spatialSystems": [{ "key": "9000012" }],
+    "verticalExtent": {
+      "Datum": { "key": "900005" },
+      "maximumValue": 6,
+      "minimumValue": 4,
+      "unitOfMeasure": { "key": "9001" }
+    }
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "optional"
+      }
+    ]
+  },
+  "metadata": { "language": { "key": "123" } },
+  "resource": {
+    "purpose": "purpose",
+    "specificUsage": "use",
+    "useLimitation": "use-constraints",
+    "useConstraints": [{ "title": { "key": "17" }, "source": "source" }],
+    "accessConstraints": [{ "key": "6" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-09-12T22:00:00.000Z",
+        "referenceDateType": { "key": "1" }
+      }
+    ],
+    "status": { "key": "5" },
+    "resourceDate": "2022-09-07T22:00:00.000Z",
+    "resourceDateType": { "key": "since" },
+    "resourceDateTypeSince": { "key": "requestTime" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "59" }] },
+  "orderInfo": "order-info",
+  "isOpenData": false,
+  "references": [
+    {
+      "url": "ref-url",
+      "type": { "key": "5304" },
+      "title": "reference-title",
+      "explanation": "reference-additional-info"
+    }
+  ],
+  "description": "descr",
+  "distribution": {
+    "format": [
+      {
+        "name": { "key": "5" },
+        "version": "4",
+        "compression": "compression",
+        "specification": "spec"
+      }
+    ]
+  },
+  "spatialScope": { "key": "-673152846" },
+  "alternateTitle": "short_descr",
+  "pointOfContact": [
+    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "3" } }
+  ],
+  "isAdVCompatible": true,
+  "advProductGroups": [{ "key": "2" }],
+  "graphicOverviews": [
+    {
+      "title": "first_archived(1)",
+      "fileName": {
+        "uri": "first_archived(1).txt",
+        "value": "first_archived(1).txt",
+        "asLink": false
+      }
+    }
+  ],
+  "parentIdentifier": "ident",
+  "priorityDatasets": [{ "key": "2016179652" }],
+  "conformanceResult": [
+    {
+      "pass": { "key": "3" },
+      "isInspire": true,
+      "explanation": null,
+      "specification": { "key": "12" },
+      "publicationDate": "2010-12-08"
+    }
+  ],
+  "isInspireIdentified": false,
+  "digitalTransferOptions": [
+    { "name": { "key": "1" }, "mediumNote": "archive", "transferSize": 200 }
+  ],
+  "maintenanceInformation": {
+    "description": "erlauterungen",
+    "maintenanceAndUpdateFrequency": { "key": "8" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 5 }
+  }
+}

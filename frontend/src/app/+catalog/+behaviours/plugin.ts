@@ -26,6 +26,7 @@ export abstract class Plugin {
   subscriptions: Subscription[] = [];
   fields?: FormlyFieldConfig[] = [];
   data?: any;
+  hideInAddress = false;
 
   register(): void {
     console.log("Register: ", this.name);
@@ -41,7 +42,7 @@ export abstract class Plugin {
 
   update(): void {}
 
-  setForAddress(): void {
-    this.forAddress = true;
+  setForAddress(forAddress: boolean): void {
+    this.forAddress = forAddress;
   }
 }

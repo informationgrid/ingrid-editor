@@ -1,12 +1,6 @@
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -27,10 +21,10 @@ export class DataCollectionDoctype extends IngridShared {
 
       this.addSection("Fachbezug", [
         this.addRepeat("categoryCatalog", "Objektartenkatalog", {
-          className: "optional",
           expressions: {
             "props.required":
               "formState.mainModel?.databaseContent?.length > 0",
+            className: "field.props.required ? '' : 'optional'",
           },
           fields: [
             this.addAutocomplete("title", "Titel", {
@@ -40,7 +34,6 @@ export class DataCollectionDoctype extends IngridShared {
               options: this.getCodelistForSelect(3535, "title"),
               codelistId: 3535,
             }),
-            { key: "_type" },
             this.addDatepickerInline("date", "Datum", {
               className: "flex-1",
               required: true,
@@ -79,15 +72,4 @@ export class DataCollectionDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService
-  ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
-  }
 }

@@ -1,9 +1,5 @@
-:host {
-  margin-top: 0.3em;
-}
-
 .address-cards {
-  padding-bottom: 14px;
+  padding: 12px 0;
 
   &.draggable {
     cursor: move;
@@ -18,8 +14,8 @@
   box-shadow: none;
 }
 
-// TODO: refactor to global style?
 ige-add-button {
   display: block;
-  margin: 11px 0;
+  margin-top: 3px;
+  padding-bottom: 22px;
 }

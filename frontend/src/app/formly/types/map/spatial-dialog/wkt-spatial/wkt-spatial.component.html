@@ -1,8 +1,6 @@
-<div fxLayout="column">
-    <div class="place-title small-bottom">Raumbezug herstellen</div>
-
+<div class="flex-col">
     <div class="dlg-field-label required">Begrenzungspolygon als WKT*</div>
-    <mat-form-field class="width-100" appearance="outline">
+    <mat-form-field class="width-100 top-align-suffix" appearance="outline">
         <textarea
             #wkt
             matInput
@@ -10,19 +8,36 @@
             [value]="wktString"
             igeFocus
             data-cy="spatial-dialog-wkt"
-            placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0)(5 5, 5 7, 7 7, 7 5, 5 5))"
+            placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))"
         ></textarea>
+        <button
+            mat-icon-button
+            matSuffix
+            class="hint"
+            (click)="showHelpDialog()"
+        >
+            <mat-icon class="material-icons-outlined" svgIcon="info-24px">
+            </mat-icon>
+        </button>
     </mat-form-field>
-    <div>
-        <button mat-button color="primary" (click)="validateWKT(wkt.value)">
-            Anzeigen
+    <div class="flex-row align-items-center gap-6 btn-analyze space-bottom">
+        <mat-spinner *ngIf="isAnalyzing" diameter="16"></mat-spinner>
+        <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            data-cy="btn-analyze"
+            (click)="validateWKT(wkt.value)"
+            [disabled]="isAnalyzing || wkt.value.trim().length === 0"
+        >
+            Prüfen und anzeigen
         </button>
     </div>
 
+    <ige-form-error *ngIf="error">{{ error }} </ige-form-error>
+
     <mat-hint class="hint-text-custom-style">
-        Nur in geografischen Koordinaten (WGS84) möglich. Unterstützt werden
-        Polygone mit einer Außen- und Innengrenze (Löcher), Points und
-        Linestrings. Zur Darstellung auf der Karte klicken Sie auf
-        "Anzeigen".</mat-hint
+        Zur Darstellung auf der Karte klicken Sie auf "Prüfen und
+        Anzeigen"</mat-hint
     >
 </div>

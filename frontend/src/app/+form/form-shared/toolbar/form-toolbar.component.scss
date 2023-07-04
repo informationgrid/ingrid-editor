@@ -48,7 +48,7 @@
 }
 
 .save-buttons {
-  .toolbar-save-button:not(.mat-button-disabled) {
+  .toolbar-save-button:not([disabled]) {
     color: $ige-secondary;
     background: white;
   }
@@ -83,7 +83,7 @@
   max-width: 500px;
 }
 
-.mat-icon-button:not([disabled]):hover {
+.mat-mdc-icon-button:not([disabled]):hover {
   background-color: darken($ige-background-bar, 5%) !important;
   border-radius: 4px;
 }

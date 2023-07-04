@@ -32,6 +32,9 @@ import { FeatureFlagDirective } from "../directives/feature-flag.directive";
 import { DndDirective } from "../directives/dnd.directive";
 import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
+import { SearchInputComponent } from "./search-input/search-input.component";
+import { DocumentIconModule } from "./document-icon/document-icon.module";
+import { FullNamePipe } from "../directives/full-name.pipe";
 
 @NgModule({
   imports: [
@@ -57,6 +60,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatMenuModule,
     MatSelectModule,
     TranslocoModule,
+    DocumentIconModule,
+    SearchInputComponent,
   ],
   declarations: [
     TreeComponent,
@@ -68,6 +73,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     SpatialListComponent,
     FeatureFlagDirective,
     DndDirective,
+    FullNamePipe,
   ],
   exports: [
     TreeComponent,
@@ -83,6 +89,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     SpatialListComponent,
     FeatureFlagDirective,
     DndDirective,
+    SearchInputComponent,
+    FullNamePipe,
   ],
 })
 export class SharedModule {}

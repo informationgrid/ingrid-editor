@@ -3,25 +3,18 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.vladmihalcea.hibernate.type.array.ListArrayType
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import de.ingrid.igeserver.services.DocumentService
+import io.hypersistence.utils.hibernate.type.array.ListArrayType
+import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.*
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.Table
 
 @Entity
 @Table(name = "document_wrapper")
-@TypeDef(
-    name = "list-array",
-    typeClass = ListArrayType::class
-)
 @Where(clause = "deleted = 0")
 class DocumentWrapper {
 
@@ -42,7 +35,7 @@ class DocumentWrapper {
 
     @Column(nullable = false)
     @JsonProperty("_type")
-    var type: String? = null
+    lateinit var type: String
 
     @Column(nullable = false)
     @JsonProperty("_category")
@@ -64,8 +57,8 @@ class DocumentWrapper {
     @JsonSetter("_parent")
     private var parentUuid: String? = null
 
-/*    @JsonIgnore
-    private var parentId: Int? = null*/
+    /*    @JsonIgnore
+        private var parentId: Int? = null*/
 
     @JsonGetter("_parent")
     fun getParentUuid(): String? {
@@ -75,83 +68,10 @@ class DocumentWrapper {
         return this.parentUuid
     }
 
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "draft", nullable = true)
-    @JsonAlias("draft") // hint for model registry
-    @JsonIgnore
-    var draft: Document? = null
-
-    @Transient
-    @JsonSetter("draft")
-    private var draftId: String? = null
-
-    @JsonGetter("draft")
-    fun getDraftId(): String? {
-        if (this.draftId == null) {
-            this.draftId = draft?.id?.toString()
-        }
-        return this.draftId
-    }
-
-    /**
-     * Published document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('published') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "published", nullable = true)
-    @JsonAlias("published") // hint for model registry
-    @JsonIgnore
-    var published: Document? = null
-
-    @Transient
-    @JsonSetter("published")
-    private var publishedId: String? = null
-
-    @JsonGetter("published")
-    fun getPublishedId(): String? {
-        if (this.publishedId == null) {
-            this.publishedId = published?.id?.toString()
-        }
-        return this.publishedId
-    }
-
-    /**
-     * Archive document relation (many-to-many)
-     * NOTE Since the JSON representation contains document ids ('archive') only, we need
-     * to map them manually to document instances for persistence
-     */
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "document_archive",
-        joinColumns = [JoinColumn(name = "wrapper_id")],
-        inverseJoinColumns = [JoinColumn(name = "document_id")]
-    )
-    @JsonAlias("archive") // hint for model registry
-    @JsonIgnore
-    var archive: MutableSet<Document> = LinkedHashSet<Document>()
-
-    @Transient
-    @JsonSetter("archive")
-    private var archiveIds: Array<String>? = null
-
-    @JsonGetter("archive")
-    fun getArchiveIds(): Array<String> {
-        if (this.archiveIds == null) {
-            this.archiveIds = archive.map { it.id.toString() }.toTypedArray()
-        }
-        return this.archiveIds!!
-    }
-
-    @Type(type = "list-array")
+    @Type(ListArrayType::class)
     @Column(
-        name = "path",
-        columnDefinition = "text[]"
+            name = "path",
+            columnDefinition = "text[]"
     )
     var path: List<String> = emptyList()
         get() = if (field == null) emptyList() else field // field can actually be null if in db table null
@@ -163,17 +83,11 @@ class DocumentWrapper {
     @Column(name = "deleted")
     var deleted = 0
 
+    @Type(ListArrayType::class)
+    @Column(name = "tags", columnDefinition = "text[]")
+    var tags: List<String> = emptyList()
+        get() = if (field == null) emptyList() else field // field can actually be null if in db table null
 
-    /**
-     * Draft document relation (many-to-one)
-     * NOTE Since the JSON representation contains a document id ('draft') only, we need
-     * to map it manually to the document instance for persistence
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "pending", nullable = true)
-    @JsonAlias("pending") // hint for model registry
-    @JsonIgnore
-    var pending: Document? = null
 
     @Column
     @JsonSerialize(using = DateSerializer::class)
@@ -181,18 +95,13 @@ class DocumentWrapper {
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
 
-    @Transient
-    fun getState(): String {
-        val hasDraft = draft != null
-        val hasPublished = published != null
-        return if (hasPublished && hasDraft) {
-            DocumentService.DocumentState.PUBLISHED.value + DocumentService.DocumentState.DRAFT.value
-        } else if (hasPublished) {
-            DocumentService.DocumentState.PUBLISHED.value
-        } else {
-            DocumentService.DocumentState.DRAFT.value
-        }
-    }
+    @JdbcTypeCode(SqlTypes.JSON)
+    var fingerprint: List<FingerprintInfo>? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsible_user", nullable = true)
+    @JsonIgnore
+    var responsibleUser: UserInfo? = null
 
     @Transient
     var hasWritePermission: Boolean = true
@@ -200,3 +109,5 @@ class DocumentWrapper {
     @Transient
     var hasOnlySubtreeWritePermission: Boolean = false
 }
+
+data class FingerprintInfo(val exportType: String, val fingerprint: String, val date: OffsetDateTime)

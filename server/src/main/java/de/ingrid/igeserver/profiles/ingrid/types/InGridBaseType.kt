@@ -6,7 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.stereotype.Component
 
 @Component
-abstract class InGridBaseType constructor() : EntityType() {
+abstract class InGridBaseType : EntityType() {
     override val profiles = arrayOf("ingrid")
 
     override fun pullReferences(doc: Document): List<Document> {
@@ -31,4 +31,9 @@ abstract class InGridBaseType constructor() : EntityType() {
         return replaceUuidWithReferenceData(doc, "pointOfContact", options)
     }
 
+    override fun getUploads(doc: Document): List<String> {
+        return doc.data.get("graphicOverviews")?.let {
+            getUploadsFromFileList(it, "fileName")
+        } ?: emptyList()
+    }
 }

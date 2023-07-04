@@ -9,11 +9,17 @@
             svgIcon="download-link"
         ></mat-icon>
         <ng-template #showDocumentIcon>
-            <ige-document-icon [doc]="item" mat-list-icon></ige-document-icon>
+            <ige-document-icon [doc]="item"></ige-document-icon>
         </ng-template>
-        <span>{{ item.title }}</span>
+        <span>{{ item.title ?? "???" }}</span>
     </div>
-    <button mat-icon-button (click)="removeItem(i, $event)">
+    <button
+        *ngIf="formControl.enabled"
+        mat-icon-button
+        type="button"
+        class="remove-icon"
+        (click)="removeItem(i, $event)"
+    >
         <mat-icon>clear</mat-icon>
     </button>
 </div>
@@ -22,8 +28,11 @@
 <mat-spinner *ngIf="refreshing" diameter="30"></mat-spinner>
 
 <ige-add-button
-    [mat-menu-trigger-for]="menu"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    *ngIf="!formControl.disabled"
+    [matMenuTriggerFor]="menu"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>
 <mat-menu #menu>
     <button mat-menu-item (click)="showInternalRefDialog()">

@@ -4,7 +4,6 @@ import { DialogTemplateComponent } from "./dialog-template.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatButtonModule } from "@angular/material/button";
-import { FlexModule } from "@angular/flex-layout";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
@@ -14,7 +13,6 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     MatIconModule,
     MatDialogModule,
     MatButtonModule,
-    FlexModule,
     DragDropModule,
   ],
   exports: [DialogTemplateComponent],

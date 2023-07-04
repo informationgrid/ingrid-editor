@@ -1,12 +1,21 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { UntypedFormControl } from "@angular/forms";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
-import { LatLng, LatLngBounds, Layer, Map, Rectangle } from "leaflet";
+import { LatLng, LatLngBounds, Map, Rectangle } from "leaflet";
 import "@geoman-io/leaflet-geoman-free";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
+import { Subscription } from "rxjs";
+import { SpatialLocation } from "../../spatial-list/spatial-list.component";
 
 @UntilDestroy()
 @Component({
@@ -14,10 +23,10 @@ import { LeafletService } from "../../leaflet.service";
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
 })
-export class FreeSpatialComponent implements OnInit {
+export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;
-  @Input() initial: SpatialBoundingBox;
-  @Input() hideTitle: boolean;
+  @Input() value: SpatialLocation;
+
   @Output() result = new EventEmitter<SpatialBoundingBox>();
   @Output() updateTitle = new EventEmitter<string>();
 
@@ -26,8 +35,11 @@ export class FreeSpatialComponent implements OnInit {
   showNoResult = false;
   showWelcome = true;
 
-  drawnBBox: Layer;
+  drawnBBox: Rectangle;
   spatialSelection: NominatimResult = null;
+  searchSubscribe: Subscription;
+
+  arsControl = new FormControl<string>("");
 
   constructor(
     private nominatimService: NominatimService,
@@ -39,13 +51,23 @@ export class FreeSpatialComponent implements OnInit {
       .pipe(untilDestroyed(this), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
-    if (this.initial) {
-      this.drawAndZoom(this.initial);
-    } else {
+    this.arsControl.valueChanges
+      .pipe(untilDestroyed(this), debounceTime(500))
+      .subscribe((ars) => (this.value.ars = ars));
+
+    if (this.value.value) {
+      this.drawAndZoom(this.value.value);
+    } else if (!this.drawnBBox) {
       this.leafletService.zoomToInitialBox(this.map);
     }
 
+    if (this.value.ars) this.arsControl.setValue(this.value.ars);
+
     this.addDrawControls();
+  }
+
+  ngOnDestroy() {
+    this.removeDrawnBoundingBox();
   }
 
   searchLocation(query: string) {
@@ -56,7 +78,7 @@ export class FreeSpatialComponent implements OnInit {
     }
     this.showWelcome = false;
 
-    this.nominatimService
+    this.searchSubscribe = this.nominatimService
       .search(query)
       .subscribe((response: NominatimResult[]) => {
         response = response
@@ -80,6 +102,14 @@ export class FreeSpatialComponent implements OnInit {
   handleSelection(item: NominatimResult) {
     this.spatialSelection = item;
 
+    this.nominatimService
+      .detail(item.osm_id, item.osm_type)
+      .subscribe((result) =>
+        this.arsControl.setValue(
+          result?.extratags?.["de:regionalschluessel"] ?? ""
+        )
+      );
+
     const box = item.boundingbox;
     const value = {
       lat1: +box[0],
@@ -90,16 +120,11 @@ export class FreeSpatialComponent implements OnInit {
 
     this.drawAndZoom(value);
 
-    this.result.next(value);
-    this.updateTitle.next(item.display_name);
+    this.result.emit(value);
+    this.updateTitle.emit(item.display_name);
   }
 
-  private drawAndZoom(value: {
-    lat1: number;
-    lat2: number;
-    lon1: number;
-    lon2: number;
-  }) {
+  private drawAndZoom(value: SpatialBoundingBox) {
     const bounds = new LatLngBounds(
       new LatLng(value.lat1, value.lon1),
       new LatLng(value.lat2, value.lon2)
@@ -128,7 +153,7 @@ export class FreeSpatialComponent implements OnInit {
   }
 
   private updateSelectedArea(bounds: LatLngBounds) {
-    this.result.next({
+    this.result.emit({
       lat1: bounds.getSouthWest().lat,
       lon1: bounds.getSouthWest().lng,
       lat2: bounds.getNorthEast().lat,
@@ -155,6 +180,7 @@ export class FreeSpatialComponent implements OnInit {
     });
 
     this.map.on("pm:create", (createEvent) => {
+      // @ts-ignore
       this.drawnBBox = createEvent.layer;
       // @ts-ignore
       this.updateSelectedArea(createEvent.layer.getBounds());

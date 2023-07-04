@@ -1,0 +1,116 @@
+{
+  "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4393a7be",
+  "title": "literatur_maximal_test",
+  "_type": "InGridLiterature",
+  "themes": [{ "key": "317" }],
+  "dataset": { "languages": ["113"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Hansa, Gremmendorf, Münster-Südost, Münster, Nordrhein-Westfalen, 48155, Deutschland (allotments)",
+        "value": {
+          "lat1": 51.9419043,
+          "lat2": 51.9439881,
+          "lon1": 7.6485776,
+          "lon2": 7.652429
+        }
+      }
+    ],
+    "description": "location-information",
+    "spatialSystems": [{ "key": "9000002" }],
+    "verticalExtent": {
+      "Datum": { "key": "900005" },
+      "maximumValue": 8,
+      "minimumValue": 7,
+      "unitOfMeasure": { "key": "4" }
+    }
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "optional-term"
+      }
+    ]
+  },
+  "metadata": { "language": { "key": "182" } },
+  "resource": {
+    "purpose": "purpose1",
+    "specificUsage": "use1",
+    "useLimitation": "use-constraints",
+    "useConstraints": [{ "title": { "key": "2" }, "source": "source-5" }],
+    "accessConstraints": [{ "key": "5" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-09-06T22:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": { "key": "7" },
+    "resourceRange": {
+      "end": "2022-10-30T23:00:00.000Z",
+      "start": "2022-10-04T22:00:00.000Z"
+    },
+    "resourceDateType": { "key": "since" },
+    "resourceDateTypeSince": { "key": "exactDate" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "39" }] },
+  "orderInfo": "order location",
+  "isOpenData": false,
+  "references": [
+    {
+      "url": "https://some-url/there",
+      "type": { "key": "3535" },
+      "title": "keys",
+      "explanation": "info remarks"
+    }
+  ],
+  "description": "full-descr",
+  "publication": {
+    "isbn": "isbn",
+    "pages": "pages",
+    "author": "author",
+    "volume": "vol",
+    "location": "location",
+    "publisher": "hrsg",
+    "explanation": "addition-info",
+    "publishedIn": "which",
+    "baseDataText": "basis data",
+    "documentType": { "key": "2" },
+    "publicationDate": "year",
+    "publishingHouse": "publisher",
+    "bibliographicData": "bibl-info",
+    "placeOfPublication": "where"
+  },
+  "alternateTitle": "short-descr",
+  "pointOfContact": [
+    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "8" } }
+  ],
+  "isAdVCompatible": false,
+  "advProductGroups": [{ "key": "13" }],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "uri": "https://some-link-somewhere.com",
+        "value": "https://some-link-somewhere.com",
+        "asLink": true
+      },
+      "fileDescription": "url-description"
+    }
+  ],
+  "parentIdentifier": "ident3",
+  "digitalTransferOptions": [
+    {
+      "name": { "key": "900005" },
+      "mediumNote": "storage-location",
+      "transferSize": 65
+    }
+  ],
+  "maintenanceInformation": {
+    "description": "remarks",
+    "maintenanceAndUpdateFrequency": { "key": "1" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 3 }
+  }
+}

@@ -4,6 +4,13 @@
   height: 100%;
 }
 
+// fixed width for usability on mobile devices
+@media (max-width: 420px) {
+  .wrapper {
+    min-width: 1024px;
+  }
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;

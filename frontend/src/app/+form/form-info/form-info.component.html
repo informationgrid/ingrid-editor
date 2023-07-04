@@ -1,4 +1,4 @@
-<div #host class="form-info-bar">
+<div class="form-info-bar">
     <div class="form-info-bar-inner">
         <ige-breadcrumb
             [path]="path"
@@ -13,40 +13,8 @@
         <ige-header-title-row
             [form]="form"
             [model]="_model"
-            [sections]="sections"
             [disableEdit]="disableTitleEdit"
             [address]="forAddress"
         ></ige-header-title-row>
     </div>
-</div>
-
-<div
-    #sticky_header
-    class="navigation-header"
-    [class.sticky]="showScrollHeader"
-    [style.left]="scrollHeaderOffsetLeft + 'px'"
->
-    <div>
-        <div class="document-type">
-            <mat-icon
-                [svgIcon]="docIcon"
-                [title]="form?.get('title')?.value"
-                [matTooltip]="form?.get('title')?.value"
-                [ngClass]="['document-icon', state]"
-            ></mat-icon>
-        </div>
-
-        <ige-header-navigation
-            fxFlex
-            [sections]="sections"
-        ></ige-header-navigation>
-
-        <!--<button mat-icon-button mat-flat-button class="menu clickable dark">
-            <mat-icon svgIcon="Mehr"></mat-icon>
-        </button>-->
-    </div>
-
-    <ige-form-message></ige-form-message>
-
-    <ng-content></ng-content>
 </div>

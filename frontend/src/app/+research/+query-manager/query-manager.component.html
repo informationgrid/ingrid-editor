@@ -8,54 +8,46 @@
             [label]="type.label"
             data-cy="card-saved-queries"
         >
-            <mat-selection-list
-                #list
-                [multiple]="false"
-                class="doc-item dense with-menu"
+            <div
+                *ngFor="
+                    let query of type.queries | async;
+                    trackBy: getIdentifier
+                "
+                class="item clickable flex-row"
+                (click)="load(query.id)"
             >
-                <mat-list-option
-                    *ngFor="
-                        let query of type.queries | async;
-                        trackBy: getIdentifier
-                    "
-                    (click)="load(query.id, list)"
-                >
-                    <mat-icon mat-list-icon>star_outline</mat-icon>
-                    <div>
-                        <div mat-line>{{ query.name }}</div>
-                        <div *ngIf="query.description" mat-line>
-                            {{ query.description }}
-                        </div>
+                <mat-icon>star_outline</mat-icon>
+                <div>
+                    <div class="title">{{ query.name }}</div>
+                    <div *ngIf="query.description">
+                        {{ query.description }}
                     </div>
-                    <div fxFlex></div>
+                </div>
 
-                    <span [title]="query.modified | date : 'long'">{{
-                        query.modified | dateAgo : "DE"
-                    }}</span>
-                    <ng-container *ngIf="query.canDelete; else placeholder">
-                        <button
-                            mat-icon-button
-                            class="menu-button"
-                            [matMenuTriggerFor]="spatialRef"
-                            (click)="$event.stopImmediatePropagation()"
-                        >
-                            <mat-icon svgIcon="Mehr"></mat-icon>
+                <div class="flex-1"></div>
+
+                <span [matTooltip]="query.modified | date : 'long'">{{
+                    query.modified | dateAgo : "DE"
+                }}</span>
+                <ng-container *ngIf="query.canDelete; else placeholder">
+                    <button
+                        mat-icon-button
+                        class="menu-button"
+                        [matMenuTriggerFor]="spatialRef"
+                        (click)="$event.stopImmediatePropagation()"
+                    >
+                        <mat-icon svgIcon="Mehr"></mat-icon>
+                    </button>
+                    <mat-menu #spatialRef="matMenu">
+                        <button mat-menu-item (click)="removeQuery(query.id)">
+                            Löschen
                         </button>
-                        <mat-menu #spatialRef="matMenu">
-                            <button
-                                mat-menu-item
-                                (click)="removeQuery(query.id)"
-                            >
-                                Löschen
-                            </button>
-                        </mat-menu>
-                    </ng-container>
-                    <ng-template #placeholder
-                        ><span style="width: 66px"></span
-                    ></ng-template>
-                    <mat-divider></mat-divider>
-                </mat-list-option>
-            </mat-selection-list>
+                    </mat-menu>
+                </ng-container>
+                <ng-template #placeholder
+                    ><span style="width: 66px"></span
+                ></ng-template>
+            </div>
         </ige-card-box>
     </div>
 </page-template>

@@ -1,9 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
-import { CodelistStore } from "../../app/store/codelist/codelist.store";
+import { inject, Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
@@ -20,15 +17,8 @@ export class McloudDoctype extends BaseDoctype {
 
   iconClass = "Fachaufgabe";
 
-  constructor(
-    codelistService: CodelistService,
-    codelistStore: CodelistStore,
-    private uploadService: UploadService,
-    private configService: ConfigService,
-    codelistQuery: CodelistQuery
-  ) {
-    super(codelistService, codelistQuery);
-  }
+  private uploadService = inject(UploadService);
+  private configService = inject(ConfigService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -163,13 +153,15 @@ export class McloudDoctype extends BaseDoctype {
         this.addGroup(null, "mFUND", [
           this.addInput("mfundProject", null, {
             fieldLabel: "mFUND Projekt",
+            id: "mfundProject", // used for autocomplete by browser
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
           this.addInput("mfundFKZ", null, {
             fieldLabel: "mFUND Förderkennzeichen",
+            id: "mfundFKZ", // used for autocomplete by browser
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
         ]),
       ]),
@@ -183,7 +175,7 @@ export class McloudDoctype extends BaseDoctype {
             externalLabel: "Zeitbezug der Ressource",
           },
           fieldArray: {
-            fieldGroupClassName: "display-flex",
+            fieldGroupClassName: "flex-row",
             fieldGroup: [
               this.addDatepicker("date", null, {
                 fieldLabel: "Datum",
@@ -191,6 +183,7 @@ export class McloudDoctype extends BaseDoctype {
                 wrappers: ["form-field"],
               }),
               this.addSelect("text", "Typ", {
+                showSearch: true,
                 required: true,
                 className: "flex-1",
                 wrappers: ["form-field"],
@@ -205,6 +198,7 @@ export class McloudDoctype extends BaseDoctype {
         },
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
+            showSearch: true,
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
@@ -229,6 +223,7 @@ export class McloudDoctype extends BaseDoctype {
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
+          showSearch: true,
           options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
           codelistId: 518,
         }),

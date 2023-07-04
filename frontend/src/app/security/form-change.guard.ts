@@ -1,8 +1,4 @@
-import {
-  ActivatedRouteSnapshot,
-  CanDeactivate,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 import { Injectable } from "@angular/core";
 import {
   ConfirmDialogComponent,
@@ -22,7 +18,7 @@ import { ConfigService } from "../services/config/config.service";
 @Injectable({
   providedIn: "root",
 })
-export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
+export class FormChangeDeactivateGuard {
   private static prefixLength: number;
 
   constructor(
@@ -141,7 +137,12 @@ export class FormChangeDeactivateGuard implements CanDeactivate<FormComponent> {
     if (action === "save") {
       const form = this.formStateService.getForm()?.value;
       await this.documentService
-        .save(form, false, isAddress, null, true)
+        .save({
+          data: form,
+          isNewDoc: false,
+          isAddress: isAddress,
+          noVisualUpdates: true,
+        })
         .toPromise();
       this.documentService.reload$.next({
         uuid: currentUuid,

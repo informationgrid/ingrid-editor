@@ -2,74 +2,125 @@
     >Dieser Fehler bezieht sich auf die gesamten Einträge</ige-form-error
 >
 
-<mat-chip-list
+<mat-chip-listbox
     *ngIf="field.fieldGroup.length > 0"
     [disabled]="formControl.disabled"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="drop($event)"
+    cdkDropListGroup
+    mixedCdkDragDrop
+    orientation="horizontal"
+    (dropped)="drop($event)"
 >
-    <mat-chip
-        disableRipple
-        cdkDrag
+    <span
         *ngFor="let field of field.fieldGroup; let i = index"
-        [cdkDragDisabled]="formControl.disabled"
-        [removable]="true"
-        [selectable]="false"
-        (removed)="remove(i)"
+        cdkDropList
+        mixedCdkDropList
     >
-        <mat-icon
-            *ngIf="props.showLanguage"
-            class="avatar gray"
-            svgIcon="language-24px"
-        ></mat-icon>
-
-        <ng-container *ngIf="props.codelistId > -1; else simpleLabel">
-            <div class="label">
-                {{ model[i] | codelist : props.codelistId | async }}
-            </div>
-        </ng-container>
-
-        <ng-template #simpleLabel
-            ><div class="label">{{ model[i] }}</div></ng-template
+        <mat-chip-option
+            disableRipple
+            cdkDrag
+            [cdkDragDisabled]="formControl.disabled"
+            [removable]="true"
+            [selectable]="false"
+            (removed)="remove(i)"
         >
+            <mat-icon
+                *ngIf="props.showLanguage"
+                class="avatar gray"
+                svgIcon="language-24px"
+            ></mat-icon>
 
-        <mat-icon *ngIf="formControl.enabled" matChipRemove>cancel</mat-icon>
-    </mat-chip>
+            <ng-container *ngIf="type === 'codelist'">
+                <div class="label">
+                    {{ model[i] | codelist : props.codelistId | async }}
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'simple'">
+                <div class="label">{{ model[i] }}</div>
+            </ng-container>
+
+            <ng-container *ngIf="type === 'object'">
+                <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
+
+            <button
+                *ngIf="formControl.enabled"
+                matChipRemove
+                aria-label="Remove chip"
+            >
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </mat-chip-option>
+    </span>
     <ige-add-button
         *ngIf="props.useDialog && formControl.enabled"
         [showLabel]="false"
         (add)="openDialog()"
         [showRequiredError]="
-            formControl.invalid && formControl.errors?.required
+            showError && formControl.invalid && formControl.errors?.required
         "
     ></ige-add-button>
-</mat-chip-list>
+</mat-chip-listbox>
 
 <ige-add-button
     *ngIf="
         props.useDialog && formControl.enabled && field.fieldGroup.length === 0
     "
     class="add-button-initial"
+    [class.error-btn]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
     [showLabel]="field.fieldGroup.length === 0"
     (add)="openDialog()"
-    [showRequiredError]="formControl.invalid && formControl.errors?.required"
+    [showRequiredError]="
+        showError && formControl.invalid && formControl.errors?.required
+    "
 ></ige-add-button>
 
-<ng-container *ngIf="!props.useDialog && formControl.enabled">
+<ng-container *ngIf="type === 'object'">
+    <ige-search-input
+        [autocompleteRef]="searchAuto"
+        [withWhiteBorder]="false"
+        [searchSub]="searchSub"
+        [query]="inputControl"
+        [flexWidth]="true"
+        placeholder="Im Umweltthesaurus suchen"
+        showSearchIcon="true"
+    ></ige-search-input>
+
+    <mat-autocomplete
+        #searchAuto="matAutocomplete"
+        class="denseX"
+        (optionSelected)="addValueObject($event.option.value)"
+    >
+        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
+            {{ doc[props.labelField] }}
+        </mat-option>
+    </mat-autocomplete>
+</ng-container>
+
+<ng-container
+    *ngIf="
+        type !== 'object' &&
+        type !== 'codelist' &&
+        !props.useDialog &&
+        formControl.enabled
+    "
+>
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput
-            placeholder="Bitte eingeben..."
+            placeholder="Bitte eingeben"
             autocomplete="off"
             [formControl]="inputControl"
-            [required]="props.required && formControl.invalid"
+            [required]="showError && props.required && formControl.invalid"
             (keydown.enter)="addValues(inputControl.value)"
         />
         <button
             *ngIf="inputControl.value.length > 0"
             mat-icon-button
             matSuffix
+            type="button"
             class="field-close"
             (click)="inputControl.setValue('')"
         >
@@ -79,8 +130,26 @@
             >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
             trennen</mat-hint
         >
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
     </mat-form-field>
-    <mat-error *ngIf="formControl.errors?.required"
-        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
-    >
+</ng-container>
+
+<ng-container
+    *ngIf="type === 'codelist' && !props.useDialog && formControl.enabled"
+>
+    <mat-form-field class="width-100" appearance="outline">
+        <mat-select
+            placeholder="Bitte auswählen"
+            [formControl]="inputControl"
+            [required]="showError && props.required && formControl.invalid"
+            (valueChange)="addValueObject($event)"
+            ><mat-option
+                *ngFor="let codelist of codelistOptions | async"
+                [value]="codelist"
+            >
+                {{ codelist.label }} ({{ codelist.value }})
+            </mat-option>
+        </mat-select>
+        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    </mat-form-field>
 </ng-container>

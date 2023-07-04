@@ -1,7 +1,15 @@
 @import "src/variables";
 
+mat-table {
+  background-color: $ige-background;
+}
+
+.padding-bottom {
+  padding-bottom: 12px;
+}
+
 .mat-column-_actions_ {
-  width: 40px;
+  width: 52px;
   min-width: 40px;
   flex: unset;
   display: flex;
@@ -9,20 +17,21 @@
 }
 
 .mat-column-_select_ {
-  width: 52px;
+  width: 80px;
   flex: unset;
 }
 
-.button-wrapper {
-  margin-top: 1.1em;
-  padding-bottom: 18px;
+.container {
+  padding-bottom: 8px;
+
+  .button-wrapper {
+    margin-top: 3px;
+    padding-bottom: 22px;
+  }
 }
 
 .table-header {
   white-space: nowrap;
-  button {
-    margin-top: 15px;
-  }
 }
 
 .table-batch-edit-row {
@@ -31,11 +40,12 @@
 }
 
 ige-form-label {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 :host {
-  ::ng-deep .mat-checkbox .mat-checkbox-ripple {
+  /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+  ::ng-deep .mat-mdc-checkbox .mat-checkbox-ripple {
     height: 32px;
     width: 32px;
     left: calc(50% - 16px);
@@ -57,6 +67,13 @@ ige-form-label {
     padding-bottom: 6px;
     word-break: break-all;
   }
+
+  ::ng-deep .disabled mat-cell {
+    a,
+    span {
+      color: rgba(0, 0, 0, 0.38);
+    }
+  }
 }
 
 mat-row,
@@ -68,10 +85,6 @@ mat-header-row {
 .select-controls {
   padding-right: 4px;
 
-  .mat-checkbox {
-    height: 18px;
-  }
-
   mat-icon {
     color: $ige-placeholder-color;
   }
@@ -79,10 +92,9 @@ mat-header-row {
 
 ige-add-button {
   display: block;
-  margin: 11px 0;
+  margin: 3px 0 22px;
 }
 
 .cdk-drag-handle {
   cursor: move;
-  padding: 0 10px;
 }

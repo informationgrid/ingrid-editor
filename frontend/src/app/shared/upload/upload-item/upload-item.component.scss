@@ -1,6 +1,13 @@
-.mat-list-item {
-  height: 58px !important;
-  border-top: 1px solid #e0e0e0;
-  padding-top: 12px;
-  text-align: left;
+@import "src/variables";
+
+:host {
+  display: block;
+  padding: 12px 16px;
+  border-top: 1px solid $ige-background-bar;
+
+  .main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 }

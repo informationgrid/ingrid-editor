@@ -36,6 +36,8 @@ import {
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { TagRequest } from "../../models/tag-request.model";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -55,7 +57,6 @@ export class DocumentService {
 
   private configuration: Configuration;
   private alternateAddressTitle: (IgeDocument) => string = null;
-
   constructor(
     private http: HttpClient,
     private configService: ConfigService,
@@ -69,7 +70,8 @@ export class DocumentService {
     private addressTreeStore: AddressTreeStore,
     private researchService: ResearchService,
     private translocoService: TranslocoService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
+    private snackBar: MatSnackBar
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -111,6 +113,31 @@ export class DocumentService {
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
       )
       .subscribe();
+
+    // only published
+    this.researchService
+      .search(
+        "",
+        {
+          type: "selectDocuments",
+          ignoreFolders: "exceptFolders",
+          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+        },
+        "modified",
+        "DESC",
+        {
+          page: 1,
+          pageSize: 10,
+        },
+        ["selectOnlyPublished"]
+      )
+      .pipe(
+        map((result) => this.mapSearchResults(result)),
+        tap((docs) =>
+          this.sessionStore.update({ latestPublishedDocuments: docs.hits })
+        )
+      )
+      .subscribe();
   }
 
   findRecentAddresses(): void {
@@ -133,7 +160,7 @@ export class DocumentService {
   }
 
   getChildren(
-    parentId: string,
+    parentId: number,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress).pipe(
@@ -143,7 +170,7 @@ export class DocumentService {
   }
 
   load(
-    id: string,
+    id: string | number,
     address?: boolean,
     updateStore = true,
     useUuid = false
@@ -178,21 +205,45 @@ export class DocumentService {
     });
   }
 
-  // TODO: Refactor to use options instead so many parameters
-  save(
-    data: IgeDocument,
-    isNewDoc?: boolean,
-    isAddress?: boolean,
-    path?: string[],
-    noVisualUpdates = false
-  ): Observable<IgeDocument> {
-    const doc = this.preSaveActions(data, isAddress);
+  save(saveOptions: SaveOptions): Observable<IgeDocument> {
+    const doc = this.preSaveActions(saveOptions.data, saveOptions.isAddress);
 
-    return this.dataService.save(doc, isAddress).pipe(
-      filter(() => !noVisualUpdates),
+    if (saveOptions.noVisualUpdates) {
+      return this.dataService.save(doc, saveOptions.isAddress).pipe(
+        tap((json) => {
+          saveOptions.data = json;
+          this.postSaveActions(saveOptions);
+        }),
+        finalize(() => this.documentOperationFinished$.next(true))
+      );
+    }
+
+    return this.dataService.save(doc, saveOptions.isAddress).pipe(
       tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
-      tap((json) => this.postSaveActions(json, isNewDoc, path, isAddress)),
+      tap((json) => {
+        saveOptions.data = json;
+        this.postSaveActions(saveOptions);
+      }),
       finalize(() => this.documentOperationFinished$.next(true))
+    );
+  }
+
+  updateTags(id: number, data: TagRequest, forAddress: boolean) {
+    const store = forAddress ? this.addressTreeStore : this.treeStore;
+
+    return this.dataService.updateTags(id, data).pipe(
+      tap((newTags: string[]) => {
+        store.update(id, {
+          _tags: newTags?.join(","),
+        });
+        const info = store.getValue().entities[id];
+        store.update({
+          datasetsChanged: {
+            type: UpdateType.Update,
+            data: [info],
+          },
+        });
+      })
     );
   }
 
@@ -205,51 +256,68 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return DocumentService.trimObjectAndRemoveEvilTags(data);
+    return this.trimObjectAndRemoveEvilTags(data);
   }
 
-  private static trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
+  private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
     const trimmed = JSON.stringify(obj, (key, value) => {
       return typeof value === "string"
-        ? DocumentService.removeEvilTags(value.trim())
+        ? this.removeEvilTags(value.trim())
         : value;
     });
     return JSON.parse(trimmed);
   }
 
-  private static removeEvilTags(val: String) {
-    return val.replace(
-      /<(?!b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+  private removeEvilTags(val: String) {
+    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
+    let processed = val.replace(
+      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
       ""
     );
+    // strip anchors with javascript
+    processed = processed.replace(
+      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
+      ""
+    );
+    // remove all event handlers
+    processed = processed.replace(/ on\w+="[^"]*"/g, "");
+
+    if (processed !== val) {
+      this.snackBar.open(
+        "Ihre Eingabe wurde gespeichert. Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
+        "OK",
+        {
+          duration: 5000,
+        }
+      );
+    }
+    return processed;
   }
 
-  postSaveActions(
-    json: any,
-    isNewDoc: boolean,
-    path: string[],
-    isAddress: boolean
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
+  postSaveActions(saveOptions: SaveOptions) {
+    const store = saveOptions.isAddress
+      ? this.addressTreeStore
+      : this.treeStore;
 
-    this.docEvents.sendAfterSave(json);
+    if (!saveOptions.dontUpdateForm)
+      this.docEvents.sendAfterSave(saveOptions.data);
 
-    const parentId = json._parent;
-    const info = this.mapToDocumentAbstracts([json], parentId)[0];
+    const parentId = saveOptions.data._parent;
+    const info = this.mapToDocumentAbstracts([saveOptions.data], parentId)[0];
 
     // after renaming a folder the folder must still be expandable
-    if (!isNewDoc) {
+    if (!saveOptions.isNewDoc) {
       const entity = store.getValue().entities[info.id];
       if (entity) {
         info._hasChildren = entity._hasChildren;
       }
     }
 
-    this.updateOpenedDocumentInTreestore(info, isAddress);
+    this.updateOpenedDocumentInTreestore(info, saveOptions.isAddress);
 
     // update state by adding node and updating parent info
     store.upsert(info.id, info);
-    if (isNewDoc && parentId) {
+    if (saveOptions.isNewDoc && parentId) {
       store.update(parentId, {
         _hasChildren: true,
       });
@@ -257,10 +325,11 @@ export class DocumentService {
 
     store.update({
       datasetsChanged: {
-        type: isNewDoc ? UpdateType.New : UpdateType.Update,
+        type: saveOptions.isNewDoc ? UpdateType.New : UpdateType.Update,
         data: [info],
         parent: parentId,
-        path: path,
+        path: saveOptions.path,
+        doNotSelect: saveOptions.dontUpdateForm,
       },
     });
   }
@@ -280,12 +349,18 @@ export class DocumentService {
         if (!publishDate)
           this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
       }),
-      tap((json) => this.postSaveActions(json, false, null, isAddress)),
+      tap((json) =>
+        this.postSaveActions({
+          data: json,
+          isNewDoc: false,
+          isAddress: isAddress,
+        })
+      ),
       finalize(() => this.documentOperationFinished$.next(true))
     );
   }
 
-  unpublish(id: string, forAddress: boolean): Observable<any> {
+  unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
       catchError((error) => {
@@ -309,7 +384,7 @@ export class DocumentService {
     );
   }
 
-  cancelPendingPublishing(id: string, forAddress: boolean): Observable<any> {
+  cancelPendingPublishing(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.cancelPendingPublishing(id).pipe(
       catchError((error) => {
@@ -339,7 +414,7 @@ export class DocumentService {
     );
   }
 
-  delete(ids: string[], isAddress: boolean): Observable<void> {
+  delete(ids: number[], isAddress: boolean): Observable<void> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.delete(ids).pipe(
       tap(() => {
@@ -411,7 +486,9 @@ export class DocumentService {
     );
   }
 
-  getPath(id: string): Observable<ShortTreeNode[]> {
+  getPath(id: number): Observable<ShortTreeNode[]> {
+    if (id === null) return of([]);
+
     let treeEntities = this.getEntitiesFromStoreContainingId(id);
     const path = this.getPathFromTreeStore(treeEntities, id);
 
@@ -431,7 +508,7 @@ export class DocumentService {
     );
   }
 
-  private getEntitiesFromStoreContainingId(id: string) {
+  private getEntitiesFromStoreContainingId(id: number) {
     let treeEntities = this.treeStore.getValue().entities;
     if (!treeEntities[id]) {
       treeEntities = this.addressTreeStore.getValue().entities;
@@ -448,8 +525,8 @@ export class DocumentService {
    * @returns {Observable<Response>}
    */
   copy(
-    srcIDs: string[],
-    dest: string,
+    srcIDs: number[],
+    dest: number,
     includeTree: boolean,
     isAddress: boolean
   ) {
@@ -484,8 +561,8 @@ export class DocumentService {
    * @returns {Observable<Response>}
    */
   move(
-    srcIDs: string[],
-    dest: string,
+    srcIDs: number[],
+    dest: number,
     isAddress: boolean,
     confirm = false
   ): Observable<any> {
@@ -605,7 +682,7 @@ export class DocumentService {
   }
 
   updateBreadcrumb(
-    id: string,
+    id: number,
     query: TreeQuery | AddressTreeQuery,
     isAddress = false
   ): Subscription {
@@ -624,7 +701,7 @@ export class DocumentService {
 
   private updateTreeStoreDocs(
     isAddress: boolean,
-    parentId: string,
+    parentId: number,
     docs: DocumentAbstract[]
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -635,22 +712,29 @@ export class DocumentService {
     }
   }
 
+  clearTreeStores() {
+    this.treeStore.reset();
+    this.addressTreeStore.reset();
+  }
+
   mapToDocumentAbstracts(
     docs: IgeDocument[],
-    parentId?: string
+    parentId?: number
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id ? doc._id.toString() : null,
+        id: doc._id ? doc._id : null,
         icon: this.profileService.getDocumentIcon(doc),
         title: doc.title || "-Kein Titel-",
         _uuid: doc._uuid,
         _state: doc._state,
         _hasChildren: doc._hasChildren,
-        _parent: doc._parent?.toString() ?? null,
+        _parent: doc._parent ?? null,
         _type: doc._type,
         _modified: doc._modified,
+        _contentModified: doc._contentModified,
         _pendingDate: doc._pendingDate,
+        _tags: doc._tags,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
@@ -675,10 +759,10 @@ export class DocumentService {
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
-  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: string[]) {
+  private reloadDocumentIfOpenedChanged(isAddress: boolean, srcIDs: number[]) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     let openedDocument = store.getValue().openedDocument;
-    const openedDocId = openedDocument?.id?.toString();
+    const openedDocId = openedDocument?.id as number;
     const openedDocWasMoved = srcIDs.indexOf(openedDocId) !== -1;
     if (openedDocWasMoved) {
       this.reload$.next({ uuid: openedDocument?._uuid, forAddress: isAddress });
@@ -695,7 +779,7 @@ export class DocumentService {
   }
 
   @transaction()
-  private updateStoreAfterDelete(ids: string[], isAddress: boolean) {
+  private updateStoreAfterDelete(ids: number[], isAddress: boolean) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     let entities = store.getValue().entities;
@@ -719,8 +803,8 @@ export class DocumentService {
 
   @transaction()
   private updateStoreAfterMove(
-    ids: string[],
-    parent: string,
+    ids: number[],
+    parent: number,
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -764,7 +848,7 @@ export class DocumentService {
   @transaction()
   private updateStoreAfterCopy(
     infos: DocumentAbstract[],
-    parentId: string,
+    parentId: number,
     isAddress: boolean
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -782,7 +866,7 @@ export class DocumentService {
   }
 
   private getChildrenIfNotDoneYet(
-    parent: string,
+    parent: number,
     isAddress: boolean
   ): Observable<DocumentAbstract[]> {
     if (parent !== null) {
@@ -809,7 +893,7 @@ export class DocumentService {
     return result.map(
       (pathItem) =>
         new ShortTreeNode(
-          pathItem.id.toString(),
+          pathItem.id,
           pathItem.title,
           pathItem.permission,
           !pathItem.permission.canWrite
@@ -819,7 +903,7 @@ export class DocumentService {
 
   private getPathFromTreeStore(
     entities: HashMap<DocumentAbstract>,
-    id: string
+    id: number
   ): ShortTreeNode[] {
     const entity = entities[id];
 
@@ -842,7 +926,7 @@ export class DocumentService {
 
   private mapEntityToShortTreeNode(entity: DocumentAbstract) {
     return new ShortTreeNode(
-      entity.id.toString(),
+      <number>entity.id,
       entity.title,
       {
         // canRead is always true, as you can not get a Document without having at least read access
@@ -860,4 +944,34 @@ export class DocumentService {
       null
     );
   }
+
+  getUsersWithPermission(id: number): Observable<any> {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${id}/users`,
+      null
+    );
+  }
+
+  setResponsibleUser(datasetId: number, userId: number) {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${datasetId}/responsibleUser/${userId}`,
+      null
+    );
+  }
+
+  validateDocument(id: number) {
+    return this.http.post(
+      `${this.configuration.backendUrl}datasets/${id}/validate`,
+      null
+    );
+  }
+}
+
+export class SaveOptions {
+  data: IgeDocument;
+  isNewDoc?: boolean;
+  isAddress?: boolean;
+  path?: number[];
+  noVisualUpdates?: boolean;
+  dontUpdateForm?: boolean;
 }

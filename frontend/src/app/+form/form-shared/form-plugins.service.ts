@@ -1,44 +1,41 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Plugin } from "../../+catalog/+behaviours/plugin";
-import { Router } from "@angular/router";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
-import { FormPluginToken } from "../../tokens/plugin.token";
-import { filter } from "rxjs/operators";
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class FormPluginsService {
   plugins: Plugin[] = [];
-  private registered = false;
+  initWithAddress: boolean = null;
 
-  constructor(
-    private behaviourService: BehaviourService,
-    @Inject(FormPluginToken) private autoPlugins: Plugin[],
-    router: Router
-  ) {
-    const forAddress = router.url.indexOf("/address") !== -1;
-
-    behaviourService.registerState$
-      .pipe(filter((value) => value.address === forAddress))
-      .subscribe((value) =>
-        value.register ? this.init(forAddress) : this.unregisterAll()
-      );
-
-    this.init(forAddress);
+  constructor(private behaviourService: BehaviourService) {
+    behaviourService.registerState$.subscribe((value) =>
+      value.register
+        ? this.init(this.plugins, value.address)
+        : this.unregisterAll()
+    );
   }
 
-  private init(forAddress: boolean) {
-    if (this.registered) return;
+  registerPlugin(plugin: Plugin) {
+    this.plugins.push(plugin);
 
-    this.behaviourService.applyActiveStates(this.autoPlugins);
-    this.plugins = [...this.autoPlugins];
-
-    if (forAddress) {
-      this.plugins.forEach((p) => p.setForAddress());
+    // register late plugins, which were not ready during initialization
+    if (this.initWithAddress !== null) {
+      this.init([plugin], this.initWithAddress);
     }
+  }
 
-    this.plugins.filter((p) => p.isActive).forEach((p) => p.register());
+  private init(plugins: Plugin[], forAddress: boolean) {
+    this.initWithAddress = forAddress;
+    this.behaviourService.applyActiveStates(plugins);
 
-    this.registered = true;
+    plugins.forEach((p) => p.setForAddress(forAddress));
+
+    plugins
+      .filter((p) => p.isActive)
+      .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
+      .forEach((p) => p.register());
   }
 
   // on destroy must be called manually from provided component since it may not be
@@ -49,6 +46,5 @@ export class FormPluginsService {
 
   private unregisterAll() {
     this.plugins.forEach((p) => p.unregister());
-    this.registered = false;
   }
 }

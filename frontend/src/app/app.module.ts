@@ -33,7 +33,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { ErrorDialogComponent } from "./dialogs/error/error-dialog.component";
 import { IgeError } from "./models/ige-error";
 import { FormsModule } from "@angular/forms";
@@ -86,6 +85,15 @@ import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { Catalog } from "./+catalog/services/catalog.model";
 import { rxStompServiceFactory } from "./rx-stomp-service-factory";
 import { RxStompService } from "./rx-stomp.service";
+import { AddonsWrapperComponent } from "./formly/wrapper/addons/addons-wrapper.component";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
+import { formPluginProvider } from "./form-plugin.provider";
+import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
+import { GermanDateAdapter } from "./services/german-date.adapter";
 
 registerLocaleData(de);
 
@@ -154,9 +162,9 @@ export function ConfigLoader(
       dialog
         .open(ConfirmDialogComponent, {
           data: {
-            title: "Fehler",
+            title: "Hinweis",
             message: `Der Katalog "${rootPath}" ist dem eingeloggten Benutzer nicht zugeordnet`,
-            confirmButtonText: "Zum aktuellen Katalog",
+            buttons: [{ text: "Schließen", alignRight: true, emphasize: true }],
           } as ConfirmDialogData,
         })
         .afterClosed()
@@ -212,6 +220,8 @@ export function animationExtension(field: FormlyFieldConfig) {
     MainHeaderComponent,
     SessionTimeoutInfoComponent,
     InitCatalogComponent,
+    AddonsWrapperComponent,
+    ButtonWrapperComponent,
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
@@ -228,8 +238,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     NgxFlowModule,
     HttpClientModule,
     HttpClientXsrfModule,
-    // Flex layout
-    FlexLayoutModule,
     FormlyModule.forRoot({
       types: [
         {
@@ -242,9 +250,11 @@ export function animationExtension(field: FormlyFieldConfig) {
       ],
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
+        { name: "addons", component: AddonsWrapperComponent },
         { name: "panel", component: OneColumnWrapperComponent },
         { name: "full-panel", component: FullWidthWrapperComponent },
         { name: "section", component: SectionWrapper },
+        { name: "button", component: ButtonWrapperComponent },
         // { name: "animation", component: AnimationWrapperComponent },
       ],
       // TODO: this animation is too slow especially when there are a lot of tables in form
@@ -270,6 +280,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     MatInputModule,
     MatCardModule,
     MatAutocompleteModule,
+    MatTableModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
     // IGE-Modules
     routing,
     FormsModule,
@@ -299,6 +313,14 @@ export function animationExtension(field: FormlyFieldConfig) {
     {
       provide: LOCALE_ID,
       useValue: "de-de",
+    },
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: "de-DE",
+    },
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
     },
     // add authorization header to all requests
     {
@@ -332,7 +354,9 @@ export function animationExtension(field: FormlyFieldConfig) {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: {
         panelClass: "mat-dialog-override",
+        autoFocus: "dialog",
         hasBackdrop: true,
+        maxWidth: "min(950px, 90vw)",
       },
     },
     {
@@ -352,6 +376,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     },
 
     // PLUGINS
+    formPluginProvider,
     pluginProvider,
   ], // additional providers
   bootstrap: [AppComponent],

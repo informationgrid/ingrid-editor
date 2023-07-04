@@ -1,10 +1,7 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlElement
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
-@XmlAccessorType(XmlAccessType.FIELD)
 data class RoleCode(
-    @XmlElement(name = "CI_RoleCode") var codelist: CodelistAttributes? = null
+    @JacksonXmlProperty(localName = "CI_RoleCode") var codelist: CodelistAttributes? = null
 )

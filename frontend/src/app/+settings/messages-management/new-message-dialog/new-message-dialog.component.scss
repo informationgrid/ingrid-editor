@@ -1,3 +1,4 @@
+/* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
 mat-dialog-content {
   width: 450px;
 
@@ -6,7 +7,12 @@ mat-dialog-content {
   }
 }
 
-.mat-dialog-title {
+.toggle-wrapper {
+  padding-bottom: 10px;
+  text-align: end;
+}
+
+.mat-mdc-dialog-title {
   cursor: move;
 }
 

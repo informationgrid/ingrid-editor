@@ -1,6 +1,5 @@
 import {
   ActivatedRouteSnapshot,
-  CanDeactivate,
   RouterStateSnapshot,
   UrlTree,
 } from "@angular/router";
@@ -10,7 +9,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
-import { filter, map, tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UserComponent } from "./user/user.component";
 import { GroupComponent } from "./group/group.component";
@@ -18,9 +17,7 @@ import { GroupComponent } from "./group/group.component";
 @Injectable({
   providedIn: "root",
 })
-export class DeactivateGuard
-  implements CanDeactivate<UserComponent | GroupComponent>
-{
+export class DeactivateGuard {
   constructor(private dialog: MatDialog) {}
 
   canDeactivate(

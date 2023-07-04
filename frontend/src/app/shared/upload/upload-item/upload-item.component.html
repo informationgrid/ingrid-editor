@@ -1,31 +1,30 @@
-<mat-list-item>
-    <mat-spinner
-        diameter="24"
-        matListIcon
-        *ngIf="file.transfer.progress < 1"
-    ></mat-spinner>
+<div class="main">
+    <mat-spinner *ngIf="file.transfer.progress < 1" diameter="24"></mat-spinner>
     <mat-icon
-        class="green"
         *ngIf="file.error === null"
-        matListIcon
+        class="green"
         svgIcon="baseline-check-24px"
     ></mat-icon>
-    <mat-icon *ngIf="file.error" matListIcon class="mat-error"
-        >error_outline
-    </mat-icon>
-    <div mat-line>{{ file.transfer.name }}</div>
-    <div mat-line class="comment">
-        {{ file.transfer.size | size }}
-        <span *ngIf="file.transfer.progress < 1"
-            >({{ file.transfer.progress * 100 | number : ".1-1" }}%)</span
-        >
+    <mat-icon *ngIf="file.error" class="error-color">error_outline</mat-icon>
+    <div>
+        <div>{{ file.transfer.name }}</div>
+        <div class="comment">
+            {{ file.transfer.size | size }}
+            <span *ngIf="file.transfer.progress < 1"
+                >({{ file.transfer.progress * 100 | number : ".1-1" }}%)</span
+            >
+        </div>
+        <div *ngIf="file.error" class="error-color">
+            {{ file.error.message }}
+        </div>
     </div>
-    <div *ngIf="file.error" mat-line class="mat-error">
-        {{ file.error.message }}
-    </div>
+
+    <div class="flex-1"></div>
+
     <ng-container *ngIf="!showOnlyProgress">
         <button
             *ngIf="file.transfer.complete; else pauseButton"
+            data-cy="btn-remove"
             mat-icon-button
             (click)="cancelFile()"
         >
@@ -42,14 +41,15 @@
             </button>
         </ng-template>
     </ng-container>
-</mat-list-item>
+</div>
+
 <mat-progress-bar
     *ngIf="file.transfer.progress < 1"
     [value]="file.transfer.progress * 100"
 ></mat-progress-bar>
 
-<div *ngIf="file.error" fxLayout="column">
-    <div fxFlex fxFlexAlign="end">
+<div *ngIf="file.error" class="flex-col">
+    <div class="flex-1 align-self-end">
         <ng-container *ngIf="file.error.status === 409; else retryButton">
             <button mat-button color="primary" (click)="overwrite()">
                 Überschreiben
@@ -73,14 +73,3 @@
         </ng-template>
     </div>
 </div>
-
-<!--<div *ngIf="file.progress === 100">{{ file | json }}</div>-->
-<!--<span id="file-label">
-    {{ file.data.name }}
-    <a title="Retry" (click)="retryFile(file)" *ngIf="file.canRetry">
-        <mat-icon>refresh</mat-icon></a
-    >
-    <a title="Cancel" (click)="cancelFile(file)" *ngIf="file.canCancel">
-        <mat-icon>cancel</mat-icon></a
-    >
-</span>-->

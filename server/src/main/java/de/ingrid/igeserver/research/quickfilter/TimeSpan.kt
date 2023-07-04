@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.research.quickfilter
 
 import de.ingrid.igeserver.model.QuickFilter
-import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,12 +1,6 @@
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -22,19 +16,25 @@ export class InformationSystemDoctype extends IngridShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ inspireRelevant: true, openData: true }),
+      this.addGeneralSection({
+        inspireRelevant: true,
+        advCompatible: true,
+        openData: true,
+      }),
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
         this.addGroup(null, "Beschreibung", [
           this.addSelectInline("serviceType", "Art des Dienstes", {
+            showSearch: true,
             options: this.getCodelistForSelect(5300, "serviceType"),
             codelistId: 5300,
             hasInlineContextHelp: true,
-            wrappers: ["form-field", "inline-help"],
+            wrappers: ["inline-help", "form-field"],
           }),
           this.addRepeatListInline("serviceVersion", "Version", {
             hasInlineContextHelp: true,
+            asAutocomplete: true,
             wrappers: ["panel", "inline-help"],
             className: "optional",
           }),
@@ -49,13 +49,18 @@ export class InformationSystemDoctype extends IngridShared {
               this.id,
               {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }
             ),
-            this.addTextAreaInline("history", "Historie", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
-            }),
+            this.addTextAreaInline(
+              "implementationHistory",
+              "Historie",
+              this.id,
+              {
+                hasInlineContextHelp: true,
+                wrappers: ["inline-help", "form-field"],
+              }
+            ),
           ],
           { className: "optional" }
         ),
@@ -65,11 +70,11 @@ export class InformationSystemDoctype extends IngridShared {
           [
             this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
             this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
               hasInlineContextHelp: true,
-              wrappers: ["form-field", "inline-help"],
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           { className: "optional" }
@@ -78,7 +83,12 @@ export class InformationSystemDoctype extends IngridShared {
           className: "optional",
           fields: [
             this.addInputInline("name", "Name", { required: true }),
-            this.addInputInline("url", "URL", { required: true }),
+            this.addInputInline("url", "URL", {
+              required: true,
+              validators: {
+                validation: ["url"],
+              },
+            }),
             this.addInputInline("description", "Erläuterung"),
           ],
         }),
@@ -90,15 +100,4 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService
-  ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
-  }
 }

@@ -7,40 +7,48 @@
             <span class="text">Eintrag bearbeiten</span>
         </h2>
     </div>
-    <mat-dialog-content fxLayout="column" [formGroup]="formGroup">
-        <mat-form-field appearance="outline">
-            <mat-label>Id</mat-label>
-            <input
-                matInput
-                igeFocus
-                formControlName="id"
-                data-cy="codelist-entry-id"
-            />
-            <mat-error>Die ID ist bereits vergeben</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Beschreibung</mat-label>
-            <textarea
-                matInput
-                formControlName="description"
-                data-cy="codelist-entry-description"
-            ></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-            <mat-label>Data</mat-label>
-            <input
-                matInput
-                placeholder='{"url":"https://xxx"}'
-                formControlName="data"
-                data-cy="codelist-entry-data"
-            />
-        </mat-form-field>
+    <mat-dialog-content class="flex-col" [formGroup]="formGroup">
+        <div class="flex-col">
+            <div>
+                <mat-form-field appearance="outline">
+                    <mat-label>Id</mat-label>
+                    <input
+                        matInput
+                        igeFocus
+                        formControlName="id"
+                        data-cy="codelist-entry-id"
+                    />
+                    <mat-error>Die ID ist bereits vergeben</mat-error>
+                </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Beschreibung</mat-label>
+                <textarea
+                    matInput
+                    formControlName="description"
+                    data-cy="codelist-entry-description"
+                ></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Data</mat-label>
+                <input
+                    matInput
+                    placeholder='{"url":"https://xxx"}'
+                    formControlName="data"
+                    data-cy="codelist-entry-data"
+                />
+            </mat-form-field>
+        </div>
+
+        <mat-divider *ngIf="fields.length"></mat-divider>
+
         <div formArrayName="fields">
             <div
                 *ngFor="let field of fields; let i = index"
                 [formGroupName]="i"
-                fxLayout="row"
-                fxLayoutGap="20px"
+                class="flex-row gap-24"
             >
                 <mat-form-field appearance="outline">
                     <mat-label>Schlüssel</mat-label>
@@ -50,7 +58,7 @@
                         [attr.data-cy]="'codelist-entry-key-' + i"
                     />
                 </mat-form-field>
-                <mat-form-field appearance="outline" fxFlex>
+                <mat-form-field class="flex-1" appearance="outline">
                     <mat-label>Titel</mat-label>
                     <input
                         matInput
@@ -68,7 +76,7 @@
 
     <mat-dialog-actions>
         <button mat-flat-button mat-dialog-close>Abbrechen</button>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <button
             mat-flat-button
             color="primary"

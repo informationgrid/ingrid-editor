@@ -1,5 +1,57 @@
+<mat-chip-listbox
+    *ngIf="props.view === 'chip' && field.fieldGroup?.length > 0"
+    [disabled]="formControl.disabled"
+    cdkDropListGroup
+    mixedCdkDragDrop
+    orientation="horizontal"
+    (dropped)="drop($event)"
+>
+    <span
+        *ngFor="let field of field.fieldGroup; let i = index"
+        cdkDropList
+        mixedCdkDropList
+    >
+        <mat-chip-option
+            disableRipple
+            cdkDrag
+            data-cy="list-item"
+            [cdkDragDisabled]="formControl.disabled"
+            [removable]="true"
+            [selectable]="false"
+            (removed)="removeItem(i)"
+        >
+            <mat-icon
+                *ngIf="props.showLanguage"
+                class="avatar gray"
+                svgIcon="language-24px"
+            ></mat-icon>
+
+            <ng-container *ngIf="!props.labelField">
+                <div class="label">
+                    {{ getParameter(model[i]) }}
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="props.labelField">
+                <div class="label">{{ model[i][props.labelField] }}</div>
+            </ng-container>
+
+            <button
+                *ngIf="formControl.enabled"
+                matChipRemove
+                aria-label="Remove chip"
+            >
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </mat-chip-option>
+    </span>
+</mat-chip-listbox>
+
 <div
-    *ngIf="field.fieldGroup.length > 0; else noFieldsSelected"
+    *ngIf="
+        props.view !== 'chip' && field.fieldGroup?.length > 0;
+        else noFieldsSelected
+    "
     class="component-list"
     cdkDropList
     cdkDropListOrientation="vertical"
@@ -9,18 +61,29 @@
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDrag
         [cdkDragDisabled]="
-            props.noDrag || formControl.disabled || model.length < 2
+            props.noDrag || formControl.disabled || model?.length < 2
         "
         class="clickable list-item"
+        data-cy="list-item"
+        tabindex="0"
+        (keydown.delete)="removeItem(i, $event)"
+        (keydown.backspace)="removeItem(i, $event)"
         (click)="this.onItemClick(model[i]?.key)"
     >
-        <span class="list-display-element">
-            <mat-icon
-                *ngIf="this.props.elementIcon"
-                [svgIcon]="this.props.elementIcon"
-            ></mat-icon>
-            {{ getParameter(model[i]) }}
-        </span>
+        <div class="text-wrapper">
+            <span class="list-display-element">
+                <mat-icon
+                    *ngIf="this.props.elementIcon"
+                    [svgIcon]="this.props.elementIcon"
+                ></mat-icon>
+                <ng-container *ngIf="type !== 'search'">
+                    {{ getParameter(model[i]) }}
+                </ng-container>
+                <ng-container *ngIf="type === 'search'">
+                    <div class="label">{{ model[i][props.labelField] }}</div>
+                </ng-container>
+            </span>
+        </div>
         <button
             *ngIf="formControl.enabled"
             type="button"
@@ -28,7 +91,8 @@
             class="close gray"
             (click)="removeItem(i)"
         >
-            <mat-icon svgIcon="Entfernen"></mat-icon>
+            <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 </div>
@@ -48,7 +112,7 @@
 </ng-template>
 
 <mat-form-field
-    *ngIf="props.asSelect; else templateAutocomplete"
+    *ngIf="type === 'select'"
     appearance="outline"
     class="width-100"
 >
@@ -56,6 +120,8 @@
         [placeholder]="props.placeholder"
         (valueChange)="addToList($event)"
         [formControl]="inputControl"
+        (keydown)="handleKeydown($event)"
+        (blur)="inputControl.setValue('')"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
@@ -72,29 +138,28 @@
             </div>
         </mat-option>
     </mat-select>
+    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 
-<ng-template #templateAutocomplete>
+<ng-container *ngIf="type === 'autocomplete'">
     <mat-form-field appearance="outline" class="width-100">
-        <mat-label>{{ props.fieldLabel }}</mat-label>
+        <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
         <mat-icon
-            *ngIf="parameterOptions && repeatListInput.value.length === 0"
-            class="gray"
+            *ngIf="parameterOptions && inputControl.value?.length === 0"
+            class="search-icon gray"
             matPrefix
             >search
         </mat-icon>
         <input
             type="text"
-            #repeatListInput
             [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
-            [required]="
-                (props.required && formControl.invalid) ||
-                formControl.validator({})?.required
-            "
-            (keydown.enter)="addFreeEntry(repeatListInput.value)"
+            (keydown.enter)="addFreeEntry(inputControl.value)"
             [matAutocomplete]="auto"
+            [errorStateMatcher]="matcher"
+            (focusin)="hasFocus = true"
+            (focusout)="hasFocus = false"
         />
         <mat-autocomplete
             #auto="matAutocomplete"
@@ -108,20 +173,96 @@
                 {{ option.label }}
             </mat-option>
         </mat-autocomplete>
+
+        <!-- clean button -->
         <button
-            *ngIf="repeatListInput.value.length > 0"
+            *ngIf="inputControl.value?.length > 0"
             mat-icon-button
             matSuffix
+            type="button"
             class="field-close"
-            (click)="repeatListInput.value = ''"
+            (click)="inputControl.setValue('')"
         >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            <mat-icon>close</mat-icon>
         </button>
-        <mat-hint *ngIf="!parameterOptions"
-            >Eingabe mit RETURN bestätigen
-        </mat-hint>
+
+        <!-- help info button -->
+        <ng-container
+            *ngIf="props.suffix"
+            matSuffix
+            [ngTemplateOutlet]="props.suffix"
+        ></ng-container>
+
+        <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
+        <mat-error>{{
+            inputControl.errors?.mustBeEmpty
+                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                : "Bitte erstellen Sie mindestens einen Eintrag"
+        }}</mat-error>
     </mat-form-field>
-</ng-template>
-<mat-error *ngIf="formControl.errors?.required"
-    >Bitte erstellen Sie mindestens einen Eintrag
-</mat-error>
+</ng-container>
+
+<ng-container *ngIf="type === 'search'">
+    <ige-search-input
+        [autocompleteRef]="searchAuto"
+        [withWhiteBorder]="false"
+        [searchSub]="searchSub"
+        [query]="inputControl"
+        [flexWidth]="true"
+        [placeholder]="props.placeholder"
+        [focus]="false"
+        [errorText]="
+            inputControl.errors?.mustBeEmpty
+                ? 'Der Inhalt muss noch mit \'Return\' bestätigt werden'
+                : null
+        "
+        showSearchIcon="true"
+    ></ige-search-input>
+
+    <mat-autocomplete
+        #searchAuto="matAutocomplete"
+        [autoActiveFirstOption]="true"
+        (optionSelected)="addValueObject($event.option.value)"
+    >
+        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
+            {{ getLabel(doc) }}
+        </mat-option>
+    </mat-autocomplete>
+</ng-container>
+
+<ng-container *ngIf="type === 'simple' && formControl.enabled">
+    <mat-form-field class="width-100" appearance="outline">
+        <input
+            matInput
+            [placeholder]="props.placeholder"
+            autocomplete="off"
+            [formControl]="inputControl"
+            [required]="showError && props.required && formControl.invalid"
+            (keydown.enter)="addSimpleValues(inputControl.value)"
+            [errorStateMatcher]="matcher"
+            (focusin)="hasFocus = true"
+            (focusout)="hasFocus = false"
+        />
+        <div matSuffix>
+            <mat-spinner
+                *ngIf="searchSub && !searchSub.closed"
+                [diameter]="24"
+            ></mat-spinner>
+            <button
+                *ngIf="inputControl.value?.length > 0"
+                mat-icon-button
+                type="button"
+                class="field-close"
+                (click)="inputControl.setValue('')"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-hint>{{ props.hint }} </mat-hint>
+        <mat-error>{{
+            inputControl.errors?.mustBeEmpty
+                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                : "Bitte erstellen Sie mindestens einen Eintrag"
+        }}</mat-error>
+    </mat-form-field>
+</ng-container>

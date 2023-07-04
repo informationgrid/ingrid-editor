@@ -1,6 +1,7 @@
 @import "src/variables";
 
 :host {
+  display: flex;
   overflow: hidden;
   flex: 1; // IE 11
 }
@@ -13,32 +14,37 @@
   letter-spacing: 0.74px;
   z-index: 1000;
 
-  div {
+  .greetings {
     font-size: 24px;
     padding: 14px 0;
+  }
 
-    &.message {
-      font-size: 16px;
-      padding: 0 0 12px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .message {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-      span {
-        flex: 1 1 auto;
-        background-color: $ige-mark-color;
-        color: $ige-primary;
-        padding: 10px 0;
-      }
+    span {
+      flex: 1 1 auto;
+      background-color: $ige-mark-color;
+      color: $ige-primary;
+      padding: 16px 0;
     }
   }
 }
 
 ige-quick-search,
-.welcome,
-.shortcut {
+.welcome {
   text-align: center;
 }
+
+.shortcut {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
 .allPageScroll {
   overflow-y: auto;
 }

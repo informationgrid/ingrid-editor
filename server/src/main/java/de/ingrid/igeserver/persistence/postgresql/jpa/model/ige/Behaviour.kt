@@ -2,10 +2,11 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
-import javax.persistence.*
 
 @Entity
 @Table(name = "behaviour")
@@ -29,7 +30,7 @@ class Behaviour {
     @Column(nullable = false)
     var active: Boolean? = null
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: Map<String, *>? = null
 

@@ -12,14 +12,14 @@
         (resetQuery)="resetSearchField()"
     ></ige-facets>
 
-    <div main-header fxFlex fxLayout="column">
-        <div fxLayout="row" class="white-bg">
+    <div main-header class="flex-col">
+        <div class="white-bg flex-row">
             <mat-form-field
                 appearance="outline"
-                style="min-width: 220px"
-                class="straight-border-right prefix-text"
+                style="max-width: 240px"
+                class="right-sharp-corner prefix-text"
             >
-                <span matPrefix class="prefix">Suche nach:</span>
+                <span matTextPrefix class="prefix">Suche nach:</span>
                 <mat-select formControlName="type">
                     <mat-option value="selectDocuments">{{
                         t("form")
@@ -28,43 +28,15 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field
-                appearance="outline"
-                class="width-100 straight-border-left straight-border-right"
-            >
-                <!--                        <mat-label>Suche</mat-label>-->
-                <input
-                    matInput
-                    placeholder="Begriff, ID oder feldbezogene Suche eingeben ..."
-                    formControlName="query"
-                />
-                <button
-                    *ngIf="form.value.query !== ''"
-                    mat-icon-button
-                    matSuffix
-                    class="close"
-                    data-cy="clear-tabsearch-field"
-                    (click)="resetSearchField()"
-                >
-                    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-                </button>
-                <!-- TODO add when implemented
-                <mat-hint
-                    >Für feldbezogene Suche den Feldtitel im Format
-                    "title: suchbegriff" eingeben
-                </mat-hint>
-            -->
-            </mat-form-field>
-            <div class="do-search-button">
-                <button
-                    mat-flat-button
-                    mat-button
-                    color="primary"
-                    (click)="startSearch()"
-                >
-                    Suchen
-                </button>
-            </div>
+            <ige-search-input
+                placeholder="Begriff, ID oder feldbezogene Suche eingeben ..."
+                [query]="form.get('query')"
+                [withWhiteBorder]="false"
+                [flexWidth]="true"
+                [rectangular]="true"
+                [withButton]="true"
+                (buttonClick)="startSearch()"
+            ></ige-search-input>
         </div>
         <div class="save-search-button">
             <button mat-button color="primary" (click)="saveQuery()">
@@ -73,7 +45,7 @@
         </div>
     </div>
 
-    <div main-content fxFlex>
+    <div main-content>
         <ige-result-table
             [result]="result"
             [isLoading]="isSearching"

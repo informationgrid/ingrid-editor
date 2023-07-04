@@ -6,7 +6,6 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.ExportRequestParameter
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,8 +82,11 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         catalogId: String
     ): String {
         return try {
-            val docOptions = UpdateReferenceOptions(!options.useDraft, true)
-            val docVersion = documentService.getLatestDocument(doc, docOptions, catalogId = catalogId)
+            val docVersion = if (!options.useDraft) documentService.getLastPublishedDocument(
+                catalogId,
+                doc.uuid,
+                true
+            ) else documentService.getDocumentByWrapperId(catalogId, doc.id!!, true)
             val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
             val result = exporter.run(docVersion, catalogId)
             if (result is ObjectNode) result.toPrettyString() else result as String
@@ -94,6 +96,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
             }
             log.info("No published version of ${doc.uuid} found. Will not be exported.")
             ""
+        } catch (ex2: java.lang.IllegalArgumentException) {
+            // TODO handle more elegantly
+            log.error("Error while exporting ${doc.uuid}", ex2)
+            "Error while exporting. Make sure the document can be published."
         }
     }
 
@@ -106,11 +112,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         val result = if (isFolder) null else handleSingleDataset(options, doc, catalogId)
 
         val children = documentService.findChildren(catalogId, doc.id)
-        val resultList = children.hits.flatMap { handleWithSubDocuments(it, options, catalogId) }
+        val resultList = children.hits.flatMap { handleWithSubDocuments(it.wrapper, options, catalogId) }
         return if (result == null)
             resultList
         else
             resultList + Pair(doc.uuid, result)
-
     }
 }

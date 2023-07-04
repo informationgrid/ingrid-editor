@@ -25,6 +25,7 @@
 
 .action-bar {
   padding-top: 20px;
+  gap: 12px;
 }
 
 .fileover {
@@ -39,6 +40,10 @@
 .content {
   background-color: $ige-background;
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .options {
@@ -48,4 +53,12 @@
 
 .space-top {
   padding-top: 24px;
+}
+
+.link-text {
+  margin-left: 12px;
+}
+
+ige-breadcrumb {
+  display: inline-block;
 }

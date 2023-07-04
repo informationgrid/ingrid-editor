@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.extension.pipe
 
 import de.ingrid.igeserver.extension.ExtensionPoint
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value
  * two Pipe instances with the same Payload type will receive the same filter set.
  */
 open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
+    
+    private val log = logger()
 
     /**
      * Optional configuration value for defining the filter sequences
@@ -87,15 +90,27 @@ open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : E
 
         // run filters
         var result: T = payload
+        var filterException: Exception? = null
         for (filter in filters) {
             if (filter.usedInProfile(profile)) {
                 context.addMessage(Message(this, "Running filter '${filter.id}'"))
-                result = filter(result, context)
+                try {
+                    result = filter(result, context)
+                } catch (e: Exception) {
+                    log.error("Filter '${filter.id}' could not be executed, due to an error", e)
+                    filterException = e
+                }
             }
             else {
                 context.addMessage(Message(this, "Skipped filter '${filter.id}' because it does not apply to profile '$profile'"))
             }
         }
+        
+        // throw an exception if one of the executed filter lead to an exception
+        if (filterException != null) {
+            throw filterException
+        }
+        
         return result
     }
 }

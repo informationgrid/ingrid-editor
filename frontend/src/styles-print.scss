@@ -1,13 +1,15 @@
 @media print {
   #print-content,
-  .cdk-overlay-container {
+  .cdk-overlay-container,
+  .mat-mdc-dialog-surface {
     position: absolute !important;
     left: 0 !important;
     right: 0 !important;
     top: 0 !important;
     bottom: 0 !important;
   }
-  #print-content {
+  #print-content,
+  .mat-mdc-dialog-surface {
     overflow: unset !important;
   }
 
@@ -15,8 +17,7 @@
   mat-dialog-actions {
     display: none !important;
   }
-
-  mat-dialog-container {
+  .mat-mdc-dialog-surface {
     box-shadow: none !important;
   }
 }
@@ -27,6 +28,6 @@
   ige-one-column-wrapper > div > ige-repeat,
   ige-one-column-wrapper > div > formly-field-mat-input,
   ige-date-range-type {
-    padding-top: 1.55em;
+    padding-top: 10px;
   }
 }

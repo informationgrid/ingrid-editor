@@ -46,12 +46,15 @@ import { MatSelectModule } from "@angular/material/select";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
+import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
+import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
     (doc) =>
       new TreeNode(
-        doc.id.toString(),
+        <number>doc.id,
         doc._uuid,
         doc.title,
         doc._type,
@@ -86,8 +89,14 @@ describe("TreeComponent", () => {
       HttpClientTestingModule,
       MatSnackBarModule,
       TranslocoModule,
+      SharedDocumentItemModule,
+      SearchInputComponent,
     ],
-    declarations: [TreeHeaderComponent, EmptyNavigationComponent],
+    declarations: [
+      TreeHeaderComponent,
+      EmptyNavigationComponent,
+      DocumentIconComponent,
+    ],
     providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
     componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
@@ -133,7 +142,7 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
 
     const doc = createDocument({
-      id: "12345",
+      id: 12345,
       _type: "A",
       title: "new node",
       _state: "W",
@@ -149,7 +158,7 @@ describe("TreeComponent", () => {
 
     // add a new document via the storage service
     const doc = createDocument({
-      id: "12345",
+      id: 12345,
       _type: "A",
       title: "initial node",
       _state: "W",
@@ -160,7 +169,7 @@ describe("TreeComponent", () => {
 
     // update document with a new id
     const docUpdate = createDocument({
-      id: "12345",
+      id: 12345,
       _type: "A",
       title: "modified node",
       _state: "W",
@@ -176,26 +185,28 @@ describe("TreeComponent", () => {
 
     // remove document via the storage service
     // @ts-ignore
-    db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: "2" }] });
+    db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: 2 }] });
 
     // node with id '2' should be gone now
     hasNumberOfTreeNodes(2);
     const treeNode = spectator.component.dataSource.data;
-    expect(treeNode[0]._id).toBe("1");
-    expect(treeNode[1]._id).toBe("3");
+    expect(treeNode[0]._id).toBe(1);
+    expect(treeNode[1]._id).toBe(3);
+
+    tick(1000);
   }));
 
   it("should add a new child node", fakeAsync(() => {
     const newChildDocOf3: any = {
-      id: "12345",
+      id: 12345,
       _profile: "A",
       title: "child",
       _state: "W",
-      _parent: "3",
+      _parent: 3,
     };
     db.getChildren.and.callFake((id) => {
       switch (id) {
-        case "3":
+        case 3:
           return of([newChildDocOf3]);
         default:
           throw new Error("Unknown parent: " + id);
@@ -220,14 +231,14 @@ describe("TreeComponent", () => {
 
   it("should modify a child node", fakeAsync(() => {
     const newDoc: any = {
-      id: "12345",
+      id: 12345,
       _profile: "A",
       title: "child node",
       _state: "W",
     };
     db.getChildren.and.callFake((id) => {
       switch (id) {
-        case "3":
+        case 3:
           return of([newDoc]);
         default:
           throw new Error("Unknown parent: " + id);
@@ -237,11 +248,11 @@ describe("TreeComponent", () => {
 
     // add a new document and update it via the storage service
     const doc = createDocument(newDoc);
-    sendTreeEvent(UpdateType.New, [doc], "3");
+    sendTreeEvent(UpdateType.New, [doc], 3);
 
     // after changes to tree are visible, modify dataset
     const child = createDocument({
-      id: "12345",
+      id: 12345,
       _type: "A",
       title: "modified child node",
       _state: "W",
@@ -259,7 +270,7 @@ describe("TreeComponent", () => {
 
   it("should delete a child node", fakeAsync(() => {
     const newDoc: any = {
-      id: "12345",
+      id: 12345,
       _profile: "A",
       title: "child node",
       _state: "W",
@@ -269,12 +280,12 @@ describe("TreeComponent", () => {
 
     // add a new document and update it via the storage service
     const doc = createDocument(newDoc);
-    sendTreeEvent(UpdateType.New, [doc], "3");
+    sendTreeEvent(UpdateType.New, [doc], 3);
 
     hasNumberOfTreeNodes(4);
 
     // @ts-ignore
-    sendTreeEvent(UpdateType.Delete, [{ id: "12345" }]);
+    sendTreeEvent(UpdateType.Delete, [{ id: 12345 }]);
 
     hasNumberOfTreeNodes(3);
 
@@ -311,27 +322,29 @@ describe("TreeComponent", () => {
     nodeImageHasClass(2, "workingWithPublished");
     nodeImageHasNotClass(2, "working");
     nodeImageHasNotClass(2, "published");
+
+    tick(1000);
   }));
 
   it("should initially expand to a deeply nested node", fakeAsync(() => {
-    db.getPath.and.returnValue(Promise.resolve(["1", "2", "3", "4"]));
+    db.getPath.and.returnValue(Promise.resolve([1, 2, 3, 4]));
     db.initialData.and.returnValue(of(deeplyNestedDocumentsRoot));
     db.getChildren.and.callFake((id) => {
       switch (id) {
-        case "1":
+        case 1:
           return of(deeplyNestedDocumentsLevel1);
-        case "2":
+        case 2:
           return of(deeplyNestedDocumentsLevel2);
-        case "3":
+        case 3:
           return of(deeplyNestedDocumentsLevel3);
         default:
           throw new Error("Unknown parent: " + id);
       }
     });
 
-    spectator.component.activeNodeId = "4";
-    spectator.component.expandNodeIds = new Subject<string[]>();
-    setTimeout(() => spectator.component.expandNodeIds.next(["1", "2", "3"]));
+    spectator.component.activeNodeId = 4;
+    spectator.component.expandNodeIds = new Subject<number[]>();
+    setTimeout(() => spectator.component.expandNodeIds.next([1, 2, 3]));
     spectator.detectChanges();
 
     tick();
@@ -380,7 +393,7 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
 
     db.treeUpdates.next(
-      newNode({ updateType: UpdateType.Move, id: "1", parent: null })
+      newNode({ updateType: UpdateType.Move, id: 1, parent: null })
     );
 
     tick(5000);
@@ -406,9 +419,9 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
 
     // store must be updated where getChildren info comes from
-    store.update("1", { _parent: "2" });
+    store.update(1, { _parent: 2 });
     db.treeUpdates.next(
-      newNode({ updateType: UpdateType.Move, id: "1", parent: "2" })
+      newNode({ updateType: UpdateType.Move, id: 1, parent: 2 })
     );
 
     tick(1000);
@@ -571,34 +584,38 @@ describe("TreeComponent", () => {
       // @ts-ignore
       db.treeUpdates.next({
         type: UpdateType.Delete,
-        data: [
+        data: <DocumentAbstract[]>[
           {
-            id: "1",
+            id: 1,
             _uuid: "1",
             title: "",
             _type: "",
             icon: "",
             _state: "W",
             _hasChildren: false,
-            _modified: false,
+            _modified: null,
+            _contentModified: null,
             _pendingDate: null,
-            _parent: "",
+            _parent: null,
             hasWritePermission: true,
             isRoot: true,
+            _tags: null,
           },
           {
-            id: "2",
+            id: 2,
             _uuid: "2",
             title: "",
             _type: "",
             icon: "",
             _state: "W",
             _hasChildren: false,
-            _modified: false,
+            _modified: null,
+            _contentModified: null,
             _pendingDate: null,
-            _parent: "",
+            _parent: null,
             hasWritePermission: true,
             isRoot: true,
+            _tags: null,
           },
         ],
       });
@@ -650,7 +667,7 @@ describe("TreeComponent", () => {
       tick(1000);
       expect(selectionModel.selected.length).toBe(1);
       // @ts-ignore
-      db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: "1" }] });
+      db.treeUpdates.next({ type: UpdateType.Delete, data: [{ id: 1 }] });
 
       expect(selectionModel.selected.length).toBe(0);
     }));
@@ -701,7 +718,7 @@ describe("TreeComponent", () => {
   function sendTreeEvent(
     type: UpdateType,
     docs: DocumentAbstract[],
-    parent?: string
+    parent?: number
   ) {
     db.treeUpdates.next({ type: type, data: docs, parent: parent });
 
@@ -709,18 +726,20 @@ describe("TreeComponent", () => {
     tick(1000);
   }
 
-  const nodeAtIndex = (index) => spectator.queryAll(".mat-tree-node")[index];
+  // const nodeAtIndex = (index) => spectator.queryAll(".mat-tree-node")[index];
 
   const expectNode = (index) =>
     expect(spectator.queryAll(".mat-tree-node")[index]);
 
-  function nodeHasClass(index: number, stateClass: string) {
+  /*function nodeHasClass(index: number, stateClass: string) {
     expectNode(index).toHaveClass(stateClass);
-  }
+  }*/
 
+  /*
   function nodeHasNotClass(index: number, stateClass: string) {
     expectNode(index).not.toHaveClass(stateClass);
   }
+*/
 
   function nodeImageHasClass(index: number, stateClass: string) {
     expect(spectator.queryAll(".mat-tree-node .mat-icon")[index]).toHaveClass(
@@ -744,9 +763,9 @@ describe("TreeComponent", () => {
 
   function nodesAreMarkedForSelection(...index: number[]) {
     index.forEach((i) =>
-      expect(spectator.queryAll(".mat-tree-node .mat-checkbox")[i]).toHaveClass(
-        "mat-checkbox-checked"
-      )
+      expect(
+        spectator.queryAll(".mat-tree-node .mat-mdc-checkbox")[i]
+      ).toHaveClass("mat-mdc-checkbox-checked")
     );
   }
 
@@ -771,9 +790,11 @@ describe("TreeComponent", () => {
           title: options.title || "Test Document 123",
           _hasChildren: false,
           _pendingDate: null,
-          _modified: false,
+          _modified: null,
+          _contentModified: null,
           icon: "",
           isRoot: !options.parent,
+          _tags: null,
         },
       ],
       parent: options.parent || null,
@@ -783,13 +804,14 @@ describe("TreeComponent", () => {
 
   function checkSelectionCount(count: number) {
     expect(
-      spectator.queryAll("mat-tree mat-checkbox.mat-checkbox-checked").length
+      spectator.queryAll("mat-tree mat-checkbox.mat-mdc-checkbox-checked")
+        .length
     ).toBe(count);
   }
 
   function checkNodeIsCheckboxSelected(index: number) {
     expect(spectator.queryAll("mat-tree mat-checkbox")[index]).toHaveClass(
-      "mat-checkbox-checked"
+      "mat-mdc-checkbox-checked"
     );
   }
 });

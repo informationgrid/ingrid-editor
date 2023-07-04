@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.uvp.types.address
+package de.ingrid.igeserver.profiles.ingrid.types.address
 
 import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.services.DocumentCategory
@@ -12,8 +12,10 @@ class InGridPersonType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate) {
     override val profiles = arrayOf("ingrid")
 
     override val category = DocumentCategory.ADDRESS.value
+    
+    override val referenceFieldInDocuments = "pointOfContact"
 
-    override val referenceFieldInDocuments = "addresses"
+    override val jsonSchema = "/ingrid/schemes/address-person.schema.json"
 
     val log = logger()
 

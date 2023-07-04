@@ -26,7 +26,7 @@ export class SidebarComponent implements OnInit {
   @Output() dropped = new EventEmitter();
 
   updateTree = new Subject<TreeAction[]>();
-  activeTreeNode = new BehaviorSubject<string>(null);
+  activeTreeNode = new BehaviorSubject<number>(null);
 
   private treeStore: AddressTreeStore | TreeStore;
   private treeQuery: AddressTreeQuery | TreeQuery;
@@ -78,7 +78,7 @@ export class SidebarComponent implements OnInit {
           filter((doc) => doc !== null),
           take(1)
         )
-        .subscribe((doc) => this.activeTreeNode.next(doc.id.toString()));
+        .subscribe((doc) => this.activeTreeNode.next(<number>doc.id));
     }
   }
 

@@ -1,0 +1,224 @@
+{
+  "title": "Komplett Gefüllte Fachaufgabe",
+  "_id": "4",
+  "_uuid": "55065077-0D06-4916-855F-F232311D7C07",
+  "_type": "InGridSpecialisedTask",
+  "_created": "2023-02-09T12:02:54.603193+01:00",
+  "_createdBy": "Max Muster",
+  "_modified": "2023-02-09T12:11:36.075864+01:00",
+  "_contentModified": "2023-02-09T12:11:36.075864+01:00",
+  "_contentModifiedBy": "Max Muster",
+  "_version": 5,
+  "_state": "P",
+  "data": {
+    "isAdVCompatible": false,
+    "parentIdentifier": "Übergeordneter Identifikator",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://test.test",
+          "value": "https://test.test",
+          "asLink": true
+        },
+        "fileDescription": "testBildBeschreibung"
+      }
+    ],
+    "alternateTitle": "Testkurzbezeichnung",
+    "description": "Komplett Gefüllte Fachaufgabe Beschreibung",
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Wemove Test",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "9931a418-a159-4d6e-9b94-f041e3957b24",
+          "_type": "InGridOrganisationDoc",
+          "_version": 3,
+          "_created": "2023-02-09T12:03:47.858725+01:00",
+          "_modified": "2023-02-09T12:04:20.818667+01:00",
+          "_contentModified": "2023-02-09T12:04:20.818667+01:00",
+          "_createdBy": "Max Muster",
+          "_contentModifiedBy": "Max Muster",
+          "_state": "PW",
+          "_id": "5",
+          "address": {
+            "street": "Hanauer Landstr. 52",
+            "zip-code": "60",
+            "city": "Frankfurt",
+            "zip-po-box": "P123 Frankfurt",
+            "po-box": "Postbox 123",
+            "administrativeArea": {
+              "key": "8"
+            },
+            "country": {
+              "key": "276"
+            }
+          },
+          "positionName": "Positionsname",
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "test@wemove.com"
+            }
+          ],
+          "organization": "Wemove Test",
+          "_parent": null
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "1"
+      },
+      {
+        "key": "2"
+      }
+    ],
+    "themes": [
+      {
+        "key": "105"
+      },
+      {
+        "key": "313"
+      }
+    ],
+    "keywords": {
+      "free": [
+        {
+          "label": "Frei1"
+        },
+        {
+          "label": "Frei2"
+        },
+        {
+          "label": "Wasser"
+        },
+        {
+          "label": "Luft"
+        }
+      ]
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "FreierBezug",
+          "value": {
+            "lat1": 2,
+            "lat2": 4,
+            "lon1": 1,
+            "lon2": 3
+          }
+        },
+        {
+          "type": "free",
+          "title": "Hannover",
+          "value": {
+            "lat1": 52.130035400390625,
+            "lat2": 52.67826461791992,
+            "lon1": 9.235983848571777,
+            "lon2": 10.309714317321777
+          }
+        },
+        {
+          "type": "free",
+          "title": "Frankfurt am Main",
+          "value": {
+            "lat1": 50.015156,
+            "lat2": 50.226444,
+            "lon1": 8.473561,
+            "lon2": 8.801178
+          }
+        },
+        {
+          "wkt": "POINT(10 10)",
+          "type": "wkt",
+          "title": "",
+          "value": null
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "4230"
+        },
+        {
+          "key": "9000011"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1.1,
+        "maximumValue": 2.2,
+        "unitOfMeasure": {
+          "key": "9036"
+        },
+        "Datum": {
+          "key": "900011"
+        }
+      },
+      "description": "Testerläuterung1"
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-02-08T23:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        },
+        {
+          "referenceDate": "2023-02-27T23:00:00.000Z",
+          "referenceDateType": {
+            "key": "3"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "since"
+      },
+      "resourceDate": "2023-02-07T23:00:00.000Z",
+      "status": {
+        "key": "4"
+      },
+      "resourceDateTypeSince": {
+        "key": "requestTime"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 2,
+        "unit": {
+          "key": "5"
+        }
+      },
+      "description": "Testerläuterung2"
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": ["123", "150"]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "45"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "TestHerstellungszweck",
+      "specificUsage": "TestEignung/Nutzung"
+    },
+    "references": []
+  }
+}

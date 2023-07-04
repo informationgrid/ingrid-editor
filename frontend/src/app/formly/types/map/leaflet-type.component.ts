@@ -18,10 +18,11 @@ import {
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
 import { distinctUntilChanged, tap } from "rxjs/operators";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -54,7 +55,8 @@ export class LeafletTypeComponent
     private contextHelpService: ContextHelpService,
     private configService: ConfigService,
     private leafletService: LeafletService,
-    private _changeDetectionRef: ChangeDetectorRef
+    private _changeDetectionRef: ChangeDetectorRef,
+    private translocoService: TranslocoService
   ) {
     super();
   }
@@ -67,7 +69,7 @@ export class LeafletTypeComponent
       .pipe(
         untilDestroyed(this),
         distinctUntilChanged(),
-        tap((value) => (this.locations = value || []))
+        tap((value: SpatialLocation[]) => (this.locations = value || []))
       )
       .subscribe(() => this.updateBoundingBox());
 
@@ -124,7 +126,7 @@ export class LeafletTypeComponent
     );
 
     const hasCoordinates = this.locations.some(
-      (location) => location.type !== "geo-name"
+      (location) => location.value || location.wkt
     );
 
     if (this.locations.length === 0 || !hasCoordinates) {
@@ -133,7 +135,9 @@ export class LeafletTypeComponent
       this.leafletReference.doubleClickZoom.disable();
     }
 
-    const locationsWithColor = this.extendLocationsWithColor(this.locations);
+    const locationsWithColor = this.leafletService.extendLocationsWithColor(
+      this.locations
+    );
     this.updateLocations(locationsWithColor);
 
     if (hasCoordinates) {
@@ -171,6 +175,7 @@ export class LeafletTypeComponent
       .open(SpatialDialogComponent, {
         width: "90%",
         disableClose: true,
+        restoreFocus: true,
         maxWidth: 1260,
         minWidth: 600,
         data: {
@@ -198,16 +203,6 @@ export class LeafletTypeComponent
       });
   }
 
-  private extendLocationsWithColor(
-    locations: SpatialLocation[]
-  ): SpatialLocationWithColor[] {
-    return locations.map((location, index) => ({
-      ...location,
-      indexNumber: index,
-      color: this.leafletService.getColor(index),
-    }));
-  }
-
   removeLocation(index: number) {
     this.locations.splice(index, 1);
     this.formControl.setValue(this.locations);
@@ -218,9 +213,7 @@ export class LeafletTypeComponent
 
   highlightLocation(index: number) {
     if (index !== null) {
-      if (this.locations[index].type === "geo-name") {
-        return;
-      }
+      if (!this.locations[index].value && !this.locations[index].wkt) return;
 
       const bounds = this.leafletService.getBoundingBoxFromLayers([
         this.drawnSpatialRefs[index],
@@ -233,15 +226,11 @@ export class LeafletTypeComponent
     this.mapHasMoved = this.locations.length === 1 ? false : index != null;
   }
 
-  showContextHelp(evt: MouseEvent) {
-    const target = new ElementRef(evt.currentTarget);
-    const infoElement = target.nativeElement as HTMLElement;
-    this.contextHelpService.showContextHelp(
-      this.profile,
-      this.docType,
-      this.fieldId,
-      this.props.externalLabel,
-      infoElement
+  showContextHelp() {
+    let desc: Observable<string> = of(
+      this.translocoService.translate("spatial.generalHelp")
     );
+
+    this.contextHelpService.showContextHelpPopup("Raumbezug", desc);
   }
 }

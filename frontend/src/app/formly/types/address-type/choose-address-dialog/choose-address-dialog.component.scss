@@ -1,7 +1,7 @@
 @import "src/variables";
 
 :host {
-  .mat-dialog-content {
+  .mat-mdc-dialog-content {
     padding: 24px 0 8px;
     display: flex;
     flex-direction: column;
@@ -21,7 +21,7 @@
   }
 }
 
-.mat-dialog-title {
+.mat-mdc-dialog-title {
   cursor: move;
 }
 
@@ -34,10 +34,6 @@ ige-tree {
 .selection-divider {
   height: 1px;
   background: $ige-primary;
-}
-
-.place-title {
-  padding-bottom: 12px !important;
 }
 
 .chosen-address {

@@ -14,11 +14,11 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
-import javax.validation.Valid
 
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
@@ -62,7 +62,7 @@ interface UsersApi {
     )
     fun deleteUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: String
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<Void>
 
     @GetMapping(
@@ -73,8 +73,19 @@ interface UsersApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the user")])
     fun getUser(
         principal: Principal,
-        @Parameter(description = "The unique login of the user.", required = true) @PathVariable("id") userId: Int
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
     ): ResponseEntity<User>
+
+    @GetMapping(
+        value = ["/users/{id}/fullname"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Get the full name of the user with the given ID.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the name")])
+    fun getFullName(
+        principal: Principal,
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
+    ): ResponseEntity<String>
 
     @GetMapping(value = ["/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation
@@ -87,6 +98,31 @@ interface UsersApi {
     fun list(
         principal: Principal
     ): ResponseEntity<List<User>>
+
+
+    @GetMapping(
+        value = ["/users/{id}/responsibilities"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Get all datasets the user is responsible for.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the dataset ids")])
+    fun getResponsibilities(
+        principal: Principal,
+        @Parameter(description = "The ID of the user.", required = true) @PathVariable("id") userId: Int
+    ): ResponseEntity<List<Int>>
+
+
+    @GetMapping(
+        value = ["/users/transferResponsibilities/{oldUserId}/{newUserId}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    @Operation(description = "Reassign all datasets from one user to another.")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets successfully reassigned")])
+    fun reassignResponsibilities(
+        principal: Principal,
+        @Parameter(description = "The ID of the user currently having the responsibility.", required = true) @PathVariable("oldUserId") oldUserId: Int,
+        @Parameter(description = "The ID of the user receiving the responsibility.", required = true) @PathVariable("newUserId") newUserId: Int
+    ): ResponseEntity<Void>
 
     @GetMapping(
         value = ["/users/admins/{catalogId}"],
@@ -103,7 +139,7 @@ interface UsersApi {
     ): ResponseEntity<List<User>>
 
     @PutMapping(
-        value = ["/users/{id}"],
+        value = ["/users"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     @Operation(description = "Updates an existing user user. If the user does not exist an error will be returned.")

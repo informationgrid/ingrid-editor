@@ -19,6 +19,7 @@
                 <mat-menu #sectionMenu="matMenu">
                     <button
                         mat-menu-item
+                        type="button"
                         (click)="removeSection(i)"
                         [disabled]="currentField.form?.disabled"
                     >
@@ -34,6 +35,7 @@
                 !(formState.disabled || props.disabled || formControl.disabled)
             "
             mat-flat-button
+            type="button"
             color="primary"
             class="button-square-icon padding-btn add-button"
             [matMenuTriggerFor]="menu"
@@ -51,6 +53,7 @@
                 !(formState.disabled || props.disabled || formControl.disabled)
             "
             mat-flat-button
+            type="button"
             color="primary"
             class="button-square-icon padding-btn"
             [matMenuTriggerFor]="menu"

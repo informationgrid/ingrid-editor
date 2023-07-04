@@ -2,6 +2,7 @@
     <button
         *ngIf="showToggleButton && docs.length > 0"
         mat-stroked-button
+        type="button"
         class="toggle-ref-docs-btn"
         (click)="toggleList()"
         color="primary"
@@ -14,7 +15,7 @@
     </ng-container>
 </div>
 
-<ng-container *ngIf="showReferences">
+<ng-container *ngIf="showReferences && docs.length > 0">
     <mat-paginator
         *ngIf="totalHits > pageSize"
         [length]="totalHits"
@@ -35,6 +36,10 @@
     </mat-hint>
 </ng-container>
 
-<p *ngIf="docs.length === 0 && !isLoading" data-cy="no-ref-docs-hint">
+<div
+    *ngIf="docs.length === 0 && !isLoading"
+    data-cy="no-ref-docs-hint"
+    class="no-references"
+>
     {{ messageNoReferences }}
-</p>
+</div>

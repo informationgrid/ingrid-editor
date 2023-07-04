@@ -1,0 +1,169 @@
+{
+  "_uuid": "5369ad60-938f-4325-b041-25dacfc14709",
+  "title": "geodataset-test",
+  "_type": "InGridGeoDataset",
+  "themes": [{ "key": "317" }],
+  "dataset": { "languages": ["134"] },
+  "lineage": { "statement": "basis" },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Linda, Neustadt an der Orla, Saale-Orla-Kreis, Thüringen, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.6638647,
+          "lat2": 50.7090902,
+          "lon1": 11.7449969,
+          "lon2": 11.8477633
+        }
+      },
+      {
+        "type": "free",
+        "ars": "1389283743"
+      }
+    ],
+    "description": "erlaeuterung",
+    "spatialSystems": [{ "key": "9000005" }],
+    "verticalExtent": {
+      "Datum": { "key": "900005" },
+      "maximumValue": 6,
+      "minimumValue": 7,
+      "unitOfMeasure": { "key": "4" }
+    }
+  },
+  "subType": { "key": "5" },
+  "keywords": {
+    "free": [{ "label": "optional" }]
+  },
+  "metadata": { "language": { "key": "103" }, "characterSet": null },
+  "resource": {
+    "purpose": "production purpose",
+    "specificUsage": "aptitude/use",
+    "useLimitation": "use constraints",
+    "useConstraints": [
+      { "title": { "key": "17" }, "source": "terms of use source" }
+    ],
+    "accessConstraints": [{ "key": "6" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-01-12T23:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": { "key": "2" },
+    "resourceDate": "2020-09-03T22:00:00.000Z",
+    "resourceDateType": { "key": "since" },
+    "resourceDateTypeSince": { "key": "unknown" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "59" }] },
+  "orderInfo": "bestellinfo",
+  "qualities": [
+    {
+      "_type": "domainConsistency",
+      "value": 2,
+      "parameter": "param",
+      "measureType": { "key": "1" }
+    }
+  ],
+  "identifier": "identifier of data source",
+  "isOpenData": false,
+  "references": [
+    {
+      "url": "data-download.com",
+      "type": { "key": "9990" },
+      "title": "data download",
+      "explanation": "more-info"
+    }
+  ],
+  "resolution": [{ "denominator": 4, "distanceDPI": 1, "distanceMeter": 6 }],
+  "dataQuality": { "completenessOmission": { "measResult": 55 } },
+  "description": "description",
+  "distribution": {},
+  "spatialScope": { "key": "885989663" },
+  "alternateTitle": "short description",
+  "pointOfContact": [
+    { "ref": "83f92167-6606-4182-948c-5747ad608b80", "type": { "key": "11" } }
+  ],
+  "dataQualityInfo": {
+    "lineage": {
+      "source": {
+        "processStep": {
+          "description": [
+            {
+              "key": null,
+              "value": "production process"
+            }
+          ]
+        },
+        "descriptions": [{ "key": null, "value": "data-basis" }]
+      }
+    }
+  },
+  "isAdVCompatible": true,
+  "topicCategories": [{ "key": "2" }],
+  "advProductGroups": [{ "key": "13" }],
+  "graphicOverviews": [
+    {
+      "title": "first_archived",
+      "fileName": {
+        "uri": "first_archived.txt",
+        "value": "first_archived.txt",
+        "asLink": false
+      }
+    }
+  ],
+  "parentIdentifier": "identifier",
+  "priorityDatasets": [{ "key": "-79614265" }],
+  "conformanceResult": [
+    {
+      "pass": { "key": "1" },
+      "isInspire": true,
+      "explanation": "etwas",
+      "specification": { "key": "11" },
+      "publicationDate": "2009-12-15"
+    }
+  ],
+  "isInspireIdentified": false,
+  "digitalTransferOptions": [
+    {
+      "name": { "key": "900006" },
+      "mediumNote": "speicherort",
+      "transferSize": 100
+    }
+  ],
+  "maintenanceInformation": {
+    "description": "mehr erläuterungen",
+    "maintenanceAndUpdateFrequency": { "key": "1" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "6" }, "number": 6 }
+  },
+  "portrayalCatalogueInfo": {
+    "citation": [
+      {
+        "date": "2021-10-06T22:00:00.000Z",
+        "title": { "key": "1" },
+        "edition": "6"
+      }
+    ]
+  },
+  "spatialRepresentationType": [{ "key": "1" }],
+  "featureCatalogueDescription": {
+    "citation": [
+      {
+        "date": "2022-04-06T22:00:00.000Z",
+        "title": { "key": "1" },
+        "edition": "9"
+      }
+    ],
+    "featureTypes": [{ "key": null, "value": "attribute info" }]
+  },
+  "vectorSpatialRepresentation": [
+    {
+      "topologyLevel": { "key": "4" },
+      "geometricObjectType": { "key": "6" },
+      "geometricObjectCount": 2
+    }
+  ],
+  "absoluteExternalPositionalAccuracy": { "vertical": 5, "horizontal": 3 }
+}

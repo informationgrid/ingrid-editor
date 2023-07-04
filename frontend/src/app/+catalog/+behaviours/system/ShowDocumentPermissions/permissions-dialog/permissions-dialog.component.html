@@ -1,0 +1,64 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <!-- dialog header -->
+    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
+        <h2 mat-dialog-title>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+            <span class="text">{{
+                forResponsibility
+                    ? "Verantwortlichen Benutzer auswählen"
+                    : "Berechtigungsübersicht"
+            }}</span>
+        </h2>
+    </div>
+
+    <mat-dialog-content *ngIf="users; else loading">
+        <!-- keyword search -->
+        <ige-search-input
+            [query]="query"
+            [showSearchIcon]="true"
+            [flexWidth]="true"
+            placeholder="Suchen"
+            [withWhiteBorder]="false"
+        ></ige-search-input>
+
+        <!-- permission table -->
+        <user-table
+            [users]="users"
+            [query]="query.value"
+            [canExport]="false"
+            (onUserSelect)="selectedUser = $event"
+            tableType="permission"
+            defaultSort="permission"
+        ></user-table>
+    </mat-dialog-content>
+
+    <!-- dialog action buttons -->
+    <mat-dialog-actions>
+        <button mat-flat-button mat-dialog-close="true">Schließen</button>
+        <div class="flex-1"></div>
+        <button
+            *ngIf="forResponsibility"
+            color="primary"
+            mat-flat-button
+            [disabled]="!selectedUser"
+            (click)="setAsResponsible()"
+        >
+            Als Verantwortlichen festlegen
+        </button>
+        <button
+            *ngIf="!forResponsibility"
+            color="primary"
+            mat-flat-button
+            [disabled]="!selectedUser"
+            (click)="switchToUser()"
+        >
+            In Nutzerverwaltung anzeigen
+        </button>
+    </mat-dialog-actions>
+</div>
+
+<ng-template #loading>
+    <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
+</ng-template>

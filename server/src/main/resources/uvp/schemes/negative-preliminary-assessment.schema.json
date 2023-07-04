@@ -31,7 +31,7 @@
         "spatial": {
           "type": "array",
           "items": {
-            "$ref": "refs/general.schema.json#/definitions/Spatial"
+            "$ref": "../../general.schema.json#/definitions/Spatial"
           },
           "minItems": 1,
           "maxItems": 1
@@ -55,13 +55,7 @@
           "minItems": 1
         }
       },
-      "required": [
-        "_uuid",
-        "_type",
-        "title",
-        "pointOfContact",
-        "decisionDate"
-      ],
+      "required": ["_uuid", "_type", "title", "pointOfContact", "decisionDate"],
       "title": "NegativePreliminaryAssessment"
     }
   }

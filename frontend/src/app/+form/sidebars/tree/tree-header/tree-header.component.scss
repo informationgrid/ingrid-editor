@@ -5,24 +5,28 @@
   display: block;
 }
 
-:host-context(.mat-dialog-container) :host {
+:host-context(.mat-mdc-dialog-container) :host {
   background-color: #ffffff;
+}
+
+mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
 }
 
 .header {
   padding: 0 12px;
 
   .options {
-    padding: 8px 0;
+    padding: 8px 0 14px;
 
     .multi-select {
       flex: 2;
       font-size: 14px;
       display: flex;
       align-items: center;
-
       mat-checkbox {
-        padding: 8px 12px;
+        padding-right: 12px;
 
         &:hover {
           background-color: $ige-background-bar;
@@ -42,45 +46,9 @@
 }
 
 .multi-select-area {
+  display: flex;
   background-color: $ige-mark-color;
-  width: 100%;
   padding: 8px 12px 8px 24px;
   font-size: 14px;
-}
-
-.search {
-  padding-top: 6px;
-
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-    margin-bottom: 0;
-
-    .mat-form-field-flex {
-      align-items: center;
-      height: 40px;
-    }
-
-    .mat-form-field-outline {
-      top: 0;
-      background-color: #ffffff;
-      border-radius: 4px;
-
-      &:not(.mat-form-field-outline-thick) > div {
-        border: none;
-      }
-    }
-
-    .mat-form-field-prefix,
-    .mat-form-field-suffix {
-      top: 0;
-    }
-
-    .mat-form-field-infix {
-      padding: 0;
-
-      input {
-        height: 100%;
-      }
-    }
-  }
+  margin-bottom: 6px;
 }

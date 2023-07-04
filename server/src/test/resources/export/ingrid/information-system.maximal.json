@@ -1,0 +1,107 @@
+{
+  "_uuid": "00cbcb2e-c52f-478d-97a4-46b0f5dabb3a",
+  "title": "information_system_max",
+  "_type": "InGridInformationSystem",
+  "themes": [{ "key": "108" }],
+  "dataset": { "languages": ["142"] },
+  "implementationHistory": "history4",
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Grüna, Chemnitz, Sachsen, 09224, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.801461,
+          "lat2": 50.8497718,
+          "lon1": 12.7275333,
+          "lon2": 12.8191334
+        }
+      }
+    ],
+    "description": "locational data",
+    "spatialSystems": [{ "key": "4258" }],
+    "verticalExtent": {
+      "Datum": { "key": "900009" },
+      "maximumValue": 6,
+      "minimumValue": 7,
+      "unitOfMeasure": { "key": "9001" }
+    }
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "optional info"
+      }
+    ]
+  },
+  "metadata": { "language": { "key": "103" } },
+  "resource": {
+    "purpose": "production purpose",
+    "specificUsage": "use7",
+    "useLimitation": "use-constraints5",
+    "useConstraints": [{ "title": { "key": "33" }, "source": "src" }],
+    "accessConstraints": [{ "key": "4" }]
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2022-01-11T23:00:00.000Z",
+        "referenceDateType": { "key": "2" }
+      }
+    ],
+    "status": { "key": "1" },
+    "resourceDate": "2022-06-14T22:00:00.000Z",
+    "resourceDateType": { "key": "at" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "68" }] },
+  "orderInfo": "order data",
+  "isOpenData": false,
+  "references": [
+    {
+      "url": "https://this-reference.com/here",
+      "type": { "key": "9999" },
+      "title": "unspecific reference",
+      "explanation": "reference information"
+    }
+  ],
+  "description": "long description",
+  "explanation": "remarks",
+  "serviceType": { "key": "1" },
+  "serviceUrls": [
+    {
+      "url": "https://service-url.com/somewhere",
+      "name": "service-url",
+      "description": "more service info"
+    }
+  ],
+  "baseDataText": "basical data",
+  "distribution": {},
+  "alternateTitle": "short description",
+  "pointOfContact": [
+    { "ref": "1f570220-d292-4fd5-8595-e2e088d2f410", "type": { "key": "3" } }
+  ],
+  "serviceVersion": [{ "key": null, "value": "4" }],
+  "isAdVCompatible": false,
+  "advProductGroups": [{ "key": "14" }],
+  "graphicOverviews": [
+    {
+      "title": "first_archived(2)",
+      "fileName": {
+        "uri": "first_archived(2).txt",
+        "value": "first_archived(2).txt",
+        "asLink": false
+      }
+    }
+  ],
+  "parentIdentifier": "ident5",
+  "systemEnvironment": "system environm",
+  "isInspireIdentified": false,
+  "digitalTransferOptions": [
+    { "name": { "key": "17" }, "mediumNote": "where", "transferSize": 34 }
+  ],
+  "maintenanceInformation": {
+    "description": "time reference infos",
+    "maintenanceAndUpdateFrequency": { "key": "7" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 4 }
+  }
+}

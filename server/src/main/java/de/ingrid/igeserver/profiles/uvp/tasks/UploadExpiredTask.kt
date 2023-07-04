@@ -2,7 +2,9 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import de.ingrid.igeserver.profiles.uvp.UvpReferenceHandler
 import de.ingrid.igeserver.utils.DocumentLinks
+import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import javax.persistence.EntityManager
 
 @Profile("uvp")
 @Component
@@ -70,7 +71,7 @@ class UploadExpiredTask(
     }
 
     private fun archiveFile(
-        uploadInfo: UvpReferenceHandler.UploadInfo,
+        uploadInfo: UploadInfo,
         uploads: DocumentLinks
     ): Boolean {
         return try {
@@ -84,7 +85,7 @@ class UploadExpiredTask(
     }
     
     private fun restoreFile(
-        uploadInfo: UvpReferenceHandler.UploadInfo,
+        uploadInfo: UploadInfo,
         uploads: DocumentLinks
     ): Boolean {
         return try {
@@ -97,7 +98,7 @@ class UploadExpiredTask(
         }
     }
 
-    private fun isExpired(upload: UvpReferenceHandler.UploadInfo, today: LocalDate) =
+    private fun isExpired(upload: UploadInfo, today: LocalDate) =
         upload.validUntil != null && today.isAfter(
             OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
         )

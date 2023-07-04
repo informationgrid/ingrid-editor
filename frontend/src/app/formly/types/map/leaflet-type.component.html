@@ -1,3 +1,13 @@
+<div *ngIf="!disabled" class="spatialHelpText">
+    Erstellen Sie auf der Karte Informationen über die räumliche Zuordnung des
+    beschriebenen Datenbestands. Nutzen Sie dazu den blauen „+“-Button auf der
+    Karte.
+    <br />
+    <a *ngIf="props.hasContextHelp" (click)="showContextHelp()"
+        >Hilfe zu Raumbezügen</a
+    >
+</div>
+
 <div #leaflet [class.passive]="!hasAnyLocations"></div>
 
 <div
@@ -17,7 +27,7 @@
         color="primary"
         (click)="openSpatialDialog()"
         [ngClass]="{
-            'has-error': formControl.errors?.required
+            'has-error': showError && formControl.errors?.required
         }"
     >
         <mat-icon svgIcon="spatial-rect"></mat-icon>
@@ -30,9 +40,9 @@
     </button>
 </div>
 
-<ige-form-error *ngIf="formControl.errors?.required"
-    >Bitte erstellen Sie einen Raumbezug</ige-form-error
->
+<ige-form-error *ngIf="showError && formControl.errors?.required"
+    >Bitte erstellen Sie einen Raumbezug
+</ige-form-error>
 
 <ige-spatial-list
     *ngIf="hasAnyLocations"
@@ -44,13 +54,14 @@
     (remove)="removeLocation($event)"
 ></ige-spatial-list>
 
-<div *ngIf="!disabled" class="spatialHelpText">
-    Erstellen Sie Informationen über die räumliche Zuordnung des beschriebenen
-    Datenbestands.
-    <a *ngIf="props.hasContextHelp" (click)="showContextHelp($event)"
-        >Hilfe zu Raumbezügen</a
-    >
-    <div *ngIf="maxLocationsReached">
-        Die maximale erlaubte Anzahl an Raumbezügen ist bereits erreicht.
+<div *ngIf="maxLocationsReached" class="limitHelpText">
+    <div class="limitHelpIcon">
+        <mat-icon
+            class="material-icons-outlined"
+            svgIcon="info-24px"
+        ></mat-icon>
     </div>
+    <ng-container *transloco="let t">
+        {{ t("spatial.limitHelpText") }}
+    </ng-container>
 </div>

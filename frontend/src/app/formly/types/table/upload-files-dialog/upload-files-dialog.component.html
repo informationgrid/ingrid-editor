@@ -8,21 +8,24 @@
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
+            [allowedUploadTypes]="allowedUploadTypes"
             (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"
             (complete)="handleUploadComplete()"
         ></ige-file-upload>
 
-        <mat-slide-toggle
-            labelPosition="before"
-            color="accent"
-            class="stretch"
-            (change)="extractZipFiles = $event.checked"
-            >ZIP-Archive nach dem Übernehmen entpacken
-        </mat-slide-toggle>
-        <div *ngIf="extractInProgress" class="no-fields-selected-notice">
-            Die ZIP-Datei wird gerade auf dem Server entpackt. Dies kann einen
-            Moment dauern.
-        </div>
+        <ng-container *ngIf="hasExtractZipOption">
+            <mat-slide-toggle
+                labelPosition="before"
+                color="accent"
+                class="stretch"
+                (change)="extractZipFiles = $event.checked"
+                >ZIP-Archive nach dem Übernehmen entpacken
+            </mat-slide-toggle>
+            <div *ngIf="extractInProgress" class="no-fields-selected-notice">
+                Die ZIP-Datei wird gerade auf dem Server entpackt. Dies kann
+                einen Moment dauern.
+            </div>
+        </ng-container>
     </ng-container>
 </ige-dialog-template>

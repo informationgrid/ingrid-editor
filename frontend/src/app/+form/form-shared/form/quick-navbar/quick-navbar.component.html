@@ -1,0 +1,30 @@
+<div class="navigation-bar-wrapper">
+    <div class="navigation-bar flex-row">
+        <ige-document-icon
+            [doc]="model"
+            [explicitTooltip]="model.title"
+        ></ige-document-icon>
+
+        <ige-header-navigation
+            class="flex-1"
+            [sections]="sections ?? []"
+        ></ige-header-navigation>
+    </div>
+</div>
+
+<ige-form-message></ige-form-message>
+
+<ige-error-panel
+    *ngIf="numberOfErrors > 0"
+    [numErrors]="numberOfErrors"
+></ige-error-panel>
+
+<div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
+    <div class="diagonal"></div>
+    <mat-slide-toggle
+        [checked]="optionalButtonState"
+        (change)="toggleOptionalFields.next($event.checked)"
+        >Alle
+    </mat-slide-toggle>
+    <div class="cover"></div>
+</div>

@@ -1,0 +1,81 @@
+{
+  "title": "ab",
+  "_uuid": "9635856b-ad0c-45c2-ae28-fbde3e56411b",
+  "_type": "InGridSpecialisedTask",
+  "themes": [{ "key": "201" }],
+  "dataset": { "languages": ["126"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Niebra, Gera, Thüringen, 07551, Deutschland (village)",
+        "value": {
+          "lat1": 50.8014664,
+          "lat2": 50.8414664,
+          "lon1": 12.0917058,
+          "lon2": 12.1317058
+        }
+      }
+    ],
+    "description": "text",
+    "spatialSystems": [{ "key": "9000011" }],
+    "verticalExtent": {
+      "Datum": { "key": "900011" },
+      "maximumValue": 4,
+      "minimumValue": 3,
+      "unitOfMeasure": { "key": "9001" }
+    }
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "any keyword"
+      }
+    ]
+  },
+  "metadata": { "language": { "key": "126" } },
+  "resource": { "purpose": "zweck1", "specificUsage": "nutzung1" },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2020-10-08T22:00:00.000Z",
+        "referenceDateType": { "key": "3" }
+      }
+    ],
+    "status": { "key": "6" },
+    "resourceDate": "2020-10-11T22:00:00.000Z",
+    "resourceDateType": { "key": "since" }
+  },
+  "extraInfo": { "legalBasicsDescriptions": [{ "key": "43" }] },
+  "references": [
+    {
+      "url": "someUrl",
+      "type": { "key": "5305" },
+      "title": "reference title",
+      "explanation": "reference information"
+    }
+  ],
+  "description": "full doc",
+  "alternateTitle": "brief description",
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
+  ],
+  "isAdVCompatible": true,
+  "advProductGroups": [{ "key": "6" }],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "uri": "https://cypress.io/something",
+        "value": "https://cypress.io/something",
+        "asLink": true
+      },
+      "fileDescription": "some url"
+    }
+  ],
+  "parentIdentifier": "identificator",
+  "maintenanceInformation": {
+    "description": "info",
+    "maintenanceAndUpdateFrequency": { "key": "1" },
+    "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 3 }
+  }
+}

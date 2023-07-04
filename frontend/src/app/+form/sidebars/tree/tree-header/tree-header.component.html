@@ -1,7 +1,6 @@
 <div
     *ngIf="multiSelectionModeEnabled"
-    class="multi-select-area"
-    fxLayoutAlign="space-between center"
+    class="multi-select-area justify-content-space-between align-items-center"
 >
     <mat-checkbox
         data-cy="toggle-all-selection"
@@ -14,25 +13,21 @@
     <button
         mat-icon-button
         matSuffix
-        class="close"
         (click)="deactivateMultiSelection()"
         data-cy="exit-multi-select-mode"
     >
-        <mat-icon svgIcon="Entfernen"></mat-icon>
+        <mat-icon>cancel</mat-icon>
     </button>
 </div>
 
-<div class="header" fxLayout="column">
+<div class="header flex-col">
     <div
         *ngIf="showOptions && !multiSelectionModeEnabled"
-        class="options"
-        fxLayout="row wrap-reverse"
-        fxLayoutAlign="space-between"
+        class="options flex-row flex-wrap-reverse justify-content-space-between align-items-stretch"
     >
         <div class="multi-select" *ngIf="showMultiSelectButton">
             <mat-checkbox
                 data-cy="edit-button"
-                class="default-button"
                 matTooltip="Mehrfachauswahl"
                 (click)="activateMultiSelection()"
             >
@@ -40,8 +35,7 @@
             </mat-checkbox>
         </div>
 
-        <div fxFlex fxLayout="row">
-            <div fxFlex="3 1 auto"></div>
+        <div class="flex-1 flex-row justify-content-end align-items-center">
             <!--            <mat-slide-toggle
                 class="show-all"
                 checked
@@ -62,39 +56,16 @@
         </div>
     </div>
 
-    <mat-form-field
-        *ngIf="showSearch"
-        class="ige-form-field"
-        appearance="outline"
-        data-cy="tree-search-field"
-    >
-        <mat-icon *ngIf="query.value?.length === 0" class="passive" matSuffix
-            >search
-        </mat-icon>
-
-        <input
-            matInput
+    <div *ngIf="showSearch" data-cy="tree-search-field">
+        <ige-search-input
+            [autocompleteRef]="searchAuto"
+            [searchSub]="searchSub"
+            [query]="query"
+            [flexWidth]="true"
+            [focus]="false"
             placeholder="Suchen"
-            aria-label="Search"
-            [formControl]="query"
-            [matAutocomplete]="searchAuto"
-            (click)="query.value?.length || search('')"
-        />
-
-        <mat-spinner
-            *ngIf="this.searchSub && !this.searchSub.closed"
-            [diameter]="18"
-        ></mat-spinner>
-        <button
-            *ngIf="query.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            class="close"
-            (click)="resetForm()"
-            data-cy="clear-tree-search-field"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
+            showSearchIcon="true"
+        ></ige-search-input>
 
         <mat-autocomplete
             #searchAuto="matAutocomplete"
@@ -107,5 +78,5 @@
                 <ige-document-list-item [doc]="doc"></ige-document-list-item>
             </mat-option>
         </mat-autocomplete>
-    </mat-form-field>
+    </div>
 </div>

@@ -1,0 +1,16 @@
+<button
+    mat-button
+    color="primary"
+    (click)="submit.next()"
+    [disabled]="disabled"
+>
+    <mat-icon
+        *ngIf="svgIcon; else normalIcon"
+        class="material-icons-outlined"
+        [svgIcon]="svgIcon"
+    ></mat-icon>
+    <ng-template #normalIcon>
+        <mat-icon class="material-icons-outlined">{{ icon }}</mat-icon>
+    </ng-template>
+    <span>{{ label }}</span>
+</button>

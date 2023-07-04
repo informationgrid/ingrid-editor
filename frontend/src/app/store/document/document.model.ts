@@ -2,16 +2,18 @@ import { ID } from "@datorama/akita";
 import { DocumentState } from "../../models/ige-document";
 
 export interface DocumentAbstract {
-  id: ID | string;
+  id: ID | number;
   title: string;
   icon: string;
   _state: DocumentState;
   _type: string;
-  _parent: string;
+  _parent: number;
   _hasChildren: boolean;
   _modified: any;
+  _contentModified: any;
   _pendingDate: any;
   _uuid: any;
+  _tags: string;
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
   isRoot: boolean;

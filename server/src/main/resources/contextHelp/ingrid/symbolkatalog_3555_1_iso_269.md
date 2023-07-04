@@ -4,15 +4,13 @@ id: citation
 docType: InGridGeoDataset
 profile: ingrid
 
-
-
 # title, used as window title
 title: Symbolkatalog
 ---
 
 # Symbolkatalog
 
-Für die Präsentation genormter Objekte und Sachverhalte können für die Nutzer der Daten zur Herstellung von Karten abgestimmte Symbole vorgegeben werden. Die Angabe eines oder mehrerer analoger oder digitaler Symbolpaletten mit zugehörigem Datum (Pflichteintrag) und Version (Optional) ist hier möglich.
+Für die Präsentation genormter Objekte und Sachverhalte können für die Nutzer der Daten zur Herstellung von Karten abgestimmte Symbole vorgegeben werden. Die Angabe einer oder mehrerer analoger oder digitaler Symbolpaletten mit zugehörigem Datum (Pflichteintrag) und Version (Optional) ist hier möglich.
 
 ## Beispiel:
 
@@ -34,7 +32,7 @@ Domain: 360 (gmd:title)
 
 Datumsangaben: Datum der Erzeugung, Veröffentlichung oder Überarbeitung der Ressource
 
-Domain: 362 (gmd:date) 
+Domain: 362 (gmd:date)
 
 Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 
@@ -43,8 +41,3 @@ Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 Ausgabe: Ausgabe, Auflage oder Version der Ressource
 
 Domain: 363 (gmd:edition)
-
-## Verweise (Objekt)
-
-Domain: 269 (gmd:portrayalCatalogueCitation@uuidref)
-

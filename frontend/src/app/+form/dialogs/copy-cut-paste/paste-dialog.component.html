@@ -1,30 +1,16 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close data-cy="dlg-close">
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{ data.titleText }}</span>
-    </h2>
-</div>
-
-<mat-dialog-content class="hide-tab-header create-dlg-content">
-    <ige-destination-selection
-        [disableRoot]="!hasWriteRootPermission"
-        [forAddress]="data.forAddress"
-        [typeToInsert]="data.typeToInsert"
-        (choice)="handleSelected($event)"
-    ></ige-destination-selection>
-</mat-dialog-content>
-
-<mat-dialog-actions>
-    <div fxFlex></div>
-    <button
-        mat-stroked-button
-        color="primary"
-        data-cy="create-applyLocation"
-        [disabled]="!hasWriteRootPermission && selection === null"
-        [mat-dialog-close]="{ selection: selection, path: path }"
-    >
-        {{ data.buttonText }}
-    </button>
-</mat-dialog-actions>
+<ige-dialog-template
+    [label]="data.titleText"
+    submitLabel="Einfügen"
+    [disabled]="!hasWriteRootPermission && selection === null"
+    (submit)="submit()"
+    class="mdc-dialog--no-content-padding"
+>
+    <div content class="hide-tab-header create-dlg-content">
+        <ige-destination-selection
+            [disableRoot]="!hasWriteRootPermission"
+            [forAddress]="data.forAddress"
+            [typeToInsert]="data.typeToInsert"
+            (choice)="handleSelected($event)"
+        ></ige-destination-selection>
+    </div>
+</ige-dialog-template>

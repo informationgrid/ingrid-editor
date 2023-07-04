@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.AddressModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.KeyValueModel
-import de.ingrid.igeserver.profiles.mcloud.exporter.model.SpatialModel
+import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
 import java.text.SimpleDateFormat
@@ -24,12 +24,14 @@ data class UVPModel(
     val _created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val _contentModified: OffsetDateTime,
 ) {
-
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
 
+    var catalogId: String = ""
     val spatialTitle = data.spatials?.get(0)?.title
 
     var documentType = mapDocumentType()
@@ -50,8 +52,10 @@ data class UVPModel(
     val parentUuid: String? = data._parent
     var pointOfContact: AddressModel? = null
 
-    init {
+    fun init(catalogId: String): UVPModel {
+        this.catalogId = catalogId
         pointOfContact = determinePointOfContact()
+        return this
     }
 
     fun handleContent(value: String?): String? {
@@ -66,7 +70,8 @@ data class UVPModel(
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id)
+//        val catalogId = AddressModel.catalogRepository?.getCatalogIdentifier(doc.catalog!!.id!!)!!
+        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id, catalogId)
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
@@ -111,7 +116,7 @@ data class UVPModel(
     private fun prepareSpatialString(spatial: SpatialModel): String {
         val coordinates =
             "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
-        val title = spatial.title ?: "" 
+        val title = spatial.title ?: ""
         return "${title}: $coordinates"
     }
 
@@ -181,7 +186,7 @@ data class UVPModel(
     private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent)
+        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent, catalogId)
     }
 
 

@@ -1,15 +1,34 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.imports.DocumentAnalysis
+import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.model.Operator
+import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.profiles.IndexIdFieldConfig
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.DocumentTypes
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.SpatialInGrid
+import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Published
+import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
@@ -17,7 +36,11 @@ import org.springframework.stereotype.Service
 @Profile("ingrid")
 class InGridProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
-    @JsonIgnore val codelistHandler: CodelistHandler
+    @JsonIgnore val codelistHandler: CodelistHandler,
+    @JsonIgnore @Lazy val documentService: DocumentService,
+    @JsonIgnore val query: QueryRepository,
+    @JsonIgnore val dateService: DateService,
+    @JsonIgnore val openDataCategory: OpenDataCategory
 ) : CatalogProfile {
     companion object {
         const val id = "ingrid"
@@ -27,13 +50,56 @@ class InGridProfile @Autowired constructor(
     override val title = "InGrid Katalog"
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"
+    override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf()
+        return arrayOf(
+            FacetGroup(
+                "state", "Allgemein", arrayOf(
+                    Published(),
+                    ExceptFolders(),
+                    TitleSearch()
+                ),
+                viewComponent = ViewComponent.CHECKBOX,
+                combine = Operator.AND
+            ),
+            FacetGroup(
+                "spatial", "Raumbezug", arrayOf(
+                    SpatialInGrid()
+                ),
+                viewComponent = ViewComponent.SPATIAL
+            ),
+            FacetGroup(
+                "timeRef", "Zeitbezug", arrayOf(
+                    TimeSpan()
+                ),
+                viewComponent = ViewComponent.TIMESPAN
+            ),
+            FacetGroup(
+                "docType", "Datensatztyp", arrayOf(
+                    DocumentTypes()
+                ),
+                viewComponent = ViewComponent.SELECT
+            ),
+            FacetGroup(
+                "openDataCategory", "OpenData Kategorie", arrayOf(
+                    openDataCategory
+                ),
+                viewComponent = ViewComponent.SELECT
+            ),
+        )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf()
+        return arrayOf(
+            FacetGroup(
+                "state", "Allgemein", arrayOf(
+                    Published(),
+                    ExceptFolders()
+                ),
+                viewComponent = ViewComponent.CHECKBOX
+            )
+        )
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
@@ -52,7 +118,10 @@ class InGridProfile @Autowired constructor(
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
             null -> {
-                codelistHandler.removeAndAddCodelists(catalogId, listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555))
+                codelistHandler.removeAndAddCodelists(
+                    catalogId,
+                    listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555)
+                )
             }
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
@@ -181,7 +250,26 @@ class InGridProfile @Autowired constructor(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-
+        val queryTest = Query().apply {
+            this.catalog = catalogRepo.findByIdentifier(catalogId)
+            category = "sql"
+            name = "Alle Dokumente ohne Adressreferenzen"
+            description = "Zeigt alle Dokumente an, die keine Adresse angegeben haben"
+            data = jacksonObjectMapper().createObjectNode().apply {
+                put(
+                    "sql", """
+                SELECT document1.*, document_wrapper.category
+                FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid
+                WHERE document1.is_latest = true AND document_wrapper.category = 'data'
+                  AND document_wrapper.type <> 'FOLDER'
+                  AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)
+            """.trimIndent()
+                )
+            }
+            global = true
+            modified = dateService.now()
+        }
+        query.save(queryTest)
     }
 
     override fun getElasticsearchMapping(format: String): String {
@@ -190,5 +278,36 @@ class InGridProfile @Autowired constructor(
 
     override fun getElasticsearchSetting(format: String): String {
         return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
+    }
+
+    override fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {
+        val notExistingCoupledResources = mutableListOf<String>()
+
+        report.references
+            .flatMap { it.document.data.get("service")?.get("coupledResources")?.toList() ?: emptyList() }
+            .filter { !it.get("isExternalRef").asBoolean() }
+            .map { it.get("uuid").asText() }
+            .forEach { coupledUuid ->
+                val referenceInImport = report.references.any { it.document.uuid == coupledUuid }
+                if (!referenceInImport) {
+                    try {
+                        documentService.getWrapperByCatalogAndDocumentUuid(catalogId, coupledUuid)
+                    } catch (ex: Exception) {
+                        message.infos.add("Coupled Resource with UUID $coupledUuid was not found. Removing reference.")
+                        notExistingCoupledResources.add(coupledUuid)
+                    }
+                }
+            }
+
+        removeReferencesFromDatasets(report.references, notExistingCoupledResources)
+    }
+
+    private fun removeReferencesFromDatasets(refs: List<DocumentAnalysis>, uuids: MutableList<String>) {
+        refs.forEach { ref ->
+            ref.document.data.get("service")?.let {
+                val coupledResources = it.get("coupledResources") as ArrayNode
+                coupledResources.removeAll { node -> node.get("uuid")?.asText() in uuids }
+            }
+        }
     }
 }

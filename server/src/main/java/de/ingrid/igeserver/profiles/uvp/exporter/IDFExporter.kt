@@ -18,15 +18,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.io.StringReader
-import java.io.StringWriter
-import javax.xml.XMLConstants
-import javax.xml.transform.OutputKeys
-import javax.xml.transform.Source
-import javax.xml.transform.Transformer
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.stream.StreamResult
-import javax.xml.transform.stream.StreamSource
 
 
 @Service
@@ -58,28 +49,6 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         return prettyXml
     }
 
-    fun prettyFormat(input: String, indent: Int): String {
-        return try {
-            val xmlInput: Source = StreamSource(StringReader(input))
-            val stringWriter = StringWriter()
-            val xmlOutput = StreamResult(stringWriter)
-            val transformerFactory = TransformerFactory.newInstance()
-            transformerFactory.setAttribute("indent-number", indent)
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "")
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "")
-            val transformer: Transformer =
-                transformerFactory.newTransformer(StreamSource(javaClass.getResourceAsStream("/prettyprint.xsl")))
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes")
-            transformer.transform(xmlInput, xmlOutput)
-            xmlOutput.writer.toString()/*
-                .replace("\n", "&#10;")
-                .replace("\r", "&#13;")
-                .replace("\t", "&#9;")*/
-        } catch (e: Exception) {
-            throw RuntimeException(e) // simple exception handling, please review it
-        }
-    }
-
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
             "UvpApprovalProcedureDoc" -> "uvp/idf-approval.jte"
@@ -102,7 +71,7 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
-                "model" to mapper.convertValue(json, UVPModel::class.java),
+                "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },
                 "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl)
             )
         )

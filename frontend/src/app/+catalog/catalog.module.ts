@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { RouterModule } from "@angular/router";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -32,12 +31,12 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { FormlyModule } from "@ngx-formly/core";
+import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    FlexLayoutModule,
     CodelistPresenterModule,
     MatSnackBarModule,
     MatCardModule,
@@ -61,6 +60,7 @@ import { FormlyModule } from "@ngx-formly/core";
     MatProgressBarModule,
     DragDropModule,
     FormlyModule,
+    JobHandlerHeaderModule,
   ],
   providers: [CatalogService],
   declarations: [

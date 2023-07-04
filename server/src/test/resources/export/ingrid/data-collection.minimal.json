@@ -1,0 +1,54 @@
+{
+  "_uuid": "d967e83f-5336-4207-960c-3a6a900d0210",
+  "_type": "InGridDataCollection",
+  "title": "aba",
+  "themes": [],
+  "dataset": { "languages": ["142"] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Auma, Auma-Weidatal, Greiz, Thüringen, 07955, Deutschland (town)",
+        "value": {
+          "lat1": 50.6587079,
+          "lat2": 50.7387079,
+          "lon1": 11.8593229,
+          "lon2": 11.9393229
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000001" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": {
+    "free": []
+  },
+  "metadata": { "language": { "key": "150" } },
+  "resource": { "useConstraints": [], "accessConstraints": [] },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2020-12-11T23:00:00.000Z",
+        "referenceDateType": { "key": "1" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "isOpenData": false,
+  "references": [],
+  "description": "some description",
+  "pointOfContact": [
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
+  ],
+  "categoryCatalog": [],
+  "databaseContent": [],
+  "isAdVCompatible": false,
+  "advProductGroups": [],
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  }
+}

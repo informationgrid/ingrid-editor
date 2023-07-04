@@ -2,6 +2,7 @@
 
 .entry-list {
   .mat-expansion-panel-header-description {
+    flex: unset;
     justify-content: flex-end;
     align-items: center;
   }
@@ -19,7 +20,8 @@
   }
 
   mat-expansion-panel-header {
-    height: 60px;
+    height: unset;
+    min-height: 60px;
     padding-right: 0;
   }
   .mat-expansion-panel:first-of-type,
@@ -29,6 +31,13 @@
 
   .content {
     padding-left: 48px;
+  }
+}
+
+mat-panel-description {
+  margin-right: 8px;
+  button {
+    display: inline-block;
   }
 }
 
@@ -49,6 +58,7 @@
 .identifier {
   color: $ige-hint-color;
   font-size: 16px;
+  font-weight: 400;
 }
 .name {
   font-size: 16px;

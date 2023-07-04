@@ -24,6 +24,7 @@ import {
 import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
+import { ExportService } from "../../services/export.service";
 
 @Component({
   selector: "ige-result-table",
@@ -52,7 +53,12 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   }
 
   dataSource = new MatTableDataSource<IgeDocument>([]);
-  displayedColumns: string[] = ["_type", "title", "_modified", "settings"];
+  displayedColumns: string[] = [
+    "_type",
+    "title",
+    "_contentModified",
+    "settings",
+  ];
   columnsMap: SelectOptionUi[];
   showSaveButton: boolean;
 
@@ -64,7 +70,8 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private profileQuery: ProfileQuery,
     private documentService: DocumentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -128,5 +135,16 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
             .subscribe(() => this.updated.next());
         }
       });
+  }
+
+  downloadTable() {
+    const rows: string[][] = [];
+    rows.push(["Typ", "Titel", "Aktualität"]);
+    for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
+    this.exportService.exportCsv(rows, { exportName: "research" });
+  }
+
+  private buildRowByDoc(doc: IgeDocument) {
+    return [doc._type, doc.title, doc._contentModified];
   }
 }

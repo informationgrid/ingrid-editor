@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "InformationSystem#1.0.0",
+  "$ref": "#/definitions/InformationSystem",
+  "definitions": {
+    "InformationSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "boolean"]
+        },
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "const": "InGridInformationSystem"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "alternateTitle": {
+          "type": ["null", "string"]
+        },
+        "serviceType": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serviceUrls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "serviceVersion": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
+        "parentIdentifier": {
+          "type": ["null", "string"]
+        },
+        "pointOfContact": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/PointOfContact"
+          },
+          "minItems": 1
+        },
+        "advProductGroups": {
+          "$ref": "refs/general.schema.json#/definitions/advProductGroups"
+        },
+        "themes": {
+          "$ref": "refs/general.schema.json#/definitions/themes"
+        },
+        "spatial": {
+          "$ref": "refs/general.schema.json#/definitions/Spatial"
+        },
+        "temporal": {
+          "$ref": "refs/general.schema.json#/definitions/temporal"
+        },
+        "dataset": {
+          "$ref": "refs/general.schema.json#/definitions/dataset"
+        },
+        "extraInfo": {
+          "$ref": "refs/general.schema.json#/definitions/extraInfo"
+        },
+        "metadata": {
+          "$ref": "refs/general.schema.json#/definitions/metadata"
+        },
+        "resource": {
+          "$ref": "refs/general.schema.json#/definitions/resource"
+        },
+        "keywords": {
+          "$ref": "refs/general.schema.json#/definitions/keywords"
+        },
+        "maintenanceInformation": {
+          "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
+        },
+        "references": {
+          "$ref": "refs/general.schema.json#/definitions/references"
+        },
+        "graphicOverviews": {
+          "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
+        },
+        "digitalTransferOptions": {
+          "$ref": "refs/general.schema.json#/definitions/digitalTransferOptions"
+        },
+        "categoryCatalog": {
+          "$ref": "refs/general.schema.json#/definitions/categoryCatalog"
+        },
+        "databaseContent": {
+          "$ref": "refs/general.schema.json#/definitions/databaseContent"
+        },
+        "explanation": {
+          "$ref": "refs/general.schema.json#/definitions/explanation"
+        },
+        "methodText": {
+          "$ref": "refs/general.schema.json#/definitions/methodText"
+        },
+        "systemEnvironment": {
+          "$ref": "refs/general.schema.json#/definitions/systemEnvironment"
+        },
+        "baseDataText": {
+          "$ref": "refs/general.schema.json#/definitions/baseDataText"
+        },
+        "implementationHistory": {
+          "type": ["null", "string"]
+        },
+        "orderInfo": {
+          "$ref": "refs/general.schema.json#/definitions/orderInfo"
+        },
+        "distribution": {
+          "$ref": "refs/general.schema.json#/definitions/distribution"
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "pointOfContact",
+        "spatial",
+        "temporal",
+        "metadata",
+        "dataset"
+      ],
+      "title": "InformationSystem"
+    }
+  }
+}

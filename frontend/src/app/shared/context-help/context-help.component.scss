@@ -1,6 +1,15 @@
 @import "src/variables";
 
-.mat-dialog-content {
+.infoIcon {
+  border-radius: 50%;
+  background-color: $ige-background;
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  margin-right: 8px;
+}
+
+.mat-mdc-dialog-content {
   resize: both;
   padding-top: 0;
   color: $ige-text-color;
@@ -12,51 +21,17 @@
   width: 500px;
 }
 
-:host {
-  margin-bottom: -24px;
-
-  ::ng-deep h1 {
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  ::ng-deep h2 {
-    font-size: 16px;
-    font-weight: 500;
-    color: $ige-text-color;
-    margin-bottom: 0;
-  }
-  ::ng-deep h2 + p {
-    margin-top: 0;
-  }
-}
-
-.mat-dialog-title {
-  margin-bottom: 10px;
-  margin-top: -14px;
-  margin-left: -14px;
-  margin-right: -14px;
+.mat-mdc-dialog-title {
   display: flex;
   align-items: flex-start;
   cursor: move;
+  font-size: 16px;
+  padding: 8px;
 
   span {
     flex: 1 1 auto;
     line-height: 24px;
     color: $ige-primary;
     font-weight: normal;
-  }
-
-  .mat-icon-button {
-    height: 24px;
-    width: 24px;
-    line-height: 24px;
-    color: $ige-secondary;
-  }
-}
-
-.mat-dialog-actions {
-  ::ng-deep .mat-icon svg path {
-    fill: $ige-secondary;
   }
 }

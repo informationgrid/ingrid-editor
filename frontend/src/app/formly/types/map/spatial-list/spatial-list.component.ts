@@ -8,7 +8,7 @@ import {
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 
-export type SpatialLocationType = "free" | "wkt" | "geo-name";
+export type SpatialLocationType = "free" | "wkt" | "wfsgnde";
 
 export interface SpatialLocation {
   title: string;
@@ -16,6 +16,7 @@ export interface SpatialLocation {
   value?: SpatialBoundingBox;
   wkt?: string;
   limitTypes?: SpatialLocationType[];
+  ars?: string;
 }
 
 export interface SpatialLocationWithColor extends SpatialLocation {
@@ -54,24 +55,13 @@ export class SpatialListComponent implements OnInit {
         prev[curr.type].push(curr);
         return prev;
       },
-      { free: [], wkt: [], "geo-name": [] }
+      { free: [], wkt: [], coordinates: [], wfsgnde: [] }
     );
 
     // @ts-ignore
     this.types = Object.keys(this.typedLocations).filter(
       (type) => this.typedLocations[type].length > 0
     );
-  }
-
-  getTypeName(type: SpatialLocationType): string {
-    switch (type) {
-      case "free":
-        return "Freier Raumbezug";
-      case "wkt":
-        return "Raumbezug (WKT)";
-      case "geo-name":
-        return "Geographischer Name";
-    }
   }
 
   confirmRemove(location: SpatialLocationWithColor): void {
@@ -86,7 +76,7 @@ export class SpatialListComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.remove.next(location.indexNumber);
+          this.remove.emit(location.indexNumber);
         }
       });
   }

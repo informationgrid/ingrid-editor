@@ -2,10 +2,16 @@ import { Component, forwardRef, Input, OnInit } from "@angular/core";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatIconModule } from "@angular/material/icon";
+import { PermissionTableComponent } from "./permission-table/permission-table.component";
+import { TranslocoModule } from "@ngneat/transloco";
+import { NgIf } from "@angular/common";
 
 @UntilDestroy()
 @Component({
@@ -19,6 +25,15 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
       multi: true,
     },
   ],
+  imports: [
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatIconModule,
+    PermissionTableComponent,
+    TranslocoModule,
+    NgIf,
+  ],
+  standalone: true,
 })
 export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};

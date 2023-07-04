@@ -1,8 +1,17 @@
-<div *ngIf="hasContextHelp" class="contextHelpIcon">
+<div
+    *ngIf="hasContextHelp"
+    class="contextHelpIcon"
+    (click)="showContextHelp($event)"
+>
     <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
 </div>
+
 <div class="label-wrapper">
-    <label (click)="showContextHelp($event)">
+    <label
+        [attr.tabindex]="hasContextHelp ? 0 : null"
+        (click)="showContextHelp($event)"
+        (keydown.enter)="showContextHelp($event)"
+    >
         <ng-content></ng-content>
     </label>
 </div>

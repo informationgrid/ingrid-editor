@@ -1,0 +1,1334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:igctx="https://www.ingrid-oss.eu/schemas/igctx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+    <gmd:fileIdentifier>
+        <gco:CharacterString>4915275a-733a-47cd-b1a6-1a3f1e976948</gco:CharacterString>
+    </gmd:fileIdentifier>
+    <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+    </gmd:language>
+    <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+    </gmd:characterSet>
+    <gmd:parentIdentifier>
+        <gco:CharacterString>CBA54D12-110A-48BE-8BC9-66E5902F18F4</gco:CharacterString>
+    </gmd:parentIdentifier>
+    <gmd:hierarchyLevel>
+        <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+    </gmd:hierarchyLevel>
+    <gmd:contact>
+        <gmd:CI_ResponsibleParty uuid="110C6012-1713-44C0-9A33-4E2C24D06966">
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>you@wemove.com</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role>
+                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+            </gmd:role>
+        </gmd:CI_ResponsibleParty>
+    </gmd:contact>
+    <gmd:dateStamp>
+        <gco:Date>2023-02-07</gco:Date>
+    </gmd:dateStamp>
+    <gmd:metadataStandardName>
+        <gco:CharacterString>ISO19115</gco:CharacterString>
+    </gmd:metadataStandardName>
+    <gmd:metadataStandardVersion>
+        <gco:CharacterString>2003/Cor.1:2006</gco:CharacterString>
+    </gmd:metadataStandardVersion>
+    <gmd:spatialRepresentationInfo>
+        <gmd:MD_VectorSpatialRepresentation>
+            <gmd:topologyLevel>
+                <gmd:MD_TopologyLevelCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_TopologyLevelCode" codeListValue="fullPlanarGraph"/>
+            </gmd:topologyLevel>
+            <gmd:geometricObjects>
+                <gmd:MD_GeometricObjects>
+                    <gmd:geometricObjectType>
+                        <gmd:MD_GeometricObjectTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="solid"/>
+                    </gmd:geometricObjectType>
+                    <gmd:geometricObjectCount>
+                        <gco:Integer>8</gco:Integer>
+                    </gmd:geometricObjectCount>
+                </gmd:MD_GeometricObjects>
+            </gmd:geometricObjects>
+        </gmd:MD_VectorSpatialRepresentation>
+    </gmd:spatialRepresentationInfo>
+    <gmd:spatialRepresentationInfo>
+        <gmd:MD_Georectified>
+            <gmd:numberOfDimensions>
+                <gco:Integer>3</gco:Integer>
+            </gmd:numberOfDimensions>
+            <gmd:axisDimensionProperties>
+                <gmd:MD_Dimension>
+                    <gmd:dimensionName>
+                        <gmd:MD_DimensionNameTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="line"/>
+                    </gmd:dimensionName>
+                    <gmd:dimensionSize>
+                        <gco:Integer>6</gco:Integer>
+                    </gmd:dimensionSize>
+                    <gmd:resolution>
+                        <gco:Scale uom="meter">3</gco:Scale>
+                    </gmd:resolution>
+                </gmd:MD_Dimension>
+            </gmd:axisDimensionProperties>
+            <gmd:cellGeometry>
+                <gmd:MD_CellGeometryCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="area"/>
+            </gmd:cellGeometry>
+            <gmd:transformationParameterAvailability>
+                <gco:Boolean>true</gco:Boolean>
+            </gmd:transformationParameterAvailability>
+            <gmd:checkPointAvailability>
+                <gco:Boolean>true</gco:Boolean>
+            </gmd:checkPointAvailability>
+            <gmd:checkPointDescription>
+                <gco:CharacterString>ctrl description</gco:CharacterString>
+            </gmd:checkPointDescription>
+            <gmd:cornerPoints>
+                <gml:Point gml:id="cornerPointId1">
+                    <gml:coordinates>2</gml:coordinates>
+                </gml:Point>
+            </gmd:cornerPoints>
+            <gmd:pointInPixel>
+                <gmd:MD_PixelOrientationCode>lowerLeft</gmd:MD_PixelOrientationCode>
+            </gmd:pointInPixel>
+        </gmd:MD_Georectified>
+    </gmd:spatialRepresentationInfo>
+    <gmd:referenceSystemInfo>
+        <gmd:MD_ReferenceSystem>
+            <gmd:referenceSystemIdentifier>
+                <gmd:RS_Identifier>
+                    <gmd:code>
+                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/3068">EPSG 3068: DHDN / Soldner Berlin</gmx:Anchor>
+                    </gmd:code>
+                </gmd:RS_Identifier>
+            </gmd:referenceSystemIdentifier>
+        </gmd:MD_ReferenceSystem>
+    </gmd:referenceSystemInfo>
+    <gmd:identificationInfo>
+        <gmd:MD_DataIdentification uuid="http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948">
+            <gmd:citation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>Bebauungsplan Barmbek-Nord 18</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:alternateTitle>
+                        <gco:CharacterString>Luftbilder</gco:CharacterString>
+                    </gmd:alternateTitle>
+                    <gmd:alternateTitle>
+                        <gco:CharacterString>Festpunkte</gco:CharacterString>
+                    </gmd:alternateTitle>
+                    <gmd:alternateTitle>
+                        <gco:CharacterString>Short</gco:CharacterString>
+                    </gmd:alternateTitle>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:DateTime>2016-03-01T00:00:00.000+01:00</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:identifier>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:identifier>
+                    <gmd:identifier>
+                        <gmd:MD_Identifier>
+                            <gmd:authority>
+                                <gmd:CI_Citation>
+                                    <gmd:title gco:nilReason="missing"/>
+                                    <gmd:date gco:nilReason="missing"/>
+                                    <gmd:identifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>Image</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:identifier>
+                                </gmd:CI_Citation>
+                            </gmd:authority>
+                            <gmd:code>
+                                <gco:CharacterString>https://doi.org/10.1234/abc</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:identifier>
+                </gmd:CI_Citation>
+            </gmd:citation>
+            <gmd:abstract>
+                <gco:CharacterString>siehe Originalplan</gco:CharacterString>
+            </gmd:abstract>
+            <gmd:purpose>
+                <gco:CharacterString>Herstellung</gco:CharacterString>
+            </gmd:purpose>
+            <gmd:status>
+                <gmd:MD_ProgressCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode" codeListValue="underDevelopment"/>
+            </gmd:status>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty uuid="DA64401A-2AFC-458D-A8AF-58D0A3C35AA9">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:positionName>
+                        <gco:CharacterString>Notizen MMMM</gco:CharacterString>
+                    </gmd:positionName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:deliveryPoint>
+                                        <gco:CharacterString>Postbox 123,P123 Frankfurt</gco:CharacterString>
+                                    </gmd:deliveryPoint>
+                                    <gmd:deliveryPoint>
+                                        <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
+                                    </gmd:deliveryPoint>
+                                    <gmd:city>
+                                        <gco:CharacterString>Frankfurt</gco:CharacterString>
+                                    </gmd:city>
+                                    <gmd:administrativeArea>
+                                        <gco:CharacterString>Hessen</gco:CharacterString>
+                                    </gmd:administrativeArea>
+                                    <gmd:postalCode>
+                                        <gco:CharacterString>60314</gco:CharacterString>
+                                    </gmd:postalCode>
+                                    <gmd:country>
+                                        <gco:CharacterString>DEU</gco:CharacterString>
+                                    </gmd:country>
+                                    <gmd:electronicMailAddress>
+                                        <gco:CharacterString>test@wemove.com</gco:CharacterString>
+                                    </gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:resourceMaintenance>
+                <gmd:MD_MaintenanceInformation>
+                    <gmd:maintenanceAndUpdateFrequency>
+                        <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="continual"/>
+                    </gmd:maintenanceAndUpdateFrequency>
+                    <gmd:userDefinedMaintenanceFrequency>
+                        <gts:TM_PeriodDuration>PT6H</gts:TM_PeriodDuration>
+                    </gmd:userDefinedMaintenanceFrequency>
+                    <gmd:updateScope>
+                        <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                    </gmd:updateScope>
+                    <gmd:maintenanceNote>
+                        <gco:CharacterString>Erläuterungen Zeitbezug</gco:CharacterString>
+                    </gmd:maintenanceNote>
+                </gmd:MD_MaintenanceInformation>
+            </gmd:resourceMaintenance>
+            <gmd:graphicOverview>
+                <gmd:MD_BrowseGraphic>
+                    <gmd:fileName>
+                        <gco:CharacterString>https://mein-bild.de/xxx.png</gco:CharacterString>
+                    </gmd:fileName>
+                    <gmd:fileDescription>
+                        <gco:CharacterString>Bildbeschreibung</gco:CharacterString>
+                    </gmd:fileDescription>
+                </gmd:MD_BrowseGraphic>
+            </gmd:graphicOverview>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Adressen</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                    </gmd:type>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2008-06-01</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Wasser</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                    </gmd:type>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2009-01-15</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Unbekannt</gco:CharacterString>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>inspireidentifiziert</gco:CharacterString>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>opendata</gco:CharacterString>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>AdVMIS</gco:CharacterString>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset/FacilitiesForManagingExtractiveWaste-dir-2006-21">Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)</gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/PriorityDataset">INSPIRE priority data set</gmx:Anchor>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2018-04-04</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope/regional">National</gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope">Spatial scope</gmx:Anchor>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2019-05-22</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>HEAL</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                    </gmd:type>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Nieders. Abfallgesetz (NAbfG)</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>Further legal basis</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2020-05-05</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:resourceSpecificUsage>
+                <gmd:MD_Usage>
+                    <gmd:specificUsage>
+                        <gco:CharacterString>Eignung</gco:CharacterString>
+                    </gmd:specificUsage>
+                    <gmd:userContactInfo gco:nilReason="unknown"/>
+                </gmd:MD_Usage>
+            </gmd:resourceSpecificUsage>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:useLimitation>
+                        <gco:CharacterString>Datenlizenz Deutschland - Namensnennung - Version 2.0; &lt;a href="https://www.govdata.de/dl-de/by-2-0"&gt;https://www.govdata.de/dl-de/by-2-0&lt;/a&gt;; dl-de-by-2.0; Namensnennung: "Freie und Hansestadt Hamburg, Bezirksamt Nord, Fachamt Stadt- und Landschaftsplanung"</gco:CharacterString>
+                    </gmd:useLimitation>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:useConstraints>
+                        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                    </gmd:useConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>BSD Lizenz</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>Quellenvermerk: Quelle 2</gco:CharacterString>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>{"id":"bsdlicense","name":"BSD Lizenz","url":"http://www.opensource.org/licenses/bsd-license.php","quelle":"Quelle 2"}</gco:CharacterString>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:accessConstraints>
+                        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                    </gmd:accessConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Es gelten keine Zugriffsbeschränkungen</gmx:Anchor>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="vector"/>
+            </gmd:spatialRepresentationType>
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid"/>
+            </gmd:spatialRepresentationType>
+            <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                    <gmd:equivalentScale>
+                        <gmd:MD_RepresentativeFraction>
+                            <gmd:denominator>
+                                <gco:Integer>1000</gco:Integer>
+                            </gmd:denominator>
+                        </gmd:MD_RepresentativeFraction>
+                    </gmd:equivalentScale>
+                </gmd:MD_Resolution>
+            </gmd:spatialResolution>
+            <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                    <gmd:distance>
+                        <gco:Distance uom="meter">100</gco:Distance>
+                    </gmd:distance>
+                </gmd:MD_Resolution>
+            </gmd:spatialResolution>
+            <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                    <gmd:distance>
+                        <gco:Distance uom="dpi">300</gco:Distance>
+                    </gmd:distance>
+                </gmd:MD_Resolution>
+            </gmd:spatialResolution>
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+            </gmd:language>
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="fin"/>
+            </gmd:language>
+            <gmd:characterSet>
+                <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="shiftJIS"/>
+            </gmd:characterSet>
+            <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
+            <gmd:extent>
+                <gmd:EX_Extent>
+                    <gmd:geographicElement>
+                        <gmd:EX_BoundingPolygon>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:myvalue><tag>xxx</tag></gmd:myvalue>
+                            <gmd:polygon>
+                                <gml:Polygon gml:id="Polygon_ID_953bbea6-e623-4970-acf3-6546b95032d4" srsDimension="2">
+                                    <gml:exterior>
+                                        <gml:LinearRing>
+                                            <gml:posList>36 11 46 46 16 41 11 21 36 11</gml:posList>
+                                        </gml:LinearRing>
+                                    </gml:exterior>
+                                    <gml:interior>
+                                        <gml:LinearRing>
+                                            <gml:posList>21 31 36 36 31 21 21 31</gml:posList>
+                                        </gml:LinearRing>
+                                    </gml:interior>
+                                </gml:Polygon>
+                            </gmd:polygon>
+                        </gmd:EX_BoundingPolygon>
+                    </gmd:geographicElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+            <gmd:extent>
+                <gmd:EX_Extent>
+                    <gmd:description>
+                        <gco:CharacterString>Erläuterungen Raumbezug</gco:CharacterString>
+                    </gmd:description>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gco:CharacterString>Hamburg</gco:CharacterString>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:westBoundLongitude>
+                                <gco:Decimal>8.420551</gco:Decimal>
+                            </gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude>
+                                <gco:Decimal>10.326304</gco:Decimal>
+                            </gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude>
+                                <gco:Decimal>53.394985</gco:Decimal>
+                            </gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude>
+                                <gco:Decimal>53.964153</gco:Decimal>
+                            </gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox>
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                            <gmd:westBoundLongitude>
+                                <gco:Decimal>8.473561</gco:Decimal>
+                            </gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude>
+                                <gco:Decimal>8.801178</gco:Decimal>
+                            </gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude>
+                                <gco:Decimal>50.015156</gco:Decimal>
+                            </gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude>
+                                <gco:Decimal>50.226444</gco:Decimal>
+                            </gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/054352">054352000000</gmx:Anchor>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                <gml:TimePeriod gml:id="timePeriod_ID_29c17dea-ac68-4457-9ef0-18181edce216">
+                                    <gml:beginPosition>2016-03-01T00:00:00.000+01:00</gml:beginPosition>
+                                    <gml:endPosition indeterminatePosition="now"/>
+                                </gml:TimePeriod>
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+                    <gmd:verticalElement>
+                        <gmd:EX_VerticalExtent>
+                            <gmd:minimumValue>
+                                <gco:Real>1.0</gco:Real>
+                            </gmd:minimumValue>
+                            <gmd:maximumValue>
+                                <gco:Real>6.0</gco:Real>
+                            </gmd:maximumValue>
+                            <gmd:verticalCRS>
+                                <gml:VerticalCRS gml:id="verticalCRSN_ID_3af243e9-3c03-4a7b-b1fe-be05799f39e7">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:scope/>
+                                    <gml:verticalCS>
+                                        <gml:VerticalCS gml:id="verticalCS_ID_c074f920-947d-4a8f-9ad5-04e31b4fe177">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:axis>
+                                                <gml:CoordinateSystemAxis gml:id="coordinateSystemAxis_ID_a41e9776-03cc-4966-9df6-ff70efe31b12" uom="Metre">
+                                                    <gml:identifier codeSpace=""/>
+                                                    <gml:axisAbbrev/>
+                                                    <gml:axisDirection codeSpace=""/>
+                                                </gml:CoordinateSystemAxis>
+                                            </gml:axis>
+                                        </gml:VerticalCS>
+                                    </gml:verticalCS>
+                                    <gml:verticalDatum>
+                                        <gml:VerticalDatum gml:id="verticalDatum_ID_e7ff3b38-9697-431e-bc1b-cf95072d61e2">
+                                            <gml:identifier codeSpace=""/>
+                                            <gml:name>DE_AMST / NH</gml:name>
+                                            <gml:scope/>
+                                        </gml:VerticalDatum>
+                                    </gml:verticalDatum>
+                                </gml:VerticalCRS>
+                            </gmd:verticalCRS>
+                        </gmd:EX_VerticalExtent>
+                    </gmd:verticalElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+        </gmd:MD_DataIdentification>
+    </gmd:identificationInfo>
+    <gmd:contentInfo>
+        <gmd:MD_FeatureCatalogueDescription>
+            <gmd:language>
+                <gco:CharacterString>deutsch</gco:CharacterString>
+            </gmd:language>
+            <gmd:includedWithDataset>
+                <gco:Boolean>false</gco:Boolean>
+            </gmd:includedWithDataset>
+            <gmd:featureTypes>
+                <gco:LocalName>Meine Sachdaten</gco:LocalName>
+            </gmd:featureTypes>
+            <gmd:featureCatalogueCitation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>von Drachenfels 94</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:DateTime>2023-02-03T00:00:00.000+01:00</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:edition>
+                        <gco:CharacterString>2.1</gco:CharacterString>
+                    </gmd:edition>
+                </gmd:CI_Citation>
+            </gmd:featureCatalogueCitation>
+        </gmd:MD_FeatureCatalogueDescription>
+    </gmd:contentInfo>
+    <gmd:distributionInfo>
+        <gmd:MD_Distribution>
+            <gmd:distributionFormat>
+                <gmd:MD_Format>
+                    <gmd:name>
+                        <gco:CharacterString>PNG</gco:CharacterString>
+                    </gmd:name>
+                    <gmd:version gco:nilReason="unknown"/>
+                </gmd:MD_Format>
+            </gmd:distributionFormat>
+            <gmd:distributionFormat>
+                <gmd:MD_Format>
+                    <gmd:name>
+                        <gco:CharacterString>PNG</gco:CharacterString>
+                    </gmd:name>
+                    <gmd:version>
+                        <gco:CharacterString>4.1</gco:CharacterString>
+                    </gmd:version>
+                    <gmd:specification>
+                        <gco:CharacterString>Spec 1</gco:CharacterString>
+                    </gmd:specification>
+                    <gmd:fileDecompressionTechnique>
+                        <gco:CharacterString>ZIP</gco:CharacterString>
+                    </gmd:fileDecompressionTechnique>
+                </gmd:MD_Format>
+            </gmd:distributionFormat>
+            <gmd:distributionFormat>
+                <gmd:MD_Format>
+                    <gmd:name>
+                        <gco:CharacterString>PNG</gco:CharacterString>
+                    </gmd:name>
+                    <gmd:version>
+                        <gco:CharacterString>3.0</gco:CharacterString>
+                    </gmd:version>
+                </gmd:MD_Format>
+            </gmd:distributionFormat>
+            <gmd:distributor>
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact>
+                        <gmd:CI_ResponsibleParty>
+                            <gmd:role>
+                                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor"/>
+                            </gmd:role>
+                        </gmd:CI_ResponsibleParty>
+                    </gmd:distributorContact>
+                    <gmd:distributionOrderProcess>
+                        <gmd:MD_StandardOrderProcess>
+                            <gmd:orderingInstructions>
+                                <gco:CharacterString>Bestell</gco:CharacterString>
+                            </gmd:orderingInstructions>
+                        </gmd:MD_StandardOrderProcess>
+                    </gmd:distributionOrderProcess>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>Bekanntmachung im HmbGVBl als PDF Datei</gco:CharacterString>
+                            </gmd:name>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>http://www.hamburg.de/bebauungsplaene-online.de</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>URL zu weiteren Informationen über den Datensatz</gco:CharacterString>
+                            </gmd:name>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>Begründung des Bebauungsplans als PDF Datei</gco:CharacterString>
+                            </gmd:name>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>Festsetzungen (Planzeichnung / Verordnung) als PDF Datei</gco:CharacterString>
+                            </gmd:name>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:transferSize>
+                        <gco:Real>700.0</gco:Real>
+                    </gmd:transferSize>
+                    <gmd:offLine>
+                        <gmd:MD_Medium>
+                            <gmd:name>
+                                <gmd:MD_MediumNameCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MediumNameCode" codeListValue="3halfInchFloppy"/>
+                            </gmd:name>
+                            <gmd:mediumNote>
+                                <gco:CharacterString>Bunker</gco:CharacterString>
+                            </gmd:mediumNote>
+                        </gmd:MD_Medium>
+                    </gmd:offLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        </gmd:MD_Distribution>
+    </gmd:distributionInfo>
+    <gmd:dataQualityInfo>
+        <gmd:DQ_DataQuality>
+            <gmd:scope>
+                <gmd:DQ_Scope>
+                    <gmd:level>
+                        <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                    </gmd:level>
+                </gmd:DQ_Scope>
+            </gmd:scope>
+            <gmd:report>
+                <gmd:DQ_CompletenessOmission>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Rate of missing items</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>7</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>completeness omission (rec_grade)</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_e07632e8-3344-49b3-9f95-bb30148e4006">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>completeness omission</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>23</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_CompletenessOmission>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_AbsoluteExternalPositionalAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Mean value of positional uncertainties (1D)</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>28</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>vertical</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_3747068c-53cb-46d0-87a3-b3c5bb009835">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>meter</gml:name>
+                                    <gml:quantityType>absolute external positional accuracy, vertical accuracy</gml:quantityType>
+                                    <gml:catalogSymbol>m</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>66</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_AbsoluteExternalPositionalAccuracy>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_GriddedDataPositionalAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Root mean square error of planimetry</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>47</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_56773dce-960c-4a72-8c34-c8998b6e14e7">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>meter</gml:name>
+                                    <gml:quantityType>absolute external positional accuracy</gml:quantityType>
+                                    <gml:catalogSymbol>m</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>43</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_GriddedDataPositionalAccuracy>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_AbsoluteExternalPositionalAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Mean value of positional uncertainties (2D)</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>28</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>geographic</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_c98bdfe1-adba-44f0-b155-37d2f67ef5b4">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>meter</gml:name>
+                                    <gml:quantityType>absolute external positional accuracy, geographic accuracy</gml:quantityType>
+                                    <gml:catalogSymbol>m</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>654</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_AbsoluteExternalPositionalAccuracy>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:result>
+                        <gmd:DQ_ConformanceResult>
+                            <gmd:specification>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>Technical Guidance for the implementation of INSPIRE Download Services</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2007-03-14</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:specification>
+                            <gmd:explanation>
+                                <gco:CharacterString>see the referenced specification</gco:CharacterString>
+                            </gmd:explanation>
+                            <gmd:pass>
+                                <gco:Boolean>false</gco:Boolean>
+                            </gmd:pass>
+                        </gmd:DQ_ConformanceResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:result>
+                        <gmd:DQ_ConformanceResult>
+                            <gmd:specification>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2010-12-08</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:specification>
+                            <gmd:explanation>
+                                <gco:CharacterString>see the referenced specification</gco:CharacterString>
+                            </gmd:explanation>
+                            <gmd:pass>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:pass>
+                        </gmd:DQ_ConformanceResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_CompletenessCommission>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Number of duplicate feature instances</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>4</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>343</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit gco:nilReason="inapplicable"/>
+                            <gmd:value>
+                                <gco:Record>43</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_CompletenessCommission>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_ConceptualConsistency>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Conceptual Schema compliance</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>13</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>545</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_915f0327-74e9-4447-8643-9ee2bad8d54e">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>conceptual consistency</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>343</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_ConceptualConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Value domain non conformance rate</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>17</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>533</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_bb82f200-70cd-4f70-91bf-35e821171f0b">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>domain consistency</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>45</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_FormatConsistency>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Physical structure conflict rate</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>20</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>577</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_7624a16c-9a88-4249-a19d-8c1c110ad795">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>format consistency</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>54</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_FormatConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_TopologicalConsistency>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Number of missing connections due to undershoots</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>23</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>31</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit gco:nilReason="inapplicable"/>
+                            <gmd:value>
+                                <gco:Record>64</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_TopologicalConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_TemporalConsistency>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Percentage of items that are correctly events ordered</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification gco:nilReason="missing"/>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>6</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_18d8a3dc-9959-44ac-bd38-edab8b451754">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>temporal consistency</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>5</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_TemporalConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_ThematicClassificationCorrectness>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Misclassification rate</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>61</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>87</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_517df505-bf52-4ad6-bc71-a4456195b425">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>percent</gml:name>
+                                    <gml:quantityType>thematic classification correctness</gml:quantityType>
+                                    <gml:catalogSymbol>%</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>7</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_ThematicClassificationCorrectness>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_NonQuantitativeAttributeAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Rate of incorrect classification for national identifier</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>87</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit gco:nilReason="unknown"/>
+                            <gmd:value>
+                                <gco:Record>64</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_NonQuantitativeAttributeAccuracy>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_QuantitativeAttributeAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>Attribute value uncertainty at 95 % significance level</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>71</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>77</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit gco:nilReason="inapplicable"/>
+                            <gmd:value>
+                                <gco:Record>44</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_QuantitativeAttributeAccuracy>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_RelativeInternalPositionalAccuracy>
+                    <gmd:nameOfMeasure>
+                        <gco:CharacterString>mean value of positional uncertainties (3D)</gco:CharacterString>
+                    </gmd:nameOfMeasure>
+                    <gmd:measureIdentification>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>28</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:measureIdentification>
+                    <gmd:measureDescription>
+                        <gco:CharacterString>Param 1</gco:CharacterString>
+                    </gmd:measureDescription>
+                    <gmd:result>
+                        <gmd:DQ_QuantitativeResult>
+                            <gmd:valueUnit>
+                                <gml:UnitDefinition gml:id="unitDefinition_ID_4acb50ca-f7b0-4360-a311-5ab181b3699d">
+                                    <gml:identifier codeSpace=""/>
+                                    <gml:name>meter</gml:name>
+                                    <gml:quantityType>relative internal positional accuracy</gml:quantityType>
+                                    <gml:catalogSymbol>m</gml:catalogSymbol>
+                                </gml:UnitDefinition>
+                            </gmd:valueUnit>
+                            <gmd:value>
+                                <gco:Record>64</gco:Record>
+                            </gmd:value>
+                        </gmd:DQ_QuantitativeResult>
+                    </gmd:result>
+                </gmd:DQ_RelativeInternalPositionalAccuracy>
+            </gmd:report>
+            <gmd:lineage>
+                <gmd:LI_Lineage>
+                    <gmd:statement>
+                        <gco:CharacterString>vergl. eGovernment Vorhaben "PLIS"</gco:CharacterString>
+                    </gmd:statement>
+                    <gmd:processStep>
+                        <gmd:LI_ProcessStep>
+                            <gmd:description>
+                                <gco:CharacterString>Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert.</gco:CharacterString>
+                            </gmd:description>
+                        </gmd:LI_ProcessStep>
+                    </gmd:processStep>
+                    <gmd:source>
+                        <gmd:LI_Source>
+                            <gmd:description>
+                                <gco:CharacterString>Meine Datengrundlage</gco:CharacterString>
+                            </gmd:description>
+                        </gmd:LI_Source>
+                    </gmd:source>
+                </gmd:LI_Lineage>
+            </gmd:lineage>
+        </gmd:DQ_DataQuality>
+    </gmd:dataQualityInfo>
+    <gmd:portrayalCatalogueInfo>
+        <gmd:MD_PortrayalCatalogueReference>
+            <gmd:portrayalCatalogueCitation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>Ganzflächige Biotopkartierung 94</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:DateTime>2023-02-07T00:00:00.000+01:00</gco:DateTime>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:edition>
+                        <gco:CharacterString>1.0</gco:CharacterString>
+                    </gmd:edition>
+                </gmd:CI_Citation>
+            </gmd:portrayalCatalogueCitation>
+        </gmd:MD_PortrayalCatalogueReference>
+    </gmd:portrayalCatalogueInfo>
+</gmd:MD_Metadata>

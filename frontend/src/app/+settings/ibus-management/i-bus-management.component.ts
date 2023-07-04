@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { iBusFields } from "./formly-fields";
 import { ConfigService } from "../../services/config/config.service";
+import { tap } from "rxjs/operators";
 
 @Component({
   selector: "ige-ibus-management",
@@ -12,16 +13,40 @@ export class IBusManagementComponent implements OnInit {
   form = new UntypedFormGroup({});
   fields = iBusFields;
   model: any;
+  connectionStates = [];
 
   constructor(private configService: ConfigService) {}
 
   ngOnInit(): void {
     this.configService
       .getIBusConfig()
+      .pipe(tap((config) => this.checkConnectionState(config)))
       .subscribe((config) => (this.model = { ibus: config }));
   }
 
   save() {
-    this.configService.saveIBusConfig(this.form.value.ibus).subscribe();
+    const config = this.form.value.ibus;
+    this.configService
+      .saveIBusConfig(config)
+      .subscribe(() => this.checkConnectionState(config));
+  }
+
+  private checkConnectionState(configs: any[]) {
+    this.connectionStates = [];
+
+    configs.forEach((config, index) => {
+      this.connectionStates.push({
+        id: config.url,
+        connected: undefined,
+      });
+    });
+
+    configs.forEach((config, index) => {
+      this.configService
+        .isIBusConnected(index)
+        .subscribe(
+          (connected) => (this.connectionStates[index].connected = connected)
+        );
+    });
   }
 }

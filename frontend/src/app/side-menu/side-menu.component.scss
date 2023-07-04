@@ -1,11 +1,11 @@
 @import "src/variables";
 
-.mat-list-base {
+.mat-mdc-list-base {
   padding-top: 0;
 }
 
 :host {
-  display: block;
+  display: flex;
   background-color: $ige-secondary-dark;
   height: 100%;
   letter-spacing: 0.67px;
@@ -16,21 +16,22 @@
   box-shadow: 0 2px 2px -2px #808080;
 }
 
-.mat-nav-list {
+mat-nav-list {
   overflow: auto;
   width: 300px;
-  flex-basis: auto !important; // IE 11
+  display: flex;
+  flex-direction: column;
 
   &.collapsed {
     width: 56px;
     overflow: hidden;
   }
-
-  ::ng-deep .mat-list-item-content {
+  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
+  /*::ng-deep .mat-list-item-content {
     padding: 0 12px !important;
   }
 
-  ::ng-deep .mat-list-item {
+  ::ng-deep .mat-mdc-list-item {
     color: #ffffff;
     height: 56px;
     font-size: 18px;
@@ -56,7 +57,7 @@
     &.active:hover {
       background: lighten($ige-primary, 8%) !important;
     }
-  }
+  }*/
 }
 
 .fillVertical {

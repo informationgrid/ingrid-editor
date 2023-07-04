@@ -8,12 +8,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.Type
 import java.time.OffsetDateTime
-import javax.persistence.*
-import kotlin.jvm.Transient
 
 @NoArgs
 @Entity
@@ -55,7 +55,7 @@ class Query {
     @JsonProperty("modified")
     var modified: OffsetDateTime? = null
 
-    @Type(type = "jsonb")
+    @Type(JsonType::class)
     @Column(columnDefinition = "jsonb")
     @JsonProperty("settings")
     var data: JsonNode? = null

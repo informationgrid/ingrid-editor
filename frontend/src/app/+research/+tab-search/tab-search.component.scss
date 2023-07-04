@@ -1,16 +1,24 @@
+@import "src/variables";
+
 :host {
   overflow: auto;
 }
 
+.prefix {
+  color: $ige-comment-color;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
 .save-search-button {
-  margin-top: -20px;
+  margin-top: -12px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
-.do-search-button {
-  .mat-button {
+/*.do-search-button {
+  .mat-mdc-button {
     line-height: 41.3px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -20,4 +28,4 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-}
+}*/

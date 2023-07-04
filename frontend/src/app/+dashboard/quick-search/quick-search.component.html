@@ -1,39 +1,24 @@
 <div class="search-content">
-    <mat-form-field class="search" appearance="outline">
-        <input
-            matInput
-            placeholder="Suchbegriff eingeben"
-            aria-label="Search"
-            [formControl]="query"
-            [matAutocomplete]="auto"
-        />
-        <mat-spinner
-            *ngIf="searchSub && !searchSub.closed"
-            [diameter]="20"
-        ></mat-spinner>
-        <button
-            *ngIf="query.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            class="field-close"
-            (click)="resetSearch()"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
-    </mat-form-field>
+    <ige-search-input
+        [query]="query"
+        [searchSub]="searchSub"
+        [autocompleteRef]="auto"
+        withButton="true"
+        (buttonClick)="openResearchPage()"
+        minWidth="564px"
+    >
+    </ige-search-input>
+
     <mat-autocomplete
         #auto="matAutocomplete"
-        class="quicksearch-auto dense option-no-padding"
+        class="quicksearch-auto ultra-dense"
     >
         <div
-            fxFlex
-            fxLayout="row"
-            fxLayoutAlign="space-between"
-            class="result-header"
+            class="result-header flex-row justify-content-space-between align-items-stretch"
         >
             <div>Suchvorschläge</div>
             <div class="extra-large-spacing link-text">
-                <a href="#" (click)="openResearchPage($event)">
+                <a (click)="openResearchPage()">
                     <mat-icon
                         svgIcon="Recherche"
                         class="research-icon"
@@ -46,8 +31,8 @@
         <div class="result-title">Daten ({{ numDocs }})</div>
 
         <mat-option
-            class="multiline"
             *ngFor="let doc of docs"
+            class="multiline no-padding"
             (onSelectionChange)="selectDoc.next(doc._uuid)"
         >
             <ige-document-list-item [doc]="doc"></ige-document-list-item>
@@ -58,8 +43,8 @@
             class="show-all-link link-text extra-large-spacing"
         >
             <a
-                href="#"
-                (click)="openResearchPage($event)"
+                class="link-text"
+                (click)="openResearchPage()"
                 data-cy="all-link-data"
             >
                 <mat-icon>keyboard_arrow_right</mat-icon>
@@ -71,6 +56,7 @@
         <div class="result-title">Adressen ({{ numAddresses }})</div>
         <mat-option
             *ngFor="let address of addresses"
+            class="multiline no-padding"
             (onSelectionChange)="selectAddress.next(address._uuid)"
         >
             <ige-document-list-item [doc]="address"></ige-document-list-item>
@@ -81,8 +67,8 @@
             class="show-all-link link-text extra-large-spacing"
         >
             <a
-                href="#"
-                (click)="openResearchPage($event, true)"
+                class="link-text"
+                (click)="openResearchPage(true)"
                 data-cy="all-link-address"
             >
                 <mat-icon>keyboard_arrow_right</mat-icon>
@@ -90,14 +76,4 @@
             </a>
         </div>
     </mat-autocomplete>
-
-    <button
-        mat-flat-button
-        color="primary"
-        class="btn-search upper-case"
-        (click)="openResearchPage($event)"
-    >
-        <mat-icon>search</mat-icon>
-        Suchen
-    </button>
 </div>

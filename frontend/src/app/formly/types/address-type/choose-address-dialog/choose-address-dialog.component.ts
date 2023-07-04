@@ -26,8 +26,8 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
-import { MatSelect } from "@angular/material/select";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
+import { MatSelect } from "@angular/material/select";
 
 export interface ChooseAddressDialogData {
   address: AddressRef;
@@ -50,10 +50,12 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection: DocumentAbstract;
   selectedType: string;
-  selectedNode = new BehaviorSubject<string>(null);
+  selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   placeholder: string;
-
+  initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
+    null
+  );
   typeSelectionEnabled = false;
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
@@ -80,7 +82,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       .selectEntity("505")
       .pipe(
         untilDestroyed(this),
-        map(CodelistService.mapToSelectSorted),
+        map((codelist) => CodelistService.mapToSelect(codelist)),
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),
         tap(
@@ -93,6 +95,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         tap(() => (this.placeholder = "Bitte wählen ..."))
       )
       .subscribe();
+
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
       map((allRecent) => {
@@ -123,7 +126,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   updateAddressList(address: DocumentAbstract) {
     this.selection = address;
-    this.selectedNode.next(address.id.toString());
+    this.selectedNode.next(address.id as number);
   }
 
   getResult(): void {
@@ -148,6 +151,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     const isAllowed = this.isTypeAllowed(address);
     if (isAllowed) {
       this.selectedType = address.type.key;
+      this.initialActiveAddressType.next({
+        id: this.selectedType,
+      });
     }
     this.selectedNode.next(address.ref._id);
   }

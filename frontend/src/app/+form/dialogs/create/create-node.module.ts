@@ -10,7 +10,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { CommonModule } from "@angular/common";
 import { BreadcrumbModule } from "../../form-info/breadcrumb/breadcrumb.module";
 import { ReactiveFormsModule } from "@angular/forms";
-import { FlexModule } from "@angular/flex-layout";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
 import { MatInputModule } from "@angular/material/input";
@@ -33,7 +32,6 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     CommonModule,
     BreadcrumbModule,
     ReactiveFormsModule,
-    FlexModule,
     MatFormFieldModule,
     SharedDocumentItemModule,
     MatInputModule,

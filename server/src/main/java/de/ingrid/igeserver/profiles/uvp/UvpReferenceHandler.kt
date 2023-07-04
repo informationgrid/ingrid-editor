@@ -1,15 +1,15 @@
 package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlNegativeDecisionDocsPublished
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlStepsPublished
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
-import org.hibernate.query.NativeQuery
+import de.ingrid.igeserver.utils.UploadInfo
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import javax.persistence.EntityManager
 
 @Service
 class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
@@ -27,7 +27,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND doc.state != 'ARCHIVED'
     """.trimIndent()
 
     val sqlNegativeDecisionDocsDraftAndPending = """
@@ -39,7 +40,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
-          AND (dw.draft = doc.id OR dw.pending = doc.id)
+          AND dw.uuid = doc.uuid
+          AND doc.state != 'ARCHIVED'
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
@@ -62,8 +64,8 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     }
 
     private fun mapQueryResults(
-        result: List<Array<Any>>,
-        resultNegativeDocs: List<Array<Any>>,
+        result: List<Array<Any?>>,
+        resultNegativeDocs: List<Array<Any?>>,
         onlyLinks: Boolean = false
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
@@ -72,31 +74,33 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            val data = jacksonObjectMapper().readTree(it[2].toString())
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
                         catalogId,
                         docUuid,
-                        getUrlsFromJsonField(it[2] as JsonNode, onlyLinks),
+                        getUrlsFromJsonField(data, onlyLinks),
                         it[3].toString(),
                         it[4].toString()
                     )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
             }
         }
         resultNegativeDocs.forEach {
             val catalogId = it[1].toString()
             val docUuid = it[0].toString()
             val existingDoc = uniqueList.find { it.catalogId == catalogId && it.docUuid == docUuid }
+            val data = jacksonObjectMapper().readTree(it[2].toString())
             if (existingDoc == null) {
                 uniqueList.add(
                     DocumentLinks(
                         catalogId,
                         docUuid,
                         getUrlsFromJsonFieldTable(
-                            it[2] as JsonNode,
+                            data,
                             "uvpNegativeDecisionDocs",
                             onlyLinks
                         ).toMutableList(),
@@ -105,30 +109,11 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
                     )
                 )
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonField(it[2] as JsonNode, onlyLinks))
+                existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
             }
         }
 
         return uniqueList
-    }
-
-    private fun queryDocs(
-        sql: String,
-        jsonbField: String,
-        filterByDocId: Int?,
-        catalogId: String? = null
-    ): List<Array<Any>> {
-        var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
-        if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
-
-        @Suppress("UNCHECKED_CAST")
-        return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
-            .addScalar("uuid")
-            .addScalar("catalogId")
-            .addScalar(jsonbField, JsonNodeBinaryType.INSTANCE)
-            .addScalar("title")
-            .addScalar("type")
-            .resultList as List<Array<Any>>
     }
 
     private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> {
@@ -149,17 +134,29 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
     ): List<UploadInfo> {
         return json.get(tableField)
             ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
-            ?.map { mapToUploadInfo(tableField, it) }
+            ?.mapNotNull { mapToUploadInfo(tableField, it) }
             ?: emptyList()
     }
 
-    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo {
+    private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo? {
         val validUntilDateField = it.get("validUntil")
         val expiredDate =
             if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
-        return UploadInfo(field, it.get("downloadURL").get("uri").textValue(), expiredDate)
+        val uri = it.get("downloadURL")?.get("uri")?.textValue() ?: return null
+        return UploadInfo(field, uri, expiredDate)
     }
-
-    data class UploadInfo(val fromField: String, val uri: String, val validUntil: String?)
+    
+    private data class UrlTableFields(
+            val applicationDocs: List<TableDef>?,
+            val announcementDocs: List<TableDef>?,
+            val reportsRecommendationDocs: List<TableDef>?,
+            val furtherDocs: List<TableDef>?,
+            val considerationDocs: List<TableDef>?,
+            val approvalDocs: List<TableDef>?,
+            val decisionDocs: List<TableDef>?,
+    )
+    
+    private data class TableDef(val downloadUrl: UrlDef, val validUntil: String?)
+    private data class UrlDef(val asLink: Boolean, val uri: String)
 
 }

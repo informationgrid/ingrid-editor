@@ -1,71 +1,46 @@
 @import "src/variables";
 
-.mat-list-base {
-  background-color: $ige-background;
-  padding-top: 0;
-
-  .mat-list-item {
-    border-bottom: 2px solid #fff;
-    height: auto;
-
-    &.click-draggable {
-      cursor: move;
-    }
-
-    ::ng-deep .mat-list-item-content {
-      padding-top: 12px;
-      padding-bottom: 12px;
-      align-items: flex-start;
-    }
-
-    .avatar {
-      align-self: center;
-      width: 48px;
-      height: 48px;
-      .mat-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-
-        ::ng-deep .coloring {
-          fill: $ige-background-bar;
-        }
-      }
-    }
-
-    &.image .avatar {
-      width: 100px;
-      height: 100px;
-      background-color: $ige-background-bar;
-      background-repeat: no-repeat;
-      border-radius: 8px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .type {
-      font-size: 14px;
-    }
-
-    .title {
-      font-size: 16px;
-      font-weight: 500;
-      padding-bottom: 4px;
-    }
-  }
+ige-add-button {
+  display: block;
+  padding-bottom: 22px;
 }
 
-.download-image {
-  display: inline-block;
-  position: relative;
+.cdk-drag {
+  background: $ige-background;
+}
 
-  .overlay {
-    position: absolute;
-    top: 16px;
-    left: 12px;
+.cdk-drag-handle {
+  color: $ige-background-bar;
+}
 
-    ::ng-deep .coloring {
-      fill: $ige-icon-color !important;
-    }
+.mat-mdc-list-item {
+  height: auto;
+  padding: 6px;
+  border-bottom: 2px solid #fff;
+
+  .type {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .url,
+  .explanation {
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+
+  .url {
+    -webkit-line-clamp: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .explanation {
+    -webkit-line-clamp: 2;
   }
 }

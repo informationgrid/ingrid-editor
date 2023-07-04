@@ -7,6 +7,13 @@
   overflow: auto;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
 ige-codelist-presenter {
   display: flex;
   flex-direction: column;

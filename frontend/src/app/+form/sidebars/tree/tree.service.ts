@@ -50,7 +50,7 @@ export class TreeService {
    * @param id
    */
   @transaction()
-  selectTreeNode(isAddress: boolean, id: string) {
+  selectTreeNode(isAddress: boolean, id: number) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     store.update({
@@ -61,5 +61,20 @@ export class TreeService {
         breadcrumb: [],
       });
     }
+  }
+
+  updateScrollPositionInStore(isAddress: boolean, top) {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+
+    store.update({
+      scrollPosition: top,
+    });
+  }
+
+  isReloadNeededWithReset(isAddress: boolean): boolean {
+    const store = isAddress ? this.addressTreeStore : this.treeStore;
+    const needsReload = store.getValue().needsReload;
+    if (needsReload) store.update({ needsReload: false });
+    return needsReload;
   }
 }

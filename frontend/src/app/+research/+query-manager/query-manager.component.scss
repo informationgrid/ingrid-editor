@@ -1,11 +1,18 @@
+@import "src/variables";
+
 :host {
   overflow: auto;
 }
 
-mat-selection-list {
-  padding-top: 0;
+.item {
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid $ige-background-bar;
+  padding: 10px;
+  min-height: 59px;
 }
 
 ige-card-box {
+  display: block;
   padding-bottom: 24px;
 }

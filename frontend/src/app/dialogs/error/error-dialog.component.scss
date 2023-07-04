@@ -1,13 +1,15 @@
+/* TODO(mdc-migration): The following rule targets internal classes of dialog that may no longer apply for the MDC version. */
 mat-dialog-content {
   overflow-wrap: break-word;
 }
 
 pre {
   white-space: pre-line;
+  margin: 0;
 }
 
 .clipboard-btn {
   position: absolute;
-  right: 2px;
-  top: 2px;
+  right: 5px;
+  top: 5px;
 }

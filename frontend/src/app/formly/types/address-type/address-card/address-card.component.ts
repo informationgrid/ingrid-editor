@@ -26,18 +26,18 @@ export class AddressCardComponent implements OnInit {
   @Input() address: AddressRef;
   @Input() disabled = false;
 
-  @Output() remove = new EventEmitter();
-  @Output() edit = new EventEmitter();
-  @Output() gotoAddress = new EventEmitter();
+  @Output() remove = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<void>();
+  @Output() gotoAddress = new EventEmitter<void>();
 
   content: {
-    iconClass: string;
-    iconState: string;
-    role: string | BackendOption;
-    title: string;
-    secondTitle: string;
-    emailOrPhone: string;
-  };
+    iconClass?: string;
+    iconState?: string;
+    role?: string | BackendOption;
+    title?: string;
+    secondTitle?: string;
+    emailOrPhone?: string;
+  } = {};
   invalidAddressReference = false;
   stateInfo: string = "";
 
@@ -46,7 +46,6 @@ export class AddressCardComponent implements OnInit {
   ngOnInit(): void {
     if (!this.address.ref) {
       console.error("Address reference is null!");
-      // @ts-ignore
       this.content = {
         title: "Ungültige Adressreferenz",
         iconState: "",
@@ -62,7 +61,8 @@ export class AddressCardComponent implements OnInit {
       iconState:
         DocumentUtils.getStateClass(
           this.address.ref._state,
-          this.address.ref._type
+          this.address.ref._type,
+          this.address.ref._tags
         ) ?? "",
       role: this.address.type,
       title: this.getTitle(this.address.ref),
@@ -78,12 +78,11 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getEmailOrTelephone(address: any) {
-    // TODO: type is a string but should be number?
-    const email = address.contact?.filter((item) => item.type === "3");
+    const email = address.contact?.filter((item) => item?.type?.key === "3");
     if (email && email.length > 0) {
       return email[0].connection;
     } else {
-      const phone = address.contact?.filter((item) => item.type === "1");
+      const phone = address.contact?.filter((item) => item?.type?.key === "1");
       return phone && phone.length > 0 ? phone[0].connection : "";
     }
   }
@@ -101,13 +100,13 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getAddressInfo() {
-    switch (this.content?.iconState) {
-      case "working":
-        return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
-      case "workingWithPublished":
-        return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
-      default:
-        return "";
-    }
+    const states = this.content?.iconState?.split(" ");
+
+    if (states.indexOf("working") !== -1)
+      return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
+    if (states.indexOf("workingWithPublished") !== -1)
+      return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
+
+    return "";
   }
 }

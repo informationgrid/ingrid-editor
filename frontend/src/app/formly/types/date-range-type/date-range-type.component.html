@@ -1,27 +1,34 @@
-<mat-date-range-input
-    [rangePicker]="picker"
-    [formGroup]="rangeFormGroup"
-    [disabled]="formControl.disabled"
->
-    <input
-        matStartDate
-        placeholder="TT.MM.JJJJ"
-        formControlName="start"
-        (change)="updateFormControl()"
-    />
-    <input
-        matEndDate
-        placeholder="TT.MM.JJJJ"
-        formControlName="end"
-        (change)="updateFormControl()"
-    />
-</mat-date-range-input>
-<mat-datepicker-toggle
-    *ngIf="!disabled"
-    matSuffix
-    [for]="picker"
-></mat-datepicker-toggle>
-<mat-date-range-picker
-    #picker
-    (closed)="updateFormControl()"
-></mat-date-range-picker>
+<mat-form-field [appearance]="props.appearance">
+    <mat-date-range-input
+        [rangePicker]="picker"
+        [formGroup]="rangeFormGroup"
+        [disabled]="formControl.disabled"
+    >
+        <input
+            matStartDate
+            placeholder="TT.MM.JJJJ"
+            formControlName="start"
+            (change)="updateFormControl()"
+        />
+        <input
+            matEndDate
+            placeholder="TT.MM.JJJJ"
+            formControlName="end"
+            [errorStateMatcher]="errorStateMatcher"
+            (change)="updateFormControl()"
+        />
+    </mat-date-range-input>
+    <mat-datepicker-toggle
+        *ngIf="!disabled"
+        matIconSuffix
+        [for]="picker"
+    ></mat-datepicker-toggle>
+    <mat-date-range-picker
+        #picker
+        (closed)="updateFormControl()"
+    ></mat-date-range-picker>
+
+    <mat-error *ngIf="showError">
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </mat-error>
+</mat-form-field>

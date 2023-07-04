@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
-id: serviceCategories
+id: classification
 docType: InGridGeoService
 profile: ingrid
-
-
 
 # title, used as window title
 title: Klassifikation des Dienstes
@@ -16,12 +14,10 @@ Auswahl der Beschreibung des Dienstes. Dieses Feld dient in erster Linie der Ide
 
 ## Beispiel:
 
-z.B. Katalogdienst, Dienst für geografische Visualisierung, usw. 
+z.B. Katalogdienst, Dienst für geografische Visualisierung, usw.
 
 # ISO Abbildung
 
 Schlüsselwörter: Schlüsselwörter, ihr Typ und Quellenangabe (Service Classification, version 1.0)
 
 Domain: 33 (gmd:descriptiveKeywords)
-
-

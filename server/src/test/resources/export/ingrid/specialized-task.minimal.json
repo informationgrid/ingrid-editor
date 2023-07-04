@@ -1,0 +1,73 @@
+{
+  "title": "aaa",
+  "_uuid": "675e1034-e766-4753-99a2-444a6412127d",
+  "_type": "InGridSpecialisedTask",
+  "isAdVCompatible": false,
+  "description": "Meine Beschreibung",
+  "pointOfContact": [
+    {
+      "type": {
+        "key": "7"
+      },
+      "ref": "3c87c74e-ea10-41a5-bc07-93a54396470e"
+    }
+  ],
+  "advProductGroups": [],
+  "themes": [],
+  "keywords": {
+    "free": []
+  },
+  "spatial": {
+    "references": [
+      {
+        "value": {
+          "lat1": 50.0153529,
+          "lon1": 8.4727605,
+          "lat2": 50.2271424,
+          "lon2": 8.8004049
+        },
+        "title": "Frankfurt am Main, Hessen, Deutschland (administrative)",
+        "type": "free"
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "84"
+      }
+    ],
+    "verticalExtent": {
+      "unitOfMeasure": null
+    }
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2023-01-08T23:00:00.000Z",
+        "referenceDateType": {
+          "key": "1"
+        }
+      }
+    ],
+    "resourceDateType": null,
+    "status": null
+  },
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null
+    }
+  },
+  "metadata": {
+    "language": {
+      "key": "150"
+    }
+  },
+  "dataset": {
+    "languages": []
+  },
+  "extraInfo": {
+    "legalBasicsDescriptions": []
+  },
+  "resource": {},
+  "references": []
+}

@@ -30,13 +30,13 @@ import { FormLabelComponent } from "../formly/wrapper/form-label/form-label.comp
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
+    FormLabelComponent,
   ],
   declarations: [
     DropDownComponent,
     DateboxComponent,
     CheckboxComponent,
     RadioboxComponent,
-    FormLabelComponent,
   ],
   exports: [
     DropDownComponent,

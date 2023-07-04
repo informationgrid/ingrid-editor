@@ -86,6 +86,7 @@ export class AutocompleteTypeComponent
     );
     const value = this.getFormValueLabel();
     this.filteredOptions = this.filterParameterByName(value);
+    this.formControl.setValue(this.formControl.value);
   }
 
   _filter(value: string): BackendOption[] {

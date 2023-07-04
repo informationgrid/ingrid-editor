@@ -22,9 +22,8 @@ ige-session-timeout-info {
 
 .header-info {
   color: $ige-secondary;
-  height: 32px;
+  line-height: 32px;
   font-size: 12px;
-  font-weight: 400;
   padding-right: 12px;
   margin-left: 80px;
   text-align-last: end;
@@ -45,6 +44,7 @@ ige-session-timeout-info {
   }
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
 .link-button ::ng-deep .mat-button-wrapper {
   text-transform: none;
 }
@@ -74,6 +74,7 @@ ige-session-timeout-info {
 .page-title-general {
   font-weight: normal;
   padding-left: 10px;
+  font-size: 1.25rem;
 }
 
 .header-logo {
@@ -93,38 +94,35 @@ ige-session-timeout-info {
   font-weight: normal;
   color: $ige-primary !important;
   padding-left: 20px;
+  font-size: 1.25rem;
+}
+
+::ng-deep .user-popup-menu > div {
+  padding: 0 !important;
+  overflow: hidden;
 }
 
 .user-popup {
   height: 32px;
   width: 32px;
-  line-height: 32px;
+  font-size: 14px;
+  line-height: 24px;
   background-color: $ige-background;
   color: $ige-primary;
   margin-left: 12px;
-
-  .mat-icon {
-    line-height: 22px;
-  }
-
-  &:hover {
-    background-color: darken($ige-background, 5%);
-  }
-
-  ::ng-deep .mat-icon path {
-    fill: $ige-primary;
-  }
+  font-weight: 500;
+  font-family: "Roboto";
 
   &[aria-expanded="true"] {
     background-color: $ige-primary;
     color: #ffffff;
 
-    ::ng-deep .mat-icon path {
-      fill: #ffffff;
-    }
-
     &:hover {
       background-color: lighten($ige-primary, 8%);
+    }
+
+    ::ng-deep path {
+      fill: #ffffff;
     }
   }
 }
@@ -132,22 +130,18 @@ ige-session-timeout-info {
 .user-popup-header {
   color: #ffffff;
   background-color: $ige-primary;
-  margin-top: -8px;
+  //margin-top: -8px;
   padding: 20px;
 }
 
 .user-popup-footer {
   border-top: 1px solid $ige-background-bar;
-  margin-bottom: -8px;
+  //margin-bottom: -8px;
   text-align: center;
 
   button {
     width: 100%;
   }
-}
-
-::ng-deep .user-popup-menu {
-  margin: 12px 0 0;
 }
 
 .label {
@@ -156,15 +150,30 @@ ige-session-timeout-info {
   font-size: 14px !important;
 }
 
-.mat-menu-item .mat-icon {
+.mat-mdc-menu-item .mat-icon {
   padding-bottom: 4px !important;
   margin-right: 0;
 }
 
 mat-card-title {
-  font-weight: normal;
+  font-weight: 400;
+  font-size: 24px;
 }
 
 .last-login {
   margin-bottom: 0;
+}
+
+// usability css on mobile devices
+@media (max-width: 420px) {
+  .page-title-general,
+  .center-header {
+    display: none;
+  }
+  .main-page-title {
+    padding-left: unset;
+  }
+  .header-info {
+    margin-left: unset;
+  }
 }

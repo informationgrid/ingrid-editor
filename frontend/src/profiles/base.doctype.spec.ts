@@ -1,6 +1,13 @@
 import { BaseDoctype } from "./base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Injectable } from "@angular/core";
+import { TestBed } from "@angular/core/testing";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
+@Injectable({
+  providedIn: "root",
+})
 class DummyDocType extends BaseDoctype {
   documentFields() {
     return <FormlyFieldConfig[]>[
@@ -29,7 +36,11 @@ describe("Document Type", () => {
   let doctype;
 
   beforeEach(async () => {
-    doctype = new DummyDocType(null, null);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, MatSnackBarModule],
+      providers: [DummyDocType],
+    });
+    doctype = TestBed.inject(DummyDocType);
     initialFieldLength = doctype.fields.length;
     await doctype.init(helpIds);
   });

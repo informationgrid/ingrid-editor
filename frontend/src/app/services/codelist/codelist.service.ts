@@ -52,20 +52,24 @@ export interface SelectOptionUi extends SelectOption {
 export class CodelistService {
   private requestedCodelists = new Subject<string[]>();
 
-  static mapToSelectSorted = (codelist: Codelist): SelectOptionUi[] => {
+  static mapToSelect = (
+    codelist: Codelist,
+    language = "de",
+    sort = true
+  ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
 
-    return codelist.entries
-      .map(
-        (entry) =>
-          ({
-            label: entry.fields["de"] ?? entry.fields["name"],
-            value: entry.id,
-          } as SelectOptionUi)
-      )
-      .sort((a, b) => a.label?.localeCompare(b.label));
+    const items = codelist.entries.map(
+      (entry) =>
+        ({
+          label: entry.fields[language] ?? entry.fields["name"],
+          value: entry.id,
+        } as SelectOptionUi)
+    );
+
+    return sort ? items.sort((a, b) => a.label?.localeCompare(b.label)) : items;
   };
   private queue = [];
   private batchProcessed = true;
@@ -226,12 +230,18 @@ export class CodelistService {
   }
 
   observe(codelistId: string): Observable<SelectOptionUi[]> {
+    return this.observeRaw(codelistId).pipe(
+      map((codelist) => CodelistService.mapToSelect(codelist))
+    );
+  }
+
+  observeRaw(codelistId: string): Observable<Codelist> {
     const alreadyInQueue = this.queue.some((item) => item === codelistId);
     const alreadyInStore =
       this.codelistQuery.getCatalogCodelist(codelistId) ||
       this.codelistQuery.getEntity(codelistId);
 
-    if (!alreadyInQueue || !alreadyInStore) {
+    if (!alreadyInQueue && !alreadyInStore) {
       this.byId(codelistId);
     }
 
@@ -239,9 +249,8 @@ export class CodelistService {
       this.codelistQuery.selectEntity(codelistId),
       this.codelistQuery.selectCatalogCodelist(codelistId)
     ).pipe(
-      filter((codelist) => !!codelist),
+      filter((codelist) => !!codelist)
       // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
-      map((codelist) => CodelistService.mapToSelectSorted(codelist))
     );
   }
 }

@@ -8,28 +8,39 @@
   overflow: auto;
 }
 
+.header {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+
+.profile {
+  line-height: 26px;
+}
+
 .modal-body input {
   width: 100%;
 }
 
-.mat-card-title {
+.title {
   color: $ige-primary;
+  font-size: 24px;
+  font-weight: 500;
+  padding-bottom: 4px;
 }
 
-.card-header {
-  padding-bottom: 12px;
-
-  .profile {
-    padding-left: 12px;
-    line-height: 24px;
-  }
+.subtitle {
+  color: $ige-comment-color;
+  font-size: 14px;
+  padding-bottom: 16px;
 }
 
 .menu {
   visibility: hidden;
 }
 
-.mat-card {
+.mat-mdc-card {
   &.selected {
     border: 1px solid $ige-primary;
   }
@@ -63,6 +74,6 @@
   font-size: 16px;
 }
 
-.mat-spinner {
+.mat-mdc-progress-spinner {
   display: inline-block;
 }

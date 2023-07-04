@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   Input,
   OnInit,
 } from "@angular/core";
@@ -9,6 +10,7 @@ import { animate, style, transition, trigger } from "@angular/animations";
 import { DocumentUtils } from "../../../services/document.utils";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
+import { ContextHelpService } from "../../../services/context-help/context-help.service";
 
 @Component({
   selector: "ige-header-more",
@@ -34,10 +36,9 @@ export class HeaderMoreComponent implements OnInit {
   hideFields: any;
   migrated: boolean;
 
-  constructor(
-    private profileQuery: ProfileQuery,
-    private configService: ConfigService
-  ) {}
+  private contextHelpService = inject(ContextHelpService);
+  private profileQuery = inject(ProfileQuery);
+  private configService = inject(ConfigService);
 
   ngOnInit() {
     this.hideFields =
@@ -51,7 +52,7 @@ export class HeaderMoreComponent implements OnInit {
     const catCreateDate =
       this.configService.$userInfo.getValue().currentCatalog.created;
     // compare the creation dates of document and catalog
-    this.migrated = new Date(this.model._created) < catCreateDate;
+    this.migrated = new Date(this.model._created) < new Date(catCreateDate);
   }
 
   getState(state: DocumentState) {
@@ -60,5 +61,15 @@ export class HeaderMoreComponent implements OnInit {
 
   mapDocumentType(type: string) {
     return this.profileQuery.getEntity(type).label;
+  }
+
+  showHelp() {
+    this.contextHelpService.showContextHelp(
+      "all",
+      "all",
+      "modifiedMetadata",
+      "Metadaten-Datum",
+      null
+    );
   }
 }

@@ -1,32 +1,24 @@
 @import "src/variables";
 
-.error {
-  color: $error-color;
-  font-size: 12px;
-  padding-top: 4px;
-  height: 0;
-  overflow: visible;
-}
-
 button {
-  display: flex;
-  align-items: center;
-  transition: background-color 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  //display: flex;
+  //align-items: center;
+  /*transition: background-color 280ms cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.74px;
   height: 36px;
   justify-content: center;
-  line-height: normal;
+  line-height: normal;*/
 
-  &.mat-stroked-button {
+  /*&.mat-mdc-outlined-button {
     color: $ige-secondary;
     background-color: #ffffff !important;
     &:hover {
       background-color: darken(#ffffff, 5%);
     }
   }
-
+*/
   &.error-outline {
-    border-color: $error-color;
+    border-color: $error-color !important;
   }
 
   &.padding-btn {
@@ -34,6 +26,10 @@ button {
   }
 }
 
-:host ::ng-deep ige-repeat > div + ige-add-button .wrapper {
-  padding-top: 0 !important;
+.error {
+  padding-top: 6px;
 }
+
+/*:host ::ng-deep ige-repeat > div + ige-add-button .wrapper {
+  padding-top: 0 !important;
+}*/

@@ -4,24 +4,23 @@
         [class.required]="props.required"
     >
         <ige-form-label
-            [hasContextHelp]="to?.hasContextHelp"
+            [hasContextHelp]="props?.hasContextHelp"
             (contextHelp)="showContextHelp($event)"
         >
-            {{ to?.externalLabel }}<span *ngIf="to?.required">*</span>
+            {{ props?.externalLabel }}<span *ngIf="props?.required">*</span>
         </ige-form-label>
     </div>
 </ng-template>
 
 <div
     *ngIf="dataSource?.data?.length > 0"
-    class="table-header"
-    fxLayout
-    [attr.data-cy]="to?.externalLabel + '-header'"
+    class="table-header flex-row"
+    [attr.data-cy]="props?.externalLabel + '-header'"
 >
     <ng-container *ngTemplateOutlet="label"></ng-container>
 
     <ng-container *ngIf="formControl.enabled">
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <button
             color="primary"
             type="button"
@@ -43,7 +42,7 @@
     </ng-container>
 </div>
 
-<div fxLayout="column">
+<div [class.padding-bottom]="dataSource?.data?.length > 0">
     <div *ngIf="batchMode" class="table-batch-edit-row">
         <mat-checkbox
             (change)="$event ? masterToggle() : null"
@@ -75,13 +74,18 @@
     </div>
 
     <ige-form-error
-        *ngIf="formControl.invalid && !formControl.hasError('required')"
-        ><formly-validation-message [field]="field"></formly-validation-message
-    ></ige-form-error>
+        *ngIf="
+            showError &&
+            formControl.invalid &&
+            !formControl.hasError('required')
+        "
+    >
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </ige-form-error>
 
     <mat-table
         *ngIf="dataSource?.data?.length > 0"
-        fxLayout="column"
+        class="flex-col"
         [dataSource]="dataSource"
         [class.edit-mode]="batchMode"
         [attr.data-cy]="props.externalLabel + '-table'"
@@ -102,12 +106,6 @@
                     *matCellDef="let element; let rowIndex = index"
                     class="select-controls"
                 >
-                    <mat-checkbox
-                        (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(element) : null"
-                        [checked]="selection.isSelected(element)"
-                    >
-                    </mat-checkbox>
                     <mat-icon
                         cdkDragHandle
                         (touchstart)="dragDisabled = false"
@@ -117,6 +115,12 @@
                     >
                         drag_indicator
                     </mat-icon>
+                    <mat-checkbox
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(element) : null"
+                        [checked]="selection.isSelected(element)"
+                    >
+                    </mat-checkbox>
                 </mat-cell>
             </ng-container>
 
@@ -153,51 +157,60 @@
 
             <!-- Normal column-->
             <ng-container *ngSwitchDefault>
-                <mat-header-cell
-                    *matHeaderCellDef
-                    [class]="props.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
+                <ng-container
+                    *ngIf="{
+                        width: props.columns[batchMode ? i - 1 : i].width
+                    } as flex"
                 >
-                    {{ props.columns[batchMode ? i - 1 : i].label }}
-                    <span
-                        *ngIf="
-                            props.columns[batchMode ? i - 1 : i].props.required
-                        "
-                        >*</span
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        [class]="props.columns[batchMode ? i - 1 : i].class"
+                        [style.flex-basis]="flex.width"
+                        [style.max-width]="flex.width"
                     >
-                </mat-header-cell>
-                <mat-cell
-                    *matCellDef="let element; let rowIndex = index"
-                    [class]="props.columns[batchMode ? i - 1 : i].class"
-                    [fxFlex]="props.columns[batchMode ? i - 1 : i].width"
-                >
-                    <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
-                    <span
-                        [innerHTML]="
-                            formattedCell[rowIndex]
-                                ? formattedCell[rowIndex][column] ??
-                                  element[column]
-                                : element[column]
-                        "
-                        (click)="handleCellClick(i, element, $event)"
-                    ></span>
+                        {{ props.columns[batchMode ? i - 1 : i].label }}
+                        <span
+                            *ngIf="
+                                props.columns[batchMode ? i - 1 : i].props
+                                    .required
+                            "
+                            >*</span
+                        >
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let element; let rowIndex = index"
+                        [class]="props.columns[batchMode ? i - 1 : i].class"
+                        [style.flex-basis]="flex.width"
+                        [style.max-width]="flex.width"
+                    >
+                        <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
+                        <span
+                            [innerHTML]="
+                                formattedCell[rowIndex]
+                                    ? formattedCell[rowIndex][column] ??
+                                      element[column]
+                                    : element[column]
+                            "
+                            (click)="handleCellClick(i, element, $event)"
+                        ></span>
 
-                    <!-- This edit is defined in the cell and can implicitly access element -->
-                    <!--<ng-template #nameEdit>
-                      <form #f="ngForm"
-                            matEditLens
-                            matEditLensClickOutBehavior="submit"
-                            (ngSubmit)="onSubmitName(element, f)"
-                            [matEditLensPreservedFormValue]="preservedValues[column].get(element)"
-                            (matEditLensPreservedFormValueChange)="preservedValues[column].set(element, $event)">
-                        <div mat-edit-content>
-                          <mat-form-field class="full-width">
-                            <input matInput [ngModel]="element[column]" name="name" required>
-                          </mat-form-field>
-                        </div>
-                      </form>
-                    </ng-template>-->
-                </mat-cell>
+                        <!-- This edit is defined in the cell and can implicitly access element -->
+                        <!--<ng-template #nameEdit>
+                          <form #f="ngForm"
+                                matEditLens
+                                matEditLensClickOutBehavior="submit"
+                                (ngSubmit)="onSubmitName(element, f)"
+                                [matEditLensPreservedFormValue]="preservedValues[column].get(element)"
+                                (matEditLensPreservedFormValueChange)="preservedValues[column].set(element, $event)">
+                            <div mat-edit-content>
+                              <mat-form-field class="full-width">
+                                <input matInput [ngModel]="element[column]" name="name" required>
+                              </mat-form-field>
+                            </div>
+                          </form>
+                        </ng-template>-->
+                    </mat-cell>
+                </ng-container>
             </ng-container>
         </ng-container>
 
@@ -225,16 +238,20 @@
     </mat-table>
 </div>
 
-<div *ngIf="formControl.enabled" class="display-flex">
+<div *ngIf="formControl.enabled" class="flex-row">
     <ige-form-label
         *ngIf="dataSource?.data?.length > 0; else label"
     ></ige-form-label>
 
-    <div>
+    <div class="container">
         <ige-form-error
-            *ngIf="formControl.invalid && formControl.hasError('required')"
-            >Es wird mindestens ein Eintrag erwartet</ige-form-error
-        >
+            *ngIf="
+                showError &&
+                formControl.invalid &&
+                formControl.hasError('required')
+            "
+            >Es wird mindestens ein Eintrag erwartet
+        </ige-form-error>
 
         <ng-container *ngIf="props.supportUpload; else simpleAdd">
             <div class="button-wrapper">

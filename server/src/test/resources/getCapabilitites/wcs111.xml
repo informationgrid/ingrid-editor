@@ -1,0 +1,118 @@
+<wcs:Capabilities version="1.1.1"
+                  xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 https://sgx.geodatenzentrum.de/geoserver/schemas/wcs/1.1.1/wcsGetCapabilities.xsd"
+                  updateSequence="32187" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ows:ServiceIdentification>
+        <ows:Title>INSPIRE-WCS Digitales Geländemodell Gitterweite 200 m</ows:Title>
+        <ows:Abstract>INSPIRE Downloaddienst des Digitalen Geländemodell Gitterweite 200 m für das Gebiet der Bundesrepublik Deutschland.    Zur einheitlichen Beschreibung des Reliefs des Gebietes der Bundesrepublik Deutschland werden im Rahmen des ATKIS®-Projektes durch die deutsche Landesvermessung Digitale Geländemodelle (DGM) unterschiedlicher Qualitätsstufen aufgebaut.        Das Digitale Geländemodell DGM200 beschreibt die Geländeformen der Erdoberfläche durch eine in einem regelmäßigen Gitter angeordnete, in Lage und Höhe georeferenzierte Punktmenge. Die Gitterweite beträgt 200 m.        Die Visualisierung des Reliefs erfolgt nach den Stilvorgaben von INSPIRE für das Thema Elevation.</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword>WCS</ows:Keyword>
+            <ows:Keyword>INSPIRE:DownloadService</ows:Keyword>
+            <ows:Keyword>INSPIRE</ows:Keyword>
+            <ows:Keyword>infoCoverageAccessService</ows:Keyword>
+            <ows:Keyword>BKG</ows:Keyword>
+            <ows:Keyword>Bundesamt für Kartographie und Geodäsie</ows:Keyword>
+            <ows:Keyword>Deutschland</ows:Keyword>
+            <ows:Keyword>Germany</ows:Keyword>
+            <ows:Keyword>Geobasisdaten</ows:Keyword>
+            <ows:Keyword>AdV</ows:Keyword>
+            <ows:Keyword>DGM</ows:Keyword>
+            <ows:Keyword>DGM200</ows:Keyword>
+            <ows:Keyword>Digitales Gelände Modell 200 m</ows:Keyword>
+            <ows:Keyword>Digital Terrain Model Grid Width 200 m</ows:Keyword>
+            <ows:Keyword>DEM</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType>WCS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+        <ows:ServiceTypeVersion>1.1.1</ows:ServiceTypeVersion>
+        <ows:Fees>Diese Daten können geldleistungsfrei gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes (GeoNutzV) vom 19. März 2013 (Bundesgesetzblatt Jahrgang 2013 Teil I Nr. 14) genutzt werden, siehe https://sg.geodatenzentrum.de/web_public/gdz/lizenz/geonutzv.pdf. Der Quellenvermerk ist zu beachten. | Quellenvermerk: © GeoBasis-DE / BKG &lt;Jahr></ows:Fees>
+        <ows:AccessConstraints>Es gelten keine Zugriffsbeschränkungen.</ows:AccessConstraints>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>Dienstleistungszentrum des Bundes für Geoinformation und Geodäsie</ows:ProviderName>
+        <ows:ProviderSite xlink:href=""/>
+        <ows:ServiceContact>
+            <ows:PositionName>Technischer Administrator</ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>+49 (0) 341 5634 333</ows:Voice>
+                    <ows:Facsimile>+49 (0) 341 5634 415</ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint>Karl-Rothe-Str. 10 - 14</ows:DeliveryPoint>
+                    <ows:City>Leipzig</ows:City>
+                    <ows:AdministrativeArea>DE-SN</ows:AdministrativeArea>
+                    <ows:PostalCode>04105</ows:PostalCode>
+                    <ows:Country>Deutschland</ows:Country>
+                    <ows:ElectronicMailAddress>dlz@bkg.bund.de</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:Parameter name="store">
+                <ows:AllowedValues>
+                    <ows:Value>True</ows:Value>
+                    <ows:Value>False</ows:Value>
+                </ows:AllowedValues>
+            </ows:Parameter>
+        </ows:Operation>
+        <ows:Constraint name="PostEncoding">
+            <ows:AllowedValues>
+                <ows:Value>XML</ows:Value>
+            </ows:AllowedValues>
+        </ows:Constraint>
+    </ows:OperationsMetadata>
+    <wcs:Contents>
+        <wcs:CoverageSummary>
+            <ows:Title>Grid Coverage</ows:Title>
+            <ows:Abstract>Generated from ImageMosaic</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword>grid</ows:Keyword>
+                <ows:Keyword>coverage</ows:Keyword>
+            </ows:Keywords>
+            <ows:Metadata xlink:type="simple" xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000113"/>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>5.5493554862369905 47.140652918628305</ows:LowerCorner>
+                <ows:UpperCorner>15.57402035157314 55.0611433089022</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <wcs:Identifier>dgm200_inspire:EL.GridCoverage</wcs:Identifier>
+        </wcs:CoverageSummary>
+    </wcs:Contents>
+</wcs:Capabilities>

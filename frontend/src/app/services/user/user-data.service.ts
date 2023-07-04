@@ -28,7 +28,7 @@ export class UserDataService {
 
   saveUser(user: BackendUser): Observable<BackendUser> {
     return this.http.put<BackendUser>(
-      this.configuration.backendUrl + "users/" + user.login,
+      this.configuration.backendUrl + "users",
       user
     );
   }
@@ -47,8 +47,18 @@ export class UserDataService {
     );
   }
 
-  deleteUser(login: string): Observable<any> {
-    return this.http.delete(this.configuration.backendUrl + "users/" + login);
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete(this.configuration.backendUrl + "users/" + userId);
+  }
+
+  transferResponsibility(
+    oldUserId: number,
+    newUserId: number
+  ): Observable<any> {
+    return this.http.get(
+      this.configuration.backendUrl +
+        `users/transferResponsibilities/${oldUserId}/${newUserId}`
+    );
   }
 
   getUser(id: number): Observable<BackendUser> {
@@ -57,9 +67,22 @@ export class UserDataService {
     );
   }
 
+  getUserFullName(id: number): Observable<any> {
+    return this.http.get(
+      this.configuration.backendUrl + `users/${id}/fullname`,
+      { responseType: "text" }
+    );
+  }
+
   getAssignedUsers(dbId: string): Observable<string[]> {
     return this.http.get<string[]>(
       this.configuration.backendUrl + "info/assignedUsers/" + dbId
+    );
+  }
+
+  getAssignedDatasets(userId: number): Observable<number[]> {
+    return this.http.get<number[]>(
+      this.configuration.backendUrl + `users/${userId}/responsibilities`
     );
   }
 

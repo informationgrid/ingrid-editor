@@ -25,10 +25,10 @@ export class UploadCheckComponent implements OnInit {
 
   filter(onlyErrors: boolean) {
     this.resultsFiltered = onlyErrors
-      ? this.result.filter((item) => !item.valid)
+      ? this.result?.filter((item) => !item.valid)
       : this.result;
 
-    this.resultsFiltered = this.resultsFiltered.reduce(function (r, a) {
+    this.resultsFiltered = this.resultsFiltered?.reduce(function (r, a) {
       r[a.catalogId] = r[a.catalogId] || {};
       r[a.catalogId][a.uuid] = r[a.catalogId][a.uuid] || [];
       r[a.catalogId][a.uuid].push(a);

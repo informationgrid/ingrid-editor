@@ -10,8 +10,12 @@ import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
 import { clone } from "../app/shared/utils";
+import { inject } from "@angular/core";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
+  protected codelistService = inject(CodelistService);
+  protected codelistQuery = inject(CodelistQuery);
+
   fields = <FormlyFieldConfig[]>[
     {
       key: "title",
@@ -42,16 +46,42 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     },
     {
       key: "_modified",
+    },
+    {
+      key: "_contentModified",
       props: {
         label: "Aktualität",
       },
     },
     {
-      key: "_modifiedBy",
+      key: "_contentModifiedBy",
     },
     {
       key: "_version",
     },
+  ];
+
+  private metaFields: FormlyFieldConfig[] = [
+    this.addSection("", [
+      this.addTextArea("title", "Titel", {
+        className: "width-100",
+        wrappers: ["panel", "form-field"],
+      }),
+      this.addDatepicker("_created", "Erstellt am", {
+        className: "flex-1",
+      }),
+      this.addTextArea("_createdBy", "Ersteller", {
+        className: "flex-1",
+        wrappers: ["panel", "form-field"],
+      }),
+      this.addDatepicker("_contentModified", "Geändert am", {
+        className: "flex-1",
+      }),
+      this.addTextArea("_contentModifiedBy", "Bearbeiter", {
+        className: "flex-1",
+        wrappers: ["panel", "form-field"],
+      }),
+    ]),
   ];
 
   id: string;
@@ -67,13 +97,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
   cleanFields: FormlyFieldConfig[];
-
-  constructor(
-    private codelistService?: CodelistService,
-    protected codelistQuery?: CodelistQuery
-  ) {
-    super();
-  }
 
   abstract documentFields(): FormlyFieldConfig[];
 
@@ -217,7 +240,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   public getFieldsForPrint(diffObj) {
-    const copy: FormlyFieldConfig[] = clone(this.cleanFields);
+    const copy: FormlyFieldConfig[] = [
+      ...clone(this.metaFields),
+      ...clone(this.cleanFields),
+    ];
     if (diffObj) this.addDifferenceFlags(copy, diffObj);
     return this.createFieldsForPrint(copy);
   }
@@ -226,22 +252,25 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     fields: FormlyFieldConfig[]
   ): FormlyFieldConfig[] {
     const supportedTypes = [
+      "input",
       "textarea",
       "address-card",
       "select",
       "autocomplete",
-      // "datepicker",
+      "datepicker",
       "repeatList",
       // "table",
     ];
-    fields.forEach((field) => {
+    const excludedTypes = ["updateGetCapabilities"];
+    fields?.forEach((field) => {
       if (field.fieldGroup) {
-        this.createFieldsForPrint(field.fieldGroup);
+        field.fieldGroup = this.createFieldsForPrint(field.fieldGroup);
       }
       if (field.fieldArray) {
-        this.createFieldsForPrint(
-          (<FormlyFieldConfig>field.fieldArray).fieldGroup
-        );
+        (<FormlyFieldConfig>field.fieldArray).fieldGroup =
+          this.createFieldsForPrint(
+            (<FormlyFieldConfig>field.fieldArray).fieldGroup
+          );
       }
       if (field.props?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
@@ -269,7 +298,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         field.type += "Print";
       }
     });
-    return fields;
+    // TODO: remove excludedTypes and use hideInPreview instead
+    return fields
+      ?.filter((field) => !excludedTypes.includes(<string>field.type))
+      ?.filter((field) => !field.props?.hideInPreview);
   }
 
   private calcIsDifferent(field, diffObj): boolean {
@@ -288,7 +320,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   addDifferenceFlags(fields: FormlyFieldConfig[], diffObj) {
-    fields.forEach((field) => {
+    fields?.forEach((field) => {
       if (field.fieldGroup) {
         this.addDifferenceFlags(field.fieldGroup, diffObj);
       }
@@ -322,6 +354,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     fields: FormlyFieldConfig[],
     tableId: string
   ): any[] {
+    if (!fields) return null;
     for (const field of fields) {
       if (field.fieldGroup) {
         const result = this.getFormatterForColumn(field.fieldGroup, tableId);

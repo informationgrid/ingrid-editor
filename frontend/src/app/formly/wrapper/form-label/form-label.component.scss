@@ -2,12 +2,13 @@
 
 :host {
   display: flex;
+  position: relative;
 }
 
 .label-wrapper {
   width: 90px;
   padding-right: 24px;
-  padding-top: 1.55em;
+  padding-top: 10px;
 }
 
 :host-context(.preview-dialog) .label-wrapper {
@@ -16,7 +17,6 @@
 
 :host-context(ige-new-user-dialog) .label-wrapper {
   width: 120px;
-  padding-top: 0.8em;
 }
 
 :host-context(ige-configuration) .label-wrapper {
@@ -36,27 +36,36 @@
 }
 
 :host-context(.hasContextHelp) {
-  &:hover {
-    .contextHelpIcon {
-      position: absolute;
-      display: block;
-    }
+  &:hover .contextHelpIcon {
+    position: absolute;
+    display: block;
+  }
 
-    label {
-      color: $ige-primary;
-      cursor: pointer;
-    }
+  &:hover label,
+  label:focus {
+    color: $ige-primary;
+    cursor: pointer;
+  }
+
+  &:hover:before {
+    content: "";
+    width: 24px;
+    left: -24px;
+    top: 0;
+    bottom: 0;
+    position: absolute;
   }
 
   .contextHelpIcon {
     display: none;
+    cursor: pointer;
     background-color: $ige-background;
     border-radius: 50%;
     height: 24px;
     width: 24px;
     margin-left: -28px;
     margin-right: 4px;
-    margin-top: 22px;
+    margin-top: 8px;
 
     ::ng-deep .mat-icon svg rect {
       fill: $ige-secondary;

@@ -23,6 +23,7 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { ValidationErrors } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -76,6 +77,24 @@ export class TableTypeComponent
         (value) => (this.dataSource = new MatTableDataSource<any>(value || []))
       );
 
+    const requiredColumnKeys = this.props.columns
+      .filter((col) => col.props.required)
+      .map((col) => col.key);
+    if (requiredColumnKeys.length > 0) {
+      this.formControl.addValidators((): ValidationErrors | null => {
+        return !this.formControl.value ||
+          this.formControl.value.length === 0 ||
+          requiredColumnKeys.length === 0 ||
+          this.hasRequiredFields(requiredColumnKeys)
+          ? null
+          : {
+              requiredColumns: {
+                message: "Es sind nicht alle Pflichtspalten ausgefüllt",
+              },
+            };
+      });
+    }
+
     // init with formatted values
     this.prepareFormattedValues(this.formControl.value);
 
@@ -116,7 +135,8 @@ export class TableTypeComponent
     this.dialog
       .open(this.props.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
-        minWidth: 550,
+        restoreFocus: true,
+        minWidth: 600,
         data: {
           fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry
@@ -241,9 +261,11 @@ export class TableTypeComponent
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
+        restoreFocus: true,
         data: {
           currentItems: this.dataSource.data,
           uploadFieldKey: this.getUploadFieldKey(),
+          hasExtractZipOption: true,
         },
       })
       .afterClosed()
@@ -296,6 +318,7 @@ export class TableTypeComponent
       .open(LinkDialogComponent, {
         maxWidth: 600,
         hasBackdrop: true,
+        restoreFocus: true,
         data: {
           fields: this.props.columns,
           model: {},
@@ -359,5 +382,11 @@ export class TableTypeComponent
       lastDotPos === -1 ? file.length : lastDotPos
     );
     return decodeURI(name);
+  }
+
+  private hasRequiredFields(requiredColumnKeys: string[]): boolean {
+    return this.formControl.value?.every((item) =>
+      requiredColumnKeys.every((key) => item[key])
+    );
   }
 }

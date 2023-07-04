@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.development
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -34,6 +35,10 @@ class AuthUtilsMock : AuthUtils {
 
     override fun isSuperAdmin(principal: Principal): Boolean {
         return containsRole(principal, "ige-super-admin")
+    }
+
+    override fun getCurrentUserRoles(): Set<Group> {
+        return emptySet()
     }
 
 }

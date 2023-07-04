@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import {
   EventData,
@@ -13,6 +13,7 @@ import { ModalService } from "../../../../services/modal/modal.service";
 import { IgeError } from "../../../../models/ige-error";
 import { filter, map, take } from "rxjs/operators";
 import { Observable } from "rxjs";
+import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
 
 @Injectable()
 export class DeleteEmptyFoldersBehaviour extends Plugin {
@@ -28,6 +29,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
     private addressTreeQuery: AddressTreeQuery
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {
@@ -36,7 +38,9 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
     this.subscriptions.push(
       this.eventService
         .respondToEvent(IgeEvent.DELETE)
-        .subscribe((resultObserver) => this.handleEvent(resultObserver))
+        .subscribe((resultObserver) =>
+          this.handleEvent(resultObserver.eventResponseHandler)
+        )
     );
   }
 

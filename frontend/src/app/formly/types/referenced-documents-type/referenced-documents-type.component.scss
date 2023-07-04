@@ -1,9 +1,5 @@
-:host {
-  padding-top: 10px;
-}
-
 .toggle-ref-docs-btn {
-  margin: 7px 0;
+  margin: 3px 0;
 }
 
 mat-hint {
@@ -18,4 +14,8 @@ mat-spinner {
 .spinner-wrapper {
   display: flex;
   align-items: center;
+}
+
+.no-references {
+  padding: 10px 0 22px;
 }

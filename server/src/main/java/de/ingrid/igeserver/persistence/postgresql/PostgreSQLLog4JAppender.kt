@@ -3,6 +3,7 @@ package de.ingrid.igeserver.persistence.postgresql
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.PersistenceException
+import jakarta.transaction.Transactional
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Appender
 import org.apache.logging.log4j.core.Core
@@ -28,7 +29,6 @@ import java.sql.Types
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
-import javax.transaction.Transactional
 
 /**
  * Log4j2 appender using the postgresql database configured in application.properties (spring.datasource)

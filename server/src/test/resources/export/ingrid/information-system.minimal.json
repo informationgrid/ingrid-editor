@@ -1,0 +1,56 @@
+{
+  "_uuid": "4e52691b-92b2-4f22-bd13-6ba43edf4ab6",
+  "_type": "InGridInformationSystem",
+  "title": "info-system",
+  "themes": [],
+  "dataset": { "languages": [] },
+  "spatial": {
+    "references": [
+      {
+        "type": "free",
+        "title": "Linda, Neustadt an der Orla, Saale-Orla-Kreis, Thüringen, Deutschland (administrative)",
+        "value": {
+          "lat1": 50.6638647,
+          "lat2": 50.7090902,
+          "lon1": 11.7449969,
+          "lon2": 11.8477633
+        }
+      }
+    ],
+    "spatialSystems": [{ "key": "9000001" }],
+    "verticalExtent": { "unitOfMeasure": null }
+  },
+  "keywords": {
+    "free": []
+  },
+  "metadata": { "language": { "key": "103" } },
+  "resource": { "useConstraints": [], "accessConstraints": [] },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2020-12-12T23:00:00.000Z",
+        "referenceDateType": { "key": "2" }
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": { "legalBasicsDescriptions": [] },
+  "isOpenData": false,
+  "references": [],
+  "description": "some more description",
+  "serviceType": null,
+  "serviceUrls": [],
+  "pointOfContact": [
+    { "ref": "1f570220-d292-4fd5-8595-e2e088d2f410", "type": { "key": "7" } }
+  ],
+  "serviceVersion": [],
+  "isAdVCompatible": false,
+  "advProductGroups": [],
+  "isInspireIdentified": false,
+  "digitalTransferOptions": [],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": { "unit": null }
+  }
+}

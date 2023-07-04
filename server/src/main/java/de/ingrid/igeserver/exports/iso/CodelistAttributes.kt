@@ -1,13 +1,12 @@
 package de.ingrid.igeserver.exports.iso
 
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAttribute
-import javax.xml.bind.annotation.XmlValue
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
-@XmlAccessorType(XmlAccessType.FIELD)
 data class CodelistAttributes(
-    @XmlAttribute(name = "codeList") var codeList: String? = null,
-    @XmlAttribute(name = "codeListValue") var codeListValue: String? = null,
-    @XmlAttribute var content: String? = null
-)
+    @JacksonXmlProperty(isAttribute = true) var codeList: String,
+    @JacksonXmlProperty(isAttribute = true) var codeListValue: String,
+    @JacksonXmlProperty(isAttribute = true) var codeSpace: String? = null,
+) {
+    @JacksonXmlText val value: String? = null
+}

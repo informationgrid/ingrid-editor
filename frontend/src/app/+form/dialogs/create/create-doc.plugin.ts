@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -12,6 +12,7 @@ import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @UntilDestroy()
 @Injectable()
@@ -37,6 +38,7 @@ export class CreateDocumentPlugin extends Plugin {
     private translocoService: TranslocoService
   ) {
     super();
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

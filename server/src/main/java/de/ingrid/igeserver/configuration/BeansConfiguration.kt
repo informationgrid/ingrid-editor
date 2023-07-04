@@ -1,16 +1,21 @@
 package de.ingrid.igeserver.configuration
 
+import com.fasterxml.jackson.databind.*
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.comm.HttpCLCommunication
 import de.ingrid.codelists.comm.ICodeListCommunication
 import de.ingrid.codelists.persistency.ICodeListPersistency
 import de.ingrid.codelists.persistency.XmlCodeListPersistency
+import org.hibernate.cfg.AvailableSettings
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 import org.springframework.context.annotation.*
+
 
 @Configuration
 @ComponentScan(basePackages = ["de.ingrid.igeserver"])
-open class BeansConfiguration {
+class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null
 
@@ -24,7 +29,7 @@ open class BeansConfiguration {
     private val codelistDataPath: String? = null
 
     @Bean
-    open fun HttpCodelistCommunication(): ICodeListCommunication {
+    fun HttpCodelistCommunication(): ICodeListCommunication {
         val communication = HttpCLCommunication()
         communication.setRequestUrl("$codelistUrl/rest/getCodelists")
         communication.setUsername(codelistUserName)
@@ -33,19 +38,29 @@ open class BeansConfiguration {
     }
 
     @Bean
-    open fun codeListPersistency(): ICodeListPersistency {
+    fun codeListPersistency(): ICodeListPersistency {
         val persistency = XmlCodeListPersistency<Any>()
         persistency.setPathToXml(codelistDataPath)
         return persistency
     }
 
     @Bean
-    open fun codeListService(communication: ICodeListCommunication?,
-                             persistencies: List<ICodeListPersistency?>?): CodeListService {
+    fun codeListService(communication: ICodeListCommunication?,
+                        persistencies: List<ICodeListPersistency?>?): CodeListService {
         val service = CodeListService()
         service.setPersistencies(persistencies)
         service.setComm(communication)
         service.setDefaultPersistency(0)
         return service
+    }
+
+    /**
+     * This mapper is needed to correctly convert JSONB columns into Classes, especially OffsetDateTime!
+     */
+    @Bean
+    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer {
+        return HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
+            properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
+        }
     }
 }

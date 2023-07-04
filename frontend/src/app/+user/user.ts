@@ -15,6 +15,7 @@ export abstract class User {
   modificationDate: Date;
   latestLogin?: Date;
   email?: string;
+  phoneNumber?: string;
 
   constructor(values: Object = {}) {
     Object.assign(this, values);
@@ -40,6 +41,16 @@ export class BackendUser extends User {
   groups?: number[];
 }
 
+// user that is assigned with permission to an individual doc.
+export class UserWithDocPermission extends User {
+  permission: PermissionLevel;
+
+  constructor(user: User, permission: PermissionLevel) {
+    super(user);
+    this.permission = permission;
+  }
+}
+
 export class Permissions {
   rootPermission?: "READ" | "WRITE";
   documents: TreePermission[] = [];
@@ -47,7 +58,7 @@ export class Permissions {
 }
 
 export class TreePermission {
-  id: string;
+  id: number;
   title: string;
   isFolder: boolean;
   permission: string; // TODO: still used?
@@ -66,7 +77,7 @@ export enum PermissionType {
 export enum PermissionLevel {
   /** Write Access to whole tree */
   WRITE = "writeTree",
-  /** Write Access to sub tree*/
+  /** Write Access to subtree */
   WRITE_EXCEPT_PARENT = "writeTreeExceptParent",
   /** Read Access to whole tree */
   READ = "readTree",

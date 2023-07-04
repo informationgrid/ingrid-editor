@@ -1,0 +1,117 @@
+@import "src/variables";
+
+:host {
+  display: block;
+
+  .navigation-bar-wrapper {
+    background-color: $ige-background;
+    box-shadow: 0 2px 2px -2px #666666;
+  }
+
+  .navigation-bar {
+    max-width: 1260px;
+    margin: 0 auto;
+    align-items: center;
+    padding: 0 24px 0 36px;
+  }
+
+  ige-document-icon {
+    opacity: 0;
+    transition: opacity 0.2s linear;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    height: 26px;
+    width: 26px;
+  }
+
+  .optional-fields-toggle mat-slide-toggle ::ng-deep .mdc-form-field {
+    margin-top: 7px;
+  }
+}
+
+:host-context(.sticky-header) {
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+
+  ige-document-icon {
+    opacity: 1;
+  }
+
+  a {
+    color: $ige-secondary;
+    //font-size: 13px;
+    padding: 0 10px;
+    text-transform: none;
+  }
+
+  .menu {
+    opacity: 1;
+  }
+
+  mat-slide-toggle,
+  .cover {
+    box-shadow: 0 1px 0 0 #ddd;
+  }
+}
+
+.optional-fields-toggle {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  height: 36px;
+  max-width: 1260px;
+  margin: 0 0 -36px;
+  font-size: 14px;
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
+
+  .cover {
+    position: absolute;
+    width: 1000px;
+    height: 36px;
+    left: 1260px;
+    background: $ige-background;
+    z-index: 1;
+  }
+
+  .mat-mdc-slide-toggle {
+    background: $ige-background;
+  }
+
+  ::ng-deep .mat-mdc-slide-toggle.mat-disabled {
+    opacity: 1;
+    /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
+    .mat-slide-toggle-label {
+      opacity: 0.38;
+    }
+  }
+
+  .diagonal {
+    width: 36px;
+    background: linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 50%,
+      #666 50%,
+      $ige-background 50%,
+      $ige-background 100%
+    );
+    //background: -webkit-linear-gradient(
+    //  45deg,
+    //  #00000000 45%,
+    //  $ige-background 0%
+    //);
+  }
+  /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/
+  mat-slide-toggle {
+    padding-right: 23px;
+    height: inherit;
+  }
+}

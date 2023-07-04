@@ -7,14 +7,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
+import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
+import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
-import javax.persistence.*
 
 @Entity
 @Table(name = "document")
@@ -31,33 +33,19 @@ class Document {
     @JsonIgnore
     var catalog: Catalog? = null
 
-    /**
-     * This is used as information during indexing, where we don't want to request database for each document
-     * we want to index. This can be removed, if we use the catalog id instead or database id of the document.
-     * Since references in profiles are stored as uuids we need the catalog id(entifier)!
-     */
-    @Transient
-    @JsonIgnore
-    var catalogIdentifier: String? = null
-
     @Column(nullable = false)
     @JsonProperty("_uuid")
     var uuid: String = UUID.randomUUID().toString()
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @JsonProperty("_type")
     lateinit var type: String
 
     @Column(nullable = false)
     var title: String? = null
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     lateinit var data: ObjectNode
-
-    @ManyToMany(mappedBy = "archive", fetch = FetchType.LAZY)
-    @JsonIgnore
-    var archiveWrapper: MutableSet<DocumentWrapper> = LinkedHashSet<DocumentWrapper>()
 
     @Version
     @JsonProperty("_version")
@@ -80,10 +68,11 @@ class Document {
         modified = dateService?.now()
     }
 
-    @PreUpdate
-    fun setUpdateDate() {
-        modified = dateService?.now()
-    }
+    @Column
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonProperty("_contentModified")
+    var contentmodified: OffsetDateTime? = null
 
     @Column
     @JsonProperty("_createdBy")
@@ -92,6 +81,10 @@ class Document {
     @Column
     @JsonProperty("_modifiedBy")
     var modifiedby: String? = null
+
+    @Column
+    @JsonProperty("_contentModifiedBy")
+    var contentmodifiedby: String? = null
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -102,12 +95,14 @@ class Document {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifiedbyuser", nullable = true)
     @JsonIgnore
-    var modifiedByUser: UserInfo? = null
+    var contentModifiedByUser: UserInfo? = null
 
+    @JsonIgnore
+    var isLatest: Boolean = false
 
-    @Transient
+    @Convert(converter = StateEnumConverter::class)
     @JsonProperty("_state")
-    var state: String? = null
+    lateinit var state: DOCUMENT_STATE
 
     companion object {
         private val dateService: DateService? by lazy {
@@ -124,4 +119,11 @@ class Document {
     @Transient
     @JsonProperty("_id")
     var wrapperId: Int? = null
+}
+
+class StateEnumConverter : AttributeConverter<DOCUMENT_STATE, String> {
+    override fun convertToDatabaseColumn(attribute: DOCUMENT_STATE): String = attribute.name
+
+    override fun convertToEntityAttribute(dbData: String): DOCUMENT_STATE = DOCUMENT_STATE.valueOf(dbData)
+
 }

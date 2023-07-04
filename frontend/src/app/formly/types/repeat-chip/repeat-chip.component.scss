@@ -1,49 +1,32 @@
 @import "src/variables";
 
-:host {
-  margin-top: 15px;
+/*TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
+mat-chip-listbox {
+  padding-bottom: 10px;
+  ige-add-button {
+    margin-left: 8px;
+    line-height: 42px;
+  }
 }
 
-.mat-chip-list {
-  display: block;
-  //padding-top: 10px;
-  padding-bottom: 10px;
+.mat-mdc-chip {
+  border-radius: 4px;
+  cursor: move;
+  min-height: 36px;
 
-  ige-add-button {
-    margin-left: 6px;
+  .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .add-button-initial {
   display: block;
-  margin-bottom: 11px;
-}
+  margin-top: 3px;
+  margin-bottom: 19px;
 
-.mat-chip {
-  max-width: calc(100% - 32px);
-  height: auto;
-  min-height: 36px;
-  margin: 6px !important;
-  font-weight: normal;
-  font-size: 16px;
-  border-radius: 4px;
-  background-color: $ige-background;
-  pointer-events: initial !important;
-  cursor: move;
-
-  &:focus:after, /* press */
-  &:hover:after {
-    opacity: 0.05;
-  }
-
-  &:active {
-    /* press */
-    box-shadow: none !important;
-  }
-
-  .label {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  &.error-btn {
+    margin-bottom: 0;
   }
 }
 

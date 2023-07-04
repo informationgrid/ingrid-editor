@@ -62,9 +62,11 @@
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
+        [attr.tabindex]="!disabledCondition(node) ? 0 : null"
+        (keydown.enter)="!disabledCondition(node) && selectNode(node, $event)"
     >
         <div style="width: 100%">
-            <div fxLayout="row">
+            <div class="flex-row">
                 <button
                     mat-icon-button
                     class="toggle"
@@ -84,18 +86,18 @@
             <div class="label">
                 <mat-checkbox
                     *ngIf="selection.multiSelectionModeEnabled"
+                    [class.docNode]="node.level !== 0"
                     [checked]="selection.isSelected(node)"
                     (click)="$event.stopImmediatePropagation()"
                     (change)="selection.nodeSelectionToggle(node, $event)"
                 ></mat-checkbox>
-                <mat-icon
-                    [svgIcon]="node.iconClass"
-                    [ngClass]="['document-icon', getStateClass(node)]"
-                    [matTooltipShowDelay]="1000"
-                    [matTooltip]="t('docType.' + node.type)"
-                ></mat-icon>
-                <!-- TODO: replace with matTooltip and matTooltipShowDelay when https://github.com/angular/components/pull/24652 is merged -->
-                <span title="{{ node.title }}">{{ node.title }}</span>
+                <ige-document-icon
+                    [doc]="node"
+                    showDelay="1000"
+                ></ige-document-icon>
+                <span [matTooltipShowDelay]="1000" [matTooltip]="node.title">{{
+                    node.title
+                }}</span>
             </div>
         </div>
     </mat-tree-node>
@@ -119,9 +121,10 @@
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
         [class.folder]="node.type === 'FOLDER'"
+        [class]="node.tags"
     >
         <div style="width: 100%">
-            <div fxLayout="row">
+            <div class="flex-row">
                 <button
                     mat-icon-button
                     class="toggle"

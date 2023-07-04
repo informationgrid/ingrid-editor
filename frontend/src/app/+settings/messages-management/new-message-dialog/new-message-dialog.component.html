@@ -10,12 +10,7 @@
     <mat-dialog-content [formGroup]="form">
         <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Benachrichtigungstext</mat-label>
-            <textarea
-                matInput
-                formControlName="text"
-                placeholder="Benachrichtigungstext"
-            >
-            </textarea>
+            <textarea matInput formControlName="text"> </textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Benachrichtigung anzeigen bis (optional)</mat-label>
@@ -37,26 +32,30 @@
         </mat-form-field>
 
         <div [hidden]="userInfo.role != 'ige-super-admin'">
-            <mat-slide-toggle
-                data-cy="toggle-for-all-catalogs"
-                labelPosition="before"
-                color="accent"
-                class="stretch"
-                [checked]="currentCatalog"
-                (change)="slideToggleChange($event)"
-                >Für alle Kataloge
-            </mat-slide-toggle>
+            <div class="toggle-wrapper">
+                <mat-slide-toggle
+                    data-cy="toggle-for-all-catalogs"
+                    labelPosition="before"
+                    color="accent"
+                    class="stretch"
+                    [checked]="currentCatalog"
+                    (change)="slideToggleChange($event)"
+                >
+                    Für alle Kataloge
+                </mat-slide-toggle>
+            </div>
             <div>
-                <mat-hint matCardSubtitle>
-                    Bei aktivierter Option wird die Nachricht in allen Katalogen
-                    angezeigt, ansonsten nur in diesem Katalog.
-                </mat-hint>
+                <mat-hint matCardSubtitle
+                    >Bei aktivierter Option wird die Nachricht in allen
+                    Katalogen angezeigt, ansonsten nur in diesem
+                    Katalog.</mat-hint
+                >
             </div>
         </div>
     </mat-dialog-content>
     <mat-dialog-actions>
         <button mat-button mat-dialog-close color="primary">Abbrechen</button>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <button
             mat-flat-button
             color="primary"

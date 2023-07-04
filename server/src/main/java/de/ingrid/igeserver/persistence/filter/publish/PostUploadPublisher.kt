@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostUploadPublisher @Autowired constructor(val storage: Storage, val uploadExpiredTask: UploadExpiredTask?) : Filter<PostPublishPayload> {
 
-    override val profiles = arrayOf("mcloud", "uvp", "test", "bmi")
+    override val profiles = emptyArray<String>()
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
         val docId = payload.document.uuid

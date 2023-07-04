@@ -1,7 +1,7 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
         <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
+            <button mat-icon-button mat-dialog-close (click)="cancel.next()">
                 <mat-icon>close</mat-icon>
             </button>
             <span class="text">{{ label }}</span>
@@ -20,7 +20,7 @@
         >
             Abbrechen
         </button>
-        <div fxFlex></div>
+        <div class="flex-1"></div>
         <ng-content select="[actions]"></ng-content>
         <button
             mat-flat-button
@@ -28,7 +28,7 @@
             [disabled]="disabled"
             (click)="submit.next()"
         >
-            Übernehmen
+            {{ submitLabel }}
         </button>
     </mat-dialog-actions>
 </div>

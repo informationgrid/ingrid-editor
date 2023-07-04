@@ -53,7 +53,7 @@ export class DynamicDatabase {
   }
 
   getChildren(
-    parentId: string,
+    parentId: number,
     forceFromServer?: boolean,
     isAddress?: boolean
   ): Observable<DocumentAbstract[]> {
@@ -87,7 +87,7 @@ export class DynamicDatabase {
     return this.docService.find(value, 10, isAddress);
   }
 
-  getPath(id: string): Promise<string[]> {
+  getPath(id: number): Promise<number[]> {
     return this.docService
       .getPath(id)
       .pipe(map((paths) => paths.map((path) => path.id)))
@@ -98,7 +98,7 @@ export class DynamicDatabase {
     return docs.map(
       (doc) =>
         new TreeNode(
-          <string>doc.id,
+          <number>doc.id,
           doc._uuid,
           doc.title,
           doc._type,
@@ -109,7 +109,8 @@ export class DynamicDatabase {
           doc.icon,
           false,
           doc.hasWritePermission,
-          doc.hasOnlySubtreeWritePermission
+          doc.hasOnlySubtreeWritePermission,
+          doc._tags
         )
     );
   }

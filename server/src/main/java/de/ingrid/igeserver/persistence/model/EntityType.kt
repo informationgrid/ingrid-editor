@@ -3,9 +3,7 @@ package de.ingrid.igeserver.persistence.model
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_UUID
+import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -61,7 +59,7 @@ abstract class EntityType {
     /**
      * Persistence hook called when an instance of this type is created
      */
-    open fun onCreate(doc: Document) {}
+    open fun onCreate(doc: Document, initiator: InitiatorAction) {}
 
     /**
      * Persistence hook called when an instance of this type is updated
@@ -110,15 +108,25 @@ abstract class EntityType {
         return emptyList()
     }
 
-    fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
+    private fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val latestDocument = documentService.getLatestDocument(wrapper, options.onlyPublished, catalogId = catalogId)
-        val latestDocumentJson = documentService.convertToJsonNode(latestDocument)
+        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also { 
+            it.document.data.put(FIELD_TAGS, wrapper.tags?.joinToString(","))
+        }
+        
+        val latestDocumentJson = documentService.convertToJsonNode(documentData.document)
 
         if (options.forExport) {
             documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
         }
         return latestDocumentJson
+    }
+
+    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
+        return fileList
+            ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
+            ?.map { it.get(field).get("uri").textValue() }
+            ?: emptyList()
     }
 
     fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {
@@ -151,7 +159,7 @@ abstract class EntityType {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(doc.catalogIdentifier!!, uuid, options)
+                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid, options)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (e: EmptyResultDataAccessException) {
                 // TODO: what to do with removed references?
@@ -164,5 +172,6 @@ abstract class EntityType {
 
 data class UpdateReferenceOptions(
     val onlyPublished: Boolean = false,
-    val forExport: Boolean = false
+    val forExport: Boolean = false,
+    val catalogId: String? = null
 )

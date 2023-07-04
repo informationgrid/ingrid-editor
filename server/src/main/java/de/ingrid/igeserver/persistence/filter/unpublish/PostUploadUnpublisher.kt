@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostUploadUnpublisher @Autowired constructor(val storage: Storage) : Filter<PostUnpublishPayload> {
 
-    override val profiles = arrayOf("mcloud", "uvp", "test", "bmi")
+    override val profiles = emptyArray<String>()
 
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
         val docId = payload.document.uuid

@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import {
   MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatAutocompleteModule,
@@ -29,15 +28,11 @@ import { AddressTypeComponent } from "./types/address-type/address-type.componen
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
 import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
 import { MatCardModule } from "@angular/material/card";
-import { CodelistPipe } from "../directives/codelist.pipe";
 import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
 import { FreeSpatialComponent } from "./types/map/spatial-dialog/free-spatial/free-spatial.component";
 import { WktSpatialComponent } from "./types/map/spatial-dialog/wkt-spatial/wkt-spatial.component";
-import { DrawSpatialComponent } from "./types/map/spatial-dialog/draw-spatial/draw-spatial.component";
-import { NameSpatialComponent } from "./types/map/spatial-dialog/name-spatial/name-spatial.component";
 import { RepeatListComponent } from "./types/repeat-list/repeat-list.component";
-import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { FormDialogComponent } from "./types/table/form-dialog/form-dialog.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { RepeatComponent } from "./types/repeat/repeat.component";
@@ -63,6 +58,11 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
+  maxValidationMessage,
+  minValidationMessage,
+  NotEmptyArrayValidator,
+  UrlValidator,
+  UrlValidatorMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -85,6 +85,13 @@ import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-s
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
+import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
+import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
+import { TranslocoModule } from "@ngneat/transloco";
+import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
+import { GeothesaurusWfsgndeComponent } from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
+import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
+import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -96,7 +103,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatInputModule,
     ReactiveFormsModule,
     FormsModule,
-    FlexLayoutModule,
     MatDialogModule,
     MatButtonModule,
     MatAutocompleteModule,
@@ -110,6 +116,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
     FormlyMatToggleModule,
+    SharedPipesModule,
     FormlyModule.forChild({
       types: [
         {
@@ -168,7 +175,19 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "couplingService",
           component: DocumentReferenceTypeComponent,
         },
+        {
+          name: "updateGetCapabilities",
+          component: UpdateGetCapabilitiesComponent,
+        },
+        {
+          name: "previewImage",
+          component: PreviewImageComponent,
+        },
         /* FOR PREVIEW */
+        {
+          name: "inputPrint",
+          component: PrintTypeComponent,
+        },
         {
           name: "textareaPrint",
           component: PrintTypeComponent,
@@ -197,11 +216,17 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "autocompletePrint",
           component: PrintTypeComponent,
         },
+        {
+          name: "previewImagePrint",
+          component: PrintTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
         { name: "email", validation: EmailValidator },
+        { name: "notEmptyArray", validation: NotEmptyArrayValidator },
+        { name: "url", validation: UrlValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
@@ -218,12 +243,24 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           message: "Dieses Feld darf keine Großbuchstaben enthalten",
         },
         {
+          name: "url",
+          message: UrlValidatorMessage,
+        },
+        {
           name: "matDatepickerMin",
           message: "Das Datum liegt weiter zurück als erlaubt",
         },
         {
           name: "matDatepickerMax",
           message: "Das Datum ist größer als erlaubt",
+        },
+        {
+          name: "min",
+          message: minValidationMessage,
+        },
+        {
+          name: "max",
+          message: maxValidationMessage,
         },
       ] /*,
       wrappers: [
@@ -249,6 +286,11 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     DocumentIconModule,
+    TranslocoModule,
+    GeothesaurusWfsgndeComponent,
+    FormErrorComponent,
+    MixedCdkDragDropModule,
+    PrintViewDialogComponent,
   ],
   providers: [
     {
@@ -270,7 +312,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     },
   ],
   declarations: [
-    CodelistPipe,
     SelectOptionPipe,
     ContextHelpComponent,
     AutocompleteTypeComponent,
@@ -282,17 +323,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SpatialDialogComponent,
     FreeSpatialComponent,
     WktSpatialComponent,
-    DrawSpatialComponent,
-    NameSpatialComponent,
     RepeatListComponent,
     RepeatComponent,
-    RepeatDetailListComponent,
-    FormErrorComponent,
     FormDialogComponent,
     RepeatChipComponent,
     ChipDialogComponent,
     DateRangeTypeComponent,
-    RepeatDetailListComponent,
     UploadTypeComponent,
     LinkDialogComponent,
     UploadFilesDialogComponent,
@@ -301,17 +337,17 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
     PrintTypeComponent,
-    PrintViewDialogComponent,
     DocumentReferenceTypeComponent,
     SelectGeoDatasetDialog,
     SelectCswRecordDialog,
+    CoordinatesSpatialComponent,
+    UpdateGetCapabilitiesComponent,
   ],
   exports: [
     ReactiveFormsModule,
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
-    CodelistPipe,
   ],
 })
 export class IgeFormlyModule {}

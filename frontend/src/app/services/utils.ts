@@ -1,3 +1,7 @@
+import { inject } from "@angular/core";
+import { Clipboard } from "@angular/cdk/clipboard";
+import { MatSnackBar } from "@angular/material/snack-bar";
+
 interface IIsObject {
   (item: any): boolean;
 }
@@ -9,6 +13,15 @@ interface IObject {
 interface IDeepMerge {
   (target: IObject, ...sources: Array<IObject>): IObject;
 }
+
+export const generateUUID = function () {
+  return (<any>[1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  );
+};
 
 /**
  * @description Method to check if an item is an object. Date and Function are considered
@@ -66,4 +79,26 @@ export const deepMerge: IDeepMerge = (
   }
 
   return result;
+};
+
+export const copyToClipboardFn = () => {
+  const clipboard = inject(Clipboard);
+  const snackbar = inject(MatSnackBar);
+
+  return (
+    copyText: string,
+    opts?: {
+      successText?: string;
+      errorText?: string;
+    }
+  ) => {
+    const isCopied = clipboard.copy(copyText);
+    if (isCopied) {
+      snackbar.open(
+        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert."
+      );
+    } else {
+      snackbar.open(opts?.errorText ?? "Der Text konnte nicht kopiert werden.");
+    }
+  };
 };

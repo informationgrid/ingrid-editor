@@ -1,0 +1,37 @@
+@use "@angular/material" as mat;
+
+@include mat.list-density(0);
+
+mat-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.centered {
+  align-items: center;
+}
+
+.baselined {
+  align-items: baseline;
+  width: 100%;
+}
+
+.intend {
+  padding-left: 12px;
+}
+
+.toggle-checkbox {
+  margin-right: 12px;
+}
+
+mat-selection-list {
+  overflow: auto;
+}
+
+mat-list-option {
+  border-bottom: 1px solid #dddddd;
+}
+
+ige-breadcrumb {
+  display: inline;
+}

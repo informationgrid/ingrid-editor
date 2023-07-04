@@ -12,9 +12,16 @@ import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
+import { GroupService } from "../../../services/role/group.service";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../dialogs/confirm/confirm-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { ExportService } from "../../../services/export.service";
 
 @Component({
   selector: "groups-table",
@@ -53,7 +60,11 @@ export class GroupsTableComponent
   dataSource = new MatTableDataSource([]);
   selection: SelectionModel<Group>;
 
-  constructor() {
+  constructor(
+    public groupService: GroupService,
+    public dialog: MatDialog,
+    private exportService: ExportService
+  ) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
@@ -87,5 +98,49 @@ export class GroupsTableComponent
   select(element) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
+  }
+
+  exportTable() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        hasBackdrop: true,
+        data: <ConfirmDialogData>{
+          title: "Exportieren",
+          message:
+            "Möchten Sie die Gruppendaten aus der Tabelle als csv-Datei herunterladen?",
+          confirmButtonText: "Herunterladen",
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) this.downloadTable();
+      });
+  }
+
+  private async downloadTable() {
+    const rows: string[][] = [];
+    const headerCol = [
+      "Gruppe eingerichtet am",
+      "Gruppenname",
+      "Gruppenbeschreibung",
+      "Anzahl zugeordneter Benutzer",
+    ];
+    rows.push(headerCol);
+    for (const group of this.dataSource.filteredData) {
+      rows.push(await this.buildRowByGroup(group));
+    }
+    this.exportService.exportCsv(rows, { exportName: "groups" });
+  }
+
+  private async buildRowByGroup(group): Promise<string[]> {
+    const users = await firstValueFrom(
+      this.groupService.getUsersOfGroup(group.id)
+    );
+    return [
+      group.data.creationDate,
+      group.name,
+      group.description,
+      users.length,
+    ];
   }
 }

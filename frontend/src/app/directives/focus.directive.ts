@@ -9,6 +9,8 @@ export class FocusDirective {
   constructor(private host: ElementRef) {}
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.host.nativeElement.focus());
+    if (this.igeFocus !== false) {
+      setTimeout(() => this.host.nativeElement.focus());
+    }
   }
 }

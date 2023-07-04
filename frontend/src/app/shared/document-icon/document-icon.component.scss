@@ -2,9 +2,10 @@
 
 :host {
   display: flex;
-  align-self: flex-start;
-  height: 24px;
-  padding: 0;
+  //align-self: flex-start;
+  //height: 24px;
+  //padding: 0;
+  //margin-right: 16px !important;
 }
 
 :host-context(.single) :host {
@@ -16,5 +17,18 @@
 
   &.marker ::ng-deep .coloring {
     fill: $ige-check-color;
+  }
+}
+
+.icon-wrapper {
+  display: inline-block;
+  position: relative;
+
+  .document-icon-tag {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    right: 0;
+    top: 12px;
   }
 }

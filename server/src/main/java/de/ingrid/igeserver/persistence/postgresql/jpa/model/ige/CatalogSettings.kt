@@ -10,15 +10,20 @@ data class CatalogSettings(
     var config: CatalogConfig? = null
 )
 
+// TODO refactor for profile specific settings
 data class CatalogConfig(
     val partner: String? = null,
     val provider: String? = null,
     val elasticsearchAlias: String? = null,
+    var namespace: String? = null,
+    var atomDownloadUrl: String? = null,
+    var spatialReference: Any? = null,
     val ibus: IBusConfig? = IBusConfig()
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig(
     val url: String? = null,
     val ip: String = "127.0.0.1",
-    val port: Int = 9200
+    val port: Int = 9200,
+    val publicationTypes: List<String>? = null
 )

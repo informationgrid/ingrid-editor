@@ -1,6 +1,5 @@
 import {
   ActivatedRouteSnapshot,
-  CanActivate,
   Router,
   RouterStateSnapshot,
 } from "@angular/router";
@@ -11,7 +10,7 @@ import { ConfigService } from "../services/config/config.service";
 @Injectable({
   providedIn: "root",
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard {
   constructor(
     private router: Router,
     private modalService: ModalService,

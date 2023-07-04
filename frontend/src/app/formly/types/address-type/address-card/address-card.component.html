@@ -1,21 +1,17 @@
 <mat-card
+    appearance="outlined"
     class="hover-elevate"
     [class.disabled]="disabled"
     [class.warning]="content.iconState === ''"
     [matTooltip]="stateInfo"
 >
-    <mat-card-header>
-        <div mat-card-avatar>
-            <mat-icon
-                [svgIcon]="content.iconClass"
-                [ngClass]="['document-icon', content.iconState]"
-            ></mat-icon>
-        </div>
-        <mat-card-title fxFlex>{{
-            address.type | codelist : "505" | async
-        }}</mat-card-title>
-        <div fxFlex></div>
-        <div>
+    <mat-card-content>
+        <div class="header flex-row">
+            <ige-document-icon [doc]="address.ref"></ige-document-icon>
+            <div class="title">
+                {{ address.type | codelist : "505" | async }}
+            </div>
+            <div class="flex-1"></div>
             <button
                 mat-icon-button
                 type="button"
@@ -48,19 +44,19 @@
                 </button>
             </mat-menu>
         </div>
-    </mat-card-header>
 
-    <mat-card-content>
-        <ng-container *ngIf="address.ref?.organization">
-            <div class="title" [class.error]="invalidAddressReference">
+        <ng-container *ngIf="address.ref?.organization; else person">
+            <div
+                class="title address-title"
+                [class.error]="invalidAddressReference"
+            >
                 {{ content.title }}
             </div>
             <div class="organization-person">{{ content.secondTitle }}</div>
-            <div class="email">{{ content.emailOrPhone }}</div>
         </ng-container>
 
-        <ng-container *ngIf="!address.ref?.organization">
-            <div class="title">
+        <ng-template #person>
+            <div class="title address-title">
                 <span
                     >{{
                         address.ref["academic-title"]
@@ -69,7 +65,10 @@
                     }} </span
                 >{{ content.title }}
             </div>
-            <div class="email">{{ content.emailOrPhone }}</div>
-        </ng-container>
+        </ng-template>
+
+        <div *ngIf="content.emailOrPhone" class="email">
+            {{ content.emailOrPhone }}
+        </div>
     </mat-card-content>
 </mat-card>

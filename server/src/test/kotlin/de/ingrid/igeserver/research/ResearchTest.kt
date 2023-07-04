@@ -1,10 +1,10 @@
 package de.ingrid.igeserver.research
 
-import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType
 import de.ingrid.igeserver.IgeServer
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeExactly
+import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
 import org.intellij.lang.annotations.Language
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
-import javax.persistence.EntityManager
 
 
 @SpringBootTest(classes = [IgeServer::class])
@@ -46,9 +45,8 @@ class ResearchTest : ShouldSpec() {
         should("find by term (like)") {
             @Language("PostgreSQL") val sql = """
             SELECT *
-            FROM document_wrapper
-            LEFT JOIN document document1 ON document_wrapper.draft = document1.id
-            WHERE document1.data ->> 'company' LIKE '%verwaltung%';
+            FROM document document1
+            WHERE document1.is_latest = true AND document1.data ->> 'company' LIKE '%verwaltung%';
         """
 
             val list = execQuery(sql)
@@ -60,7 +58,7 @@ class ResearchTest : ShouldSpec() {
         return entityManager
             .createNativeQuery(sql)
             .unwrap(NativeQuery::class.java)
-            .addScalar("data", JsonNodeBinaryType.INSTANCE)
+            .addScalar("data")
             .addScalar("title")
             .addScalar("uuid")
             .addScalar("type")

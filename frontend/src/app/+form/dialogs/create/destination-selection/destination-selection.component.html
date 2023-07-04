@@ -1,4 +1,4 @@
-<div class="side-padding place-title">Zielordner wählen</div>
+<div class="side-padding dlg-field-hero-label">Zielordner wählen</div>
 <!-- FIXME: [hideReadOnly]="true" after completion of #4261 -->
 <ige-tree
     [disabledCondition]="disabledCondition()"
@@ -10,9 +10,10 @@
     [hideReadOnly]="false"
     [ignoreTreeUpdates]="true"
 ></ige-tree>
+
 <ng-container *ngIf="!disableRoot">
     <div class="selection-divider"></div>
-    <div class="side-padding place-title-other">Oder anlegen unter</div>
+    <div class="side-padding dlg-field-hero-label">Oder anlegen unter</div>
     <ige-document-list-item
         [docs]="getRootNode()"
         [hideDivider]="true"

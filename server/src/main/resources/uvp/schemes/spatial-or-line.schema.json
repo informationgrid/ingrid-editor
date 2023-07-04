@@ -31,7 +31,7 @@
         "spatial": {
           "type": "array",
           "items": {
-            "$ref": "refs/general.schema.json#/definitions/Spatial"
+            "$ref": "../../general.schema.json#/definitions/Spatial"
           },
           "minItems": 1,
           "maxItems": 1

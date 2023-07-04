@@ -1,27 +1,52 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
+import { HttpClient } from "@angular/common/http";
 
 export interface Options {
+  id?: string;
   wrappers?: string[];
   className?: string;
   required?: boolean;
   defaultValue?: any;
   hasInlineContextHelp?: boolean;
   contextHelpId?: string;
+  change?: (field, event) => void;
+  remove?: (field, event) => void;
   expressions?: {
     hide?;
     className?;
+    defaultValue?;
     "props.required"?;
     "props.disabled"?;
+    "props.minLength"?;
+    "props.hintStart"?;
   };
+  hooks?: { onInit: (field) => void };
+  buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
+  hideInPreview?: boolean;
+}
+
+export interface DatePickerOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  datepickerOptions?: any;
+  validators?: any;
 }
 
 export interface RepeatOptions extends Options {
   menuOptions?: { key; value; fields }[];
   fieldGroupClassName?: string;
   fields?: FormlyFieldConfig[];
-  validators?: { [x: string]: { expression: any; message: string } };
+  validators?: { [x: string]: { expression: any; message: string } | string[] };
+  // if true, the gap between repeats will be extended.
+  hasExtendedGap?: boolean;
+  addButtonTitle?: string;
+}
+
+export interface RepeatDetailListOptions extends Options {
+  fields?: FormlyFieldConfig[];
+  validators?: { [x: string]: { expression: any; message: string } | string[] };
 }
 
 export interface RepeatListOptions extends Options {
@@ -32,12 +57,22 @@ export interface RepeatListOptions extends Options {
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
   options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  view?: "chip" | "list";
+  restCall?: (query: string) => Observable<any[]>;
+  labelField?: string;
+  selectLabelField?: string | ((item) => string);
+  hint?: string;
+  asAutocomplete?: boolean;
+  asSimpleValues?: boolean;
+  convert?: (value) => any;
 }
 
 export interface RepeatChipOptions extends Options {
   useDialog?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: number;
+  restCall?: (http: HttpClient, query: string) => Observable<any[]>;
+  labelField?: string;
 }
 
 export interface SelectOptions extends Options {
@@ -47,6 +82,8 @@ export interface SelectOptions extends Options {
   externalLabel?: string;
   showSearch?: boolean;
   allowNoValue?: boolean;
+  change?: any;
+  hooks?: any;
 }
 
 export interface TableOptions extends Options {
@@ -68,6 +105,23 @@ export interface InputOptions extends Options {
   disabled?: boolean;
   contextHelpId?: string;
   validators?: any;
+  suffix?: any;
+  prefix?: any;
+  min?: number;
+  max?: number;
+  hintStart?: string | any;
+  updateOn?: "change" | "blur" | "submit";
+  keydown?: (field: FormlyFieldConfig, event) => void;
+  placeholder?: string;
+}
+
+export interface AutocompleteOptions extends Options {
+  fieldLabel?: string;
+  placeholder?: string;
+  highlightMatches?: boolean;
+  hideDeleteButton?: boolean;
+  options?: any[] | Observable<any[]>;
+  codelistId?: number;
 }
 
 export class FormFieldHelper {
@@ -82,11 +136,12 @@ export class FormFieldHelper {
   }
 
   addGroup(id: string, label: string, fields: any[], options?) {
+    const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,
-      id: id,
+      id: options?.id,
       className: options?.className,
-      fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
       wrappers: options?.wrappers ?? ["panel"],
       props: {
         externalLabel: label,
@@ -94,7 +149,10 @@ export class FormFieldHelper {
         required: options?.required,
       },
       fieldGroup: fields,
-      expressions: { hide: options?.hideExpression },
+      expressions: {
+        ...expressions,
+        hide: options?.hideExpression,
+      },
       validators: options?.validators,
     };
   }
@@ -116,7 +174,7 @@ export class FormFieldHelper {
    */
   addTextArea(id, label, elementIdPrefix, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
-    return {
+    return <FormlyFieldConfig>{
       key: id,
       type: "textarea",
       // className: id,
@@ -127,9 +185,9 @@ export class FormFieldHelper {
         externalLabel: label,
         label: options?.fieldLabel,
         autosize: false,
-        autosizeMinRows: 3,
+        rows: options?.rows ?? "3",
         attributes: {
-          style: "resize:vertical;min-height:54px",
+          style: "resize:vertical;",
         },
         appearance: "outline",
         required: options?.required,
@@ -147,6 +205,7 @@ export class FormFieldHelper {
     options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
+      className: "top-align-suffix flex-1",
       wrappers: ["form-field"],
       fieldLabel: label,
       ...options,
@@ -166,15 +225,27 @@ export class FormFieldHelper {
         allowedTypes: options?.allowedTypes,
         max: options?.max,
       },
-      validators: options?.validators,
+      validators: {
+        addressesPublished: {
+          expression: (ctrl) =>
+            ctrl.value
+              ? ctrl.value.every((row) => row.ref._state === "P")
+              : false,
+          message: "Alle Adressen müssen veröffentlicht sein",
+        },
+        ...options?.validators,
+      },
     };
   }
 
+  /**
+   * @deprecated use addRepeatList
+   */
   addRepeatChip(id, label, options?: RepeatChipOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      id: id,
+      id: options?.id,
       type: "repeatChip",
       wrappers: ["panel"],
       defaultValue: [],
@@ -185,22 +256,26 @@ export class FormFieldHelper {
         useDialog: options?.useDialog,
         options: options?.options,
         codelistId: options?.codelistId,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
       },
     };
   }
 
   addRepeatList(id, label, options?: RepeatListOptions) {
     const expressions = this.initExpressions(options?.expressions);
+    let placeholder = this.determinePlaceholder(options);
+
     return <FormlyFieldConfig>{
       key: id,
       type: "repeatList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: [],
+      defaultValue: options?.defaultValue ?? [],
       fieldGroupClassName: options?.fieldGroupClassName,
       props: {
         externalLabel: label,
-        placeholder: options?.placeholder ?? "Bitte wählen...",
+        placeholder: placeholder,
         fieldLabel: options?.fieldLabel,
         options: options?.options,
         codelistId: options?.codelistId,
@@ -208,9 +283,52 @@ export class FormFieldHelper {
         asSelect: options?.asSelect,
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
+        change: options?.change,
+        remove: options?.remove,
+        view: options?.view,
+        hint: options?.hint,
+        restCall: options?.restCall,
+        labelField: options?.labelField,
+        selectLabelField: options?.selectLabelField ?? options?.labelField,
+        asAutocomplete: options?.asAutocomplete ?? false,
+        asSimpleValues: options?.asSimpleValues,
+        convert: options?.convert,
       },
       expressions: expressions,
     };
+  }
+
+  addRepeatDetailList(
+    id,
+    label,
+    options?: RepeatDetailListOptions
+  ): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "repeatDetailList",
+      wrappers: options?.wrappers ?? ["panel"],
+      className: options?.className,
+      props: {
+        externalLabel: label,
+        required: options?.required,
+      },
+      fieldArray: {
+        fieldGroup: options?.fields,
+      },
+      expressions: expressions,
+      validators: options?.validators,
+    };
+  }
+
+  private determinePlaceholder(options: RepeatListOptions) {
+    let placeholder = options?.placeholder;
+    if (!placeholder && options?.asSelect) placeholder = "Bitte wählen...";
+    if (!placeholder && options?.codelistId)
+      placeholder = "Bitte wählen oder eingeben";
+    if (!placeholder) placeholder = "Bitte eingeben";
+    return placeholder;
   }
 
   addRepeatListInline(id, label, options: RepeatListOptions = {}) {
@@ -237,9 +355,11 @@ export class FormFieldHelper {
         menuOptions: options?.menuOptions,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        hasExtendedGap: options?.hasExtendedGap,
+        addButtonTitle: options?.addButtonTitle,
       },
       fieldArray: {
-        fieldGroupClassName: options?.fieldGroupClassName ?? "display-flex",
+        fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
         fieldGroup: options?.fields,
       },
       expressions: expressions,
@@ -247,7 +367,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutocomplete(id, label, options?) {
+  addAutocomplete(id, label, options?: AutocompleteOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -258,7 +378,7 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
-        placeholder: options?.placeholder ?? "Bitte wählen",
+        placeholder: options?.placeholder ?? "Bitte wählen oder eingeben",
         appearance: "outline",
         required: options?.required,
         highlightMatches: options?.highlightMatches,
@@ -271,7 +391,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutoCompleteInline(id, label, options = {}) {
+  addAutoCompleteInline(id, label, options: AutocompleteOptions = {}) {
     return this.addAutocomplete(id, null, {
       fieldLabel: label,
       wrappers: ["form-field"],
@@ -284,7 +404,7 @@ export class FormFieldHelper {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      id: id,
+      id: options?.id,
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
@@ -297,19 +417,29 @@ export class FormFieldHelper {
         appearance: "outline",
         disabled: options?.disabled,
         contextHelpId: options?.contextHelpId,
+        addonRight: options?.suffix,
+        addonLeft: options?.prefix,
+        buttonConfig: options?.buttonConfig,
+        min: options?.min,
+        max: options?.max,
+        hintStart: options?.hintStart,
+        keydown: options?.keydown,
+        placeholder: options?.placeholder,
+        hideInPreview: options?.hideInPreview ?? false,
       },
       modelOptions: {
-        updateOn: "blur",
+        updateOn: options?.updateOn ?? "blur",
       },
       expressions: expressions,
       validators: options?.validators,
+      hooks: options?.hooks,
     };
   }
 
   addInputInline(id, label, options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       ...options,
     });
   }
@@ -326,18 +456,21 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       props: {
-        placeholder: "Wählen...",
+        placeholder: "Bitte wählen...",
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
         required: options?.required,
         options: options?.options,
         showSearch: options?.showSearch,
-        allowNoValue: options?.allowNoValue,
+        allowNoValue: options?.allowNoValue ?? !options?.required,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
+        change: options?.change,
+        contextHelpId: options?.contextHelpId,
       },
       expressions: expressions,
+      hooks: options?.hooks,
     };
   }
 
@@ -370,6 +503,20 @@ export class FormFieldHelper {
     };
   }
 
+  addPreviewImage(id, label, options?): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "previewImage",
+      wrappers: options?.wrappers ?? ["panel"],
+      expressions: expressions,
+      props: {
+        required: options?.required,
+        externalLabel: label,
+      },
+    };
+  }
+
   addSpatial(id, label, options?) {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -377,6 +524,7 @@ export class FormFieldHelper {
       type: "leaflet",
       wrappers: [],
       expressions: expressions,
+      defaultValue: options?.defaultValue,
       props: {
         required: options?.required,
         mapOptions: {},
@@ -388,12 +536,12 @@ export class FormFieldHelper {
     };
   }
 
-  addDatepicker(id, label, options?) {
+  addDatepicker(id, label, options?: DatePickerOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "datepicker",
-      className: "flex-1",
+      className: options?.className ?? "ige-date-picker width-date-small",
       wrappers:
         options?.wrappers === undefined
           ? ["panel", "form-field"]
@@ -420,16 +568,22 @@ export class FormFieldHelper {
     });
   }
 
-  addDateRange(id, label, options?) {
+  addDateRange(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "date-range",
       className:
-        options?.className === undefined ? "flex-1" : options?.className,
+        options?.className === undefined
+          ? "ige-date-picker"
+          : options?.className,
       wrappers:
         options?.wrappers === undefined ? ["form-field"] : options?.wrappers,
-      defaultValue: null,
+      // defaultValue: null,
+      /*fieldGroup: [
+        { type: "input", key: "start" },
+        { type: "input", key: "end" },
+      ],*/
       props: {
         placeholder: "Zeitraum eingeben ...",
         externalLabel: label,
@@ -443,12 +597,6 @@ export class FormFieldHelper {
             !options?.required ||
             !(ctrl.value?.start === null && ctrl.value?.end === null),
         },
-        validStartEnd: {
-          expression: (ctrl) =>
-            (ctrl.value?.start === null && ctrl.value?.end === null) ||
-            (ctrl.value?.start && ctrl.value?.end),
-          message: "Das Start- und Enddatum muss gültig sein",
-        },
       },
     };
   }
@@ -459,14 +607,14 @@ export class FormFieldHelper {
       key: id,
       type: "checkbox",
       className: options?.className,
-      wrappers: options?.wrappers ?? ["panel", "form-field"],
+      wrappers: options?.wrappers ?? ["panel"],
       defaultValue: options?.defaultValue ?? false,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
         indeterminate: false,
-        required: options?.required,
         click: options?.click,
+        isSuffixUnsupported: true,
         hasInlineContextHelp: options?.hasInlineContextHelp,
       },
       expressions: expressions,
@@ -476,17 +624,17 @@ export class FormFieldHelper {
   addCheckboxInline(id, label, options: CheckboxOptions = {}) {
     return this.addCheckbox(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field", "inline-help"],
+      wrappers: ["inline-help"],
       ...options,
     });
   }
 
-  addRadioboxes(id, label, options?) {
+  addRadioboxes(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
       type: "radio",
-      wrappers: ["panel", "form-field", "inline-help"],
+      wrappers: ["panel", "inline-help"],
       className: "ige-radios",
       props: {
         label: options?.fieldLabel,
@@ -495,6 +643,7 @@ export class FormFieldHelper {
         valueProp: "id",
         options: options?.options,
         required: options?.required,
+        click: options?.click,
       },
       expressions: expressions,
     };
@@ -509,10 +658,11 @@ export class FormFieldHelper {
     messageNoReferences?: string,
     referencesHint?: string,
     options?
-  ) {
+  ): FormlyFieldConfig {
     return {
       type: "referencedDocuments",
       wrappers: ["panel"],
+      className: options?.className,
       props: {
         externalLabel: label,
         referenceField: referenceField,

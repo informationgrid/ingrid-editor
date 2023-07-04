@@ -9,7 +9,12 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -22,10 +27,15 @@ import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { StickyHeaderInfo } from "../../form-info/form-info.component";
-import { filter, map, tap } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { combineLatest, merge, Observable, Subscription } from "rxjs";
+import {
+  combineLatest,
+  fromEvent,
+  merge,
+  Observable,
+  Subscription,
+} from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
@@ -37,6 +47,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -44,19 +55,22 @@ import { ConfigService } from "../../../services/config/config.service";
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
   // data and addresses need their own configured service
-  providers: [FormPluginsService],
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
+  @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
 
   sidebarWidth: number;
 
   fields: FormlyFieldConfig[] = [];
 
   formOptions: FormlyFormOptions = {
+    showError: (field) => {
+      return this.showValidationErrors && field.formControl?.invalid;
+    },
     formState: {
       disabled: true,
       updateModel: () => {
@@ -94,6 +108,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
   isStickyHeader = false;
+  numberOfErrors = 0;
+  private errorCounterSubscription: Subscription;
 
   constructor(
     private formularService: FormularService,
@@ -108,6 +124,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
+    private profileService: ProfileService,
     private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
@@ -167,11 +184,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
       .subscribe((doPublish) => {
+        this.numberOfErrors = 0;
         if (doPublish) {
           this.showValidationErrors = true;
           this.form.markAllAsTouched();
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         } else {
           this.showValidationErrors = false;
+          // @ts-ignore
+          this.form._updateTreeValidity({ emitEvent: true });
         }
       });
 
@@ -218,6 +240,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // noinspection JSUnusedGlobalSymbols
+  scrollHeaderOffsetLeft: number;
+
   ngAfterViewInit(): any {
     // show blocker div to prevent user from modifying data or calling functions
     // during save
@@ -233,6 +257,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
       .subscribe((finished) => (this.showBlocker = !finished));
+
+    this.initScrollBehavior();
   }
 
   @HostListener("window: keydown", ["$event"])
@@ -240,11 +266,42 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
   }
 
+  private initScrollBehavior() {
+    const element = this.scrollForm.nativeElement;
+    fromEvent(element, "scroll")
+      .pipe(
+        untilDestroyed(this),
+        // debounceTime(10), // do not handle all events
+        filter((_) => this.formInfoRef !== undefined),
+        map((): boolean => this.determineToggleState(element.scrollTop)),
+        tap((show) => this.toggleStickyHeader(show)),
+        debounceTime(300), // update store less frequently
+        tap(() =>
+          this.treeService.updateScrollPositionInStore(
+            this.address,
+            element.scrollTop
+          )
+        )
+      )
+      .subscribe();
+  }
+
+  private determineToggleState(top) {
+    // when we scroll more than the non-sticky area then it should become sticky
+    return top > this.formInfoRef.nativeElement.clientHeight;
+  }
+
+  private toggleStickyHeader(show: boolean) {
+    this.isStickyHeader = show;
+  }
+
   /**
    * Load a document and prepare the form for the data.
    * @param {string} id is the ID of document to be loaded
    */
   loadDocument(id: string) {
+    this.showValidationErrors = false;
+    this.numberOfErrors = 0;
     let previousDocUuid = this.form.value._uuid;
 
     if (id === undefined) {
@@ -256,8 +313,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.messageService.clearMessages();
 
     this.updateScrollPosition();
-
-    this.showValidationErrors = false;
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
@@ -285,10 +340,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc.hasWritePermission || doc._pendingDate != null;
+    this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
   }
 
-  private updateBreadcrumb(id: string) {
+  private updateBreadcrumb(id: number) {
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
@@ -345,11 +400,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
+
+        // make sure to reset the model before detecting changes, so that the old
+        // data is not included in the new form
+        // @ts-ignore
+        this.model = {};
+        this.formInfoModel = null;
+
         // do change detection to update formly component with new fields and form
         this.cdr.detectChanges();
       }
 
       this.formOptions.resetModel(data);
+      this.model = data;
       this.prepareForm(data.hasWritePermission && !this.readonly);
 
       this.formInfoModel = { ...this.model };
@@ -391,21 +454,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.formularService.getFields(profile);
   }
 
-  private markFavorite($event: Event) {
-    // TODO: mark favorite
-    $event.stopImmediatePropagation();
-    console.log("TODO: Mark document as favorite");
-  }
-
   rememberSizebarWidth(info) {
     this.formularService.updateSidebarWidth(info.sizes[0]);
-  }
-
-  updateContentPadding(stickyHeaderInfo: StickyHeaderInfo) {
-    this.paddingWithHeader = stickyHeaderInfo.show
-      ? stickyHeaderInfo.headerHeight + 20 + "px"
-      : 20 + "px";
-    this.isStickyHeader = stickyHeaderInfo.show;
   }
 
   private prepareForm(writePermission: boolean) {
@@ -436,12 +486,47 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private createNewForm() {
+    this.errorCounterSubscription?.unsubscribe();
+
     // create new form group since it can become corrupted, probably because of page caching
     // load address -> load doc and save -> open address -> load doc and save modified again -> old document state is written
     this.form = new UntypedFormGroup({});
 
+    this.errorCounterSubscription = this.form.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(500),
+        filter(() => this.showValidationErrors)
+      )
+      .subscribe(() => {
+        const invalidFields = this.getInvalidControlNames(this.form);
+        console.warn("INVALID FIELDS: ", invalidFields);
+        this.numberOfErrors = invalidFields.length;
+      });
+
     // update form here instead of onInit, because of caching problem, where no onInit method is called
     // after revisiting the page
     this.formStateService.updateForm(this.form);
+  }
+
+  private getInvalidControlNames(input: FormGroup | FormArray): string[] {
+    let invalidControlNames: string[] = [];
+    Object.keys(input.controls).forEach((controlName) => {
+      const control = input.get(controlName)!;
+      if (control.invalid && control instanceof FormControl) {
+        invalidControlNames.push(controlName);
+      } else if (
+        control.invalid &&
+        (control instanceof FormGroup || control instanceof FormArray)
+      ) {
+        const invalidControls = this.getInvalidControlNames(control);
+        if (invalidControls.length === 0) {
+          invalidControlNames.push(controlName);
+        } else {
+          invalidControlNames.push(...this.getInvalidControlNames(control));
+        }
+      }
+    });
+    return invalidControlNames;
   }
 }

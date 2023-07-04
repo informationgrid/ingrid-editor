@@ -20,3 +20,6 @@ title: Verfügbarkeit der Orientierungsparameter
 
 Angabe, ob Orientierungsparameter verfügbar sind.
 
+# ISO Abbildung
+
+Domain: 172 (gmd:orientationParameter Availability)

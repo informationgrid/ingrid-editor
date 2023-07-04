@@ -1,0 +1,109 @@
+<Capabilities
+        xmlns="http://www.opengeospatial.net/wcts"
+        xmlns:ows="http://www.opengeospatial.net/ows"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.opengeospatial.net/wcts ../Schemas/wctsGetCapabilities.xsd http://www.opengeospatial.net/ows ../Schemas/owsAdditions.xsd"
+        version="0.0.0">
+    <!-- Primary editor: Arliss Whiteside. Last updated 2004/12/20-->
+    <ows:ServiceIdentification>
+        <ows:Title>Web Coordinate Transformation Service</ows:Title>
+        <ows:Abstract>Network service for transforming coordinates from one CRS to another</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword>Coordinate Reference System</ows:Keyword>
+            <ows:Keyword>transformation</ows:Keyword>
+            <ows:Keyword>conversion</ows:Keyword>
+            <ows:Keyword>coordinate operation</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType>OGC WCTS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+        <ows:Fees>NONE</ows:Fees>
+        <ows:AccessConstraints>NONE</ows:AccessConstraints>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>lat/lon</ows:ProviderName>
+        <ows:ProviderSite xlink:href="TBD"/>
+        <ows:ServiceContact>
+            <ows:IndividualName>Andreas Poth</ows:IndividualName>
+            <ows:PositionName>Senior Software Engineer</ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>++49 228 732838</ows:Voice>
+                    <ows:Facsimile>++49 228 732153</ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint>Meckenheimer Allee 176</ows:DeliveryPoint>
+                    <ows:City>Bonn</ows:City>
+                    <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+                    <ows:PostalCode>53115</ows:PostalCode>
+                    <ows:Country>Germany</ows:Country>
+                    <ows:ElectronicMailAddress>poth@lat-lon.de</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="www.lat-lon.de/transform"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="Transform">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="www.lat-lon.de/transform"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="IsTransformable">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="www.lat-lon.de/transform"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetResourceByID">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="www.lat-lon.de/transform"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <Contents userDefinedCRSs="true">
+        <Transformation>urn:ogc:def:coordinateOperation:WWWW</Transformation>
+        <Transformation>urn:ogc:def:coordinateOperation:XXXX</Transformation>
+        <Transformation>urn:ogc:def:coordinateOperation:YYYY</Transformation>
+        <Transformation>urn:ogc:def:coordinateOperation:ZZZZ</Transformation>
+        <Method>urn:ogc:def:method:9801</Method>
+        <Method>urn:ogc:def:method:9802</Method>
+        <Method>urn:ogc:def:method:9803</Method>
+        <SourceCRS>urn:ogc:def:crs:4326</SourceCRS>
+        <SourceCRS>urn:ogc:def:crs:23031</SourceCRS>
+        <SourceCRS>urn:ogc:def:crs:23032</SourceCRS>
+        <SourceCRS>urn:ogc:def:crs:31467</SourceCRS>
+        <TargetCRS>urn:ogc:def:crs:4326</TargetCRS>
+        <TargetCRS>urn:ogc:def:crs:EPSG:6.3:23031</TargetCRS>
+        <TargetCRS>urn:ogc:def:crs:23032</TargetCRS>
+        <TargetCRS>urn:ogc:def:crs:31467</TargetCRS>
+        <CoverageAbilities>
+            <CoverageType>GridCoverage</CoverageType>
+            <CoverageFormat>image/pix</CoverageFormat>
+            <CoverageFormat>image/HDF-EOS</CoverageFormat>
+            <CoverageFormat>image/DTED</CoverageFormat>
+            <CoverageFormat>image/GeoTIFF</CoverageFormat>
+            <CoverageFormat>image/NITF</CoverageFormat>
+            <ows:InterpolationMethod>nearest neighbor</ows:InterpolationMethod>
+            <ows:InterpolationMethod>bilinear</ows:InterpolationMethod>
+            <ows:InterpolationMethod>bicubic</ows:InterpolationMethod>
+        </CoverageAbilities>
+        <FeatureAbilities remoteProperties="false">
+            <GeometryType>Point</GeometryType>
+            <GeometryType>LineString</GeometryType>
+            <GeometryType>Polygon</GeometryType>
+            <FeatureFormat>text/xml; gmlVersion=3.1.0</FeatureFormat>
+        </FeatureAbilities>
+    </Contents>
+</Capabilities>

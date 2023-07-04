@@ -9,11 +9,8 @@ import {
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { UntypedFormGroup } from "@angular/forms";
-import { ProfileService } from "../../../services/profile.service";
 import { IgeDocument } from "../../../models/ige-document";
-import { DocumentUtils } from "../../../services/document.utils";
-import { ConfigService } from "../../../services/config/config.service";
-import { DocEventsService } from "../../../services/event/doc-events.service";
+import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
 
 @Component({
   selector: "ige-header-title-row",
@@ -28,11 +25,9 @@ export class HeaderTitleRowComponent implements OnInit {
 
   @Input() set model(value: IgeDocument) {
     this._model = value;
-    this.stateClass = this.getStateClass(value);
-    this.icon = this.getIcon(value);
+    this.updateHeaderMenuOptions();
   }
 
-  @Input() sections: string[];
   @Input() disableEdit: boolean;
   @Input() address: boolean;
 
@@ -41,36 +36,19 @@ export class HeaderTitleRowComponent implements OnInit {
 
   _form: UntypedFormGroup;
   _model: IgeDocument;
-  stateClass: string;
-  icon: string;
   showTitleInput = false;
   showMore = false;
   showMoreActions = false;
 
-  // TODO: fill more actions by a service
-  moreActions = [
-    {
-      title: "Adresse ersetzen",
-      name: "replace-address",
-      action: () =>
-        this.docEventsService.sendEvent({
-          type: "REPLACE_ADDRESS",
-          data: { uuid: this._model._uuid },
-        }),
-    },
-  ];
+  moreActions: FormularMenuItem[];
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private profileService: ProfileService,
-    private configService: ConfigService,
-    private docEventsService: DocEventsService
+    private formMenuService: FormMenuService
   ) {}
 
   ngOnInit() {
-    const role = this.configService.$userInfo.value.role;
-    const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
-    this.showMoreActions = this.address && isPrivileged;
+    this.updateHeaderMenuOptions();
   }
 
   editTitle() {
@@ -84,11 +62,10 @@ export class HeaderTitleRowComponent implements OnInit {
     this.showMore = !this.showMore;
   }
 
-  private getIcon(doc: IgeDocument) {
-    return this.profileService.getDocumentIcon(doc);
-  }
-
-  private getStateClass(model) {
-    return DocumentUtils.getStateClass(model._state, model._type);
+  private updateHeaderMenuOptions() {
+    this.moreActions = this.formMenuService.getMenuItems(
+      this.address ? "address" : "dataset"
+    );
+    this.showMoreActions = this.moreActions.length > 0;
   }
 }

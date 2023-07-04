@@ -155,9 +155,10 @@ mat-tree-node {
       line-clamp: 4;
       -webkit-box-orient: vertical;
     }
-
     mat-checkbox {
       padding-right: 10px;
+      height: 0;
+      margin-top: -10px;
     }
 
     .mat-icon {
@@ -167,10 +168,15 @@ mat-tree-node {
       line-height: 0;
     }
 
-    .mat-spinner {
+    .mat-mdc-progress-spinner {
       margin-left: 12px;
       margin-top: 3px;
     }
+  }
+
+  &.folder:not(.rootNode) mat-checkbox,
+  mat-checkbox.docNode {
+    margin-top: -40px !important;
   }
 
   .quick-child-selection {
@@ -270,4 +276,15 @@ mat-tree-node {
 // TODO: use class disabled instead?
 .readonly {
   color: $ige-comment-color;
+}
+ige-document-icon {
+  margin-right: 6px;
+}
+
+.folder.intranet .label {
+  color: red;
+}
+
+.folder.amtsintern .label {
+  color: blue;
 }

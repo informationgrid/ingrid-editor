@@ -5,6 +5,7 @@ import { BackendOption } from "../../app/store/codelist/codelist.model";
 import {
   EmailValidator,
   UrlValidator,
+  UrlValidatorMessage,
 } from "../../app/formly/input.validators";
 
 export interface AddressOptions {
@@ -12,6 +13,7 @@ export interface AddressOptions {
   hideCountryAndAdministrativeArea: boolean;
   hideAdministrativeArea: boolean;
   inheritAddress: boolean;
+  positionNameAndHoursOfService: boolean;
   requiredField: any;
 }
 
@@ -26,6 +28,7 @@ export abstract class AddressShared extends BaseDoctype {
           wrappers: null,
           className: "flex-1",
           required: true,
+          showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
               items.filter((item) => item.value !== "5" && item.value !== "6")
@@ -50,12 +53,25 @@ export abstract class AddressShared extends BaseDoctype {
                 const type = ctrl.parent.value.type;
                 return type?.key === "4" ? UrlValidator(ctrl) === null : true;
               },
-              message: "Die URL ist ungültig",
+              message: UrlValidatorMessage,
             },
           },
         }),
       ],
     });
+  }
+
+  addPositionNameAndHoursOfService(): FormlyFieldConfig[] {
+    return [
+      this.addTextArea(
+        "positionName",
+        "Position/nachgeordnete Abteilung",
+        this.id
+      ),
+      this.addInput("hoursOfService", "Servicezeiten", {
+        wrappers: ["panel", "form-field"],
+      }),
+    ];
   }
 
   addAddressSection(options: Partial<AddressOptions> = {}): FormlyFieldConfig {
@@ -83,45 +99,45 @@ export abstract class AddressShared extends BaseDoctype {
             model.inheritAddress,
           fieldGroup: [
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
                   className: "width-100",
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
               ],
             },
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
                   className: "flex-3",
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
               ],
             },
             {
-              fieldGroupClassName: "display-flex",
+              fieldGroupClassName: "flex-row",
               fieldGroup: [
                 this.addInput("zip-po-box", null, {
                   fieldLabel: "PLZ (Postfach)",
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
                 this.addInput("po-box", null, {
                   fieldLabel: "Postfach",
                   className: "flex-3",
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }),
               ],
             },
@@ -159,7 +175,7 @@ export abstract class AddressShared extends BaseDoctype {
     return options.hideAdministrativeArea
       ? country
       : {
-          fieldGroupClassName: "display-flex",
+          fieldGroupClassName: "flex-row",
           fieldGroup: [administrativeArea, country],
         };
   }

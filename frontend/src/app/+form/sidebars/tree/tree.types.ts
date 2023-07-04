@@ -3,7 +3,7 @@ import { NodePermission } from "../../../models/path-response";
 
 export class ShortTreeNode {
   constructor(
-    public id: string,
+    public id: number,
     public title: string,
     public permission: NodePermission = {
       canRead: false,
@@ -23,5 +23,5 @@ export class ShortTreeNode {
 }
 
 export class TreeAction {
-  constructor(public type: TreeActionType, public id: string) {}
+  constructor(public type: TreeActionType, public id: number) {}
 }

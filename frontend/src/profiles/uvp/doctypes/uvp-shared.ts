@@ -1,27 +1,16 @@
-import { ConfigService } from "../../../app/services/config/config.service";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { map } from "rxjs/operators";
+import { inject } from "@angular/core";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: number;
 
-  constructor(
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    private configService: ConfigService,
-    private uploadService: UploadService,
-    private behaviourService?: BehaviourService
-  ) {
-    super(codelistService, codelistQuery);
-  }
+  private uploadService = inject(UploadService);
+  private behaviourService = inject(BehaviourService);
 
   isInitialized(): Promise<void> {
     return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
@@ -100,7 +89,7 @@ export class UvpShared extends BaseDoctype {
           { key: "type" },
           this.addDateRange("disclosureDate", "Zeitraum der Auslegung", {
             required: true,
-            wrappers: ["panel", "form-field"],
+            wrappers: ["panel"],
           }),
           this.addTable("announcementDocs", "Auslegungsinformationen", {
             required: true,
@@ -138,6 +127,7 @@ export class UvpShared extends BaseDoctype {
   addPublishConditionCheckbox(id: string) {
     return this.addCheckbox(id + "PublishDuringDisclosure", null, {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
+      className: "space-bottom-field negative-space-top-field",
       expressions: {
         hide: `!model || !model["${id}"] || model["${id}"].length === 0`,
       },
@@ -156,7 +146,7 @@ export class UvpShared extends BaseDoctype {
           { key: "type" },
           this.addDateRange("publicHearingDate", "Zeitraum der Erörterung", {
             required: true,
-            wrappers: ["panel", "form-field"],
+            wrappers: ["panel"],
           }),
           this.addTable(
             "considerationDocs",

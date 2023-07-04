@@ -1,25 +1,18 @@
-<div fxLayout="column" class="free-spatial-wrapper">
-    <div *ngIf="!hideTitle" class="place-title small-bottom">
-        Raumbezug herstellen
-    </div>
-
+<div class="free-spatial-wrapper flex-col">
     <div class="dlg-field-label">Ort</div>
-    <mat-form-field appearance="outline">
-        <mat-icon matPrefix class="passive">search</mat-icon>
-        <input
-            matInput
-            igeFocus
-            data-cy="spatial-dialog-free"
-            placeholder="Suchen"
-            [formControl]="searchInput"
-        />
-        <mat-hint *ngIf="showWelcome">
-            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
-            zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
-            werden die zugehörigen Breiten-/Längenkoordinaten automatisch
-            angezeigt.
-        </mat-hint>
-    </mat-form-field>
+    <ige-search-input
+        placeholder="Suchen"
+        [query]="searchInput"
+        [searchSub]="searchSubscribe"
+        [withWhiteBorder]="false"
+        minWidth="100%"
+    ></ige-search-input>
+
+    <div *ngIf="showWelcome" class="comment">
+        Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
+        Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
+        zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
+    </div>
 
     <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
 
@@ -33,17 +26,22 @@
                         [title]="entry.display_name"
                     >
                         <mat-radio-button
-                            matListIcon
+                            matListItemIcon
                             [value]="entry"
                             [checked]="spatialSelection === entry"
                         ></mat-radio-button>
-                        <p matLine>
+                        <div matListItemLine>
                             {{ entry.display_name }}
-                        </p>
+                        </div>
                     </mat-list-item>
                     <mat-divider></mat-divider>
                 </ng-container>
             </mat-list>
         </div>
     </div>
+    <mat-form-field appearance="outline" class="ars-input">
+        <mat-label>Amtlicher Regionalschlüssel (ARS)</mat-label>
+        <input matInput [formControl]="arsControl" data-cy="free-spatial-ars" />
+        <mat-error>Die ID ist bereits vergeben</mat-error>
+    </mat-form-field>
 </div>

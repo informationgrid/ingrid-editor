@@ -6,13 +6,10 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatButtonModule } from "@angular/material/button";
-import { FormPluginsService } from "./form-plugins.service";
 import { CreateDocumentPlugin } from "../dialogs/create/create-doc.plugin";
 import { SavePlugin } from "../dialogs/save/save.plugin";
-import { FlexLayoutModule } from "@angular/flex-layout";
 import { CreateFolderPlugin } from "../dialogs/create/create-folder.plugin";
 import { DeleteDocsPlugin } from "../dialogs/delete-docs/delete-docs.plugin";
-import { IsoViewPlugin } from "../dialogs/isoView/iso-view.plugin";
 import { CopyCutPastePlugin } from "../dialogs/copy-cut-paste/copy-cut-paste.plugin";
 import { PublishPlugin } from "../dialogs/save/publish.plugin";
 import { UndoPlugin } from "../dialogs/undo/undo.plugin";
@@ -37,8 +34,6 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
 import { FolderDashboardComponent } from "./folder/folder-dashboard.component";
 import { AngularSplitModule } from "angular-split";
 import { FormComponent } from "../form/form.component";
-import { FormToolbarService } from "./toolbar/form-toolbar.service";
-import { formPluginProvider } from "../../form-plugin.provider";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { SharedPipesModule } from "../../directives/shared-pipes.module";
@@ -50,6 +45,11 @@ import { PublishPendingComponent } from "../form-info/publish-pending/publish-pe
 import { CreateNodeModule } from "../dialogs/create/create-node.module";
 import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
 import { TranslocoModule } from "@ngneat/transloco";
+import { ActionButtonModule } from "../../shared/action-button/action-button.module";
+import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
+import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
+import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
+import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.component";
 
 @NgModule({
   declarations: [
@@ -68,6 +68,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     FolderDashboardComponent,
     DelayedPublishDialogComponent,
     PublishPendingComponent,
+    QuickNavbarComponent,
   ],
   imports: [
     CommonModule,
@@ -80,7 +81,6 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    FlexLayoutModule,
     IgeFormlyModule,
     MatTabsModule,
     SharedModule,
@@ -92,28 +92,25 @@ import { TranslocoModule } from "@ngneat/transloco";
     CreateNodeModule,
     BreadcrumbModule,
     TranslocoModule,
+    ActionButtonModule,
+    DocumentIconModule,
+    FormLabelComponent,
+    ErrorPanelComponent,
   ],
   providers: [
-    FormToolbarService,
-    FormPluginsService,
     CreateDocumentPlugin,
     SavePlugin,
     CreateFolderPlugin,
     DeleteDocsPlugin,
-    IsoViewPlugin,
     CopyCutPastePlugin,
     PublishPlugin,
     UndoPlugin,
     PrintViewPlugin,
     FormularService,
     HistoryPlugin,
-
-    // FORM-PLUGINS
-    formPluginProvider,
   ],
   exports: [
     FormToolbarComponent,
-    FlexLayoutModule,
     IgeFormlyModule,
     FormInfoComponent,
     DynamicFormComponent,

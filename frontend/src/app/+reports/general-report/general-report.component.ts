@@ -6,7 +6,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
 import { Facets, ResearchService } from "../../+research/research.service";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
-import { debounceTime, tap } from "rxjs/operators";
+import { debounceTime, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
 
@@ -53,7 +53,7 @@ export class GeneralReportComponent implements OnInit {
   async ngOnInit() {
     await this.initFacets();
     this.form.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(300))
+      .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe(() => this.updateFilter());
   }
 

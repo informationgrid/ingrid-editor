@@ -2,9 +2,6 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImportTypeInfo
-import de.ingrid.igeserver.model.ImportAnalyzeInfo
-import de.ingrid.igeserver.model.ImportAnalyzeResponse
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,37 +24,18 @@ class ImportApiController @Autowired constructor(
         return ResponseEntity.ok(importer)
     }
 
-
-    override fun importDataset(
-        principal: Principal,
-        file: MultipartFile,
-        importerId: String,
-        parentDoc: String,
-        parentAddress: String,
-        options: String
-    ): ResponseEntity<ImportAnalyzeInfo> {
-
-        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        val optionsObj = ImportOptions(parentDoc, parentAddress, options)
-        val (result, importerName) = importService.importFile(principal, dbId, importerId, file, optionsObj)
-        val info = createInfo(importerName, result)
-        return ResponseEntity.ok(info)
+    override fun analyzeFile(principal: Principal, file: MultipartFile): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+//        val response = importService.analyzeFile(catalogId, file)
+        return ResponseEntity.ok().build()
     }
 
-    override fun analyzeFile(principal: Principal, file: MultipartFile): ResponseEntity<ImportAnalyzeResponse> {
-        val response = importService.analyzeFile(file)
-        return ResponseEntity.ok(response)
-    }
-
-    private fun createInfo(importerName: String, result: Document): ImportAnalyzeInfo {
-        val info = ImportAnalyzeInfo()
-        info.importType = importerName
-        info.numDocuments = 1
-        info.result = result
-
-        return info
-    }
 }
 
-data class ImportOptions(val parentDocument: String, val parentAddress: String, val options: String)
+data class ImportOptions(
+    val parentDocument: Int? = null,
+    val parentAddress: Int? = null, 
+    val publish: Boolean = false, 
+    val overwriteAddresses: Boolean = false, 
+    // so far we always want to overwrite datasets
+    val overwriteDatasets: Boolean = true)

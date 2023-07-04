@@ -12,6 +12,7 @@ export interface ConfirmDialogData {
   buttons?: ConfirmDialogButton[];
   preformatted?: boolean;
   cookieId?: string;
+  hideCancelButton?: boolean;
 }
 
 export interface ConfirmDialogButton {
@@ -26,7 +27,7 @@ export interface ConfirmDialogButton {
   templateUrl: "confirm-dialog.component.html",
   styles: [
     `
-      .mat-dialog-content p {
+      .mat-mdc-dialog-content p {
         white-space: normal;
       }
     `,

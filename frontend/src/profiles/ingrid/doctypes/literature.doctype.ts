@@ -1,12 +1,6 @@
-import { CodelistService } from "../../../app/services/codelist/codelist.service";
-import { DocumentService } from "../../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IngridShared } from "./ingrid-shared";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "../../../app/services/cookie.service";
 
 @Injectable({
   providedIn: "root",
@@ -43,11 +37,11 @@ export class LiteratureDoctype extends IngridShared {
                 [
                   this.addInputInline("publishedIn", "Erschienen in", {
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                   this.addInputInline("placeOfPublication", "Erscheinungsort", {
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                 ],
                 { wrappers: [] }
@@ -58,15 +52,15 @@ export class LiteratureDoctype extends IngridShared {
                 [
                   this.addInputInline("volume", "Band/Heft", {
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                   this.addInputInline("pages", "Seiten", {
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                   this.addInputInline("publicationDate", "Erscheinungsjahr", {
                     hasInlineContextHelp: true,
-                    wrappers: ["form-field", "inline-help"],
+                    wrappers: ["inline-help", "form-field"],
                   }),
                 ],
                 { wrappers: [] }
@@ -106,12 +100,12 @@ export class LiteratureDoctype extends IngridShared {
                 this.id,
                 {
                   hasInlineContextHelp: true,
-                  wrappers: ["form-field", "inline-help"],
+                  wrappers: ["inline-help", "form-field"],
                 }
               ),
               this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
                 hasInlineContextHelp: true,
-                wrappers: ["form-field", "inline-help"],
+                wrappers: ["inline-help", "form-field"],
               }),
             ],
             { className: "optional" }
@@ -125,15 +119,4 @@ export class LiteratureDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
-
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-    uploadService: UploadService,
-    dialog: MatDialog,
-    cookieService: CookieService
-  ) {
-    super(codelistService, codelistQuery, uploadService, dialog, cookieService);
-  }
 }

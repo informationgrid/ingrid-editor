@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { MatDialog } from "@angular/material/dialog";
@@ -12,6 +12,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { FormPluginsService } from "../../form-shared/form-plugins.service";
 
 @UntilDestroy()
 @Injectable()
@@ -39,6 +40,7 @@ export class CreateFolderPlugin extends Plugin {
   ) {
     super();
     this.isActive = true;
+    inject(FormPluginsService).registerPlugin(this);
   }
 
   register() {

@@ -5,6 +5,7 @@ import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.GrantedAuthoritySid
@@ -24,14 +25,15 @@ data class PermissionInfo(
 @Service
 class IgeAclService @Autowired constructor(
     val aclService: AclService,
-    val docWrapperRepo: DocumentWrapperRepository
+    val docWrapperRepo: DocumentWrapperRepository,
+    val authUtils: AuthUtils
 ) {
 
     private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
 
 
     fun hasRightsForGroup(authentication: Authentication, group: Group): Boolean {
-        if (hasAdminRole(authentication)) {
+        if (authUtils.isAdmin(authentication)) {
             return true
         }
         val permissionLevels = listOf("writeTree", "readTree", "writeTreeExceptParent")
@@ -68,8 +70,8 @@ class IgeAclService @Autowired constructor(
         val hasRootWrite =
             checkForRootPermissions(sids, listOf(BasePermission.WRITE))
         val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
-
-        if (hasAdminRole(authentication)) {
+        
+        if (authUtils.isAdmin(authentication)) {
             return PermissionInfo(true, true, false)
         } else if (id == null) {
             return PermissionInfo(hasRootRead || hasRootWrite, hasRootWrite, false)
@@ -93,6 +95,7 @@ class IgeAclService @Autowired constructor(
 
     fun getDatasetIdsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
         return groups
+            .asSequence()
             .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
             .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
             .flatten().toSet().toList()
@@ -100,6 +103,7 @@ class IgeAclService @Autowired constructor(
 
     fun getAllDatasetIdsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
         return groups
+            .asSequence()
             .map { group ->
                 mutableListOf<JsonNode>().apply {
                     addAll(group.permissions?.addresses ?: emptyList())
@@ -160,14 +164,9 @@ class IgeAclService @Autowired constructor(
         (aclService as JdbcMutableAclService).updateAcl(acl)
     }
 
-    fun removeAclForDocument(uuid: String) {
-        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+    fun removeAclForDocument(id: Int) {
+        val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
-    }
-
-    private fun hasAdminRole(authentication: Authentication): Boolean {
-        val roles = authentication.authorities.map { it.authority }
-        return roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
 
 }

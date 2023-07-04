@@ -22,11 +22,11 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { PasteDialogComponent } from "./dialogs/copy-cut-paste/paste-dialog.component";
-import { IsoViewComponent } from "./dialogs/isoView/iso-view.component";
 import { FormSharedModule } from "./form-shared/form-shared.module";
 import { VersionConflictDialogComponent } from "./dialogs/version-conflict-dialog/version-conflict-dialog.component";
 import { CreateNodeModule } from "./dialogs/create/create-node.module";
 import { AngularSplitModule } from "angular-split";
+import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 
 @NgModule({
   imports: [
@@ -51,10 +51,10 @@ import { AngularSplitModule } from "angular-split";
     FormSharedModule,
     CreateNodeModule,
     AngularSplitModule,
+    DialogTemplateModule,
   ],
   declarations: [
     PasteDialogComponent,
-    IsoViewComponent,
     ScrollToDirective,
     VersionConflictDialogComponent,
   ],

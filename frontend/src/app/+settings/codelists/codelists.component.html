@@ -4,19 +4,17 @@
         werden mit dem IGE NG synchronisiert.
     </div>
 
-    <div main-header fxFlex fxLayoutAlign="center center">
-        <div>
-            Letzte Synchronisation erfolgte am ...
-            <button
-                mat-icon-button
-                class="dark menu-button"
-                [class.expanded]="showMore"
-                (click)="showMore = !showMore"
-            >
-                <mat-icon class="animated">keyboard_arrow_down</mat-icon>
-            </button>
-        </div>
-        <div fxFlex></div>
+    <div main-header class="header">
+        <div>Letzte Synchronisation erfolgte am ...</div>
+        <button
+            mat-icon-button
+            class="dark menu-button"
+            [class.expanded]="showMore"
+            (click)="showMore = !showMore"
+        >
+            <mat-icon class="animated">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="flex-1"></div>
         <div>
             <button
                 mat-flat-button
@@ -31,8 +29,8 @@
 
     <div *ngIf="showMore" status class="status">Letzte Information ...</div>
 
-    <div main-content fxFlex>
-        <div fxLayoutAlign="center">
+    <div main-content>
+        <div class="flex-row justify-content-center align-items-stretch">
             <ige-filter-select
                 [options]="codelists"
                 class="white-bg"
@@ -56,7 +54,7 @@
 
         <div
             *ngIf="!selectedCodelist"
-            fxLayoutAlign="center"
+            class="flex-row justify-content-center align-items-stretch"
             style="padding-top: 60px"
         >
             <img

@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { filter, map, switchMap, take, tap } from "rxjs/operators";
-import { ActivatedRouteSnapshot } from "@angular/router";
 
 export enum IgeEvent {
   DELETE = "DELETE",
+  DELETE_USER = "DELETE_USER",
 }
 
 export enum IgeEventResultType {
@@ -17,6 +17,10 @@ export interface EventData {
   data: any;
 }
 
+export type EventResponder = {
+  data: any;
+  eventResponseHandler: EventResponseHandler;
+};
 export type EventResponseHandler = (data: EventData) => void;
 
 /**
@@ -53,10 +57,19 @@ export class EventService {
   /**
    * Send a defined event and return a new observable which waits for the results.
    * @param type defines the Event Type
+   * @param data used to send additional data to the subscribers
    */
-  sendEvent(type: IgeEvent): Observable<EventData[]> {
-    this.event$[type].next();
+  sendEvent(type: IgeEvent, data: any = null): Observable<EventData[]> {
+    this.event$[type].next(data);
     return this.receiveEventResult(type);
+  }
+
+  /**
+   * Check if the event has observers
+   * @param type
+   */
+  eventIsObserved(type: IgeEvent): boolean {
+    return this.event$[type].observed;
   }
 
   /**
@@ -64,9 +77,13 @@ export class EventService {
    * all responses were tagged successful.
    *
    * @param type defines the Event Type
+   * @param data used to send additional data to the subscribers
    */
-  sendEventAndContinueOnSuccess(type: IgeEvent): Observable<EventData[]> {
-    return this.sendEvent(type).pipe(
+  sendEventAndContinueOnSuccess(
+    type: IgeEvent,
+    data: any = null
+  ): Observable<EventData[]> {
+    return this.sendEvent(type, data).pipe(
       filter((responses) => this.allResponsesSuccessful(type, responses))
     );
   }
@@ -77,10 +94,16 @@ export class EventService {
    *
    * @param type defines the Event Type
    */
-  respondToEvent(type: IgeEvent): Observable<EventResponseHandler> {
-    return this.event$[type]
-      .asObservable()
-      .pipe(map(() => (data) => this.updateEventData(type, data)));
+  respondToEvent(type: IgeEvent): Observable<EventResponder> {
+    return this.event$[type].asObservable().pipe(
+      map((data) => {
+        return {
+          data,
+          eventResponseHandler: (eventData) =>
+            this.updateEventData(type, eventData),
+        };
+      })
+    );
   }
 
   private allResponsesSuccessful(type: IgeEvent, responses: EventData[]) {

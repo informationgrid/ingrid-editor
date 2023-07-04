@@ -1,55 +1,57 @@
 import { Component, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import {
   FormDialogComponent,
   FormDialogData,
 } from "../table/form-dialog/form-dialog.component";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
-
-interface Item {
-  type?: string;
-  title?: string;
-  icon?: string;
-  description?: string;
-}
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+} from "@angular/cdk/drag-drop";
+import { MatListModule } from "@angular/material/list";
+import { AsyncPipe, KeyValuePipe, NgForOf, NgIf } from "@angular/common";
+import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+import { MatIconModule } from "@angular/material/icon";
+import { MatMenuModule } from "@angular/material/menu";
+import { AddButtonModule } from "../../../shared/add-button/add-button.module";
+import { MatButtonModule } from "@angular/material/button";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 
 @Component({
   selector: "ige-repeat-detail-list",
   templateUrl: "./repeat-detail-list.component.html",
   styleUrls: ["./repeat-detail-list.component.scss"],
+  imports: [
+    NgIf,
+    NgForOf,
+    AsyncPipe,
+    CdkDrag,
+    CdkDropList,
+    CdkDragHandle,
+    MatDialogModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    AddButtonModule,
+    MatButtonModule,
+    SharedPipesModule,
+    FormErrorComponent,
+    KeyValuePipe,
+  ],
+  standalone: true,
 })
 export class RepeatDetailListComponent
   extends FieldArrayType
   implements OnInit
 {
-  private getTypeDeclaration: FormlyFieldConfig = {
-    key: "_type",
-    type: "select",
-    props: {
-      appearance: "outline",
-      required: true,
-      label: "Link-Typ",
-      simple: true,
-      options: [
-        { label: "Externer Link", value: "external" },
-        { label: "Interner Link", value: "internal" },
-        { label: "Daten-Download", value: "download" },
-      ],
-    },
-  };
-
   constructor(private dialog: MatDialog) {
     super();
   }
 
-  ngOnInit(): void {
-    if (!this.props.asImage) {
-      (<FormlyFieldConfig>this.field.fieldArray).fieldGroup.unshift(
-        this.getTypeDeclaration
-      );
-    }
-  }
+  ngOnInit(): void {}
 
   addItem() {
     this.openDialog(null);
@@ -62,11 +64,14 @@ export class RepeatDetailListComponent
   private openDialog(index?: number) {
     this.dialog
       .open(FormDialogComponent, {
-        minWidth: "400px",
+        width: "90vw",
+        maxWidth: "950px",
+        restoreFocus: true,
         data: <FormDialogData>{
           fields: [this.field.fieldArray],
           model:
             index === null ? {} : JSON.parse(JSON.stringify(this.model[index])),
+          formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
       })
       .afterClosed()

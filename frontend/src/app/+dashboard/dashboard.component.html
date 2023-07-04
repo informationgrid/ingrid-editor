@@ -1,11 +1,9 @@
 <div
-    fxFlex
-    fxLayout="column"
     *transloco="let t; read: 'dashboard'"
-    class="allPageScroll"
+    class="allPageScroll flex-1 flex-col"
 >
     <div class="welcome" data-cy="welcome-message">
-        <div>{{ t("welcome") }}</div>
+        <div class="greetings">{{ t("welcome") }}</div>
         <div *ngFor="let message of messages$ | async" class="message">
             <span>{{ message.text }}</span>
         </div>
@@ -18,55 +16,36 @@
         ></ige-quick-search>
 
         <div class="shortcut">
-            <button
-                mat-button
-                (click)="createNewDocument()"
+            <ige-action-button
+                [label]="t('newDocument')"
+                svgIcon="Neuer-Datensatz"
                 [disabled]="!canCreateDataset"
-            >
-                <mat-icon
-                    class="material-icons-outlined"
-                    svgIcon="Neuer-Datensatz"
-                ></mat-icon>
-                <span>{{ t("newDocument") }}</span>
-            </button>
-            <button
-                mat-button
-                (click)="createNewFolder()"
+                (submit)="createNewDocument()"
+            ></ige-action-button>
+            <ige-action-button
+                label="Neuer Ordner"
+                svgIcon="outline-create_new_folder-24px"
                 [disabled]="!canCreateDataset"
-            >
-                <mat-icon
-                    class="material-icons-outlined"
-                    svgIcon="outline-create_new_folder-24px"
-                ></mat-icon>
-                <span>Neuer Ordner</span>
-            </button>
-            <button
-                mat-button
+                (submit)="createNewFolder()"
+            ></ige-action-button>
+            <ige-action-button
                 *ngIf="canImport"
-                (click)="gotoImportPage()"
+                [label]="t('importDocument')"
+                icon="import_export"
                 [disabled]="!canImport"
-            >
-                <mat-icon class="material-icons-outlined"
-                    >import_export
-                </mat-icon>
-                <span>{{ t("importDocument") }}</span>
-            </button>
-            <button
-                mat-button
-                (click)="createNewAddress()"
+                (submit)="gotoImportPage()"
+            ></ige-action-button>
+            <ige-action-button
+                label="Neue Adresse"
+                svgIcon="outline-person_add-24px"
                 [disabled]="!canCreateAddress"
-            >
-                <mat-icon
-                    class="material-icons-outlined"
-                    svgIcon="outline-person_add-24px"
-                ></mat-icon>
-                <span>Neue Adresse</span>
-            </button>
+                (submit)="createNewAddress()"
+            ></ige-action-button>
         </div>
 
-        <div class="info-cards" fxLayout="column" fxLayoutGap="24px">
-            <div class="info-box" fxLayout="row" fxLayoutGap="36px">
-                <ige-card-box fxFlex label="{{ t('application') }} Datensätze">
+        <div class="info-cards flex-col gap-24">
+            <div class="info-box flex-row gap-36">
+                <ige-card-box label="{{ t('application') }} Datensätze">
                     <ige-chart
                         [data]="chartDataPublished.asObservable()"
                     ></ige-chart>
@@ -74,8 +53,6 @@
             </div>
 
             <ige-card-box
-                fxFlex
-                data-cy="recent-docs"
                 label="{{ t('mostRecent') }}"
                 data-cy="card-latest-docs"
             >
@@ -86,7 +63,6 @@
                 ></ige-document-list-item>
             </ige-card-box>
             <ige-card-box
-                fxFlex
                 data-cy="recent-published-docs"
                 label="{{ t('mostRecentPublished') }}"
             >

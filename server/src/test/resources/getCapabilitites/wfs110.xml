@@ -1,0 +1,252 @@
+<wfs:WFS_Capabilities version="1.1.0"
+                      xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsAll.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
+                      xmlns:wfs="http://www.opengis.net/wfs"
+                      xmlns:ogc="http://www.opengis.net/ogc"
+                      xmlns:gml="http://www.opengis.net/gml"
+                      xmlns:ows="http://www.opengis.net/ows"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      xmlns:FD_FHH_Map_WFS_BSU_U_Geotourismus="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx">
+    <ows:ServiceIdentification>
+        <ows:Title>WFS_Geotourismus</ows:Title>
+        <ows:Abstract>Test WFS 1.1.0</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword/>
+        </ows:Keywords>
+        <ows:ServiceType>WFS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+        <ows:Fees/>
+        <ows:AccessConstraints/>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>Landesbetrieb Geoinformation und Vermessung Hamburg</ows:ProviderName>
+        <ows:ProviderSite xlink:href="http://www.geoinfo.hamburg.de" xlink:type="simple"/>
+        <ows:ServiceContact>
+            <ows:IndividualName>Thomas Eichhorn</ows:IndividualName>
+            <ows:PositionName></ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>+49 40 42826 5450</ows:Voice>
+                    <ows:Facsimile> 40 42826 5966</ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint>Neuenfelder Straße 19</ows:DeliveryPoint>
+                    <ows:City>Hamburg</ows:City>
+                    <ows:AdministrativeArea>Hamburg</ows:AdministrativeArea>
+                    <ows:PostalCode>21109</ows:PostalCode>
+                    <ows:Country>Germany</ows:Country>
+                    <ows:ElectronicMailAddress>gvgeoportal@gv.hamburg.de</ows:ElectronicMailAddress>
+                </ows:Address>
+                <ows:OnlineResource xlink:href="www.geoinfo.hamburg.de" xlink:type="simple"/>
+                <ows:HoursOfService/>
+                <ows:ContactInstructions/>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?"/>
+                    <ows:Post xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:Parameter name="AcceptVersions">
+                <ows:Value>1.1.0</ows:Value>
+                <ows:Value>1.0.0</ows:Value>
+            </ows:Parameter>
+            <ows:Parameter name="AcceptFormats">
+                <ows:Value>text/xml</ows:Value>
+            </ows:Parameter>
+        </ows:Operation>
+        <ows:Operation name="DescribeFeatureType">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?"/>
+                    <ows:Post xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:Parameter name="outputFormat">
+                <ows:Value>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</ows:Value>
+            </ows:Parameter>
+        </ows:Operation>
+        <ows:Operation name="GetFeature">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?"/>
+                    <ows:Post xlink:href="http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"/>
+                </ows:HTTP>
+            </ows:DCP>
+            <ows:Parameter name="resultType">
+                <ows:Value>results</ows:Value>
+                <ows:Value>hits</ows:Value>
+            </ows:Parameter>
+            <ows:Parameter name="outputFormat">
+                <ows:Value>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</ows:Value>
+            </ows:Parameter>
+        </ows:Operation>
+        <ows:ExtendedCapabilities>
+            <ows:Constraint name="serviceAxisOrderForSwappableSRS">
+                <ows:Value>latitude,longitude</ows:Value>
+            </ows:Constraint>
+        </ows:ExtendedCapabilities>
+    </ows:OperationsMetadata>
+    <wfs:FeatureTypeList>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Landschaftsform</wfs:Name>
+            <wfs:Title>Landschaftsform</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.6998665041296626 53.439818489782624</ows:LowerCorner>
+                <ows:UpperCorner>10.336552045994994 53.74180783201885</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Bauwerke</wfs:Name>
+            <wfs:Title>Bauwerke</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.6710675643643107 53.398214876212485</ows:LowerCorner>
+                <ows:UpperCorner>10.299690875096376 53.722265833076975</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Unsichtbares_Objekt</wfs:Name>
+            <wfs:Title>Unsichtbares_Objekt</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>10.113665839720433 53.39853422093119</ows:LowerCorner>
+                <ows:UpperCorner>10.19057884115737 53.65732655156777</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Sehenswerte_Objekte</wfs:Name>
+            <wfs:Title>Sehenswerte_Objekte</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.7852317555563726 53.495509854334827</ows:LowerCorner>
+                <ows:UpperCorner>10.256345519008139 53.598858415633444</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Bergbau</wfs:Name>
+            <wfs:Title>Bergbau</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.6747741686764108 53.420062317916845</ows:LowerCorner>
+                <ows:UpperCorner>10.344173832806435 53.7278730217161</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Wasser_und_Wasserbau</wfs:Name>
+            <wfs:Title>Wasser_und_Wasserbau</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.7878057912663152 53.391622681296731</ows:LowerCorner>
+                <ows:UpperCorner>10.407430505549277 53.740889510476698</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:GeologischeObjekte</wfs:Name>
+            <wfs:Title>GeologischeObjekte</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.7349851898194579 53.395626266252442</ows:LowerCorner>
+                <ows:UpperCorner>10.27983875300683 53.706196742062652</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Stein_und_Fels</wfs:Name>
+            <wfs:Title>Stein_und_Fels</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.7983927341901715 53.420911680339664</ows:LowerCorner>
+                <ows:UpperCorner>10.002871458386743 53.597272141825549</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+        <wfs:FeatureType>
+            <wfs:Name>FD_FHH_Map_WFS_BSU_U_Geotourismus:Geotope</wfs:Name>
+            <wfs:Title>Geotope</wfs:Title>
+            <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:25832</wfs:DefaultSRS>
+            <wfs:OtherSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:OtherSRS>
+            <wfs:OutputFormats>
+                <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+            </wfs:OutputFormats>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>9.7655738465879907 53.402593848198485</ows:LowerCorner>
+                <ows:UpperCorner>10.302925462393098 53.72715089146115</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+        </wfs:FeatureType>
+    </wfs:FeatureTypeList>
+    <ogc:Filter_Capabilities>
+        <ogc:Spatial_Capabilities>
+            <ogc:GeometryOperands>
+                <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+                <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+                <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+                <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+            </ogc:GeometryOperands>
+            <ogc:SpatialOperators>
+                <ogc:SpatialOperator name="BBOX"/>
+                <ogc:SpatialOperator name="Equals"/>
+                <ogc:SpatialOperator name="Disjoint"/>
+                <ogc:SpatialOperator name="Intersects"/>
+                <ogc:SpatialOperator name="Crosses"/>
+                <ogc:SpatialOperator name="Touches"/>
+                <ogc:SpatialOperator name="Within"/>
+                <ogc:SpatialOperator name="Contains"/>
+                <ogc:SpatialOperator name="Overlaps"/>
+            </ogc:SpatialOperators>
+        </ogc:Spatial_Capabilities>
+        <ogc:Scalar_Capabilities>
+            <ogc:LogicalOperators/>
+            <ogc:ComparisonOperators>
+                <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+                <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+            </ogc:ComparisonOperators>
+        </ogc:Scalar_Capabilities>
+        <ogc:Id_Capabilities>
+            <ogc:EID/>
+            <ogc:FID/>
+        </ogc:Id_Capabilities>
+    </ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

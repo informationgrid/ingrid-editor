@@ -6,7 +6,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { UntypedFormGroup } from "@angular/forms";
+import { FormGroup, UntypedFormGroup } from "@angular/forms";
 
 export class FormUtils {
   static timestamp: number = 0;
@@ -30,7 +30,7 @@ export class FormUtils {
   }
 
   static async handleDirtyForm(
-    form: UntypedFormGroup,
+    form: FormGroup,
     documentService: DocumentService,
     dialog: MatDialog,
     isAddress: boolean
@@ -42,9 +42,11 @@ export class FormUtils {
       const value = form.value;
       const decision = await this.showDecisionDialog(dialog);
       if (decision === "save") {
-        await documentService.save(value, false, isAddress).toPromise();
+        await documentService
+          .save({ data: value, isNewDoc: false, isAddress: isAddress })
+          .toPromise();
       } else if (decision === "discard") {
-        form.reset();
+        form.reset(undefined, { emitEvent: false });
       } else {
         //decision is 'Abbrechen'
         return false;
