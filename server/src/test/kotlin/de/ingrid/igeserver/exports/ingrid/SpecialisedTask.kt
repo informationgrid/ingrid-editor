@@ -51,6 +51,21 @@ class SpecialisedTask : AnnotationSpec() {
     }
 
     @Test
+    fun maximalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+
+        var result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
+        // replace generated UUIDs and windows line endings
+        result = result
+            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+            .replace("\r\n", "\n")
+
+        result shouldNotBe null
+        // TODO: pending
+        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
+    }
+
+    @Test
     fun completeExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
