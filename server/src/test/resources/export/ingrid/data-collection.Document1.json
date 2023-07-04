@@ -1,0 +1,301 @@
+{
+  "title": "Test-Datensammlung",
+  "_id": 1635,
+  "_uuid": "5e25e2cf-570e-412f-9a9b-61a755fa9839",
+  "_type": "InGridDataCollection",
+  "_created": "2023-07-03T16:18:29.783958Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-03T16:32:58.862528Z",
+  "_contentModified": "2023-07-03T16:32:58.863009Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 12,
+  "_state": "P",
+  "data": {
+    "_parent": 1238,
+    "isOpenData": true,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "asLink": true
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 9,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-03T15:47:26.773386Z",
+          "_contentModified": "2023-07-03T15:47:26.7739Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Stra.",
+            "country": {
+              "key": "8"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "4"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "2"
+      },
+      {
+        "key": "1"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/TH_00008528",
+          "label": "Erdgas",
+          "alternativeLabel": "Naturgas"
+        },
+        {
+          "id": "https://sns.uba.de/umthes/TH_00030455",
+          "label": "Höhle",
+          "alternativeLabel": "Naturhöhle"
+        }
+      ],
+      "free": [
+        {
+          "label": "Schlagwort"
+        }
+      ]
+    },
+    "categoryCatalog": [
+      {
+        "title": {
+          "key": null,
+          "value": "Biotoptypenschlüssel, Datum 01.01.1998, Version 1.1"
+        },
+        "date": "2023-06-30T22:00:00.000Z",
+        "edition": "1"
+      }
+    ],
+    "databaseContent": [
+      {
+        "parameter": "10 ppb Cadmium",
+        "moreInfo": "Blei / in Trinkwasser, Nachweisgrenze"
+      }
+    ],
+    "methodText": "Ionenchromatographie nach DIN 38405-D20 (Sept. 91)",
+    "explanation": "Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.",
+    "spatial": {
+      "references": [
+        {
+          "ars": "11",
+          "type": "wfsgnde",
+          "title": "Berlin, Bundesland",
+          "value": {
+            "lat1": 52.35918,
+            "lat2": 52.688663,
+            "lon1": 13.082744,
+            "lon2": 13.784928
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        },
+        {
+          "key": "23031"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "9036"
+        },
+        "Datum": {
+          "key": "900002"
+        }
+      },
+      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "2"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "since"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "5"
+      },
+      "resourceDateTypeSince": {
+        "key": "unknown"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 1,
+        "unit": {
+          "key": "6"
+        }
+      },
+      "description": "Die Messungen erfolgten nur tagsüber."
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": [
+        "150",
+        "123"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "61"
+        },
+        {
+          "key": "62"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Herstellungszweck",
+      "specificUsage": "Eignung/Nutzung",
+      "accessConstraints": [
+        {
+          "key": "8"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "2"
+          },
+          "source": "Quellenvermerk"
+        }
+      ],
+      "useLimitation": "Nicht für Navigationszwecke geeignet"
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "900006"
+        },
+        "transferSize": 12,
+        "mediumNote": "test"
+      }
+    ],
+    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+    "references": [
+      {
+        "type": {
+          "key": "5302"
+        },
+        "title": "Titel der Information",
+        "url": "https://info.com",
+        "explanation": "Beschreibung der Information"
+      },
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "Titel des Downloads",
+        "url": "https://download.com",
+        "explanation": "Beschreibung des Downloads"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "3"
+      },
+      {
+        "key": "9"
+      }
+    ],
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "16"
+          },
+          "version": "1",
+          "compression": "test",
+          "specification": "test"
+        }
+      ]
+    }
+  }
+}
