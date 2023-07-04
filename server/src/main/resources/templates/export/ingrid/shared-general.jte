@@ -251,6 +251,7 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
 
         @if(page.getSpecificUsage() != null)
         <gmd:resourceSpecificUsage>

@@ -77,7 +77,7 @@ open class IngridModelTransformer constructor(
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
     val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(
-        if (it.fileName.asLink) it.fileName.uri 
+        if (it.fileName.asLink) it.fileName.uri
         else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
         it.fileDescription
     )} ?: emptyList()
@@ -203,11 +203,12 @@ open class IngridModelTransformer constructor(
         showType = false
     )
 
-    // TODO after thesauri are added
     val umthesKeywords = Thesaurus(
+        keywords = data.keywords?.umthes?.map { Keyword(name = it.label, link = null) } ?: emptyList(),
         date = "2009-01-15",
         name = "UMTHES Thesaurus"
     )
+    // TODO after thesauri are added
     val gemetKeywords = Thesaurus(
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
