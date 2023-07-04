@@ -7,7 +7,6 @@ import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.lang3.ArrayUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.security.core.context.SecurityContextHolder
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import java.text.ParseException
@@ -500,8 +499,6 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         val organizationFilter = BoolFilter("AND", conditionOrganisation, null, null, false)
         val documentFilter = BoolFilter("OR", null, listOf(personFilter, organizationFilter), null, false)
         researchService.query(
-            SecurityContextHolder.getContext().authentication,
-            emptySet(),
             catalogId,
             ResearchQuery(null, documentFilter)
         ).hits.getOrNull(0)?.let {
@@ -521,8 +518,6 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         val documentFilter = BoolFilter("AND", conditions, null, null, false)
         val coupledResourceQuery = ResearchQuery(null, documentFilter)
         val hit = researchService.query(
-            SecurityContextHolder.getContext().authentication,
-            emptySet(),
             catalogId,
             coupledResourceQuery
         ).hits.getOrNull(0)
@@ -545,7 +540,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
         return null;
     }
-    
+
     protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
         var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)
         if (id == null && valueField == "de") {

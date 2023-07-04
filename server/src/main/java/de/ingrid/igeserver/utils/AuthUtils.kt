@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.utils
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import java.security.Principal
 
 interface AuthUtils {
@@ -9,4 +10,5 @@ interface AuthUtils {
     fun containsRole(principal: Principal, role: String): Boolean
     fun isAdmin(principal: Principal): Boolean
     fun isSuperAdmin(principal: Principal): Boolean
+    fun getCurrentUserRoles(): Set<Group>
 }

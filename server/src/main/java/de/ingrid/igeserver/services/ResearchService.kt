@@ -11,6 +11,7 @@ import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.security.Principal
 import java.time.Instant
@@ -56,8 +57,9 @@ class ResearchService {
 
     }
 
-    fun query(principal: Principal, groups: Set<Group>, catalogId: String, query: ResearchQuery): ResearchResponse {
+    fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
+        val groups = authUtils.getCurrentUserRoles()
         val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
         val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 

@@ -32,12 +32,12 @@ class CapabilitiesServiceTest : ShouldSpec({
     beforeSpec {
         mockCodelists(codelistHandler)
         every { mockContext.authentication } returns UsernamePasswordAuthenticationToken("test-user", "xxx")
-        every { researchService.query(any(), any(), any(), any()) } returns ResearchResponse(0, emptyList())
+        every { researchService.query(any(), any(), any()) } returns ResearchResponse(0, emptyList())
 
         factory = GetCapabilitiesParserFactory(codelistHandler, researchService)
     }
-    
-    beforeAny { 
+
+    beforeAny {
         SecurityContextHolder.setContext(mockContext)
     }
 
@@ -443,9 +443,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                 )
                 operations?.shouldHaveSize(3)
                 operations shouldContainExactly listOf(
-                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")),
+                    OperationBean(
+                        listOf("http://hostname:port/path"),
+                        listOf(7),
+                        "GetCapabilities",
+                        KeyValue("1", "GetCapabilities")
+                    ),
                     OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
-                    OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetFeatureInfo", KeyValue("3", "GetFeatureInfo")),
+                    OperationBean(
+                        listOf("http://hostname:port/path"),
+                        listOf(7),
+                        "GetFeatureInfo",
+                        KeyValue("3", "GetFeatureInfo")
+                    ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
@@ -562,9 +572,19 @@ class CapabilitiesServiceTest : ShouldSpec({
                     phone = "+1 301 555-1212"
                 )
                 operations shouldContainExactly listOf(
-                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")),
+                    OperationBean(
+                        listOf("http://hostname/path?"),
+                        listOf(7),
+                        "GetCapabilities",
+                        KeyValue("1", "GetCapabilities")
+                    ),
                     OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
-                    OperationBean(listOf("http://hostname/path?"), listOf(7), "GetFeatureInfo", KeyValue("3", "GetFeatureInfo")),
+                    OperationBean(
+                        listOf("http://hostname/path?"),
+                        listOf(7),
+                        "GetFeatureInfo",
+                        KeyValue("3", "GetFeatureInfo")
+                    ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
@@ -971,8 +991,11 @@ class CapabilitiesServiceTest : ShouldSpec({
                     TimeReferenceBean(2, formatter.parse("2012-10-22")),
                     TimeReferenceBean(3, formatter.parse("2013-11-26"))
                 )
-                timeSpan shouldBe TimeReferenceBean(from = formatter.parse("2009-08-20"), to = formatter.parse("2010-04-29"))
-                
+                timeSpan shouldBe TimeReferenceBean(
+                    from = formatter.parse("2009-08-20"),
+                    to = formatter.parse("2010-04-29")
+                )
+
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 1,

@@ -10,7 +10,7 @@ import org.w3c.dom.Document
 
 
 @Service
-class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
+class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
 
     private lateinit var xPathUtils: XPathUtils
     val log = logger()
@@ -74,7 +74,8 @@ class GetCapabilitiesParserFactory constructor(val codelistHandler: CodelistHand
             isServiceType(doc, ServiceType.WFS200) -> ServiceType.WFS200
             isServiceType(doc, ServiceType.WMTS) -> ServiceType.WMTS
             else -> {
-                val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")?.uppercase()
+                val value = xPathUtils.getString(doc, "/csw:Capabilities/ows:ServiceIdentification/ows:ServiceType[1]")
+                    ?.uppercase()
                     ?: throw RuntimeException("Service Type not found")
                 when { // TODO: handle lowercase!
                     value.contains(SERVICE_TYPE_WMS) -> ServiceType.WMS130

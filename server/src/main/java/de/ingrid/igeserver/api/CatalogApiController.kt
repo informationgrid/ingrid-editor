@@ -12,7 +12,6 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -58,11 +57,8 @@ class CatalogApiController @Autowired constructor(
 
     private fun getStatisticData(catalogIdentifier: String): CatalogStatistic {
 
-        val auth = SecurityContextHolder.getContext().authentication
         val filter = BoolFilter("AND", listOf("document_wrapper.type != 'FOLDER'", "deleted = 0"), null, null, false)
         val response = researchService.query(
-            auth,
-            emptySet(),
             catalogIdentifier,
             ResearchQuery(
                 null,

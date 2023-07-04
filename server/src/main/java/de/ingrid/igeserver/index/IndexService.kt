@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 const val PAGE_SIZE: Int = 100
@@ -76,11 +75,7 @@ class IndexService @Autowired constructor(
         filter: BoolFilter,
         currentPage: Int = 0
     ): Pair<Long, List<Document>> {
-        val auth = SecurityContextHolder.getContext().authentication
-
         val response = researchService.query(
-            auth,
-            emptySet(),
             catalogId,
             ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
         )

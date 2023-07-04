@@ -73,10 +73,8 @@ class StatisticApiController @Autowired constructor(
         query: ResearchQuery
     ): StatisticResponse {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val userName = authUtils.getUsernameFromPrincipal(principal)
-        val userGroups = catalogService.getUser(userName)?.groups ?: emptySet()
 
-        val queryResult = researchService.query(principal, userGroups, dbId, query)
+        val queryResult = researchService.query(dbId, query, principal)
 
 
         val allData = queryResult.totalHits.toLong()

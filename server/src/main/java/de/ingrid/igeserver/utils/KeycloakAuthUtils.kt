@@ -1,11 +1,16 @@
 package de.ingrid.igeserver.utils
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
@@ -13,7 +18,7 @@ import java.security.Principal
 
 @Service
 @Profile("!dev")
-class KeycloakAuthUtils : AuthUtils {
+class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     val log = logger()
 
@@ -58,6 +63,12 @@ class KeycloakAuthUtils : AuthUtils {
 
     override fun isSuperAdmin(principal: Principal): Boolean {
         return containsRole(principal, "ige-super-admin")
+    }
+
+    override fun getCurrentUserRoles(): Set<Group> {
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val userName: String = getUsernameFromPrincipal(authentication)
+        return catalogService.getUser(userName)?.groups ?: emptySet()
     }
 
     // TODO: this function is supposed to be used globally
