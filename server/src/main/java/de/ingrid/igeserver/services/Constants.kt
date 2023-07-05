@@ -29,7 +29,7 @@ const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
 
 enum class DOCUMENT_STATE {
-    DRAFT, PUBLISHED, PENDING, DRAFT_AND_PUBLISHED, ARCHIVED;
+    DRAFT, PUBLISHED, PENDING, DRAFT_AND_PUBLISHED, ARCHIVED, WITHDRAWN;
 
     @JsonValue
     fun getState(): String = when (name) {

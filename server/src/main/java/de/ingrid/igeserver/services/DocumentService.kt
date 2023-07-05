@@ -507,10 +507,7 @@ class DocumentService @Autowired constructor(
             if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
             docRepo.save(docData.document)
 
-            // prepare new document
-            docData.document.id = null
-            docData.document.isLatest = true
-            docData.document.version = docData.document.version?.inc()
+            prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft)
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
@@ -519,6 +516,12 @@ class DocumentService @Autowired constructor(
             moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
         }
         docData.document.modified = dateService.now()
+    }
+
+    private fun prepareDocumentForCopy(document: Document) {
+        document.id = null
+        document.isLatest = true
+        document.version = document.version?.inc()
     }
 
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
@@ -754,6 +757,7 @@ class DocumentService @Autowired constructor(
         // remove publish
         val currentDoc = getDocumentFromCatalog(catalogId, id)
         val lastPublished = getLastPublishedDocument(catalogId, currentDoc.document.uuid)
+        val onlyPublished = lastPublished.isLatest == true
         lastPublished.wrapperId = id
 
         // run pre-unpublish pipe(s)
@@ -762,13 +766,20 @@ class DocumentService @Autowired constructor(
         val preUnpublishPayload = PreUnpublishPayload(docType, lastPublished, currentDoc.wrapper)
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
-        // if no draft version exists, move published version to draft
-        val updatedDoc = if (lastPublished.isLatest) {
+        // update state of published version
+        lastPublished.state = DOCUMENT_STATE.WITHDRAWN
+        lastPublished.isLatest = false
+        docRepo.save(lastPublished)
+        
+        // if no draft version exists, copy published version to draft and update state of published version
+        val updatedDoc = if (onlyPublished) {
+            // copy published version to draft
+            entityManager.detach(lastPublished)
+            prepareDocumentForCopy(lastPublished)
             lastPublished.state = DOCUMENT_STATE.DRAFT
             docRepo.save(lastPublished)
         } else {
-            // else delete published version which automatically sets published version in wrapper to null
-            docRepo.delete(lastPublished)
+            // set different state
             currentDoc.document.state = DOCUMENT_STATE.DRAFT
             docRepo.save(currentDoc.document)
         }
