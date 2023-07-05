@@ -130,33 +130,23 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
         val operations: JsonNode = service["operations"]
 
-        val uploadInfoList = mutableListOf<UploadInfo>()
+        return   operations
+            .mapNotNull { it["methodCall"]?.asText() }
+            .filter { !it.isNullOrBlank() }
+            .map { node -> UploadInfo("Operationen", node, null)}
+            .toMutableList()
 
-        operations
-            .mapNotNull { operation ->
-                val methodCall: String? = operation["methodCall"]?.asText()
-                methodCall?.takeIf { !it.isBlank() }
-            }
-            .mapTo(uploadInfoList) { methodCall ->
-                UploadInfo("Operationen", methodCall, null)
-            }
-
-
-        return  uploadInfoList
     }
 
     private fun getUrlsFromReferenceJsonField(references: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
         if (references == null) return mutableListOf()
 
-        return  references
-            .mapNotNull { node ->
-                val url: String? = node["url"]?.asText()
-                url?.takeIf { !it.isBlank() }
-            }
-            .map { url ->
-                UploadInfo("Reference", url, null)
-            }
+        return   references
+            .mapNotNull { it["url"]?.asText() }
+            .filter { !it.isNullOrBlank() }
+            .map { node -> UploadInfo("Reference", node, null)}
             .toMutableList()
+
 
     }
 
@@ -164,13 +154,9 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
         if (serviceURLs == null) return mutableListOf()
 
         return  serviceURLs
-            .mapNotNull { node ->
-                val url: String? = node["url"]?.asText()
-                url?.takeIf { !it.isBlank() }
-            }
-            .map { url ->
-                UploadInfo("serviceURLs", url, null)
-            }
+            .mapNotNull { it["url"]?.asText() }
+            .filter { !it.isNullOrBlank() }
+            .map { node -> UploadInfo("serviceURLs", node, null)}
             .toMutableList()
 
     }
