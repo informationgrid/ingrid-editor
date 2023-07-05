@@ -127,49 +127,52 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     private fun getUrlsFromOperationJsonField(service: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
         if (service == null) return mutableListOf()
 
+
         val operations: JsonNode = service["operations"]
 
         val uploadInfoList = mutableListOf<UploadInfo>()
 
-        for (operation in operations) {
-            val methodCall: String? = operation["methodCall"]?.asText()
-            if (!methodCall.isNullOrBlank()) {
-                uploadInfoList.add(UploadInfo("Operationen", methodCall!!, null))
+        operations
+            .mapNotNull { operation ->
+                val methodCall: String? = operation["methodCall"]?.asText()
+                methodCall?.takeIf { !it.isBlank() }
             }
-        }
+            .mapTo(uploadInfoList) { methodCall ->
+                UploadInfo("Operationen", methodCall, null)
+            }
+
+
         return  uploadInfoList
     }
 
     private fun getUrlsFromReferenceJsonField(references: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
         if (references == null) return mutableListOf()
 
-        val uploadInfoList = mutableListOf<UploadInfo>()
-
-        for (node in references) {
-            val url: String? = node["url"]?.asText()
-            if (!url.isNullOrBlank()) {
-                uploadInfoList.add(UploadInfo("Reference", url!!, null))
+        return  references
+            .mapNotNull { node ->
+                val url: String? = node["url"]?.asText()
+                url?.takeIf { !it.isBlank() }
             }
+            .map { url ->
+                UploadInfo("Reference", url, null)
+            }
+            .toMutableList()
 
-        }
-
-        return  uploadInfoList
     }
 
     private fun getUrlsFromServiceURLsJsonField(serviceURLs: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
         if (serviceURLs == null) return mutableListOf()
 
-        val uploadInfoList = mutableListOf<UploadInfo>()
-
-        for (node in serviceURLs) {
-            val url: String? = node["url"]?.asText()
-            if (!url.isNullOrBlank()) {
-                uploadInfoList.add(UploadInfo("serviceURLs", url!!, null))
+        return  serviceURLs
+            .mapNotNull { node ->
+                val url: String? = node["url"]?.asText()
+                url?.takeIf { !it.isBlank() }
             }
+            .map { url ->
+                UploadInfo("serviceURLs", url, null)
+            }
+            .toMutableList()
 
-        }
-
-        return  uploadInfoList
     }
 
 
