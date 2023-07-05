@@ -9,6 +9,7 @@ import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
@@ -16,6 +17,7 @@ import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.*
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.Permissions
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
@@ -24,16 +26,18 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("bmi")
 class BmiProfile @Autowired constructor(
-    @JsonIgnore val codelistRepo: CodelistRepository,
-    @JsonIgnore val catalogRepo: CatalogRepository,
-    @JsonIgnore val query: QueryRepository,
-    @JsonIgnore val dateService: DateService
+        @JsonIgnore val codelistRepo: CodelistRepository,
+        @JsonIgnore val catalogRepo: CatalogRepository,
+        @JsonIgnore val query: QueryRepository,
+        @JsonIgnore val dateService: DateService,
+        @JsonIgnore val authUtils: AuthUtils,
 ) : CatalogProfile {
 
     override val identifier = "bmi"
     override val title = "Open Data Katalog"
     override val description = null
     override val indexExportFormatID = "index"
+    override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
@@ -398,7 +402,7 @@ class BmiProfile @Autowired constructor(
     }
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
-        val isSuperAdmin = principal.authorities.any { it.authority == "ige-super-admin" }
+        val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
 
         return  if(isSuperAdmin) {
             permissions

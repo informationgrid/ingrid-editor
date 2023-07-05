@@ -52,11 +52,12 @@ class BmiPublishExport @Autowired constructor(
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
-            """
+                """
             SELECT DISTINCT d.uuid 
             FROM document d, document_wrapper dw 
             WHERE (
-                dw.published = d.id
+                dw.uuid = d.uuid
+                AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
             """.trimIndent()

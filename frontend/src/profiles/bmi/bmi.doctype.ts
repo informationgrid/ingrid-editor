@@ -1,10 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { Injectable } from "@angular/core";
-import { CodelistStore } from "../../app/store/codelist/codelist.store";
-import { map } from "rxjs/operators";
+import { inject, Injectable } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
@@ -20,15 +16,8 @@ export class BmiDoctype extends BaseDoctype {
 
   iconClass = "Fachaufgabe";
 
-  constructor(
-    codelistService: CodelistService,
-    codelistStore: CodelistStore,
-    private uploadService: UploadService,
-    private configService: ConfigService,
-    codelistQuery: CodelistQuery
-  ) {
-    super(codelistService, codelistQuery);
-  }
+  private uploadService = inject(UploadService);
+  private configService = inject(ConfigService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -154,6 +143,7 @@ export class BmiDoctype extends BaseDoctype {
       this.addSection("Zeitbezüge", [
         this.addGroup("temporal", "Zeitspanne", [
           this.addSelect("rangeType", null, {
+            showSearch: true,
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
@@ -181,6 +171,7 @@ export class BmiDoctype extends BaseDoctype {
           }),
         ]),
         this.addSelect("periodicity", "Periodizität", {
+          showSearch: true,
           options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
           codelistId: 518,
         }),

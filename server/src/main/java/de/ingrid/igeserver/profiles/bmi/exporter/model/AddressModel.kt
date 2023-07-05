@@ -51,11 +51,11 @@ data class AddressModel(
      *  but only if they have a parent themselves.
      *  @return List of ancestors
      */
-    fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<AddressModel> {
+    fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
         if (id == null) return mutableListOf()
 
         val doc = documentService!!.getWrapperByDocumentId(id)
-        val publishedDoc = doc.published
+        val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
         if (publishedDoc == null || publishedDoc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()
         }
@@ -63,7 +63,7 @@ data class AddressModel(
         val convertedDoc = addInternalFields(publishedDoc, doc)
 
         return if (doc.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!)
+            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
             // ignore hideAddress if address has no ancestors
             if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
             ancestors
@@ -83,29 +83,6 @@ data class AddressModel(
         }
 
         return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
-    }
-
-    private fun getAddressInformationFromParent(parentId: Int?): Address {
-        val emptyAddress = Address(false, "", "", "", "", "", null, null)
-        if (parentId == null) return emptyAddress
-
-        val parentAddress = documentService?.getWrapperByDocumentId(parentId) ?: return emptyAddress
-        if (parentAddress.type == "FOLDER") {
-            throw ServerException.withReason("Folder not allowed as parent of inherited address")
-        }
-
-        val jsonParentAddress = parentAddress.published?.data?.get("address") ?: return emptyAddress
-        val parent = jacksonObjectMapper().readValue(jsonParentAddress.toString(), Address::class.java)
-
-        return try {
-            if (parent.inheritAddress && parentAddress.parent?.id != null)
-                getAddressInformationFromParent(parentAddress.parent?.id)
-            else parent
-        } catch(ex: ServerException) {
-            // parent probably was a folder and inherited field accidentally was set to true
-            parent
-        }
-
     }
 
 /*    @JsonProperty("_parent")

@@ -2,7 +2,6 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import de.ingrid.igeserver.exports.interfaces.dcat.Download
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(

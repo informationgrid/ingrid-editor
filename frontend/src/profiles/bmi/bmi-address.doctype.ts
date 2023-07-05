@@ -17,7 +17,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
     codelistService: CodelistService,
     codelistQuery: CodelistQuery
   ) {
-    super(storageService, codelistService, codelistQuery, "addresses");
+    super(storageService, "addresses");
     this.addressType = "organization";
     this.options = {
       hideCountryAndAdministrativeArea: true,
