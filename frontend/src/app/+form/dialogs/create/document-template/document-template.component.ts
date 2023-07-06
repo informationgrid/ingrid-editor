@@ -62,7 +62,7 @@ export class DocumentTemplateComponent implements OnInit {
           id: profile.id,
           title: profile.label,
           icon: profile.iconClass,
-          _type: profile.addressType,
+          _type: profile.id,
           _state: "P",
         } as DocumentAbstract;
       })

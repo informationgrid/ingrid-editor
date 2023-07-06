@@ -28,4 +28,5 @@ class InGridKommunalStProfile @Autowired constructor(
 
     override val identifier = id
     override val title = "InGrid Katalog (Kommunal ST)"
+    override val parentProfile: String? = "ingrid"
 }

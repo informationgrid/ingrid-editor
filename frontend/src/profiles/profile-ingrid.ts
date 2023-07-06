@@ -1,4 +1,4 @@
-import { Component, inject, NgModule } from "@angular/core";
+import { Component, inject, NgModule, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
@@ -38,7 +38,7 @@ import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.m
 @Component({
   template: "",
 })
-export class InGridComponent {
+export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
   folder = inject(FolderDoctype);
   specialisedTask = inject(SpecialisedTaskDoctype);
@@ -52,20 +52,26 @@ export class InGridComponent {
   organisation = inject(IngridOrganisationDoctype);
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
-  constructor() {
+
+  protected docTypes = [
+    this.folder,
+    this.specialisedTask,
+    this.geoDataset,
+    this.literature,
+    this.geoService,
+    this.project,
+    this.dataCollection,
+    this.informationSystem,
+    this.person,
+    this.organisation,
+  ];
+
+  constructor() {}
+
+  ngOnInit() {
+    console.log("PROFILE ON INIT");
     this.profileService.setProfileId("ingrid");
-    this.profileService.registerProfiles([
-      this.folder,
-      this.specialisedTask,
-      this.geoDataset,
-      this.literature,
-      this.geoService,
-      this.project,
-      this.dataCollection,
-      this.informationSystem,
-      this.person,
-      this.organisation,
-    ]);
+    this.profileService.registerProfiles(this.docTypes);
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
   }

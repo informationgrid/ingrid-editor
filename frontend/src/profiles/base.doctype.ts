@@ -16,6 +16,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
   protected codelistQuery = inject(CodelistQuery);
 
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    return fieldConfig;
+  };
+
   fields = <FormlyFieldConfig[]>[
     {
       key: "title",

@@ -115,6 +115,11 @@ export interface InputOptions extends Options {
   placeholder?: string;
 }
 
+export interface TextAreaOptions extends Options {
+  fieldLabel?: string;
+  rows?: number;
+}
+
 export interface AutocompleteOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
@@ -172,7 +177,12 @@ export class FormFieldHelper {
    * @param elementIdPrefix is needed here to remember text area height correctly
    * @param options
    */
-  addTextArea(id, label, elementIdPrefix, options?): FormlyFieldConfig {
+  addTextArea(
+    id,
+    label,
+    elementIdPrefix,
+    options?: TextAreaOptions
+  ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
       key: id,

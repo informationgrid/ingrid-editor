@@ -21,6 +21,13 @@ export class GeoServiceDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  geoServiceOptions = {
+    required: {
+      operations: false,
+      classification: true,
+    },
+  };
+
   private mapServiceTypeToVersionCodelist = {
     "1": 5151,
     "2": 5152,
@@ -63,7 +70,7 @@ export class GeoServiceDoctype extends IngridShared {
           this.addRepeatList("classification", "Klassifikation des Dienstes", {
             asSelect: true,
             showSearch: true,
-            required: true,
+            required: this.geoServiceOptions.required.classification,
             options: this.getCodelistForSelect(5200, "classification"),
             codelistId: 5200,
           }),
@@ -110,6 +117,7 @@ export class GeoServiceDoctype extends IngridShared {
             }),
           ]),
           this.addRepeat("operations", "Operationen", {
+            required: this.geoServiceOptions.required.operations,
             fields: [
               this.addAutoCompleteInline("name", "Name", {
                 required: true,

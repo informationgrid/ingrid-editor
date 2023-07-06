@@ -17,7 +17,8 @@ data class UserInfo(
     val lastLogin: Date?,
     val externalHelp: String?,
     val useElasticsearch: Boolean?,
-    val permissions: List<String>
+    val permissions: List<String>,
+    var parentProfile: String? = null
 )
 
 data class Version(val version: String?, val date: Date?, val commitId: String?)
