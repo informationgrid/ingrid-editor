@@ -2,9 +2,7 @@ package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
@@ -19,7 +17,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
     private val sqlUrls = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data -> 'graphicOverviews' as graphicOverviews, doc.title, doc.type
-        , doc.data -> 'references'  as references , doc.data -> 'service' as service , doc.data -> 'serviceUrls' as serviceUrls
+        ,doc.data -> 'references' as references, doc.data -> 'service' as service, doc.data -> 'serviceUrls' as serviceUrls
         FROM catalog,
              document_wrapper dw,
              document doc
@@ -33,15 +31,14 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
 
     override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
-        val extraJsonbFields = arrayOf("references", "service" , "serviceUrls")
+        val extraJsonbFields = arrayOf("references", "service", "serviceUrls")
 
-        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId , extraJsonbFields)
+        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId, extraJsonbFields)
         return mapQueryResults(result)
     }
 
     private fun mapQueryResults(
-            result: List<Array<Any?>>,
-            onlyLinks: Boolean = true
+        result: List<Array<Any?>>
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
         val dictionary: MutableMap<String, JsonNode?> = mutableMapOf()
@@ -53,8 +50,6 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
             val references = if (it[5] == null) null else jacksonObjectMapper().readTree(it[5].toString())
             val operations = if (it[6] == null) null else jacksonObjectMapper().readTree(it[6].toString())
             val serviceUrls = if (it[7] == null) null else jacksonObjectMapper().readTree(it[7].toString())
-           // val identifier = if (it[7] == null) null else jacksonObjectMapper().readTree(it[7].toString())
-
 
             dictionary["graphicOverviews"] = data
             dictionary["operations"] = operations
@@ -63,18 +58,16 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
             if (existingDoc == null) {
                 uniqueList.add(
-                        DocumentLinks(
-                                catalogId,
-                                docUuid,
-                                getUrlsFromJsonFields(dictionary, onlyLinks),
-                                it[3].toString(),
-                                it[4].toString()
-                        )
+                    DocumentLinks(
+                        catalogId,
+                        docUuid,
+                        getUrlsFromJsonFields(dictionary),
+                        it[3].toString(),
+                        it[4].toString()
+                    )
                 )
-
             } else {
-                existingDoc.docs.addAll(getUrlsFromJsonFields(dictionary, onlyLinks))
-
+                existingDoc.docs.addAll(getUrlsFromJsonFields(dictionary))
             }
         }
 
@@ -82,88 +75,75 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     }
 
 
-    private fun getUrlsFromJsonFields(dictionary: MutableMap<String, JsonNode?>, onlyLinks: Boolean): MutableList<UploadInfo> {
-        if (dictionary["graphicOverviews"] == null && dictionary["operations"] == null && dictionary["references"] == null
-            &&  dictionary["serviceUrls"] == null ) return mutableListOf()
-
-
+    private fun getUrlsFromJsonFields(dictionary: MutableMap<String, JsonNode?>): MutableList<UploadInfo> {
         val linkList: MutableList<UploadInfo> = mutableListOf()
 
-        if (dictionary["graphicOverviews"] != null) {
-
-            linkList.addAll(getUrlsFromGraphicOverviews(dictionary["graphicOverviews"] , true))
+        dictionary["graphicOverviews"].let {
+            linkList.addAll(getUrlsFromGraphicOverviews(dictionary["graphicOverviews"]))
         }
 
-        if (dictionary["operations"] != null) {
-
-            linkList.addAll(getUrlsFromOperationJsonField(dictionary["operations"] , true))
+        dictionary["operations"].let {
+            linkList.addAll(getUrlsFromOperationJsonField(dictionary["operations"]))
         }
 
-
-        if (dictionary["references"] != null) {
-
-            linkList.addAll(getUrlsFromReferenceJsonField(dictionary["references"] , true))
+        dictionary["references"].let {
+            linkList.addAll(getUrlsFromReferenceJsonField(dictionary["references"]))
         }
 
-        if (dictionary["serviceUrls"] != null) {
-
-            linkList.addAll(getUrlsFromServiceURLsJsonField(dictionary["serviceUrls"] , true))
+        dictionary["serviceUrls"].let {
+            linkList.addAll(getUrlsFromServiceURLsJsonField(dictionary["serviceUrls"]))
         }
         return linkList
-
     }
-    private fun getUrlsFromGraphicOverviews(graphicOverviews: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
+
+    private fun getUrlsFromGraphicOverviews(graphicOverviews: JsonNode?): MutableList<UploadInfo> {
         if (graphicOverviews == null) return mutableListOf()
 
         return graphicOverviews
-                .asSequence()
-                .map { jacksonObjectMapper().convertValue(it, LinkItem::class.java) }
-                .filter { it.fileName.asLink }
-                .map { it.fileName.uri }
-                .map { UploadInfo("graphicOverviews", it, null) }
-                .toMutableList()
+            .asSequence()
+            .map { jacksonObjectMapper().convertValue(it, LinkItem::class.java) }
+            .filter { it.fileName.asLink }
+            .map { it.fileName.uri }
+            .map { UploadInfo("graphicOverviews", it, null) }
+            .toMutableList()
     }
 
-    private fun getUrlsFromOperationJsonField(service: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
+    private fun getUrlsFromOperationJsonField(service: JsonNode?): MutableList<UploadInfo> {
         if (service == null) return mutableListOf()
 
+        val operations: JsonNode = service["operations"] ?: return mutableListOf()
 
-        val operations: JsonNode = service["operations"]
-
-        return   operations
+        return operations
             .mapNotNull { it["methodCall"]?.asText() }
-            .filter { !it.isNullOrBlank() }
-            .map { node -> UploadInfo("Operationen", node, null)}
+            .filter { it.isNotBlank() }
+            .map { node -> UploadInfo("Operationen", node, null) }
             .toMutableList()
-
     }
 
-    private fun getUrlsFromReferenceJsonField(references: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
+    private fun getUrlsFromReferenceJsonField(references: JsonNode?): MutableList<UploadInfo> {
         if (references == null) return mutableListOf()
 
-        return   references
+        return references
             .mapNotNull { it["url"]?.asText() }
-            .filter { !it.isNullOrBlank() }
-            .map { node -> UploadInfo("Reference", node, null)}
+            .filter { it.isNotBlank() }
+            .map { node -> UploadInfo("Reference", node, null) }
             .toMutableList()
-
-
     }
 
-    private fun getUrlsFromServiceURLsJsonField(serviceURLs: JsonNode?, onlyLinks: Boolean): MutableList<UploadInfo> {
+    private fun getUrlsFromServiceURLsJsonField(serviceURLs: JsonNode?): MutableList<UploadInfo> {
         if (serviceURLs == null) return mutableListOf()
 
-        return  serviceURLs
+        return serviceURLs
             .mapNotNull { it["url"]?.asText() }
-            .filter { !it.isNullOrBlank() }
-            .map { node -> UploadInfo("serviceURLs", node, null)}
+            .filter { it.isNotBlank() }
+            .map { node -> UploadInfo("serviceURLs", node, null) }
             .toMutableList()
-
     }
 
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class LinkItem(val fileName: FileInfo, val fileDescription: String?)
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class FileInfo(val uri: String, val value: String, val asLink: Boolean)
 
