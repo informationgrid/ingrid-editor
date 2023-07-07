@@ -9,8 +9,6 @@ class InGridKommunalStComponent extends InGridComponent {
     super();
 
     this.modifyFormFieldConfiguration();
-
-    this.docTypes = [this.folder, this.geoService, this.geoDataset];
   }
 
   private modifyFormFieldConfiguration() {
@@ -19,7 +17,7 @@ class InGridKommunalStComponent extends InGridComponent {
     this.geoDataset.geodatasetOptions.required.statement = false;
     this.geoDataset.geodatasetOptions.required.subType = false;
     this.geoDataset.geodatasetOptions.dynamicRequired.citation = undefined;
-    // this.geoDataset.
+    this.geoDataset.options.required.topicCategories = false;
 
     [
       this.specialisedTask,
