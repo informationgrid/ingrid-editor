@@ -39,6 +39,7 @@ export class DestinationSelectionComponent implements OnInit {
         this.forAddress ? "menu.address" : "menu.form"
       ),
       icon: "Ordner",
+      _type: "FOLDER",
       _state: "P",
     };
 
