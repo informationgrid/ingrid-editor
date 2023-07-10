@@ -353,12 +353,25 @@ class BmiProfile @Autowired constructor(
 
             }
         }
+        val codelist20005 = Codelist().apply {
+            identifier = "20005"
+            catalog = catalogRef
+            name = "geplante Verfügbarkeiten"
+            description = "Liste der geplanten Verfügbarkeiten die von GovData unterstützt werden."
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toCodelistEntry("temporary", "Daten können jederzeit verschwinden."))
+                add(toCodelistEntry("experimental", "Daten versuchsweise verfügbar, sind aber noch etwa ein Jahr erreichbar."))
+                add(toCodelistEntry("available", "Daten sind für einige Jahre verfügbar, mittelfristige Planung"))
+                add(toCodelistEntry("stable", "Daten werden langfristig erhältlich bleiben."))
+            }
+        }
 
         when (codelistId) {
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
             "20002" -> removeAndAddCodelist(catalogId, codelist20002)
             "20003" -> removeAndAddCodelist(catalogId, codelist20003)
             "20004" -> removeAndAddCodelist(catalogId, codelist20004)
+            "20005" -> removeAndAddCodelist(catalogId, codelist20005)
             null -> {
                 removeAndAddCodelist(catalogId, codelist20001)
                 codelistRepo.save(codelist20001)
@@ -368,6 +381,8 @@ class BmiProfile @Autowired constructor(
                 codelistRepo.save(codelist20003)
                 removeAndAddCodelist(catalogId, codelist20004)
                 codelistRepo.save(codelist20004)
+                removeAndAddCodelist(catalogId, codelist20005)
+                codelistRepo.save(codelist20005)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
