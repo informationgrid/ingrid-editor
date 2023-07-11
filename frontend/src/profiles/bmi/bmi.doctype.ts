@@ -4,6 +4,9 @@ import { inject, Injectable } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
+import {map} from "rxjs/operators";
+import {CodelistQuery} from "../../app/store/codelist/codelist.query";
+import {RepeatDetailListOptions} from "../form-field-helper";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -18,6 +21,7 @@ export class BmiDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
+  protected codelistQuery = inject(CodelistQuery);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -66,78 +70,83 @@ export class BmiDoctype extends BaseDoctype {
           options: this.getCodelistForSelect(20001, "DCATThemes"),
           codelistId: 20001,
         }),
-        this.addTable("distributions", "Downloads", {
+        this.addRepeatDistirbutionsDetailList("distributions", "Downloads", {
           required: true,
-          columns: [
-            {
-              key: "title",
-              id: "title",
-              type: "input",
-              label: "Titel",
-              focus: true,
-              class: "flex-2",
-              props: {
-                label: "Titel",
-                appearance: "outline",
-              },
-            },
-            {
-              key: "link",
-              type: "upload",
-              label: "Link",
-              class: "flex-2",
-              props: {
+          fields: [
+            this.addGroupSimple(null, [
+              { key: "link" },
+              this.addInputInline("title", "Titel", {
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+              }),
+              {
+                key: "link",
+                type: "upload",
                 label: "Link",
-                appearance: "outline",
-                required: true,
-                onClick: (docUuid, uri, $event) => {
-                  this.uploadService.downloadFile(docUuid, uri, $event);
-                },
-                formatter: (link: any, form: UntypedFormGroup) => {
-                  if (link.asLink) {
-                    return `
-                         <a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri} </a> `;
-                  } else {
-                    return `<a href="${
-                      this.configService.getConfiguration().backendUrl
-                    }upload/${form.get("_uuid").value}/${
-                      link.uri
-                    }" class="no-text-transform icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${
-                      link.uri
-                    }</a>`;
+                class: "flex-2",
+                props: {
+                  label: "Link",
+                  appearance: "outline",
+                  required: true,
+                  onClick: (docUuid, uri, $event) => {
+                    this.uploadService.downloadFile(docUuid, uri, $event);
                   }
                 },
               },
-            },
-            {
-              key: "format",
-              type: "select",
-              label: "Datenformat",
-              wrappers: ["form-field"],
-              props: {
-                label: "Datenformat",
-                appearance: "outline",
-                options: this.getCodelistForSelect(20003, null),
+              this.addSelectInline("format", "Format", {
+                showSearch: true,
+                options: this.getCodelistForSelect(20003, "type").pipe(
+                  map((data) => {
+                    return data;
+                  })
+                ),
                 codelistId: 20003,
-                formatter: (item: any) =>
-                  this.formatCodelistValue("20003", item),
-              },
-            },
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+              }),
+              this.addRepeatListInline("languages", "Sprachen der Ressource", {
+                view: "chip",
+                asSelect: true,
+                asSimpleValues: true,
+                placeholder: "Sprachen der Ressource",
+                options: this.getCodelistForSelect(
+                  99999999,
+                  "extraInfoLangData"
+                ),
+                codelistId: 99999999,
+              }),
+              this.addGroupSimple(null, [
+                this.addTextAreaInline("description", "Beschreibung", {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
+                }),
+              ]),
+              this.addSelectInline("license", "Lizenz", {
+                required: true,
+                options: this.getCodelistForSelect(20004, "null"),
+                codelistId: 20004,
+              }),
+              this.addInputInline("byClause", "Namensnennungstext für \"By\"-Clauses", {
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+              }),
+              this.addSelectInline("plannedAvailability", "geplante Verfügbarkeit", {
+                options: this.getCodelistForSelect(20005, "null"),
+                codelistId: 20005,
+              }),
+            ])
           ],
           validators: {
-            requiredColumns: {
-              expression: (ctrl) => ctrl.value?.every((row) => row.link),
-              message: "Es müssen alle Pflichtspalten ausgefüllt sein",
-            },
           },
         }),
-        this.addSelect("license", "Lizenz", {
-          required: true,
-          options: this.getCodelistForSelect(20004, "null"),
-          codelistId: 20004,
+        this.addTextArea(
+          "legalBasis",
+          "Rechtsgrundlage für die Zugangseröffnung",
+          this.id
+        ),
+        this.addInput("qualityProcessURI", "Qualitätssicherungsprozess URI", {
+          wrappers: ["panel", "form-field"],
         }),
-        this.addTextArea("origin", "Quellenvermerk", this.id),
       ]),
       this.addSection("Raumbezüge", [this.addSpatial("spatial", "Raumbezüge")]),
       this.addSection("Zeitbezüge", [
@@ -177,4 +186,34 @@ export class BmiDoctype extends BaseDoctype {
         }),
       ]),
     ];
+
+  addRepeatDistirbutionsDetailList(
+    id,
+    label,
+    options?: RepeatDetailListOptions
+  ): FormlyFieldConfig {
+    const expressions = this._initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "repeatDistributionsDetailList",
+      wrappers: options?.wrappers ?? ["panel"],
+      className: options?.className,
+      props: {
+        externalLabel: label,
+        required: options?.required,
+      },
+      fieldArray: {
+        fieldGroup: options?.fields,
+      },
+      expressions: expressions,
+      validators: options?.validators,
+    };
+  }
+
+  private _initExpressions(expressions = {}) {
+    return {
+      "props.disabled": "formState.disabled",
+      ...expressions,
+    };
+  }
 }

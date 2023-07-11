@@ -1,0 +1,106 @@
+<ige-form-error
+    *ngIf="
+        showError &&
+        formControl.invalid &&
+        formControl.errors &&
+        !formControl.hasError('required')
+    "
+>
+    <div *ngFor="let error of formControl.errors | keyvalue">
+        {{ error.value.message }}
+    </div>
+</ige-form-error>
+
+<mat-list
+    *ngIf="field.fieldGroup.length"
+    cdkDropList
+    cdkDropListOrientation="vertical"
+    (cdkDropListDropped)="drop($event)"
+>
+    <mat-list-item
+        *ngFor="let item of field.fieldGroup; let i = index"
+        cdkDrag
+        [cdkDragDisabled]="formControl.disabled"
+        [class.clickable]="formControl.enabled"
+        [class.draggable]="formControl.enabled"
+    >
+        <div class="flex-row gap-6">
+            <mat-icon *ngIf="formControl.enabled" cdkDragHandle
+                >drag_indicator
+            </mat-icon>
+
+            <div class="flex-1 flex-col align-items-start">
+                <div
+                    *ngIf="
+                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]?.props
+                            ?.codelistId;
+                        else simpleType
+                    "
+                    class="type"
+                >
+                    {{
+                    model[i].format.key
+                        | codelist
+                        : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
+                            ?.props?.codelistId
+                        | async
+                    }}
+                </div>
+                <ng-template #simpleType>
+                    <div class="type">{{ model[i].format?.key }}</div>
+                </ng-template>
+                <div class="title">{{ model[i].title }}</div>
+                <a *ngIf="model[i].link.asLink"
+                   class="url no-text-transform icon-in-table"
+                   [href]="model[i].link.uri"
+                   target="_blank">
+                    <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> {{ model[i].link.uri }}</a>
+                <a *ngIf="!model[i].link.asLink"
+                   class="url no-text-transform icon-in-table"
+                   [href]="getDownloadURL(model[i].link.uri)"
+                   target="_blank">
+                    <img  width="20"  height="20" src="assets/icons/download.svg"> {{ model[i].link.uri }}</a>
+
+                <div *ngIf="model[i].description" class="explanation">
+                    {{ model[i].description }}
+                </div>
+            </div>
+
+            <button
+                *ngIf="formControl.enabled"
+                mat-icon-button
+                type="button"
+                class="menu-button"
+                [matMenuTriggerFor]="menu"
+            >
+                <mat-icon svgIcon="Mehr"></mat-icon>
+            </button>
+
+            <mat-menu #menu>
+                <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
+                <button mat-menu-item (click)="remove(i)">Entfernen</button>
+            </mat-menu>
+        </div>
+    </mat-list-item>
+</mat-list>
+
+
+    <div class="button-wrapper">
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showUploadFilesDialog()"
+        >
+            Dateien hochladen
+        </button>
+        oder
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showAddLinkDialog()"
+        >
+            Link angeben
+        </button>
+    </div>

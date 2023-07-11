@@ -1,0 +1,46 @@
+@import "src/variables";
+
+ige-add-button {
+  display: block;
+  padding-bottom: 22px;
+}
+
+.cdk-drag {
+  background: $ige-background;
+}
+
+.cdk-drag-handle {
+  color: $ige-background-bar;
+}
+
+.mat-mdc-list-item {
+  height: auto;
+  padding: 6px;
+  border-bottom: 2px solid #fff;
+
+  .type {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .url,
+  .explanation {
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+
+  .url {
+    -webkit-line-clamp: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .explanation {
+    -webkit-line-clamp: 2;
+  }
+}
