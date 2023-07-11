@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.services.geothesaurus
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
@@ -59,10 +60,15 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 //        val adaptedTerm = convertType(options.searchType, term)
         val response = sendRequest("POST", searchUrlTemplate, template(term))
         val mapper = XmlMapper(JacksonXmlModule())
-        val result = mapper.readTree(response).get("featureMember")
-            ?.mapNotNull { mapToSpatial(it.get("GnObjekt")) }
-            ?.toSet()?.toList() ?: emptyList()
-            
+        val featureMember = mapper.readTree(response).get("featureMember")
+        
+        val result = if (featureMember is ObjectNode) {
+            listOfNotNull(mapToSpatial(featureMember.get("GnObjekt")))
+        }else {
+            featureMember
+                ?.mapNotNull { mapToSpatial(it.get("GnObjekt")) }
+                ?.toSet()?.toList() ?: emptyList()
+        }
         return resolveTypeReferences(result)
     }
 
@@ -137,11 +143,19 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
             null -> null
             1 -> endonyms.get("Endonym").get("name").asText()
             else -> {
+
+                getGermanName(featureMember)?.let { return it }
+                
                 val endo = endonyms.get(0)?.get("Endonym")
                 "${endo?.get("name")?.asText()} (${endonyms.get(1)?.get("Endonym")?.get("name")?.asText()})"
             }
         }
     }
+
+    private fun getGermanName(featureMember: JsonNode) = featureMember.get("hatEndonym").find {
+        val hatSprache = it?.get("Endonym")?.get("hatSprache")
+        hatSprache?.get("Sprache")?.get("sprache_ID")?.asText() == "1" || hatSprache?.get("href")?.asText() == "#Spr_1"
+    }?.get("Endonym")?.get("name")?.asText()
 }
 
 private fun convertType(searchType: ThesaurusSearchType, term: String): String {
