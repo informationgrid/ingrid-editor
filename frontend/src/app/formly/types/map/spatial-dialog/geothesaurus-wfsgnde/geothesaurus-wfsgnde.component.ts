@@ -92,6 +92,8 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   }
 
   private searchLocation(query: string) {
+    if (this.searchSubscribe) this.searchSubscribe.unsubscribe();
+
     if (query.trim().length === 0) {
       this.showWelcome = true;
       this.geoThesaurusResults = [];
