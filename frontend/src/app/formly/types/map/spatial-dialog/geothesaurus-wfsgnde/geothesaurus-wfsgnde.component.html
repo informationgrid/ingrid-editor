@@ -1,4 +1,4 @@
-<div class="free-spatial-wrapper flex-col">
+<div class="wfsgnde-spatial-wrapper flex-col">
     <div class="dlg-field-label">Ort</div>
     <ige-search-input
         placeholder="Suchen"
@@ -9,7 +9,7 @@
         minWidth="100%"
     ></ige-search-input>
 
-    <div *ngIf="showWelcome" class="comment">
+    <div *ngIf="showWelcome" class="padding-vertical comment">
         Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
         Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
         zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
@@ -19,7 +19,7 @@
 
     <div class="result-wrapper">
         <div class="list-wrapper">
-            <mat-list dense style="overflow: auto">
+            <mat-list dense style="overflow: auto" ngDefaultControl>
                 <ng-container *ngFor="let entry of geoThesaurusResults">
                     <mat-list-item
                         (click)="handleSelection(entry)"
@@ -38,6 +38,9 @@
                     <mat-divider></mat-divider>
                 </ng-container>
             </mat-list>
+            <div *ngIf="hasMoreResults" class="comment padding">
+                Max. 50 Treffer. Bitte verfeinern Sie die Suche.
+            </div>
         </div>
     </div>
     <div *ngIf="spatialSelection?.ars">

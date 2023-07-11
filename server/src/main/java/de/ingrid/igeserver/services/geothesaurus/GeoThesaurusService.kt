@@ -20,7 +20,8 @@ data class SpatialResponse(
     @JsonIgnore val typeId: String?,
     val name: String?,
     val bbox: BoundingBox,
-    val ars: String?
+    val ars: String?,
+    val hasMoreResults: Boolean
 )
 
 data class BoundingBox(

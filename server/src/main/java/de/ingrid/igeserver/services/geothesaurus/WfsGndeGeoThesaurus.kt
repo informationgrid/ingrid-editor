@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
+    @Value("\${geothesaurus.max.results:50}")
+    private val maxResults: Int = 50
+    
     override val id = "wfsgnde"
 
     val searchUrlTemplate = "http://sg.geodatenzentrum.de/wfs_gnde"
@@ -37,7 +41,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
             """.trimIndent()
         }.joinToString("")
         return """
-    <wfs:GetFeature traverseXlinkDepth="*" resultType="results" version="1.1.0" service="WFS" xmlns:wfs="http://www.opengis.net/wfs"  xmlns:ogc="http://www.opengis.net/ogc"          >
+    <wfs:GetFeature maxFeatures="$maxResults" traverseXlinkDepth="*" resultType="results" version="1.1.0" service="WFS" xmlns:wfs="http://www.opengis.net/wfs"  xmlns:ogc="http://www.opengis.net/ogc"          >
         <wfs:Query featureVersion="1.1.0" typeName="gn:GnObjekt" xmlns:gn="http://www.geodatenzentrum.de/gnde">
             <ogc:Filter>
                 <ogc:And>
@@ -63,10 +67,11 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         val featureMember = mapper.readTree(response).get("featureMember")
         
         val result = if (featureMember is ObjectNode) {
-            listOfNotNull(mapToSpatial(featureMember.get("GnObjekt")))
+            listOfNotNull(mapToSpatial(featureMember.get("GnObjekt"), false))
         }else {
+            val maxReached = featureMember?.size() == maxResults
             featureMember
-                ?.mapNotNull { mapToSpatial(it.get("GnObjekt")) }
+                ?.mapNotNull { mapToSpatial(it.get("GnObjekt"), maxReached) }
                 ?.toSet()?.toList() ?: emptyList()
         }
         return resolveTypeReferences(result)
@@ -81,7 +86,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         }
     }
 
-    private fun mapToSpatial(featureMember: JsonNode?): SpatialResponse? {
+    private fun mapToSpatial(featureMember: JsonNode?, maxReached: Boolean): SpatialResponse? {
         if (featureMember == null) return null
         
         val (typeName, typeId) = getType(featureMember)
@@ -91,7 +96,8 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
             typeId,
             mapName(featureMember),
             mapBoundingBox(featureMember),
-            getARS(featureMember)
+            getARS(featureMember),
+            maxReached
         )
     }
 
