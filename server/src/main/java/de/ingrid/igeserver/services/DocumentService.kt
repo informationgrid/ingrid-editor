@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
@@ -753,6 +754,7 @@ class DocumentService @Autowired constructor(
         return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
     }
 
+    @AuditLog(action = "unpublish", target = "id")
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
         val currentDoc = getDocumentFromCatalog(catalogId, id)
