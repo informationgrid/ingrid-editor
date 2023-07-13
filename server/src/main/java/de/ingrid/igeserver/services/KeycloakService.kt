@@ -142,7 +142,7 @@ class KeycloakService : UserManagementService {
     }
 
 
-    fun initAdminClient(): KeycloakCloseableClient {
+    override fun initAdminClient(): KeycloakCloseableClient {
         val jsonResponse = this.sendLoginRequest(superAdminUser!!, superAdminPassword!!)
         return initClient(jsonResponse["access_token"].toString())
     }

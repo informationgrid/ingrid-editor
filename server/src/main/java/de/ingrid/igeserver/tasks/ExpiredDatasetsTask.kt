@@ -30,7 +30,7 @@ class ExpiredDatasetsTask(
     val emailService: EmailServiceImpl,
     val documentService: DocumentService,
     val aclService: IgeAclService,
-    private val keycloakService: KeycloakService,
+    private val keycloakService: UserManagementService,
     val appSettings: GeneralProperties
 ) {
 
