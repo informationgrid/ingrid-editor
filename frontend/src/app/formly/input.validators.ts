@@ -29,7 +29,10 @@ export function UrlValidator(control: UntypedFormControl): ValidationErrors {
   return regExp.test(control.value?.trim()) ? null : { url: true };
 }
 
-export function UrlValidatorMessage(error: any, field: FormlyFieldConfig) {
+export function UrlValidatorMessage(
+  error: any = null,
+  field: FormlyFieldConfig = null
+) {
   return "Verwenden Sie bitte eine gültige URL";
 }
 
