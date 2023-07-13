@@ -96,12 +96,15 @@ class ExpiredDatasetsTask(
         val linkstub = "${appSettings.host}/${catalog.name}"
 
 
-        this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub)
-        this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub)
+        try {
+            this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub)
+            this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub)
 
-
-         this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
-         this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
+             this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
+             this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
+        } catch (e: Exception) {
+            log.error("Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.", e)
+        }
     }
 
     private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset {
