@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -42,12 +43,15 @@ class ExpiredDatasetsTask(
     // this ensures that the task is executed after the initial db migrations
     @EventListener(ApplicationReadyEvent::class)
     fun onStartup() {
+        expiredDatasetsTask()
+    }
+
+    @Scheduled(cron = "\${cron.expired.datasets.expression}")
+    fun expiredDatasetsTask() {
         catalogService.getCatalogs().forEach {
             sendExpiryEmails(it)
         }
         getAuthentication()
-
-
     }
 
     private fun sendExpiryEmails(catalog: Catalog) {
