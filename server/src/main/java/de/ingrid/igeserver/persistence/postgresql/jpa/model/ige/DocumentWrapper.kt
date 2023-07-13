@@ -103,6 +103,14 @@ class DocumentWrapper {
     @JsonIgnore
     var responsibleUser: UserInfo? = null
 
+    @Column
+    @JsonIgnore
+    var last_expiry_time: OffsetDateTime? = null
+
+    @Column
+    @JsonIgnore
+    var expiry_state: Int? = 0
+
     @Transient
     var hasWritePermission: Boolean = true
 
