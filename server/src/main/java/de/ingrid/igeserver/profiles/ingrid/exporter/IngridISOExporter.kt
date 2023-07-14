@@ -23,7 +23,7 @@ class IngridISOExporter @Autowired constructor(
     override val typeInfo = ExportTypeInfo(
             DocumentCategory.DATA,
             "ingridISO",
-            "Ingrid ISO",
+            "ISO 19139",
             "Export von Ingrid Dokumenten ISO Format für die Anzeige im Portal.",
             "text/xml",
             "xml",

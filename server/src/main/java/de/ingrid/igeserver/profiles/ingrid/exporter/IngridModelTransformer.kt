@@ -7,10 +7,10 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
-import de.ingrid.igeserver.exports.iso19139.Keyword
-import de.ingrid.igeserver.exports.iso19139.Thesaurus
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -182,18 +182,18 @@ open class IngridModelTransformer constructor(
     val dateEvents = data.temporal.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
-        keywords = data.themes?.map { Keyword(name = codelists.getValue("6100", it), link = null) } ?: emptyList(),
+        keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = null) } ?: emptyList(),
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
     val freeKeywords = Thesaurus(
-        keywords = data.keywords?.free?.map { Keyword(name = it.label, link = null) } ?: emptyList(),
+        keywords = data.keywords?.free?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = null,
         name = null,
     )
     val furtherLegalBasisKeywords = Thesaurus(
         keywords = data.extraInfo?.legalBasicsDescriptions?.map {
-            Keyword(
+            KeywordIso(
                 name = codelists.getValue("1350", it),
                 link = null
             )
@@ -204,7 +204,7 @@ open class IngridModelTransformer constructor(
     )
 
     val umthesKeywords = Thesaurus(
-        keywords = data.keywords?.umthes?.map { Keyword(name = it.label, link = null) } ?: emptyList(),
+        keywords = data.keywords?.umthes?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = "2009-01-15",
         name = "UMTHES Thesaurus"
     )
@@ -215,7 +215,7 @@ open class IngridModelTransformer constructor(
     )
 
     val serviceTypeKeywords = Thesaurus(
-        keywords = data.service?.classification?.map { Keyword(name = codelists.getValue("5200", it, "iso"), link = null) }
+        keywords = data.service?.classification?.map { KeywordIso(name = codelists.getValue("5200", it, "iso"), link = null) }
             ?: emptyList(),
         date = "2008-06-01",
         name = "Service Classification, version 1.0"
@@ -225,7 +225,7 @@ open class IngridModelTransformer constructor(
         name = "German Environmental Classification - Topic, version 1.0"
     )
     val inspirePriorityKeywords = Thesaurus(
-        keywords = data.priorityDatasets?.map { Keyword(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) }
+        keywords = data.priorityDatasets?.map { KeywordIso(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) }
             ?: emptyList(),
         date = "2018-04-04",
         name = "INSPIRE priority data set",
@@ -233,7 +233,7 @@ open class IngridModelTransformer constructor(
         showType = false
     )
     val spatialScopeKeyword = Thesaurus(
-        keywords = data.spatialScope?.let { listOf(Keyword(name = codelists.getValue("6360", it), link = codelists.getDataField("6360", it.key, "url"))) }
+        keywords = data.spatialScope?.let { listOf(KeywordIso(name = codelists.getValue("6360", it), link = codelists.getDataField("6360", it.key, "url"))) }
             ?: emptyList(),
         date = "2019-05-22",
         name = "Spatial scope",
@@ -242,13 +242,13 @@ open class IngridModelTransformer constructor(
     )
 
     val advCompatibleKeyword =
-        if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(Keyword("AdVMIS"))) else Thesaurus()
+        if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val opendataKeyword =
-        if (data.isOpenData == true) Thesaurus(keywords = listOf(Keyword("opendata"))) else Thesaurus()
+        if (data.isOpenData == true) Thesaurus(keywords = listOf(KeywordIso("opendata"))) else Thesaurus()
     val opendataCategoryKeywords = if (data.isOpenData == true) Thesaurus(
         name = "",
         keywords = this.data.openDataCategories?.map {
-            Keyword(
+            KeywordIso(
                 codelists.getValue(
                     "6400",
                     it
@@ -257,7 +257,7 @@ open class IngridModelTransformer constructor(
         } ?: emptyList(),
     ) else Thesaurus()
     val inspireRelevantKeyword =
-        if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(Keyword("inspireidentifiziert"))) else Thesaurus()
+        if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation

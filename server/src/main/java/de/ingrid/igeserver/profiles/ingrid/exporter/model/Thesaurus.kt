@@ -1,9 +1,9 @@
-package de.ingrid.igeserver.exports.iso19139
+package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 data class Thesaurus(
     var name: String? = null,
     var date: String? = null,
     var link: String? = null,
     var showType: Boolean = true,
-    var keywords: List<Keyword> = emptyList()
+    var keywords: List<KeywordIso> = emptyList()
 )
