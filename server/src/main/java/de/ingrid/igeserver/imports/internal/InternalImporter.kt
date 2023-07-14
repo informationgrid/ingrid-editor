@@ -3,6 +3,7 @@ package de.ingrid.igeserver.imports.internal
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.FIELD_ID
@@ -27,7 +28,13 @@ class InternalImporter : IgeImporter {
         if (version == "0.0.1") {
            documents = migrateDocumentsFrom(documents as ArrayNode)
         }
-        return documents
+        val published = documents.get("published")
+        val draft = documents.get("draft")
+        return jacksonObjectMapper().createArrayNode().apply { 
+            add(published) 
+            add(draft) 
+        }
+//        return documents
     }
 
     private fun migrateDocumentsFrom(documents: ArrayNode): ArrayNode {

@@ -70,7 +70,9 @@ class ImportService(
 
         val result = importer[0].run(catalogId, fileContent)
         return if (result is ArrayNode) {
-            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0])))
+            // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[0], true)))
+            prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result[1])))
         } else {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
         }
@@ -142,7 +144,7 @@ class ImportService(
         return ExtractedZip(importers.toList(), docs)
     }
 
-    private fun analyzeDoc(catalogId: String, doc: JsonNode): DocumentAnalysis {
+    private fun analyzeDoc(catalogId: String, doc: JsonNode, forcePublish: Boolean = false): DocumentAnalysis {
         val document = documentService.convertToDocument(doc)
         document.state = DOCUMENT_STATE.DRAFT
         document.isLatest = true
@@ -155,7 +157,14 @@ class ImportService(
                     val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
                     it.state = DOCUMENT_STATE.DRAFT
                     document.isLatest = true
-                    DocumentAnalysis(it, wrapper?.id, isAddress(it.type), wrapper != null && wrapper.deleted == 0, wrapper?.deleted == 1)
+                    DocumentAnalysis(
+                        it,
+                        wrapper?.id,
+                        isAddress(it.type),
+                        wrapper != null && wrapper.deleted == 0,
+                        wrapper?.deleted == 1,
+                        forcePublish = forcePublish
+                    )
                 }
 
         return DocumentAnalysis(
@@ -164,7 +173,8 @@ class ImportService(
                 isAddress(document.type),
                 documentWrapper != null && documentWrapper.deleted == 0,
                 documentWrapper?.deleted == 1,
-                references
+                references,
+                forcePublish
         )
     }
 
@@ -243,7 +253,7 @@ class ImportService(
         } else if (ref.deleted) {
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
-            if (options.publish) {
+            if (options.publish || ref.forcePublish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
                 documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
@@ -257,7 +267,7 @@ class ImportService(
 
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
             setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
-            if (options.publish) {
+            if (options.publish || ref.forcePublish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
                 documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
@@ -326,7 +336,8 @@ data class DocumentAnalysis(
         val isAddress: Boolean,
         val exists: Boolean,
         val deleted: Boolean,
-        val references: List<DocumentAnalysis> = emptyList()
+        val references: List<DocumentAnalysis> = emptyList(),
+        val forcePublish: Boolean = false
 )
 
 data class OptimizedImportAnalysis(

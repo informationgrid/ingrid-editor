@@ -2,6 +2,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
@@ -89,7 +90,7 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
                 true
             ) else documentService.getDocumentByWrapperId(catalogId, doc.id!!, true)
             val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-            val result = exporter.run(docVersion, catalogId)
+            val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft))
             if (result is ObjectNode) result.toPrettyString() else result as String
         } catch (ex: NotFoundException) {
             if (options.useDraft) {
