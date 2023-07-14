@@ -32,9 +32,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
     fun getExporter(category: DocumentCategory, format: String): IgeExporter =
         exporterFactory.getExporter(category, format)
 
-    fun getExportTypes(profile: String): List<ExportTypeInfo> {
+    fun getExportTypes(profile: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         return exporterFactory.typeInfos
             .filter { it.profiles.isEmpty() || it.profiles.contains(profile) }
+            .filter { if (onlyPublic) it.isPublic else true }
     }
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {

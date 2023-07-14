@@ -39,7 +39,8 @@ class IngridIndexExporter @Autowired constructor(
         "Export von Ingrid Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
-        listOf("ingrid")
+        listOf("ingrid"),
+        false
     )
 
     private lateinit var xpathUtils: XPathUtils

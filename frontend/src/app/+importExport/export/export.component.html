@@ -50,29 +50,33 @@
                     <div class="section-title">Ort</div>
                     <ige-breadcrumb [path]="path"></ige-breadcrumb>
 
-                    <div class="section-title space">{{ t("form") }}</div>
-                    <mat-checkbox
-                        formControlName="drafts"
-                        style="margin-top: 12px; display: block"
-                    >
-                        Auch Entwürfe exportieren
-                    </mat-checkbox>
-
-                    <div class="section-title space">Format</div>
-                    <mat-form-field
-                        appearance="outline"
-                        class="white-bg"
-                        style="width: 300px"
-                    >
-                        <mat-select formControlName="format">
-                            <mat-option
-                                *ngFor="let format of exportFormats | async"
-                                [value]="format"
+                    <div class="section-title padding-vertical">Format</div>
+                    <div class="flex-row gap-12">
+                        <mat-form-field
+                            appearance="outline"
+                            class="white-bg"
+                            style="width: 300px"
+                        >
+                            <mat-select
+                                formControlName="format"
+                                (selectionChange)="updateDraftsCheckbox($event)"
                             >
-                                {{ format.name }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                                <mat-option
+                                    *ngFor="let format of exportFormats | async"
+                                    [value]="format"
+                                >
+                                    {{ format.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-checkbox
+                            *ngIf="showDraftsCheckbox"
+                            formControlName="drafts"
+                        >
+                            Auch Entwürfe exportieren
+                        </mat-checkbox>
+                    </div>
                 </form>
                 <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">

@@ -21,7 +21,8 @@ class IndexExporter @Autowired constructor(val idfExporter: IDFExporter, val luc
         "Export von UVP Verfahren ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
-        listOf("uvp")
+        listOf("uvp"),
+        false
     )
 
     override fun run(doc: Document, catalogId: String): Any {

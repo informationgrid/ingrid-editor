@@ -33,7 +33,8 @@ class IndexExporterAddress @Autowired constructor(
         "Export von UVP Adressen ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format. Für UVP allerdings leer und nur für Auflistung im Portal unter 'Verfahrensführende Behörden' benötigt.",
         "application/json",
         "json",
-        listOf("uvp")
+        listOf("uvp"),
+        false
     )
 
     @Transactional

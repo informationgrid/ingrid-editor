@@ -18,6 +18,7 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
+import { MatSelectChange } from "@angular/material/select";
 
 @Component({
   selector: "ige-export",
@@ -40,6 +41,7 @@ export class ExportComponent implements OnInit {
     );
   path: ShortTreeNode[];
   showMore = false;
+  showDraftsCheckbox = true;
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -151,5 +153,10 @@ export class ExportComponent implements OnInit {
       };
       reader.readAsText(error.error);
     });
+  }
+
+  updateDraftsCheckbox($event: MatSelectChange) {
+    this.showDraftsCheckbox = $event.value.type === "internal";
+    this.optionsFormGroup.get("drafts").setValue(false);
   }
 }

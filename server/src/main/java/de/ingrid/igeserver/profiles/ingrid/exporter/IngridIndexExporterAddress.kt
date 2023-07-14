@@ -33,7 +33,8 @@ class IngridIndexExporterAddress @Autowired constructor(
         "Export von Ingrid Adressen ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
-        listOf("ingrid")
+        listOf("ingrid"),
+        false
     )
 
     @Transactional
