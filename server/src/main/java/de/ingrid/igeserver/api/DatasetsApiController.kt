@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
@@ -134,6 +135,7 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.noContent().build()
     }
 
+    @AuditLog(action = "copy_datasets", target = "options", data = "ids")
     @Transactional
     override fun copyDatasets(
         principal: Principal,
@@ -151,6 +153,7 @@ class DatasetsApiController @Autowired constructor(
         return ResponseEntity.ok(results)
     }
 
+    @AuditLog(action = "move_datasets", target = "options", data = "ids")
     @Transactional
     override fun moveDatasets(
         principal: Principal,

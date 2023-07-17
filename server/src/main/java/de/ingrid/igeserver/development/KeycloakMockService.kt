@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.services.KeycloakService
 import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -99,6 +100,10 @@ class KeycloakMockService : UserManagementService {
     }
 
     override fun deleteUser(principal: Principal?, userId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun initAdminClient(): KeycloakService.KeycloakCloseableClient {
         TODO("Not yet implemented")
     }
 

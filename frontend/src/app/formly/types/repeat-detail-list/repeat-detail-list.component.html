@@ -10,7 +10,6 @@
         {{ error.value.message }}
     </div>
 </ige-form-error>
-
 <mat-list
     *ngIf="field.fieldGroup.length"
     cdkDropList
@@ -24,6 +23,15 @@
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
     >
+        <div *ngFor="let error of item.formControl.errors | keyvalue">
+            {{ error.value.message }}
+        </div>
+        <ige-form-error *ngIf="showError && item.formControl.invalid">
+            <formly-validation-message
+                *ngFor="let subField of item.fieldGroup[0].fieldGroup"
+                [field]="subField"
+            ></formly-validation-message>
+        </ige-form-error>
         <div class="flex-row gap-6">
             <mat-icon *ngIf="formControl.enabled" cdkDragHandle
                 >drag_indicator

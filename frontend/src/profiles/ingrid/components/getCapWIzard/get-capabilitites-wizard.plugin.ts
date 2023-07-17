@@ -105,7 +105,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
         ? null
         : doc._type === "FOLDER"
         ? doc.id
-        : this.treeQuery.getFirstParentFolder(doc.id + "").id;
+        : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
     const newDoc = new IgeDocument("InGridGeoService", +parentFolder);
     const model: IgeDocument = {
       ...newDoc,

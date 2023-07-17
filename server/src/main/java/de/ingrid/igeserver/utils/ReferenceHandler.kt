@@ -49,7 +49,9 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         sql: String,
         jsonbField: String,
         filterByDocId: Int?,
-        catalogId: String? = null
+        catalogId: String? = null,
+        extraJsonbFields : Array<String>?  = null
+
     ): List<Array<Any?>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
@@ -60,8 +62,11 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
             .addScalar("catalogId")
             .addScalar(jsonbField)
             .addScalar("title")
-            .addScalar("type")
-            .resultList as List<Array<Any?>>
+            .addScalar("type").apply {
+                extraJsonbFields?.forEach { field ->
+                addScalar(field)
+            }
+        }.resultList as List<Array<Any?>>
     }
 
     private val replaceUrlSql = """

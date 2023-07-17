@@ -16,7 +16,7 @@ import io.mockk.every
 import io.mockk.mockk
 import mockCodelists
 
-class SpecialisedTask : AnnotationSpec() {
+class DataCollection : AnnotationSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -37,24 +37,10 @@ class SpecialisedTask : AnnotationSpec() {
     }
 
     @Test
-    fun minimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
-
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-            .replace("\r\n", "\n")
-
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
-    }
-
-    @Test
     fun maximalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
+        var result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
@@ -62,22 +48,10 @@ class SpecialisedTask : AnnotationSpec() {
 
         result shouldNotBe null
         // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
+        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.expected.maximal.idf.xml")
     }
 
     @Test
     fun completeExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
-
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-            .replace("\r\n", "\n")
-
-        result shouldNotBe null
-        // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
     }
-
 }

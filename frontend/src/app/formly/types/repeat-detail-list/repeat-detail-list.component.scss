@@ -28,6 +28,7 @@ ige-add-button {
   }
 
   .url,
+  .title,
   .explanation {
     white-space: normal;
     overflow: hidden;
@@ -35,11 +36,16 @@ ige-add-button {
     -webkit-box-orient: vertical;
   }
 
+  .title,
   .url {
-    -webkit-line-clamp: 1;
     overflow-wrap: anywhere;
   }
 
+  .url {
+    -webkit-line-clamp: 1;
+  }
+
+  .title,
   .explanation {
     -webkit-line-clamp: 2;
   }

@@ -78,6 +78,25 @@ export const fields = (codelistService: CodelistService) =>
       },
     },
     {
+      key: "expiryDuration",
+      type: "number",
+      wrappers: ["panel", "form-field"],
+      props: {
+        externalLabel:
+          "Zeitraum der Gültigkeit von Datensätzen in Tagen (optional)",
+        appearance: "outline",
+      },
+    },
+    {
+      key: "notifyDaysBeforeExpiry",
+      type: "number",
+      wrappers: ["panel", "form-field"],
+      props: {
+        externalLabel: "Benachrichtigung vor Ablauf in Tagen (optional)",
+        appearance: "outline",
+      },
+    },
+    {
       key: "spatialReference",
       type: "leaflet",
       wrappers: ["panel"],

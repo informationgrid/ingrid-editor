@@ -511,10 +511,10 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "none"))
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        -180.0,
                         -90.0,
-                        180.0,
+                        -180.0,
                         90.0,
+                        180.0,
                         "Raumbezug von: Acme Corp. Map Server",
                         "frei"
                     )
@@ -528,7 +528,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         null,
                         "123456",
                         "Roads and Rivers",
-                        listOf(LocationBean(-71.63, 41.75, -70.78, 42.9, "ROADS_RIVERS", "frei")),
+                        listOf(LocationBean(41.75, -71.63, 42.9, -70.78, "ROADS_RIVERS", "frei")),
                         spatialSystems = listOf(
                             KeyValue(null, "EPSG:26986"),
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
@@ -542,10 +542,10 @@ class CapabilitiesServiceTest : ShouldSpec({
                         "Roads at 1:1M scale",
                         listOf(
                             LocationBean(
-                                -180.0,
                                 -90.0,
-                                180.0,
+                                -180.0,
                                 90.0,
+                                180.0,
                                 "Raumbezug von: Acme Corp. Map Server",
                                 "frei"
                             )

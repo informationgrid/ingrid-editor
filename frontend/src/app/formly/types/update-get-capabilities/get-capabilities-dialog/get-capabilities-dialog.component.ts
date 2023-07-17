@@ -98,6 +98,9 @@ export class GetCapabilitiesDialogComponent {
     this.allChecked = checked;
     if (checked) this.selection.selectAll();
     else this.selection.deselectAll();
+
+    // we need to manually trigger the following function, since selectAll/deselectAll does not emit selectionChange-event!
+    this.handleAddressConstraint();
   }
 
   private handleAddressConstraint() {

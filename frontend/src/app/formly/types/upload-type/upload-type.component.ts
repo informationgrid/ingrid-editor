@@ -5,6 +5,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../models/ige-document";
 import { UntypedFormControl, Validators } from "@angular/forms";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { patternWithMessage, REGEX_URL } from "../../input.validators";
 
 interface LinkType {
   uri: string;
@@ -25,9 +26,6 @@ export class UploadTypeComponent
   // TODO: refactor and use direct form control to prevent explicit updates
   upload: LinkType;
   @Input() document: IgeDocument;
-
-  private URL_REGEXP =
-    "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
 
   private defaultValue: LinkType = {
     asLink: true,
@@ -57,7 +55,7 @@ export class UploadTypeComponent
   }
 
   private setControl() {
-    const validators = [Validators.pattern(this.URL_REGEXP)];
+    const validators = [patternWithMessage(REGEX_URL, "url")];
     if (this.props.required) {
       validators.push(Validators.required);
     }
@@ -83,5 +81,8 @@ export class UploadTypeComponent
   updateValue() {
     this.upload.uri = this.control.value;
     this.formControl.setValue(this.upload);
+    this.formControl.setErrors(
+      this.control.invalid ? this.control.errors : null
+    );
   }
 }

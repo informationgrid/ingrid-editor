@@ -33,6 +33,7 @@ interface GeoThesaurusResult {
   ars: string;
   type: string;
   bbox: SpatialBoundingBox;
+  hasMoreResults: boolean;
 }
 
 @UntilDestroy()
@@ -76,6 +77,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
 
   spatialSelection: GeoThesaurusResult = null;
   useArs = true;
+  hasMoreResults = false;
 
   ngOnInit(): void {
     this.searchInput.valueChanges
@@ -92,9 +94,12 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   }
 
   private searchLocation(query: string) {
+    if (this.searchSubscribe) this.searchSubscribe.unsubscribe();
+
     if (query.trim().length === 0) {
       this.showWelcome = true;
       this.geoThesaurusResults = [];
+      this.hasMoreResults = false;
       return;
     }
     this.showWelcome = false;
@@ -105,6 +110,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
         this.applyDisplayTitle(response);
         this.geoThesaurusResults = response;
         this.showNoResult = response.length === 0;
+        this.hasMoreResults = response?.[0]?.hasMoreResults ?? false;
         // @ts-ignore
         setTimeout(() => (<Map>this.map)._onResize());
       });

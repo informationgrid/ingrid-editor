@@ -1,0 +1,226 @@
+{
+  "title": "Test-Fachaufgabe",
+  "_id": 1636,
+  "_uuid": "39d33dfb-8648-478c-930d-4ed0ed6f2872",
+  "_type": "InGridSpecialisedTask",
+  "_created": "2023-07-04T08:11:13.801471Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-04T10:38:58.379083726+02:00",
+  "_contentModified": "2023-07-04T10:38:58.379569552+02:00",
+  "_contentModifiedBy": "Super User",
+  "_version": 8,
+  "_state": "P",
+  "data": {
+    "_parent": 1238,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "asLink": true,
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg"
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "type": {
+          "key": "12"
+        },
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 9,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-03T15:47:26.773386Z",
+          "_contentModified": "2023-07-03T15:47:26.7739Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Stra.",
+            "country": {
+              "key": "8"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "4"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "26"
+      },
+      {
+        "key": "27"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/DW_00038573",
+          "label": "Natur",
+          "alternativeLabel": null
+        },
+        {
+          "id": "https://sns.uba.de/umthes/_8c74f7d8",
+          "label": "Natura-2000",
+          "alternativeLabel": null
+        }
+      ],
+      "free": [
+        {
+          "label": "Schlagwort"
+        }
+      ]
+    },
+    "spatial": {
+      "references": [
+        {
+          "value": {
+            "lat1": 52.35918,
+            "lon1": 13.082744,
+            "lat2": 52.688663,
+            "lon2": 13.784928
+          },
+          "title": "Berlin, Bundesland",
+          "type": "wfsgnde",
+          "ars": "11"
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "9000014"
+        },
+        {
+          "key": "5679"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "9036"
+        },
+        "Datum": {
+          "key": "900011"
+        }
+      },
+      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "3"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "till"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "7"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 15,
+        "unit": {
+          "key": "4"
+        }
+      },
+      "description": "Die Messungen erfolgten nur tagsüber."
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "1"
+        },
+        {
+          "key": "31"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Herstellungszweck",
+      "specificUsage": "Präsentation des Raumordnungsprogramms auf Basis der topografischen Kartenwerke"
+    },
+    "references": [
+      {
+        "type": {
+          "key": "5305"
+        },
+        "title": "Titel",
+        "url": "https://url.com",
+        "explanation": "Beschreibung!"
+      }
+    ]
+  }
+}
