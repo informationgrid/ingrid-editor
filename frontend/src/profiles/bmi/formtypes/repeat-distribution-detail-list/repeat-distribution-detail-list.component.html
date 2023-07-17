@@ -11,6 +11,7 @@
     </div>
 </ige-form-error>
 
+<mat-accordion>
 <mat-list
     *ngIf="field.fieldGroup.length"
     cdkDropList
@@ -24,65 +25,78 @@
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
     >
-        <div class="flex-row gap-6">
-            <mat-icon *ngIf="formControl.enabled" cdkDragHandle
-                >drag_indicator
-            </mat-icon>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <mat-icon *ngIf="formControl.enabled" cdkDragHandle
+                        >drag_indicator
+                        </mat-icon>
+                        {{ model[i].title }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <div class="flex-1 flex-col align-items-start">
+                        <a *ngIf="model[i].link.asLink"
+                           class="url no-text-transform icon-in-table"
+                           [href]="model[i].link.uri"
+                           (click)="$event.stopPropagation()"
+                           (keydown)="$event.stopPropagation()"
+                           target="_blank">
+                            <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> {{ model[i].link.uri }}</a>
+                        <a *ngIf="!model[i].link.asLink"
+                           class="url no-text-transform icon-in-table"
+                           [href]="getDownloadURL(model[i].link.uri)"
+                           (click)="$event.stopPropagation()"
+                           (keydown)="$event.stopPropagation()"
+                           target="_blank">
+                            <img  width="20"  height="20" src="assets/icons/download.svg"> {{ model[i].link.uri }}</a>
+                        </div>
+                        <button
+                            *ngIf="formControl.enabled"
+                            mat-icon-button
+                            type="button"
+                            class="menu-button"
+                            [matMenuTriggerFor]="menu"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
 
+                            <mat-menu #menu>
+                                <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
+                                <button mat-menu-item (click)="remove(i)">Entfernen</button>
+                            </mat-menu>
+                        </button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
             <div class="flex-1 flex-col align-items-start">
-                <div
-                    *ngIf="
-                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]?.props
-                            ?.codelistId;
-                        else simpleType
-                    "
-                    class="type"
-                >
-                    {{
-                    model[i].format.key
-                        | codelist
-                        : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
-                            ?.props?.codelistId
-                        | async
-                    }}
+                <div *ngIf="model[i].format?.key">
+                    <div class="type">Format: {{ model[i].format?.key }}</div>
                 </div>
-                <ng-template #simpleType>
-                    <div class="type">{{ model[i].format?.key }}</div>
-                </ng-template>
-                <div class="title">{{ model[i].title }}</div>
-                <a *ngIf="model[i].link.asLink"
-                   class="url no-text-transform icon-in-table"
-                   [href]="model[i].link.uri"
-                   target="_blank">
-                    <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> {{ model[i].link.uri }}</a>
-                <a *ngIf="!model[i].link.asLink"
-                   class="url no-text-transform icon-in-table"
-                   [href]="getDownloadURL(model[i].link.uri)"
-                   target="_blank">
-                    <img  width="20"  height="20" src="assets/icons/download.svg"> {{ model[i].link.uri }}</a>
+
 
                 <div *ngIf="model[i].description" class="explanation">
                     {{ model[i].description }}
                 </div>
+                <div>
+                    <a *ngIf="model[i].license?.key"
+                       class="url no-text-transform icon-in-table"
+                       [href]="model[i].license?.key"
+                       target="_blank"
+                    >{{ model[i].license?.key }}</a>
+                    <ng-container *ngIf="model[i].byClause">Namensnennung: {{ model[i].byClause }}</ng-container>
+                </div>
+                <div *ngIf="model[i].availability?.key">{{
+                    model[i].availability?.key
+                        | codelist
+                        : "20005"
+                        | async
+                    }}</div>
+
             </div>
-
-            <button
-                *ngIf="formControl.enabled"
-                mat-icon-button
-                type="button"
-                class="menu-button"
-                [matMenuTriggerFor]="menu"
-            >
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
-
-            <mat-menu #menu>
-                <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
-                <button mat-menu-item (click)="remove(i)">Entfernen</button>
-            </mat-menu>
-        </div>
+            </mat-expansion-panel>
     </mat-list-item>
 </mat-list>
+</mat-accordion>
 
 
     <div class="button-wrapper">

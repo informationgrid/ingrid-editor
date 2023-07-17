@@ -1,6 +1,7 @@
 import {Component, inject, OnInit} from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import {MatExpansionModule} from '@angular/material/expansion';
 import {
   FormDialogComponent,
   FormDialogData,
@@ -25,7 +26,6 @@ import {
 } from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
 import {filter} from "rxjs/operators";
 import {LinkDialogComponent} from "../../../../app/formly/types/table/link-dialog/link-dialog.component";
-import {MatTableDataSource} from "@angular/material/table";
 import {ConfigService} from "../../../../app/services/config/config.service";
 
 @Component({
@@ -43,6 +43,7 @@ import {ConfigService} from "../../../../app/services/config/config.service";
     MatIconModule,
     MatListModule,
     MatMenuModule,
+    MatExpansionModule,
     AddButtonModule,
     MatButtonModule,
     SharedPipesModule,
@@ -159,6 +160,7 @@ export class RepeatDistributionDetailListComponent
         maxWidth: 600,
         hasBackdrop: true,
         restoreFocus: true,
+        disableClose: true,
         data: {
           fields: this.getFields(this.field.fieldArray),
           model: {},
@@ -193,6 +195,7 @@ export class RepeatDistributionDetailListComponent
         width: "90vw",
         maxWidth: "950px",
         restoreFocus: true,
+        disableClose: true,
         data: <FormDialogData>{
           fields: this.getFields(this.field.fieldArray),
           model:

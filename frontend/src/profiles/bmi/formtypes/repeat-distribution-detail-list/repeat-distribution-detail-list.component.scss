@@ -13,6 +13,12 @@ ige-add-button {
   color: $ige-background-bar;
 }
 
+mat-panel-description{
+  img {
+    vertical-align: middle;
+  }
+}
+
 .mat-mdc-list-item {
   height: auto;
   padding: 6px;
