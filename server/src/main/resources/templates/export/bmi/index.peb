@@ -5,6 +5,7 @@
     "uuid": "{{ model.uuid }}",
     "title": "{{ model.title.trim() }}",
     "description": "{{ model.data.description }}",
+    "landingPage": "{{ model.data.landingPage }}",
     "theme": [
       "{{ model.getThemes() | join('","') | raw }}"
     ],
@@ -19,7 +20,6 @@
             "{{ model.data.keywords | join('","') | raw }}"
         {% endif %}
     ],
-    "creator": null,
     {% if model.data.origin %}
         "originator": [
             {
@@ -29,10 +29,25 @@
     {% endif %}
     "publisher": {
         "organization": "{{ model.getPublisher().organization.trim() }}",
-        "homepage": "{{ model.getPublisher().getHomepage() }}"
+        "homepage": "{{ model.getPublisher().getHomepage() }}",
+        "email": "{{ model.getPublisher().getEmail() }}"
     },
+    {% if model.data.getCreator() %}
+    "creator": {
+        "organization": "{{ model.getCreator().organization.trim() }}",
+        "homepage": "{{ model.getCreator().getHomepage() }}",
+        "email": "{{ model.getCreator().getEmail() }}"
+    },
+    {% endif %}
+    {% if model.data.getOriginator() %}
+    "originator": {
+        "organization": "{{ model.getOriginator().organization.trim() }}",
+        "homepage": "{{ model.getOriginator().getHomepage() }}",
+        "email": "{{ model.getOriginator().getEmail() }}"
+    },
+    {% endif %}
     {% if model.data.legalBasis %}
-        "legal_basis": ["{{ model.data.legalBasis }}"],
+        "legal_basis": "{{ model.data.legalBasis }}",
     {% endif %}
     "distribution": [
     {% for download in model.data.distributions %}
@@ -43,16 +58,25 @@
             {% else %}
                 "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
             {% endif %}
-            "title": "{{ download.title }}"
+            "modified": "{{ download.modified }}",
+            "title": "{{ download.title }}",
+            "description": "{{ download.description }}",
+            "license": "{{ download.getLicenseData().id }}",
+            "byClause": "{{ download.byClause }}",
+            "languages": [
+                {% if not download.languageKeys.isEmpty() %}
+                    "{{ download.languageKeys | join('","') | raw }}"
+                {% endif %}
+            ],
+            "availability": "{{ download.availability.key }}"
         }{% if not loop.last %},{% endif %}
     {% endfor %}
     ],
-    "extras": {
+    "qualityProcessURI": "{{ model.data.qualityProcessURI }}",
         "metadata": {
             "issued": "{{ model.created }}",
             "modified": "{{ model.modified }}"
         },
-        "license": "{{ model.getLicenseData().id }}",
         "spatial":
         {% if model.realSpatials is empty %}
         null
@@ -75,8 +99,12 @@
         {% endif %}
         ,
        {% if not model.spatialTitels.isEmpty() %}
-            "spatial_text": "{{ model.spatialTitels | join(',') }}",
+            "spatial_text": ["{{ model.spatialTitels | join('","') | raw }}"],
         {% endif %}
+       {% if not model.ars.isEmpty() %}
+            "ars": ["{{ model.ars | join('","') | raw }}"],
+        {% endif %}
+        "politicalGeocodingLevel": "{{ model.data.geopoliticalLevel.key }}",
         "temporal": [
          {% if model.data.temporal.start or model.data.temporal.end %}
         {
@@ -87,7 +115,5 @@
                 "lte": "{{model.data.temporal.end}}"
             {% endif %}
             }
-         {% endif %}],
-        "citation": null
-    }
+         {% endif %}]
 }

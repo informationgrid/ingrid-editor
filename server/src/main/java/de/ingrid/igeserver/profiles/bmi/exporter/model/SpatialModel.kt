@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.apache.logging.log4j.kotlin.logger
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?) {
+data class SpatialModel(val type: String?, val title: String?, val value: BoundingBoxModel?, val wkt: String?, val ars: String) {
 
     val log = logger()
 
@@ -14,6 +14,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         get() {
             return when (type) {
                 "free" -> getFreeCoordinates()
+                "wfsgnde" -> getFreeCoordinates()
                 "wkt" -> getWktCoordinates()
                 else -> null
             }
@@ -23,6 +24,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         get() {
             return when (type) {
                 "free" -> "polygon"
+                "wfsgnde" -> "polygon"
                 "wkt" -> getWktType()
                 else -> null
             }

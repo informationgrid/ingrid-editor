@@ -29,14 +29,17 @@
             "$ref": "#/definitions/Event"
           }
         },
-        "origin": {
+        "landingPage": {
           "type": [
             "string",
             "null"
           ]
         },
-        "license": {
-          "$ref": "#/definitions/KeyValue"
+        "qualityProcessURI": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "spatial": {
           "type": [
@@ -46,6 +49,16 @@
           "items": {
             "$ref": "#/definitions/Spatial"
           }
+        },
+        "politicalGeocodingLevel": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
         },
         "keywords": {
           "type": "array",
@@ -69,7 +82,7 @@
         "DCATThemes": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/KeyValue"
           },
           "minItems": 1
         },
@@ -108,8 +121,7 @@
         "description",
         "addresses",
         "DCATThemes",
-        "distributions",
-        "license"
+        "distributions"
       ],
       "title": "BMI"
     },
@@ -143,6 +155,12 @@
             "null"
           ]
         },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "format": {
           "oneOf": [
             {
@@ -152,6 +170,37 @@
               "$ref": "#/definitions/KeyValue"
             }
           ]
+        },
+        "license": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "byClause": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modified": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "availability": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
         }
       },
       "required": [
@@ -178,6 +227,12 @@
         "asLink": {
           "type": [
             "boolean",
+            "null"
+          ]
+        },
+        "lastModified": {
+          "type": [
+            "string",
             "null"
           ]
         }
@@ -216,6 +271,12 @@
       "properties": {
         "type": {
           "type": "string"
+        },
+        "ars": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "title": {
           "type": [

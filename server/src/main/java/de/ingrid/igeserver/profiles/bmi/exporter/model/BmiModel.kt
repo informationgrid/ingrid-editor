@@ -24,25 +24,32 @@ data class BmiModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val _modified: OffsetDateTime,
     val distributions: List<DownloadModel>?,
-    val license: String?,
 ) {
 
-    val publisher: AddressModel?
-        get() {
-            return data.addresses
-                ?.firstOrNull { it.type?.key == "10" }
-                ?.ref
-        }
+    val creator: AddressModel? get() {return getAddresses("creator")}
+    val contactPoint: AddressModel? get() {return getAddresses("contactPoint")}
+    val publisher: AddressModel? get() {return getAddresses("publisher")}
+    val originator: AddressModel? get() {return getAddresses("originator")}
+    val maintainer: AddressModel? get() {return getAddresses("maintainer")}
+    val contributor: AddressModel? get() {return getAddresses("contributor")}
 
+    fun getAddresses(type: String) : AddressModel?{
+        return data.addresses
+                ?.firstOrNull { it.type?.key == type }
+                ?.ref
+    }
     val hasSingleSpatial: Boolean
         get() = realSpatials?.size == 1
 
     val spatialTitels: List<String>?
         get() = data.spatials?.map { it.title }?.filterNotNull()
 
+    val ars: List<String>?
+        get() = data.spatials?.map { it.ars }?.filterNotNull()
+
     val realSpatials: List<SpatialModel>?
         get() {
-            return data.spatials?.filter { it.type == "free" || it.type == "wkt" }
+            return data.spatials?.filter { it.type == "free" || it.type == "wkt" || it.type == "wfsgnde" }
         }
 
     val allData: List<String>?
@@ -53,6 +60,7 @@ data class BmiModel(
     fun getThemes(): List<String> {
         if (data.DCATThemes == null) return emptyList()
         return data.DCATThemes
+                .map { theme -> theme.key }
             .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
     }
 
@@ -64,23 +72,6 @@ data class BmiModel(
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
         }
-    }
-    fun getLicenseData(): Any? {
-        if(data.license != null) {
-            var jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+data.license.value+"\"}";
-            // either use key or if no key search for value
-            val entryID = data.license.key ?: codeListService?.getCodeListEntryId("6500", data.license.value, "de")
-            if(entryID != null) {
-                val codeListEntry = codeListService?.getCodeListEntry("6500", entryID)
-                if(!codeListEntry?.data.isNullOrEmpty()) {
-                    jsonString = codeListEntry?.data.toString();
-                } else if(codeListEntry?.getField("de") != null) {
-                    jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+codeListEntry.getField("de")+"\"}";
-                }
-            }
-            return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
-        }
-        return null
     }
 
     val periodicity: String?

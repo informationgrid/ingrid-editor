@@ -43,23 +43,25 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "city": {
+        "street": {
           "type": ["string", "null"]
         },
-        "po-box": {
-          "type": ["string", "null"],
-          "format": "integer"
-        },
-        "street": {
+        "city": {
           "type": ["string", "null"]
         },
         "zip-code": {
           "type": ["string", "null"],
           "format": "integer"
         },
-        "zip-po-box": {
-          "type": ["string", "null"],
-          "format": "integer"
+        "country": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
         }
       },
       "required": [

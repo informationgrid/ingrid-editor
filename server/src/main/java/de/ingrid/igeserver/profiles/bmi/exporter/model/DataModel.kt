@@ -6,12 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
     val description: String?,
-    val DCATThemes: List<String>?, val origin: String?,
+    val landingPage: String?,
+    val DCATThemes: List<KeyValueModel>?,
     val addresses: List<AddressRefModel>?,
+    val qualityProcessURI: String?,
     val legalBasis: String?,
     val distributions: List<DownloadModel>?,
-    val license: KeyValueModel?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
+    val geopoliticalLevel: String?,
     val temporal: TimeSpanModel?,
     val periodicity: KeyValueModel?,
     val keywords: List<String>?
