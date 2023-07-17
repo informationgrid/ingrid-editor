@@ -26,10 +26,9 @@ import {
 } from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
 import {filter} from "rxjs/operators";
 import {LinkDialogComponent} from "../../../../app/formly/types/table/link-dialog/link-dialog.component";
-import {ConfigService} from "../../../../app/services/config/config.service";
 
 @Component({
-  selector: "ige-repeat-detail-list",
+  selector: "ige-repeat-distribution-detail-list",
   templateUrl: "./repeat-distribution-detail-list.component.html",
   styleUrls: ["./repeat-distribution-detail-list.component.scss"],
   imports: [
@@ -56,7 +55,6 @@ export class RepeatDistributionDetailListComponent
   extends FieldArrayType
   implements OnInit
 {
-  private configService = inject(ConfigService);
 
   constructor(private dialog: MatDialog) {
     super();
@@ -106,7 +104,7 @@ export class RepeatDistributionDetailListComponent
   }
 
   private getDownloadURL(uri: String) {
-    return this.configService.getConfiguration().backendUrl + "upload/" + this.form.get("_uuid").value + "/" + uri;
+    return this.field.props.backendUrl + "upload/" + this.form.get("_uuid").value + "/" + uri;
   }
 
   private addUploadInfoToDatasource(file: LinkInfo) {

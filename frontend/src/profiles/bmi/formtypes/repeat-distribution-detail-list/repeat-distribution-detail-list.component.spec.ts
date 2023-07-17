@@ -3,7 +3,7 @@ import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { RepeatDistributionDetailListComponent } from "./repeat-distribution-detail-list.component";
 import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 
-describe("RepeatDetailListComponent", () => {
+describe("RepeatDistributionDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,
@@ -12,7 +12,7 @@ describe("RepeatDetailListComponent", () => {
       FormlyModule.forRoot({
         types: [
           {
-            name: "repeatDistributionsDetailList",
+            name: "repeatDistributionDetailList",
             component: RepeatDistributionDetailListComponent,
           },
         ],
@@ -26,7 +26,7 @@ describe("RepeatDetailListComponent", () => {
         config: [
           {
             key: "repeatField",
-            type: "repeatDetailList",
+            type: "repeatDistributionDetailList",
             props: {},
             fieldArray: {
               fieldGroup: [

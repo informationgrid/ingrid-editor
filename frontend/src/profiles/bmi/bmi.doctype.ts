@@ -71,7 +71,7 @@ export class BmiDoctype extends BaseDoctype {
           options: this.getCodelistForSelect(20001, "DCATThemes"),
           codelistId: 20001,
         }),
-        this.addRepeatDistributionsDetailList("distributions", "Ressourcen", {
+        this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
           fields: [
             this.addGroupSimple(null, [
@@ -201,7 +201,7 @@ export class BmiDoctype extends BaseDoctype {
       ]),
     ];
 
-  addRepeatDistributionsDetailList(
+  addRepeatDistributionDetailList(
     id,
     label,
     options?: RepeatDetailListOptions
@@ -209,12 +209,13 @@ export class BmiDoctype extends BaseDoctype {
     const expressions = this._initExpressions(options?.expressions);
     return {
       key: id,
-      type: "repeatDistributionsDetailList",
+      type: "repeatDistributionDetailList",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
       props: {
         externalLabel: label,
         required: options?.required,
+        backendUrl: this.configService.getConfiguration().backendUrl,
       },
       fieldArray: {
         fieldGroup: options?.fields,

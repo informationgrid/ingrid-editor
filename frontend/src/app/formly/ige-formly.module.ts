@@ -151,7 +151,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: RepeatDetailListComponent,
         },
         {
-          name: "repeatDistributionsDetailList",
+          name: "repeatDistributionDetailList",
           component: RepeatDistributionDetailListComponent,
         },
         {
