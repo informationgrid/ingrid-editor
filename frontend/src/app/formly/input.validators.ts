@@ -24,7 +24,7 @@ export function NotEmptyArrayValidator(
 
 export function UrlValidator(control: UntypedFormControl): ValidationErrors {
   const regExp = new RegExp("^(https?://)([0-9a-z.-]+)\\.([a-z.]{2,6})(/.*)?");
-  return regExp.test(control.value?.trim()) ? null : { url: true };
+  return (!control.value || control.value?.trim().length === 0 || regExp.test(control.value?.trim())) ? null : { url: true };
 }
 
 export function UrlValidatorMessage(error: any, field: FormlyFieldConfig) {
