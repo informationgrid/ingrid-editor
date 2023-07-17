@@ -78,6 +78,19 @@ class BmiProfile @Autowired constructor(
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
+        val codelist505 = Codelist().apply {
+            identifier = "505"
+            catalog = catalogRef
+            name = "Adresstyp"
+            description = "Liste derAdresstypen"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toISOCodelistEntry("creator", "Autor", "creator"))
+                add(toISOCodelistEntry("contactPoint", "Ansprechpartner", "contactPoint"))
+                add(toISOCodelistEntry("publisher", "Veröffentlichende Stelle", "publisher"))
+                add(toISOCodelistEntry("originator", "Urheber", "originator"))
+                add(toISOCodelistEntry("maintainer", "Verwalter", "maintainer"))
+            }
+        }
         val codelist20001 = Codelist().apply {
             identifier = "20001"
             catalog = catalogRef
@@ -97,25 +110,6 @@ class BmiProfile @Autowired constructor(
                 add(toCodelistEntry("TRAN", "Verkehr"))
                 add(toCodelistEntry("ECON", "Wirtschaft und Finanzen"))
                 add(toCodelistEntry("TECH", "Wissenschaft und Technologie"))
-            }
-        }
-        val codelist20002 = Codelist().apply {
-            identifier = "20002"
-            catalog = catalogRef
-            name = "Download Typ"
-            description = "Dies sind die Typen, die ein Download-Eintrag haben kann"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(toCodelistEntry("api", "API"))
-                add(toCodelistEntry("atomFeed", "AtomFeed"))
-                add(toCodelistEntry("download", "Dateidownload"))
-                add(toCodelistEntry("ftp", "FTP"))
-                add(toCodelistEntry("portal", "Portal"))
-                add(toCodelistEntry("software", "Software"))
-                add(toCodelistEntry("sos", "SOS"))
-                add(toCodelistEntry("wcs", "WCS"))
-                add(toCodelistEntry("wfs", "WFS"))
-                add(toCodelistEntry("wms", "WMS"))
-                add(toCodelistEntry("wmts", "WMTS"))
             }
         }
         val codelist20003 = Codelist().apply {
@@ -359,30 +353,63 @@ class BmiProfile @Autowired constructor(
             name = "geplante Verfügbarkeiten"
             description = "Liste der geplanten Verfügbarkeiten die von GovData unterstützt werden."
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(toCodelistEntry("temporary", "Daten können jederzeit verschwinden."))
-                add(toCodelistEntry("experimental", "Daten versuchsweise verfügbar, sind aber noch etwa ein Jahr erreichbar."))
-                add(toCodelistEntry("available", "Daten sind für einige Jahre verfügbar, mittelfristige Planung"))
-                add(toCodelistEntry("stable", "Daten werden langfristig erhältlich bleiben."))
+                add(toCodelistEntry("TEMPORARY", "Daten können jederzeit verschwinden. (TEMPORARY)"))
+                add(toCodelistEntry("EXPERIMENTAL", "Daten versuchsweise verfügbar, sind aber noch etwa ein Jahr erreichbar. (EXPERIMENTAL)"))
+                add(toCodelistEntry("AVAILABLE", "Daten sind für einige Jahre verfügbar, mittelfristige Planung. (AVAILABLE)"))
+                add(toCodelistEntry("STABLE", "Daten werden langfristig erhältlich bleiben. (STABLE)"))
+                add(toCodelistEntry("OP_DATPRO", "Vorläufige Daten. (OP_DATPRO)"))
+            }
+        }
+        val codelist20006 = Codelist().apply {
+            identifier = "20006"
+            catalog = catalogRef
+            name = "geopolitischen Verwaltungscodierung"
+            description = "Liste der geopolitischen Verwaltungscodierung"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toCodelistEntry("international", "internationale Ebene"))
+                add(toCodelistEntry("european", "EU-Ebene"))
+                add(toCodelistEntry("federal", "Bundesebene"))
+                add(toCodelistEntry("state", "Ebene der Bundesländer"))
+                add(toCodelistEntry("administrativeDistrict", "Ebene der Landkreise und Regierungsbezirke"))
+                add(toCodelistEntry("municipality", "kommunale Ebene"))
+
+            }
+        }
+        val codelist20007 = Codelist().apply {
+            identifier = "20007"
+            catalog = catalogRef
+            name = "Sprache"
+            description = "Liste der Sprachen"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(toCodelistEntry("DEU", "Deutsch"))
+                add(toCodelistEntry("ENG", "Englisch"))
             }
         }
 
         when (codelistId) {
+            "505" -> removeAndAddCodelist(catalogId, codelist505)
             "20001" -> removeAndAddCodelist(catalogId, codelist20001)
-            "20002" -> removeAndAddCodelist(catalogId, codelist20002)
+            // "20002" -> removeAndAddCodelist(catalogId, codelist20002) // Deprecated Liste "Download Typ"
             "20003" -> removeAndAddCodelist(catalogId, codelist20003)
             "20004" -> removeAndAddCodelist(catalogId, codelist20004)
             "20005" -> removeAndAddCodelist(catalogId, codelist20005)
+            "20006" -> removeAndAddCodelist(catalogId, codelist20006)
+            "20007" -> removeAndAddCodelist(catalogId, codelist20007)
             null -> {
+                removeAndAddCodelist(catalogId, codelist505)
+                codelistRepo.save(codelist505)
                 removeAndAddCodelist(catalogId, codelist20001)
                 codelistRepo.save(codelist20001)
-                removeAndAddCodelist(catalogId, codelist20002)
-                codelistRepo.save(codelist20002)
                 removeAndAddCodelist(catalogId, codelist20003)
                 codelistRepo.save(codelist20003)
                 removeAndAddCodelist(catalogId, codelist20004)
                 codelistRepo.save(codelist20004)
                 removeAndAddCodelist(catalogId, codelist20005)
                 codelistRepo.save(codelist20005)
+                removeAndAddCodelist(catalogId, codelist20006)
+                codelistRepo.save(codelist20006)
+                removeAndAddCodelist(catalogId, codelist20007)
+                codelistRepo.save(codelist20007)
             }
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
         }
@@ -412,6 +439,16 @@ class BmiProfile @Autowired constructor(
             put("id", id)
             set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)
+            })
+        }
+    }
+
+    private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode {
+        return jacksonObjectMapper().createObjectNode().apply {
+            put("id", id)
+            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
+                put("de", german)
+                put("iso", iso)
             })
         }
     }
