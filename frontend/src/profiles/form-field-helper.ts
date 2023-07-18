@@ -47,6 +47,7 @@ export interface RepeatOptions extends Options {
 export interface RepeatDetailListOptions extends Options {
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
+  titleField?: string;
 }
 
 export interface RepeatListOptions extends Options {
@@ -314,6 +315,7 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         required: options?.required,
+        titleField: options?.titleField,
       },
       fieldArray: {
         fieldGroup: options?.fields,
