@@ -1150,8 +1150,7 @@ export abstract class IngridShared extends BaseDoctype {
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
-      this.addSelectInline("type", "Typ", {
-        showSearch: true,
+      this.addAutoCompleteInline("type", "Typ", {
         required: true,
         options: this.getCodelistForSelect(2000, "type").pipe(
           map((data) => {

@@ -47,11 +47,11 @@
                     class="type"
                 >
                     {{
-                    model[i].type.key
+                    (model[i].type.key
                         | codelist
                         : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
                             ?.props?.codelistId
-                        | async
+                        | async) ?? model[i].type.value
                     }}
                 </div>
                 <ng-template #simpleType>
