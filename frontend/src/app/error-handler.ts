@@ -70,7 +70,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         return this.translocoService.translate(
           "replace-address.reference-error-multiple-files"
         );
-
+      case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
+        return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
       case "CATALOG_NOT_FOUND":
         return `Dem Benutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       case "CONFLICT_WHEN_MOVING":

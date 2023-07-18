@@ -51,7 +51,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         if (result.size > 0) {
-            throw IsReferencedException.byUuids(result.map { it["uuid"] as String })
+            throw IsReferencedException.addressByPublishedDatasets(result.map { it["uuid"] as String })
         }
     }
 }
