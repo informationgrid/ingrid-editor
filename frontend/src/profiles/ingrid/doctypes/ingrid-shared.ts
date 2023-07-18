@@ -387,7 +387,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
           wrappers: ["panel", "button", "form-field"],
-          placeholder: "Bitte eingeben",
+          placeholder: this.transloco.translate("form.placeholder.enter"),
           hintStart: "Mehrere Schlagworte durch Komma trennen",
           hideInPreview: true,
           buttonConfig: {
@@ -960,7 +960,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addGroupSimple("extraInfo", [
           this.addRepeatList(
             "legalBasicsDescriptions",
-            "Weitere Rechtliche Grundlagen",
+            "Weitere rechtliche Grundlagen",
             {
               asSelect: false,
               showSearch: true,
