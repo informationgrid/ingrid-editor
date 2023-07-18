@@ -105,6 +105,7 @@ export interface InputOptions extends Options {
   disabled?: boolean;
   contextHelpId?: string;
   validators?: any;
+  validation?: any;
   suffix?: any;
   prefix?: any;
   min?: number;
@@ -431,6 +432,7 @@ export class FormFieldHelper {
         updateOn: options?.updateOn ?? "blur",
       },
       expressions: expressions,
+      validation: options?.validation,
       validators: options?.validators,
       hooks: options?.hooks,
     };

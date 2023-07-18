@@ -57,7 +57,9 @@
                 <ng-template #simpleType>
                     <div class="type">{{ model[i].type }}</div>
                 </ng-template>
-                <div class="title">{{ model[i].title }}</div>
+                <div class="title">
+                    {{ model[i][props.titleField ?? "title"] }}
+                </div>
                 <a
                     class="url no-text-transform"
                     [href]="model[i].url"

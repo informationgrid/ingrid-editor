@@ -1176,11 +1176,36 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
       }),
       this.addInputInline("url", "URL", {
-        required: true,
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
+        updateOn: "change",
         validators: {
           validation: ["url"],
+        },
+        expressions: {
+          "props.required": (field) => {
+            return !field.form.value?.uuidRef;
+          },
+        },
+        validation: {
+          messages: {
+            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
+        },
+      }),
+      this.addInputInline("uuidRef", "Datensatzverweis", {
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+        updateOn: "change",
+        expressions: {
+          "props.required": (field) => {
+            return !field.form.value?.url;
+          },
+        },
+        validation: {
+          messages: {
+            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
         },
       }),
       this.addGroupSimple(null, [
