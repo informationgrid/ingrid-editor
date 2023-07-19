@@ -8,7 +8,6 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,18 +35,20 @@ class InternalExporter @Autowired constructor(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // TODO: move to utilities to prevent cycle
-        val publishedVersion = documentService.convertToJsonNode(doc)
-        val draftVersion = if (options.includeDraft) getDraft(catalogId, doc.wrapperId!!) else null
-        documentService.removeInternalFieldsForImport(publishedVersion as ObjectNode)
-        return addExportWrapper(catalogId, publishedVersion, draftVersion)
+        val version = documentService.convertToJsonNode(doc)
+        documentService.removeInternalFieldsForImport(version as ObjectNode)
+        
+        val versions = if (options.includeDraft) {
+            Pair(getPublished(catalogId, doc.uuid), version)
+        } else {
+            Pair(version, null)
+        }
+        return addExportWrapper(catalogId, versions.first, versions.second)
     }
 
-    private fun getDraft(catalogId: String, wrapperId: Int): JsonNode? {
-        val document = documentService.getDocumentByWrapperId(catalogId, wrapperId)
-        val isDraftVersion =
-            document.state == DOCUMENT_STATE.DRAFT || document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED
-        return if (isDraftVersion) documentService.convertToJsonNode(document)
-        else null
+    private fun getPublished(catalogId: String, uuid: String): JsonNode {
+        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+        return documentService.convertToJsonNode(document)
     }
 
     private fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {

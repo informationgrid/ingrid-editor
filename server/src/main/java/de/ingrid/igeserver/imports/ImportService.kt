@@ -73,8 +73,8 @@ class ImportService(
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
                 importer.map { it.typeInfo.id }, listOf(
-                    analyzeDoc(catalogId, result[0], true),
-                    analyzeDoc(catalogId, result[1])
+                    analyzeDoc(catalogId, result[0], forcePublish = true, isLatest = false),
+                    analyzeDoc(catalogId, result[1], forcePublish = false, isLatest = true, isDraftAndPublished = true)
                 )
             )
         } else {
@@ -148,10 +148,17 @@ class ImportService(
         return ExtractedZip(importers.toList(), docs)
     }
 
-    private fun analyzeDoc(catalogId: String, doc: JsonNode, forcePublish: Boolean = false): DocumentAnalysis {
+    private fun analyzeDoc(
+        catalogId: String,
+        doc: JsonNode,
+        forcePublish: Boolean = false,
+        isLatest: Boolean = true,
+        isDraftAndPublished: Boolean = false
+    ): DocumentAnalysis {
         val document = documentService.convertToDocument(doc)
-        document.state = DOCUMENT_STATE.DRAFT
-        document.isLatest = true
+        document.state = if (forcePublish) DOCUMENT_STATE.PUBLISHED
+        else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+        document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
         val refType = documentService.getDocumentType(document.type)
@@ -277,11 +284,12 @@ class ImportService(
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            setVersionInfo(catalogId, ref.wrapperId!!, ref.document)
+            val wrapperId = ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
+            setVersionInfo(catalogId, wrapperId, ref.document)
             if (publish) {
-                documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
+                documentService.publishDocument(principal, catalogId, wrapperId, ref.document)
             } else {
-                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
+                documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
 
             counter.overwritten++
