@@ -9,7 +9,6 @@ import {
 } from "../../../../services/event/event.service";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { ModalService } from "../../../../services/modal/modal.service";
 import { filter } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
@@ -25,6 +24,9 @@ import { TransferResponsibilityDialogComponent } from "../../../../+user/user/tr
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormPluginsService } from "src/app/+form/form-shared/form-plugins.service";
 import { ConfigService } from "../../../../services/config/config.service";
+import { FormUtils } from "../../../../+form/form.utils";
+import { FormStateService } from "../../../../+form/form-state.service";
+import { DocumentService } from "../../../../services/document/document.service";
 
 @Injectable()
 export class AssignedUserBehaviour extends Plugin {
@@ -36,7 +38,6 @@ export class AssignedUserBehaviour extends Plugin {
   private isPrivileged: boolean;
 
   constructor(
-    private modal: ModalService,
     private eventService: EventService,
     private userService: UserService,
     private docEvents: DocEventsService,
@@ -44,6 +45,8 @@ export class AssignedUserBehaviour extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
+    private formStateService: FormStateService,
+    private documentService: DocumentService,
     private configService: ConfigService,
     private toast: MatSnackBar,
     private dialog: MatDialog
@@ -151,7 +154,23 @@ export class AssignedUserBehaviour extends Plugin {
     };
   }
 
-  private openAssignUserDialog(docId: number) {
+  private async openAssignUserDialog(docId: number) {
+    const query = this.forAddress
+      ? this.addressTreeQuery
+      : this.documentTreeQuery;
+    const currentUUID = query.getOpenedDocument()._uuid;
+    console.log("currentUUID", currentUUID);
+
+    const handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
+    if (!handled) {
+      return;
+    }
+
     this.dialog
       .open(PermissionsDialogComponent, {
         width: "780px",
@@ -161,7 +180,12 @@ export class AssignedUserBehaviour extends Plugin {
         },
       })
       .afterClosed()
-      .subscribe();
+      .subscribe(() => {
+        this.documentService.reload$.next({
+          uuid: currentUUID,
+          forAddress: this.forAddress,
+        });
+      });
   }
 
   openTransferResponsibilityDialog(oldUser: User) {
