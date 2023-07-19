@@ -285,6 +285,10 @@ open class IngridModelTransformer constructor(
     val operations = data.service?.operations ?: emptyList()
     val references = data.references ?: emptyList()
 
+    // information system
+    val serviceUrls = data.serviceUrls ?: emptyList()
+
+
 
     val parentIdentifier: String? = data.parentIdentifier
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
