@@ -143,8 +143,9 @@ class IndexService @Autowired constructor(
     fun requestPublishableDocuments(catalogId: String, category: String, uuid: String?, profile: CatalogProfile, paging: ResearchPaging = ResearchPaging(pageSize = PAGE_SIZE)): List<DocumentIndexInfo> {
         val iBusConditions = getSystemSpecificConditions()
         val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
-
-        val nativeQuery = entityManager.createNativeQuery(sql)
+        val orderBy = " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
+        
+        val nativeQuery = entityManager.createNativeQuery(sql + orderBy)
         
         nativeQuery.setParameter(1, catalogId)
 
