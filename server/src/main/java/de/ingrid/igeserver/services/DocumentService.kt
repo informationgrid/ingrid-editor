@@ -402,6 +402,7 @@ class DocumentService @Autowired constructor(
             FIELD_ID,
             FIELD_DOCUMENT_TYPE,
             FIELD_TAGS,
+            FIELD_STATE,
             "title",
             "hasWritePermission",
             "hasOnlySubtreeWritePermission",
