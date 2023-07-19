@@ -46,7 +46,6 @@ export class PublishPlugin extends SaveBase {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
-    public formStateService: FormStateService,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
     messageService: FormMessageService,
