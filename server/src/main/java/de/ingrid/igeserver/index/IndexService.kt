@@ -59,7 +59,7 @@ class IndexService @Autowired constructor(
         currentPage: Int = 0,
         totalHits: Long
     ): Page<DocumentIndexInfo> {
-        val docs = requestPublishableDocuments(catalogId, category, null, catalogProfile)
+        val docs = requestPublishableDocuments(catalogId, category, null, catalogProfile, ResearchPaging(currentPage + 1, PAGE_SIZE))
         val pagedDocs = PageImpl(docs, Pageable.ofSize(PAGE_SIZE), totalHits)
 
         return if (pagedDocs.isEmpty) {
@@ -184,7 +184,7 @@ class IndexService @Autowired constructor(
                     ${iBusSelector.joinToString(" ")}
                     ELSE '-1' END AS IBUS
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
-                WHERE document_wrapper.catalog_id = catalog.id AND category = '$category' AND document1.state = 'PUBLISHED' AND deleted = 0 AND catalog.identifier = ? AND 
+                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND document1.state = 'PUBLISHED' AND deleted = 0 AND catalog.identifier = ? AND 
                 (${iBusConditions.joinToString(" OR ")})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
