@@ -37,11 +37,11 @@ class RemoveUnreferencedDocsTask(
         val negativeDocs = queryDocs(sqlNegativeDecisionDocsWithDraft, "negativeDocs")
 
         val uploads = docs.map {
-            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            val data = jacksonObjectMapper().readValue(it[2] as String, JsonNode::class.java)
             DocUrls(it[1] as String, it[0] as String, getUrlsFromJsonField(data))
         }
         val uploadsNegative = negativeDocs.map {
-            val data = jacksonObjectMapper().convertValue(it[2], JsonNode::class.java)
+            val data = jacksonObjectMapper().readValue(it[2] as String, JsonNode::class.java)
             DocUrls(
                 it[1] as String,
                 it[0] as String,
