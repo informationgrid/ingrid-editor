@@ -247,7 +247,15 @@ class DatasetsApiController @Autowired constructor(
         ).forEach { objectNode.remove(it) }
 
         val copiedParent =
-            documentService.createDocument(principal, catalogId, doc, options.destId, isAddress, false, InitiatorAction.COPY)
+            documentService.createDocument(
+                principal,
+                catalogId,
+                doc,
+                options.destId,
+                isAddress,
+                false,
+                InitiatorAction.COPY
+            )
 
         addMetadataToDocument(copiedParent)
 
@@ -303,12 +311,16 @@ class DatasetsApiController @Autowired constructor(
 
         // updateWrapper
         val docData = documentService.getDocumentFromCatalog(catalogId, id)
-        val parent = if (options.destId == null) null else documentService.getDocumentFromCatalog(catalogId, options.destId)
+        val parent =
+            if (options.destId == null) null else documentService.getDocumentFromCatalog(catalogId, options.destId)
 
         // check parent is published if moved dataset also has been published
         if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
             if (parent.document.state == DOCUMENT_STATE.DRAFT) {
-                throw ValidationException.withReason("Parent must be published, since moved dataset is also published", errorCode = "PARENT_IS_NOT_PUBLISHED")
+                throw ValidationException.withReason(
+                    "Parent must be published, since moved dataset is also published",
+                    errorCode = "PARENT_IS_NOT_PUBLISHED"
+                )
             }
         }
 
@@ -403,9 +415,18 @@ class DatasetsApiController @Autowired constructor(
     ): ResponseEntity<UserAccessResponse> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         // TODO: change structure to show permissions
-        val canWriteUsers = groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.WRITE)
+        val canWriteUsers =
+            groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.WRITE).toMutableSet()
         val canOnlyReadUsers =
             groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.READ).minus(canWriteUsers)
+                .toMutableSet()
+
+        // admins can always write
+        val admins =
+            catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }.toSet()
+        canWriteUsers.addAll(admins)
+        canOnlyReadUsers.removeAll(admins)
+
         return ResponseEntity.ok(UserAccessResponse(canOnlyReadUsers, canWriteUsers))
     }
 
