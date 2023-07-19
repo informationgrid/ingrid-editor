@@ -9,6 +9,8 @@ import { PublicationTypeDialog } from "./publication-type/publication-type.dialo
 import { filter, switchMap } from "rxjs/operators";
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
+import { FormStateService } from "../../../../+form/form-state.service";
+import { FormUtils } from "../../../../+form/form.utils";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -25,7 +27,8 @@ export class TagsBehaviour extends Plugin {
     private treeStore: TreeStore,
     private addressTreeStore: AddressTreeStore,
     private documentService: DocumentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private formStateService: FormStateService
   ) {
     super();
     inject(FormPluginsService).registerPlugin(this);
@@ -58,10 +61,18 @@ export class TagsBehaviour extends Plugin {
     this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
   }
 
-  private showTagsDialog() {
+  private async showTagsDialog() {
     const store = this.forAddress ? this.addressTreeStore : this.treeStore;
     const currentDocument = store.getValue().openedDocument;
-
+    const handled = await FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress
+    );
+    if (!handled) {
+      return;
+    }
     this.dialog
       .open(PublicationTypeDialog, {
         data: currentDocument._tags ?? "",

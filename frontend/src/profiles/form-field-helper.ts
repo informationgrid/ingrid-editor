@@ -2,6 +2,8 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { TranslocoService } from "@ngneat/transloco";
 
 export interface Options {
   id?: string;
@@ -47,6 +49,7 @@ export interface RepeatOptions extends Options {
 export interface RepeatDetailListOptions extends Options {
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
+  titleField?: string;
 }
 
 export interface RepeatListOptions extends Options {
@@ -105,6 +108,7 @@ export interface InputOptions extends Options {
   disabled?: boolean;
   contextHelpId?: string;
   validators?: any;
+  validation?: any;
   suffix?: any;
   prefix?: any;
   min?: number;
@@ -125,6 +129,8 @@ export interface AutocompleteOptions extends Options {
 }
 
 export class FormFieldHelper {
+  protected transloco = inject(TranslocoService);
+
   addSection(label: string, fields: any[]) {
     return {
       wrappers: ["section"],
@@ -313,6 +319,7 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         required: options?.required,
+        titleField: options?.titleField,
       },
       fieldArray: {
         fieldGroup: options?.fields,
@@ -324,10 +331,12 @@ export class FormFieldHelper {
 
   private determinePlaceholder(options: RepeatListOptions) {
     let placeholder = options?.placeholder;
-    if (!placeholder && options?.asSelect) placeholder = "Bitte wählen...";
+    if (!placeholder && options?.asSelect)
+      placeholder = this.transloco.translate("form.placeholder.choose");
     if (!placeholder && options?.codelistId)
-      placeholder = "Bitte wählen oder eingeben";
-    if (!placeholder) placeholder = "Bitte eingeben";
+      placeholder = this.transloco.translate("form.placeholder.chooseOrEnter");
+    if (!placeholder)
+      placeholder = this.transloco.translate("form.placeholder.enter");
     return placeholder;
   }
 
@@ -378,7 +387,9 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
-        placeholder: options?.placeholder ?? "Bitte wählen oder eingeben",
+        placeholder:
+          options?.placeholder ??
+          this.transloco.translate("form.placeholder.chooseOrEnter"),
         appearance: "outline",
         required: options?.required,
         highlightMatches: options?.highlightMatches,
@@ -431,6 +442,7 @@ export class FormFieldHelper {
         updateOn: options?.updateOn ?? "blur",
       },
       expressions: expressions,
+      validation: options?.validation,
       validators: options?.validators,
       hooks: options?.hooks,
     };
@@ -456,7 +468,7 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       props: {
-        placeholder: "Bitte wählen...",
+        placeholder: this.transloco.translate("form.placeholder.choose"),
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",

@@ -194,16 +194,17 @@ dependencies {
     implementation "gg.jte:jte-kotlin:$jte_version"
 }
 
-/*dependencyManagement {
+dependencyManagement {
     dependencies {
-        dependency "org.elasticsearch:elasticsearch:$elastic_version"
-        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
-        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
-        dependency "org.elasticsearch.client:transport:$elastic_version"
+//        dependency "org.elasticsearch:elasticsearch:$elastic_version"
+//        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
+//        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
+//        dependency "org.elasticsearch.client:transport:$elastic_version"
         dependency "org.yaml:snakeyaml:2.0"
+        dependency "commons-collections:commons-collections:3.2.2"
 
     }
-}*/
+}
 
 group = 'de.ingrid'
 description = 'IGE-NG Server'

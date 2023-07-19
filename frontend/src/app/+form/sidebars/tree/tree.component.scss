@@ -95,7 +95,7 @@ mat-tree-node {
   //}
 
   &.rootNode {
-    padding: 9px 0;
+    padding: 3px 0;
     background-color: $ige-background;
 
     &:hover {
@@ -104,6 +104,7 @@ mat-tree-node {
 
     &.folder {
       font-size: 16px;
+      padding: 8px 0;
     }
   }
 
@@ -143,9 +144,10 @@ mat-tree-node {
 
   .label {
     display: flex;
-    padding: 5px 0 5px 24px;
+    padding: 0 0 0 24px;
     line-height: 20px;
     user-select: none;
+    align-items: flex-start;
 
     span {
       overflow: hidden;
@@ -171,6 +173,10 @@ mat-tree-node {
     .mat-mdc-progress-spinner {
       margin-left: 12px;
       margin-top: 3px;
+    }
+
+    ige-document-icon + span {
+      padding-top: 2px;
     }
   }
 
@@ -220,7 +226,7 @@ mat-tree-node {
   &:not(.rootNode) {
     .label {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       padding: 14px 0;
       word-wrap: anywhere;
     }
@@ -228,7 +234,7 @@ mat-tree-node {
 
   &:not(.rootNode):not(.folder) {
     .label {
-      padding: 8px 0;
+      padding: 6px 0;
     }
   }
 

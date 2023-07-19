@@ -23,11 +23,12 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
         super.onDelete(doc)
         val sqlQuery = """
             SELECT DISTINCT d.uuid, title 
-            FROM document d, document_wrapper dw 
+            FROM document d, document_wrapper dw, catalog
             WHERE (
                 dw.deleted = 0
                 AND dw.uuid = d.uuid
-                AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING')
+                AND d.catalog_id = ${doc.catalog?.id}
+                AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING' OR d.state = 'PUBLISHED')
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
@@ -51,7 +52,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         if (result.size > 0) {
-            throw IsReferencedException.byUuids(result.map { it["uuid"] as String })
+            throw IsReferencedException.addressByPublishedDatasets(result.map { it["uuid"] as String })
         }
     }
 }
