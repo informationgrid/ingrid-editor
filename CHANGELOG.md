@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.1 (19.07.2023)
+
+### Bugfixes
+
+- Uploads werden durch den Aufräum-Job gelöscht (#5337)
+- Indizierung stoppt nicht (#5336)
+
 ## 1.4.0 (11.07.2023)
 
 ### Features
