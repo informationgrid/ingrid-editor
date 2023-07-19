@@ -1,7 +1,5 @@
 package de.ingrid.igeserver.profiles.uvp.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
@@ -36,14 +34,11 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
         every { catalogRepo.findAllByType("uvp") } returns listOf(Catalog().apply {
             identifier = "test-cat"
         })
-        val input = jacksonObjectMapper().readValue(
+        val input =
             """{"applicationDocs": $applicationDocs, "announcementDocs": $announcementDocs, "reportsRecommendationDocs": $reportsRecommendationDocs, 
-                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }""".trimMargin(),
-            JsonNode::class.java
-        )
-        val inputNegative = jacksonObjectMapper().readValue(
-            """{"uvpNegativeDecisionDocs": $negativeDocs}""".trimMargin(), JsonNode::class.java
-        )
+                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }""".trimMargin()
+
+        val inputNegative = """{"uvpNegativeDecisionDocs": $negativeDocs}""".trimMargin()
 
         every {
             entityManager.createNativeQuery(sqlStepsWithDrafts).unwrap(NativeQuery::class.java)
@@ -113,7 +108,7 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
         )
         var fileName = 'a'
         val files = (1..8).map { fakeFile(fileSystemStorage, (fileName++).toString()) }
-        
+
         every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns files
         task.start()
 
