@@ -1,13 +1,15 @@
-<ng-container #fieldComponent></ng-container>
+<!-- the suffix is unsupported, when the form does not contain a typical input field, e.g. checkbox. -->
+<div
+    class="flex-row gap-6 align-items-center"
+    *ngIf="props.isSuffixUnsupported; else fieldTemplate"
+>
+    <ng-container [ngTemplateOutlet]="fieldTemplate"></ng-container>
+    <ng-container [ngTemplateOutlet]="matSuffix"></ng-container>
+</div>
 
-<!--
-    the suffix is unsupported, when the filed component does not contain an input field.
-    the info button will be directly added after the component instead.
--->
-<ng-container
-    *ngIf="props.isSuffixUnsupported"
-    [ngTemplateOutlet]="matSuffix"
-></ng-container>
+<ng-template #fieldTemplate>
+    <ng-container #fieldComponent></ng-container>
+</ng-template>
 
 <!-- suffix template for info button that activates context help -->
 <ng-template #matSuffix>

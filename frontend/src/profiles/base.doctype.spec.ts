@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @Injectable({
   providedIn: "root",
@@ -37,7 +38,7 @@ describe("Document Type", () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MatSnackBarModule],
+      imports: [HttpClientTestingModule, MatSnackBarModule, TranslocoModule],
       providers: [DummyDocType],
     });
     doctype = TestBed.inject(DummyDocType);

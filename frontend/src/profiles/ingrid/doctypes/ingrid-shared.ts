@@ -387,7 +387,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addInput(null, "Schlagwortanalyse", {
           className: "optional",
           wrappers: ["panel", "button", "form-field"],
-          placeholder: "Bitte eingeben",
+          placeholder: this.transloco.translate("form.placeholder.enter"),
           hintStart: "Mehrere Schlagworte durch Komma trennen",
           hideInPreview: true,
           buttonConfig: {
@@ -469,10 +469,13 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private checkConnectedIsoCategory(event, field) {
+    const themes = field.options.formState.mainModel.themes;
+    // if themes are removed because not INSPIRE-relevant, then ignore
+    if (!themes) return;
+
     const possibleKeys = Object.keys(this.inspireToIsoMapping).filter(
       (key) => this.inspireToIsoMapping[key] === event.key
     );
-    const themes = field.options.formState.mainModel.themes;
     const connectedInspireTheme = themes.find(
       (item) => possibleKeys.indexOf(item.key) !== -1
     );
@@ -960,7 +963,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addGroupSimple("extraInfo", [
           this.addRepeatList(
             "legalBasicsDescriptions",
-            "Weitere Rechtliche Grundlagen",
+            "Weitere rechtliche Grundlagen",
             {
               asSelect: false,
               showSearch: true,
@@ -1150,8 +1153,7 @@ export abstract class IngridShared extends BaseDoctype {
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
-      this.addSelectInline("type", "Typ", {
-        showSearch: true,
+      this.addAutoCompleteInline("type", "Typ", {
         required: true,
         options: this.getCodelistForSelect(2000, "type").pipe(
           map((data) => {
@@ -1176,11 +1178,36 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
       }),
       this.addInputInline("url", "URL", {
-        required: true,
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
+        updateOn: "change",
         validators: {
           validation: ["url"],
+        },
+        expressions: {
+          "props.required": (field) => {
+            return !field.form.value?.uuidRef;
+          },
+        },
+        validation: {
+          messages: {
+            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
+        },
+      }),
+      this.addInputInline("uuidRef", "Datensatzverweis", {
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
+        updateOn: "change",
+        expressions: {
+          "props.required": (field) => {
+            return !field.form.value?.url;
+          },
+        },
+        validation: {
+          messages: {
+            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
         },
       }),
       this.addGroupSimple(null, [

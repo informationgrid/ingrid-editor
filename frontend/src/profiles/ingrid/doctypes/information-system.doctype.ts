@@ -8,7 +8,7 @@ import { IngridShared } from "./ingrid-shared";
 export class InformationSystemDoctype extends IngridShared {
   id = "InGridInformationSystem";
 
-  label = "Informationssystem";
+  label = "Anwendung";
 
   iconClass = "Informationssystem";
 
@@ -24,21 +24,14 @@ export class InformationSystemDoctype extends IngridShared {
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
-        this.addGroup(null, "Beschreibung", [
-          this.addSelectInline("serviceType", "Art des Dienstes", {
-            showSearch: true,
-            options: this.getCodelistForSelect(5300, "serviceType"),
-            codelistId: 5300,
-            hasInlineContextHelp: true,
-            wrappers: ["inline-help", "form-field"],
-          }),
-          this.addRepeatListInline("serviceVersion", "Version", {
-            hasInlineContextHelp: true,
-            asAutocomplete: true,
-            wrappers: ["panel", "inline-help"],
-            className: "optional",
-          }),
-        ]),
+        this.addSelect("serviceType", "Art des Dienstes", {
+          showSearch: true,
+          options: this.getCodelistForSelect(5300, "serviceType"),
+          codelistId: 5300,
+        }),
+        this.addRepeatList("serviceVersion", "Version", {
+          asAutocomplete: true,
+        }),
         this.addGroup(
           null,
           "Weitere Informationen",

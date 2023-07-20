@@ -47,17 +47,19 @@
                     class="type"
                 >
                     {{
-                    model[i].type.key
+                    (model[i].type.key
                         | codelist
                         : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
                             ?.props?.codelistId
-                        | async
+                        | async) ?? model[i].type.value
                     }}
                 </div>
                 <ng-template #simpleType>
                     <div class="type">{{ model[i].type }}</div>
                 </ng-template>
-                <div class="title">{{ model[i].title }}</div>
+                <div class="title">
+                    {{ model[i][props.titleField ?? "title"] }}
+                </div>
                 <a
                     class="url no-text-transform"
                     [href]="model[i].url"

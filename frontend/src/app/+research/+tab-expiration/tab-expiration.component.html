@@ -1,0 +1,68 @@
+<page-template label="Verfallszeit">
+    <div left-side>
+        <ng-container *ngIf="expiryDurationInDays; else expiryUnset">
+            Hier sehen Sie die Datensätze, deren Verfallszeitspanne abgelaufen
+            ist und auf die Sie Schreib- oder Leserechte haben.
+        </ng-container>
+        <ng-template #expiryUnset
+            >Um hier Datensätze sehen zu können, deren Verfallszeitspanne
+            abgelaufen ist, muss eine Verfallszeitspanne in den
+            Katalogeinstellungen definiert sein.<br /><br />Dies wird bei Bedarf
+            durch den Katalog-Administrator festgelegt.
+        </ng-template>
+    </div>
+
+    <div
+        main-header
+        *ngIf="expiryDurationInDays"
+        class="flex-col gap-12 align-items-start"
+    >
+        <button mat-flat-button color="primary" (click)="onSearch.emit()">
+            Aktualisieren
+        </button>
+        <mat-checkbox (change)="toggleFilter($event.checked)"
+            >Nur Datensätze für die ich verantwortlich bin
+        </mat-checkbox>
+    </div>
+
+    <div main-content *ngIf="expiryDurationInDays">
+        <div
+            class="leading flex-row align-items-center justify-content-center gap-12"
+        >
+            <ng-container *ngIf="!isSearching; else searching">
+                {{
+                    totalHits
+                        ? totalHits + " Ergebnisse abgelaufen"
+                        : "Alle Daten sind aktuell."
+                }}
+            </ng-container>
+            <ng-template #searching>
+                <mat-spinner strokeWidth="3" diameter="24"></mat-spinner>
+                wird geprüft...
+            </ng-template>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-tab-group *ngIf="totalHits">
+            <mat-tab label="Daten">
+                <ng-template matTabContent>
+                    <ige-expiration-table
+                        [isSearching]="isSearching"
+                        [filterUserId]="filterUserId"
+                        [result]="objects"
+                    ></ige-expiration-table>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Adressen">
+                <ng-template matTabContent>
+                    <ige-expiration-table
+                        [isSearching]="isSearching"
+                        [filterUserId]="filterUserId"
+                        [result]="addresses"
+                    ></ige-expiration-table>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</page-template>

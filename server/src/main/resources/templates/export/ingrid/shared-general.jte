@@ -585,6 +585,30 @@ ${contentInfo}
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
         @endfor
+        @for( ServiceUrl serviceUrl : page.getServiceUrls() )
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
+                            </gmd:name>
+                            @if(serviceUrl.getDescription() != null)
+                            <gmd:description>
+                                <gco:CharacterString>${serviceUrl.getDescription()}</gco:CharacterString>
+                            </gmd:description>
+                            @endif
+                            <gmd:function>
+                                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                            </gmd:function>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        @endfor
         @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>

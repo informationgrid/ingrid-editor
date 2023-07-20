@@ -29,9 +29,11 @@ export function NotEmptyArrayValidator(
     : { hasEmptyRows: { message: "Es dürfen keine leeren Zeilen vorkommen" } };
 }
 
+const regExp = new RegExp(REGEX_URL);
 export function UrlValidator(control: UntypedFormControl): ValidationErrors {
-  const regExp = new RegExp(REGEX_URL);
-  return (!control.value || control.value?.trim().length === 0 || regExp.test(control.value?.trim())) ? null : { url: true };
+  return !control.value || regExp.test(control.value?.trim())
+    ? null
+    : { url: true };
 }
 
 export function UrlValidatorMessage(

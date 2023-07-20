@@ -33,7 +33,6 @@ export class SavePlugin extends SaveBase {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
-    public formStateService: FormStateService,
     public documentService: DocumentService,
     sessionStore: SessionStore,
     messageService: FormMessageService,

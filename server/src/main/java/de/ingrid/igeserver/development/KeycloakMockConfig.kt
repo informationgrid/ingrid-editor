@@ -6,7 +6,6 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -25,21 +24,6 @@ import org.springframework.util.function.SingletonSupplier
 @Profile("dev")
 @Configuration
 internal class KeycloakMockConfig : KeycloakConfig() {
-
-    @Autowired
-    private val authenticationProviderMock: AuthenticationProviderMock? = null
-
-    /**
-     * Registers the KeycloakAuthenticationProvider with the authentication manager.
-     */
-    /*@Autowired
-    override fun configureGlobal(auth: AuthenticationManagerBuilder) {
-        // check out: https://www.thomasvitale.com/spring-security-keycloak/
-        val grantedAuthorityMapper = SimpleAuthorityMapper()
-        grantedAuthorityMapper.setPrefix("ROLE_")
-        val keycloakAuthenticationProvider = authenticationProviderMock
-        auth.authenticationProvider(keycloakAuthenticationProvider)
-    }*/
 
     /**
      * Secure appropriate endpoints

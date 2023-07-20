@@ -4,16 +4,13 @@ id: placeOfPublication
 docType: InGridLiterature
 profile: ingrid
 
-
-
-
 # title, used as window title
 title: Erscheinungsort
 ---
 
 # Erscheinungsort
 
-Angabe des Publikationsortes der Literatur. Diese Angabe bezieht sich auf die Literatur und nicht auf die Inhalte der Literatur. Die räumliche Zuordnung der Inhalte der Literatur erfolgt in den Angaben zum Raumbezug des aktuellen Objektes.
+Angabe des Publikationsortes des Dokuments. Diese Angabe bezieht sich auf das Dokument und nicht auf die Inhalte des Dokuments. Die räumliche Zuordnung der Inhalte des Dokuments erfolgt in den Angaben zum Raumbezug des aktuellen Objektes.
 
 ## Beispiel:
 

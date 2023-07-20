@@ -52,7 +52,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
-  placeholder: string;
   initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null
   );
@@ -91,8 +90,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         tap((items) => {
           this.typeSelectionEnabled = items.length > 1;
           this.cdr.markForCheck();
-        }),
-        tap(() => (this.placeholder = "Bitte wählen ..."))
+        })
       )
       .subscribe();
 

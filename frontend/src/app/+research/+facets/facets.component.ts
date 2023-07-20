@@ -149,7 +149,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   initLeaflet() {
     if (this.leaflet) {
-      this.leaflet.nativeElement.style.height = "200px";
+      this.leaflet.nativeElement.style.minHeight = "200px";
       this.leaflet.nativeElement.style.minWidth = "200px";
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,

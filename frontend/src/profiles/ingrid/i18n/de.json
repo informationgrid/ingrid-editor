@@ -1,12 +1,12 @@
 {
   "docType": {
-    "InGridSpecialisedTask": "Fachaufgabe",
+    "InGridSpecialisedTask": "Organisationseinheit",
     "InGridGeoDataset": "Geodatensatz",
-    "InGridLiterature": "Literatur",
+    "InGridLiterature": "Dokument",
     "InGridGeoService": "Geodatendienst",
     "InGridProject": "Projekt",
-    "InGridDataCollection": "Datensammlung",
-    "InGridInformationSystem": "Informationssystem",
+    "InGridDataCollection": "Datenbank",
+    "InGridInformationSystem": "Anwendung",
     "InGridOrganisationDoc": "Organisation",
     "InGridPersonDoc": "Person"
   }
