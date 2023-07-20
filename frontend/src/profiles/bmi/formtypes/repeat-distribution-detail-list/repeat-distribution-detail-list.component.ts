@@ -56,6 +56,9 @@ export class RepeatDistributionDetailListComponent
   implements OnInit
 {
 
+  showMore = {};
+  batchMode = false;
+
   constructor(private dialog: MatDialog) {
     super();
   }
@@ -103,8 +106,12 @@ export class RepeatDistributionDetailListComponent
     return this.getFields(this.field.fieldArray).find((field) => field.type === "upload")?.key;
   }
 
-  private getDownloadURL(uri: String) {
+  private getDownloadURL(uri: string) {
     return this.field.props.backendUrl + "upload/" + this.form.get("_uuid").value + "/" + uri;
+  }
+
+  private getDateString(datetime: string): string {
+    return new Date(datetime).toLocaleDateString();
   }
 
   private addUploadInfoToDatasource(file: LinkInfo) {
@@ -141,8 +148,6 @@ export class RepeatDistributionDetailListComponent
   }
 
   private updateTableDataToForm(data: any[]) {
-    console.log('updateTableDataToForm')
-    console.log(data);
     //this.model = new MatTableDataSource<any>(data);
     this.updateFormControl(data);
   }
@@ -216,5 +221,22 @@ export class RepeatDistributionDetailListComponent
     const item = this.model[event.previousIndex];
     this.remove(event.previousIndex);
     this.add(event.currentIndex, item);
+  }
+
+  handleCellClick(index: number, element, $event: MouseEvent) {
+    //if (!this.props.supportUpload) return;
+
+    const uploadKey = this.getUploadFieldKey();
+    if (!element.asLink) {
+      const options =
+        this.getFields(this.field.fieldArray)[2].props;
+      if (options.onClick) {
+        options.onClick(
+          this.form.root.get("_uuid").value,
+          element.uri,
+          $event
+        );
+      }
+    }
   }
 }

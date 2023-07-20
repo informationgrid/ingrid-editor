@@ -10,7 +10,7 @@ ige-add-button {
 }
 
 .cdk-drag-handle {
-  color: $ige-background-bar;
+  color: rgba(0,0,0, 0.54);
 }
 
 mat-panel-description{
@@ -21,7 +21,7 @@ mat-panel-description{
 
 .mat-mdc-list-item {
   height: auto;
-  padding: 6px;
+  padding: 4px;
   border-bottom: 2px solid #fff;
 
   .type {
@@ -49,4 +49,28 @@ mat-panel-description{
   .explanation {
     -webkit-line-clamp: 2;
   }
+}
+
+
+.expander {
+  transition: all 0.2s linear;
+
+  &.expanded {
+    transform: scale(1, -1);
+  }
+}
+
+
+mat-expansion-panel-header {
+  height: unset;
+  min-height: 60px;
+  padding: 0;
+}
+.mat-expansion-panel:first-of-type,
+.mat-expansion-panel:last-of-type {
+  border-radius: 0 !important;
+}
+
+.mat-expansion-panel-header-description{
+  margin: 0;
 }
