@@ -3,9 +3,13 @@ package de.ingrid.igeserver.exceptions
 import de.ingrid.igeserver.ServerException
 import org.springframework.http.HttpStatus
 
-class IsReferencedException: ServerException {
-    protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
-            super(statusCode, errorCode, errorText, data, cause)
+class IsReferencedException(
+    statusCode: HttpStatus,
+    errorCode: String,
+    errorText: String,
+    data: Map<String, Any?>? = null,
+    cause: Throwable? = null
+) : ServerException(statusCode, errorCode, errorText, data, cause) {
 
     companion object {
         private const val ERROR_CODE = "IS_REFERENCED_ERROR"
