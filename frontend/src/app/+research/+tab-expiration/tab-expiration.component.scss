@@ -1,0 +1,12 @@
+@import "src/variables";
+
+.leading {
+  min-height: 48px;
+  background: white;
+  font-size: 24px;
+  color: $ige-primary;
+}
+
+mat-tab-group {
+  background: white;
+}

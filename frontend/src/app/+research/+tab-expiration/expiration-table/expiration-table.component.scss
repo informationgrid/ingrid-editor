@@ -1,0 +1,12 @@
+@import "src/variables";
+
+.mat-mdc-row {
+  &:hover:not(.readonly) {
+    background: rgba(0, 0, 0, 0.04) !important;
+    cursor: pointer;
+  }
+
+  &.readonly .mat-mdc-cell {
+    color: $ige-comment-color;
+  }
+}
