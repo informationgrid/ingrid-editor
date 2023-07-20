@@ -8,7 +8,7 @@ import { IngridShared } from "./ingrid-shared";
 export class LiteratureDoctype extends IngridShared {
   id = "InGridLiterature";
 
-  label = "Literatur";
+  label = "Dokument";
 
   iconClass = "Literatur-Dokument";
 

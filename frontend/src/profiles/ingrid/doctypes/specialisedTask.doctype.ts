@@ -8,7 +8,7 @@ import { IngridShared } from "./ingrid-shared";
 export class SpecialisedTaskDoctype extends IngridShared {
   id = "InGridSpecialisedTask";
 
-  label = "Fachaufgabe";
+  label = "Organisationseinheit";
 
   iconClass = "Fachaufgabe";
 

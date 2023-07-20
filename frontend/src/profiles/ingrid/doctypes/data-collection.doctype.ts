@@ -8,7 +8,7 @@ import { IngridShared } from "./ingrid-shared";
 export class DataCollectionDoctype extends IngridShared {
   id = "InGridDataCollection";
 
-  label = "Datensammlung";
+  label = "Datenbank";
 
   iconClass = "Datensammlung";
 

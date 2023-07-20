@@ -8,7 +8,7 @@ import { IngridShared } from "./ingrid-shared";
 export class InformationSystemDoctype extends IngridShared {
   id = "InGridInformationSystem";
 
-  label = "Informationssystem";
+  label = "Anwendung";
 
   iconClass = "Informationssystem";
 
