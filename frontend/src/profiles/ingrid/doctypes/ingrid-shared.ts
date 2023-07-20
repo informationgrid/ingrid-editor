@@ -469,10 +469,13 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private checkConnectedIsoCategory(event, field) {
+    const themes = field.options.formState.mainModel.themes;
+    // if themes are removed because not INSPIRE-relevant, then ignore
+    if (!themes) return;
+
     const possibleKeys = Object.keys(this.inspireToIsoMapping).filter(
       (key) => this.inspireToIsoMapping[key] === event.key
     );
-    const themes = field.options.formState.mainModel.themes;
     const connectedInspireTheme = themes.find(
       (item) => possibleKeys.indexOf(item.key) !== -1
     );
