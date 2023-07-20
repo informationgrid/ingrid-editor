@@ -14,14 +14,10 @@ import org.springframework.web.servlet.view.RedirectView
  */
 @Controller
 class HomeController {
-    @GetMapping(value = ["/"])
-    fun index(): RedirectView {
-        return RedirectView("index.html")
-    }
 
     @GetMapping(value = ["/swagger"])
     fun swagger(): RedirectView {
-        return RedirectView("swagger-ui/index.html?configUrl=/v3/api-docs")
+        return RedirectView("swagger-ui/index.html")
     }
 
     @GetMapping(value = ["/accessDenied"])

@@ -122,7 +122,7 @@ location /ige-server/ {
 }
 ```
 
-To get the swagger-api json documentation go to http://localhost:8550/api-docs. The UI version can be accessed
+To get the swagger-api json documentation go to http://localhost:8550/v3/api-docs. The UI version can be accessed
 with http://localhost:8550/swagger-ui.html, where you also can test the API.
 
 # Tests

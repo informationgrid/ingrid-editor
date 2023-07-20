@@ -131,8 +131,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
 
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11' // Attention: also update SwaggerDocumentationConfig.kt
-    implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.11'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
