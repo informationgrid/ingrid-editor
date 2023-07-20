@@ -9,7 +9,7 @@
                 [matTooltip]="button.tooltip"
                 [matTooltipShowDelay]="1000"
                 (click)="sendEvent(button.eventId)"
-                [disabled]="!button.active"
+                [disabled]="!button.active || isNotReady"
             >
                 <mat-icon
                     class="material-icons-outlined"
@@ -26,7 +26,7 @@
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
                     [matTooltipShowDelay]="1000"
-                    [disabled]="!button.active"
+                    [disabled]="!button.active || isNotReady"
                     (menuOpened)="menu[button.id] = true"
                     (menuClosed)="menu[button.id] = false"
                 >
@@ -69,7 +69,7 @@
                     [matTooltipShowDelay]="1000"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     (click)="sendEvent(button.eventId)"
-                    [disabled]="!button.active"
+                    [disabled]="!button.active || isNotReady"
                 >
                     <!--aria-label="{{button.tooltip}}"-->
                     <mat-icon>{{ button.matIconVariable }}</mat-icon>
@@ -81,7 +81,7 @@
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
                     [matTooltipShowDelay]="1000"
-                    [disabled]="!button.active"
+                    [disabled]="!button.active || isNotReady"
                     (click)="sendEvent(button.eventId)"
                 >
                     {{ button.label }}
@@ -95,7 +95,7 @@
                         [attr.data-cy]="'toolbar_publish_now'"
                         [matTooltip]="button.tooltip"
                         [matTooltipShowDelay]="1000"
-                        [disabled]="!button.active"
+                        [disabled]="!button.active || isNotReady"
                     >
                         {{ button.label }}
                     </button>
@@ -103,7 +103,7 @@
                         class="btnPublishMore"
                         mat-flat-button
                         color="primary"
-                        [disabled]="!button.active"
+                        [disabled]="!button.active || isNotReady"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matMenuTriggerFor]="publishMenu"
                         (menuOpened)="menu[button.id] = true"

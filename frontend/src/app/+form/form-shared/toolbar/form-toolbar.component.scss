@@ -17,6 +17,10 @@
   .drop-down {
     width: 56px;
     padding-left: 8px;
+
+    &[disabled] {
+      opacity: 0.26;
+    }
   }
 }
 
