@@ -49,6 +49,8 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
         val basePath = ""
         registry.addResourceHandler("$basePath/swagger-ui.html**")
                 .addResourceLocations("classpath:/")
+        registry.addResourceHandler("$basePath/swagger-ui*/**")
+            .addResourceLocations("classpath:/META-INF/resources/webjars/")
         registry.addResourceHandler("/**/*")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
