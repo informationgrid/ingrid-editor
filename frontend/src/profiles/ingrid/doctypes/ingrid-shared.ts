@@ -388,6 +388,7 @@ export abstract class IngridShared extends BaseDoctype {
           className: "optional",
           wrappers: ["panel", "button", "form-field"],
           placeholder: this.transloco.translate("form.placeholder.enter"),
+          contextHelpId: "keywordanalysis",
           hintStart: "Mehrere Schlagworte durch Komma trennen",
           hideInPreview: true,
           buttonConfig: {
