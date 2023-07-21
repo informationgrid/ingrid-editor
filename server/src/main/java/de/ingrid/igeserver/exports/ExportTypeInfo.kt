@@ -11,4 +11,4 @@ import de.ingrid.igeserver.services.DocumentCategory
  * @param profiles in which profiles can this exporter be used
  *
  */
-data class ExportTypeInfo(val category: DocumentCategory, val type: String, val name: String, val description: String, val dataType: String, val fileExtension: String, val profiles: List<String>)
+data class ExportTypeInfo(val category: DocumentCategory, val type: String, val name: String, val description: String, val dataType: String, val fileExtension: String, val profiles: List<String>, val isPublic: Boolean = true)

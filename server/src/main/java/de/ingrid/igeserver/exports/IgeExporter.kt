@@ -12,10 +12,12 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
+data class ExportOptions(val includeDraft: Boolean)
+
 interface IgeExporter {
     val typeInfo: ExportTypeInfo
 
-    fun run(doc: Document, catalogId: String): Any
+    fun run(doc: Document, catalogId: String, options: ExportOptions = ExportOptions(false)): Any
     fun toString(exportedObject: Any): String {
         return exportedObject.toString()
     }

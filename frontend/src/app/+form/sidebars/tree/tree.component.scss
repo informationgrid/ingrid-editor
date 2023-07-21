@@ -161,6 +161,7 @@ mat-tree-node {
       padding-right: 10px;
       height: 0;
       margin-top: -10px;
+      padding-top: 2px;
     }
 
     .mat-icon {
@@ -180,9 +181,8 @@ mat-tree-node {
     }
   }
 
-  &.folder:not(.rootNode) mat-checkbox,
-  mat-checkbox.docNode {
-    margin-top: -40px !important;
+  &.folder mat-checkbox {
+    padding-top: 0 !important;
   }
 
   .quick-child-selection {

@@ -3,19 +3,17 @@ package de.ingrid.igeserver.imports.internal
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.FIELD_ID
 import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.services.MapperService
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
 class InternalImporter : IgeImporter {
-
-    private val log = logger()
 
     private val mapperService = MapperService()
 
@@ -25,9 +23,18 @@ class InternalImporter : IgeImporter {
 
         var documents = json.get("resources")
         if (version == "0.0.1") {
-           documents = migrateDocumentsFrom(documents as ArrayNode)
+            documents = migrateDocumentsFrom(documents as ArrayNode)
         }
-        return documents
+        val published = documents.get("published")
+        val draft = documents.get("draft")
+        return if (draft == null) {
+            published
+        } else {
+            jacksonObjectMapper().createArrayNode().apply {
+                add(published)
+                add(draft)
+            }
+        }
     }
 
     private fun migrateDocumentsFrom(documents: ArrayNode): ArrayNode {

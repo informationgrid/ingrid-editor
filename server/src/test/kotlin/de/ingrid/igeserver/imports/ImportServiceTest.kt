@@ -10,6 +10,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.security.core.Authentication
@@ -42,8 +43,9 @@ class ImportServiceTest : ShouldSpec() {
         }
 
         should("Count documents") {
+            every { docService.getWrapperByCatalogAndDocumentUuid(any(), any()) } throws Exception()
+            
             val options = ImportOptions()
-
             val doc = DocumentAnalysis(docEntity, 1, false, false, false)
             val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())
             val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
@@ -52,6 +54,8 @@ class ImportServiceTest : ShouldSpec() {
         }
 
         should("Count addresses") {
+            every { docService.getWrapperByCatalogAndDocumentUuid(any(), any()) } throws Exception()
+            
             val options = ImportOptions()
             val doc = DocumentAnalysis(docEntity, 1, true, false, false)
             val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())

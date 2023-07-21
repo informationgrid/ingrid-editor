@@ -1,13 +1,13 @@
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exports.iso19139.Keyword
-@import de.ingrid.igeserver.exports.iso19139.Thesaurus
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 
 @param Thesaurus thesaurus
         <%-- only show template if keywords exist  --%>
         @if(!thesaurus.getKeywords().isEmpty())
         <gmd:descriptiveKeywords>
             <gmd:MD_Keywords>
-                @for( Keyword keyword :  thesaurus.getKeywords())
+                @for( KeywordIso keyword :  thesaurus.getKeywords())
                 <gmd:keyword>
                     @if(keyword.getLink() != null)
                     <gmd:code>
