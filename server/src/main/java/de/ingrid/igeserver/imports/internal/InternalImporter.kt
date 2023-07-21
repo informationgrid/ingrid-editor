@@ -27,9 +27,13 @@ class InternalImporter : IgeImporter {
         }
         val published = documents.get("published")
         val draft = documents.get("draft")
-        return jacksonObjectMapper().createArrayNode().apply {
-            add(published)
-            add(draft)
+        return if (draft == null) {
+            published
+        } else {
+            jacksonObjectMapper().createArrayNode().apply {
+                add(published)
+                add(draft)
+            }
         }
     }
 
