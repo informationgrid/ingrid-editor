@@ -57,7 +57,7 @@
     background: white;
 
     // for accessibility, workaround to mimic hover color when selected by tab
-    &.cdk-focused {
+    &:focus {
       --mat-mdc-button-persistent-ripple-color: #8f8f8f;
     }
   }

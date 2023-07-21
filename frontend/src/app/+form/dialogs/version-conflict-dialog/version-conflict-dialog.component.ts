@@ -1,4 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import {
+  Option,
+  OptionListComponent,
+} from "../../../shared/option-list/option-list.component";
 
 export type VersionConflictChoice = "cancel" | "force" | "reload";
 
@@ -6,9 +13,16 @@ export type VersionConflictChoice = "cancel" | "force" | "reload";
   selector: "ige-version-conflict-dialog",
   templateUrl: "./version-conflict-dialog.component.html",
   styleUrls: ["./version-conflict-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    OptionListComponent,
+  ],
 })
 export class VersionConflictDialogComponent implements OnInit {
-  options = [
+  options: Option[] = [
     { label: "Speichern abbrechen", value: "cancel" },
     {
       label: "Trotzdem speichern und Änderungen vom anderen Benutzer verwerfen",

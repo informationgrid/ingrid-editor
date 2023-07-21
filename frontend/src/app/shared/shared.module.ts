@@ -15,7 +15,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { EmptyNavigationComponent } from "../+form/sidebars/tree/empty-navigation/empty-navigation.component";
 import { SharedDocumentItemModule } from "./shared-document-item.module";
-import { OptionListComponent } from "./option-list/option-list.component";
 import { MatRadioModule } from "@angular/material/radio";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -67,7 +66,6 @@ import { FullNamePipe } from "../directives/full-name.pipe";
     TreeComponent,
     EmptyNavigationComponent,
     TreeHeaderComponent,
-    OptionListComponent,
     ChartComponent,
     FacetsComponent,
     SpatialListComponent,
@@ -81,7 +79,6 @@ import { FullNamePipe } from "../directives/full-name.pipe";
     MatInputModule,
     MatButtonModule,
     CardBoxComponent,
-    OptionListComponent,
     SharedDocumentItemModule,
     AddButtonComponent,
     ChartComponent,
