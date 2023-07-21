@@ -54,7 +54,4 @@ class DataCollection : AnnotationSpec() {
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.expected.maximal.idf.xml")
     }
 
-    @Test
-    fun completeExport() {
-    }
 }

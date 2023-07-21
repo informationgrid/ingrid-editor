@@ -4,6 +4,7 @@
 
 ### Bugfixes
 
+- Es werden nicht alle Datensätze indiziert (#5339)
 - Uploads werden durch den Aufräum-Job gelöscht (#5337)
 - Indizierung stoppt nicht (#5336)
 
