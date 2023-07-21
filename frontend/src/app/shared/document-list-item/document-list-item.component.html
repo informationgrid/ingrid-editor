@@ -27,12 +27,7 @@
             [doc]="doc"
             matListItemIcon
         ></ige-document-icon>
-        <!--
-            it is not possible to assign tabindex to mat-list-option,
-            therefore, we assign it to a child component.
-            https://github.com/angular/components/issues/18631
-        -->
-        <h3 matListItemTitle tabindex="0" class="doc-item-content">
+        <h3 matListItemTitle class="doc-item-content">
             <span class="card-title">{{ doc.title }}</span>
             <span
                 *ngIf="!hideDate"
