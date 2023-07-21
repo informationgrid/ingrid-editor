@@ -5,7 +5,7 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { ExchangeService } from "../exchange.service";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, finalize, tap } from "rxjs/operators";
 import { MatStepper } from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
@@ -42,6 +42,7 @@ export class ExportComponent implements OnInit {
   path: ShortTreeNode[];
   showMore = false;
   showDraftsCheckbox = true;
+  exportFinished = false;
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -77,9 +78,13 @@ export class ExportComponent implements OnInit {
       model
     );
     this.exportResult = null;
+    this.exportFinished = false;
     this.exportService
       .export(options)
-      .pipe(catchError((error) => this.handleError(error)))
+      .pipe(
+        catchError((error) => this.handleError(error)),
+        finalize(() => (this.exportFinished = true))
+      )
       .subscribe((response: HttpResponse<Blob>) => {
         console.log("Export-Result:", response);
         this.exportResult = response;

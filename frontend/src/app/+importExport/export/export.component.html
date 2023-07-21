@@ -102,7 +102,7 @@
 
                 <div
                     class="flex-col justify-content-center align-items-center"
-                    *ngIf="exportResult; else waitForResponse"
+                    *ngIf="exportResult"
                 >
                     <div class="section-title">Exportdatei erstellt:</div>
                     <mat-icon
@@ -124,13 +124,12 @@
                     </ng-template>
                 </div>
 
-                <ng-template #waitForResponse>
-                    <div
-                        class="flex-row justify-content-center align-items-center"
-                    >
-                        <mat-spinner></mat-spinner>
-                    </div>
-                </ng-template>
+                <div
+                    *ngIf="!exportFinished"
+                    class="flex-row justify-content-center align-items-center"
+                >
+                    <mat-spinner></mat-spinner>
+                </div>
 
                 <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">
