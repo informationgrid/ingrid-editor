@@ -37,7 +37,7 @@ class InternalExporter @Autowired constructor(
         // TODO: move to utilities to prevent cycle
         val version = documentService.convertToJsonNode(doc)
         documentService.removeInternalFieldsForImport(version as ObjectNode)
-        
+
         val versions = if (options.includeDraft) {
             Pair(getPublished(catalogId, doc.uuid), version)
         } else {
@@ -46,9 +46,14 @@ class InternalExporter @Autowired constructor(
         return addExportWrapper(catalogId, versions.first, versions.second)
     }
 
-    private fun getPublished(catalogId: String, uuid: String): JsonNode {
-        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-        return documentService.convertToJsonNode(document)
+    private fun getPublished(catalogId: String, uuid: String): JsonNode? {
+        return try {
+            val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+            documentService.convertToJsonNode(document)
+        } catch (ex: Exception) {
+            // allow to export only draft versions
+            null
+        }
     }
 
     private fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
