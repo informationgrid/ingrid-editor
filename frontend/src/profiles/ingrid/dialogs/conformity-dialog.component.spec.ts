@@ -1,0 +1,182 @@
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
+import { ConformityDialogComponent } from "./conformity-dialog.component";
+import {
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from "@ngneat/spectator";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { DialogTemplateModule } from "../../../app/shared/dialog-template/dialog-template.module";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { MatSelectModule } from "@angular/material/select";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatAutocompleteHarness } from "@angular/material/autocomplete/testing";
+import {
+  DateAdapter,
+  MAT_DATE_LOCALE,
+  MatNativeDateModule,
+} from "@angular/material/core";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { MatCheckboxHarness } from "@angular/material/checkbox/testing";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
+import { Observable, of } from "rxjs";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatDatepickerInputHarness } from "@angular/material/datepicker/testing";
+import { MatInputHarness } from "@angular/material/input/testing";
+import { MatSelectHarness } from "@angular/material/select/testing";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
+
+describe("ConformityDialogComponent", () => {
+  let spectator: Spectator<ConformityDialogComponent>;
+  let isInspireCheckbox: MatCheckboxHarness;
+  let dateField: MatDatepickerInputHarness;
+  let descriptionField: MatInputHarness;
+  let inspireSpecification: MatSelectHarness;
+  let loader: any;
+  let inspireSpecificationAutocomplete: MatAutocompleteHarness;
+  const createComponent = createComponentFactory({
+    component: ConformityDialogComponent,
+    imports: [
+      MatDialogModule,
+      HttpClientTestingModule,
+      MatSnackBarModule,
+      MatFormFieldModule,
+      DialogTemplateModule,
+      MatInputModule,
+      MatButtonModule,
+      MatCheckboxModule,
+      MatIconTestingModule,
+      MatSelectModule,
+      MatDatepickerModule,
+      MatNativeDateModule,
+      FormsModule,
+      ReactiveFormsModule,
+      MatAutocompleteModule,
+    ],
+    providers: [
+      { provide: MatDialogRef, useValue: {} },
+      { provide: MAT_DIALOG_DATA, useValue: [] },
+      {
+        provide: MAT_DATE_LOCALE,
+        useValue: "de-DE",
+      },
+      {
+        provide: DateAdapter,
+        useClass: GermanDateAdapter,
+      },
+      // we need to mock CodelistService as a provider since it's already used in the constructor
+      mockProvider(CodelistService, {
+        observe(codelistId: string): Observable<SelectOptionUi[]> {
+          if (codelistId === "6005")
+            return of(<SelectOptionUi[]>[
+              { label: "Eins", value: "1" },
+              { label: "Zwei", value: "2" },
+              { label: "Drei", value: "3" },
+            ]);
+          else if (codelistId === "6006")
+            return of(<SelectOptionUi[]>[
+              { label: "Zehn", value: "1" },
+              { label: "Elf", value: "2" },
+            ]);
+          else if (codelistId === "6000")
+            return of(<SelectOptionUi[]>[
+              { label: "konform", value: "1" },
+              { label: "nicht konform", value: "2" },
+            ]);
+        },
+      }),
+    ],
+    componentMocks: [CodelistQuery],
+    detectChanges: false,
+  });
+
+  beforeEach(async () => {
+    UntilDestroy()(ConformityDialogComponent);
+    spectator = createComponent();
+
+    mockCodelists();
+
+    loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+    isInspireCheckbox = await loader.getHarness(MatCheckboxHarness);
+    dateField = await loader.getHarness(MatDatepickerInputHarness);
+    descriptionField = await loader.getHarness(MatInputHarness);
+    inspireSpecification = await loader.getHarness(MatSelectHarness);
+  });
+
+  it("should create the component", () => {
+    expect(spectator.component).toBeTruthy();
+  });
+
+  it("should disable the date field when isInspire is true", async () => {
+    spectator.detectChanges();
+
+    expect(await isInspireCheckbox.isChecked()).toBeTrue(); // Assuming checkbox is initially checked
+    expect(await dateField.isDisabled()).toBeTrue();
+
+    await isInspireCheckbox.uncheck();
+    expect(await dateField.isDisabled()).toBeFalse();
+
+    await isInspireCheckbox.check();
+    expect(await dateField.isDisabled()).toBeTrue();
+  });
+
+  it("should set INSPIRE specification as autoComplete select value with free text ", async () => {
+    await isInspireCheckbox.uncheck();
+    // with uncheck the select changes to autocomplete
+    inspireSpecificationAutocomplete = await loader.getHarness(
+      MatAutocompleteHarness
+    );
+    await inspireSpecificationAutocomplete.enterText("text to enter");
+    const options = await inspireSpecificationAutocomplete.getOptions();
+    expect(options.length).toBe(2);
+    await inspireSpecificationAutocomplete.selectOption({ text: "Elf" });
+
+    dateField.setValue("18.15.2019");
+  });
+
+  it("should set date for INSPIRE specification", async () => {
+    spectator.detectChanges();
+
+    await inspireSpecification.open();
+
+    const options = await inspireSpecification.getOptions();
+    expect(options.length).toBe(3);
+
+    await inspireSpecification.clickOptions({ text: "Eins" });
+
+    expect(await dateField.getValue()).toBe("20.10.2009");
+  });
+
+  function mockCodelists() {
+    const codelistQuery = spectator.inject(CodelistQuery, true);
+    codelistQuery.getCodelistEntryByKey.withArgs("6005", "1").and.returnValue(<
+      CodelistEntry
+    >{
+      id: "1",
+      fields: new Map([["de", "Eins"]]),
+      data: "2009-10-20",
+    });
+    codelistQuery.getCodelistEntryByKey.withArgs("6006", "1").and.returnValue(<
+      CodelistEntry
+    >{
+      id: "1",
+      fields: new Map([["de", "Zehn"]]),
+    });
+  }
+});

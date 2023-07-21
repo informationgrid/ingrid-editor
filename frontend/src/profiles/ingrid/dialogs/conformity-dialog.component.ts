@@ -16,7 +16,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { BackendOption } from "../../../app/store/codelist/codelist.model";
 
-interface FormType {
+export interface FormType {
   specification: FormControl<SelectOptionUi>;
   pass: FormControl<SelectOptionUi>;
   date: FormControl<string>;
@@ -51,22 +51,22 @@ export class ConformityDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     const model = this.data.model;
-    const isInspire = model.isInspire ?? true;
+    const isInspire = model?.isInspire ?? true;
     const specification = this.prepareSpecification(
       isInspire,
-      model.specification
+      model?.specification
     );
     this.form = fb.group({
       specification: fb.control(specification, Validators.required),
       pass: fb.control(
-        SelectOption.fromBackend(model.pass),
+        SelectOption.fromBackend(model?.pass),
         Validators.required
       ),
       date: fb.control(
-        { value: model.publicationDate, disabled: isInspire },
+        { value: model?.publicationDate, disabled: isInspire },
         Validators.required
       ),
-      verifiedBy: fb.control(model.explanation),
+      verifiedBy: fb.control(model?.explanation),
       isInspire: fb.control(isInspire),
     });
   }
