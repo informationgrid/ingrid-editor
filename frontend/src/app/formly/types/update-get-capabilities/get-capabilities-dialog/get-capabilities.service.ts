@@ -282,6 +282,15 @@ export class GetCapabilitiesService {
         connection: value.phone,
       });
 
+    const state =
+      !value.state.key && !value.state.value
+        ? null
+        : {
+            key: value.state.key,
+            value: value.state.value,
+          };
+    const country = !value.country.key ? null : { key: value.country.key };
+
     const address: IgeDocument = {
       _uuid: value.uuid,
       _type: type,
@@ -298,12 +307,8 @@ export class GetCapabilitiesService {
         street: value.street,
         "zip-code": value.postcode,
         city: value.city,
-        administrativeArea: {
-          key: value.state.key,
-        },
-        country: {
-          key: value.country.key,
-        },
+        administrativeArea: state,
+        country: country,
       },
     };
 
