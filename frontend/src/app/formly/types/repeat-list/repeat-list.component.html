@@ -19,6 +19,8 @@
             [removable]="true"
             [selectable]="false"
             (removed)="removeItem(i)"
+            tabindex="0"
+            (keydown.enter)="removeItem(i)"
         >
             <mat-icon
                 *ngIf="props.showLanguage"

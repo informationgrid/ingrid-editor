@@ -20,6 +20,7 @@
             [class.padding-btn]="showLabel"
             [class.error-outline]="showRequiredError"
             (click)="add.next()"
+            [matTooltip]="showLabel ? '' : 'Hinzufügen'"
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>

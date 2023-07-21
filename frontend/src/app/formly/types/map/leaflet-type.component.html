@@ -25,6 +25,7 @@
         class="spatialBtn"
         data-cy="spatialButton"
         color="primary"
+        matTooltip="Raumbezug hinzufügen"
         (click)="openSpatialDialog()"
         [ngClass]="{
             'has-error': showError && formControl.errors?.required
