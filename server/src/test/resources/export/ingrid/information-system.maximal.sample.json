@@ -1,17 +1,20 @@
 {
-  "title": "Test-Projekt",
-  "_id": 1633,
-  "_uuid": "aa14bb31-c99b-4463-a108-1935541985f2",
-  "_type": "InGridProject",
-  "_created": "2023-07-03T15:35:09.269235Z",
+  "title": "Test-Informationssystem",
+  "_id": 1622,
+  "_uuid": "33948d61-a1b3-4504-912e-2dafa37ce1c5",
+  "_type": "InGridInformationSystem",
+  "_created": "2023-06-28T16:10:49.143855Z",
   "_createdBy": "Super User",
-  "_modified": "2023-07-03T15:59:59.481464Z",
-  "_contentModified": "2023-07-03T15:59:59.481875Z",
+  "_modified": "2023-07-06T18:04:49.626587Z",
+  "_contentModified": "2023-07-06T18:04:49.627555Z",
   "_contentModifiedBy": "Super User",
-  "_version": 16,
+  "_version": 12,
   "_state": "P",
   "data": {
     "_parent": 1238,
+    "isInspireIdentified": true,
+    "isAdVCompatible": true,
+    "isOpenData": true,
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
     "alternateTitle": "Hier ist die Kurzbezeichnung.",
     "description": "Hier ist die Beschreibung.",
@@ -33,10 +36,10 @@
           "hasOnlySubtreeWritePermission": false,
           "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
           "_type": "InGridPersonDoc",
-          "_version": 13,
+          "_version": 14,
           "_created": "2023-07-03T15:35:47.866462Z",
-          "_modified": "2023-07-05T08:40:16.184845Z",
-          "_contentModified": "2023-07-05T08:40:16.182211Z",
+          "_modified": "2023-07-06T18:07:16.7324Z",
+          "_contentModified": "2023-07-06T18:07:16.73328Z",
           "_createdBy": "Super User",
           "_modifiedBy": "Super User",
           "_contentModifiedBy": "Super User",
@@ -44,7 +47,79 @@
           "address": {
             "city": "Frankfurt am Main",
             "po-box": "30151",
-            "street": "Mustermann Stra.",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "7"
+        }
+      },
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 14,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-06T18:07:16.7324Z",
+          "_contentModified": "2023-07-06T18:07:16.73328Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_state": "P",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
             "country": {
               "key": "276"
             },
@@ -100,15 +175,31 @@
     ],
     "advProductGroups": [
       {
-        "key": "4"
+        "key": "11"
+      },
+      {
+        "key": "5"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "13"
+      },
+      {
+        "key": "2"
       }
     ],
     "keywords": {
       "gemet": [],
       "umthes": [
         {
-          "id": "https://sns.uba.de/umthes/TH_00008528",
-          "label": "Erdgas",
+          "id": "https://sns.uba.de/umthes/TH_00025174",
+          "label": "Umweltethik",
+          "alternativeLabel": "Naturethik"
+        },
+        {
+          "id": "https://sns.uba.de/umthes/TH_00017906",
+          "label": "Naturstoff",
           "alternativeLabel": null
         }
       ],
@@ -118,9 +209,26 @@
         }
       ]
     },
-    "participants": "BfN, BMU",
-    "manager": "Dr. Antje Robbe",
-    "explanation": "Das Objekt, auf das verwiesen wird, enthält weiterführende Literaturhinweise zum aktuellen Objekt.",
+    "serviceType": {
+      "key": "1"
+    },
+    "serviceVersion": [
+      {
+        "key": null,
+        "value": "1"
+      }
+    ],
+    "systemEnvironment": "Systemumgebung",
+    "implementationHistory": "Historie",
+    "baseDataText": "Basisdaten",
+    "explanation": "Erläuterungen",
+    "serviceUrls": [
+      {
+        "name": "Service-URLs",
+        "url": "https://urls.com",
+        "description": "Erläuterungen"
+      }
+    ],
     "spatial": {
       "references": [
         {
@@ -137,52 +245,55 @@
       ],
       "spatialSystems": [
         {
-          "key": "84"
+          "key": "9000001"
         },
         {
-          "key": "3034"
+          "key": "9000013"
         }
       ],
       "verticalExtent": {
         "minimumValue": 1,
         "maximumValue": 1,
         "unitOfMeasure": {
-          "key": "9002"
+          "key": "4"
         },
         "Datum": {
-          "key": "5105"
+          "key": "5129"
         }
       },
-      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+      "description": "Erläuterung"
     },
     "temporal": {
       "events": [
         {
           "referenceDate": "2023-06-30T22:00:00.000Z",
           "referenceDateType": {
-            "key": "1"
+            "key": "3"
           }
         }
       ],
       "resourceDateType": {
-        "key": "at"
+        "key": "since"
       },
       "resourceDate": "2023-06-30T22:00:00.000Z",
       "status": {
-        "key": "1"
+        "key": "6"
+      },
+      "resourceDateTypeSince": {
+        "key": "requestTime"
       }
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
-        "key": "8"
+        "key": "1"
       },
       "userDefinedMaintenanceFrequency": {
         "number": 1,
         "unit": {
-          "key": "6"
+          "key": "5"
         }
       },
-      "description": "Die Messungen erfolgten nur tagsüber."
+      "description": "Erläuterung"
     },
     "metadata": {
       "language": {
@@ -197,7 +308,10 @@
     "extraInfo": {
       "legalBasicsDescriptions": [
         {
-          "key": "58"
+          "key": "63"
+        },
+        {
+          "key": "42"
         }
       ]
     },
@@ -206,55 +320,49 @@
       "specificUsage": "Eignung/Nutzung",
       "accessConstraints": [
         {
-          "key": "6"
+          "key": "1"
         }
       ],
       "useConstraints": [
         {
           "title": {
-            "key": "18"
+            "key": "31"
           },
-          "source": "Quellenvermerk"
-        },
-        {
-          "title": {
-            "key": "17"
-          },
-          "source": "Quellenvermerk"
+          "source": "Quelle"
         }
       ],
-      "useLimitation": "Nicht für Navigationszwecke geeignet"
+      "useLimitation": "Anwendungseinschränkungen"
     },
     "distribution": {
       "format": [
         {
           "name": {
-            "key": "23"
+            "key": "3"
           },
           "version": "1",
-          "compression": "test",
-          "specification": "test"
+          "compression": "technik",
+          "specification": "spezi"
         }
       ]
     },
     "digitalTransferOptions": [
       {
         "name": {
-          "key": "1"
+          "key": "900009"
         },
         "transferSize": 12,
-        "mediumNote": "test"
+        "mediumNote": "Ort"
       }
     ],
-    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+    "orderInfo": "Bestellinformation",
     "references": [
       {
         "type": {
-          "key": "5304"
+          "key": "9990"
         },
-        "title": "Titel der Bestellung",
-        "url": "https://bestellung.com",
-        "explanation": "Beschreibung der Bestellung"
+        "title": "Titel",
+        "url": "https://url.com",
+        "explanation": "Erläuterungen"
       }
     ]
   }
