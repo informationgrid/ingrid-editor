@@ -10,10 +10,10 @@ ige-add-button {
 }
 
 .cdk-drag-handle {
-  color: rgba(0,0,0, 0.54);
+  color: rgba(0, 0, 0, 0.54);
 }
 
-mat-panel-description{
+mat-panel-description {
   img {
     vertical-align: middle;
   }
@@ -51,7 +51,6 @@ mat-panel-description{
   }
 }
 
-
 .expander {
   transition: all 0.2s linear;
 
@@ -59,7 +58,6 @@ mat-panel-description{
     transform: scale(1, -1);
   }
 }
-
 
 mat-expansion-panel-header {
   height: unset;
@@ -71,6 +69,6 @@ mat-expansion-panel-header {
   border-radius: 0 !important;
 }
 
-.mat-expansion-panel-header-description{
+.mat-expansion-panel-header-description {
   margin: 0;
 }

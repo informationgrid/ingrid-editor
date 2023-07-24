@@ -1,7 +1,7 @@
-import {Component, inject, OnInit} from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from "@angular/material/expansion";
 import {
   FormDialogComponent,
   FormDialogData,
@@ -22,10 +22,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
 import {
   LinkInfo,
-  UploadFilesDialogComponent
+  UploadFilesDialogComponent,
 } from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
-import {filter} from "rxjs/operators";
-import {LinkDialogComponent} from "../../../../app/formly/types/table/link-dialog/link-dialog.component";
+import { filter } from "rxjs/operators";
+import { LinkDialogComponent } from "../../../../app/formly/types/table/link-dialog/link-dialog.component";
 
 @Component({
   selector: "ige-repeat-distribution-detail-list",
@@ -55,7 +55,6 @@ export class RepeatDistributionDetailListComponent
   extends FieldArrayType
   implements OnInit
 {
-
   showMore = {};
   batchMode = false;
 
@@ -91,23 +90,29 @@ export class RepeatDistributionDetailListComponent
       );
   }
 
-
   private updateTableInformationWithUploadInfo(files: LinkInfo[]) {
     files
       .filter((file) => this.isNotInTable(file))
       .forEach((file) => this.addUploadInfoToDatasource(file));
-
 
     this.formControl.markAsDirty();
     //this.updateTableDataToForm(this.model);
   }
 
   private getUploadFieldKey(): string {
-    return this.getFields(this.field.fieldArray).find((field) => field.type === "upload")?.key;
+    return this.getFields(this.field.fieldArray).find(
+      (field) => field.type === "upload"
+    )?.key;
   }
 
   private getDownloadURL(uri: string) {
-    return this.field.props.backendUrl + "upload/" + this.form.get("_uuid").value + "/" + uri;
+    return (
+      this.field.props.backendUrl +
+      "upload/" +
+      this.form.get("_uuid").value +
+      "/" +
+      uri
+    );
   }
 
   private getDateString(datetime: string): string {
@@ -116,13 +121,13 @@ export class RepeatDistributionDetailListComponent
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = {
-      format: {key: null},
+      format: { key: null },
       title: this.prepareTitleFromFile(file.file),
       description: "",
       license: null,
       byClause: "",
       languages: [],
-      plannedAvailability: null
+      plannedAvailability: null,
     };
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
@@ -141,8 +146,7 @@ export class RepeatDistributionDetailListComponent
     const uploadKey = this.getUploadFieldKey();
     return (
       this.model?.findIndex(
-        (item) =>
-          !item[uploadKey].asLink && item[uploadKey].uri === file.uri
+        (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri
       ) === -1
     );
   }
@@ -179,7 +183,7 @@ export class RepeatDistributionDetailListComponent
       });
   }
 
-  private getFields(props: any){
+  private getFields(props: any) {
     return props.fieldGroup[0].fieldGroup;
   }
 
@@ -228,14 +232,9 @@ export class RepeatDistributionDetailListComponent
 
     const uploadKey = this.getUploadFieldKey();
     if (!element.asLink) {
-      const options =
-        this.getFields(this.field.fieldArray)[2].props;
+      const options = this.getFields(this.field.fieldArray)[2].props;
       if (options.onClick) {
-        options.onClick(
-          this.form.root.get("_uuid").value,
-          element.uri,
-          $event
-        );
+        options.onClick(this.form.root.get("_uuid").value, element.uri, $event);
       }
     }
   }

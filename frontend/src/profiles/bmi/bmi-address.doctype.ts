@@ -3,10 +3,14 @@ import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
 import { OrganisationDoctype } from "../address/organisation.doctype";
-import {FormlyFieldConfig} from "@ngx-formly/core";
-import {AddressOptions} from "../address/address.shared";
-import {map} from "rxjs/operators";
-import {EmailValidator, UrlValidator, UrlValidatorMessage} from "../../app/formly/input.validators";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { AddressOptions } from "../address/address.shared";
+import { map } from "rxjs/operators";
+import {
+  EmailValidator,
+  UrlValidator,
+  UrlValidatorMessage,
+} from "../../app/formly/input.validators";
 
 @Injectable({
   providedIn: "root",
@@ -28,7 +32,6 @@ export class BmiAddressDoctype extends OrganisationDoctype {
     };
   }
 
-
   addContact(): FormlyFieldConfig {
     return this.addRepeat("contact", "Kontakt", {
       className: "contact",
@@ -40,7 +43,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
               ? ctrl.value.some((row) => row.type?.key === "3")
               : false,
           message: "Es muss eine Email angegeben werden",
-        }
+        },
       },
       fields: [
         this.addSelect("type", "Art", {
@@ -122,7 +125,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
               options: this.getCodelistForSelect(6200, "country"),
               codelistId: 6200,
               defaultValue: options?.defaultCountry,
-            })
+            }),
           ],
         },
       ],

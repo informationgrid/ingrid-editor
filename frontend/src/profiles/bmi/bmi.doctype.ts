@@ -4,9 +4,9 @@ import { inject, Injectable } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
-import {map} from "rxjs/operators";
-import {CodelistQuery} from "../../app/store/codelist/codelist.query";
-import {RepeatDetailListOptions} from "../form-field-helper";
+import { map } from "rxjs/operators";
+import { CodelistQuery } from "../../app/store/codelist/codelist.query";
+import { RepeatDetailListOptions } from "../form-field-helper";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -43,14 +43,17 @@ export class BmiDoctype extends BaseDoctype {
                 ctrl.value
                   ? ctrl.value.some((row) => row.type.key === "publisher")
                   : false,
-              message: "Es muss die veröffentlichende Stelle als Adresse angegeben sein",
+              message:
+                "Es muss die veröffentlichende Stelle als Adresse angegeben sein",
             },
             onePublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.filter((row) => row.type.key === "publisher").length < 2
+                  ? ctrl.value.filter((row) => row.type.key === "publisher")
+                      .length < 2
                   : true,
-              message: "Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
+              message:
+                "Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
             },
             publisherPublished: {
               expression: (ctrl) =>
@@ -61,7 +64,7 @@ export class BmiDoctype extends BaseDoctype {
             },
           },
         }),
-        this.addRepeatList("keywords", "Schlagworte", {view: "chip"}),
+        this.addRepeatList("keywords", "Schlagworte", { view: "chip" }),
       ]),
       this.addSection("Open Data", [
         this.addRepeatList("DCATThemes", "Open Data Kategorien", {
@@ -75,7 +78,7 @@ export class BmiDoctype extends BaseDoctype {
           required: true,
           fields: [
             this.addGroupSimple(null, [
-              {key: "_title"},
+              { key: "_title" },
               this.addInputInline("title", "Titel", {
                 wrappers: ["inline-help", "form-field"],
               }),
@@ -95,7 +98,7 @@ export class BmiDoctype extends BaseDoctype {
                   },
                   onClick: (docUuid, uri, $event) => {
                     this.uploadService.downloadFile(docUuid, uri, $event);
-                  }
+                  },
                 },
               },
               this.addDatepickerInline("modified", "Aktualisierungsdatum", {
@@ -117,10 +120,7 @@ export class BmiDoctype extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 placeholder: "Sprachen der Ressource",
-                options: this.getCodelistForSelect(
-                  20007,
-                  "null"
-                ),
+                options: this.getCodelistForSelect(20007, "null"),
                 codelistId: 20007,
               }),
               this.addTextAreaInline("description", "Beschreibung", {
@@ -134,22 +134,26 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
               }),
-              this.addInputInline("byClause", "Namensnennungstext für \"By\"-Clauses", {
-                wrappers: ["inline-help", "form-field"],
-                hasInlineContextHelp: true,
-              }),
+              this.addInputInline(
+                "byClause",
+                'Namensnennungstext für "By"-Clauses',
+                {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
+                }
+              ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
                 options: this.getCodelistForSelect(20005, "null"),
                 codelistId: 20005,
               }),
-            ])
+            ]),
           ],
-          validators: {
-          },
+          validators: {},
         }),
         this.addInput(
           "legalBasis",
-          "Rechtsgrundlage für die Zugangseröffnung",{
+          "Rechtsgrundlage für die Zugangseröffnung",
+          {
             wrappers: ["panel", "form-field"],
           }
         ),
@@ -159,10 +163,14 @@ export class BmiDoctype extends BaseDoctype {
       ]),
       this.addSection("Raumbezüge", [
         this.addSpatial("spatial", "Raumbezüge"),
-        this.addSelect("politicalGeocodingLevel", "Ebene der geopolitischen Abdeckung", {
-          options: this.getCodelistForSelect(20006, "null"),
-          codelistId: 20006,
-        }),
+        this.addSelect(
+          "politicalGeocodingLevel",
+          "Ebene der geopolitischen Abdeckung",
+          {
+            options: this.getCodelistForSelect(20006, "null"),
+            codelistId: 20006,
+          }
+        ),
       ]),
       this.addSection("Zeitbezüge", [
         this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
