@@ -200,7 +200,7 @@ class Wfs200CapabilitiesParser(
 
         // add found keywords to our this bean
         keywords.addAll(keywordsFeatureType)
-        return keywords
+        return keywords.distinctBy { it.lowercase() }
     }
 
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {

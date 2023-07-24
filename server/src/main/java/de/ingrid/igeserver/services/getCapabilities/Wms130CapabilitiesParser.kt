@@ -37,7 +37,7 @@ class Wms130CapabilitiesParser(
             addExtendedCapabilities(this, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
             val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
             val allKeywordsSet: MutableList<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER)
-            keywords.addAll(commonKeywords + allKeywordsSet)
+            keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
 
             // get bounding boxes of each layer and create a union
             val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)

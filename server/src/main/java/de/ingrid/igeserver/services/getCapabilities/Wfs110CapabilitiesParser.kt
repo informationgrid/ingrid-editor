@@ -32,7 +32,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
             onlineResources =
                 getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
             addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-            keywords += getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(doc, XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE)
+            keywords += (getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(doc, XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE)).distinctBy { it.lowercase() }
             boundingBoxes = getBoundingBoxesFromLayers(doc)
             spatialReferenceSystems = getSpatialReferenceSystems(
                 doc,
