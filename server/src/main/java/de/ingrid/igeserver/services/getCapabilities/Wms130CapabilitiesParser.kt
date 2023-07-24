@@ -170,11 +170,7 @@ class Wms130CapabilitiesParser(
         }
         return operations
     }
-
-    private fun convertToStringList(spatialReferenceSystems: List<KeyValue>?): List<String> {
-        return spatialReferenceSystems?.mapNotNull { it.value } ?: emptyList()
-    }
-
+    
     private fun getAddress(doc: Document): AddressBean {
         val address = AddressBean()
         setNameInAddressBean(
@@ -246,6 +242,16 @@ class Wms130CapabilitiesParser(
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
         val bboxes: MutableList<LocationBean> = ArrayList()
         val layers = xPathUtils.getNodeList(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer")
+        
+        if (layers.length == 0) {
+            val layer = xPathUtils.getNode(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer")
+            if (layer != null) {
+                val box = getBoundingBoxFromLayer(layer)
+                if (box != null) bboxes.add(box)
+            }
+            return bboxes
+        }
+        
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
             val box = getBoundingBoxFromLayer(layer)
