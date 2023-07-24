@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.bmi.exporter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.mitchellbosecke.pebble.PebbleEngine
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -30,14 +31,14 @@ class BmiIndexExporter : IgeExporter {
             )
         }
 
-    override fun run(doc: Document, catalogId: String): Any {
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
             //.newLineTrimming(false)
             .build()
 
         // TODO: should we handle export of addresses here too, instead of having another class
-        //       Then we don't need to define info in ExportTypeInfo! 
+        //       Then we don't need to define info in ExportTypeInfo!
         val compiledTemplate = engine.getTemplate("templates/export/bmi/index.peb")
 
         val writer: Writer = StringWriter()

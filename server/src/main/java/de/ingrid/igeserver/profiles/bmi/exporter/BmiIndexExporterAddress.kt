@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.profiles.bmi.exporter
 
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -26,7 +27,7 @@ class BmiIndexExporterAddress : IgeExporter {
             )
         }
 
-    override fun run(doc: Document, catalogId: String): Any {
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // do not export addresses
         return "{}"
     }
