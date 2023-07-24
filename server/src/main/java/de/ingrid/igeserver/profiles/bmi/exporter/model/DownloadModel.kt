@@ -16,8 +16,7 @@ data class DownloadModel(val title: String?,
                          val description: String?,
                          val license: KeyValueModel?,
                          val byClause: String?,
-                         @JsonDeserialize(using = DateDeserializer::class)
-                         val modified: OffsetDateTime?,
+                         val modified: String?,
                          val availability: KeyValueModel?,
                          val languages: List<KeyValueModel>?
     ): Download

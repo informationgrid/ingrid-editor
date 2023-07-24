@@ -58,7 +58,9 @@
             {% else %}
                 "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
             {% endif %}
-            "modified": "{{ download.modified }}",
+            {% if download.modified  %}
+                "modified": "{{ download.modified }}",
+            {% endif %}
             "title": "{{ download.title }}",
             "description": "{{ download.description }}",
             "license": "{{ download.getLicenseData().id }}",
