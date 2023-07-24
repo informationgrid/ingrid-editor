@@ -36,6 +36,10 @@ class Project : AnnotationSpec() {
         }
     }
 
+    /*
+    * export with all inputs possible.
+    * address has an organization assigned.
+    * */
     @Test
     fun maximalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
@@ -47,8 +51,7 @@ class Project : AnnotationSpec() {
             .replace("\r\n", "\n")
 
         result shouldNotBe null
-        // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/project.expected.maximal.idf.xml")
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/project.expected.maximal.idf.xml")
     }
 
     @Test

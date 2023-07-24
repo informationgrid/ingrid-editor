@@ -76,7 +76,7 @@
                 </gmd:MD_ReferenceSystem>
             </gmd:referenceSystemInfo>
             <gmd:identificationInfo>
-                <gmd:MD_DataIdentification uuid="http://portalu.de/igc_testNS#KRZN/60742E70-65CF-3BD9-9475-F9D2F4ABB307">
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/aa14bb31-c99b-4463-a108-1935541985f2">
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>
@@ -158,34 +158,7 @@
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
-                                <gco:CharacterString>Erdgas</gco:CharacterString>
-                            </gmd:keyword>
-                            <gmd:type>
-                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-                            </gmd:type>
-                            <gmd:thesaurusName>
-                                <gmd:CI_Citation>
-                                    <gmd:title>
-                                        <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
-                                    </gmd:title>
-                                    <gmd:date>
-                                        <gmd:CI_Date>
-                                            <gmd:date>
-                                                <gco:Date>2009-01-15</gco:Date>
-                                            </gmd:date>
-                                            <gmd:dateType>
-                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
-                                            </gmd:dateType>
-                                        </gmd:CI_Date>
-                                    </gmd:date>
-                                </gmd:CI_Citation>
-                            </gmd:thesaurusName>
-                        </gmd:MD_Keywords>
-                    </gmd:descriptiveKeywords>
-                    <gmd:descriptiveKeywords>
-                        <gmd:MD_Keywords>
-                            <gmd:keyword>
-                                <gco:CharacterString>Test_Schlagwort</gco:CharacterString>
+                                <gco:CharacterString>Schlagwort</gco:CharacterString>
                             </gmd:keyword>
                         </gmd:MD_Keywords>
                     </gmd:descriptiveKeywords>
@@ -203,6 +176,33 @@
                                         <gmd:CI_Date>
                                             <gmd:date>
                                                 <gco:Date>2020-05-05</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Erdgas</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2009-01-15</gco:Date>
                                             </gmd:date>
                                             <gmd:dateType>
                                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
@@ -307,7 +307,7 @@
                             <gmd:temporalElement>
                                 <gmd:EX_TemporalExtent>
                                     <gmd:extent>
-                                        <gml:TimeInstant>
+                                        <gml:TimeInstant gml:id="timePeriod_ID_00000000-0000-0000-0000-000000000000">
                                             <gml:timePosition>2023-07-01T00:00:00.000+02:00</gml:timePosition>
                                         </gml:TimeInstant>
                                     </gmd:extent>

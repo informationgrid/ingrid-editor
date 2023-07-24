@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+    <idf:head/>
+    <idf:body>
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+            <gmd:fileIdentifier>
+                <gco:CharacterString>3d7f5936-3e7d-4361-b91c-d94a5620b69d</gco:CharacterString>
+            </gmd:fileIdentifier>
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+            </gmd:language>
+            <gmd:characterSet>
+                <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+            </gmd:characterSet>
+            <gmd:hierarchyLevel>
+                <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+            </gmd:hierarchyLevel>
+            <gmd:contact>
+                <idf:idfResponsibleParty type="2" uuid="53DC4D57-1BA3-4647-8CBF-E57168FFE2FF">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress>
+                                        <gco:CharacterString>mustermann@wemove.com</gco:CharacterString>
+                                    </gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                            <gmd:hoursOfService>
+                                <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                            </gmd:hoursOfService>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                    </gmd:role>
+                </idf:idfResponsibleParty>
+            </gmd:contact>
+            <gmd:dateStamp>
+                <gco:Date>2023-07-11</gco:Date>
+            </gmd:dateStamp>
+            <gmd:metadataStandardName>
+                <gco:CharacterString>ISO19115</gco:CharacterString>
+            </gmd:metadataStandardName>
+            <gmd:metadataStandardVersion>
+                <gco:CharacterString>2003/Cor.1:2006</gco:CharacterString>
+            </gmd:metadataStandardVersion>
+            <gmd:referenceSystemInfo>
+                <gmd:MD_ReferenceSystem>
+                    <gmd:referenceSystemIdentifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>CRS 84: CRS 84 / mathematisch</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:RS_Identifier>
+                    </gmd:referenceSystemIdentifier>
+                </gmd:MD_ReferenceSystem>
+            </gmd:referenceSystemInfo>
+            <gmd:referenceSystemInfo>
+                <gmd:MD_ReferenceSystem>
+                    <gmd:referenceSystemIdentifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>DE_PD/83 / GK_9-15, Bezug 12. Meridian (BY)</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:RS_Identifier>
+                    </gmd:referenceSystemIdentifier>
+                </gmd:MD_ReferenceSystem>
+            </gmd:referenceSystemInfo>
+            <gmd:identificationInfo>
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/699b6606-a61d-4853-a767-e014a162b4ec">
+                    <gmd:citation>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>Test-Datensatz OpenData An</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:DateTime>2023-07-01T00:00:00.000+02:00</gco:DateTime>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:DateTime>2023-07-01T00:00:00.000+02:00</gco:DateTime>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision"/>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:DateTime>2023-07-01T00:00:00.000+02:00</gco:DateTime>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                            <gmd:identifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/699b6606-a61d-4853-a767-e014a162b4ec</gco:CharacterString>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:identifier>
+                        </gmd:CI_Citation>
+                    </gmd:citation>
+                    <gmd:abstract>
+                        <gco:CharacterString>Allgemeine Beschreibung.</gco:CharacterString>
+                    </gmd:abstract>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>opendata</gco:CharacterString>
+                            </gmd:keyword>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>ENER</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>HEAL</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>EDUC</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:resourceConstraints>
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useConstraints>
+                                <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+                            </gmd:useConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>Open Data Commons Attribution License (ODC-BY 1.0)</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>Quellenvermerk: Quelle</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>{"id":"odby","name":"Open Data Commons Attribution License (ODC-BY 1.0)","url":"https://www.opendefinition.org/licenses/odc-by","quelle":"Quelle"}</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>Creative Commons 1.0 Universell Public Domain Dedication</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>Quellenvermerk: Quelle</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
+                                <gco:CharacterString>{"id":"CC0 1.0","name":"Creative Commons 1.0 Universell Public Domain Dedication","url":"https://creativecommons.org/publicdomain/zero/1.0/deed.de","quelle":"Quelle"}</gco:CharacterString>
+                            </gmd:otherConstraints>
+                        </gmd:MD_LegalConstraints>
+                    </gmd:resourceConstraints>
+                    <gmd:language>
+                        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+                    </gmd:language>
+                    <gmd:topicCategory>
+                        <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
+                    </gmd:topicCategory>
+                    <gmd:topicCategory>
+                        <gmd:MD_TopicCategoryCode>structure</gmd:MD_TopicCategoryCode>
+                    </gmd:topicCategory>
+                    <gmd:topicCategory>
+                        <gmd:MD_TopicCategoryCode>inlandWaters</gmd:MD_TopicCategoryCode>
+                    </gmd:topicCategory>
+                    <gmd:extent>
+                        <gmd:EX_Extent>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>Berlin, Deutschland (administrative)</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>13.088</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>13.761</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>52.338</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>52.676</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>Berlin (110000000000)</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicBoundingBox>
+                                    <gmd:extentTypeCode>
+                                        <gco:Boolean>true</gco:Boolean>
+                                    </gmd:extentTypeCode>
+                                    <gmd:westBoundLongitude>
+                                        <gco:Decimal>13.082744</gco:Decimal>
+                                    </gmd:westBoundLongitude>
+                                    <gmd:eastBoundLongitude>
+                                        <gco:Decimal>13.784928</gco:Decimal>
+                                    </gmd:eastBoundLongitude>
+                                    <gmd:southBoundLatitude>
+                                        <gco:Decimal>52.35918</gco:Decimal>
+                                    </gmd:southBoundLatitude>
+                                    <gmd:northBoundLatitude>
+                                        <gco:Decimal>52.688663</gco:Decimal>
+                                    </gmd:northBoundLatitude>
+                                </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                        </gmd:EX_Extent>
+                    </gmd:extent>
+                </gmd:MD_DataIdentification>
+            </gmd:identificationInfo>
+            <gmd:distributionInfo>
+                <gmd:MD_Distribution>
+                    <gmd:distributionFormat>
+                        <gmd:MD_Format>
+                            <gmd:name gco:nilReason="unknown"/>
+                            <gmd:version gco:nilReason="unknown"/>
+                        </gmd:MD_Format>
+                    </gmd:distributionFormat>
+                    <gmd:transferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                                <idf:idfOnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>https://datendownload.com</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:name>
+                                        <gco:CharacterString>Titel der Verweise mit Typ Datendownload</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:description>
+                                        <gco:CharacterString>Datendownload Erläuterungen</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+                                    </gmd:function>
+                                    <idf:attachedToField entry-id="9990" list-id="2000">Datendownload</idf:attachedToField>
+                                </idf:idfOnlineResource>
+                            </gmd:onLine>
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:transferOptions>
+                </gmd:MD_Distribution>
+            </gmd:distributionInfo>
+            <gmd:dataQualityInfo>
+                <gmd:DQ_DataQuality>
+                    <gmd:scope>
+                        <gmd:DQ_Scope>
+                            <gmd:level>
+                                <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                            </gmd:level>
+                        </gmd:DQ_Scope>
+                    </gmd:scope>
+                    <gmd:lineage>
+                        <gmd:LI_Lineage>
+                            <gmd:statement>
+                                <gco:CharacterString>Fachliche Grundlage.</gco:CharacterString>
+                            </gmd:statement>
+                        </gmd:LI_Lineage>
+                    </gmd:lineage>
+                </gmd:DQ_DataQuality>
+            </gmd:dataQualityInfo>
+            <idf:abstract>
+                <gco:CharacterString>Allgemeine Beschreibung.</gco:CharacterString>
+            </idf:abstract>
+        </idf:idfMdMetadata>
+    </idf:body>
+</idf:html>

@@ -51,6 +51,7 @@
                 class="user-popup pad-right"
                 mat-icon-button
                 [matMenuTriggerFor]="menu"
+                matTooltip="Nutzerprofil"
                 data-cy="header-profile-button"
             >
                 {{ initials }}
@@ -112,6 +113,7 @@
                 class="user-popup"
                 mat-icon-button
                 [matMenuTriggerFor]="menuInfo"
+                matTooltip="Systemnavigation"
                 data-cy="header-info-button"
             >
                 <mat-icon svgIcon="Mehr"></mat-icon>
@@ -132,7 +134,7 @@
                             group.title
                         }}</span>
                         <mat-divider></mat-divider>
-                        <div *ngFor="let entry of group.entries">
+                        <ng-container *ngFor="let entry of group.entries">
                             <button
                                 *ngIf="entry.isRouterLink"
                                 mat-menu-item
@@ -148,7 +150,7 @@
                                 >{{ entry.label }}</a
                             >
                             <mat-divider></mat-divider>
-                        </div>
+                        </ng-container>
                     </div>
                 </div>
                 <a

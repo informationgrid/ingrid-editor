@@ -2,10 +2,12 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.ExportRequestParameter
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,9 +34,10 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
     fun getExporter(category: DocumentCategory, format: String): IgeExporter =
         exporterFactory.getExporter(category, format)
 
-    fun getExportTypes(profile: String): List<ExportTypeInfo> {
+    fun getExportTypes(profile: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         return exporterFactory.typeInfos
             .filter { it.profiles.isEmpty() || it.profiles.contains(profile) }
+            .filter { if (onlyPublic) it.isPublic else true }
     }
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {
@@ -81,25 +84,29 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         doc: DocumentWrapper,
         catalogId: String
     ): String {
+        val docVersion =
+            if (!options.useDraft) getPublishedVersion(catalogId, doc) else documentService.getDocumentByWrapperId(
+                catalogId,
+                doc.id!!,
+                true
+            )
+        val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
+        val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft))
+        return if (result is ObjectNode) result.toPrettyString() else result as String
+    }
+
+    private fun getPublishedVersion(
+        catalogId: String,
+        doc: DocumentWrapper
+    ): Document {
         return try {
-            val docVersion = if (!options.useDraft) documentService.getLastPublishedDocument(
+            documentService.getLastPublishedDocument(
                 catalogId,
                 doc.uuid,
                 true
-            ) else documentService.getDocumentByWrapperId(catalogId, doc.id!!, true)
-            val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-            val result = exporter.run(docVersion, catalogId)
-            if (result is ObjectNode) result.toPrettyString() else result as String
-        } catch (ex: NotFoundException) {
-            if (options.useDraft) {
-                throw ex
-            }
-            log.info("No published version of ${doc.uuid} found. Will not be exported.")
-            ""
-        } catch (ex2: java.lang.IllegalArgumentException) {
-            // TODO handle more elegantly
-            log.error("Error while exporting ${doc.uuid}", ex2)
-            "Error while exporting. Make sure the document can be published."
+            )
+        } catch (ex: Exception) {
+            throw NotFoundException.withMissingPublishedVersion(doc.uuid)
         }
     }
 

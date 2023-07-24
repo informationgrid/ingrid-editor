@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.uvp.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -38,7 +39,7 @@ class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override fun run(doc: Document, catalogId: String): Any {
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
         // pretty printing takes around 5ms

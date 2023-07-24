@@ -161,16 +161,16 @@ export abstract class AddressShared extends BaseDoctype {
       codelistId: 6200,
       defaultValue: options?.defaultCountry,
     });
-    const administrativeArea = this.addSelect("administrativeArea", null, {
-      fieldLabel: "Verwaltungsgebiet",
-      showSearch: true,
-      wrappers: null,
-      className: "flex-1",
-      options: this.getCodelistForSelect(110, "administrativeArea"),
-      codelistId: 110,
-      required:
-        options.requiredField && options.requiredField["administrativeArea"],
-    });
+    const administrativeArea = this.addAutoCompleteInline(
+      "administrativeArea",
+      "Verwaltungsgebiet",
+      {
+        options: this.getCodelistForSelect(6250, "administrativeArea"),
+        codelistId: 6250,
+        required:
+          options.requiredField && options.requiredField["administrativeArea"],
+      }
+    );
 
     return options.hideAdministrativeArea
       ? country

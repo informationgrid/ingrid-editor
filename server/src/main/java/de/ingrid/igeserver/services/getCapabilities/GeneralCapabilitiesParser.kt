@@ -542,6 +542,11 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     }
 
     protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
+        if (codelistId == "6200" && value.lowercase() == "de") {
+            val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
+            return KeyValue(id, null)
+        }
+        
         var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)
         if (id == null && valueField == "de") {
             id = codelistHandler.getCodeListEntryId(codelistId, value, "en")

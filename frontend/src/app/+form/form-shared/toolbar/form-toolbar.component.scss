@@ -55,6 +55,11 @@
   .toolbar-save-button:not([disabled]) {
     color: $ige-secondary;
     background: white;
+
+    // for accessibility, workaround to mimic hover color when selected by tab
+    &:focus {
+      --mat-mdc-button-persistent-ripple-color: #8f8f8f;
+    }
   }
 
   button.btnPublish,

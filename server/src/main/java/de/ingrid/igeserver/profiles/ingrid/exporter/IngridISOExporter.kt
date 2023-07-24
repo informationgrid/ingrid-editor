@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -23,15 +24,15 @@ class IngridISOExporter @Autowired constructor(
     override val typeInfo = ExportTypeInfo(
             DocumentCategory.DATA,
             "ingridISO",
-            "Ingrid ISO",
+            "ISO 19139",
             "Export von Ingrid Dokumenten ISO Format für die Anzeige im Portal.",
             "text/xml",
             "xml",
             listOf("ingrid")
     )
 
-    override fun run(doc: Document, catalogId: String): String {
-        val indexString = super.run(doc, catalogId) as String
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
+        val indexString = super.run(doc, catalogId, options) as String
         val elasticDoc = jacksonObjectMapper().readValue<ElasticDocument>(indexString)
         val idfDoc = convertStringToDocument(elasticDoc["idf"] as String)
         val isoDoc = transformIDFtoIso(idfDoc!!)

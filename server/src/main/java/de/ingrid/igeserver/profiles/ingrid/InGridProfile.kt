@@ -107,7 +107,7 @@ class InGridProfile @Autowired constructor(
 
         val codelist6006 = createCodelist6006(catalogRef)
         val codelist1350 = createCodelist1350(catalogRef)
-        val codelist1370 = createCodelist1370(catalogRef)
+        val codelist1370 = createCodelist6250(catalogRef)
         val codelist3535 = createCodelist3535(catalogRef)
         val codelist3555 = createCodelist3555(catalogRef)
 
@@ -140,14 +140,31 @@ class InGridProfile @Autowired constructor(
         }
     }
 
-    private fun createCodelist1370(catalogRef: Catalog): Codelist {
+    private fun createCodelist6250(catalogRef: Catalog): Codelist {
         return Codelist().apply {
-            identifier = "1370"
+            identifier = "6250"
             catalog = catalogRef
-            name = "XML Exportkriterium"
+            name = "Verwaltungsgebiet"
             description = ""
+            defaultEntry = "0"
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "CDS"))
+                add(CodelistHandler.toCodelistEntry("0", "Bundesrepublik Deutschland", null, "Federal Republic of Germany"))
+                add(CodelistHandler.toCodelistEntry("1", "Baden-Württemberg", null, "Baden Wurttemberg"))
+                add(CodelistHandler.toCodelistEntry("2", "Bayern", null, "Bavaria"))
+                add(CodelistHandler.toCodelistEntry("3", "Berlin", null, "Berlin"))
+                add(CodelistHandler.toCodelistEntry("4", "Brandenburg", null, "Brandenburg"))
+                add(CodelistHandler.toCodelistEntry("5", "Bremen", null, "Bremen"))
+                add(CodelistHandler.toCodelistEntry("6", "Hamburg", null, "Hamburg"))
+                add(CodelistHandler.toCodelistEntry("7", "Hessen", null, "Hessen"))
+                add(CodelistHandler.toCodelistEntry("8", "Mecklenburg-Vorpommern", null, "Mecklenburg-West Pomerania"))
+                add(CodelistHandler.toCodelistEntry("9", "Niedersachsen", null, "Lower Saxony"))
+                add(CodelistHandler.toCodelistEntry("10", "Nordrhein-Westfalen", null, "North Rhine Westphalia"))
+                add(CodelistHandler.toCodelistEntry("11", "Rheinland-Pfalz", null, "Rhineland Palatinate"))
+                add(CodelistHandler.toCodelistEntry("12", "Saarland", null, "Saarland"))
+                add(CodelistHandler.toCodelistEntry("13", "Sachsen", null, "Saxony "))
+                add(CodelistHandler.toCodelistEntry("14", "Sachsen-Anhalt", null, "Saxony Anhalt"))
+                add(CodelistHandler.toCodelistEntry("15", "Schleswig-Holstein", null, "Schleswig-Holstein"))
+                add(CodelistHandler.toCodelistEntry("16", "Thüringen", null, "Thuringia"))
             }
         }
     }

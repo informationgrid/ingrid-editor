@@ -1,0 +1,186 @@
+{
+  "title": "Test-Geodienst Downloaddienst",
+  "_id": 1664,
+  "_uuid": "9c00a83e-a7e5-4638-b529-92843a99c73f",
+  "_type": "InGridGeoService",
+  "_created": "2023-07-12T19:32:11.569137Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-12T21:33:05.894304435+02:00",
+  "_contentModified": "2023-07-12T21:33:05.894896251+02:00",
+  "_contentModifiedBy": "Super User",
+  "_version": 2,
+  "_state": "P",
+  "data": {
+    "isInspireIdentified": false,
+    "isAdVCompatible": false,
+    "isOpenData": false,
+    "description": "Feld von Beschreibung",
+    "graphicOverviews": [],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "16466cb3-7dbc-4450-9b36-4d8f7917eef1",
+          "_type": "InGridPersonDoc",
+          "_version": 2,
+          "_created": "2023-07-12T12:02:25.127758Z",
+          "_modified": "2023-07-12T12:02:30.778165Z",
+          "_contentModified": "2023-07-12T12:02:30.778664Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1662,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [],
+    "keywords": {
+      "gemet": [],
+      "umthes": [],
+      "free": []
+    },
+    "service": {
+      "classification": [
+        {
+          "key": "303"
+        }
+      ],
+      "type": {
+        "key": "3"
+      },
+      "version": [
+        {
+          "key": "1"
+        }
+      ],
+      "operations": [],
+      "coupledResources": [],
+      "couplingType": {
+        "key": "loose"
+      },
+      "resolution": [],
+      "hasAccessConstraints": false,
+      "isAtomDownload": true
+    },
+    "spatial": {
+      "references": [
+        {
+          "ars": "11",
+          "type": "wfsgnde",
+          "title": "Berlin, Bundesland",
+          "value": {
+            "lat1": 52.35918,
+            "lat2": 52.688663,
+            "lon1": 13.082744,
+            "lon2": 13.784928
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      }
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      }
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "accessConstraints": [],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "31"
+          },
+          "source": "Feld von Quelle"
+        }
+      ]
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "references": []
+  }
+}

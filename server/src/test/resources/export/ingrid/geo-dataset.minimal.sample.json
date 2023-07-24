@@ -1,0 +1,205 @@
+{
+  "title": "Test-Datensatz Minimal",
+  "_id": 1661,
+  "_uuid": "7abc5862-a893-4a70-8d83-23cf5a2dd264",
+  "_type": "InGridGeoDataset",
+  "_created": "2023-07-12T11:59:53.836622Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-12T14:05:06.617441269+02:00",
+  "_contentModified": "2023-07-12T14:05:06.617873804+02:00",
+  "_contentModifiedBy": "Super User",
+  "_version": 3,
+  "_state": "P",
+  "data": {
+    "isInspireIdentified": false,
+    "isAdVCompatible": false,
+    "isOpenData": false,
+    "subType": {
+      "key": "5"
+    },
+    "description": "Feld von Beschreibung",
+    "graphicOverviews": [],
+    "pointOfContact": [
+      {
+        "type": {
+          "key": "12"
+        },
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "16466cb3-7dbc-4450-9b36-4d8f7917eef1",
+          "_type": "InGridPersonDoc",
+          "_version": 2,
+          "_created": "2023-07-12T12:02:25.127758Z",
+          "_modified": "2023-07-12T12:02:30.778165Z",
+          "_contentModified": "2023-07-12T12:02:30.778664Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1662,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        }
+      }
+    ],
+    "advProductGroups": [],
+    "topicCategories": [
+      {
+        "key": "4"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [],
+      "free": []
+    },
+    "lineage": {
+      "statement": "Feld von Fachliche Grundlage"
+    },
+    "identifier": "55e618a3-fab8-4170-a557-14308285842d",
+    "spatialRepresentationType": [],
+    "resolution": [],
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
+      }
+    },
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {},
+    "qualities": [],
+    "spatial": {
+      "references": [
+        {
+          "value": {
+            "lat1": 52.35918,
+            "lon1": 13.082744,
+            "lat2": 52.688663,
+            "lon2": 13.784928
+          },
+          "title": "Berlin, Bundesland",
+          "type": "wfsgnde",
+          "ars": "11"
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      }
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      }
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      },
+      "characterSet": null
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "accessConstraints": [],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "20"
+          },
+          "source": "Feld von Quelle"
+        }
+      ]
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "references": []
+  }
+}

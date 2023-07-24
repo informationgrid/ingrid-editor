@@ -177,3 +177,8 @@ mat-card-title {
     margin-left: unset;
   }
 }
+
+.mat-mdc-menu-item[disabled] {
+  opacity: unset;
+  color: rgba(0, 0, 0, 0.6);
+}

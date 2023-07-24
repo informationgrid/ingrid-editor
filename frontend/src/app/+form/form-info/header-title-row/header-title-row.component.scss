@@ -87,25 +87,30 @@
       //letter-spacing: 0.4px !important;
     }
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-outline > div {
     //background-color: #ffffff;
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-wrapper {
     //padding-bottom: 0 !important;
     //margin: 0 0 9px;
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-subscript-wrapper {
     //margin: 0 !important;
     //padding: 0 !important;
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-infix {
     //padding: 10px 0 7px;
     //line-height: 38px;
   }
+
   /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
     //padding: 5px 10px 0;

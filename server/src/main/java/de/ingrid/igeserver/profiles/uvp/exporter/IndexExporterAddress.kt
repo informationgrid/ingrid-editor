@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.uvp.exporter
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -33,11 +34,12 @@ class IndexExporterAddress @Autowired constructor(
         "Export von UVP Adressen ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format. Für UVP allerdings leer und nur für Auflistung im Portal unter 'Verfahrensführende Behörden' benötigt.",
         "application/json",
         "json",
-        listOf("uvp")
+        listOf("uvp"),
+        false
     )
 
     @Transactional
-    override fun run(doc: Document, catalogId: String): Any {
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident") ?: ""
         val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident") ?: ""

@@ -17,7 +17,12 @@
             Rolle
         </th>
         <td class="thin-column" mat-cell *matCellDef="let element">
-            <mat-icon [svgIcon]="userService.roleIcon[element.role]"></mat-icon>
+            <ng-container *transloco="let t">
+                <mat-icon
+                    [svgIcon]="userService.roleIcon[element.role]"
+                    [matTooltip]="t('roles.' + element.role)"
+                ></mat-icon>
+            </ng-container>
         </td>
     </ng-container>
 

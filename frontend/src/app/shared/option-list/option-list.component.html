@@ -1,38 +1,16 @@
-<mat-selection-list
-    *ngIf="dense; else noDense"
-    #choice
-    [multiple]="false"
-    (selectionChange)="select.next($event.option.value)"
+<mat-radio-group
+    color="warn"
+    class="flex-col no-gap"
+    aria-labelledby="Versionskonflikt"
+    [(ngModel)]="selected"
 >
-    <mat-list-option *ngFor="let option of options" [value]="option.value">
+    <ng-container *ngFor="let option of options">
         <mat-radio-button
-            mat-list-icon
             [value]="option.value"
-            [checked]="
-                option.value === choice.selectedOptions.selected[0]?.value
-            "
-        ></mat-radio-button>
-        {{ option.label }}
-        <mat-divider *ngIf="showDivider"></mat-divider>
-    </mat-list-option>
-</mat-selection-list>
-
-<ng-template #noDense>
-    <mat-selection-list
-        #choice
-        [multiple]="false"
-        (selectionChange)="select.next($event.options[0].value)"
-    >
-        <mat-list-option *ngFor="let option of options" [value]="option.value">
-            <mat-radio-button
-                mat-list-icon
-                [value]="option.value"
-                [checked]="
-                    option.value === choice.selectedOptions.selected[0]?.value
-                "
-            ></mat-radio-button>
+            (change)="onSelect(option.value)"
+            (keydown.enter)="onSelect(option.value)"
+        >
             {{ option.label }}
-            <mat-divider *ngIf="showDivider"></mat-divider>
-        </mat-list-option>
-    </mat-selection-list>
-</ng-template>
+        </mat-radio-button>
+    </ng-container>
+</mat-radio-group>
