@@ -48,6 +48,7 @@ export interface UserInfo {
 
   useElasticsearch?: boolean;
   permissions: string[];
+  parentProfile?: string;
 }
 
 @Injectable({

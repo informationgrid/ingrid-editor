@@ -1,4 +1,4 @@
-import { Component, NgModule } from "@angular/core";
+import { Component, inject, NgModule, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
@@ -38,37 +38,42 @@ import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.m
 @Component({
   template: "",
 })
-class InGridComponent {
-  constructor(
-    profileService: ProfileService,
-    folder: FolderDoctype,
-    specialisedTask: SpecialisedTaskDoctype,
-    geoDataset: GeoDatasetDoctype,
-    literature: LiteratureDoctype,
-    geoService: GeoServiceDoctype,
-    project: ProjectDoctype,
-    dataCollection: DataCollectionDoctype,
-    informationSystem: InformationSystemDoctype,
-    person: IngridPersonDoctype,
-    organisation: IngridOrganisationDoctype,
-    getCapWizard: GetCapabilititesWizardPlugin,
-    isoView: IsoViewPlugin
-  ) {
-    profileService.setProfileId("ingrid");
-    profileService.registerProfiles([
-      folder,
-      specialisedTask,
-      geoDataset,
-      literature,
-      geoService,
-      project,
-      dataCollection,
-      informationSystem,
-      person,
-      organisation,
-    ]);
+export class InGridComponent implements OnInit {
+  profileService = inject(ProfileService);
+  folder = inject(FolderDoctype);
+  specialisedTask = inject(SpecialisedTaskDoctype);
+  geoDataset = inject(GeoDatasetDoctype);
+  literature = inject(LiteratureDoctype);
+  geoService = inject(GeoServiceDoctype);
+  project = inject(ProjectDoctype);
+  dataCollection = inject(DataCollectionDoctype);
+  informationSystem = inject(InformationSystemDoctype);
+  person = inject(IngridPersonDoctype);
+  organisation = inject(IngridOrganisationDoctype);
+  getCapWizard = inject(GetCapabilititesWizardPlugin);
+  isoView = inject(IsoViewPlugin);
 
-    profileService.setDefaultDataDoctype(geoDataset);
+  protected docTypes = [
+    this.folder,
+    this.specialisedTask,
+    this.geoDataset,
+    this.literature,
+    this.geoService,
+    this.project,
+    this.dataCollection,
+    this.informationSystem,
+    this.person,
+    this.organisation,
+  ];
+
+  constructor() {}
+
+  ngOnInit() {
+    console.log("PROFILE ON INIT");
+    this.profileService.setProfileId("ingrid");
+    this.profileService.registerProfiles(this.docTypes);
+
+    this.profileService.setDefaultDataDoctype(this.geoDataset);
   }
 }
 
@@ -105,6 +110,7 @@ class InGridComponent {
     IsoViewComponent,
     BreadcrumbModule,
   ],
+  exports: [InGridComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

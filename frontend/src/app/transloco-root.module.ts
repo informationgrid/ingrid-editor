@@ -22,15 +22,28 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     return this.configService.$userInfo.pipe(
       switchMap((info) => {
         const profile = info?.currentCatalog?.type;
+        const parentProfile = info?.parentProfile;
         const assetsDir =
           this.configService.getConfiguration().contextPath + "assets";
 
-        return combineLatest([
+        const sources = [
           this.http.get<Translation>(`${assetsDir}/i18n/${lang}.json`),
           this.http
             .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
             .pipe(catchError(() => of({}))),
-        ]).pipe(map((files) => deepMerge(files[0], files[1])));
+        ];
+        if (parentProfile) {
+          sources.push(
+            this.http
+              .get<Translation>(
+                `${assetsDir}/${parentProfile}/i18n/${lang}.json`
+              )
+              .pipe(catchError(() => of({})))
+          );
+        }
+        return combineLatest(sources).pipe(
+          map((files) => deepMerge(files[0], files[1], files[2]))
+        );
       })
     );
   }

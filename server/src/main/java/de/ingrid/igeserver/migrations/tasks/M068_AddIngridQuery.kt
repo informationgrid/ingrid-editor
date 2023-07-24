@@ -20,12 +20,12 @@ class M068_AddIngridQuery : MigrationBase("0.68") {
     private lateinit var catalogRepo: CatalogRepository
 
     @Autowired
-    private lateinit var ingridProfile: InGridProfile
+    private lateinit var ingridProfile: List<InGridProfile>
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
             catalogRepo.findAllByType("ingrid").forEach { catalog ->
-                ingridProfile.initCatalogQueries(catalog.identifier)
+                ingridProfile.forEach { it.initCatalogQueries(catalog.identifier) }
             }
         }
     }

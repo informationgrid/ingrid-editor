@@ -17,14 +17,25 @@ export class GeoDatasetDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  geodatasetOptions = {
+    required: {
+      statement: true,
+      subType: true,
+    },
+    dynamicRequired: {
+      citation:
+        "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+    },
+  };
+
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
         openData: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
-          required: true,
+          required: this.geodatasetOptions.required.subType,
           showSearch: true,
           options: this.getCodelistForSelect(525, "subType"),
           codelistId: 525,
@@ -40,7 +51,7 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addGroupSimple("lineage", [
           this.addTextArea("statement", "Fachliche Grundlage", this.id, {
-            required: true,
+            required: this.geodatasetOptions.required.statement,
           }),
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
@@ -331,8 +342,7 @@ export class GeoDatasetDoctype extends IngridShared {
           this.addRepeat("citation", "Schlüsselkatalog", {
             fields: this.titleDateEditionFields(3535),
             expressions: {
-              "props.required":
-                "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+              "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: "field.props.required ? '' : 'optional'",
             },
             contextHelpId: "citation_2",
@@ -465,6 +475,9 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 
   private getQualityFields(codelistId: number) {
     return this.addGroupSimple(

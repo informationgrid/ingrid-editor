@@ -313,6 +313,9 @@ class UsersApiController : UsersApi {
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
                 permissions = permissions
             )
+            userInfo.currentCatalog?.type?.let {
+                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+            }
             return ResponseEntity.ok(userInfo)
         }
     }

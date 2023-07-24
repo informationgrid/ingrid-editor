@@ -89,6 +89,7 @@ export class ConfigDataService {
       lastLogin: json.lastLogin ? new Date(json.lastLogin) : undefined,
       useElasticsearch: json.useElasticsearch === true,
       permissions: json.permissions ?? [],
+      parentProfile: json.parentProfile,
     };
   }
 }
