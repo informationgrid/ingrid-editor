@@ -5,6 +5,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -19,6 +20,7 @@ class M071_UpdateInGridCatalogCodelists : MigrationBase("0.71") {
     @Autowired
     private lateinit var catalogRepo: CatalogRepository
 
+    @Qualifier("inGridProfile")
     @Autowired
     private lateinit var ingridProfile: InGridProfile
 
