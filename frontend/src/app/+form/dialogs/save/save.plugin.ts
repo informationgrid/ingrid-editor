@@ -7,7 +7,6 @@ import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { catchError, finalize } from "rxjs/operators";
-import { FormStateService } from "../../form-state.service";
 import { SaveBase } from "./save.base";
 import { SessionStore } from "../../../store/session.store";
 import { DocEventsService } from "../../../services/event/doc-events.service";
@@ -33,7 +32,6 @@ export class SavePlugin extends SaveBase {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
-    public formStateService: FormStateService,
     public documentService: DocumentService,
     sessionStore: SessionStore,
     messageService: FormMessageService,

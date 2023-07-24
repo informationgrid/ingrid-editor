@@ -4,15 +4,13 @@ id: explanation
 docType: InGridInformationSystem
 profile: ingrid
 
-
-
 # title, used as window title
 title: Erläuterungen
 ---
 
 # Erläuterungen
 
-Zusätzliche Anmerkungen zu dem beschriebenen Dienst, der Anwendung oder dem Informationssystem. Hier können weitergehende Angaben z. B. technischer Art gemacht werden, die zum Verständnis des Dienstes, der Anwendung, des Informationssystems notwendig sind.
+Zusätzliche Anmerkungen zu dem beschriebenen Dienst oder der Anwendung. Hier können weitergehende Angaben z. B. technischer Art gemacht werden, die zum Verständnis des Dienstes, der Anwendung, des Informationssystems notwendig sind.
 
 ## Beispiel:
 

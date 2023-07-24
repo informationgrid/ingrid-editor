@@ -4,14 +4,13 @@ id: documentType
 docType: InGridLiterature
 profile: ingrid
 
-
 # title, used as window title
 title: Dokumenttyp
 ---
 
 # Dokumenttyp
 
-Angabe der Art des Dokumentes. Es ist eine Kurzcharakteristik über die Art der Literatur anzugeben. Der Eintrag kann direkt erfolgen oder mit Hilfe einer Auswahlliste, die über den Pfeil am rechten Ende des Feldes geöffnet werden kann.
+Angabe der Art des Dokumentes. Es ist eine Kurzcharakteristik über die Art des Dokuments anzugeben. Der Eintrag kann direkt erfolgen oder mit Hilfe einer Auswahlliste, die über den Pfeil am rechten Ende des Feldes geöffnet werden kann.
 
 ## Beispiel:
 

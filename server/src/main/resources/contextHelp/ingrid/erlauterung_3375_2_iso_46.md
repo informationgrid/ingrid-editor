@@ -4,15 +4,13 @@ id: explanation
 docType: InGridLiterature
 profile: ingrid
 
-
-
 # title, used as window title
 title: Erläuterung
 ---
 
 # Erläuterung
 
-Zusätzliche Anmerkungen zur beschriebenen Literatur.
+Zusätzliche Anmerkungen zum beschriebenen Dokument.
 
 ## Beispiel:
 

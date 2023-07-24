@@ -5,7 +5,7 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { ExchangeService } from "../exchange.service";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, finalize, tap } from "rxjs/operators";
 import { MatStepper } from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
@@ -18,6 +18,7 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
+import { MatSelectChange } from "@angular/material/select";
 
 @Component({
   selector: "ige-export",
@@ -40,6 +41,8 @@ export class ExportComponent implements OnInit {
     );
   path: ShortTreeNode[];
   showMore = false;
+  showDraftsCheckbox = true;
+  exportFinished = false;
 
   constructor(
     private _formBuilder: UntypedFormBuilder,
@@ -75,9 +78,13 @@ export class ExportComponent implements OnInit {
       model
     );
     this.exportResult = null;
+    this.exportFinished = false;
     this.exportService
       .export(options)
-      .pipe(catchError((error) => this.handleError(error)))
+      .pipe(
+        catchError((error) => this.handleError(error)),
+        finalize(() => (this.exportFinished = true))
+      )
       .subscribe((response: HttpResponse<Blob>) => {
         console.log("Export-Result:", response);
         this.exportResult = response;
@@ -151,5 +158,10 @@ export class ExportComponent implements OnInit {
       };
       reader.readAsText(error.error);
     });
+  }
+
+  updateDraftsCheckbox($event: MatSelectChange) {
+    this.showDraftsCheckbox = $event.value.type === "internal";
+    this.optionsFormGroup.get("drafts").setValue(false);
   }
 }

@@ -5,6 +5,10 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { map } from "rxjs/operators";
 import { inject } from "@angular/core";
+import {
+  REGEX_URL,
+  UrlValidatorMessage,
+} from "../../../app/formly/input.validators";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: number;
@@ -59,6 +63,17 @@ export class UvpShared extends BaseDoctype {
           } else {
             return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
+        },
+      },
+      validators: {
+        url: {
+          expression: (field) => {
+            const regExp = new RegExp(REGEX_URL);
+            return field.value?.asLink
+              ? regExp.test(field.value?.uri?.trim())
+              : true;
+          },
+          message: UrlValidatorMessage,
         },
       },
     },

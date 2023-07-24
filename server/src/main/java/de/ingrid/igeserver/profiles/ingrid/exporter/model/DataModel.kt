@@ -43,6 +43,7 @@ data class DataModel(
     val distribution: Distribution?,
     val orderInfo: String?,
     val references: List<Reference>?,
+    val serviceUrls: List<ServiceUrl>?,
     val dataQuality: DataQuality?,
     val dataQualityInfo: DataQualityInfo?,
     val qualities: List<Quality>?,
@@ -74,6 +75,13 @@ data class Reference(
     val type: KeyValueModel?,
     val explanation: String?,
     val url: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ServiceUrl(
+    val name: String,
+    val url: String,
+    val description: String?,
 )
 
 data class Operation(

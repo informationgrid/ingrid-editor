@@ -4,15 +4,13 @@ id: isbn
 docType: InGridLiterature
 profile: ingrid
 
-
-
 # title, used as window title
 title: ISBN-Nr.
 ---
 
 # ISBN-Nr.
 
-Angabe der 10-stelligen Identifikationsnummer der Literatur.
+Angabe der 10-stelligen Identifikationsnummer des Dokuments.
 
 ## Beispiel:
 
@@ -20,6 +18,6 @@ Angabe der 10-stelligen Identifikationsnummer der Literatur.
 
 # ISO Abbildung
 
-Internationale  Standardbuchnummer
+Internationale Standardbuchnummer
 
 Domain: 372 (gmd:ISBN)

@@ -1,0 +1,573 @@
+{
+  "title": "Test-Geodatendienst",
+  "_id": 1651,
+  "_uuid": "ID_00000000-0000-0000-0000-000000000000",
+  "_type": "InGridGeoService",
+  "_created": "2023-07-10T09:07:44.593038Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-10T10:42:33.614112Z",
+  "_contentModified": "2023-07-10T10:42:33.614735Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 18,
+  "_state": "P",
+  "data": {
+    "_parent": 1238,
+    "isInspireIdentified": true,
+    "isAdVCompatible": true,
+    "isOpenData": true,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "asLink": true
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 15,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-07T14:07:27.952322Z",
+          "_contentModified": "2023-07-07T14:07:27.95296Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      },
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 15,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-07T14:07:27.952322Z",
+          "_contentModified": "2023-07-07T14:07:27.95296Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_state": "P",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "9"
+        }
+      },
+      {
+        "ref": {
+          "title": "Musterfrau, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "fc521f66-0f47-45fb-ae42-b14fc669942e",
+          "_type": "InGridPersonDoc",
+          "_version": 3,
+          "_created": "2023-07-10T09:11:23.340756Z",
+          "_modified": "2023-07-10T09:11:59.830622Z",
+          "_contentModified": "2023-07-10T09:11:59.831142Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_state": "P",
+          "_id": 1652,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Musterfrau Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "musterfrau@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://musterfrau.com"
+            }
+          ],
+          "lastName": "Musterfrau",
+          "firstName": "Max",
+          "salutation": {
+            "key": "1"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "7"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "18"
+      },
+      {
+        "key": "23"
+      },
+      {
+        "key": "1"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/TH_00040996",
+          "label": "Binnenmeer",
+          "alternativeLabel": null
+        },
+        {
+          "id": "https://sns.uba.de/umthes/TH_00015341",
+          "label": "Küste",
+          "alternativeLabel": "Meeresküste"
+        }
+      ],
+      "free": [
+        {
+          "label": "Schlagwort"
+        }
+      ]
+    },
+    "service": {
+      "classification": [
+        {
+          "key": "201"
+        },
+        {
+          "key": "701"
+        }
+      ],
+      "type": {
+        "key": "3"
+      },
+      "version": [
+        {
+          "key": "1"
+        }
+      ],
+      "operations": [
+        {
+          "name": {
+            "key": "6"
+          },
+          "description": "OP Beschreibung",
+          "methodCall": "https://op.com"
+        },
+        {
+          "name": {
+            "key": "2"
+          },
+          "description": "OP2 Beschreibung",
+          "methodCall": "https://op2.com"
+        }
+      ],
+      "coupledResources": [
+        {
+          "icon": "Geodatensatz",
+          "type": "InGridGeoDataset",
+          "uuid": "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+          "state": "P",
+          "isExternalRef": false
+        }
+      ],
+      "couplingType": {
+        "key": "tight"
+      },
+      "resolution": [
+        {
+          "denominator": 1,
+          "distanceMeter": 1,
+          "distanceDPI": 1
+        },
+        {
+          "denominator": 2,
+          "distanceMeter": 2,
+          "distanceDPI": 2
+        }
+      ],
+      "systemEnvironment": "Fachbezug Systemumgebung",
+      "implementationHistory": "Fachbezug Historie",
+      "explanation": "Fachbezug Erläuterungen",
+      "hasAccessConstraints": true,
+      "isAtomDownload": true
+    },
+    "spatial": {
+      "references": [
+        {
+          "ars": "11",
+          "type": "wfsgnde",
+          "title": "Berlin, Bundesland",
+          "value": {
+            "lat1": 52.35918,
+            "lat2": 52.688663,
+            "lon1": 13.082744,
+            "lon2": 13.784928
+          }
+        },
+        {
+          "ars": "02",
+          "type": "wfsgnde",
+          "title": "Hamburg, Bundesland",
+          "value": {
+            "lat1": 53.39813,
+            "lat2": 54.02584,
+            "lon1": 8.117716,
+            "lon2": 10.344088
+          }
+        },
+        {
+          "ars": "",
+          "type": "free",
+          "title": "Harz, Sachsen-Anhalt, Deutschland (region)",
+          "value": {
+            "lat1": 51.494774,
+            "lat2": 51.95506,
+            "lon1": 10.184021,
+            "lon2": 11.464914
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "9036"
+        },
+        "Datum": {
+          "key": "5129"
+        }
+      },
+      "description": "Raumbezug Erläuterung"
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "2"
+          }
+        },
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "at"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "4"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 4,
+        "unit": {
+          "key": "3"
+        }
+      },
+      "description": "Zeitbezug Erläuterungen"
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "conformanceResult": [
+      {
+        "pass": {
+          "key": "3"
+        },
+        "isInspire": true,
+        "explanation": null,
+        "specification": {
+          "key": "10"
+        },
+        "publicationDate": "2009-10-20"
+      },
+      {
+        "pass": {
+          "key": "1"
+        },
+        "isInspire": true,
+        "explanation": null,
+        "specification": {
+          "key": "12"
+        },
+        "publicationDate": "2010-12-08"
+      }
+    ],
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "1"
+        },
+        {
+          "key": "2"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Zusatzinformation Herstellungszweck",
+      "specificUsage": "Zusatzinformation Eignung/Nutzung",
+      "accessConstraints": [
+        {
+          "key": "6"
+        },
+        {
+          "key": "2"
+        },
+        {
+          "key": "7"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "2"
+          },
+          "source": "Quelle"
+        },
+        {
+          "title": {
+            "key": "18"
+          },
+          "source": "Quelle"
+        }
+      ],
+      "useLimitation": "Verfügbarkeit  Anwendungseinschränkungen"
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "1"
+          },
+          "version": "1",
+          "compression": "Kom",
+          "specification": "Spezi"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "900009"
+        },
+        "transferSize": 12,
+        "mediumNote": "Ort"
+      }
+    ],
+    "orderInfo": "Verfügbarkeit Bestellinformation",
+    "references": [
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "Titel der Verweise",
+        "url": "https://verweise.com",
+        "explanation": "Verweise Erläuterungen"
+      },
+      {
+        "type": {
+          "key": "5305"
+        },
+        "title": "Titel der Suche",
+        "url": "https://suche.com",
+        "explanation": "Verweise Erläuterungen"
+      }
+    ],
+    "themes": [
+      {
+        "key": "303"
+      },
+      {
+        "key": "202"
+      },
+      {
+        "key": "302"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "11"
+      },
+      {
+        "key": "12"
+      },
+      {
+        "key": "10"
+      }
+    ],
+    "priorityDatasets": [
+      {
+        "key": "176198897"
+      },
+      {
+        "key": "1071855318"
+      }
+    ],
+    "spatialScope": {
+      "key": "-673152846"
+    }
+  }
+}

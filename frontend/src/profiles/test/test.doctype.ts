@@ -85,7 +85,7 @@ export class TestDoctype extends BaseDoctype {
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox",
-              placeholder: "Bitte wählen",
+              placeholder: "Bitte wählen...",
               appearance: "outline",
               options: this.getCodelistForSelect(8000, "select"),
               required: true,
@@ -97,7 +97,7 @@ export class TestDoctype extends BaseDoctype {
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox mit leerer Option",
-              placeholder: "Bitte wählen",
+              placeholder: "Bitte wählen...",
               appearance: "outline",
               options: this.getCodelistForSelectWithEmtpyOption(
                 8000,
@@ -112,7 +112,7 @@ export class TestDoctype extends BaseDoctype {
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Combobox/Autocomplete",
-              placeholder: "Bitte wählen",
+              placeholder: "Bitte wählen...",
               appearance: "outline",
               required: true,
               options: this.getCodelistForSelect(6500, "autocomplete"),
@@ -124,7 +124,7 @@ export class TestDoctype extends BaseDoctype {
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Date",
-              placeholder: "Bitte wählen",
+              placeholder: "Bitte wählen...",
               appearance: "outline",
               required: true,
             },

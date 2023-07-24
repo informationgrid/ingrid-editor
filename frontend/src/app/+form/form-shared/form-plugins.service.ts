@@ -45,6 +45,6 @@ export class FormPluginsService {
   }
 
   private unregisterAll() {
-    this.plugins.forEach((p) => p.unregister());
+    this.plugins.filter((p) => p.isActive).forEach((p) => p.unregister());
   }
 }

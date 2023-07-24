@@ -56,6 +56,11 @@
     "titleTooltip": {
       "Organisation": "Der Titel der Adresse ergibt sich aus dem Feld Bezeichnung.",
       "Person": "Der Titel der Adresse ergibt sich aus den Feldern Nachname und/oder Vorname."
+    },
+    "placeholder": {
+      "enter": "Bitte eingeben...",
+      "choose": "Bitte wählen...",
+      "chooseOrEnter": "Bitte wählen oder eingeben..."
     }
   },
   "spatial": {

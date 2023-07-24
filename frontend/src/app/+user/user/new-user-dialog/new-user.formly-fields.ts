@@ -13,7 +13,7 @@ export const getNewUserFormFields = (
       wrappers: ["panel", "form-field"],
       props: {
         externalLabel: "Benutzername",
-        // placeholder: "Bitte wählen",
+        // placeholder: "Bitte wählen...",
         appearance: "outline",
         required: true,
         options: logins,

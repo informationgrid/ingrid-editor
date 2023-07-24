@@ -21,27 +21,32 @@ class CodelistHandler @Autowired constructor(
 ) {
 
     companion object {
-        fun toCodelistEntry(id: String, german: String, data: String? = null): JsonNode {
+        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null): JsonNode {
             return jacksonObjectMapper().createObjectNode().apply {
                 put("id", id)
                 if (data != null) put("data", data)
                 set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
                     put("de", german)
+                    if (english != null) put("en", english)
                 })
             }
         }
 
     }
+    
+    fun removeCodelist(catalogId: String, codelistIdentifier: String) {
+        codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelistIdentifier)
+    }
 
     fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
-        codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
+        removeCodelist(catalogId, codelist.identifier)
         codelistRepo.flush()
         codelistRepo.save(codelist)
     }
 
     fun removeAndAddCodelists(catalogId: String, codelists: List<Codelist>) {
         codelists.forEach {
-            codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, it.identifier)
+            removeCodelist(catalogId, it.identifier)
         }
         codelistRepo.flush()
         codelistRepo.saveAll(codelists)
@@ -147,6 +152,16 @@ class CodelistHandler @Autowired constructor(
         return codeListService.getCodeList(listId)
             .entries.find { it.data.contains(dataValue) }
             ?.id
+    }
+    
+    fun getDefaultCodelistEntryId(listId: String): String? {
+        val defaultEntryId = codeListService.getCodeList(listId).defaultEntry
+        return if (defaultEntryId == "-1") null else defaultEntryId
+    }
+    
+    fun getDefaultCatalogCodelistEntryId(catalogId: String, listId: String): String? {
+        val defaultEntryId = getCatalogCodelists(catalogId).find { it.id == listId }?.defaultEntry
+        return if (defaultEntryId == "-1") null else defaultEntryId
     }
 
     val allCodelists: List<CodeList> = codeListService.codeLists

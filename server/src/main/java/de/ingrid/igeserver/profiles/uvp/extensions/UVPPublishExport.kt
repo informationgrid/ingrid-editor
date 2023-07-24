@@ -55,9 +55,11 @@ class UVPPublishExport @Autowired constructor(
         val docsWithReferences = jdbcTemplate.queryForList<String>(
             """
             SELECT DISTINCT d.uuid 
-            FROM document d, document_wrapper dw 
+            FROM document d, document_wrapper dw, catalog cat
             WHERE (
                 dw.uuid = d.uuid
+                AND dw.catalog_id = cat.id
+                AND cat.identifier = '${context.catalogId}'
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'pointOfContact' @> '[{"ref": "$docId"}]');

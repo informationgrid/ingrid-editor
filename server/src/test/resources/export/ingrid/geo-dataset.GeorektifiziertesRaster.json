@@ -1,0 +1,250 @@
+{
+  "title": "Test-Datensatz mit Georektifiziertes Raster",
+  "_id": 1659,
+  "_uuid": "c2020bf8-99f8-4ada-bf45-3faf7ccceb3f",
+  "_type": "InGridGeoDataset",
+  "_created": "2023-07-12T10:11:55.732502Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-12T10:13:41.13145Z",
+  "_contentModified": "2023-07-12T10:13:41.131905Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 3,
+  "_state": "P",
+  "data": {
+    "isInspireIdentified": false,
+    "isAdVCompatible": false,
+    "isOpenData": false,
+    "subType": {
+      "key": "5"
+    },
+    "description": "Feld von Beschreibung",
+    "graphicOverviews": [],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 15,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-07T14:07:27.952322Z",
+          "_contentModified": "2023-07-07T14:07:27.95296Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [],
+    "topicCategories": [
+      {
+        "key": "4"
+      },
+      {
+        "key": "17"
+      },
+      {
+        "key": "12"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [],
+      "free": []
+    },
+    "lineage": {
+      "statement": "Feld von Fachliche Grundlage"
+    },
+    "identifier": "3c5862ec-f7e7-457e-a5e5-3e07f1746cfb",
+    "spatialRepresentationType": [
+      {
+        "key": "2"
+      }
+    ],
+    "resolution": [],
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
+      }
+    },
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {},
+    "qualities": [],
+    "spatial": {
+      "references": [
+        {
+          "ars": "11",
+          "type": "wfsgnde",
+          "title": "Berlin, Bundesland",
+          "value": {
+            "lat1": 52.35918,
+            "lat2": 52.688663,
+            "lon1": 13.082744,
+            "lon2": 13.784928
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      }
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": null,
+      "userDefinedMaintenanceFrequency": {
+        "unit": null
+      }
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      },
+      "characterSet": null
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "accessConstraints": [],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "17"
+          },
+          "source": "Feld von Quelle"
+        }
+      ]
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "references": [],
+    "gridSpatialRepresentation": {
+      "type": {
+        "key": "rectified"
+      },
+      "axesDimensionProperties": [
+        {
+          "name": {
+            "key": "6"
+          },
+          "size": 10,
+          "resolution": 20
+        },
+        {
+          "name": {
+            "key": "2"
+          },
+          "size": 30,
+          "resolution": 40
+        }
+      ],
+      "transformationParameterAvailability": true,
+      "numberOfDimensions": 3,
+      "cellGeometry": {
+        "key": "2"
+      },
+      "georectified": {
+        "checkPointAvailability": true,
+        "checkPointDescription": "Feld von Kontrollpunktbeschreibung",
+        "cornerPoints": "Feld von Eckpunkte",
+        "pointInPixel": {
+          "key": "1"
+        }
+      }
+    }
+  }
+}

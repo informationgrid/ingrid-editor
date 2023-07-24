@@ -1,0 +1,369 @@
+{
+  "title": "Test-Informationssystem",
+  "_id": 1622,
+  "_uuid": "33948d61-a1b3-4504-912e-2dafa37ce1c5",
+  "_type": "InGridInformationSystem",
+  "_created": "2023-06-28T16:10:49.143855Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-06T18:04:49.626587Z",
+  "_contentModified": "2023-07-06T18:04:49.627555Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 12,
+  "_state": "P",
+  "data": {
+    "_parent": 1238,
+    "isInspireIdentified": true,
+    "isAdVCompatible": true,
+    "isOpenData": true,
+    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
+    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "description": "Hier ist die Beschreibung.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
+          "asLink": true
+        },
+        "fileDescription": "Hallo Flutter!"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 14,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-06T18:07:16.7324Z",
+          "_contentModified": "2023-07-06T18:07:16.73328Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "7"
+        }
+      },
+      {
+        "ref": {
+          "title": "Mustermann, Max",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 14,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-06T18:07:16.7324Z",
+          "_contentModified": "2023-07-06T18:07:16.73328Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
+          "_state": "P",
+          "_id": 1634,
+          "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Str.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
+            "administrativeArea": {
+              "key": "8"
+            }
+          },
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
+            }
+          ],
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
+          "_tags": ""
+        },
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "11"
+      },
+      {
+        "key": "5"
+      }
+    ],
+    "openDataCategories": [
+      {
+        "key": "13"
+      },
+      {
+        "key": "2"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [
+        {
+          "id": "https://sns.uba.de/umthes/TH_00025174",
+          "label": "Umweltethik",
+          "alternativeLabel": "Naturethik"
+        },
+        {
+          "id": "https://sns.uba.de/umthes/TH_00017906",
+          "label": "Naturstoff",
+          "alternativeLabel": null
+        }
+      ],
+      "free": [
+        {
+          "label": "Schlagwort"
+        }
+      ]
+    },
+    "serviceType": {
+      "key": "1"
+    },
+    "serviceVersion": [
+      {
+        "key": null,
+        "value": "1"
+      }
+    ],
+    "systemEnvironment": "Systemumgebung",
+    "implementationHistory": "Historie",
+    "baseDataText": "Basisdaten",
+    "explanation": "Erläuterungen",
+    "serviceUrls": [
+      {
+        "name": "Service-URLs",
+        "url": "https://urls.com",
+        "description": "Erläuterungen"
+      }
+    ],
+    "spatial": {
+      "references": [
+        {
+          "ars": "02",
+          "type": "wfsgnde",
+          "title": "Hamburg, Bundesland",
+          "value": {
+            "lat1": 53.39813,
+            "lat2": 54.02584,
+            "lon1": 8.117716,
+            "lon2": 10.344088
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "9000001"
+        },
+        {
+          "key": "9000013"
+        }
+      ],
+      "verticalExtent": {
+        "minimumValue": 1,
+        "maximumValue": 1,
+        "unitOfMeasure": {
+          "key": "4"
+        },
+        "Datum": {
+          "key": "5129"
+        }
+      },
+      "description": "Erläuterung"
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "3"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "since"
+      },
+      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "status": {
+        "key": "6"
+      },
+      "resourceDateTypeSince": {
+        "key": "requestTime"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 1,
+        "unit": {
+          "key": "5"
+        }
+      },
+      "description": "Erläuterung"
+    },
+    "metadata": {
+      "language": {
+        "key": "150"
+      }
+    },
+    "dataset": {
+      "languages": [
+        "150"
+      ]
+    },
+    "extraInfo": {
+      "legalBasicsDescriptions": [
+        {
+          "key": "63"
+        },
+        {
+          "key": "42"
+        }
+      ]
+    },
+    "resource": {
+      "purpose": "Herstellungszweck",
+      "specificUsage": "Eignung/Nutzung",
+      "accessConstraints": [
+        {
+          "key": "1"
+        }
+      ],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "31"
+          },
+          "source": "Quelle"
+        }
+      ],
+      "useLimitation": "Anwendungseinschränkungen"
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "3"
+          },
+          "version": "1",
+          "compression": "technik",
+          "specification": "spezi"
+        }
+      ]
+    },
+    "digitalTransferOptions": [
+      {
+        "name": {
+          "key": "900009"
+        },
+        "transferSize": 12,
+        "mediumNote": "Ort"
+      }
+    ],
+    "orderInfo": "Bestellinformation",
+    "references": [
+      {
+        "type": {
+          "key": "9990"
+        },
+        "title": "Titel",
+        "url": "https://url.com",
+        "explanation": "Erläuterungen"
+      }
+    ]
+  }
+}

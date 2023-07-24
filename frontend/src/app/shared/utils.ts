@@ -328,10 +328,10 @@ export class JsonDiffMerge {
         if (
           property.indexOf("__") !== 0 &&
           property.indexOf("$$") !== 0 &&
-          obj2[property] !== obj1[property]
+          obj2?.[property] !== obj1?.[property]
         ) {
           // Value changed
-          delta[property] = obj2[property];
+          delta[property] = obj2?.[property];
         }
       }
     }

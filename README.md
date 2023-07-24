@@ -15,6 +15,12 @@ The server uses several spring profiles to be configured for different environme
 The profiles can be set in the startup configuration or in the application.properties under `server/src/main/resources`.
 We suggest to use the startup configuration to prevent accidentally commit of development changes.
 
+When using Keycloak then some properties must be configured. Please also check `application.properties`:
+
+- spring.security.oauth2.client.provider.keycloak.issuer-uri
+- spring.security.oauth2.resourceserver.jwt.issuer-uri
+- keycloak.auth-server-url
+
 #### Database
 
 The application requires a PostgreSQL database instance which is configured in application.properties.
@@ -56,40 +62,41 @@ run `npm run start-ie11`.
 
 - Open IntelliJ
 - Import project
-    - _If first project in IntelliJ_ Open or Import > Select `build.gradle` > Open as Project > OK
-    - _Else_ File > New > Project from Existing Sources... > Select `build.gradle` > OK
+  - _If first project in IntelliJ_ Open or Import > Select `build.gradle` > Open as Project > OK
+  - _Else_ File > New > Project from Existing Sources... > Select `build.gradle` > OK
 - Create **server run configuration**
-    - **Java 17 SDK** is required
-    - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
-        - Name: IgeServerKt
-        - VM options: `-Dspring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch`
-        - Use classpath of module: `IGE-NG.server.main`
-        - Main class: `de.ingrid.igeserver.IgeServerKt`  
-          (The file should automatically appear in the search dialog. When not, choose manually _
-          server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
-        - JRE: `path/to/java-17-jdk`
-        - Shorten command line: `JAR manifest`
+
+  - **Java 17 SDK** is required
+  - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
+    - Name: IgeServerKt
+    - VM options: `-Dspring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch`
+    - Use classpath of module: `IGE-NG.server.main`
+    - Main class: `de.ingrid.igeserver.IgeServerKt`  
+      (The file should automatically appear in the search dialog. When not, choose manually _
+      server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
+    - JRE: `path/to/java-17-jdk`
+    - Shorten command line: `JAR manifest`
 
 - Install **frontend packages**
-    - Open a shell in root directory of the project
-    - Install _yarn_ if not installed yet: `npm -g i yarn`
-    - Install packages: `yarn --cwd ./frontend`
+  - Open a shell in root directory of the project
+  - Install _yarn_ if not installed yet: `npm -g i yarn`
+  - Install packages: `yarn --cwd ./frontend`
 - Create **frontend run configuration**
-    - Run > Edit Configurations > + (new configuration) >
-        - _community edition_ Shell Script
-            - Script path: _path/to/npm_
-            - Script options: `start`
-            - Working directory: _path/to/frontend_
-            - Interpreter path: _empty_
-        - _ultimate edition_ npm
-            - It just works (Andre)
+  - Run > Edit Configurations > + (new configuration) >
+    - _community edition_ Shell Script
+      - Script path: _path/to/npm_
+      - Script options: `start`
+      - Working directory: _path/to/frontend_
+      - Interpreter path: _empty_
+    - _ultimate edition_ npm
+      - It just works (Andre)
 - Choose an active profile  
   The profile `mcloud` might be active by default when starting the frontend interface. Choose your target profile for
   development through the following steps:
-    - Start backend and frontend and navigate to frontend home page
-    - Click on the three-dots icon in the top right corner and choose `Allgemein`
-    - Navigate to `Katalogverwaltung` and add a new catalog with the target profile
-    - Activate your newly created catalog
+  - Start backend and frontend and navigate to frontend home page
+  - Click on the three-dots icon in the top right corner and choose `Allgemein`
+  - Navigate to `Katalogverwaltung` and add a new catalog with the target profile
+  - Activate your newly created catalog
 
 You are all set. Run server and frontend with the appropriate run configuration.
 
@@ -115,7 +122,7 @@ location /ige-server/ {
 }
 ```
 
-To get the swagger-api json documentation go to http://localhost:8550/api-docs. The UI version can be accessed
+To get the swagger-api json documentation go to http://localhost:8550/v3/api-docs. The UI version can be accessed
 with http://localhost:8550/swagger-ui.html, where you also can test the API.
 
 # Tests
@@ -138,18 +145,18 @@ gradlew patchChangelog
 ## Release a new version
 
 - Set an annotated tag to the latest commit which represents the release
-    - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
+  - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
 - push tag (with commit) to remote
-    - if only tag was pushed, build needs to be triggered manually in Jenkins
+  - if only tag was pushed, build needs to be triggered manually in Jenkins
 
 # Jenkins Setup
 
 The following behaviours for the Jenkins project have to be applied:
 
 - Advanced clone behaviours
-    - to fetch tags so that the correct version is calculated
+  - to fetch tags so that the correct version is calculated
 - Check out to matching local branch
-    - to get branch information for creating correct tag for docker image
+  - to get branch information for creating correct tag for docker image
 
 # FAQ
 

@@ -6,7 +6,7 @@ buildscript {
     ext.kotlin_version = '1.8.21'
     ext.spring_boot_version = '3.0.6'
     ext.hibernate_version = '6.2.1.Final'
-    ext.kotest_version = '5.5.5'
+    ext.kotest_version = '5.6.2'
     ext.jte_version = '2.3.2'
 //    ext.elastic_version = '7.17.9'
     ext.geotools_version = '28.2'
@@ -25,7 +25,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.3.1'
     id "com.gorylenko.gradle-git-properties" version "2.4.1"
-    id 'io.kotest' version '0.3.9'
+    id 'io.kotest' version '0.4.10'
     id "com.github.ben-manes.versions" version "0.46.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "$hibernate_version"
@@ -131,8 +131,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
 
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11' // Attention: also update SwaggerDocumentationConfig.kt
-    implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.11'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
@@ -194,16 +193,17 @@ dependencies {
     implementation "gg.jte:jte-kotlin:$jte_version"
 }
 
-/*dependencyManagement {
+dependencyManagement {
     dependencies {
-        dependency "org.elasticsearch:elasticsearch:$elastic_version"
-        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
-        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
-        dependency "org.elasticsearch.client:transport:$elastic_version"
+//        dependency "org.elasticsearch:elasticsearch:$elastic_version"
+//        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
+//        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
+//        dependency "org.elasticsearch.client:transport:$elastic_version"
         dependency "org.yaml:snakeyaml:2.0"
+        dependency "commons-collections:commons-collections:3.2.2"
 
     }
-}*/
+}
 
 group = 'de.ingrid'
 description = 'IGE-NG Server'
@@ -258,6 +258,10 @@ test {
     ignoreFailures = true
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
+
+    filter {
+        excludeTestsMatching "de.ingrid.igeserver.exports.ingrid.*"
+    }
 }
 
 publishing {

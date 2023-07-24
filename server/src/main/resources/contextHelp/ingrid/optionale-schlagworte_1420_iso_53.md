@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: keywords
+id: free
 docType:
   - InGridDataCollection
   - InGridGeoDataset
@@ -18,12 +18,11 @@ title: Freie Schlagworte
 # Freie Schlagworte
 
 Die Verschlagwortung dient der Klassifizierung und dem einfacheren Wiederauffinden eines Datensatzes.
-Bei den optionalen Schlagworten gibt es zwei Möglichkeiten der Eingabe: im oberen Feld können freie Schlagworte angegeben werden, durch Komma getrennt, die genau so als Schlagworte übernommen werden, z.B. Lärm, Kita. Wortgruppen können in Anführungszeichen angegeben werden.
-Im unteren Feld Analyse können ebenfalls Schlagworte, durch Komma getrennt, oder Wortgruppen in Anführungszeichen, angegeben werden. Diese werden anschließend analysiert und einer Schlagwortklasse (z.B. Thesaurus) automatisch zugeordnet.
+Bei den "Freien Schlagworten" können beliebige Schlagworte, durch Kommas getrennt, eingegeben, und diese werden unverändert als freie Schlagworte übernommen.
 
 ## Beispiel:
 
-Naturschutz, Schmetterling, Kartierung, Artenschutz
+Seehundpopulation, Waldgebiet, besonderes Schutzgebiet
 
 # ISO Abbildung
 

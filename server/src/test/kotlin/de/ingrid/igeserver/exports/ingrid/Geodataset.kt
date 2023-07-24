@@ -47,34 +47,118 @@ class Geodataset : AnnotationSpec() {
         }
     }
 
-    /*    @Test
-        fun minimalExport() {
-            every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+    /*
+    * export with only required inputs.
+    * address has no organization assigned.
+    * */
+    @Test
+    fun minimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
+    }
 
-            var result = exportJsonToXML(exporter, "/export/ingrid/geodataset-Document1.json")
-            // replace generated UUIDs and windows line endings
-            result = result
-                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-                .replace("\r\n", "\n")
-
-            result shouldNotBe null
-            // TODO: pending
-            // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document1.idf.xml")
-        }*/
-
+    /*
+    * export with all inputs possible.
+    * address has an organization assigned.
+    * */
     @Test
     fun maximalExport() {
         every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
-        var result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.sample.maximal.json")
+        var result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.maximal.sample.json")
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
             .replace("\r\n", "\n")
 
         result shouldNotBe null
-        // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.expected.maximal.idf.xml")
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and openData selected.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun openDataMinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.openData.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and INSPIRE selected.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun inspireMinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and AdV selected.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun advMinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.AdV.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and Vektor selected in Digitale Repräsentation.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun vectorMinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.vector.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and Geobasis Raster selected in Digitale Repräsentation.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun raster1MinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and Georektifiziertes Raster selected in Digitale Repräsentation.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun raster2MinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml")
+    }
+
+    /*
+    * export with only required inputs and Georeferenzierbares Raster selected in Digitale Repräsentation.
+    * address has an organization assigned.
+    * */
+    @Test
+    fun raster3MinimalExport() {
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
+        result shouldNotBe null
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml")
     }
 
     @Test

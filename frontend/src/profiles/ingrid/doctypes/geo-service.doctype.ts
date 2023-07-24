@@ -51,7 +51,7 @@ export class GeoServiceDoctype extends IngridShared {
         type: "updateGetCapabilities",
         wrappers: ["panel"],
         props: {
-          externalLabel: "GetCapabilities-Aktualisierung",
+          externalLabel: "GetCapabilities",
         },
       },
       this.addGeneralSection({
@@ -90,6 +90,16 @@ export class GeoServiceDoctype extends IngridShared {
                     onInit: (field) => this.handleServiceTypeChange(field),
                   },
                 }),
+                this.addRepeatListInline("version", "Version des Dienstes", {
+                  options: this.getServiceVersionOptions,
+                  // codelistId: 5152,
+                  showSearch: true,
+                  fieldGroupClassName: "flex-1",
+                  hasInlineContextHelp: true,
+                  contextHelpId: "serviceVersion",
+                  wrappers: ["inline-help"],
+                  className: "optional flex-1",
+                }),
                 this.addCheckboxInline(
                   "isAtomDownload",
                   "Als ATOM-Download Dienst bereitstellen",
@@ -104,17 +114,6 @@ export class GeoServiceDoctype extends IngridShared {
               ],
               { className: "flex-1" }
             ),
-
-            this.addRepeatListInline("version", "Version des Dienstes", {
-              options: this.getServiceVersionOptions,
-              // codelistId: 5152,
-              showSearch: true,
-              fieldGroupClassName: "flex-1",
-              hasInlineContextHelp: true,
-              contextHelpId: "serviceVersion",
-              wrappers: ["inline-help"],
-              className: "optional flex-1",
-            }),
           ]),
           this.addRepeat("operations", "Operationen", {
             required: this.geoServiceOptions.required.operations,
@@ -177,6 +176,9 @@ export class GeoServiceDoctype extends IngridShared {
                 ],
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
+                expressions: {
+                  hide: "!formState.mainModel?.service?.coupledResources?.length",
+                },
               }),
             ],
             {
@@ -285,7 +287,8 @@ export class GeoServiceDoctype extends IngridShared {
   private updateServiceVersionInPrintField(value: SelectOptionUi[]) {
     const versionProps = this.cleanFields.find(
       (item) => item?.fieldGroup?.[0]?.key === "service"
-    )?.fieldGroup[0].fieldGroup[1].fieldGroup[1].props;
+    )?.fieldGroup[0].fieldGroup[1].fieldGroup[0].fieldGroup[1].props;
+
     versionProps.options = value;
   }
 

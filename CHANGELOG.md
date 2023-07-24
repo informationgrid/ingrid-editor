@@ -1,5 +1,46 @@
 # Changelog
 
+## 1.4.1 (19.07.2023)
+
+### Bugfixes
+
+- Es werden nicht alle Datensätze indiziert (#5339)
+- Uploads werden durch den Aufräum-Job gelöscht (#5337)
+- Indizierung stoppt nicht (#5336)
+
+## 1.4.0 (11.07.2023)
+
+### Features
+
+- Vervollständigung der Unit-Tests für Export aller Typen (#5283)
+- Kennzeichnung Veröffentlichungsrecht im Baum (#5225)
+- "Optionale Schlagworte" aufteilen (#5221)
+- Vorschaugrafik - Verbesserungen (#5220)
+- Hilfetexte GEMET und UMTHES ergänzen (#5218)
+- Geo-Thesaurus: Suchbegriffe mit \*? (#5213)
+- Verweise - Komponente austauschen (#5211)
+- Eingaben in Datengrundlage/Herstellungsprozess werden nicht automatisch übernommen (#5194)
+- ISO Vorschau soll kopierbar sein (#5187)
+
+### Bugfixes
+
+- URL als ungültig erkannt (#5303)
+- Capabilites-Assistent: Koordinaten werden vertauscht (#5299)
+- Ansprechpartner MD verpflichten (#5282)
+- "Erläuterungen zum Zeitbezug" - falscher Hilfetext (#5272)
+- Datensatz enthält Daten aus zuvor geladenen Datensatz (#5266)
+- Verweis-Typ: "Basisdaten" taucht zweimal auf (#5260)
+- Löschung einer Adresse die in Datensätzen referenziert wird (#5250)
+- Manche Toolbar Icons erscheinen nicht bei einem Direkteinsprung (#5244)
+- Tooltip bei Adresse mit Bearbeitungskopie fehlt (#5242)
+- Vorschau - diverse Fehler beheben (#5237)
+- "Zugang geschützt" - Verhalten bei Aktivierung? (#5236)
+- PORTAL / Export, diverse Fehler beheben und Unit-Tests (#5235)
+- Kopieren eines MD - Identifikator der Datenquelle löschen (#5234)
+- ARS - Feld leeren bei Wechsel zwischen versch. Raumbezugstypen? (#5229)
+- UX/UI: Verbesserungen, Behebung von Fehlern (#5219)
+- Capabilities-Assistent: Berechtigung Adresse (#5212)
+
 ## [1.2.0] - 2023-01-18
 
 ### Added

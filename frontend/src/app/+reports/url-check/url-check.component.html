@@ -44,7 +44,7 @@
                 &nbsp;Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}
             </div>
             <br />
-            <div>Analysierte URLs: {{ analyzedUrls }}</div>
+            <div *ngIf="log.endTime">Analysierte URLs: {{ analyzedUrls }}</div>
             <div *ngIf="log.errors?.length > 0">
                 Fehler:
                 <span data-cy="count-errors">{{ log.errors.length }}</span>

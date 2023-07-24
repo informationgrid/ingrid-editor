@@ -70,7 +70,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         return this.translocoService.translate(
           "replace-address.reference-error-multiple-files"
         );
-
+      case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
+        return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
       case "CATALOG_NOT_FOUND":
         return `Dem Benutzer "${error.data.user}" ist kein Katalog zugewiesen`;
       case "CONFLICT_WHEN_MOVING":
@@ -83,6 +84,8 @@ export class GlobalErrorHandler implements ErrorHandler {
           : null;
       case "PARENT_IS_NOT_PUBLISHED":
         return "Der Datensatz liegt veröffentlicht vor und darf nicht unter einen unveröffentlichten Datensatz verschoben werden.";
+      case "UNPUBLISH-CHILD_IS_PUBLISHED":
+        return "Mindestens eines der untergeordneten Datensätze ist veröffentlicht. Sie müssen diese Veröffentlichung ebenfalls zurückziehen, bevor Sie fortsetzen können.";
       default:
         return null;
     }

@@ -18,7 +18,9 @@ data class CatalogConfig(
     var namespace: String? = null,
     var atomDownloadUrl: String? = null,
     var spatialReference: Any? = null,
-    val ibus: IBusConfig? = IBusConfig()
+    val ibus: IBusConfig? = IBusConfig(),
+    val expiryDuration: Int? = null,
+    val notifyDaysBeforeExpiry: Int? = null,
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig(

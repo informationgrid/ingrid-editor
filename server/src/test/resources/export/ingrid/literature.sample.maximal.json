@@ -13,7 +13,7 @@
   "data": {
     "isOpenData": true,
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
-    "alternateTitle": "Hier ist die Kurzbezeichnung.",
+    "alternateTitle": "Hier ist die Kurzbeschreibung.",
     "description": "Hier ist die Beschreibung.",
     "graphicOverviews": [
       {
@@ -28,23 +28,31 @@
     "pointOfContact": [
       {
         "ref": {
-          "title": "Test-Organisation",
+          "title": "Mustermann, Max",
           "hasWritePermission": true,
           "hasOnlySubtreeWritePermission": false,
-          "_uuid": "e34dc962-a492-4610-b802-25c9aa460225",
-          "_type": "InGridOrganisationDoc",
-          "_version": 3,
-          "_created": "2023-07-03T12:25:40.79299Z",
-          "_modified": "2023-07-03T12:26:28.079139Z",
-          "_contentModified": "2023-07-03T12:26:28.081136Z",
-          "_createdBy": "Mike Cat-Miller",
-          "_modifiedBy": "Mike Cat-Miller",
-          "_contentModifiedBy": "Mike Cat-Miller",
+          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+          "_type": "InGridPersonDoc",
+          "_version": 13,
+          "_created": "2023-07-03T15:35:47.866462Z",
+          "_modified": "2023-07-05T08:40:16.184845Z",
+          "_contentModified": "2023-07-05T08:40:16.182211Z",
+          "_createdBy": "Super User",
+          "_modifiedBy": "Super User",
+          "_contentModifiedBy": "Super User",
           "_state": "P",
-          "_id": 3,
+          "_id": 1634,
           "address": {
+            "city": "Frankfurt am Main",
+            "po-box": "30151",
+            "street": "Mustermann Stra.",
+            "country": {
+              "key": "276"
+            },
+            "zip-code": "60314",
+            "zip-po-box": "60314",
             "administrativeArea": {
-              "key": "4"
+              "key": "8"
             }
           },
           "contact": [
@@ -52,10 +60,38 @@
               "type": {
                 "key": "3"
               },
-              "connection": "test@wemove.com"
+              "connection": "mustermann@wemove.com"
+            },
+            {
+              "type": {
+                "key": "1"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "2"
+              },
+              "connection": "123456789"
+            },
+            {
+              "type": {
+                "key": "4"
+              },
+              "connection": "https://mustermann.com"
             }
           ],
-          "organization": "Test-Organisation",
+          "lastName": "Mustermann",
+          "firstName": "Max",
+          "salutation": {
+            "key": "2"
+          },
+          "hideAddress": true,
+          "positionName": "Position/nachgeordnete Abteilung",
+          "academic-title": {
+            "key": "1"
+          },
+          "hoursOfService": "Servicezeiten",
           "_tags": ""
         },
         "type": {
@@ -69,96 +105,126 @@
       }
     ],
     "keywords": {
-      "gemet": [],
+      "gemet": [
+        {
+          "id": "http://www.eionet.europa.eu/gemet/concept/7104",
+          "label": "Renaturierung",
+          "alternativeLabel": null
+        }
+      ],
       "umthes": [
         {
           "id": "https://sns.uba.de/umthes/TH_00008528",
           "label": "Erdgas",
-          "alternativeLabel": null
+          "alternativeLabel": "Naturgas"
         }
       ],
       "free": [
         {
-          "label": "Test_Schlagwort"
+          "label": "Schlagwort"
         }
       ]
     },
     "publication": {
-      "author": "Test-Autor",
-      "publisher": "Test Herausgeber",
-      "publishedIn": "Jahresberichte zur Abfallwirtschaft",
-      "placeOfPublication": "Hamburg",
+      "author": "Autor/Verfasser",
+      "publisher": "Herausgeber",
+      "publishedIn": "Erscheinung",
+      "placeOfPublication": "Erscheinungsort",
       "volume": "1",
       "pages": "1",
       "publicationDate": "2023",
-      "location": "Bibliothek Umweltbundesamt",
+      "location": "Standort",
       "isbn": "3-456-7889-X",
-      "publishingHouse": "econ",
+      "publishingHouse": "Verlag",
       "documentType": {
         "key": "1"
       },
-      "baseDataText": "Deponieüberwachung Berlin-Tegel, Statistikauswertungen seit 1974",
-      "bibliographicData": "Das Kartenwerk ist im DIN A3-Format erschienen.",
-      "explanation": "Der Artikel beruht auf der Diplomarbeit des Autors aus dem Jahr 1995 an der Universität"
+      "baseDataText": "Basisdaten",
+      "bibliographicData": "Weitere bibliographische Angaben",
+      "explanation": "Erläuterungen"
     },
     "spatial": {
       "references": [
         {
-          "type": "free",
-          "title": "Hamburg, Deutschland",
           "value": {
-            "lat1": 53.398,
-            "lat2": 54.026,
-            "lon1": 8.118,
-            "lon2": 10.344
-          }
+            "lat1": 13,
+            "lon1": 52.3,
+            "lat2": 13.7,
+            "lon2": 52.6
+          },
+          "title": "Berlin, Deutschland (administrative)",
+          "type": "free",
+          "ars": "11"
+        },
+        {
+          "value": {
+            "lat1": 52.35918,
+            "lon1": 13.082744,
+            "lat2": 52.688663,
+            "lon2": 13.784928
+          },
+          "title": "Berlin, Bundesland",
+          "type": "wfsgnde",
+          "ars": "11"
         }
       ],
       "spatialSystems": [
         {
-          "key": "3034"
+          "key": "3068"
         }
       ],
       "verticalExtent": {
         "minimumValue": 1,
         "maximumValue": 1,
         "unitOfMeasure": {
-          "key": "9002"
+          "key": "9001"
         },
         "Datum": {
           "key": "5105"
         }
       },
-      "description": "Die Koordinaten für die Fachliche Gebietseinheit sind ungefähre Angaben."
+      "description": "Erläuterung"
     },
     "temporal": {
       "events": [
         {
-          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDate": "2023-05-31T22:00:00.000Z",
           "referenceDateType": {
             "key": "1"
+          }
+        },
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "3"
+          }
+        },
+        {
+          "referenceDate": "2023-06-30T22:00:00.000Z",
+          "referenceDateType": {
+            "key": "2"
           }
         }
       ],
       "resourceDateType": {
         "key": "at"
       },
-      "resourceDate": "2023-06-30T22:00:00.000Z",
+      "resourceDate": "2023-05-31T22:00:00.000Z",
       "status": {
         "key": "1"
       }
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
-        "key": "9"
+        "key": "1"
       },
       "userDefinedMaintenanceFrequency": {
         "number": 1,
         "unit": {
-          "key": "6"
+          "key": "4"
         }
       },
-      "description": "Die Messungen erfolgten nur tagsüber."
+      "description": "Erläuterung"
     },
     "metadata": {
       "language": {
@@ -173,13 +239,16 @@
     "extraInfo": {
       "legalBasicsDescriptions": [
         {
-          "key": "5"
+          "key": "58"
+        },
+        {
+          "key": "3"
         }
       ]
     },
     "resource": {
-      "purpose": "Grund für die Datenerhebung.",
-      "specificUsage": "Präsentation des Raumordnungsprogramms auf Basis der topografischen Kartenwerke",
+      "purpose": "Herstellungszweck",
+      "specificUsage": "Eignung/Nutzung",
       "accessConstraints": [
         {
           "key": "6"
@@ -190,20 +259,20 @@
           "title": {
             "key": "18"
           },
-          "source": "Quellenvermerk"
+          "source": "Quelle"
         }
       ],
-      "useLimitation": "Nicht für Navigationszwecke geeignet."
+      "useLimitation": "Anwendungseinschränkungen"
     },
     "distribution": {
       "format": [
         {
           "name": {
-            "key": "24"
+            "key": "23"
           },
           "version": "1",
-          "compression": "Test Kompressionstechnik",
-          "specification": "Test Spezifikation"
+          "compression": "Kompressionstechnik",
+          "specification": "Spezifikation"
         }
       ]
     },
@@ -213,10 +282,10 @@
           "key": "18"
         },
         "transferSize": 12,
-        "mediumNote": "Test-Ort"
+        "mediumNote": "Ort"
       }
     ],
-    "orderInfo": "Lieferzeit beträgt 3 Wochen",
+    "orderInfo": "Bestellinformation",
     "references": [
       {
         "type": {

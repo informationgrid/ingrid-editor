@@ -12,6 +12,7 @@
                 mat-icon-button
                 class="toggle"
                 (click)="toggleSection(group.id)"
+                [matTooltip]="notExpanded[group.id] ? 'Öffnen' : 'Schließen'"
             >
                 <mat-icon
                     class="mat-icon-rtl-mirror expander animated"

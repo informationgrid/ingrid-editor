@@ -4,15 +4,13 @@ id: publicationDate
 docType: InGridLiterature
 profile: ingrid
 
-
-
 # title, used as window title
 title: Erscheinungsjahr
 ---
 
 # Erscheinungsjahr
 
-Angabe der Jahreszahl der Publikation der Literatur. Das Erscheinungsjahr ist vor allem für regelmäßig erscheinende Literatur wie z.B. jährliche Tagungsbände äußerst wichtig zur Identifikation. Das Erscheinungsjahr kann sich von den entsprechenden Angaben im Zeitbezug des Objektes unterscheiden, die sich auf den Inhalt der Literatur beziehen und nicht auf die Literatur selbst.
+Angabe der Jahreszahl der Publikation des Dokuments. Das Erscheinungsjahr ist vor allem für regelmäßig erscheinende Dokumente wie z.B. jährliche Tagungsbände äußerst wichtig zur Identifikation. Das Erscheinungsjahr kann sich von den entsprechenden Angaben im Zeitbezug des Objektes unterscheiden, die sich auf den Inhalt des Dokuments beziehen und nicht auf das Dokument selbst.
 
 ## Beispiel:
 

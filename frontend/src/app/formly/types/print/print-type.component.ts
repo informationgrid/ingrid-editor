@@ -26,7 +26,7 @@ export class PrintTypeComponent
       : (this.props.options as BehaviorSubject<any[]>)?.value;
 
     if (options != undefined) {
-      return options.find((option) => option.value === value.key)?.label ?? "";
+      return options.find((option) => option.value === value?.key)?.label ?? "";
     } else if (isObject(value)) {
       return value.value ?? value.label ?? "";
     } else {

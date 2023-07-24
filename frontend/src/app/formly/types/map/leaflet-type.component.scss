@@ -70,8 +70,9 @@
       stroke: #cccccc;
     }
 
-    &:hover {
-      background-color: #30296e;
+    &:hover,
+    &:focus {
+      background-color: #352d79;
     }
 
     &.has-error {

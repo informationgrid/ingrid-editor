@@ -4,14 +4,13 @@ id: publishingHouse
 docType: InGridLiterature
 profile: ingrid
 
-
 # title, used as window title
 title: Verlag
 ---
 
 # Verlag
 
-Angabe des Verlages, in dem die Literatur erschienen ist.
+Angabe des Verlages, in dem das Dokument erschienen ist.
 
 ## Beispiel:
 

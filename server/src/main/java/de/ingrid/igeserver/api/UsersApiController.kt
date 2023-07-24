@@ -293,6 +293,9 @@ class UsersApiController : UsersApi {
 
             val lastLogin = this.updateAndGetLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
+            val permissions = try { catalogService.getPermissions(principal) } catch (ex: Exception) {
+                emptyList()
+            }
 
             val userInfo = UserInfo(
                 userId = user.login,
@@ -308,7 +311,7 @@ class UsersApiController : UsersApi {
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
-                permissions = catalogService.getPermissions(principal)
+                permissions = permissions
             )
             userInfo.currentCatalog?.type?.let {
                 userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile

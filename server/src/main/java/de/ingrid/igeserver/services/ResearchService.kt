@@ -19,17 +19,18 @@ import java.util.*
 
 
 data class Result(
-        val title: String?,
-        val _id: Int,
-        val _uuid: String?,
-        val _type: String?,
-        val _created: Date?,
-        val _contentModified: Date?,
-        val _state: String?,
-        val _category: String?,
-        var hasWritePermission: Boolean?,
+    val title: String?,
+    val _id: Int,
+    val _uuid: String?,
+    val _type: String?,
+    val _created: Date?,
+    val _contentModified: Date?,
+    val _state: String?,
+    val _category: String?,
+    var hasWritePermission: Boolean?,
     var hasOnlySubtreeWritePermission: Boolean?,
-    var _tags: String?
+    var _tags: String?,
+    val _responsibleUser: Any?
 )
 
 @Service
@@ -105,15 +106,17 @@ class ResearchService {
     }
 
     private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
-
-        return """
-                SELECT DISTINCT document1.*, document_wrapper.category, document_wrapper.id as wrapperid, document_wrapper.tags as tags
+        var sqlQuery =
+            """
+                SELECT DISTINCT document1.*, document_wrapper.category
                 FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, groupDocUuids)}
             """ + if (query.orderByField != null) """
                 ORDER BY document1.${query.orderByField} ${query.orderByDirection}
             """.trimIndent() else ""
+        sqlQuery = this.addAdditionalSelectsToQuery(sqlQuery)
+        return sqlQuery
     }
 
     private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocIds: List<Int>): String {
@@ -243,6 +246,7 @@ class ResearchService {
                 .addScalar("wrapperid")
                 .addScalar("state")
                 .addScalar("tags")
+                .addScalar("responsibleUser")
                 .setFirstResult((paging.page - 1) * paging.pageSize)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
@@ -292,7 +296,8 @@ class ResearchService {
                                     item[7] as Int
                             ).canOnlyWriteSubtree,
                     _id = item[7] as Int,
-                    _tags = (item[9] as? Array<*>)?.joinToString(",")
+                    _tags = (item[9] as? Array<*>)?.joinToString(","),
+                    _responsibleUser = item[10]
                     )
                 }
     }
@@ -311,7 +316,7 @@ class ResearchService {
         try {
             assertValidQuery(sqlQuery)
             val catalogQuery = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
-            finalQuery = addWrapperIdAndTagsToQuery(catalogQuery)
+            finalQuery = addAdditionalSelectsToQuery(catalogQuery)
 
             val termAsParameters = emptyList<String>()
             val result = sendQuery(finalQuery, termAsParameters, paging)
@@ -341,10 +346,10 @@ class ResearchService {
         // TODO: UPDATE AND DELETE IS NOT ALLOWED!
     }
 
-    private fun addWrapperIdAndTagsToQuery(query: String): String {
+    private fun addAdditionalSelectsToQuery(query: String): String {
         val fromIndex = query.indexOf("FROM")
         return """
-            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid, document_wrapper.tags as tags ${query.substring(fromIndex)}
+            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser ${query.substring(fromIndex)}
         """.trimIndent()
     }
 

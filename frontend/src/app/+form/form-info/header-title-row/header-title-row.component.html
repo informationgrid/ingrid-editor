@@ -16,7 +16,7 @@
         (click)="!disableEdit && editTitle()"
     >
         <span>{{ _form.get("title")?.value || "Kein Titel" }}</span>
-        <mat-icon svgIcon="cursor-edit"></mat-icon>
+        <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
     </span>
 
     <form [formGroup]="_form" [class.hide]="!showTitleInput">
@@ -41,6 +41,7 @@
         mat-icon-button
         data-cy="btn-more-header"
         class="dark menu-button btn-toggle-form-header"
+        [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
         [class.expanded]="showMore"
         (click)="toggleMoreInfo()"
     >
@@ -52,6 +53,7 @@
         mat-icon-button
         class="menu dark menu-button"
         [matMenuTriggerFor]="moreActionsMenu"
+        matTooltip="Bearbeiten"
     >
         <mat-icon svgIcon="Mehr"></mat-icon>
         <mat-menu #moreActionsMenu="matMenu">

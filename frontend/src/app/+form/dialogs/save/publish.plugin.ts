@@ -10,7 +10,6 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { FormStateService } from "../../form-state.service";
 import { catchError, filter, tap } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
@@ -46,7 +45,6 @@ export class PublishPlugin extends SaveBase {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
-    public formStateService: FormStateService,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
     messageService: FormMessageService,
@@ -355,7 +353,7 @@ export class PublishPlugin extends SaveBase {
       )
       .subscribe((result) => {
         console.log("backendValidation: ", result);
-        if (result instanceof IgeError) return;
+        if (!isValid || result instanceof IgeError) return;
 
         this.modalService.confirmWith({
           title: "Prüfung",

@@ -484,9 +484,8 @@ export class GeoDatasetDoctype extends IngridShared {
       null,
       [
         { key: "_type" },
-        this.addSelectInline("measureType", "Art der Messung", {
+        this.addAutoCompleteInline("measureType", "Art der Messung", {
           required: true,
-          showSearch: true,
           options: this.getCodelistForSelect(codelistId, "measureType"),
           codelistId: codelistId,
           className: "flex-2",

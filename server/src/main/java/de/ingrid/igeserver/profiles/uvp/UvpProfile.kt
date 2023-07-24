@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
@@ -106,7 +107,10 @@ class UvpProfile @Autowired constructor(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-
+        behaviourService.save(catalogId, listOf(Behaviour().apply {
+            name = "plugin.tags"
+            active = false
+        }))
     }
 
     override fun getElasticsearchMapping(format: String): String {

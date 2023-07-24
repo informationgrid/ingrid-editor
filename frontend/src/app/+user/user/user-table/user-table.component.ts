@@ -36,6 +36,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { PermissionLegendsComponent } from "../../permissions/permission-legends/permission-legends.component";
 import { ExportService } from "../../../services/export.service";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "user-table",
@@ -54,6 +55,7 @@ import { ExportService } from "../../../services/export.service";
     PermissionLegendsComponent,
     TranslocoModule,
     NgSwitchCase,
+    MatTooltipModule,
   ],
   standalone: true,
 })

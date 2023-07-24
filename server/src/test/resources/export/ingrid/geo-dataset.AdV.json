@@ -1,33 +1,24 @@
 {
-  "title": "Test-Informationssystem",
-  "_id": 1622,
-  "_uuid": "33948d61-a1b3-4504-912e-2dafa37ce1c5",
-  "_type": "InGridInformationSystem",
-  "_created": "2023-06-28T16:10:49.143855Z",
+  "title": "Test-Datensatz AdV",
+  "_id": 1656,
+  "_uuid": "da35b8a7-4273-4d9f-a6ff-828462faf37d",
+  "_type": "InGridGeoDataset",
+  "_created": "2023-07-12T09:05:18.27872Z",
   "_createdBy": "Super User",
-  "_modified": "2023-07-04T11:29:27.050183181+02:00",
-  "_contentModified": "2023-07-04T11:29:27.042171728+02:00",
+  "_modified": "2023-07-12T11:12:54.246533207+02:00",
+  "_contentModified": "2023-07-12T11:12:54.247157623+02:00",
   "_contentModifiedBy": "Super User",
-  "_version": 9,
+  "_version": 5,
   "_state": "P",
   "data": {
-    "_parent": 1238,
-    "isInspireIdentified": true,
+    "isInspireIdentified": false,
     "isAdVCompatible": true,
-    "isOpenData": true,
-    "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
-    "alternateTitle": "Hier ist die Kurzbezeichnung.",
-    "description": "Hier ist die Beschreibung.",
-    "graphicOverviews": [
-      {
-        "fileName": {
-          "asLink": true,
-          "value": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg",
-          "uri": "https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg"
-        },
-        "fileDescription": "Hallo Flutter!"
-      }
-    ],
+    "isOpenData": false,
+    "subType": {
+      "key": "5"
+    },
+    "description": "Feld von Beschreibung",
+    "graphicOverviews": [],
     "pointOfContact": [
       {
         "type": {
@@ -39,10 +30,10 @@
           "hasOnlySubtreeWritePermission": false,
           "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
           "_type": "InGridPersonDoc",
-          "_version": 9,
+          "_version": 15,
           "_created": "2023-07-03T15:35:47.866462Z",
-          "_modified": "2023-07-03T15:47:26.773386Z",
-          "_contentModified": "2023-07-03T15:47:26.7739Z",
+          "_modified": "2023-07-07T14:07:27.952322Z",
+          "_contentModified": "2023-07-07T14:07:27.95296Z",
           "_createdBy": "Super User",
           "_modifiedBy": "Super User",
           "_contentModifiedBy": "Super User",
@@ -50,14 +41,14 @@
           "address": {
             "city": "Frankfurt am Main",
             "po-box": "30151",
-            "street": "Mustermann Stra.",
+            "street": "Mustermann Str.",
             "country": {
-              "key": "8"
+              "key": "276"
             },
             "zip-code": "60314",
             "zip-po-box": "60314",
             "administrativeArea": {
-              "key": "4"
+              "key": "8"
             }
           },
           "contact": [
@@ -91,6 +82,7 @@
           "salutation": {
             "key": "2"
           },
+          "hideAddress": true,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -109,10 +101,10 @@
           "hasOnlySubtreeWritePermission": false,
           "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
           "_type": "InGridPersonDoc",
-          "_version": 9,
+          "_version": 15,
           "_created": "2023-07-03T15:35:47.866462Z",
-          "_modified": "2023-07-03T15:47:26.773386Z",
-          "_contentModified": "2023-07-03T15:47:26.7739Z",
+          "_modified": "2023-07-07T14:07:27.952322Z",
+          "_contentModified": "2023-07-07T14:07:27.95296Z",
           "_createdBy": "Super User",
           "_modifiedBy": "Super User",
           "_contentModifiedBy": "Super User",
@@ -121,14 +113,14 @@
           "address": {
             "city": "Frankfurt am Main",
             "po-box": "30151",
-            "street": "Mustermann Stra.",
+            "street": "Mustermann Str.",
             "country": {
-              "key": "8"
+              "key": "276"
             },
             "zip-code": "60314",
             "zip-po-box": "60314",
             "administrativeArea": {
-              "key": "4"
+              "key": "8"
             }
           },
           "contact": [
@@ -162,6 +154,7 @@
           "salutation": {
             "key": "2"
           },
+          "hideAddress": true,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -173,122 +166,105 @@
     ],
     "advProductGroups": [
       {
-        "key": "11"
+        "key": "4"
       },
       {
-        "key": "5"
+        "key": "8"
+      },
+      {
+        "key": "2"
+      }
+    ],
+    "topicCategories": [
+      {
+        "key": "4"
+      },
+      {
+        "key": "17"
+      },
+      {
+        "key": "12"
       }
     ],
     "keywords": {
       "gemet": [],
-      "umthes": [
-        {
-          "id": "https://sns.uba.de/umthes/TH_00025174",
-          "label": "Umweltethik",
-          "alternativeLabel": "Naturethik"
-        },
-        {
-          "id": "https://sns.uba.de/umthes/TH_00017906",
-          "label": "Naturstoff",
-          "alternativeLabel": null
-        }
-      ],
-      "free": [
-        {
-          "label": "Schlagwort"
-        }
-      ]
+      "umthes": [],
+      "free": []
     },
-    "serviceType": {
-      "key": "1"
+    "lineage": {
+      "statement": "Feld von Fachliche Grundlage"
     },
-    "serviceVersion": [
-      {
-        "key": null,
-        "value": "1"
+    "identifier": "3138788d-7b05-4ab9-a5c4-7f0f6177e967",
+    "spatialRepresentationType": [],
+    "resolution": [],
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
+        }
       }
-    ],
-    "systemEnvironment": "Systemumgebung",
-    "implementationHistory": "Historie",
-    "baseDataText": "Basisdaten",
-    "explanation": "Erläuterungen",
-    "serviceUrls": [
-      {
-        "name": "Service-URLs",
-        "url": "https://urls.com",
-        "description": "Erläuterungen"
-      }
-    ],
+    },
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {},
+    "qualities": [],
     "spatial": {
       "references": [
         {
           "value": {
-            "lat1": 53.39813,
-            "lon1": 8.117716,
-            "lat2": 54.02584,
-            "lon2": 10.344088
+            "lat1": 52.35918,
+            "lon1": 13.082744,
+            "lat2": 52.688663,
+            "lon2": 13.784928
           },
-          "title": "Hamburg, Bundesland",
+          "title": "Berlin, Bundesland",
           "type": "wfsgnde",
-          "ars": "02"
+          "ars": "11"
         }
       ],
       "spatialSystems": [
         {
-          "key": "9000001"
-        },
-        {
-          "key": "9000013"
+          "key": "84"
         }
       ],
       "verticalExtent": {
-        "minimumValue": 1,
-        "maximumValue": 1,
-        "unitOfMeasure": {
-          "key": "4"
-        },
-        "Datum": {
-          "key": "5129"
-        }
-      },
-      "description": "Erläuterung"
+        "unitOfMeasure": null
+      }
     },
     "temporal": {
       "events": [
         {
           "referenceDate": "2023-06-30T22:00:00.000Z",
           "referenceDateType": {
-            "key": "3"
+            "key": "1"
           }
         }
       ],
-      "resourceDateType": {
-        "key": "since"
-      },
-      "status": {
-        "key": "6"
-      },
-      "resourceDateTypeSince": {
-        "key": "requestTime"
-      },
-      "resourceDate": "2023-06-30T22:00:00.000Z"
+      "resourceDateType": null,
+      "status": null
     },
     "maintenanceInformation": {
-      "maintenanceAndUpdateFrequency": {
-        "key": "1"
-      },
+      "maintenanceAndUpdateFrequency": null,
       "userDefinedMaintenanceFrequency": {
-        "number": 1,
-        "unit": {
-          "key": "5"
-        }
-      },
-      "description": "Erläuterung"
+        "unit": null
+      }
     },
     "metadata": {
       "language": {
         "key": "150"
-      }
+      },
+      "characterSet": null
     },
     "dataset": {
       "languages": [
@@ -296,72 +272,23 @@
       ]
     },
     "extraInfo": {
-      "legalBasicsDescriptions": [
-        {
-          "key": "63"
-        },
-        {
-          "key": "42"
-        }
-      ]
+      "legalBasicsDescriptions": []
     },
     "resource": {
-      "purpose": "Herstellungszweck",
-      "specificUsage": "Eignung/Nutzung",
-      "accessConstraints": [
-        {
-          "key": "1"
-        }
-      ],
+      "accessConstraints": [],
       "useConstraints": [
         {
           "title": {
-            "key": "31"
+            "key": "2"
           },
-          "source": "Quelle"
-        }
-      ],
-      "useLimitation": "Anwendungseinschränkungen"
-    },
-    "distribution": {
-      "format": [
-        {
-          "name": {
-            "key": "3"
-          },
-          "version": "1",
-          "compression": "technik",
-          "specification": "spezi"
+          "source": "Feld von Quelle"
         }
       ]
     },
-    "digitalTransferOptions": [
-      {
-        "name": {
-          "key": "900009"
-        },
-        "transferSize": 12,
-        "mediumNote": "Ort"
-      }
-    ],
-    "orderInfo": "Bestellinformation",
-    "references": [
-      {
-        "type": {
-          "key": "9990"
-        },
-        "title": "Titel",
-        "url": "https://url.com",
-        "explanation": "Erläuterungen"
-      }
-    ],
-    "openDataCategories": [
-      {
-        "key": "13"
-      },
-      {
-        "key": "2"
-      }
-    ]
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "references": []
   }
 }

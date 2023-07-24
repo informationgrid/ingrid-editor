@@ -12,6 +12,8 @@ import jakarta.ws.rs.ForbiddenException
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
+import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -30,9 +32,15 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
+import java.net.URI
 import java.net.URL
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.security.Principal
+import java.time.Duration
 import java.util.*
+import java.util.concurrent.Executors
 
 
 @Service
@@ -57,6 +65,12 @@ class KeycloakService : UserManagementService {
     }
 
     private val log = LogManager.getLogger(KeycloakService::class.java)
+
+    @Value("\${keycloak.super-admin-user:ige}")
+    private val superAdminUser: String? = null
+
+    @Value("\${keycloak.super-admin-password:ige}")
+    private val superAdminPassword: String? = null
 
     @Value("\${keycloak.auth-server-url}")
     private val keycloakUrl: String? = null
@@ -127,12 +141,20 @@ class KeycloakService : UserManagementService {
         }
     }
 
+
+    override fun initAdminClient(): KeycloakCloseableClient {
+        val jsonResponse = this.sendLoginRequest(superAdminUser!!, superAdminPassword!!)
+        return initClient(jsonResponse["access_token"].toString())
+    }
+
     private fun initClient(principal: Principal?): KeycloakCloseableClient {
         principal as JwtAuthenticationToken
-        val client: Keycloak
         val tokenString = principal.token.tokenValue
+        return initClient(tokenString)
+    }
 
-        client = KeycloakBuilder.builder()
+    private fun initClient(tokenString: String): KeycloakCloseableClient {
+        val client: Keycloak = KeycloakBuilder.builder()
             .serverUrl(keycloakUrl)
             .realm(keycloakRealm)
             .clientId(keycloakClientId)
@@ -328,13 +350,13 @@ class KeycloakService : UserManagementService {
         initClient(principal).use { client ->
             val kcUser = getKeycloakUser(client, id)
             kcUser.apply {
-                    requiredActions = listOf("UPDATE_PASSWORD")
-                    credentials = listOf(CredentialRepresentation().apply {
-                        type = CredentialRepresentation.PASSWORD
-                        isTemporary = true
-                        value = password
-                    })
-                }
+                requiredActions = listOf("UPDATE_PASSWORD")
+                credentials = listOf(CredentialRepresentation().apply {
+                    type = CredentialRepresentation.PASSWORD
+                    isTemporary = true
+                    value = password
+                })
+            }
 
             val userResource = client.realm().users().get(kcUser.id)
             updateKeycloakUser(userResource, kcUser)
@@ -419,7 +441,8 @@ class KeycloakService : UserManagementService {
     }
 
     private fun filterRoles(roles: List<String>): List<String> {
-        val ignoreRoles = listOf("default-roles-ingrid", "ige-user", "ige-user-manager", "offline_access", "uma_authorization")
+        val ignoreRoles =
+            listOf("default-roles-ingrid", "ige-user", "ige-user-manager", "offline_access", "uma_authorization")
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
@@ -434,9 +457,9 @@ class KeycloakService : UserManagementService {
 
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
         userRep.attributes = userRep.attributes ?: mutableMapOf()
-        userRep.attributes["phoneNumber"] = listOf( user.phoneNumber)
-        userRep.attributes["institution"] = listOf( user.organisation)
-        userRep.attributes["department"] = listOf( user.department)
+        userRep.attributes["phoneNumber"] = listOf(user.phoneNumber)
+        userRep.attributes["institution"] = listOf(user.organisation)
+        userRep.attributes["department"] = listOf(user.department)
 
         return userRep.apply {
             username = user.login.lowercase()
@@ -464,5 +487,26 @@ class KeycloakService : UserManagementService {
         password = listOf(letters.random()) + password
 
         return password.joinToString("")
+    }
+
+    private fun sendLoginRequest(username: String, password: String): JSONObject {
+        val executor = Executors.newSingleThreadExecutor()
+        val request = HttpRequest.newBuilder()
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .method(
+                "POST",
+                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$username&password=$password")
+            )
+            .uri(URI.create("$keycloakUrl/realms/$keycloakRealm/protocol/openid-connect/token"))
+            .timeout(Duration.ofSeconds(5))
+            .build()
+        val http = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .executor(executor)
+            .build()
+        val response = http.send(request, HttpResponse.BodyHandlers.ofString())
+        val json = JSONParser().parse(response.body()) as JSONObject
+        return json
     }
 }

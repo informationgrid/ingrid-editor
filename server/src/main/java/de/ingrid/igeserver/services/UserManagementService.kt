@@ -32,4 +32,5 @@ interface UserManagementService {
     fun removeRoles(principal: Principal?, userId: String, roles: List<String>)
     fun addRoles(principal: Principal?, userLogin: String, roles: List<String>)
     fun deleteUser(principal: Principal?, userId: String)
+    fun initAdminClient(): KeycloakService.KeycloakCloseableClient
 }

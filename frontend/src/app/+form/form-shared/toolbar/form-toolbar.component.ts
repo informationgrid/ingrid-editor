@@ -4,6 +4,8 @@ import {
   Separator,
   ToolbarItem,
 } from "./form-toolbar.service";
+import { DocumentService } from "../../../services/document/document.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "form-toolbar",
@@ -16,11 +18,21 @@ export class FormToolbarComponent implements OnInit {
 
   menu = {};
 
-  constructor(private formToolbarService: FormToolbarService) {
+  isNotReady = false;
+
+  constructor(
+    private formToolbarService: FormToolbarService,
+    private documentService: DocumentService
+  ) {
     formToolbarService.toolbar$.subscribe((buttons) => {
       this.buttons_left = buttons.filter((b) => b.align !== "right");
       this.buttons_right = buttons.filter((b) => b.align === "right");
     });
+    this.documentService.documentOperationFinished$
+      .pipe(takeUntilDestroyed())
+      .subscribe((isReady) => {
+        this.isNotReady = !isReady;
+      });
   }
 
   ngOnInit() {}

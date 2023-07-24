@@ -1,5 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
+import {
+  FieldArrayType,
+  FormlyFieldConfig,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -40,6 +44,7 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
     SharedPipesModule,
     FormErrorComponent,
     KeyValuePipe,
+    FormlyModule,
   ],
   standalone: true,
 })

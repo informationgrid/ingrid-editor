@@ -6,6 +6,9 @@
         matInput
         placeholder="https://..."
         [formControl]="control"
-        (change)="updateValue()"
+        (keyup)="updateValue()"
     />
+    <mat-error>
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </mat-error>
 </mat-form-field>

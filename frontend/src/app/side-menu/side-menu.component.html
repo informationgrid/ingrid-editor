@@ -4,8 +4,10 @@
 >
     <a
         mat-list-item
+        tabindex="0"
         *ngFor="let item of menuItems | async"
         (click)="gotoPage(item.path)"
+        (keydown.enter)="gotoPage(item.path)"
         [attr.data-cy]="item.path"
         [matTooltip]="t(item.path)"
         matTooltipPosition="right"
@@ -16,7 +18,7 @@
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
     >
-        <mat-icon matListItemIcon [svgIcon]="item.data?.icon"> </mat-icon>
+        <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
         <p matListItemTitle>{{ t(item.path) }}</p>
     </a>
 
@@ -25,8 +27,10 @@
     <a
         *ngIf="showDrawer | async"
         mat-list-item
+        tabindex="0"
         class="menu-toggle"
         (click)="toggleSidebar(!menuIsExpanded)"
+        (keydown.enter)="toggleSidebar(!menuIsExpanded)"
         matTooltip="Vergrößern"
         [matTooltipShowDelay]="1000"
         [matTooltipDisabled]="menuIsExpanded"

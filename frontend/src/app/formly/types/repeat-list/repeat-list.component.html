@@ -19,6 +19,8 @@
             [removable]="true"
             [selectable]="false"
             (removed)="removeItem(i)"
+            tabindex="0"
+            (keydown.enter)="removeItem(i)"
         >
             <mat-icon
                 *ngIf="props.showLanguage"
@@ -144,12 +146,6 @@
 <ng-container *ngIf="type === 'autocomplete'">
     <mat-form-field appearance="outline" class="width-100">
         <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
-        <mat-icon
-            *ngIf="parameterOptions && inputControl.value?.length === 0"
-            class="search-icon gray"
-            matPrefix
-            >search
-        </mat-icon>
         <input
             type="text"
             [placeholder]="props.placeholder"

@@ -17,6 +17,10 @@
   .drop-down {
     width: 56px;
     padding-left: 8px;
+
+    &[disabled] {
+      opacity: 0.26;
+    }
   }
 }
 
@@ -51,6 +55,11 @@
   .toolbar-save-button:not([disabled]) {
     color: $ige-secondary;
     background: white;
+
+    // for accessibility, workaround to mimic hover color when selected by tab
+    &:focus {
+      --mat-mdc-button-persistent-ripple-color: #8f8f8f;
+    }
   }
 
   button.btnPublish,
