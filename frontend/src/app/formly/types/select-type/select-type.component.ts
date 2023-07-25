@@ -10,10 +10,10 @@ import { MatSelect, MatSelectChange } from "@angular/material/select";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatPseudoCheckboxState } from "@angular/material/core";
-import { filter, take, tap } from "rxjs/operators";
+import { filter, map, take, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { BackendOption } from "../../../store/codelist/codelist.model";
 
 @UntilDestroy()
 @Component({
@@ -33,17 +33,12 @@ export class SelectTypeComponent
   defaultOptions = {
     props: {
       options: [],
-      compareWith(o1: any, o2: any) {
-        return o1 === o2;
-      },
     },
   };
 
-  selectControl = new UntypedFormControl();
-
   private selectAllValue!: { options: any; value: any[] };
-  selectOptions: SelectOptionUi[];
-  filteredOptions: SelectOptionUi[];
+  selectOptions: BackendOption[];
+  filteredOptions: BackendOption[];
   private optionsLoaded$ = new BehaviorSubject<boolean>(false);
 
   constructor(private cdr: ChangeDetectorRef) {
@@ -51,6 +46,16 @@ export class SelectTypeComponent
   }
 
   ngOnInit() {
+    if (!this.props.simple && !this.props.compareWith) {
+      this.props.compareWith = (o1: any, o2: any) => {
+        return o1?.key === o2?.key;
+      };
+    } else if (this.props.simple) {
+      this.props.compareWith = (o1: any, o2: any) => {
+        return o1 === o2 || o1?.key === o2;
+      };
+    }
+
     this.filterCtrl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => {
@@ -65,8 +70,6 @@ export class SelectTypeComponent
       )
       .subscribe();
 
-    this.addDisabledBehaviour();
-
     let options = this.props.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
       options = of(options);
@@ -76,6 +79,12 @@ export class SelectTypeComponent
         untilDestroyed(this),
         filter((data) => data !== undefined && data.length > 0),
         take(1),
+        map((options) =>
+          options.map(
+            (option) =>
+              <BackendOption>{ key: option.value, value: option.label }
+          )
+        ),
         tap((data) => (this.selectOptions = data)),
         tap((data) => (this.filteredOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
@@ -84,28 +93,20 @@ export class SelectTypeComponent
       .subscribe();
   }
 
-  private addDisabledBehaviour() {
-    this.formControl.statusChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((status) =>
-        status === "DISABLED"
-          ? this.selectControl.disable()
-          : this.selectControl.enable()
-      );
-
-    if (this.formControl.disabled) {
-      this.selectControl.disable();
-    }
-  }
-
   private updateSelectField(value) {
-    if (this.props.simple) {
-      this.selectControl.setValue(value, { emitEvent: false });
-    } else {
-      this.selectControl.setValue(value?.key, {
-        emitEvent: false,
-      });
+    if (!this.props.simple) {
+      if (value?.key != null && value?.value != null) {
+        this.formControl.setValue({ key: value.key });
+      } else if (value?.key === null && !value?.value) {
+        this.formControl.setValue(null);
+      }
+    } else if (this.props.multiple) {
+      let simpleValues = value.map((item) => item?.key ?? item);
+      this.formControl.setValue(simpleValues, { emitEvent: false });
+    } else if (value?.key) {
+      this.formControl.setValue(value.key);
     }
+    this.cdr.detectChanges();
   }
 
   getSelectAllState(options: any[]): MatPseudoCheckboxState {
@@ -120,28 +121,19 @@ export class SelectTypeComponent
 
   toggleSelectAll(options: any[]) {
     const selectAllValue = this.getSelectAllValue(options);
-    this.selectControl.setValue(
+    this.formControl.setValue(
       !this.value || this.value.length !== selectAllValue.length
         ? selectAllValue
         : []
     );
 
-    this.selectControl.markAsDirty();
+    this.formControl.markAsDirty();
   }
 
   change($event: MatSelectChange) {
     if (this.props.change) {
       this.props.change(this.field, $event);
     }
-    if (this.props.simple) {
-      this.formControl.setValue($event.value);
-    } else {
-      this.formControl.setValue(
-        $event.value === undefined ? null : { key: $event.value }
-      );
-    }
-
-    this.formControl.markAsDirty();
   }
 
   _getAriaLabelledby(): string {
@@ -181,7 +173,7 @@ export class SelectTypeComponent
   search(value: string) {
     let filter = value.toLowerCase();
     return this.selectOptions.filter(
-      (option) => option.label.toLowerCase().indexOf(filter) !== -1
+      (option) => option.value.toLowerCase().indexOf(filter) !== -1
     );
   }
 }

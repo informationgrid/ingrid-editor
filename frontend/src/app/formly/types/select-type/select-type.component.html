@@ -10,7 +10,7 @@
 </ng-template>
 <mat-select
     [id]="id"
-    [formControl]="selectControl"
+    [formControl]="formControl"
     [formlyAttributes]="field"
     [placeholder]="props.placeholder"
     [tabIndex]="props.tabindex"
@@ -37,8 +37,8 @@
         </ng-container>
         <mat-option *ngIf="props.allowNoValue">- Keine -</mat-option>
         <ng-container *ngFor="let item of filteredOptions">
-            <mat-option [value]="item.value" [disabled]="item.disabled">{{
-                item.label
+            <mat-option [value]="item" [disabled]="item.disabled">{{
+                item.value
             }}</mat-option>
         </ng-container>
     </ng-container>
