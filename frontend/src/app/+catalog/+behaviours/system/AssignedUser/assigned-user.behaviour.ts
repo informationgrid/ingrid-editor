@@ -55,7 +55,8 @@ export class AssignedUserBehaviour extends Plugin {
     inject(FormPluginsService).registerPlugin(this);
 
     let role = configService.$userInfo.getValue().role;
-    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    this.isPrivileged =
+      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   formMenuId: MenuId;

@@ -202,7 +202,6 @@ export class McloudDoctype extends BaseDoctype {
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
-              { label: "", value: undefined },
               { label: "am", value: "at" },
               { label: "seit", value: "since" },
               { label: "bis", value: "till" },

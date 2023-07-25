@@ -29,6 +29,7 @@
             class="dark menu-button"
             data-cy="btn-show-more"
             [class.expanded]="showMoreInternal"
+            [matTooltip]="showMoreInternal ? 'Schließen' : 'Öffnen'"
             (click)="toggleShow()"
         >
             <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>

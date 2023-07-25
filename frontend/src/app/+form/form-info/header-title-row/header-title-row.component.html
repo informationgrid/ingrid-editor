@@ -3,7 +3,7 @@
 
     <span
         *ngIf="!showTitleInput"
-        class="label flex-1"
+        class="label flex-1 flex-row justify-content-space-between"
         [matTooltip]="
             t(
                 'form.titleTooltip.' +
@@ -14,13 +14,21 @@
         [matTooltipShowDelay]="1000"
         [class.editable]="!disableEdit"
         (click)="!disableEdit && editTitle()"
+        tabindex="0"
+        (keyup.enter)="!disableEdit && editTitle()"
     >
-        <span>{{ _form.get("title")?.value || "Kein Titel" }}</span>
+        <span class="flex-1">{{
+            _form.get("title")?.value || "Kein Titel"
+        }}</span>
         <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
     </span>
 
-    <form [formGroup]="_form" [class.hide]="!showTitleInput">
-        <mat-form-field appearance="outline">
+    <form
+        class="flex-1 flex-row"
+        [formGroup]="_form"
+        [class.hide]="!showTitleInput"
+    >
+        <mat-form-field class="flex-1" appearance="outline">
             <textarea
                 #cfcAutosize="cdkTextareaAutosize"
                 #titleInput

@@ -30,18 +30,23 @@
                         mat-icon-button
                         class="menu-button expander"
                         [class.expanded]="showMore[entry.id]"
+                        [matTooltip]="
+                            showMore[entry.id] ? 'Schließen' : 'Öffnen'
+                        "
                         (click)="showMore[entry.id] = !showMore[entry.id]"
                     >
                         <mat-icon class="animated"
-                            >keyboard_arrow_down</mat-icon
-                        >
+                            >keyboard_arrow_down
+                        </mat-icon>
                     </button>
 
                     <ng-container *ngIf="!hideMenu">
                         <button
                             mat-icon-button
                             class="menu-button"
+                            matTooltip="Bearbeiten"
                             (click)="$event.stopImmediatePropagation()"
+                            (keydown.enter)="$event.stopImmediatePropagation()"
                             [matMenuTriggerFor]="codelistMenu"
                         >
                             <mat-icon svgIcon="Mehr"></mat-icon>
