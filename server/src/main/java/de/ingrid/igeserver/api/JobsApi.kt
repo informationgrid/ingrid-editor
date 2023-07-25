@@ -60,20 +60,23 @@ interface JobsApi {
             required = true
         ) command: JobCommand
     ): ResponseEntity<Unit>
-    
+
     @PostMapping(
         value = ["/jobs/import/analyze"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun importAnalyzeTask(
         principal: Principal,
-        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
+        @Parameter(
+            description = "The dataset to be imported.",
+            required = true
+        ) @RequestBody file: @Valid MultipartFile,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
             required = true
         ) command: JobCommand
     ): ResponseEntity<Unit>
-    
+
     @PostMapping(
         value = ["/jobs/import"],
         produces = [MediaType.APPLICATION_JSON_VALUE]
@@ -99,5 +102,17 @@ interface JobsApi {
             required = true
         ) data: UrlReplaceData
     ): ResponseEntity<Map<String, Any>>
+
+    @PostMapping(
+        value = ["/jobs/cleanup-uploads"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun cleanupUploads(principal: Principal): ResponseEntity<Unit>
+
+    @PostMapping(
+        value = ["/jobs/remove-unreferenced-documents"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun removeUnreferencedDocuments(principal: Principal): ResponseEntity<List<String>>
 }
 
