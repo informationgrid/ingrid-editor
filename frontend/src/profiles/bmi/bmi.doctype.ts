@@ -82,6 +82,8 @@ export class BmiDoctype extends BaseDoctype {
             this.addGroupSimple(null, [
               { key: "_title" },
               this.addInputInline("title", "Titel", {
+                contextHelpId: "distribution_title",
+                hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
               }),
               {
@@ -91,6 +93,7 @@ export class BmiDoctype extends BaseDoctype {
                 class: "flex-2",
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
+                contextHelpId: "distribution_link",
                 props: {
                   label: "Link",
                   appearance: "outline",
@@ -106,6 +109,8 @@ export class BmiDoctype extends BaseDoctype {
               this.addDatepickerInline("modified", "Aktualisierungsdatum", {
                 placeholder: "TT.MM.JJJJ",
                 wrappers: ["form-field"],
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_modified",
               }),
               this.addSelectInline("format", "Format", {
                 showSearch: true,
@@ -124,9 +129,14 @@ export class BmiDoctype extends BaseDoctype {
                 placeholder: "Sprachen der Ressource",
                 options: this.getCodelistForSelect(20007, "null"),
                 codelistId: 20007,
+                wrappers: ["inline-help"],
+                hasInlineContextHelp: true,
+                contextHelpId: "language",
               }),
               this.addTextAreaInline("description", "Beschreibung", {
-                wrappers: ["form-field"],
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_description",
               }),
               this.addSelectInline("license", "Lizenz", {
                 required: true,
@@ -147,6 +157,8 @@ export class BmiDoctype extends BaseDoctype {
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
                 options: this.getCodelistForSelect(20005, "null"),
                 codelistId: 20005,
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
               }),
             ]),
           ],

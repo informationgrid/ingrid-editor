@@ -96,8 +96,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
                   className: "width-100",
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
+                  wrappers: ["form-field"],
                 }),
               ],
             },
@@ -106,14 +105,12 @@ export class BmiAddressDoctype extends OrganisationDoctype {
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
+                  wrappers: ["form-field"],
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
                   className: "flex-3",
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
+                  wrappers: ["form-field"],
                 }),
               ],
             },
