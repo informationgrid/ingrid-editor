@@ -12,6 +12,7 @@
                 mat-icon-button
                 class="dark menu-button"
                 [class.expanded]="showMore"
+                [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
                 (click)="showMore = !showMore"
             >
                 <mat-icon class="animated">keyboard_arrow_down</mat-icon>

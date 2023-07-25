@@ -23,6 +23,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { AddButtonModule } from "../../../shared/add-button/add-button.module";
 import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "ige-repeat-detail-list",
@@ -45,6 +46,7 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
     FormErrorComponent,
     KeyValuePipe,
     FormlyModule,
+    MatTooltipModule,
   ],
   standalone: true,
 })

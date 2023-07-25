@@ -8,6 +8,7 @@
         [checked]="checkToggleAll"
         [indeterminate]="indeterminateToggleAll"
         (change)="toggleAllSelection.next($event.checked)"
+        (keyup.enter)="toggleAllSelection.next(!checkToggleAll)"
         >Alle
     </mat-checkbox>
     <button
@@ -30,6 +31,7 @@
                 data-cy="edit-button"
                 matTooltip="Mehrfachauswahl"
                 (click)="activateMultiSelection()"
+                (keyup.enter)="activateMultiSelection()"
             >
                 Auswahl
             </mat-checkbox>

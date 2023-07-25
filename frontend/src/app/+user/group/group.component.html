@@ -89,6 +89,7 @@
                                 data-cy="btn-expand-header"
                                 class="dark menu-button"
                                 [class.expanded]="showMore"
+                                [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
                                 (click)="this.showMore = !this.showMore"
                             >
                                 <mat-icon class="rotating animated"
@@ -99,6 +100,7 @@
                                 mat-icon-button
                                 data-cy="more-actions"
                                 class="menu dark menu-button"
+                                matTooltip="Bearbeiten"
                                 [matMenuTriggerFor]="groupMoreMenu"
                             >
                                 <mat-icon svgIcon="Mehr"></mat-icon>

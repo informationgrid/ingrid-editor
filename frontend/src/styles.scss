@@ -960,9 +960,13 @@ mat-icon.mark-color .coloring {
   }
 
   .mat-mdc-tab-link {
-    //background-color: #161234;
     border-bottom: none;
     height: 56px !important;
+
+    &:focus,
+    &:hover {
+      background: lighten($ige-secondary, 8%);
+    }
 
     .mdc-tab__text-label {
       color: #ffffff !important;

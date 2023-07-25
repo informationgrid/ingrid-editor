@@ -6,6 +6,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { ScrollingModule } from "@angular/cdk/scrolling";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { ScrollingModule } from "@angular/cdk/scrolling";
     MatIconModule,
     MatMenuModule,
     ScrollingModule,
+    MatTooltipModule,
   ],
   declarations: [CodelistPresenterComponent],
   exports: [CodelistPresenterComponent],
