@@ -12,7 +12,8 @@
     "profiles/profile-mcloud.ts",
     "profiles/profile-uvp.ts",
     "profiles/profile-test.ts",
-    "profiles/profile-ingrid.ts"
+    "profiles/profile-ingrid.ts",
+    "profiles/profile-ingrid-kommunal-st.ts"
   ],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }
