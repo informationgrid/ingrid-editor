@@ -50,6 +50,7 @@ export interface RepeatDetailListOptions extends Options {
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
+  infoText?: string;
 }
 
 export interface RepeatListOptions extends Options {

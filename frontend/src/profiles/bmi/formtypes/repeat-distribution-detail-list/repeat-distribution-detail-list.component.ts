@@ -81,6 +81,7 @@ export class RepeatDistributionDetailListComponent
           currentItems: this.model,
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
+          infoText: this.field.props.infoText,
         },
       })
       .afterClosed()

@@ -76,6 +76,8 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
+          infoText:
+            "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
           fields: [
             this.addGroupSimple(null, [
               { key: "_title" },
@@ -230,6 +232,7 @@ export class BmiDoctype extends BaseDoctype {
         externalLabel: label,
         required: options?.required,
         backendUrl: this.configService.getConfiguration().backendUrl,
+        infoText: options?.infoText,
       },
       fieldArray: {
         fieldGroup: options?.fields,
