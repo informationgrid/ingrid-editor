@@ -116,6 +116,15 @@
                             Format: {{ model[i].format?.key }}
                         </div>
                     </div>
+                    <div *ngIf="model[i].languages?.length > 0">
+                        <div class="type">
+                            Sprachen:
+                            <span *ngFor="let language of model[i].languages">
+                                {{ language.key | codelist : "20007" | async }}
+                            </span>
+                        </div>
+                    </div>
+
                     <div *ngIf="model[i].modified">
                         <div class="type">
                             Zuletzt Bearbeitet:
