@@ -25,14 +25,15 @@ class RemoveUnreferencedDocsTask(
     private val log = logger()
 
     @Scheduled(cron = "\${upload.cleanup.schedule}")
-    fun start() {
+    fun start(): List<String> {
         log.info("Starting Task: Remove-Unreferenced-Docs")
         val uvpCatalogs = catalogRepo.findAllByType("uvp")
-        uvpCatalogs.forEach { cleanupFilesForCatalogId(it.identifier) }
+        val unreferencedFiles = uvpCatalogs.flatMap { cleanupFilesForCatalogId(it.identifier) }
         log.debug("Task finished: Remove-Unreferenced-Docs")
+        return unreferencedFiles
     }
 
-    private fun cleanupFilesForCatalogId(catalogId: String) {
+    private fun cleanupFilesForCatalogId(catalogId: String): List<String> {
         val docs = queryDocs(sqlStepsWithDrafts, "step")
         val negativeDocs = queryDocs(sqlNegativeDecisionDocsWithDraft, "negativeDocs")
 
@@ -69,6 +70,7 @@ class RemoveUnreferencedDocsTask(
                 storage.delete(catalogId, it)
             }
         }
+        return unreferencedFiles.map { "$catalogId -> ${it.path}/${it.file}" }
     }
 
     private fun getReferencedFilesOfCatalog(

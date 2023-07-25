@@ -19,6 +19,7 @@ import {
 import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
+import { lastValueFrom } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -151,21 +152,6 @@ export class GetCapabilitiesService {
     }
   }
 
-  private getCodelistForServiceType(value: any) {
-    switch (value) {
-      case "1":
-        return "5105";
-      case "2":
-        return "5110";
-      case "3":
-        return "5120";
-      case "4":
-        return "5130";
-      default:
-        return null;
-    }
-  }
-
   private mapEvents(value: any[]) {
     return value.map((item) => {
       return {
@@ -202,19 +188,18 @@ export class GetCapabilitiesService {
       let uuid = resource.uuid;
       if (!resource.exists) {
         const doc = this.mapCoupledResource(resource, parent);
-        const savedDoc = await this.documentService
-          .save({
-            data: doc,
-            isNewDoc: true,
-            isAddress: false,
-            noVisualUpdates: true,
-            dontUpdateForm: true,
-          })
-          .toPromise();
+        const savedDoc = this.documentService.save({
+          data: doc,
+          isNewDoc: true,
+          isAddress: false,
+          noVisualUpdates: true,
+          dontUpdateForm: true,
+        });
+        const newDoc = await lastValueFrom(savedDoc);
         return <DocumentReference>{
           ...docReferenceTemplate,
           title: resource.title,
-          uuid: savedDoc._uuid,
+          uuid: newDoc._uuid,
         };
       }
       return <DocumentReference>{
@@ -316,16 +301,15 @@ export class GetCapabilitiesService {
       return [{ ref: address, type: { key: "1" } }];
     }
 
-    const result = await this.documentService
-      .save({
-        data: address,
-        isNewDoc: true,
-        isAddress: true,
-        noVisualUpdates: true,
-        dontUpdateForm: true,
-      })
-      .toPromise();
-    return [{ ref: result, type: { key: "1" } }];
+    const result = this.documentService.save({
+      data: address,
+      isNewDoc: true,
+      isAddress: true,
+      noVisualUpdates: true,
+      dontUpdateForm: true,
+    });
+    const newAddress = await lastValueFrom(result);
+    return [{ ref: newAddress, type: { key: "1" } }];
   }
 
   private mapTimeSpan(value: TimeReference): any {

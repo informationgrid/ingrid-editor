@@ -46,7 +46,8 @@
     }}</ng-container>
     <ng-container *ngSwitchCase="'autocompletePrint'">{{
         props.codelistId
-            ? (formControl.value | codelist : props.codelistId | async)
+            ? (formControl.value | codelist : props.codelistId | async) ??
+              formControl.value?.value
             : getFromOption(formControl.value)
     }}</ng-container>
     <div

@@ -11,5 +11,6 @@ data class GeneralProperties(
     val markInsteadOfDelete: Boolean,
     val host: String,
     val externalHelp: String?,
-    val instanceId: String = "ige-ng"
+    val instanceId: String = "ige-ng",
+    val indexPageSize: Int = 100
 )

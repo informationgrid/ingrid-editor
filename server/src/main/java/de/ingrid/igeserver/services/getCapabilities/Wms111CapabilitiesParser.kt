@@ -37,7 +37,7 @@ class Wms111CapabilitiesParser(
                 getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
             val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
             val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
-            keywords.addAll(commonKeywords + allKeywordsSet)
+            keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
             val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
             var unionOfBoundingBoxes: LocationBean? = null
             if (boundingBoxesFromLayers.isNotEmpty()) {

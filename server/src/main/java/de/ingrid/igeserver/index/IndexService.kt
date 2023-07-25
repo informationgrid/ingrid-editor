@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.igeserver.api.messaging.IndexMessage
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.IndexConfigOptions
@@ -22,7 +23,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
-const val PAGE_SIZE: Int = 100
 
 data class DocumentIndexInfo(
     val document: Document,
@@ -35,9 +35,9 @@ class IndexService @Autowired constructor(
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
     private val researchService: ResearchService,
-    private val behaviourService: BehaviourService,
     private val entityManager: EntityManager,
-    private val settingsService: SettingsService
+    private val settingsService: SettingsService,
+    private val generalProperties: GeneralProperties
 ) {
 
     private val log = logger()
@@ -59,8 +59,14 @@ class IndexService @Autowired constructor(
         currentPage: Int = 0,
         totalHits: Long
     ): Page<DocumentIndexInfo> {
-        val docs = requestPublishableDocuments(catalogId, category, null, catalogProfile, ResearchPaging(currentPage + 1, PAGE_SIZE))
-        val pagedDocs = PageImpl(docs, Pageable.ofSize(PAGE_SIZE), totalHits)
+        val docs = requestPublishableDocuments(
+            catalogId,
+            category,
+            null,
+            catalogProfile,
+            ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
+        )
+        val pagedDocs = PageImpl(docs, Pageable.ofSize(generalProperties.indexPageSize), totalHits)
 
         return if (pagedDocs.isEmpty) {
             log.warn("No documents found in category '$category' for indexing")
@@ -77,7 +83,7 @@ class IndexService @Autowired constructor(
     ): Pair<Long, List<Document>> {
         val response = researchService.query(
             catalogId,
-            ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, PAGE_SIZE))
+            ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, generalProperties.indexPageSize))
         )
         val docsToIndex = response.hits
             .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!).apply { wrapperId = it._id } }
@@ -96,7 +102,7 @@ class IndexService @Autowired constructor(
 
         // add system specific conditions
         conditions.addAll(getSystemSpecificConditions())
-        
+
         // add profile specific conditions
         conditions.addAll(profile.additionalPublishConditions(catalogId))
 
@@ -105,7 +111,7 @@ class IndexService @Autowired constructor(
 
     private fun getSystemSpecificConditions(): List<String> {
         var publicationTypesPerIBus = settingsService.getIBusConfig().mapNotNull { it.publicationTypes }
-        
+
         // provide at least one empty iBus configuration
         if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())
 
@@ -139,13 +145,20 @@ class IndexService @Autowired constructor(
 
     fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId)
         .settings?.lastLogSummary
-    
-    fun requestPublishableDocuments(catalogId: String, category: String, uuid: String?, profile: CatalogProfile, paging: ResearchPaging = ResearchPaging(pageSize = PAGE_SIZE)): List<DocumentIndexInfo> {
+
+    fun requestPublishableDocuments(
+        catalogId: String,
+        category: String,
+        uuid: String?,
+        profile: CatalogProfile,
+        paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
+    ): List<DocumentIndexInfo> {
         val iBusConditions = getSystemSpecificConditions()
         val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
+        val orderBy = " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
-        val nativeQuery = entityManager.createNativeQuery(sql)
-        
+        val nativeQuery = entityManager.createNativeQuery(sql + orderBy)
+
         nativeQuery.setParameter(1, catalogId)
 
         val result = nativeQuery
@@ -157,12 +170,12 @@ class IndexService @Autowired constructor(
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
-        
+
         return result.map {
             IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String)
-        }.map { 
+        }.map {
             DocumentIndexInfo(
-                documentService.getLastPublishedDocument(catalogId, it.uuid).apply { wrapperId = it.wrapperId } ,
+                documentService.getLastPublishedDocument(catalogId, it.uuid).apply { wrapperId = it.wrapperId },
                 it.ibus.split(",").map { it.toInt() }
             )
         }

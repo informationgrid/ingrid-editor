@@ -13,6 +13,8 @@ interface CatalogProfile {
     val title: String
     val description: String?
     val indexExportFormatID: String?
+    val parentProfile: String?
+        get() = null
 
     @get:JsonIgnore
     val indexIdField: IndexIdFieldConfig

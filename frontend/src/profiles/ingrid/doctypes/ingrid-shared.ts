@@ -53,6 +53,14 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
 
+  options = {
+    required: {
+      freeKeywords: false,
+      useLimitation: false,
+      topicCategories: true,
+    },
+  };
+
   private inspireChangeMessage =
     "ACHTUNG: Grad der Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird geändert.";
   private inspireDeleteMessage =
@@ -340,7 +348,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect(527, "topicCategories"),
               codelistId: 527,
-              required: true,
+              required: this.options.required.topicCategories,
               remove: (field, event) =>
                 this.checkConnectedIsoCategory(event, field),
             })
@@ -378,6 +386,7 @@ export abstract class IngridShared extends BaseDoctype {
           }),
           this.addRepeatList("free", "Freie Schlagworte", {
             view: "chip",
+            required: this.options.required.freeKeywords,
             className: "optional",
             hint: this.keywordFieldHint,
             convert: (val) => (val ? { label: val } : null),
@@ -1047,6 +1056,7 @@ export abstract class IngridShared extends BaseDoctype {
           "Anwendungseinschränkungen",
           "dataset",
           {
+            required: this.options.required.useLimitation,
             className: "optional flex-1",
           }
         ),

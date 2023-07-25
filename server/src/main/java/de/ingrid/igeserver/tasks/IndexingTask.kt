@@ -16,7 +16,6 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.index.DocumentIndexInfo
 import de.ingrid.igeserver.index.IndexService
-import de.ingrid.igeserver.index.PAGE_SIZE
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
@@ -71,7 +70,8 @@ class IndexingTask @Autowired constructor(
     private val indexThroughIBus: Boolean,
     private val appProperties: GeneralProperties,
     private val codelistService: CodeListService,
-    private val postIndexPipe: PostIndexPipe
+    private val postIndexPipe: PostIndexPipe,
+    private val generalProperties: GeneralProperties
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -79,9 +79,6 @@ class IndexingTask @Autowired constructor(
     private val scheduler: TaskScheduler = initScheduler()
     private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
     private val cancellations = HashMap<String, Boolean>()
-
-    @Autowired
-    lateinit var generalProperties: GeneralProperties
 
     private lateinit var indexManager: IIndexManager
 
@@ -156,7 +153,7 @@ class IndexingTask @Autowired constructor(
                         val docsToPublish = indexService.getPublishedDocuments(catalogId, category.value, catalogProfile, page, totalHits)
                         // isLast function sometimes delivers the next to last page without a total count, so we write our own
                         val isLast =
-                            (page * PAGE_SIZE + docsToPublish.numberOfElements).toLong() == totalHits
+                            (page * generalProperties.indexPageSize + docsToPublish.numberOfElements).toLong() == totalHits
 
                         exportDocuments(docsToPublish, catalogId, message, category, page, exporter, indexInfo)
                     } while (!isLast)
@@ -227,7 +224,7 @@ class IndexingTask @Autowired constructor(
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
                 handleCancelation(catalogId, message)
-                sendNotification(category, message, index + (page * PAGE_SIZE))
+                sendNotification(category, message, index + (page * generalProperties.indexPageSize))
                 log.debug("export ${doc.document.uuid}")
                 try {
                     Pair(doc, exporter.run(doc.document, catalogId))
@@ -235,7 +232,7 @@ class IndexingTask @Autowired constructor(
                     val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
-                    sendNotification(category, message, index + (page * PAGE_SIZE))
+                    sendNotification(category, message, index + (page * generalProperties.indexPageSize))
                     null
                 }
             }

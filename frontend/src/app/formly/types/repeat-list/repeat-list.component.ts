@@ -405,10 +405,22 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         trimmed = this.props.convert(trimmed);
       }
 
-      if (this.model.indexOf(trimmed) === -1) {
+      let found: boolean;
+      if (trimmed instanceof Object) {
+        found = this.model.find((item) => this.shallowEqual(item, trimmed));
+      } else {
+        found = this.model.indexOf(trimmed) !== -1;
+      }
+
+      if (!found) {
         this.add(null, trimmed);
       } else {
-        if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
+        if (trimmed instanceof Object) {
+          if (duplicates.indexOf(item.trim()) == -1)
+            duplicates.push(item.trim());
+        } else {
+          if (duplicates.indexOf(trimmed) == -1) duplicates.push(trimmed);
+        }
       }
     });
     return duplicates;
@@ -421,6 +433,23 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     );
   }
 
+  private shallowEqual(object1, object2) {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    for (let key of keys1) {
+      if (object1[key] !== object2[key]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private prepareDuplicatesForView(duplicates: any[]) {
     if (this.props.codelistId) {
       duplicates = duplicates.map((dup) =>
@@ -430,13 +459,15 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
         )
       );
     }
-    duplicates = duplicates.map((dup) => "'" + dup + "'");
-    let formatedDuplicates: string;
+    duplicates = duplicates.map((dup) => `'${dup}'`);
+    let formattedDuplicates: string;
     if (duplicates.length == 1) {
-      formatedDuplicates = duplicates[0];
+      formattedDuplicates = duplicates[0];
     } else {
-      formatedDuplicates = duplicates.join(", ").replace(/,([^,]*)$/, " und$1");
+      formattedDuplicates = duplicates
+        .join(", ")
+        .replace(/,([^,]*)$/, " und$1");
     }
-    return formatedDuplicates;
+    return formattedDuplicates;
   }
 }

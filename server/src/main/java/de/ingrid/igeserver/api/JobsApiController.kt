@@ -2,12 +2,15 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
+import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
+import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
@@ -134,4 +137,21 @@ class JobsApiController @Autowired constructor(
     }
 
 
+    @Autowired(required = false)
+    var uploadCleanupTask: UploadCleanupTask? = null
+    override fun cleanupUploads(principal: Principal): ResponseEntity<Unit> {
+        if (uploadCleanupTask == null) throw ServerException.withReason("RemoveUnreferencedDocsTask not available")
+
+        uploadCleanupTask?.cleanup()
+        return ResponseEntity.ok().build()
+    }
+
+    @Autowired(required = false)
+    var removeUnreferencedDocsTask: RemoveUnreferencedDocsTask? = null
+    override fun removeUnreferencedDocuments(principal: Principal): ResponseEntity<List<String>> {
+        if (removeUnreferencedDocsTask == null) throw ServerException.withReason("RemoveUnreferencedDocsTask not available")
+        
+        val result = removeUnreferencedDocsTask?.start() ?: emptyList()
+        return ResponseEntity.ok(result)
+    }
 }
