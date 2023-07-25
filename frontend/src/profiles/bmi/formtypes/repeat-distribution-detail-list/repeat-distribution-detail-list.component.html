@@ -11,7 +11,7 @@
     </div>
 </ige-form-error>
 
-<mat-accordion>
+<mat-accordion [multi]="!formControl.enabled">
     <mat-list
         *ngIf="field.fieldGroup.length"
         cdkDropList
@@ -27,6 +27,8 @@
         >
             <mat-expansion-panel
                 hideToggle
+                [expanded]="!formControl.enabled"
+                [disabled]="!formControl.enabled"
                 (opened)="showMore[i] = true"
                 (closed)="showMore[i] = false"
             >
@@ -75,6 +77,7 @@
                             >
                         </div>
                         <button
+                            *ngIf="formControl.enabled"
                             mat-icon-button
                             class="menu-button expander"
                             [class.expanded]="showMore[i]"
@@ -163,7 +166,7 @@
     </mat-list>
 </mat-accordion>
 
-<div class="button-wrapper">
+<div class="button-wrapper" *ngIf="formControl.enabled">
     <button
         type="button"
         mat-stroked-button
