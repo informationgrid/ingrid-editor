@@ -121,15 +121,8 @@ export class RepeatDistributionDetailListComponent
   }
 
   private addUploadInfoToDatasource(file: LinkInfo) {
-    const newRow = {
-      format: { key: null },
-      title: this.prepareTitleFromFile(file.file),
-      description: "",
-      license: null,
-      byClause: "",
-      languages: [],
-      plannedAvailability: null,
-    };
+    const newRow = this.getEmptyEntry();
+    newRow.title = "";
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
       value: file.file,
@@ -137,6 +130,24 @@ export class RepeatDistributionDetailListComponent
       lastModified: new Date(),
     };
     this.add(null, newRow);
+  }
+
+  private getEmptyEntry() {
+    const template = {
+      format: { key: null },
+      title: "",
+      description: "",
+      license: null,
+      byClause: "",
+      languages: [],
+      plannedAvailability: null,
+    };
+    template[this.getUploadFieldKey()] = {
+      asLink: true,
+      value: "",
+      uri: "",
+    };
+    return template;
   }
 
   private addLinkInfoToDatasource(link: any) {
@@ -162,42 +173,12 @@ export class RepeatDistributionDetailListComponent
     this.formControl.markAsDirty();
   }
 
-  showAddLinkDialog() {
-    this.dialog
-      .open(LinkDialogComponent, {
-        maxWidth: 600,
-        hasBackdrop: true,
-        restoreFocus: true,
-        disableClose: true,
-        data: {
-          fields: this.getFields(this.field.fieldArray),
-          model: {},
-          newEntry: true,
-        } as FormDialogData,
-      })
-      .afterClosed()
-      .pipe(filter((result) => result))
-      .subscribe((response) => {
-        if (response) {
-          this.add(null, response);
-        }
-      });
-  }
-
   private getFields(props: any) {
     return props.fieldGroup[0].fieldGroup;
   }
 
-  private prepareTitleFromFile(file: string) {
-    const lastDotPos = file.lastIndexOf(".");
-    const name = file.substring(
-      0,
-      lastDotPos === -1 ? file.length : lastDotPos
-    );
-    return decodeURI(name);
-  }
-
   private openDialog(index?: number) {
+    console.log(index);
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
@@ -207,14 +188,16 @@ export class RepeatDistributionDetailListComponent
         data: <FormDialogData>{
           fields: this.getFields(this.field.fieldArray),
           model:
-            index === null ? {} : JSON.parse(JSON.stringify(this.model[index])),
+            index === undefined
+              ? this.getEmptyEntry()
+              : JSON.parse(JSON.stringify(this.model[index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
       })
       .afterClosed()
       .subscribe((response) => {
         if (response) {
-          if (index !== null) {
+          if (index !== undefined) {
             this.remove(index);
           }
           this.add(index, response);
