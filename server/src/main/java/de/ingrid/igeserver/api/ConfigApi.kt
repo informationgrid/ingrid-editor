@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import io.swagger.v3.oas.annotations.Parameter
@@ -29,8 +30,19 @@ interface ConfigApi {
 
     @GetMapping(value = ["/config/ibus/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun isConnected(@PathVariable index: Int): ResponseEntity<Boolean>
-    
+
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setIBus(@Parameter(required = true) @RequestBody config: List<IBusConfig>): ResponseEntity<Unit>
+
+
+    @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getCMSPages(): ResponseEntity<List<CMSPage>>
+
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
+    @PutMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateCMS(
+        @Parameter(required = true) @RequestBody pages: List<CMSPage>
+    ): ResponseEntity<Unit>
+
 }
