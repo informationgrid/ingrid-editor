@@ -148,7 +148,13 @@ export class BmiDoctype extends BaseDoctype {
               }),
             ]),
           ],
-          validators: {},
+          validators: {
+            requiredItems: {
+              expression: (ctrl) =>
+                ctrl.value?.every((entry) => entry.link && entry.type),
+              message: "Es müssen alle Pflichtfelder ausgefüllt sein",
+            },
+          },
         }),
         this.addInput(
           "legalBasis",
