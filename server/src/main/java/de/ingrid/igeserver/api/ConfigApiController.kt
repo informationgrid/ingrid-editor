@@ -70,8 +70,8 @@ class ConfigApiController @Autowired constructor(
 
     }
 
-    override fun getCMSPages(): ResponseEntity<List<CMSPage>> {
-        val cms = settingsService.getItemAsList<CMSPage>("cms")
+    override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {
+        val cms = settingsService.getItemAsList<LinkedHashMap<String,String>>("cms")
         return ResponseEntity.ok(cms)
     }
 

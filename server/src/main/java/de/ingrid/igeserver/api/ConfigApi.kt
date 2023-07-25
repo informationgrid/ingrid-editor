@@ -37,7 +37,7 @@ interface ConfigApi {
 
 
     @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getCMSPages(): ResponseEntity<List<CMSPage>>
+    fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])

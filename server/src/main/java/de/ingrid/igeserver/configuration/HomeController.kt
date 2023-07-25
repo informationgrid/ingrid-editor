@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.api.ForbiddenException
+import de.ingrid.igeserver.services.SettingsService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -11,7 +12,7 @@ import org.springframework.web.servlet.view.RedirectView
  * Home redirection to swagger api documentation
  */
 @Controller
-class HomeController {
+class HomeController(val settingsService: SettingsService) {
 
     @GetMapping(value = ["/swagger"])
     fun swagger(): RedirectView {
@@ -21,11 +22,8 @@ class HomeController {
     @GetMapping(value = ["/barrierefreiheit"], produces = [MediaType.TEXT_HTML_VALUE])
     @ResponseBody
     fun accessibility(): String {
-        return """
-            <html>
-            <body><h1>Barrierefreiheit</h1></body>
-            </html>
-        """.trimIndent()
+        val page = settingsService.getItemAsList<LinkedHashMap<String, String>>("cms").find { it["pageId"] == "accessibility" }
+        return page?.get("content") ?: "not configured"
     }
 
     @GetMapping(value = ["/accessDenied"])
