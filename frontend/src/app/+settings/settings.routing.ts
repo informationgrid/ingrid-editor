@@ -7,6 +7,7 @@ import { AuthGuard } from "../security/auth.guard";
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
+import { ContentManagementComponent } from "./content-management/content-management.component";
 
 export const routing = RouterModule.forChild([
   {
@@ -62,6 +63,14 @@ export const routing = RouterModule.forChild([
         component: CatalogAssignmentComponent,
         data: {
           title: "Katalogzuweisung",
+          permission: "manage_all_catalogs",
+        },
+      },
+      {
+        path: "contentManagement",
+        component: ContentManagementComponent,
+        data: {
+          title: "Inhalte verwalten",
           permission: "manage_all_catalogs",
         },
       },

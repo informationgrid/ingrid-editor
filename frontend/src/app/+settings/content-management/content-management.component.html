@@ -1,0 +1,21 @@
+<page-template-no-header>
+    <ng-container left-side> Infos ... </ng-container>
+
+    <ng-container main-content>
+        <div class="flex-col">
+            <mat-form-field appearance="outline">
+                <mat-label>Barrierefreiheit</mat-label>
+                <textarea
+                    matInput
+                    [formControl]="accessibility"
+                    rows="20"
+                ></textarea>
+            </mat-form-field>
+            <div class="flex-row justify-content-end">
+                <button mat-flat-button color="primary" (click)="save()">
+                    Aktualisieren
+                </button>
+            </div>
+        </div>
+    </ng-container>
+</page-template-no-header>

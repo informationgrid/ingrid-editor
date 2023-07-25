@@ -51,6 +51,11 @@ export interface UserInfo {
   parentProfile?: string;
 }
 
+export interface CMSPage {
+  pageId: string;
+  content: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -196,17 +201,25 @@ export class ConfigService {
 
   saveIBusConfig(value: any) {
     return this.http
-      .put<any>(this.config.backendUrl + "config/ibus", value)
+      .put<any>(`${this.config.backendUrl}config/ibus`, value)
       .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
   }
 
   getIBusConfig() {
-    return this.http.get<any>(this.config.backendUrl + "config/ibus");
+    return this.http.get<any>(`${this.config.backendUrl}config/ibus`);
   }
 
   isIBusConnected(index: number) {
     return this.http.get<boolean>(
       `${this.config.backendUrl}config/ibus/connected/${index}`
     );
+  }
+
+  getCMSPages() {
+    return this.http.get<CMSPage[]>(`${this.config.backendUrl}config/cms`);
+  }
+
+  updateCMSPage(content: CMSPage[]) {
+    return this.http.put<void>(`${this.config.backendUrl}config/cms`, content);
   }
 }
