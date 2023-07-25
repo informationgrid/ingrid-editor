@@ -60,7 +60,8 @@
     "placeholder": {
       "enter": "Bitte eingeben...",
       "choose": "Bitte wählen...",
-      "chooseOrEnter": "Bitte wählen oder eingeben..."
+      "chooseOrEnter": "Bitte wählen oder eingeben...",
+      "chooseFile": "Datei auswählen..."
     }
   },
   "spatial": {
