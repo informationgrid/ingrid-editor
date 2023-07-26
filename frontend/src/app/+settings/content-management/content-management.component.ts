@@ -4,6 +4,7 @@ import { MatInputModule } from "@angular/material/input";
 import { ConfigService } from "../../services/config/config.service";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { MatButtonModule } from "@angular/material/button";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "ige-content-management",
@@ -19,6 +20,7 @@ import { MatButtonModule } from "@angular/material/button";
 })
 export class ContentManagementComponent implements OnInit {
   configService = inject(ConfigService);
+  snackBar = inject(MatSnackBar);
 
   accessibility = new FormControl<string>("");
 
@@ -36,6 +38,6 @@ export class ContentManagementComponent implements OnInit {
       .updateCMSPage([
         { pageId: "accessibility", content: this.accessibility.value },
       ])
-      .subscribe();
+      .subscribe(() => this.snackBar.open("Die Änderung wurde gespeichert"));
   }
 }
