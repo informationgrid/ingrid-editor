@@ -163,10 +163,10 @@ export class BmiDoctype extends BaseDoctype {
             ]),
           ],
           validators: {
-            requiredItems: {
-              expression: (ctrl) =>
-                ctrl.value?.every((entry) => entry.link && entry.type),
-              message: "Es müssen alle Pflichtfelder ausgefüllt sein",
+            requiredLicense: {
+              expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
+              message:
+                "Es muss für jede Ressource eine Lizenz angegeben werden.",
             },
           },
         }),
