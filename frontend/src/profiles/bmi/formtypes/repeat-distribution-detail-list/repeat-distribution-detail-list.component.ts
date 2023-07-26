@@ -197,6 +197,7 @@ export class RepeatDistributionDetailListComponent
       .afterClosed()
       .subscribe((response) => {
         if (response) {
+          response.link.value = response.link.uri;
           if (index !== undefined) {
             this.remove(index);
           }

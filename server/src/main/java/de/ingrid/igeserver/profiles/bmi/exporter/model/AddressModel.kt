@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import java.time.OffsetDateTime
@@ -35,6 +37,12 @@ data class AddressModel(
     companion object {
         val documentService: DocumentService? by lazy {
             SpringContext.getBean(DocumentService::class.java)
+        }
+        val codeListService: CodeListService? by lazy {
+            SpringContext.getBean(CodeListService::class.java)
+        }
+        val codelistHandler: CodelistHandler? by lazy {
+            SpringContext.getBean(CodelistHandler::class.java)
         }
     }
 
@@ -105,7 +113,10 @@ data class AddressModel(
         ?.connection
 }
 
-data class ContactModel(val type: KeyValueModel?, val connection: String?)
+data class ContactModel(val type: KeyValueModel?, val connection: String?){
+    val typeLabel: String?
+        get() = AddressModel.codeListService?.getCodeListValue("4430", type?.key, "en")
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Address(
@@ -120,4 +131,6 @@ data class Address(
 ) {
     val countryKey = country?.key ?: ""
 
+    val countryName: String?
+        get() = AddressModel.codeListService?.getCodeListValue("6200", country?.key, "de")
 }
