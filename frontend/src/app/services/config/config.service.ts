@@ -127,36 +127,30 @@ export class ConfigService {
     this.dataService = new ConfigDataService(http);
   }
 
-  load(): Promise<Configuration> {
+  async load(): Promise<Configuration> {
     console.log("=== ConfigService ===");
 
-    return this.dataService.load().then((json) => {
-      this.config = { ...this.defaultConfig, ...json };
-      this.config.backendUrl = this.config.contextPath + "api/";
-      ConfigService.backendApiUrl = this.config.backendUrl;
-      this.dataService.config = this.config;
-      return this.config;
-    });
+    let json = await this.dataService.load();
+    this.config = { ...this.defaultConfig, ...json };
+    this.config.backendUrl = this.config.contextPath + "api/";
+    ConfigService.backendApiUrl = this.config.backendUrl;
+    this.dataService.config = this.config;
+    return this.config;
   }
 
   // TODO: refactor to fetchCurrentUserInfo()
-  getCurrentUserInfo(): Promise<UserInfo> {
-    return this.dataService.getCurrentUserInfo().then((userInfo) => {
-      if (userInfo === null) {
-        throw new IgeError("Could not get current user");
-      }
-
-      ConfigService.catalogId = userInfo.currentCatalog.id;
-
-      this.isAdministrator =
-        userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
-
-      this._hasRootWritePermission =
-        userInfo.permissions.indexOf("can_write_root") !== -1;
-
-      this.$userInfo.next(userInfo);
-      return userInfo;
-    });
+  async getCurrentUserInfo(): Promise<UserInfo> {
+    let userInfo = await this.dataService.getCurrentUserInfo();
+    if (userInfo === null) {
+      throw new IgeError("Could not get current user");
+    }
+    ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.isAdministrator =
+      userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
+    this._hasRootWritePermission =
+      userInfo.permissions.indexOf("can_write_root") !== -1;
+    this.$userInfo.next(userInfo);
+    return userInfo;
   }
 
   getConfiguration(): Configuration {
