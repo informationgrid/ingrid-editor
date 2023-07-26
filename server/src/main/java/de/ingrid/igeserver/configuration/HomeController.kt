@@ -23,7 +23,11 @@ class HomeController(val settingsService: SettingsService) {
     @ResponseBody
     fun accessibility(): String {
         val page = settingsService.getItemAsList<LinkedHashMap<String, String>>("cms").find { it["pageId"] == "accessibility" }
-        return page?.get("content") ?: "not configured"
+        val content = if (page?.get("content").isNullOrEmpty()) {
+            val inputStream = object {}.javaClass.classLoader.getResourceAsStream("content/accessibility.html")
+            inputStream?.bufferedReader()?.readText() ?: "FEHLER!!!"
+        } else page?.get("content") ?: ""
+        return content
     }
 
     @GetMapping(value = ["/accessDenied"])
