@@ -1,4 +1,4 @@
-import { RouterModule } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { SettingsComponent } from "./settings.component";
 import { GeneralSettingsComponent } from "./general-settings/general-settings.component";
 import { CodelistsComponent } from "./codelists/codelists.component";
@@ -9,7 +9,7 @@ import { MessagesManagementComponent } from "./messages-management/messages-mana
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 import { ContentManagementComponent } from "./content-management/content-management.component";
 
-export const routing = RouterModule.forChild([
+export const settingsRoutes: Routes = [
   {
     path: "",
     component: SettingsComponent,
@@ -70,10 +70,11 @@ export const routing = RouterModule.forChild([
         path: "contentManagement",
         component: ContentManagementComponent,
         data: {
-          title: "Inhalte verwalten",
+          title: "Inhalte",
           permission: "manage_all_catalogs",
         },
       },
     ],
   },
-]);
+];
+export const routing = RouterModule.forChild(settingsRoutes);

@@ -125,31 +125,36 @@
                     >
                 </div>
 
-                <div *ngFor="let group of config.menuGroups">
-                    <div *ngIf="!group.adminOnly || isAdmin">
-                        <span mat-menu-item disabled class="category-item">{{
-                            group.title
-                        }}</span>
-                        <mat-divider></mat-divider>
-                        <ng-container *ngFor="let entry of group.entries">
-                            <button
-                                *ngIf="entry.isRouterLink"
-                                mat-menu-item
-                                [routerLink]="[catalogId + '/' + entry.link]"
-                            >
-                                {{ entry.label }}
-                            </button>
-                            <a
+                <span mat-menu-item disabled class="category-item">
+                    Verwaltung
+                </span>
+                <mat-divider></mat-divider>
+                <ng-container *ngFor="let group of menuItems">
+                    <div *ngIf="isAdmin">
+                        <!--                        <ng-container *ngFor="let entry of group.entries">-->
+                        <button
+                            mat-menu-item
+                            [routerLink]="[
+                                catalogId + '/settings/' + group.path
+                            ]"
+                        >
+                            {{ group.data?.title }}
+                        </button>
+                        <!--<a
                                 *ngIf="!entry.isRouterLink"
                                 mat-menu-item
                                 href="{{ entry.link }}"
                                 target="_blank"
                                 >{{ entry.label }}</a
-                            >
-                            <mat-divider></mat-divider>
-                        </ng-container>
+                            >-->
+                        <mat-divider></mat-divider>
+                        <!--                        </ng-container>-->
                     </div>
-                </div>
+                </ng-container>
+                <span mat-menu-item disabled class="category-item">
+                    Informationen
+                </span>
+                <mat-divider></mat-divider>
                 <a
                     mat-menu-item
                     href="{{ externalHelp ?? '#' }}"
