@@ -35,19 +35,9 @@
   padding-bottom: 16px;
 }
 
-.menu {
-  visibility: hidden;
-}
-
 .mat-mdc-card {
   &.selected {
     border: 1px solid $ige-primary;
-  }
-
-  &:hover {
-    .menu {
-      visibility: visible;
-    }
   }
 }
 
