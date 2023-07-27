@@ -3,38 +3,110 @@
     "enabled": true
   },
   "properties": {
-    "priority": {
-      "type": "short"
+    "metadata": {
+      "properties": {
+        "modified": {
+          "type": "date"
+        },
+        "issued": {
+          "type": "date"
+        }
+      }
     },
-    "title": {
-      "type": "text",
-      "store": true
+    "ars": {
+      "type": "keyword"
+    },
+    "keywords": {
+      "type": "keyword"
+    },
+    "landingPage": {
+      "type": "keyword"
+    },
+    "legal_basis": {
+      "analyzer": "german_simple",
+      "type": "text"
     },
     "description": {
-      "type": "text",
-      "analyzer": "german_simple"
+      "analyzer": "german_simple",
+      "type": "text"
     },
-    "creator": {
+    "distribution": {
       "properties": {
-        "name": {
+        "license": {
+          "type": "keyword"
+        },
+        "byteSize": {
+          "type": "long"
+        },
+        "languages": {
+          "type": "keyword"
+        },
+        "accessURL": {
+          "type": "keyword"
+        },
+        "format": {
+          "type": "keyword"
+        },
+        "description": {
+          "analyzer": "german_simple",
           "type": "text"
         },
-        "mbox": {
+        "modified": {
+          "type": "date"
+        },
+        "availability": {
+          "type": "keyword"
+        },
+        "id": {
+          "type": "keyword"
+        },
+        "issued": {
+          "type": "date"
+        },
+        "title": {
+          "analyzer": "german_simple",
+          "type": "text"
+        },
+        "byClause": {
+          "analyzer": "german_simple",
+          "type": "text"
+        }
+      }
+    },
+    "title": {
+      "store": true,
+      "type": "text"
+    },
+    "accrual_periodicity": {
+      "type": "keyword"
+    },
+    "spatial_text": {
+      "type": "text",
+      "fields": {
+        "raw": {
           "type": "keyword"
         }
       }
     },
-    "publisher": {
+    "uuid": {
+      "type": "keyword"
+    },
+    "politicalGeocodingLevel": {
+      "type": "keyword"
+    },
+    "qualityProcessURI": {
+      "type": "keyword"
+    },
+    "contact": {
       "properties": {
-        "name": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+        "country": {
+          "type": "keyword"
         },
-        "homepage": {
+        "city": {
+          "analyzer": "german_simple",
+          "type": "keyword"
+        },
+        "street": {
           "type": "keyword"
         },
         "organization": {
@@ -44,50 +116,27 @@
               "type": "keyword"
             }
           }
-        }
-      }
-    },
-    "contact_point": {
-      "properties": {
-        "hasUID": {
-          "type": "keyword"
         },
-        "fn": {
-          "type": "keyword"
-        },
-        "organization-name": {
-          "type": "text",
-          "fields": {
-            "raw": {
+        "communication": {
+          "properties": {
+            "connection": {
+              "type": "keyword"
+            },
+            "type": {
               "type": "keyword"
             }
           }
         },
-        "street-address": {
+        "type": {
           "type": "keyword"
         },
-        "region": {
-          "type": "keyword"
-        },
-        "country-name": {
-          "type": "keyword"
-        },
-        "postal-code": {
-          "type": "keyword"
-        },
-        "hasEmail": {
-          "type": "keyword"
-        },
-        "hasTelephone": {
-          "type": "keyword"
-        },
-        "hasURL": {
+        "zip-code": {
           "type": "keyword"
         }
       }
     },
-    "keywords": {
-      "type": "keyword"
+    "modified": {
+      "type": "date"
     },
     "theme": {
       "type": "keyword"
@@ -95,84 +144,16 @@
     "issued": {
       "type": "date"
     },
-    "modified": {
-      "type": "date"
+    "spatial": {
+      "type": "geo_shape"
     },
-    "accrual_periodicity": {
-      "type": "keyword"
-    },
-    "legal_basis": {
-      "type": "text"
-    },
-    "distribution": {
+    "temporal": {
       "properties": {
-        "id": {
-          "type": "keyword"
-        },
-        "title": {
-          "type": "text",
-          "analyzer": "german_simple"
-        },
-        "description": {
-          "type": "text",
-          "analyzer": "german_simple"
-        },
-        "format": {
-          "type": "keyword"
-        },
-        "accessURL": {
-          "type": "keyword"
-        },
-        "issued": {
+        "gte": {
           "type": "date"
         },
-        "modified": {
+        "lte": {
           "type": "date"
-        },
-        "byteSize": {
-          "type": "long"
-        }
-      }
-    },
-    "extras": {
-      "properties": {
-        "metadata": {
-          "properties": {
-            "issued": {
-              "type": "date"
-            },
-            "modified": {
-              "type": "date"
-            }
-          }
-        },
-        "generated_id": {
-          "type": "keyword"
-        },
-        "display_contact": {
-          "properties": {
-            "name": {
-              "type": "text"
-            },
-            "url": {
-              "type": "text"
-            }
-          }
-        },
-        "license": {
-          "type": "keyword"
-        },
-        "spatial": {
-          "type": "geo_shape"
-        },
-        "spatial_text": {
-          "type": "text"
-        },
-        "temporal": {
-          "type": "date_range"
-        },
-        "groups": {
-          "type": "keyword"
         }
       }
     }
