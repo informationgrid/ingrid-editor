@@ -15,6 +15,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.*
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service
 class BmiProfile @Autowired constructor(
         @JsonIgnore val codelistRepo: CodelistRepository,
         @JsonIgnore val catalogRepo: CatalogRepository,
+        @JsonIgnore val codelistHandler: CodelistHandler,
         @JsonIgnore val query: QueryRepository,
         @JsonIgnore val dateService: DateService,
         @JsonIgnore val authUtils: AuthUtils,
