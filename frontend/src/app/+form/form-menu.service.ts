@@ -1,13 +1,15 @@
 import { Injectable } from "@angular/core";
+import { ConfigService } from "../services/config/config.service";
 
 export interface FormularMenuItem {
   name: string;
   title: string;
-  action: () => void;
+  action?: () => void;
+  link?: string;
   disabled?: boolean;
 }
 
-export type MenuId = "address" | "dataset" | "user" | "group";
+export type MenuId = "address" | "dataset" | "user" | "group" | "settings";
 
 @Injectable({
   providedIn: "root",
@@ -18,9 +20,31 @@ export class FormMenuService {
     dataset: [] as FormularMenuItem[],
     user: [] as FormularMenuItem[],
     group: [] as FormularMenuItem[],
+    settings: [
+      {
+        title: "Hilfe",
+        name: "help",
+        link: this.configService.$userInfo.getValue().externalHelp,
+        action: () => {
+          console.log("Calling help");
+        },
+      },
+      this.configService.getConfiguration().showAccessibilityLink
+        ? {
+            title: "Barrierefreiheit",
+            name: "accessibility",
+            link:
+              this.configService.getConfiguration().contextPath +
+              "barrierefreiheit",
+            action: () => {
+              console.log("Calling Accessibility");
+            },
+          }
+        : null,
+    ].filter(Boolean) as FormularMenuItem[],
   };
 
-  constructor() {}
+  constructor(private configService: ConfigService) {}
 
   getMenuItems(menuId: MenuId): FormularMenuItem[] {
     return this.menuItems[menuId];

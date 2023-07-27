@@ -155,14 +155,13 @@
                     Informationen
                 </span>
                 <mat-divider></mat-divider>
-                <a
-                    mat-menu-item
-                    href="{{ externalHelp ?? '#' }}"
-                    target="_blank"
-                    >Hilfe</a
-                >
+                <ng-container *ngFor="let item of menuInfos">
+                    <a mat-menu-item href="{{ item.link }}" target="_blank">
+                        {{ item.title }}
+                    </a>
 
-                <mat-divider></mat-divider>
+                    <mat-divider></mat-divider>
+                </ng-container>
                 <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>
                     <div>

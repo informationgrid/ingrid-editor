@@ -13,6 +13,7 @@ import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { settingsRoutes } from "../+settings/settings.routing";
+import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
 
 @Component({
   selector: "ige-main-header",
@@ -35,6 +36,7 @@ export class MainHeaderComponent implements OnInit {
   menuItems: Routes = settingsRoutes[0].children.filter(
     (item) => item.path !== ""
   );
+  menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
   constructor(
     private configService: ConfigService,
@@ -42,7 +44,8 @@ export class MainHeaderComponent implements OnInit {
     private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private formMenuService: FormMenuService
   ) {}
 
   ngOnInit() {
