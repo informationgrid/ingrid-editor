@@ -96,7 +96,7 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
 
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
-                (doc.data.get("spatial")?.get("references") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
+                (doc.data.get("spatial") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
                         .filter { it.get("type")?.asText() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
@@ -122,18 +122,20 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
             }
         }
 
-        doc.data.set<ArrayNode>("keywords", keyThemes)
+        doc.data.set<ArrayNode>("DCATThemes", keyThemes)
         return true
     }
 
     private fun migrateAddressTypes(doc: Document): Boolean {
         val adresses =
-                (doc.data.get("addresses")?.get("references") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
+                (doc.data.get("addresses") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
         if (adresses.isEmpty()) return false
 
         adresses.forEach {
-            (it as ObjectNode).put("key", mapAddressType((it as ObjectNode).get("key").textValue()))
+            val oldAddressType = (it as ObjectNode).get("key").textValue()
+            val newAddressType = mapAddressType(oldAddressType)
+            (it as ObjectNode).put("key", newAddressType)
         }
 
         return true
@@ -171,21 +173,21 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
     }
 
     private fun migrateOriginator(doc: Document): Boolean {
-        val originator =
-                (doc.data.get("originator") as ObjectNode? ?: jacksonObjectMapper().createObjectNode())
+        val origin =
+                (doc.data.get("origin") as ObjectNode? ?: jacksonObjectMapper().createObjectNode())
 
         val distributions =
                 (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
 
 
-        if (distributions.isEmpty() && originator == null) return false
+        if (distributions.isEmpty() && origin == null && origin?.asText()?.isEmpty() == true) return false
 
         distributions.forEach {
-            (it as ObjectNode).set<ObjectNode>("byClause", originator)
+            (it as ObjectNode).set<ObjectNode>("byClause", origin)
         }
 
-        doc.data.remove("originator")
+        doc.data.remove("origin")
 
         return true
     }
