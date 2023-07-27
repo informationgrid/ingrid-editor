@@ -133,15 +133,16 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         if (adresses.isEmpty()) return false
 
         adresses.forEach {
-            val oldAddressType = (it as ObjectNode).get("key").textValue()
+
+            val oldAddressType = (it as ObjectNode).get("type")?.get("key")?.textValue()
             val newAddressType = mapAddressType(oldAddressType)
-            (it as ObjectNode).put("key", newAddressType)
+            ((it as ObjectNode).get("type") as ObjectNode).put("key", newAddressType)
         }
 
         return true
     }
 
-    private fun mapAddressType(oldKey: String) : String {
+    private fun mapAddressType(oldKey: String?) : String? {
         when(oldKey){
             "10" -> return "publisher"
             "11" -> return "creator"
