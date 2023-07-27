@@ -2,6 +2,7 @@ package de.ingrid.igeserver.migrations.tasks
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -88,7 +89,7 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         if(migrateDcatTheme(doc)) migrated = true
         if(migrateAddressTypes(doc)) migrated = true
         if(migrateLicense(doc)) migrated = true
-        if(migrateOriginator(doc)) migrated = true
+        if(migrateOrigin(doc)) migrated = true
 
         return migrated
     }
@@ -173,9 +174,8 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         return true
     }
 
-    private fun migrateOriginator(doc: Document): Boolean {
-        val origin =
-                (doc.data.get("origin") as ObjectNode? ?: jacksonObjectMapper().createObjectNode())
+    private fun migrateOrigin(doc: Document): Boolean {
+        val origin = doc.data.get("origin") as TextNode?
 
         val distributions =
                 (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
@@ -185,7 +185,7 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         if (distributions.isEmpty() && origin == null && origin?.asText()?.isEmpty() == true) return false
 
         distributions.forEach {
-            (it as ObjectNode).set<ObjectNode>("byClause", origin)
+            (it as ObjectNode).set<TextNode>("byClause", origin)
         }
 
         doc.data.remove("origin")
