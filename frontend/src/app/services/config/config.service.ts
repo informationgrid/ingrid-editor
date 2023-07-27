@@ -19,9 +19,9 @@ export class Configuration {
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public menuGroups: any,
     public mapTileUrl: string,
-    public nominatimUrl: string
+    public nominatimUrl: string,
+    public showAccessibilityLink: boolean
   ) {}
 }
 
@@ -69,52 +69,6 @@ export class ConfigService {
   defaultConfig: Partial<Configuration> = {
     contextPath: "/",
     featureFlags: {},
-    menuGroups: [
-      {
-        title: "Verwaltung",
-        adminOnly: true,
-        entries: [
-          {
-            label: "Allgemein",
-            isRouterLink: true,
-            link: "/settings/general",
-          },
-          {
-            label: "Codelist Repository",
-            isRouterLink: true,
-            link: "/settings/codelist",
-          },
-          {
-            label: "Katalogverwaltung",
-            isRouterLink: true,
-            link: "/settings/catalog",
-          },
-          {
-            label: "iBus-Verwaltung",
-            isRouterLink: true,
-            link: "/settings/ibus",
-          },
-          {
-            label: "Benachrichtigungen",
-            isRouterLink: true,
-            link: "/settings/messages",
-          },
-        ],
-      },
-      {
-        title: "Informationen",
-        adminOnly: false,
-        entries: [
-          /*
-          Help gets set directly in the template
-          {
-            label: "Hilfe",
-            isRouterLink: false,
-            link: "#",
-          },*/
-        ],
-      },
-    ],
   };
 
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
