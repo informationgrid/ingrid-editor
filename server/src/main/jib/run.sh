@@ -23,5 +23,9 @@ if [[ -n "${NOMINATIM_URL}" ]]; then
   sed -i -r "s@nominatimUrl\":.*@nominatimUrl\": \"$NOMINATIM_URL\",@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${SHOW_ACCESSIBILITY_LINK}" ]]; then
+  sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": \"SHOW_ACCESSIBILITY_LINK\",@" /app/resources/static/assets/config.json
+fi
+
 echo "Run original entrypoint command"
 java -cp $( cat /app/jib-classpath-file ) $( cat /app/jib-main-class-file )

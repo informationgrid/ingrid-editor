@@ -5,13 +5,15 @@ import {
   UserInfo,
   Version,
 } from "../services/config/config.service";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, Router, Routes } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
+import { settingsRoutes } from "../+settings/settings.routing";
+import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
 
 @Component({
   selector: "ige-main-header",
@@ -31,6 +33,10 @@ export class MainHeaderComponent implements OnInit {
   config: Configuration;
   otherAssignedCatalogs: any[];
   catalogId: string;
+  menuItems: Routes = settingsRoutes[0].children.filter(
+    (item) => item.path !== ""
+  );
+  menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
   constructor(
     private configService: ConfigService,
@@ -38,7 +44,8 @@ export class MainHeaderComponent implements OnInit {
     private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private formMenuService: FormMenuService
   ) {}
 
   ngOnInit() {

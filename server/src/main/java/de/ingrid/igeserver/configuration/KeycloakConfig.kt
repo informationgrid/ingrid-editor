@@ -62,6 +62,7 @@ internal class KeycloakConfig {
                 }
             }
             authorizeRequests {
+                authorize("/barrierefreiheit", permitAll)
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))

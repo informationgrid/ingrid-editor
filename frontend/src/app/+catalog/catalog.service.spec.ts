@@ -31,42 +31,9 @@ describe("CatalogService", () => {
             null,
             null,
             null,
-            [
-              {
-                title: "Verwaltung",
-                adminOnly: true,
-                entries: [
-                  {
-                    label: "Allgemein",
-                    isRouterLink: true,
-                    link: "/settings/general",
-                  },
-                  {
-                    label: "Codelist Repository",
-                    isRouterLink: true,
-                    link: "/settings/codelist",
-                  },
-                  {
-                    label: "Katalogverwaltung",
-                    isRouterLink: true,
-                    link: "/settings/catalog",
-                  },
-                ],
-              },
-              {
-                title: "Informationen",
-                adminOnly: false,
-                entries: [
-                  {
-                    label: "Hilfe",
-                    isRouterLink: false,
-                    link: "#",
-                  },
-                ],
-              },
-            ],
             "",
-            ""
+            "",
+            true
           ),
       }),
     ],

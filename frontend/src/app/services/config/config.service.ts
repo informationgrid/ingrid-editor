@@ -19,9 +19,9 @@ export class Configuration {
     public featureFlags: any,
     public brokerUrl: string,
     public supportEmail: string,
-    public menuGroups: any,
     public mapTileUrl: string,
-    public nominatimUrl: string
+    public nominatimUrl: string,
+    public showAccessibilityLink: boolean
   ) {}
 }
 
@@ -51,6 +51,11 @@ export interface UserInfo {
   parentProfile?: string;
 }
 
+export interface CMSPage {
+  pageId: string;
+  content: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -64,52 +69,6 @@ export class ConfigService {
   defaultConfig: Partial<Configuration> = {
     contextPath: "/",
     featureFlags: {},
-    menuGroups: [
-      {
-        title: "Verwaltung",
-        adminOnly: true,
-        entries: [
-          {
-            label: "Allgemein",
-            isRouterLink: true,
-            link: "/settings/general",
-          },
-          {
-            label: "Codelist Repository",
-            isRouterLink: true,
-            link: "/settings/codelist",
-          },
-          {
-            label: "Katalogverwaltung",
-            isRouterLink: true,
-            link: "/settings/catalog",
-          },
-          {
-            label: "iBus-Verwaltung",
-            isRouterLink: true,
-            link: "/settings/ibus",
-          },
-          {
-            label: "Benachrichtigungen",
-            isRouterLink: true,
-            link: "/settings/messages",
-          },
-        ],
-      },
-      {
-        title: "Informationen",
-        adminOnly: false,
-        entries: [
-          /*
-          Help gets set directly in the template
-          {
-            label: "Hilfe",
-            isRouterLink: false,
-            link: "#",
-          },*/
-        ],
-      },
-    ],
   };
 
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
@@ -122,36 +81,30 @@ export class ConfigService {
     this.dataService = new ConfigDataService(http);
   }
 
-  load(): Promise<Configuration> {
+  async load(): Promise<Configuration> {
     console.log("=== ConfigService ===");
 
-    return this.dataService.load().then((json) => {
-      this.config = { ...this.defaultConfig, ...json };
-      this.config.backendUrl = this.config.contextPath + "api/";
-      ConfigService.backendApiUrl = this.config.backendUrl;
-      this.dataService.config = this.config;
-      return this.config;
-    });
+    let json = await this.dataService.load();
+    this.config = { ...this.defaultConfig, ...json };
+    this.config.backendUrl = this.config.contextPath + "api/";
+    ConfigService.backendApiUrl = this.config.backendUrl;
+    this.dataService.config = this.config;
+    return this.config;
   }
 
   // TODO: refactor to fetchCurrentUserInfo()
-  getCurrentUserInfo(): Promise<UserInfo> {
-    return this.dataService.getCurrentUserInfo().then((userInfo) => {
-      if (userInfo === null) {
-        throw new IgeError("Could not get current user");
-      }
-
-      ConfigService.catalogId = userInfo.currentCatalog.id;
-
-      this.isAdministrator =
-        userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
-
-      this._hasRootWritePermission =
-        userInfo.permissions.indexOf("can_write_root") !== -1;
-
-      this.$userInfo.next(userInfo);
-      return userInfo;
-    });
+  async getCurrentUserInfo(): Promise<UserInfo> {
+    let userInfo = await this.dataService.getCurrentUserInfo();
+    if (userInfo === null) {
+      throw new IgeError("Could not get current user");
+    }
+    ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.isAdministrator =
+      userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
+    this._hasRootWritePermission =
+      userInfo.permissions.indexOf("can_write_root") !== -1;
+    this.$userInfo.next(userInfo);
+    return userInfo;
   }
 
   getConfiguration(): Configuration {
@@ -196,17 +149,25 @@ export class ConfigService {
 
   saveIBusConfig(value: any) {
     return this.http
-      .put<any>(this.config.backendUrl + "config/ibus", value)
+      .put<any>(`${this.config.backendUrl}config/ibus`, value)
       .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
   }
 
   getIBusConfig() {
-    return this.http.get<any>(this.config.backendUrl + "config/ibus");
+    return this.http.get<any>(`${this.config.backendUrl}config/ibus`);
   }
 
   isIBusConnected(index: number) {
     return this.http.get<boolean>(
       `${this.config.backendUrl}config/ibus/connected/${index}`
     );
+  }
+
+  getCMSPages() {
+    return this.http.get<CMSPage[]>(`${this.config.backendUrl}config/cms`);
+  }
+
+  updateCMSPage(content: CMSPage[]) {
+    return this.http.put<void>(`${this.config.backendUrl}config/cms`, content);
   }
 }
