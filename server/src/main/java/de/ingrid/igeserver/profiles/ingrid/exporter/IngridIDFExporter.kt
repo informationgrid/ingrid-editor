@@ -44,7 +44,8 @@ class IngridIDFExporter @Autowired constructor(
         "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
         "text/xml",
         "xml",
-        listOf("ingrid")
+        listOf("ingrid"),
+        false
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)

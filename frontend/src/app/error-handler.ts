@@ -85,7 +85,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       case "PARENT_IS_NOT_PUBLISHED":
         return "Der Datensatz liegt veröffentlicht vor und darf nicht unter einen unveröffentlichten Datensatz verschoben werden.";
       case "UNPUBLISH-CHILD_IS_PUBLISHED":
-        return "Mindestens eines der untergeordneten Datensätze ist veröffentlicht. Sie müssen diese Veröffentlichung ebenfalls zurückziehen, bevor Sie fortsetzen können.";
+        return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
       default:
         return null;
     }

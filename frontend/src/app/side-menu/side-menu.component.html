@@ -28,11 +28,10 @@
         *ngIf="showDrawer | async"
         mat-list-item
         tabindex="0"
-        class="menu-toggle"
+        class="menu-toggle no-text-transform"
         (click)="toggleSidebar(!menuIsExpanded)"
         (keydown.enter)="toggleSidebar(!menuIsExpanded)"
         matTooltip="Vergrößern"
-        [matTooltipShowDelay]="1000"
         [matTooltipDisabled]="menuIsExpanded"
         matTooltipPosition="right"
         data-cy="menu-scale"

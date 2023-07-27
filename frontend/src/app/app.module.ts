@@ -365,7 +365,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     },
     {
       provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
-      useValue: { disableTooltipInteractivity: true },
+      useValue: {
+        showDelay: 1000,
+        disableTooltipInteractivity: true,
+      },
     },
 
     // WebSocket

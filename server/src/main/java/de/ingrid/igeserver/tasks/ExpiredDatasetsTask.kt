@@ -69,15 +69,15 @@ class ExpiredDatasetsTask(
         // only fill if notify days before expiry is set
         var aboutToExpireDatasets = emptyList<ExpiredDataset>()
         if (notifyDaysBeforeExpiry >= 0) {
-            log.info("Notify days before expiry not set for catalog ${catalog.name}")
-
             val notifyDate =
-                OffsetDateTime.now().minusDays(expiryDuration.toLong()).minusDays(notifyDaysBeforeExpiry.toLong())
+                expireDate.plusDays(notifyDaysBeforeExpiry.toLong())
             aboutToExpireDatasets =
                 this.getDatasetsEditedBefore(catalog, notifyDate, ExpiryState.INITIAL, expireDate).map {
                     this.mapToDataset(it)
                 }
             log.info("Found ${aboutToExpireDatasets.size} datasets about to expire for catalog ${catalog.name}")
+        } else {
+            log.info("Notify days before expiry not set for catalog ${catalog.name}")
         }
 
         var expiredDatasets = this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.TO_BE_EXPIRED).map {

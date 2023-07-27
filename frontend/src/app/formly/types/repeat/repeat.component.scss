@@ -10,13 +10,7 @@
 }
 
 .cdk-drag-handle {
-  cursor: move;
   margin-top: 8px;
-  color: $ige-background-bar;
-
-  &:hover {
-    color: inherit;
-  }
 }
 
 .extended-gap:not(:last-of-type) {
@@ -34,7 +28,7 @@
 }
 
 ige-add-button {
-  display: block;
+  display: inline-flex;
   margin-bottom: 22px;
 }
 

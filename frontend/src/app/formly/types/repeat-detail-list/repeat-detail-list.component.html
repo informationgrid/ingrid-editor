@@ -33,7 +33,10 @@
             ></formly-validation-message>
         </ige-form-error>
         <div class="flex-row gap-6">
-            <mat-icon *ngIf="formControl.enabled" cdkDragHandle
+            <mat-icon
+                *ngIf="formControl.enabled"
+                cdkDragHandle
+                matTooltip="Sortieren"
                 >drag_indicator
             </mat-icon>
 
