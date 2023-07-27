@@ -1,0 +1,441 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/BMI",
+  "definitions": {
+    "BMI": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "events": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "landingPage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "qualityProcessURI": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spatial": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/Spatial"
+          }
+        },
+        "politicalGeocodingLevel": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "temporal": {
+          "$ref": "#/definitions/Temporal"
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Address"
+          },
+          "minItems": 1
+        },
+        "DCATThemes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          },
+          "minItems": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "periodicity": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        },
+        "legalBasis": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "distributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Distribution"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "title",
+        "description",
+        "addresses",
+        "DCATThemes",
+        "distributions"
+      ],
+      "title": "BMI"
+    },
+    "Address": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": [
+        "ref",
+        "type"
+      ],
+      "title": "Address"
+    },
+    "Distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "link": {
+          "$ref": "#/definitions/Link"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "format": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        },
+        "license": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "byClause": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modified": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "availability": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue"
+          }
+        }
+      },
+      "required": [
+        "link"
+      ],
+      "title": "Distribution"
+    },
+    "Link": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "asLink": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "lastModified": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "asLink",
+        "uri",
+        "value"
+      ],
+      "title": "Link"
+    },
+    "Event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "text": {
+          "$ref": "#/definitions/KeyValue"
+        }
+      },
+      "required": [
+        "date",
+        "text"
+      ],
+      "title": "Event"
+    },
+    "Spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "ars": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/Value"
+            }
+          ]
+        },
+        "wkt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "Spatial"
+    },
+    "Value": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lat1": {
+          "type": "number"
+        },
+        "lat2": {
+          "type": "number"
+        },
+        "lon1": {
+          "type": "number"
+        },
+        "lon2": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat1",
+        "lat2",
+        "lon1",
+        "lon2"
+      ],
+      "title": "Value"
+    },
+    "Temporal": {
+      "type": "object",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": ["timeSpanDate"],
+          "properties": {
+            "rangeType": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              ]
+            },
+            "timeSpanDate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["timeSpanRange"],
+          "properties": {
+            "rangeType": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              ]
+            },
+            "timeSpanRange": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/Range"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "rangeType": {
+              "type": "null"
+            }
+          }
+        }
+      ],
+      "required": [
+        "rangeType"
+      ],
+      "title": "Temporal"
+    },
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "title": "KeyValue"
+    },
+    "Range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "end": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "title": "KeyValue"
+    }
+  }
+}

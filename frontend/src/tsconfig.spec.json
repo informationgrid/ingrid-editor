@@ -13,7 +13,8 @@
     "profiles/profile-uvp.ts",
     "profiles/profile-test.ts",
     "profiles/profile-ingrid.ts",
-    "profiles/profile-ingrid-kommunal-st.ts"
+    "profiles/profile-ingrid-kommunal-st.ts",
+    "profiles/profile-bmi.ts"
   ],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

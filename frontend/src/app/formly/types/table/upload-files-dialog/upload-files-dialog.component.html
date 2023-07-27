@@ -8,6 +8,7 @@
     <ng-container content>
         <ige-file-upload
             [target]="targetUrl"
+            [infoText]="infoText"
             [allowedUploadTypes]="allowedUploadTypes"
             (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"

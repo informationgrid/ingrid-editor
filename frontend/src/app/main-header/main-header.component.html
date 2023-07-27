@@ -5,7 +5,8 @@
     >
         <div class="header-logo"><img src="{{ t('logo') }}" /></div>
         <span class="page-title-general"
-            ><strong>{{ t("application") }}</strong> EDITOR</span
+            ><strong>{{ t("application") }}</strong> EDITOR
+            <strong>{{ t("application-suffix") }}</strong></span
         >
         <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
 
@@ -120,8 +121,10 @@
             <mat-menu #menuInfo="matMenu" class="info-menu user-popup-menu">
                 <div class="user-popup-header">
                     <mat-card-title
-                        ><strong>{{ t("application") }}</strong>
-                        EDITOR</mat-card-title
+                        ><strong>{{ t("application") }}</strong> EDITOR
+                        <strong>{{
+                            t("application-suffix")
+                        }}</strong></mat-card-title
                     >
                 </div>
 

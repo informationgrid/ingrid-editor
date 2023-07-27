@@ -1,6 +1,7 @@
 {
   "menu": {
     "application": "INGRID",
+    "application-suffix": " ",
     "logo": "assets/icons/logo.svg",
     "dashboard": "Übersicht",
     "form": "Daten",

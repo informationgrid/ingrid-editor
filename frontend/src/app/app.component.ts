@@ -60,6 +60,9 @@ export class AppComponent implements OnInit {
     } else if (profile == "uvp") {
       this.favIcon.href = "/assets/profiles/uvp/assets/icons/favicon.ico";
       titleService.setTitle("UVP Editor");
+    } else if (profile == "bmi") {
+      //this.favIcon.href = "/assets/profiles/bmi/assets/icons/favicon.ico";
+      titleService.setTitle("Open Data Editor Bund");
     }
 
     this.showTestBadge =

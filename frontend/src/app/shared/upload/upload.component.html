@@ -9,6 +9,7 @@
 >
     <div flowDrop [flow]="flow.flowJs" class="upload-content">
         <div *ngIf="!showOnlyProgress" class="text-center">
+            <div *ngIf="infoText">{{ infoText }}</div>
             <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
             <mat-icon class="upload light" svgIcon="upload"></mat-icon>
             <div class="alternative-text">oder</div>

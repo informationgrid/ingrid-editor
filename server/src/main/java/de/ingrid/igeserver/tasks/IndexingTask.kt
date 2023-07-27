@@ -146,7 +146,7 @@ class IndexingTask @Autowired constructor(
                 var page = -1
                 val totalHits: Long = indexService.getNumberOfPublishableDocuments(catalogId, category.value, catalogProfile)
                 updateMessageWithDocumentInfo(message, category, totalHits)
-                
+
                 try {
                     do {
                         page++
@@ -280,12 +280,12 @@ class IndexingTask @Autowired constructor(
         index: Int
     ) {
         if (category == DocumentCategory.DATA) {
-            notify.sendMessage(message.apply { 
-                this.progressDocuments = index + 1 
-                this.progress = (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt() 
+            notify.sendMessage(message.apply {
+                this.progressDocuments = index + 1
+                this.progress = (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt()
             })
         } else {
-            notify.sendMessage(message.apply { 
+            notify.sendMessage(message.apply {
                 this.progressAddresses = index + 1
                 this.progress = (((this.progressAddresses + 0f) / this.numDocuments) * 100).toInt()
             })

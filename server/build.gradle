@@ -214,7 +214,7 @@ springBoot {
     buildInfo()
 }
 
-/*if (hasProperty('filename')) {
+if (hasProperty('filename')) {
     bootJar {
         dependsOn(unzip)
         archiveFileName=getProperty('filename')
@@ -228,7 +228,7 @@ jar {
     // and adds them to the JAR itself. One can extend this task, to skip certain
     // files or particular types at will
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-}*/
+}
 
 allOpen {
     annotation("javax.persistence.Entity")

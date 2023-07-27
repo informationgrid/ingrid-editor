@@ -59,6 +59,8 @@ export class UploadComponent implements OnInit {
   /* allow only specific file types when given */
   @Input() allowedUploadTypes: string[];
 
+  @Input() infoText: string;
+
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
   @Output() removeFile = new EventEmitter<string>();

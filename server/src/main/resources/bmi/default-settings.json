@@ -1,0 +1,21 @@
+{
+  "analysis": {
+    "filter": {
+      "german_stemmer": {
+        "type": "stemmer",
+        "name": "light_german"
+      }
+    },
+    "analyzer": {
+      "german_simple": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "german_normalization",
+          "german_stemmer"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{# @pebvariable name="model" type="de.ingrid.igeserver.profiles.bmi.exporter.model.BmiModel" #}
+{# @pebvariable name="catalogId" type="String" #}
+
+{
+    "uuid": "{{ model.uuid }}",
+    "title": "{{ model.title.trim() }}",
+    "description": "{{ model.data.description }}",
+    "landingPage": "{{ model.data.landingPage }}",
+    "theme": [
+      "{{ model.getThemes() | join('","') | raw }}"
+    ],
+    "issued": "{{ model.created }}",
+    "modified": "{{ model.modified }}",
+    {% if model.periodicity %}
+        "accrual_periodicity": "{{ model.periodicity }}",
+    {% endif %}
+    "keywords": [
+        {% if not model.data.keywords.isEmpty() %}
+            "{{ model.data.keywords | join('","') | raw }}"
+        {% endif %}
+    ],
+    "contact": [
+    {% for address in model.data.addresses %}
+        {
+            "type": "{{ address.type.key }}",
+            "organization": "{{ address.ref.organization.trim() }}",
+            "communication": [
+            {% for contact in address.ref.contact %}
+                {
+                    "type": "{{ contact.typeLabel }}",
+                    "connection": "{{ contact.connection }}"
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+            ],
+            "street": "{{ address.ref.address.street }}",
+            "zip-code": "{{ address.ref.address.zipCode }}",
+            "city": "{{ address.ref.address.city }}",
+            "country": "{{ address.ref.address.countryName }}"
+        }{% if not loop.last %},{% endif %}
+    {% endfor %}
+       ],
+    {% if model.data.legalBasis %}
+        "legal_basis": "{{ model.data.legalBasis }}",
+    {% endif %}
+    "distribution": [
+    {% for download in model.data.distributions %}
+        {
+            "format": ["{{ download.format.key }}"],
+            {% if download.link.asLink %}
+                "accessURL": "{{ download.link.value }}",
+            {% else %}
+                "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
+            {% endif %}
+            {% if download.modified  %}
+                "modified": "{{ download.modified }}",
+            {% endif %}
+            "title": "{{ download.title }}",
+            "description": "{{ download.description }}",
+            "license": "{{ download.getLicenseData().id }}",
+            "byClause": "{{ download.byClause }}",
+            "languages": [
+                {% if not download.languageKeys.isEmpty() %}
+                    "{{ download.languageKeys | join('","') | raw }}"
+                {% endif %}
+            ],
+            "availability": "{{ download.availability.key }}"
+        }{% if not loop.last %},{% endif %}
+    {% endfor %}
+    ],
+    "qualityProcessURI": "{{ model.data.qualityProcessURI }}",
+        "metadata": {
+            "issued": "{{ model.created }}",
+            "modified": "{{ model.modified }}"
+        },
+        "spatial":
+        {% if model.realSpatials is empty %}
+        null
+        {% else %}
+            {% if not model.hasSingleSpatial %}
+            {
+                "type": "geometrycollection",
+                "geometries": [
+            {% endif %}
+                {% for spatial in model.realSpatials %}
+                    {
+                        "type": "{{ spatial.getGeoType }}",
+                        "coordinates": {{ spatial.getPolygon }}
+                    }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            {% if not model.hasSingleSpatial %}
+                ]
+            }
+            {% endif %}
+        {% endif %}
+        ,
+       {% if not model.spatialTitels.isEmpty() %}
+            "spatial_text": ["{{ model.spatialTitels | join('","') | raw }}"],
+        {% endif %}
+       {% if not model.ars.isEmpty() %}
+            "ars": ["{{ model.ars | join('","') | raw }}"],
+        {% endif %}
+        "politicalGeocodingLevel": "{{ model.data.geopoliticalLevel.key }}",
+        "temporal": [
+         {% if model.data.temporal.start or model.data.temporal.end %}
+        {
+            {% if model.data.temporal.start %}
+                "gte": "{{model.data.temporal.start}}"{% if model.data.temporal.end %},{% endif %}
+            {% endif %}
+            {% if model.data.temporal.end %}
+                "lte": "{{model.data.temporal.end}}"
+            {% endif %}
+            }
+         {% endif %}]
+}
