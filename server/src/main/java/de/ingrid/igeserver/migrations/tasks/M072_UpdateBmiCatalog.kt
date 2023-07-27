@@ -21,7 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
-@Profile("ingrid")
+@Profile("bmi")
 @Service
 class M072_UpdateBmiCatalog : MigrationBase("0.72") {
 
