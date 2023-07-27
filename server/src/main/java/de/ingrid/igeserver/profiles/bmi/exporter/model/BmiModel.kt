@@ -49,7 +49,7 @@ data class BmiModel(
 
     val realSpatials: List<SpatialModel>?
         get() {
-            return data.spatials?.filter { it.type == "free" || it.type == "wkt" || it.type == "wfsgnde" }
+            return data.spatials?.filter { (it.type == "free" && it.value != null) || it.type == "wkt" || it.type == "wfsgnde" }
         }
 
     val allData: List<String>?

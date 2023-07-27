@@ -302,9 +302,7 @@
         }
       },
       "required": [
-        "title",
-        "type",
-        "value"
+        "type"
       ],
       "title": "Spatial"
     },
