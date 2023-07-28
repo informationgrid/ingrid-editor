@@ -103,7 +103,6 @@
           "type": "keyword"
         },
         "city": {
-          "analyzer": "german_simple",
           "type": "keyword"
         },
         "street": {

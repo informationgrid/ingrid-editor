@@ -13,7 +13,7 @@ data class DataModel(
     val legalBasis: String?,
     val distributions: List<DownloadModel>?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
-    val geopoliticalLevel: String?,
+    val politicalGeocodingLevel: KeyValueModel?,
     val temporal: TimeSpanModel?,
     val periodicity: KeyValueModel?,
     val keywords: List<String>?
