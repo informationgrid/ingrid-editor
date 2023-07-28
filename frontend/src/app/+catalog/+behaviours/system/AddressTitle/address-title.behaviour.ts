@@ -1,15 +1,15 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import {
   AddressTitleFn,
   DocumentService,
 } from "../../../../services/document/document.service";
 import { IgeDocument } from "../../../../models/ige-document";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable({
   providedIn: "root",
 })
-export class AddressTitleBehaviour extends Plugin {
+export class AddressTitleBehaviour extends Plugin2 {
   id = "plugin.address.title";
   name = "Template für die Generierung des Adressen-Titels";
   description =
@@ -90,7 +90,6 @@ export class AddressTitleBehaviour extends Plugin {
   }
 
   register() {
-    console.log("Register Address Title behaviour", this.data);
     super.register();
 
     this.documentService.registerAddressTitleFunction(

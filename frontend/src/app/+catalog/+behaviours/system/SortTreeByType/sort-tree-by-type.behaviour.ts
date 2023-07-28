@@ -1,15 +1,15 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import {
   TreeService,
   TreeSortFn,
 } from "../../../../+form/sidebars/tree/tree.service";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable({
   providedIn: "root",
 })
-export class SortTreeByTypeBehaviour extends Plugin {
+export class SortTreeByTypeBehaviour extends Plugin2 {
   id = "plugin.sort.tree.by.type";
   name = "Sortierung des Baums nach Dokumententyp";
   group = "Baum";

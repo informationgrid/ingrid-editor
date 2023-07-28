@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../../services/document/document.service";
-import { Plugin } from "../../plugin";
 import { Subscription } from "rxjs";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable({
   providedIn: "root",
 })
-export class CreateDocRulesPlugin extends Plugin {
+export class CreateDocRulesPlugin extends Plugin2 {
   id = "plugin.create.doc";
   _name = "Regeln für neues Dokument";
   defaultActive = true;

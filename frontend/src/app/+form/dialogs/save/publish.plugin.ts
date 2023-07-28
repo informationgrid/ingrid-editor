@@ -20,7 +20,7 @@ import {
 import { SessionStore } from "../../../store/session.store";
 import { FormMessageService } from "../../../services/form-message.service";
 import { IgeError } from "../../../models/ige-error";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -52,11 +52,11 @@ export class PublishPlugin extends SaveBase {
   ) {
     super(sessionStore, messageService);
     this.isActive = true;
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.setupTree();
 
@@ -84,7 +84,10 @@ export class PublishPlugin extends SaveBase {
     // add behaviour to set active states for toolbar buttons
     const behaviourSubscription = this.addBehaviour();
 
-    this.subscriptions.push(...toolbarEventSubscription, behaviourSubscription);
+    this.formSubscriptions.push(
+      ...toolbarEventSubscription,
+      behaviourSubscription
+    );
   }
 
   private setupTree() {
@@ -295,8 +298,8 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
     this.formToolbarService.removeButton("toolBtnPublishSeparator");
     this.formToolbarService.removeButton("toolBtnPublish");

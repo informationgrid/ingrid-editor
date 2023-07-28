@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import {
@@ -16,10 +15,11 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
-export class DeleteDocsPlugin extends Plugin {
+export class DeleteDocsPlugin extends Plugin2 {
   id = "plugin.deleteDocs";
   name = "Delete Docs Plugin";
   description =
@@ -43,11 +43,11 @@ export class DeleteDocsPlugin extends Plugin {
   ) {
     super();
     this.isActive = true;
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.setupFields();
 
@@ -60,7 +60,7 @@ export class DeleteDocsPlugin extends Plugin {
       active: false,
     });
 
-    this.subscriptions.push(
+    this.formSubscriptions.push(
       this.docEvents.onEvent("DELETE").subscribe(() => {
         this.eventService
           .sendEventAndContinueOnSuccess(IgeEvent.DELETE)
@@ -155,8 +155,8 @@ export class DeleteDocsPlugin extends Plugin {
     );
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
     this.formToolbarService.removeButton("toolBtnRemove");
   }

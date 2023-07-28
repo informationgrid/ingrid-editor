@@ -1,6 +1,5 @@
 import { inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { IgeDocument } from "../../../models/ige-document";
@@ -13,7 +12,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -28,7 +27,6 @@ export class SavePlugin extends SaveBase {
   constructor(
     public formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
@@ -38,11 +36,11 @@ export class SavePlugin extends SaveBase {
     @Inject(DOCUMENT) private _document: Document
   ) {
     super(sessionStore, messageService);
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.setupTree();
 
@@ -112,8 +110,8 @@ export class SavePlugin extends SaveBase {
       .subscribe();
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
     this.formToolbarService.removeButton("toolBtnSave");
   }

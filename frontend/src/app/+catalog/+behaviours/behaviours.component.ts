@@ -3,17 +3,13 @@ import {
   BehaviourFormatBackend,
   BehaviourService,
 } from "../../services/behavior/behaviour.service";
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from "@angular/forms";
-import { tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { Plugin } from "./plugin";
 import { FormlyFormBuilder } from "@ngx-formly/core";
 import { ActivatedRoute } from "@angular/router";
-import { FormPluginsService } from "../../+form/form-shared/form-plugins.service";
+import { PluginService } from "../../services/plugin/plugin.service";
+import { Plugin2 } from "./plugin2";
 
 @UntilDestroy()
 @Component({
@@ -24,9 +20,8 @@ import { FormPluginsService } from "../../+form/form-shared/form-plugins.service
 export class BehavioursComponent implements OnInit {
   type: string;
 
-  private readonly formPlugins: Plugin[];
-  plugins: any;
-  // plugins: { [x: string]: Plugin[] };
+  private readonly plugins: Plugin2[];
+  pluginsGrouped: any;
 
   expanded: any = {};
 
@@ -34,29 +29,26 @@ export class BehavioursComponent implements OnInit {
   title: string;
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
     private builder: FormlyFormBuilder,
     private route: ActivatedRoute,
     private behaviourService: BehaviourService,
-    private formPluginsService: FormPluginsService
+    pluginService: PluginService
   ) {
-    this.formPlugins = formPluginsService.plugins.filter(
-      (plugin) => !plugin.hide
-    );
+    this.plugins = pluginService.plugins.filter((plugin) => !plugin.hide);
   }
 
   ngOnInit() {
     this.type = this.route.snapshot.paramMap.get("type");
 
-    if (this.type === "form") {
-      this.title = "Formularkonfiguration";
-      this.behaviourService.applyActiveStates(this.formPlugins);
-      this.plugins = this.groupBy(
-        this.formPlugins,
-        (plugin: Plugin) => plugin.group || "Andere"
-      );
-      this.fields = this.createModelFromPlugins(this.formPlugins);
-    } else {
+    // if (this.type === "form") {
+    this.title = "Verhalten";
+    // this.behaviourService.applyActiveStates(this.plugins);
+    this.pluginsGrouped = this.groupBy(
+      this.plugins,
+      (plugin: Plugin) => plugin.group || "Andere"
+    );
+    this.fields = this.createModelFromPlugins(this.plugins);
+    /* } else {
       this.title = "Katalogverhalten";
       this.behaviourService.theSystemBehaviours$
         .pipe(
@@ -70,7 +62,7 @@ export class BehavioursComponent implements OnInit {
           })
         )
         .subscribe();
-    }
+    }*/
   }
 
   private groupBy(array: any[], callback: (x: any) => any) {
@@ -84,11 +76,7 @@ export class BehavioursComponent implements OnInit {
 
   save() {
     // TODO: improve by saving only modified behaviours states
-    const behaviours =
-      this.type === "form"
-        ? this.formPlugins
-        : this.behaviourService.theSystemBehaviours$.value;
-    const updatedBehaviours = behaviours.map((item) =>
+    const updatedBehaviours = this.plugins.map((item) =>
       this.mapBehaviourForBackend(item)
     );
 
@@ -101,12 +89,6 @@ export class BehavioursComponent implements OnInit {
       active: this.fields[item.id]?.active.value,
       data: this.fields[item.id]?.form.value,
     };
-  }
-
-  hasInvalidForm() {
-    return Object.keys(this.fields).some(
-      (key) => this.fields[key].form.invalid
-    );
   }
 
   hasDirtyForm() {

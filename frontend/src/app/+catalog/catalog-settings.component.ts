@@ -17,12 +17,7 @@ export class CatalogSettingsComponent implements OnInit {
 
   tabs = [
     { label: "Codelisten", path: "codelists" },
-    { label: "Formulare", path: "form-behaviours", params: { type: "form" } },
-    {
-      label: "Katalogverhalten",
-      path: "catalog-behaviours",
-      params: { type: "catalog" },
-    },
+    { label: "Verhalten", path: "form-behaviours" },
     { label: "Indizierung", path: "indexing" },
     { label: "Konfiguration", path: "config" },
   ];
@@ -48,15 +43,7 @@ export class CatalogSettingsComponent implements OnInit {
 
   updateTab(index: number) {
     const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    const params = this.tabs.find(
-      (item) => item.path === tabPaths[index]
-    ).params;
 
-    this.sessionService.updateCurrentTab(
-      "catalogs",
-      params
-        ? [tabPaths[index], JSON.stringify(params)].join(";")
-        : tabPaths[index]
-    );
+    this.sessionService.updateCurrentTab("catalogs", tabPaths[index]);
   }
 }

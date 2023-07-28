@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { catchError, filter, switchMap } from "rxjs/operators";
@@ -14,12 +13,12 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { IgeError } from "../../../../models/ige-error";
-import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserService } from "../../../../services/user/user.service";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable()
-export class DefaultUserBehaviour extends Plugin {
+export class DefaultUserBehaviour extends Plugin2 {
   id = "plugin.default.user";
   defaultActive = true;
   name = "Benutzeroptionen";

@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
   FormToolbarService,
   Separator,
@@ -12,15 +11,15 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
-import { FormStateService } from "../../form-state.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
 import { combineLatest, of } from "rxjs";
 import { clone, JsonDiffMerge } from "../../../shared/utils";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
-export class PrintViewPlugin extends Plugin {
+export class PrintViewPlugin extends Plugin2 {
   id = "plugin.printView";
   name = "Vorschau";
   description =
@@ -37,15 +36,14 @@ export class PrintViewPlugin extends Plugin {
     private docTreeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
-    private profileService: ProfileService,
-    private formService: FormStateService
+    private profileService: ProfileService
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     // add button to toolbar
     const buttons: Array<ToolbarItem | Separator> = [
@@ -65,7 +63,7 @@ export class PrintViewPlugin extends Plugin {
       ? this.addressTreeQuery
       : this.docTreeQuery;
 
-    this.subscriptions.push(
+    this.formSubscriptions.push(
       // react on event when button is clicked
       this.docEvents.onEvent("PRINT").subscribe(() => this.showPrintDialog()),
 
@@ -112,8 +110,8 @@ export class PrintViewPlugin extends Plugin {
     });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
     this.toolbarService.removeButton("toolBtnPrint");
   }
 }

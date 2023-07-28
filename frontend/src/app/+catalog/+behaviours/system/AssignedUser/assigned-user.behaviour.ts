@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import {
   EventData,
   EventResponder,
@@ -22,14 +21,15 @@ import { DocEventsService } from "../../../../services/event/doc-events.service"
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { FormPluginsService } from "src/app/+form/form-shared/form-plugins.service";
 import { ConfigService } from "../../../../services/config/config.service";
 import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocumentService } from "../../../../services/document/document.service";
+import { PluginService } from "../../../../services/plugin/plugin.service";
+import { Plugin2 } from "../../plugin2";
 
-@Injectable()
-export class AssignedUserBehaviour extends Plugin {
+@Injectable({ providedIn: "root" })
+export class AssignedUserBehaviour extends Plugin2 {
   id = "plugin.assigned.user";
   name = "Verantwortlicher Benutzer";
   description =
@@ -52,9 +52,10 @@ export class AssignedUserBehaviour extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
 
     let role = configService.$userInfo.getValue().role;
+    // TODO: this should be centralized (configService?)
     this.isPrivileged =
       role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
@@ -62,9 +63,10 @@ export class AssignedUserBehaviour extends Plugin {
   formMenuId: MenuId;
 
   // FIXME: The behaviour is not loaded in the user management view, as it is loaded as a FormPluginToken. Should work after the behaviour refactoring
-  register() {
-    super.register();
-    this.subscriptions.push(
+  registerForm() {
+    super.registerForm();
+
+    this.formSubscriptions.push(
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
         .subscribe((eventResponder) => this.handleEvent(eventResponder)),
@@ -95,8 +97,12 @@ export class AssignedUserBehaviour extends Plugin {
         this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
         this.formMenuService.addMenuItem(this.formMenuId, button);
       });
-      this.subscriptions.push(onDocLoad);
+      this.formSubscriptions.push(onDocLoad);
     }
+  }
+
+  register() {
+    super.register();
 
     // add menu item for user management
     let selectedUser: User;
@@ -112,10 +118,14 @@ export class AssignedUserBehaviour extends Plugin {
     });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
     this.formMenuService.removeMenuItem("address", "assign-user");
     this.formMenuService.removeMenuItem("dataset", "assign-user");
+  }
+
+  unregister() {
+    super.unregister();
     this.formMenuService.removeMenuItem("user", "transfer-responsibility");
   }
 

@@ -1,15 +1,13 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { SessionQuery } from "../../../../store/session.query";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
+import { Plugin2 } from "../../plugin2";
 
-@UntilDestroy()
 @Injectable()
-export class AutosavePlugin extends Plugin {
+export class AutosavePlugin extends Plugin2 {
   id = "plugin.autosave";
   name = "Automatisches Speichern";
   description =

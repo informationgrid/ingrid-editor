@@ -14,6 +14,7 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: InheritContactDataHandler, multi: true },
   { provide: PluginToken, useClass: AutosavePlugin, multi: true },
   { provide: PluginToken, useClass: DefaultUserBehaviour, multi: true },
+  // { provide: PluginToken, useClass: AssignedUserBehaviour, multi: true },
   {
     provide: PluginToken,
     useClass: ShowDocumentPermissionsHandlerPlugin,

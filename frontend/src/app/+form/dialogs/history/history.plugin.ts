@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
   FormToolbarService,
   Separator,
@@ -20,10 +19,11 @@ import { DocumentService } from "../../../services/document/document.service";
 import { FormStateService } from "../../form-state.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
-export class HistoryPlugin extends Plugin {
+export class HistoryPlugin extends Plugin2 {
   id = "plugin.history";
   name = "History Plugin";
   description =
@@ -60,13 +60,13 @@ export class HistoryPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
+  registerForm() {
     this.setupFields();
 
-    super.register();
+    super.registerForm();
 
     this.addToolbarButtons();
 
@@ -80,7 +80,7 @@ export class HistoryPlugin extends Plugin {
       .pipe(filter((info) => info?.type === UpdateType.Delete))
       .subscribe((info) => this.removeDeletedDocsFromStack(info.data));
 
-    this.subscriptions.push(treeSubscription, deleteSubscription);
+    this.formSubscriptions.push(treeSubscription, deleteSubscription);
   }
 
   private setupFields() {
@@ -125,7 +125,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   private handleEvents() {
-    this.subscriptions.push(
+    this.formSubscriptions.push(
       // react on event when button is clicked
       this.docEvents.onEvent("HISTORY_NEXT").subscribe(() => this.handleNext()),
       this.docEvents
@@ -157,8 +157,8 @@ export class HistoryPlugin extends Plugin {
     buttons.forEach((button) => this.formToolbarService.addButton(button));
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
     this.formToolbarService.removeButton("toolBtnNewSeparator");
     this.formToolbarService.removeButton("toolBtnPreviousInHistory");

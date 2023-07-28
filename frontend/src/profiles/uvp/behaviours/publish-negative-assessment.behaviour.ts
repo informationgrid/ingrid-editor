@@ -1,6 +1,6 @@
-import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
+import { Plugin2 } from "../../../app/+catalog/+behaviours/plugin2";
 
-export class PublishNegativeAssessmentBehaviour extends Plugin {
+export class PublishNegativeAssessmentBehaviour extends Plugin2 {
   id = "plugin.publish.negative.assessment";
   name = "'Negative Vorprüfungen' veröffentlichen";
   description =

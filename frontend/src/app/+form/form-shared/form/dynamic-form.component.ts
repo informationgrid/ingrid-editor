@@ -25,7 +25,6 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
-import { FormPluginsService } from "../form-plugins.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
@@ -114,7 +113,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private formularService: FormularService,
     private formToolbarService: FormToolbarService,
-    private formPlugins: FormPluginsService, // this needs to be here for instantiation!!!
     private documentService: DocumentService,
     private modalService: ModalService,
     private messageService: FormMessageService,
@@ -140,9 +138,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([]);
-
-    // correctly destroy service since it's not always destroyed by lifecycle
-    this.formPlugins.onDestroy();
   }
 
   ngOnInit() {

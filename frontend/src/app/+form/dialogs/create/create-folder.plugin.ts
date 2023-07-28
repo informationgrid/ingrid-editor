@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
@@ -12,11 +11,12 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
-export class CreateFolderPlugin extends Plugin {
+export class CreateFolderPlugin extends Plugin2 {
   id = "plugin.folder";
   name = "Folder Plugin";
   description = "Ermöglicht das Anlegen von Ordnern.";
@@ -40,11 +40,11 @@ export class CreateFolderPlugin extends Plugin {
   ) {
     super();
     this.isActive = true;
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
@@ -68,7 +68,7 @@ export class CreateFolderPlugin extends Plugin {
       this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
     }
 
-    this.subscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   async createFolder() {
@@ -128,8 +128,8 @@ export class CreateFolderPlugin extends Plugin {
     });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
     this.formToolbarService.removeButton("toolBtnFolder");
   }

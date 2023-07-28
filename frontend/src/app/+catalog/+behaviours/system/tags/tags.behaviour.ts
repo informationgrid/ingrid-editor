@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
@@ -8,12 +7,13 @@ import { MatDialog } from "@angular/material/dialog";
 import { PublicationTypeDialog } from "./publication-type/publication-type.dialog";
 import { filter, switchMap } from "rxjs/operators";
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
-import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { FormUtils } from "../../../../+form/form.utils";
+import { Plugin2 } from "../../plugin2";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
-export class TagsBehaviour extends Plugin {
+export class TagsBehaviour extends Plugin2 {
   id = "plugin.tags";
   defaultActive = true;
   name = "Zuweisung von Tags";
@@ -31,14 +31,14 @@ export class TagsBehaviour extends Plugin {
     private formStateService: FormStateService
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
   private menuId: MenuId;
   private menuItemId = "set-tags";
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.menuId = this.forAddress ? "address" : "dataset";
     this.formMenuService.addMenuItem(this.menuId, {
@@ -53,11 +53,11 @@ export class TagsBehaviour extends Plugin {
       .onEvent(this.eventAddTags)
       .subscribe(() => this.showTagsDialog());
 
-    this.subscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
     this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
   }
 

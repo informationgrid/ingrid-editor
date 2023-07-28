@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -14,9 +13,10 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable()
-export class InheritContactDataHandler extends Plugin {
+export class InheritContactDataHandler extends Plugin2 {
   id = "plugin.inherit.contact.data.handler";
   name = "Kontaktangaben der übergeordneten Adresse übernehmen";
   description = "";

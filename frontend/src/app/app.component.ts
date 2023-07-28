@@ -17,6 +17,7 @@ import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
 import { FormPluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
+import { AssignedUserBehaviour } from "./+catalog/+behaviours/system/AssignedUser/assigned-user.behaviour";
 
 @UntilDestroy()
 @Component({
@@ -39,7 +40,8 @@ export class AppComponent implements OnInit {
     private titleService: Title,
     private profileService: ProfileService,
     private viewContainerRef: ViewContainerRef,
-    @Inject(FormPluginToken) private autoPlugins: Plugin[]
+    @Inject(FormPluginToken) private autoPlugins: Plugin[],
+    private assignedPlugin: AssignedUserBehaviour
   ) {
     this.loadProfile();
 

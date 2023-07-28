@@ -1,16 +1,11 @@
-import { Inject, Injectable } from "@angular/core";
-import { EventManager } from "@angular/platform-browser";
+import { Injectable } from "@angular/core";
 import { Plugin } from "../../+catalog/+behaviours/plugin";
-import { ProfileService } from "../profile.service";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { BehaviorDataService } from "./behavior-data.service";
-import { ProfileQuery } from "../../store/profile/profile.query";
-import { SessionQuery } from "../../store/session.query";
-import { PluginToken } from "../../tokens/plugin.token";
 import { ConfigService } from "../config/config.service";
 import { Behaviour } from "./behaviour";
-import { catchError, filter, mergeMap, take, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { PluginService } from "../plugin/plugin.service";
 
 export interface BehaviourFormatBackend {
   _id: string;
@@ -29,33 +24,28 @@ export interface BehaviourRegistration {
 export class BehaviourService {
   behaviours: Behaviour[] = [];
 
-  registerState$ = new Subject<BehaviourRegistration>();
+  // registerState$ = new Subject<BehaviourRegistration>();
 
-  theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
+  // theSystemBehaviours$ = new BehaviorSubject<Plugin[]>([]);
   backendBehaviourStates: BehaviourFormatBackend[];
 
-  behaviours$ = new BehaviorSubject<BehaviourFormatBackend[]>([]);
-
   constructor(
-    private eventManager: EventManager,
     private configService: ConfigService,
-    private profileService: ProfileService,
-    private profileQuery: ProfileQuery,
-    private sessionQuery: SessionQuery,
-    @Inject(PluginToken) private systemBehaviours: Plugin[],
+    private pluginService: PluginService,
     private dataService: BehaviorDataService,
     private toast: MatSnackBar
   ) {
-    this.loadStoredBehaviours()
+    /*this.loadStoredBehaviours()
       .pipe(
         tap((backendBehaviours) =>
           console.log("backendBehaviours: ", backendBehaviours)
-        ),
-        tap(() => this.theSystemBehaviours$.next(this.systemBehaviours))
+        )
+        // tap(() => this.theSystemBehaviours$.next(this.pluginService))
       )
-      .subscribe(() => this.registerActiveBehaviours());
+      .subscribe();*/
   }
 
+  /*
   loadStoredBehaviours(): Observable<any> {
     return this.dataService.loadStoredBehaviours().pipe(
       tap((storedBehaviours) =>
@@ -64,7 +54,7 @@ export class BehaviourService {
       tap(
         (storedBehaviours) => (this.backendBehaviourStates = storedBehaviours)
       ),
-      tap(() => this.applyActiveStates(this.systemBehaviours)),
+      // tap(() => this.applyActiveStates(this.systemBehaviours)),
       catchError((e) => {
         const userInfo = this.configService.$userInfo.value;
         console.error("Could not get behaviours");
@@ -77,6 +67,7 @@ export class BehaviourService {
       })
     );
   }
+*/
 
   applyActiveStates(behaviours: Plugin[]) {
     behaviours.forEach((behaviour) => {
@@ -91,14 +82,16 @@ export class BehaviourService {
     });
   }
 
-  registerActiveBehaviours() {
-    this.systemBehaviours
-      .filter((systemBehaviour) => systemBehaviour.isActive)
-      .forEach((systemBehaviour) => {
-        console.log("register system behaviour: " + systemBehaviour.name);
-        systemBehaviour.register();
-      });
-  }
+  /*
+    registerActiveBehaviours() {
+      this.systemBehaviours
+        .filter((systemBehaviour) => systemBehaviour.isActive)
+        .forEach((systemBehaviour) => {
+          console.log("register system behaviour: " + systemBehaviour.name);
+          systemBehaviour.register();
+        });
+    }
+  */
 
   saveBehaviours(behaviours: BehaviourFormatBackend[]) {
     this.updateState(behaviours);
@@ -106,20 +99,15 @@ export class BehaviourService {
       .saveBehaviors(behaviours)
       .pipe(tap(() => this.toast.open("Die Konfiguration wurde gespeichert")))
       .subscribe();
-    this.behaviours$.next(behaviours);
   }
 
-  addSystemBehaviourFromProfile(plugin: Plugin) {
+  /*addSystemBehaviourFromProfile(plugin: Plugin) {
     this.applyActiveStates([plugin]);
     this.systemBehaviours.push(plugin);
-  }
+  }*/
 
   getBehaviour(id: string) {
-    return this.theSystemBehaviours$.pipe(
-      mergeMap((x) => x),
-      filter((behaviour) => behaviour.id === id),
-      take(1)
-    );
+    return this.pluginService.plugins.find((plugin) => plugin.id === id);
   }
 
   private updateState(behaviours: BehaviourFormatBackend[]) {
@@ -128,14 +116,14 @@ export class BehaviourService {
     const update: Plugin[] = [];
 
     behaviours.forEach((behaviour) => {
-      const found = this.systemBehaviours.find(
-        (sysBehaviour) => sysBehaviour.id === behaviour._id
+      const found = this.pluginService.plugins.find(
+        (plugin) => plugin.id === behaviour._id
       );
       // skip form plugins
-      if (!found) {
+      /*if (!found) {
         this.handleFormBehaviour(behaviour);
         return;
-      }
+      }*/
 
       if (behaviour.active !== found.isActive) {
         behaviour.active ? activate.push(found) : deactivate.push(found);
@@ -150,9 +138,10 @@ export class BehaviourService {
     deactivate.forEach((a) => a.unregister());
     update.forEach((a) => a.update());
 
-    this.theSystemBehaviours$.next(this.systemBehaviours);
+    // this.theSystemBehaviours$.next(this.systemBehaviours);
   }
 
+  /*
   private handleFormBehaviour(behaviour: BehaviourFormatBackend) {
     const found = this.backendBehaviourStates.find(
       (backendBehaviour) => backendBehaviour._id === behaviour._id
@@ -164,4 +153,5 @@ export class BehaviourService {
     found.active = behaviour.active;
     found.data = behaviour.data;
   }
+*/
 }

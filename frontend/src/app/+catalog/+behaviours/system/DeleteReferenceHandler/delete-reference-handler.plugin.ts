@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -11,9 +10,10 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { Observable } from "rxjs";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable()
-export class DeleteReferenceHandlerPlugin extends Plugin {
+export class DeleteReferenceHandlerPlugin extends Plugin2 {
   id = "plugin.delete.reference.handler";
   name = "Referenzierte Adressen ersetzen";
   description = "";

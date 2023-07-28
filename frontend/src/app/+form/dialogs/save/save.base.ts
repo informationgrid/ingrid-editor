@@ -11,11 +11,11 @@ import { SessionStore } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { inject } from "@angular/core";
+import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
 
-export abstract class SaveBase extends Plugin {
+export abstract class SaveBase extends Plugin2 {
   dialog: MatDialog;
   formStateService = inject(FormStateService);
   documentService: DocumentService;

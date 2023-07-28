@@ -1,4 +1,3 @@
-import { Plugin } from "../../plugin";
 import { Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -11,9 +10,10 @@ import { FormMenuService } from "../../../../+form/form-menu.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../../store/document/document.model";
+import { Plugin2 } from "../../plugin2";
 
 @Injectable()
-export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
+export class ShowDocumentPermissionsHandlerPlugin extends Plugin2 {
   id = "plugin.show.document.permissions.handler";
   name = "Berechtigungen anzeigen";
   description =
