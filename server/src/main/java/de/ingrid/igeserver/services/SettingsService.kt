@@ -24,9 +24,7 @@ class SettingsService @Autowired constructor(
     }
 
     fun setIBusConfig(config: List<IBusConfig>) {
-        val configFromDBOrNew = repoSettings.findByKey("ibus") ?: Settings().apply { key = "ibus" }
-        configFromDBOrNew.value = config
-        repoSettings.save(configFromDBOrNew)
+        this.updateItem("ibus", config)
     }
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean): PlugDescription {
@@ -47,5 +45,16 @@ class SettingsService @Autowired constructor(
 
         return pd.apply { md5Hash = md5 }
 
+    }
+    
+    fun <T> getItemAsList(key: String): List<T> {
+        val iBusJson = repoSettings.findByKey(key)?.value ?: return emptyList()
+        return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<T>>() {})
+    }
+
+    fun updateItem(key: String, value: Any) {
+        val configFromDBOrNew = repoSettings.findByKey(key) ?: Settings().apply { this.key = key }
+        configFromDBOrNew.value = value
+        repoSettings.save(configFromDBOrNew)
     }
 }

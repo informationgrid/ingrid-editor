@@ -150,7 +150,7 @@ export class UploadComponent implements OnInit {
       if (invalidFile != undefined) {
         throw new IgeError(
           `Der Dateiname von [${invalidFile.name}] enthält ein ungültiges Zeichen [${invalidFile.char}].
-          Bitte korrigieren Sie dementsprechend und versuchen, die Datei nochmals hochzuladen.`
+          Bitte korrigieren Sie den Dateinamen und laden Sie die Datei erneut hoch.`
         );
       }
       const invalidFormat = this.validateUploadTypes(files);

@@ -1,4 +1,4 @@
-import { RouterModule } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { SettingsComponent } from "./settings.component";
 import { GeneralSettingsComponent } from "./general-settings/general-settings.component";
 import { CodelistsComponent } from "./codelists/codelists.component";
@@ -7,8 +7,9 @@ import { AuthGuard } from "../security/auth.guard";
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
+import { ContentManagementComponent } from "./content-management/content-management.component";
 
-export const routing = RouterModule.forChild([
+export const settingsRoutes: Routes = [
   {
     path: "",
     component: SettingsComponent,
@@ -65,6 +66,15 @@ export const routing = RouterModule.forChild([
           permission: "manage_all_catalogs",
         },
       },
+      {
+        path: "contentManagement",
+        component: ContentManagementComponent,
+        data: {
+          title: "Inhalte",
+          permission: "manage_all_catalogs",
+        },
+      },
     ],
   },
-]);
+];
+export const routing = RouterModule.forChild(settingsRoutes);
