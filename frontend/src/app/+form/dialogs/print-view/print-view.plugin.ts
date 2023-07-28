@@ -14,12 +14,12 @@ import { ProfileService } from "../../../services/profile.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
 import { combineLatest, of } from "rxjs";
 import { clone, JsonDiffMerge } from "../../../shared/utils";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
-export class PrintViewPlugin extends Plugin2 {
+export class PrintViewPlugin extends Plugin {
   id = "plugin.printView";
   name = "Vorschau";
   description =

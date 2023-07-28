@@ -15,10 +15,10 @@ import {
 import { IgeError } from "../../../../models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserService } from "../../../../services/user/user.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable()
-export class DefaultUserBehaviour extends Plugin2 {
+export class DefaultUserBehaviour extends Plugin {
   id = "plugin.default.user";
   defaultActive = true;
   name = "Benutzeroptionen";

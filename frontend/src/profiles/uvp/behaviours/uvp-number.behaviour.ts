@@ -1,7 +1,7 @@
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
-import { Plugin2 } from "../../../app/+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 
-export class UvpNumberBehaviour extends Plugin2 {
+export class UvpNumberBehaviour extends Plugin {
   id = "plugin.uvp.eia-number";
   name = "UVP Nummer (Codelist-Kategorie)";
   description =

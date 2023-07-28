@@ -13,9 +13,9 @@ import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { inject } from "@angular/core";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 
-export abstract class SaveBase extends Plugin2 {
+export abstract class SaveBase extends Plugin {
   dialog: MatDialog;
   formStateService = inject(FormStateService);
   documentService: DocumentService;

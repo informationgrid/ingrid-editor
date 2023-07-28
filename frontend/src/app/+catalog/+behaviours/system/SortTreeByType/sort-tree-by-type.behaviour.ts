@@ -4,12 +4,12 @@ import {
   TreeSortFn,
 } from "../../../../+form/sidebars/tree/tree.service";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable({
   providedIn: "root",
 })
-export class SortTreeByTypeBehaviour extends Plugin2 {
+export class SortTreeByTypeBehaviour extends Plugin {
   id = "plugin.sort.tree.by.type";
   name = "Sortierung des Baums nach Dokumententyp";
   group = "Baum";

@@ -13,10 +13,10 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable()
-export class InheritContactDataHandler extends Plugin2 {
+export class InheritContactDataHandler extends Plugin {
   id = "plugin.inherit.contact.data.handler";
   name = "Kontaktangaben der übergeordneten Adresse übernehmen";
   description = "";

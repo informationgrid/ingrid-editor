@@ -12,13 +12,13 @@ import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities.model";
 import { TreeQuery } from "../../../../app/store/tree/tree.query";
-import { Plugin2 } from "../../../../app/+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
 })
-export class GetCapabilititesWizardPlugin extends Plugin2 {
+export class GetCapabilititesWizardPlugin extends Plugin {
   id = "plugin.getCapWizard";
   defaultActive = true;
   name = "Assistent für GetCapabilities";

@@ -11,12 +11,12 @@ import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
-export class CreateDocumentPlugin extends Plugin2 {
+export class CreateDocumentPlugin extends Plugin {
   id = "plugin.newDoc";
   name = "Neues Dokument Plugin";
   description = "Ermöglicht das Anlegen eines neuen Dokuments";

@@ -4,12 +4,12 @@ import {
   DocumentService,
 } from "../../../../services/document/document.service";
 import { IgeDocument } from "../../../../models/ige-document";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable({
   providedIn: "root",
 })
-export class AddressTitleBehaviour extends Plugin2 {
+export class AddressTitleBehaviour extends Plugin {
   id = "plugin.address.title";
   name = "Template für die Generierung des Adressen-Titels";
   description =

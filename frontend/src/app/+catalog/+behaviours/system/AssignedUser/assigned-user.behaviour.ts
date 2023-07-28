@@ -26,10 +26,10 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocumentService } from "../../../../services/document/document.service";
 import { PluginService } from "../../../../services/plugin/plugin.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable({ providedIn: "root" })
-export class AssignedUserBehaviour extends Plugin2 {
+export class AssignedUserBehaviour extends Plugin {
   id = "plugin.assigned.user";
   name = "Verantwortlicher Benutzer";
   description =

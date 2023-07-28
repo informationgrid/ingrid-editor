@@ -9,10 +9,10 @@ import { UvpPersonDoctype } from "./uvp/doctypes/uvp-person.doctype";
 import { UvpOrganisationDoctype } from "./uvp/doctypes/uvp-organisation.doctype";
 import { LineDeterminationDoctype } from "./uvp/doctypes/line-determination.doctype";
 import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
-import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
+import { Plugin } from "../app/+catalog/+behaviours/plugin";
 
 @Component({
   template: "",

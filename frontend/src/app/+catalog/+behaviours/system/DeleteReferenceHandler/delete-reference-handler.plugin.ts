@@ -10,10 +10,10 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { Observable } from "rxjs";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable()
-export class DeleteReferenceHandlerPlugin extends Plugin2 {
+export class DeleteReferenceHandlerPlugin extends Plugin {
   id = "plugin.delete.reference.handler";
   name = "Referenzierte Adressen ersetzen";
   description = "";

@@ -19,11 +19,11 @@ import { DocumentService } from "../../../services/document/document.service";
 import { FormStateService } from "../../form-state.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
-export class HistoryPlugin extends Plugin2 {
+export class HistoryPlugin extends Plugin {
   id = "plugin.history";
   name = "History Plugin";
   description =

@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { UntypedFormGroup } from "@angular/forms";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 
 @Injectable()
-export class UndoPlugin extends Plugin2 {
+export class UndoPlugin extends Plugin {
   id = "plugin.undo";
   name = "Undo Plugin";
   description =

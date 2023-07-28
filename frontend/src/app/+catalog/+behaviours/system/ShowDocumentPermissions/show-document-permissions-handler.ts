@@ -10,10 +10,10 @@ import { FormMenuService } from "../../../../+form/form-menu.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable()
-export class ShowDocumentPermissionsHandlerPlugin extends Plugin2 {
+export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
   id = "plugin.show.document.permissions.handler";
   name = "Berechtigungen anzeigen";
   description =

@@ -9,11 +9,11 @@ import { filter, switchMap } from "rxjs/operators";
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { FormUtils } from "../../../../+form/form.utils";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
-export class TagsBehaviour extends Plugin2 {
+export class TagsBehaviour extends Plugin {
   id = "plugin.tags";
   defaultActive = true;
   name = "Zuweisung von Tags";

@@ -5,13 +5,13 @@ import {
   FormToolbarService,
   ToolbarItem,
 } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
 })
-export class TreeModeToolbarBehaviour extends Plugin2 {
+export class TreeModeToolbarBehaviour extends Plugin {
   id = "plugin.tree.mode.toolbar";
   name = "Toolbar Zustände wenn Mehrfachauswahl im Baum";
   description =

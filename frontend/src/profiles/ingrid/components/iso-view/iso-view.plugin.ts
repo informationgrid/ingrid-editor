@@ -8,12 +8,12 @@ import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../app/store/address-tree/address-tree.query";
 import { ExchangeService } from "../../../../app/+importExport/exchange.service";
 import { combineLatest, of } from "rxjs";
-import { Plugin2 } from "../../../../app/+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable({ providedIn: "root" })
-export class IsoViewPlugin extends Plugin2 {
+export class IsoViewPlugin extends Plugin {
   id = "plugin.isoView";
   name = "ISO-Ansicht";
   group = "Toolbar";

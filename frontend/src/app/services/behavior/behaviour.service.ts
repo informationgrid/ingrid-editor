@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
-import { Plugin } from "../../+catalog/+behaviours/plugin";
 import { BehaviorDataService } from "./behavior-data.service";
 import { ConfigService } from "../config/config.service";
 import { Behaviour } from "./behaviour";
 import { tap } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { PluginService } from "../plugin/plugin.service";
+import { Plugin } from "../../+catalog/+behaviours/plugin";
 
 export interface BehaviourFormatBackend {
   _id: string;
@@ -69,7 +69,8 @@ export class BehaviourService {
   }
 */
 
-  applyActiveStates(behaviours: Plugin[]) {
+  /*
+  applyActiveStates(behaviours: Plugin2[]) {
     behaviours.forEach((behaviour) => {
       const stored = this.backendBehaviourStates
         ? this.backendBehaviourStates.filter(
@@ -81,6 +82,7 @@ export class BehaviourService {
       behaviour.data = stored.length > 0 ? stored[0].data : null;
     });
   }
+*/
 
   /*
     registerActiveBehaviours() {

@@ -15,11 +15,11 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
-export class DeleteDocsPlugin extends Plugin2 {
+export class DeleteDocsPlugin extends Plugin {
   id = "plugin.deleteDocs";
   name = "Delete Docs Plugin";
   description =

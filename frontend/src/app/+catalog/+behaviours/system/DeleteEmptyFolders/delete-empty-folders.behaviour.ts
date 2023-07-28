@@ -12,11 +12,11 @@ import { ModalService } from "../../../../services/modal/modal.service";
 import { IgeError } from "../../../../models/ige-error";
 import { filter, map, take } from "rxjs/operators";
 import { Observable } from "rxjs";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
-export class DeleteEmptyFoldersBehaviour extends Plugin2 {
+export class DeleteEmptyFoldersBehaviour extends Plugin {
   id = "plugin.delete.empty.folders";
   name = "Nur leere Ordner löschen";
   description = "Es dürfen nur leere Ordner gelöscht werden";

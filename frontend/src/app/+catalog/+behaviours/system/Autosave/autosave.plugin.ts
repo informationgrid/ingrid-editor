@@ -4,10 +4,10 @@ import { DocEventsService } from "../../../../services/event/doc-events.service"
 import { SessionQuery } from "../../../../store/session.query";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 
 @Injectable()
-export class AutosavePlugin extends Plugin2 {
+export class AutosavePlugin extends Plugin {
   id = "plugin.autosave";
   name = "Automatisches Speichern";
   description =

@@ -21,11 +21,11 @@ import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { IgeDocument } from "../../../models/ige-document";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
-export class CopyCutPastePlugin extends Plugin2 {
+export class CopyCutPastePlugin extends Plugin {
   id = "plugin.copy.cut.paste";
   name = "Copy Cut Paste";
   description =

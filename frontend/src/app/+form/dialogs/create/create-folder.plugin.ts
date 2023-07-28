@@ -11,12 +11,12 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { Plugin2 } from "../../../+catalog/+behaviours/plugin2";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
-export class CreateFolderPlugin extends Plugin2 {
+export class CreateFolderPlugin extends Plugin {
   id = "plugin.folder";
   name = "Folder Plugin";
   description = "Ermöglicht das Anlegen von Ordnern.";

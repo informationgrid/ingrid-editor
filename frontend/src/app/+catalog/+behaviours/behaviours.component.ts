@@ -5,11 +5,10 @@ import {
 } from "../../services/behavior/behaviour.service";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { Plugin } from "./plugin";
 import { FormlyFormBuilder } from "@ngx-formly/core";
 import { ActivatedRoute } from "@angular/router";
 import { PluginService } from "../../services/plugin/plugin.service";
-import { Plugin2 } from "./plugin2";
+import { Plugin } from "./plugin";
 
 @UntilDestroy()
 @Component({
@@ -20,7 +19,7 @@ import { Plugin2 } from "./plugin2";
 export class BehavioursComponent implements OnInit {
   type: string;
 
-  private readonly plugins: Plugin2[];
+  private readonly plugins: Plugin[];
   pluginsGrouped: any;
 
   expanded: any = {};

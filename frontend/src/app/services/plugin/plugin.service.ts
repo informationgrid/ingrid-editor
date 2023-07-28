@@ -1,11 +1,10 @@
-import { Injectable } from "@angular/core";
-import { Plugin2 } from "../../+catalog/+behaviours/plugin2";
+import { EventEmitter, Injectable } from "@angular/core";
+import { Plugin } from "../../+catalog/+behaviours/plugin";
 import {
   BehaviourFormatBackend,
   BehaviourRegistration,
 } from "../behavior/behaviour.service";
-import { Observable, Subject } from "rxjs";
-import { Plugin } from "../../+catalog/+behaviours/plugin";
+import { combineLatest, Observable, Subject } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
@@ -16,21 +15,24 @@ import { ConfigService } from "../config/config.service";
 export class PluginService {
   pluginState$ = new Subject<BehaviourRegistration>();
 
-  plugins: Plugin2[] = [];
+  plugins: Plugin[] = [];
 
   backendBehaviourStates: BehaviourFormatBackend[];
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
-    this.loadStoredBehaviours();
+  isInitialized$ = new EventEmitter<boolean>();
 
-    this.pluginState$.subscribe((value) =>
-      value.register
-        ? this.initFormPlugins(value.address)
-        : this.unregisterFormPlugins()
+  constructor(private http: HttpClient, private configService: ConfigService) {
+    this.loadStoredBehaviours().subscribe();
+
+    combineLatest([this.pluginState$, this.isInitialized$]).subscribe(
+      ([value]) =>
+        value.register
+          ? this.initFormPlugins(value.address)
+          : this.unregisterFormPlugins()
     );
   }
 
-  registerPlugin(plugin: Plugin2) {
+  registerPlugin(plugin: Plugin) {
     this.plugins.push(plugin);
 
     plugin.register();
@@ -67,6 +69,7 @@ export class PluginService {
         tap(
           (storedBehaviours) => (this.backendBehaviourStates = storedBehaviours)
         ),
+        tap(() => this.isInitialized$.emit(true)),
         // tap(() => this.applyActiveStates(this.systemBehaviours)),
         catchError((e) => {
           const userInfo = this.configService.$userInfo.value;

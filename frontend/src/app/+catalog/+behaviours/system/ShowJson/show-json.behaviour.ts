@@ -2,11 +2,11 @@ import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { SessionStore } from "../../../../store/session.store";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { Plugin2 } from "../../plugin2";
+import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
-export class ShowJsonBehaviour extends Plugin2 {
+export class ShowJsonBehaviour extends Plugin {
   id = "plugin.show.json";
   name = "Anzeige JSON Formular";
   group = "Toolbar";
