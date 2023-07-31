@@ -12,7 +12,6 @@ import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-neg
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
-import { Plugin } from "../app/+catalog/+behaviours/plugin";
 
 @Component({
   template: "",
@@ -31,7 +30,7 @@ class UVPComponent {
     organisation: UvpOrganisationDoctype,
     private pluginService: PluginService
   ) {
-    this.addBehaviour();
+    this.addBehaviour(negativeAssessmentDoctype);
 
     profileService.registerProfiles([
       folder,
@@ -61,25 +60,18 @@ class UVPComponent {
     });*/
   }
 
-  private addBehaviour() {
+  private addBehaviour(
+    negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype
+  ) {
     const publishNegativeAssessmentBehaviour =
       new PublishNegativeAssessmentBehaviour();
     const uvpNumberPlugin = new UvpNumberBehaviour();
     this.pluginService.registerPlugin(publishNegativeAssessmentBehaviour);
     this.pluginService.registerPlugin(uvpNumberPlugin);
 
-    /*behaviourService.theSystemBehaviours$
-      .pipe(
-        map((plugins) =>
-          this.getActiveState(plugins, publishNegativeAssessmentBehaviour.id)
-        ),
-        filter((isActive) => isActive)
-      )
-      .subscribe(() => (negativeAssessmentDoctype.forPublish = true));*/
-  }
-
-  private getActiveState(plugins: Plugin[], behaviourId: string) {
-    return plugins.find((plugin) => plugin.id === behaviourId)?.isActive;
+    if (publishNegativeAssessmentBehaviour.isActive) {
+      negativeAssessmentDoctype.forPublish = true;
+    }
   }
 
   private addUVPReportTab(reportsService: ReportsService) {
