@@ -11,6 +11,7 @@ data class CatalogSettings(
 )
 
 // TODO refactor for profile specific settings
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CatalogConfig(
     val partner: String? = null,
     val provider: String? = null,
