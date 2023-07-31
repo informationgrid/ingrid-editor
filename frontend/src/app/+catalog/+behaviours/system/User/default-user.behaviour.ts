@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { catchError, filter, switchMap } from "rxjs/operators";
@@ -16,13 +16,15 @@ import { IgeError } from "../../../../models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserService } from "../../../../services/user/user.service";
 import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class DefaultUserBehaviour extends Plugin {
   id = "plugin.default.user";
   defaultActive = true;
   name = "Benutzeroptionen";
-  description = "Die Standard optionen für das Benutzermenü";
+  description = "Die Standard-Optionen für das Benutzermenü";
+  hide = true;
 
   constructor(
     private formMenuService: FormMenuService,
@@ -33,6 +35,7 @@ export class DefaultUserBehaviour extends Plugin {
     private dialog: MatDialog
   ) {
     super();
+    inject(PluginService).registerPlugin(this);
   }
 
   register() {

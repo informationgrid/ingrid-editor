@@ -3,7 +3,7 @@ import {
   BehaviourFormatBackend,
   BehaviourService,
 } from "../../services/behavior/behaviour.service";
-import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormlyFormBuilder } from "@ngx-formly/core";
 import { ActivatedRoute } from "@angular/router";
@@ -25,7 +25,6 @@ export class BehavioursComponent implements OnInit {
   expanded: any = {};
 
   fields: any = {};
-  title: string;
 
   constructor(
     private builder: FormlyFormBuilder,
@@ -39,29 +38,12 @@ export class BehavioursComponent implements OnInit {
   ngOnInit() {
     this.type = this.route.snapshot.paramMap.get("type");
 
-    // if (this.type === "form") {
-    this.title = "Verhalten";
     // this.behaviourService.applyActiveStates(this.plugins);
     this.pluginsGrouped = this.groupBy(
       this.plugins,
       (plugin: Plugin) => plugin.group || "Andere"
     );
     this.fields = this.createModelFromPlugins(this.plugins);
-    /* } else {
-      this.title = "Katalogverhalten";
-      this.behaviourService.theSystemBehaviours$
-        .pipe(
-          untilDestroyed(this),
-          tap((systemPlugins) => {
-            this.fields = this.createModelFromPlugins(systemPlugins);
-            this.plugins = this.groupBy(
-              systemPlugins,
-              (plugin: Plugin) => plugin.group || "Andere"
-            );
-          })
-        )
-        .subscribe();
-    }*/
   }
 
   private groupBy(array: any[], callback: (x: any) => any) {
@@ -98,11 +80,11 @@ export class BehavioursComponent implements OnInit {
 
   private createModelFromPlugins(items: Plugin[]) {
     return items.reduce((acc: any, plugin: Plugin) => {
-      const formGroup = new UntypedFormGroup({});
+      const formGroup = new FormGroup({});
 
       // initially set disabled state for fields
       if (plugin.fields.length > 0 && !plugin.isActive) {
-        // we need to build form when we want to set it disabled initialially
+        // we need to build form when we want to set it disabled initially
         this.builder.buildForm(
           formGroup,
           plugin.fields,
@@ -114,7 +96,7 @@ export class BehavioursComponent implements OnInit {
 
       acc[plugin.id] = {
         form: formGroup,
-        active: new UntypedFormControl(plugin.isActive),
+        active: new FormControl<boolean>(plugin.isActive),
         modified: plugin.isActive !== plugin.defaultActive,
         fields: plugin.fields,
         data: plugin.data ? plugin.data : {},

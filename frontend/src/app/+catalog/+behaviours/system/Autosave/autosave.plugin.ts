@@ -1,10 +1,11 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { SessionQuery } from "../../../../store/session.query";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class AutosavePlugin extends Plugin {
@@ -25,6 +26,7 @@ export class AutosavePlugin extends Plugin {
     private session: SessionQuery
   ) {
     super();
+    inject(PluginService).registerPlugin(this);
   }
 
   register() {

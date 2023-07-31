@@ -39,7 +39,6 @@ export class CreateFolderPlugin extends Plugin {
     private dialog: MatDialog
   ) {
     super();
-    this.isActive = true;
     inject(PluginService).registerPlugin(this);
   }
 

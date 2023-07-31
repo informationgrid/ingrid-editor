@@ -1,10 +1,11 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   AddressTitleFn,
   DocumentService,
 } from "../../../../services/document/document.service";
 import { IgeDocument } from "../../../../models/ige-document";
 import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
@@ -47,6 +48,8 @@ export class AddressTitleBehaviour extends Plugin {
         },
       },
     });
+
+    inject(PluginService).registerPlugin(this);
   }
 
   private validateInputString() {

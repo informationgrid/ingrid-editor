@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -11,17 +11,17 @@ import { Observable } from "rxjs";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
 import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class DeleteReferenceHandlerPlugin extends Plugin {
   id = "plugin.delete.reference.handler";
   name = "Referenzierte Adressen ersetzen";
-  description = "";
+  description =
+    "Ermöglicht es, alle Referenzen zu einer Adresse mit einer anderen Adresse zu tauschen. Dadurch können alle Referenzen zu einer Adresse entfernt werden, um diese dann löschen zu können.";
   group = "Adressen";
   defaultActive = true;
   forAddress = true;
-  private disabled = false;
-  isPrivileged: boolean;
 
   constructor(
     private docEvents: DocEventsService,
@@ -34,17 +34,17 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     super();
 
     let role = configService.$userInfo.getValue().role;
-    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
-    if (!this.isPrivileged) this.disabled = true;
-  }
-
-  register() {
-    if (this.disabled) {
+    const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    if (isPrivileged) {
+      inject(PluginService).registerPlugin(this);
+    } else {
       console.debug(
         "DeleteReferenceHandlerPlugin not registered because it's only available for catalog administrators and above."
       );
-      return;
     }
+  }
+
+  register() {
     super.register();
 
     const subscription = this.docEvents
@@ -74,24 +74,22 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
 
     this.subscriptions.push(subscription, onEvent);
 
-    if (this.isPrivileged) {
-      const onDocChange = this.tree.openedDocument$.subscribe((doc) => {
-        // refresh menu item
-        this.formMenuService.removeMenuItem("address", "replace-address");
-        if (doc && doc._type !== "FOLDER") {
-          this.formMenuService.addMenuItem("address", {
-            title: "Adresse ersetzen",
-            name: "replace-address",
-            action: () =>
-              this.docEventsService.sendEvent({
-                type: "REPLACE_ADDRESS",
-                data: { uuid: doc._uuid },
-              }),
-          });
-        }
-      });
-      this.subscriptions.push(onDocChange);
-    }
+    const onDocChange = this.tree.openedDocument$.subscribe((doc) => {
+      // refresh menu item
+      this.formMenuService.removeMenuItem("address", "replace-address");
+      if (doc && doc._type !== "FOLDER") {
+        this.formMenuService.addMenuItem("address", {
+          title: "Adresse ersetzen",
+          name: "replace-address",
+          action: () =>
+            this.docEventsService.sendEvent({
+              type: "REPLACE_ADDRESS",
+              data: { uuid: doc._uuid },
+            }),
+        });
+      }
+    });
+    this.subscriptions.push(onDocChange);
   }
 
   private showDialog(source: string, showInfo = true): Observable<any> {

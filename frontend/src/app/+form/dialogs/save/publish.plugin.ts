@@ -51,7 +51,6 @@ export class PublishPlugin extends SaveBase {
     sessionStore: SessionStore
   ) {
     super(sessionStore, messageService);
-    this.isActive = true;
     inject(PluginService).registerPlugin(this);
   }
 
