@@ -88,7 +88,7 @@ export class TabExpirationComponent implements OnInit {
       .getConfig()
       .pipe(
         untilDestroyed(this),
-        map((config) => config.expiryDuration),
+        map((config) => config.expiredDatasetConfig?.expiryDuration),
         tap((expiryDuration) => (this.expiryDurationInDays = expiryDuration)),
         tap(() => this.onSearch.emit())
       )
