@@ -4,6 +4,7 @@ import { ReportsComponent } from "./reports/reports.component";
 import { GeneralReportComponent } from "./general-report/general-report.component";
 import { ReportsService } from "./reports.service";
 import { UrlCheckComponent } from "./url-check/url-check.component";
+import { TabExpirationComponent } from "../+research/+tab-expiration/tab-expiration.component";
 
 const routes: Routes = [
   {
@@ -27,6 +28,14 @@ const routes: Routes = [
         component: UrlCheckComponent,
         data: {
           title: "URL-Pflege",
+        },
+      },
+      {
+        path: "expiration",
+        component: TabExpirationComponent,
+        data: {
+          title: "Verfallszeit",
+          tabIdentifier: "expiration",
         },
       },
     ],

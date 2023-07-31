@@ -102,7 +102,7 @@ export class TabExpirationComponent implements OnInit {
         filter(
           (event) =>
             event instanceof NavigationEnd &&
-            event.url.includes("research/expiration")
+            event.url.includes("reports/expiration")
         ),
         tap(() => this.onSearch.emit())
       )
