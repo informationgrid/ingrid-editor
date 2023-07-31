@@ -52,6 +52,8 @@ export class PluginService {
   private initFormPlugins(forAddress: boolean) {
     this.initWithAddress = forAddress;
 
+    this.plugins.forEach((p) => p.setForAddress(forAddress));
+
     this.plugins
       .filter((p) => p.isActive)
       .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
