@@ -154,7 +154,7 @@ class ExpiredDatasetsTask(
             """
                 SELECT d.uuid, dw.responsibleUser.userId, d.title, d.modified, d.modifiedby, dw.category
                     FROM DocumentWrapper dw, Document d
-                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
+                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
                     $limitDateFilter
                     $expiryFilter
                     """
