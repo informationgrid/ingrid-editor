@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
@@ -32,7 +33,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
-class UsersApiController : UsersApi {
+class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     private val logger = logger()
 
@@ -297,6 +298,7 @@ class UsersApiController : UsersApi {
                 emptyList()
             }
 
+            val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
             val userInfo = UserInfo(
                 userId = user.login,
                 name = user.firstName + ' ' + user.lastName,
@@ -306,12 +308,13 @@ class UsersApiController : UsersApi {
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
                 groups = dbUser?.groups?.map { it.name!! }?.toSet(),
-                currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0),
+                currentCatalog = currentCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
-                permissions = permissions
+                permissions = permissions,
+                plugins = behaviourService.get(currentCatalog?.identifier ?: "???" )
             )
             userInfo.currentCatalog?.type?.let {
                 userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile

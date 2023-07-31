@@ -1,11 +1,10 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Plugin } from "../../+catalog/+behaviours/plugin";
 import {
   BehaviourFormatBackend,
   BehaviourRegistration,
 } from "../behavior/behaviour.service";
-import { combineLatest, Observable, Subject } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 
@@ -19,33 +18,39 @@ export class PluginService {
 
   backendBehaviourStates: BehaviourFormatBackend[];
 
-  isInitialized$ = new EventEmitter<boolean>();
+  initWithAddress: boolean = null;
 
   constructor(private http: HttpClient, private configService: ConfigService) {
-    this.loadStoredBehaviours().subscribe();
+    this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
-    combineLatest([this.pluginState$, this.isInitialized$]).subscribe(
-      ([value]) =>
-        value.register
-          ? this.initFormPlugins(value.address)
-          : this.unregisterFormPlugins()
+    this.pluginState$.subscribe((value) =>
+      value.register
+        ? this.initFormPlugins(value.address)
+        : this.unregisterFormPlugins()
     );
   }
 
   registerPlugin(plugin: Plugin) {
+    this.applyActiveStates([plugin]);
     this.plugins.push(plugin);
 
-    plugin.register();
+    if (plugin.isActive) {
+      plugin.register();
 
-    // register late plugins, which were not ready during initialization
-    // if (this.initWithAddress !== null) {
-    //   this.init([plugin], this.initWithAddress);
-    // }
+      // register late plugins, which were not ready during initialization
+      if (this.initWithAddress !== null) {
+        if (
+          !this.initWithAddress ||
+          (this.initWithAddress && !plugin.hideInAddress)
+        ) {
+          plugin.registerForm();
+        }
+      }
+    }
   }
 
   private initFormPlugins(forAddress: boolean) {
-    // this.initWithAddress = forAddress;
-    this.applyActiveStates(this.plugins);
+    this.initWithAddress = forAddress;
 
     this.plugins
       .filter((p) => p.isActive)
@@ -55,33 +60,6 @@ export class PluginService {
 
   private unregisterFormPlugins() {
     return this.plugins.forEach((plugin) => plugin.unregisterForm());
-  }
-
-  loadStoredBehaviours(): Observable<any> {
-    return this.http
-      .get<any[]>(
-        this.configService.getConfiguration().backendUrl + "behaviours"
-      )
-      .pipe(
-        tap((storedBehaviours) =>
-          console.log(`fetched behaviours`, storedBehaviours)
-        ),
-        tap(
-          (storedBehaviours) => (this.backendBehaviourStates = storedBehaviours)
-        ),
-        tap(() => this.isInitialized$.emit(true)),
-        // tap(() => this.applyActiveStates(this.systemBehaviours)),
-        catchError((e) => {
-          const userInfo = this.configService.$userInfo.value;
-          console.error("Could not get behaviours");
-          if (userInfo?.assignedCatalogs?.length === 0) {
-            console.log("because of user with no assigned catalogs");
-            return [];
-          } else {
-            throw e;
-          }
-        })
-      );
   }
 
   applyActiveStates(behaviours: Plugin[]) {

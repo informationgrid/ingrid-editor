@@ -36,7 +36,6 @@ export abstract class Plugin {
 
   registerForm(): void {
     console.log("Register Form-Plugin: ", this.name);
-    this.isActive = true;
   }
 
   unregister(): void {
@@ -48,7 +47,6 @@ export abstract class Plugin {
 
   unregisterForm(): void {
     console.log("Unregister Form-Plugin: ", this.name);
-    this.isActive = false;
     this.formSubscriptions.forEach((sub) => sub.unsubscribe());
     this.formSubscriptions = [];
   }

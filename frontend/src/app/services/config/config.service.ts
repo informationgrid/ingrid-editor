@@ -7,6 +7,7 @@ import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { tap } from "rxjs/operators";
+import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 
 export class Configuration {
   constructor(
@@ -49,6 +50,7 @@ export interface UserInfo {
   useElasticsearch?: boolean;
   permissions: string[];
   parentProfile?: string;
+  plugins?: BehaviourFormatBackend[];
 }
 
 export interface CMSPage {
