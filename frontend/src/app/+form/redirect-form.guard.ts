@@ -7,8 +7,8 @@ import {
 import { TreeQuery } from "../store/tree/tree.query";
 import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 import { DocumentService } from "../services/document/document.service";
-import { BehaviourService } from "../services/behavior/behaviour.service";
 import { ConfigService } from "../services/config/config.service";
+import { PluginService } from "../services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +19,7 @@ export class RedirectFormGuard {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
-    private behaviourService: BehaviourService
+    private pluginService: PluginService
   ) {}
 
   async canActivate(
@@ -58,14 +58,14 @@ export class RedirectFormGuard {
   }
 
   private registerPluginsForAddress() {
-    this.behaviourService.registerState$.next({
+    this.pluginService.pluginState$.next({
       register: true,
       address: true,
     });
   }
 
   private registerPluginsForDatasets() {
-    this.behaviourService.registerState$.next({
+    this.pluginService.pluginState$.next({
       register: true,
       address: false,
     });

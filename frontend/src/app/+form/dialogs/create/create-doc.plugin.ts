@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
@@ -12,7 +11,8 @@ import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @UntilDestroy()
 @Injectable()
@@ -38,10 +38,11 @@ export class CreateDocumentPlugin extends Plugin {
     private translocoService: TranslocoService
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
+  registerForm() {
+    super.registerForm();
     this.initializeButton();
 
     // add event handler for revert
@@ -49,7 +50,7 @@ export class CreateDocumentPlugin extends Plugin {
       .onEvent("NEW_DOC")
       .subscribe(() => this.newDoc());
 
-    this.subscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   private initializeButton() {
@@ -106,10 +107,12 @@ export class CreateDocumentPlugin extends Plugin {
     });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
-    this.toolbarService.removeButton("toolBtnNew");
+    if (this.isActive) {
+      this.toolbarService.removeButton("toolBtnNew");
+    }
   }
 
   private addNonAdminBehaviour() {
@@ -128,7 +131,7 @@ export class CreateDocumentPlugin extends Plugin {
               this.isOrganisation(data)
             );
           });
-        this.subscriptions.push(organisationCheckSubscription);
+        this.formSubscriptions.push(organisationCheckSubscription);
       }
     }
   }

@@ -1,5 +1,4 @@
-import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
+import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -14,12 +13,15 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
+import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class InheritContactDataHandler extends Plugin {
   id = "plugin.inherit.contact.data.handler";
   name = "Kontaktangaben der übergeordneten Adresse übernehmen";
-  description = "";
+  description =
+    "Für Personen und Organisationen, die einer anderen Organisation untergeordnet sind, können die Adressdaten geerbt werden.";
   group = "Adressen";
   defaultActive = true;
   forAddress = true;
@@ -34,6 +36,7 @@ export class InheritContactDataHandler extends Plugin {
     private formMenuService: FormMenuService
   ) {
     super();
+    inject(PluginService).registerPlugin(this);
   }
 
   register() {

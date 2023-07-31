@@ -11,9 +11,9 @@ import { SessionStore } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { inject } from "@angular/core";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
 
 export abstract class SaveBase extends Plugin {
   dialog: MatDialog;

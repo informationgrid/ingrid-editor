@@ -1,4 +1,4 @@
-<page-template-no-header [label]="title">
+<page-template-no-header label="Verhalten">
     <ng-container left-side>
         {{
             type === "form"
@@ -9,7 +9,7 @@
 
     <div main-content class="flex-1">
         <div class="scrollable">
-            <div *ngFor="let item of plugins | keyvalue" class="section">
+            <div *ngFor="let item of pluginsGrouped | keyvalue" class="section">
                 <div class="section-title">{{ item.key }}</div>
                 <ige-behaviour-item
                     *ngFor="let plugin of item.value"

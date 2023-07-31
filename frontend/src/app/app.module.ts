@@ -59,7 +59,6 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
 import { AuthInterceptor } from "./security/keycloak/auth.interceptor";
 import { SharedDocumentItemModule } from "./shared/shared-document-item.module";
-import { pluginProvider } from "./plugin.provider";
 import { InlineHelpWrapperComponent } from "./formly/wrapper/inline-help-wrapper/inline-help-wrapper.component";
 import { FullWidthWrapperComponent } from "./formly/wrapper/full-width-wrapper.component";
 import { SessionTimeoutInterceptor } from "./services/session-timeout.interceptor";
@@ -91,7 +90,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
-import { formPluginProvider } from "./form-plugin.provider";
+import { pluginProvider } from "./plugin.provider";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { GermanDateAdapter } from "./services/german-date.adapter";
 
@@ -379,7 +378,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     },
 
     // PLUGINS
-    formPluginProvider,
     pluginProvider,
   ], // additional providers
   bootstrap: [AppComponent],

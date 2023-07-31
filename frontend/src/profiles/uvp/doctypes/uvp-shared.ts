@@ -3,7 +3,6 @@ import { SelectOptionUi } from "../../../app/services/codelist/codelist.service"
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { map } from "rxjs/operators";
 import { inject } from "@angular/core";
 import {
   REGEX_URL,
@@ -17,7 +16,9 @@ export class UvpShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
 
   isInitialized(): Promise<void> {
-    return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
+    // return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
+    this.setUvpCodelistId();
+    return Promise.resolve();
   }
 
   dateTooBigValidator = {
@@ -335,11 +336,9 @@ export class UvpShared extends BaseDoctype {
   }
 
   setUvpCodelistId() {
-    return this.behaviourService
-      .getBehaviour("plugin.uvp.eia-number")
-      .pipe(map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000))
-      .toPromise()
-      .then((id) => (this.uvpNumberCodelistId = id));
+    this.uvpNumberCodelistId =
+      this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
+        ?.uvpCodelist ?? 9000;
   }
 
   private convertToIsoDate(date: Date | string) {

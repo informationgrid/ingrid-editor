@@ -1,5 +1,4 @@
-import { Plugin } from "../../plugin";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionsDialogComponent } from "./permissions-dialog/permissions-dialog.component";
@@ -11,6 +10,8 @@ import { FormMenuService } from "../../../../+form/form-menu.service";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../../store/document/document.model";
+import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
@@ -36,6 +37,8 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
 
     let role = configService.$userInfo.getValue().role;
     this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+
+    inject(PluginService).registerPlugin(this);
   }
 
   unregister() {

@@ -34,13 +34,6 @@ export const routing = RouterModule.forChild([
         },
       },
       {
-        path: "catalog-behaviours",
-        component: BehavioursComponent,
-        data: {
-          title: "catalog-behaviour",
-        },
-      },
-      {
         path: "indexing",
         component: IndexingComponent,
         data: {

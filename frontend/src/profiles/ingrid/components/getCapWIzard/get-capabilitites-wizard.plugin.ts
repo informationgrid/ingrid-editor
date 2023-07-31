@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -10,10 +9,11 @@ import { DocumentService } from "../../../../app/services/document/document.serv
 import { IgeDocument } from "../../../../app/models/ige-document";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
-import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities.model";
 import { TreeQuery } from "../../../../app/store/tree/tree.query";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
+import { PluginService } from "../../../../app/services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
@@ -42,11 +42,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
 
   constructor() {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.formToolbarService.addButton({
       id: this.buttonId,
@@ -74,10 +74,10 @@ export class GetCapabilititesWizardPlugin extends Plugin {
             this.formToolbarService.setButtonState(this.buttonId, true);
           }
         });
-      this.subscriptions.push(treeQuerySubscription);
+      this.formSubscriptions.push(treeQuerySubscription);
     }
 
-    this.subscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   private openWizard() {
@@ -130,8 +130,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       });
   }
 
-  unregister() {
-    super.unregister();
-    this.formToolbarService.removeButton(this.buttonId);
+  unregisterForm() {
+    super.unregisterForm();
+
+    if (this.isActive) {
+      this.formToolbarService.removeButton(this.buttonId);
+    }
   }
 }

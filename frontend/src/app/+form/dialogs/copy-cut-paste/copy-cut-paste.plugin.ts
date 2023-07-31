@@ -1,12 +1,10 @@
 import { inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import {
   FormToolbarService,
   Separator,
   ToolbarItem,
 } from "../../form-shared/toolbar/form-toolbar.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import {
   PasteDialogComponent,
   PasteDialogOptions,
@@ -14,7 +12,6 @@ import {
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { FormMessageService } from "../../../services/form-message.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { delay, filter, switchMap, tap } from "rxjs/operators";
 import { ID } from "@datorama/akita";
@@ -24,7 +21,8 @@ import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { IgeDocument } from "../../../models/ige-document";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -48,17 +46,15 @@ export class CopyCutPastePlugin extends Plugin {
     private formStateService: FormStateService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private modalService: ModalService,
-    private messageService: FormMessageService,
     private dialog: MatDialog,
     private router: Router
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
@@ -125,7 +121,10 @@ export class CopyCutPastePlugin extends Plugin {
         }
       });
 
-    this.subscriptions.push(...toolbarEventSubscription, treeQuerySubscription);
+    this.formSubscriptions.push(
+      ...toolbarEventSubscription,
+      treeQuerySubscription
+    );
   }
 
   private async checkForParentsWithSelectedChildren(
@@ -272,12 +271,14 @@ export class CopyCutPastePlugin extends Plugin {
       .pop();
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
-    // remove from same index since buttons take the neighbor place after deletion
-    this.toolbarService.removeButton("toolBtnCopy");
-    this.toolbarService.removeButton("toolBtnCopyCutSeparator");
+    if (this.isActive) {
+      // remove from same index since buttons take the neighbor place after deletion
+      this.toolbarService.removeButton("toolBtnCopy");
+      this.toolbarService.removeButton("toolBtnCopyCutSeparator");
+    }
   }
 
   private isChildOfSelectedParent(id: number, selection: number[]): boolean {

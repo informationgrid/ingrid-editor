@@ -15,7 +15,7 @@ import { AuthenticationFactory } from "./security/auth.factory";
 import { Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
-import { FormPluginToken } from "./tokens/plugin.token";
+import { PluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
 
 @UntilDestroy()
@@ -32,14 +32,14 @@ export class AppComponent implements OnInit {
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
     private configService: ConfigService,
-    private codelistService: CodelistService,
+    codelistService: CodelistService,
     private registry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private authFactory: AuthenticationFactory,
-    private titleService: Title,
+    titleService: Title,
     private profileService: ProfileService,
     private viewContainerRef: ViewContainerRef,
-    @Inject(FormPluginToken) private autoPlugins: Plugin[]
+    @Inject(PluginToken) private autoPlugins: Plugin[]
   ) {
     this.loadProfile();
 

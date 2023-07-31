@@ -8,12 +8,10 @@ import { ForeignProjectsDoctype } from "./uvp/doctypes/foreign-projects.doctype"
 import { UvpPersonDoctype } from "./uvp/doctypes/uvp-person.doctype";
 import { UvpOrganisationDoctype } from "./uvp/doctypes/uvp-organisation.doctype";
 import { LineDeterminationDoctype } from "./uvp/doctypes/line-determination.doctype";
-import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-negative-assessment.behaviour";
-import { filter, map } from "rxjs/operators";
-import { Plugin } from "../app/+catalog/+behaviours/plugin";
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
+import { PluginService } from "../app/services/plugin/plugin.service";
 
 @Component({
   template: "",
@@ -22,7 +20,6 @@ class UVPComponent {
   constructor(
     profileService: ProfileService,
     reportsService: ReportsService,
-    behaviourService: BehaviourService,
     folder: FolderDoctype,
     approvalProcedureDoctype: ApprovalProcedureDoctype,
     spatialPlanningProcedureDoctype: SpatialPlanningProcedureDoctype,
@@ -30,9 +27,10 @@ class UVPComponent {
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
-    organisation: UvpOrganisationDoctype
+    organisation: UvpOrganisationDoctype,
+    private pluginService: PluginService
   ) {
-    this.addBehaviour(behaviourService, negativeAssessmentDoctype);
+    this.addBehaviour(negativeAssessmentDoctype);
 
     profileService.registerProfiles([
       folder,
@@ -63,29 +61,17 @@ class UVPComponent {
   }
 
   private addBehaviour(
-    behaviourService: BehaviourService,
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype
   ) {
     const publishNegativeAssessmentBehaviour =
       new PublishNegativeAssessmentBehaviour();
     const uvpNumberPlugin = new UvpNumberBehaviour();
-    behaviourService.addSystemBehaviourFromProfile(
-      publishNegativeAssessmentBehaviour
-    );
-    behaviourService.addSystemBehaviourFromProfile(uvpNumberPlugin);
+    this.pluginService.registerPlugin(publishNegativeAssessmentBehaviour);
+    this.pluginService.registerPlugin(uvpNumberPlugin);
 
-    behaviourService.theSystemBehaviours$
-      .pipe(
-        map((plugins) =>
-          this.getActiveState(plugins, publishNegativeAssessmentBehaviour.id)
-        ),
-        filter((isActive) => isActive)
-      )
-      .subscribe(() => (negativeAssessmentDoctype.forPublish = true));
-  }
-
-  private getActiveState(plugins: Plugin[], behaviourId: string) {
-    return plugins.find((plugin) => plugin.id === behaviourId)?.isActive;
+    if (publishNegativeAssessmentBehaviour.isActive) {
+      negativeAssessmentDoctype.forPublish = true;
+    }
   }
 
   private addUVPReportTab(reportsService: ReportsService) {

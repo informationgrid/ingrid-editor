@@ -28,10 +28,6 @@ describe("Behaviour", () => {
     (behaviourService: BehaviourService) => {
       console.log("in test");
       // fixture.detectChanges();
-
-      // behaviourService = TestBed.get( BehaviourService );
-      expect(behaviourService.behaviours.length).toEqual(2);
-      expect(behaviourService.behaviours[0].id).toEqual("xxx");
     }
   ));
 

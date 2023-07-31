@@ -1,5 +1,4 @@
-import { Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
+import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { catchError, filter, switchMap } from "rxjs/operators";
@@ -14,16 +13,18 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { IgeError } from "../../../../models/ige-error";
-import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserService } from "../../../../services/user/user.service";
+import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class DefaultUserBehaviour extends Plugin {
   id = "plugin.default.user";
   defaultActive = true;
   name = "Benutzeroptionen";
-  description = "Die Standard optionen für das Benutzermenü";
+  description = "Die Standard-Optionen für das Benutzermenü";
+  hide = true;
 
   constructor(
     private formMenuService: FormMenuService,
@@ -34,6 +35,7 @@ export class DefaultUserBehaviour extends Plugin {
     private dialog: MatDialog
   ) {
     super();
+    inject(PluginService).registerPlugin(this);
   }
 
   register() {
