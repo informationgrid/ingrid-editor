@@ -36,7 +36,7 @@ class ExpiredDatasetsTask(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    val repeatExpiryCheck = false
+
 
     val log = logger()
 
@@ -55,8 +55,12 @@ class ExpiredDatasetsTask(
     }
 
     private fun sendExpiryEmails(catalog: Catalog) {
-        val expiryDuration = catalog.settings?.config?.expiryDuration ?: -1
-        val notifyDaysBeforeExpiry = catalog.settings?.config?.notifyDaysBeforeExpiry ?: -1
+        val config = catalog.settings?.config?.expiredDatasetConfig ?: return
+        if (!config.emailEnabled) return;
+
+        val repeatExpiryCheck = config.repeatExpiry
+        val expiryDuration = config.expiryDuration ?: -1
+        val notifyDaysBeforeExpiry = config.notifyDaysBeforeExpiry ?: -1
 
         if (expiryDuration < 0) {
             log.info("Expiry duration not set for catalog ${catalog.name}")
@@ -104,10 +108,13 @@ class ExpiredDatasetsTask(
             this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub)
             this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub)
 
-             this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
-             this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
+            this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
+            this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
         } catch (e: Exception) {
-            log.error("Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.", e)
+            log.error(
+                "Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.",
+                e
+            )
         }
     }
 
@@ -147,7 +154,7 @@ class ExpiredDatasetsTask(
             """
                 SELECT d.uuid, dw.responsibleUser.userId, d.title, d.modified, d.modifiedby, dw.category
                     FROM DocumentWrapper dw, Document d
-                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.deleted != 1 AND d.isLatest AND d.modified < :date 
+                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
                     $limitDateFilter
                     $expiryFilter
                     """
