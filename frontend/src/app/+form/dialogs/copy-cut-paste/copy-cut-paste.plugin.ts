@@ -274,9 +274,11 @@ export class CopyCutPastePlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    // remove from same index since buttons take the neighbor place after deletion
-    this.toolbarService.removeButton("toolBtnCopy");
-    this.toolbarService.removeButton("toolBtnCopyCutSeparator");
+    if (this.isActive) {
+      // remove from same index since buttons take the neighbor place after deletion
+      this.toolbarService.removeButton("toolBtnCopy");
+      this.toolbarService.removeButton("toolBtnCopyCutSeparator");
+    }
   }
 
   private isChildOfSelectedParent(id: number, selection: number[]): boolean {

@@ -300,8 +300,10 @@ export class PublishPlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnPublishSeparator");
-    this.formToolbarService.removeButton("toolBtnPublish");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnPublishSeparator");
+      this.formToolbarService.removeButton("toolBtnPublish");
+    }
   }
 
   /**

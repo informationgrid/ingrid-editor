@@ -132,6 +132,9 @@ export class GetCapabilititesWizardPlugin extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    this.formToolbarService.removeButton(this.buttonId);
+
+    if (this.isActive) {
+      this.formToolbarService.removeButton(this.buttonId);
+    }
   }
 }

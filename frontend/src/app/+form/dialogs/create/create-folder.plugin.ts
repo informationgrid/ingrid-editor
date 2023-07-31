@@ -130,6 +130,8 @@ export class CreateFolderPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnFolder");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnFolder");
+    }
   }
 }

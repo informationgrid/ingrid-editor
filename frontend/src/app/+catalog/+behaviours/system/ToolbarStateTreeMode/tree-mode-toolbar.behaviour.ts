@@ -44,10 +44,6 @@ export class TreeModeToolbarBehaviour extends Plugin {
     this.formSubscriptions.push(subscription);
   }
 
-  unregisterForm() {
-    super.unregisterForm();
-  }
-
   private handleMode(multiSelectMode: boolean) {
     if (multiSelectMode) {
       this.handleMultiSelectMode();

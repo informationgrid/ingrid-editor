@@ -120,8 +120,10 @@ export class AssignedUserBehaviour extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    this.formMenuService.removeMenuItem("address", "assign-user");
-    this.formMenuService.removeMenuItem("dataset", "assign-user");
+    if (this.isActive) {
+      this.formMenuService.removeMenuItem("address", "assign-user");
+      this.formMenuService.removeMenuItem("dataset", "assign-user");
+    }
   }
 
   unregister() {

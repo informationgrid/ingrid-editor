@@ -113,7 +113,9 @@ export class SavePlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnSave");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnSave");
+    }
   }
 
   private handleValidationOnSave() {

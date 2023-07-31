@@ -112,6 +112,9 @@ export class PrintViewPlugin extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    this.toolbarService.removeButton("toolBtnPrint");
+
+    if (this.isActive) {
+      this.toolbarService.removeButton("toolBtnPrint");
+    }
   }
 }

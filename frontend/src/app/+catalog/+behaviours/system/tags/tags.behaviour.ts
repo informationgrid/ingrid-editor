@@ -58,7 +58,9 @@ export class TagsBehaviour extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
+    if (this.isActive) {
+      this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
+    }
   }
 
   private async showTagsDialog() {

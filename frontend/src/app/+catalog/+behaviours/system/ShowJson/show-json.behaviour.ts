@@ -61,9 +61,11 @@ export class ShowJsonBehaviour extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
-    this.formToolbarService.removeButton("toolBtnShowJson");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
+      this.formToolbarService.removeButton("toolBtnShowJson");
 
-    this.toggleJSONView(false);
+      this.toggleJSONView(false);
+    }
   }
 }

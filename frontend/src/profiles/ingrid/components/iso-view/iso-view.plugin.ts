@@ -102,6 +102,9 @@ export class IsoViewPlugin extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    this.formToolbarService.removeButton("toolBtnIso");
+
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnIso");
+    }
   }
 }

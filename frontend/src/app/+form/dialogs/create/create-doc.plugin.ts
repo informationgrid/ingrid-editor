@@ -110,7 +110,9 @@ export class CreateDocumentPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    this.toolbarService.removeButton("toolBtnNew");
+    if (this.isActive) {
+      this.toolbarService.removeButton("toolBtnNew");
+    }
   }
 
   private addNonAdminBehaviour() {

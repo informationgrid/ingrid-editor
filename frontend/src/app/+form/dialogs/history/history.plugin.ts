@@ -160,12 +160,14 @@ export class HistoryPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnNewSeparator");
-    this.formToolbarService.removeButton("toolBtnPreviousInHistory");
-    this.formToolbarService.removeButton("toolBtnNextInHistory");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnNewSeparator");
+      this.formToolbarService.removeButton("toolBtnPreviousInHistory");
+      this.formToolbarService.removeButton("toolBtnNextInHistory");
 
-    this.stack = [];
-    this.pointer = -1;
+      this.stack = [];
+      this.pointer = -1;
+    }
   }
 
   private handleNext() {

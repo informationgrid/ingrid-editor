@@ -157,6 +157,8 @@ export class DeleteDocsPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnRemove");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnRemove");
+    }
   }
 }
