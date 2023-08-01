@@ -64,12 +64,21 @@ export class ResearchService {
                 AND LOWER(title) LIKE '%test%'`,
     },
     {
-      label: 'Dokumente "Luft- und Raumfahrt"',
+      label: 'Metadatensätze ohne gültige Adressreferenz',
       value: `SELECT document1.*, document_wrapper.category
               FROM document_wrapper
-                     JOIN document document1 ON document_wrapper.uuid=document1.uuid
-              WHERE document1.is_latest = true AND document1.type = 'mCloudDoc'
-              AND data -> 'mCloudCategories' @> '"aviation"'`,
+                    JOIN document document1 ON document_wrapper.uuid=document1.uuid
+              WHERE document1.is_latest = true AND document_wrapper.category = 'data'
+              AND document_wrapper.type <> 'FOLDER'
+              AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)`,
+    },
+    {
+      label: 'Metadatensätze die als Open Data gekennzeichnet sind',
+      value: `SELECT document1.*, document_wrapper.category
+              FROM document_wrapper
+                    JOIN document document1 ON document_wrapper.uuid=document1.uuid
+              WHERE document1.is_latest = true 
+              AND data ->> 'isOpenData' = 'true'`,
     },
   ];
 
