@@ -47,7 +47,7 @@
     <div *ngIf="error.unhandledException">
         {{ generalErrorMessage }}
     </div>
-    {{ error.message }}
+    {{ error.message?.error ?? error.message }}
 
     <ng-container *ngIf="error.detail || error.stacktrace">
         <button
