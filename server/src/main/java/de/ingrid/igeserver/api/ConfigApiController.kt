@@ -20,8 +20,8 @@ class ConfigApiController @Autowired constructor(
     @Autowired(required = false)
     var iBusService: IBusService? = null
 
-    @Value("\${keycloak.auth-server-url}")
-    lateinit var keycloakUrl: String
+    @Value("\${keycloak.auth-server-url-frontend}")
+    lateinit var keycloakUrlFrontend: String
 
     @Value("\${keycloak.realm}")
     lateinit var keycloakRealm: String
@@ -40,7 +40,7 @@ class ConfigApiController @Autowired constructor(
 
         return ResponseEntity.ok().body(
             FrontendConfiguration(
-                keycloakUrl = keycloakUrl,
+                keycloakUrl = keycloakUrlFrontend,
                 keycloakRealm = keycloakRealm,
                 keycloakClientId = keycloakClientId,
                 keycloakEnabled = keycloakEnabled,
