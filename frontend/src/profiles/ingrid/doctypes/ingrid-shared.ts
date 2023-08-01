@@ -774,6 +774,9 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 "props.required": (field) => isNotEmptyObject(field.form.value),
               },
+              validators: {
+                validation: ["positiveNum"],
+              },
             }),
             this.addSelectInline("unit", "Einheit", {
               showSearch: true,

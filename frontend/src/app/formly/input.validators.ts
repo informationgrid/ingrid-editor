@@ -29,7 +29,14 @@ export function NotEmptyArrayValidator(
     : { hasEmptyRows: { message: "Es dürfen keine leeren Zeilen vorkommen" } };
 }
 
+export function PositiveNumValidator(control: UntypedFormControl) {
+  return control.value == undefined || control.value >= 0
+    ? null
+    : { positiveNum: { message: "Der Wert darf nicht negativ sein" } };
+}
+
 const regExp = new RegExp(REGEX_URL);
+
 export function UrlValidator(control: UntypedFormControl): ValidationErrors {
   return !control.value || regExp.test(control.value?.trim())
     ? null

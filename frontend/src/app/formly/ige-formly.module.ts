@@ -65,6 +65,7 @@ import {
   maxValidationMessage,
   minValidationMessage,
   NotEmptyArrayValidator,
+  PositiveNumValidator,
   UrlValidator,
   UrlValidatorMessage,
 } from "./input.validators";
@@ -236,6 +237,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "email", validation: EmailValidator },
         { name: "notEmptyArray", validation: NotEmptyArrayValidator },
         { name: "url", validation: UrlValidator },
+        { name: "positiveNum", validation: PositiveNumValidator },
       ],
       validationMessages: [
         { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
