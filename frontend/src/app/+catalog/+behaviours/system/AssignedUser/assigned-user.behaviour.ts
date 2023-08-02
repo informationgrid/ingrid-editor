@@ -35,7 +35,7 @@ export class AssignedUserBehaviour extends Plugin {
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
-  private isPrivileged: boolean;
+  private readonly isPrivileged: boolean;
 
   constructor(
     private eventService: EventService,
@@ -47,7 +47,7 @@ export class AssignedUserBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
-    private configService: ConfigService,
+    configService: ConfigService,
     private toast: MatSnackBar,
     private dialog: MatDialog
   ) {
@@ -62,7 +62,6 @@ export class AssignedUserBehaviour extends Plugin {
 
   formMenuId: MenuId;
 
-  // FIXME: The behaviour is not loaded in the user management view, as it is loaded as a FormPluginToken. Should work after the behaviour refactoring
   registerForm() {
     super.registerForm();
 

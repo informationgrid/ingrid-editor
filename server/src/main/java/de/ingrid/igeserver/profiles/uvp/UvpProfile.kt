@@ -107,10 +107,11 @@ class UvpProfile @Autowired constructor(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-        behaviourService.save(catalogId, listOf(Behaviour().apply {
-            name = "plugin.tags"
+        val behaviours = listOf("plugin.tags", "plugin.assigned.user").map { Behaviour().apply {
+            name = it
             active = false
-        }))
+        }}
+        behaviourService.save(catalogId, behaviours)
     }
 
     override fun getElasticsearchMapping(format: String): String {
