@@ -70,7 +70,7 @@ export class ResearchService {
                     JOIN document document1 ON document_wrapper.uuid=document1.uuid
               WHERE document1.is_latest = true AND document_wrapper.category = 'data'
               AND document_wrapper.type <> 'FOLDER'
-              AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)`,
+              AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\\:\\:jsonb)`,
     },
     {
       label: "Metadatensätze die als Open Data gekennzeichnet sind",
