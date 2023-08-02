@@ -3,6 +3,7 @@
     "application": "INGRID",
     "application-suffix": " ",
     "logo": "assets/icons/logo.svg",
+    "logo-text": "Logo InGrid Framework",
     "dashboard": "Übersicht",
     "form": "Daten",
     "address": "Adressen",
