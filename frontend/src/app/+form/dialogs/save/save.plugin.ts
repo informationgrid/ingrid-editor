@@ -81,7 +81,7 @@ export class SavePlugin extends SaveBase {
       }
     );
 
-    this.subscriptions.push(toolbarEventSubscription, treeSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription, treeSubscription);
   }
 
   private setupTree() {
