@@ -25,11 +25,9 @@ export class NominatimService {
 
   search(query: string): Observable<NominatimResult[]> {
     return this.http.get<NominatimResult[]>(
-      this.url +
-        "/search/" +
-        query +
-        "?format=json&countrycodes=" +
-        this.searchInCountries
+      this.url
+        .replace("{query}", query)
+        .replace("{countries}", this.searchInCountries)
     );
   }
 }
