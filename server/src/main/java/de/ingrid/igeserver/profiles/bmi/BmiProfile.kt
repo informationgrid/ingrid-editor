@@ -44,24 +44,12 @@ class BmiProfile @Autowired constructor(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state", "Filter", arrayOf(
                     Draft(),
                     ExceptFolders()
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
                 combine = Operator.AND
-            ),
-            FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
-                    Spatial()
-                ),
-                viewComponent = ViewComponent.SPATIAL
-            ),
-            FacetGroup(
-                "timeRef", "Aktualität der Metadaten", arrayOf(
-                    TimeSpan()
-                ),
-                viewComponent = ViewComponent.TIMESPAN
             )
         )
     }
@@ -69,7 +57,7 @@ class BmiProfile @Autowired constructor(
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state", "Filter", arrayOf(
                     Draft(),
                     ExceptFolders()
                 ),
