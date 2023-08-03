@@ -3,7 +3,9 @@
         class="header-row medium-spacing"
         [class.showShadow]="showShadow"
     >
-        <div class="header-logo"><img src="{{ t('logo') }}" /></div>
+        <div class="header-logo">
+            <img src="{{ t('logo') }}" alt="{{ t('logo-text') }}" />
+        </div>
         <span class="page-title-general"
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
