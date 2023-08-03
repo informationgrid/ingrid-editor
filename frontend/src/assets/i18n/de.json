@@ -22,6 +22,7 @@
     "importDocument": "Datensatz importieren",
     "mostRecent": "Zuletzt bearbeitet im Katalog",
     "mostRecentPublished": "Zuletzt veröffentlicht im Katalog",
+    "oldestExpired": "Abgelaufene Datensätze",
     "form": "Daten",
     "formSingular": "Datensatz"
   },

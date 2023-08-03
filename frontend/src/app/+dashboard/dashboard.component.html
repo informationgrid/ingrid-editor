@@ -62,6 +62,7 @@
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
             </ige-card-box>
+
             <ige-card-box
                 data-cy="recent-published-docs"
                 label="{{ t('mostRecentPublished') }}"
@@ -72,6 +73,21 @@
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
             </ige-card-box>
+
+            <ng-container
+                *ngIf="oldestExpiredDocs$ | async as oldestExpiredDocs"
+            >
+                <ige-card-box
+                    *ngIf="oldestExpiredDocs.length"
+                    label="{{ t('oldestExpired') }}"
+                >
+                    <ige-document-list-item
+                        [docs]="oldestExpiredDocs"
+                        [hideDate]="false"
+                        (select)="openDocument($event._uuid)"
+                    ></ige-document-list-item>
+                </ige-card-box>
+            </ng-container>
         </div>
     </div>
 </div>

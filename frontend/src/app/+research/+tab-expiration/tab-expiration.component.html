@@ -39,19 +39,18 @@
         <ng-container *ngIf="{ shownData: shownData | async } as obs">
             <div
                 class="leading flex-row align-items-center justify-content-center gap-12"
+                id="result_dec"
                 tabindex="0"
                 aria-label="Tabelle der Verfallszeit"
                 aria-describedby="result_dec"
             >
-                <div id="result_dec">
-                    <ng-container *ngIf="!isSearching; else searching">
-                        <ng-container
-                            *ngIf="expiredData$.value?.totalHits; else noExpiry"
-                        >
-                            {{ obs.shownData.totalHits + " Ergebnisse" }}
-                        </ng-container>
+                <ng-container *ngIf="!isSearching; else searching">
+                    <ng-container
+                        *ngIf="expiredData$.value?.totalHits; else noExpiry"
+                    >
+                        {{ obs.shownData.totalHits + " Ergebnisse" }}
                     </ng-container>
-                </div>
+                </ng-container>
 
                 <ng-template #noExpiry>Alle Daten sind aktuell</ng-template>
 

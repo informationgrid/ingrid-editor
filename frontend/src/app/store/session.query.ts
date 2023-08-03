@@ -12,6 +12,9 @@ export class SessionQuery extends Query<SessionState> {
   latestPublishedDocuments$ = this.select(
     (state) => state.latestPublishedDocuments
   );
+  oldestExpiredDocuments$ = this.select(
+    (state) => state.oldestExpiredDocuments
+  );
   latestAddresses$ = this.select((state) => state.latestAddresses);
   recentAddresses$ = this.select((state) => state.recentAddresses);
   showJSONView$ = this.select((state) => state.ui.showJSONView);

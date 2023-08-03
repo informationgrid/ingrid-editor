@@ -25,6 +25,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import { UserDataService } from "../../services/user/user-data.service";
 import { ExpiredData } from "./tab-expiration.model";
 import { FormsModule } from "@angular/forms";
+import { isExpired } from "../../services/utils";
 
 @UntilDestroy()
 @Component({
@@ -93,10 +94,9 @@ export class TabExpirationComponent implements OnInit {
       )
       .subscribe();
     this.catalogService
-      .getConfig()
+      .getExpiryDuration()
       .pipe(
         untilDestroyed(this),
-        map((config) => config.expiredDatasetConfig?.expiryDuration),
         tap((expiryDuration) => (this.expiryDurationInDays = expiryDuration)),
         tap(() => this.onSearch.emit())
       )
@@ -136,12 +136,9 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private filterByExpiry(res: ResearchResponse): ResearchResponse {
-    const filtered = res.hits.filter((doc) => {
-      const expiryDuration = 1000 * 60 * 60 * 24 * this.expiryDurationInDays;
-      const modifiedTime = new Date(doc._contentModified).getTime();
-      const expiryTime = modifiedTime + expiryDuration;
-      return Date.now() > expiryTime;
-    });
+    const filtered = res.hits.filter((doc) =>
+      isExpired(doc._contentModified, this.expiryDurationInDays)
+    );
     return { totalHits: filtered.length, hits: filtered };
   }
 

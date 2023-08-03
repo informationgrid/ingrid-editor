@@ -29,6 +29,7 @@ export class DashboardComponent implements OnInit {
   private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
   recentPublishedDocs$: Observable<DocumentAbstract[]>;
+  oldestExpiredDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = new Subject<number[]>();
   messages$: BehaviorSubject<Message[]>;
 
@@ -55,6 +56,9 @@ export class DashboardComponent implements OnInit {
       this.sessionQuery.latestPublishedDocuments$.pipe(
         map((docs) => docs.slice(0, 5))
       );
+    this.oldestExpiredDocs$ = this.sessionQuery.oldestExpiredDocuments$.pipe(
+      map((docs) => docs.slice(0, 5))
+    );
     this.fetchStatistic();
     this.fetchData();
     this.messageService.loadStoredMessages();
@@ -68,6 +72,7 @@ export class DashboardComponent implements OnInit {
 
   fetchData() {
     this.docService.findRecent();
+    this.docService.findExpired();
   }
 
   createNewDocument() {
