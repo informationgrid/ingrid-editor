@@ -12,6 +12,8 @@ import { Observable, of } from "rxjs";
 export interface SelectCswRecordResponse {
   title: string;
   url: string;
+  identifier: string;
+  uuid: string;
 }
 
 @UntilDestroy()
@@ -46,9 +48,11 @@ export class SelectCswRecordDialog implements OnInit {
   }
 
   submit() {
-    this.dlg.close({
+    this.dlg.close(<SelectCswRecordResponse>{
       title: this.analysis.title,
       url: this.urlControl.value,
+      identifier: this.analysis.identifier,
+      uuid: this.analysis.uuid,
     });
   }
 

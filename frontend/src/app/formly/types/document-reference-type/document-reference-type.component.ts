@@ -109,8 +109,7 @@ export class DocumentReferenceTypeComponent
       .subscribe((item: SelectCswRecordResponse) => {
         if (item) {
           this.add(null, {
-            title: item.title,
-            url: item.url,
+            ...item,
             isExternalRef: true,
           });
           this.props.change?.(this.field);
