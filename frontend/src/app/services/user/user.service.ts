@@ -60,7 +60,7 @@ export class UserService {
         users
           .filter(
             // remove current user from list
-            (u) => u.login !== this.configService.$userInfo.getValue().userId
+            (u) => u.login !== this.configService.$userInfo.getValue().login
           )
           .sort((a, b) => a.login.localeCompare(b.login))
       ),

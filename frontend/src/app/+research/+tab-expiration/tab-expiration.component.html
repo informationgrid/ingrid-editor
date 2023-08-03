@@ -17,52 +17,70 @@
         *ngIf="expiryDurationInDays"
         class="flex-col gap-12 align-items-start"
     >
-        <button mat-flat-button color="primary" (click)="onSearch.emit()">
+        <button
+            mat-flat-button
+            color="primary"
+            (click)="onSearch.emit()"
+            (keyup.enter)="onSearch.emit()"
+            aria-description="Aktualisieren die Tabelle der Verfallszeit"
+        >
             Aktualisieren
         </button>
-        <mat-checkbox (change)="toggleFilter($event.checked)"
+        <mat-checkbox
+            [ngModel]="isFiltered$.value"
+            (click)="toggleFilter()"
+            (keyup.enter)="toggleFilter()"
+            aria-description="Zeigen nur Datensätze für die, ich verantwortlich bin"
             >Nur Datensätze für die ich verantwortlich bin
         </mat-checkbox>
     </div>
 
     <div main-content *ngIf="expiryDurationInDays">
-        <div
-            class="leading flex-row align-items-center justify-content-center gap-12"
-        >
-            <ng-container *ngIf="!isSearching; else searching">
-                {{
-                    totalHits
-                        ? totalHits + " Ergebnisse abgelaufen"
-                        : "Alle Daten sind aktuell."
-                }}
-            </ng-container>
-            <ng-template #searching>
-                <mat-spinner strokeWidth="3" diameter="24"></mat-spinner>
-                wird geprüft...
-            </ng-template>
-        </div>
+        <ng-container *ngIf="{ shownData: shownData | async } as obs">
+            <div
+                class="leading flex-row align-items-center justify-content-center gap-12"
+                tabindex="0"
+                aria-label="Tabelle der Verfallszeit"
+                aria-describedby="result_dec"
+            >
+                <div id="result_dec">
+                    <ng-container *ngIf="!isSearching; else searching">
+                        <ng-container
+                            *ngIf="expiredData$.value?.totalHits; else noExpiry"
+                        >
+                            {{ obs.shownData.totalHits + " Ergebnisse" }}
+                        </ng-container>
+                    </ng-container>
+                </div>
 
-        <mat-divider></mat-divider>
+                <ng-template #noExpiry>Alle Daten sind aktuell</ng-template>
 
-        <mat-tab-group *ngIf="totalHits">
-            <mat-tab label="Daten">
-                <ng-template matTabContent>
-                    <ige-expiration-table
-                        [isSearching]="isSearching"
-                        [filterUserId]="filterUserId"
-                        [result]="objects"
-                    ></ige-expiration-table>
+                <ng-template #searching>
+                    <mat-spinner strokeWidth="3" diameter="24"></mat-spinner>
+                    wird geprüft...
                 </ng-template>
-            </mat-tab>
-            <mat-tab label="Adressen">
-                <ng-template matTabContent>
-                    <ige-expiration-table
-                        [isSearching]="isSearching"
-                        [filterUserId]="filterUserId"
-                        [result]="addresses"
-                    ></ige-expiration-table>
-                </ng-template>
-            </mat-tab>
-        </mat-tab-group>
+            </div>
+
+            <mat-divider aria-hidden="true" />
+
+            <mat-tab-group *ngIf="obs.shownData?.totalHits">
+                <mat-tab label="Daten">
+                    <ng-template matTabContent>
+                        <ige-expiration-table
+                            [isSearching]="isSearching"
+                            [result]="obs.shownData.objects"
+                        ></ige-expiration-table>
+                    </ng-template>
+                </mat-tab>
+                <mat-tab label="Adressen">
+                    <ng-template matTabContent>
+                        <ige-expiration-table
+                            [isSearching]="isSearching"
+                            [result]="obs.shownData.addresses"
+                        ></ige-expiration-table>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </ng-container>
     </div>
 </page-template>

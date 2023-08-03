@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
-import { ResearchResponse } from "../../research.service";
 import { AsyncPipe, DatePipe, NgIf } from "@angular/common";
 import { DocumentIconModule } from "../../../shared/document-icon/document-icon.module";
 import { MatSort, MatSortModule } from "@angular/material/sort";
@@ -37,19 +36,13 @@ import { SharedModule } from "../../../shared/shared.module";
 export class ExpirationTableComponent implements AfterViewInit {
   @Input() isSearching: boolean;
 
-  @Input()
-  set filterUserId(id: number) {
-    this.dataSource.filter = id?.toString();
-  }
-
-  @Input() set result(val: ResearchResponse) {
-    this.updateTableByResult(val);
+  @Input() set result(docs: IgeDocument[]) {
+    this.dataSource.data = docs ?? [];
   }
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  totalHits: number;
   dataSource = new MatTableDataSource<IgeDocument>([]);
   displayedColumns: string[] = [
     "_type",
@@ -58,16 +51,7 @@ export class ExpirationTableComponent implements AfterViewInit {
     "_responsibleUser",
   ];
 
-  constructor(private router: Router) {
-    this.dataSource.filterPredicate = (doc, filter) => {
-      return doc._responsibleUser.toString() == filter;
-    };
-  }
-
-  private updateTableByResult(val: ResearchResponse) {
-    this.dataSource.data = val?.hits ?? [];
-    this.totalHits = val?.totalHits ?? 0;
-  }
+  constructor(private router: Router) {}
 
   openDataset(element: IgeDocument) {
     if (this.isSearching) return;

@@ -33,7 +33,8 @@ export interface Version {
 }
 
 export interface UserInfo {
-  userId: string;
+  id: number;
+  login: string;
   name: string;
   firstName: string;
   lastName: string;

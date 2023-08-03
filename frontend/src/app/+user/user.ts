@@ -10,7 +10,6 @@ export abstract class User {
   organisation: string;
   department: string;
   attributes: any[];
-  password?: string;
   creationDate: Date;
   modificationDate: Date;
   latestLogin?: Date;

@@ -43,6 +43,9 @@
             *matRowDef="let row; columns: displayedColumns"
             [class.readonly]="isSearching"
             (click)="openDataset(row)"
+            tabindex="0"
+            role="button"
+            (keyup.enter)="openDataset(row)"
         ></tr>
     </table>
 

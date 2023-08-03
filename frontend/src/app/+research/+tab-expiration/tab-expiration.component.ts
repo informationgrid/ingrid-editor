@@ -2,20 +2,29 @@ import { Component, EventEmitter, OnInit } from "@angular/core";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ResearchResponse, ResearchService } from "../research.service";
-import { combineLatestWith, concatMap, debounce, of, timer } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  combineLatestWith,
+  concatMap,
+  debounce,
+  of,
+  timer,
+} from "rxjs";
 import { ExpirationTableComponent } from "./expiration-table/expiration-table.component";
 import { MatButtonModule } from "@angular/material/button";
 import { catchError, filter, map, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { NgIf } from "@angular/common";
+import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
 import { MatDividerModule } from "@angular/material/divider";
 import { CatalogService } from "../../+catalog/services/catalog.service";
-import { UserService } from "../../services/user/user.service";
-import { FrontendUser } from "../../+user/user";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NavigationEnd, Router } from "@angular/router";
+import { UserDataService } from "../../services/user/user-data.service";
+import { ExpiredData } from "./tab-expiration.model";
+import { FormsModule } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -32,25 +41,29 @@ import { NavigationEnd, Router } from "@angular/router";
     MatDividerModule,
     MatTabsModule,
     MatProgressSpinnerModule,
+    AsyncPipe,
+    NgTemplateOutlet,
+    FormsModule,
   ],
 })
 export class TabExpirationComponent implements OnInit {
-  currentUser: FrontendUser;
+  currentUserId: number;
   expiryDurationInDays: number;
 
   isSearching: boolean = false;
-  filterUserId: number;
   onSearch = new EventEmitter<void>();
 
-  totalHits: number;
-  objects: ResearchResponse;
-  addresses: ResearchResponse;
+  isFiltered$ = new BehaviorSubject<boolean>(false);
+  expiredData$ = new BehaviorSubject<ExpiredData>(undefined);
+  shownData = combineLatest([this.expiredData$, this.isFiltered$]).pipe(
+    map(() => this.getShownData())
+  );
 
   constructor(
     private researchService: ResearchService,
     private configService: ConfigService,
     private catalogService: CatalogService,
-    private userService: UserService,
+    private userDataService: UserDataService,
     private router: Router
   ) {}
 
@@ -76,12 +89,7 @@ export class TabExpirationComponent implements OnInit {
     this.configService.$userInfo
       .pipe(
         untilDestroyed(this),
-        map((userInfo) =>
-          this.userService.users$.value.find(
-            (user) => user.login == userInfo.userId
-          )
-        ),
-        tap((user) => (this.currentUser = user))
+        tap((info) => (this.currentUserId = info.id))
       )
       .subscribe();
     this.catalogService
@@ -114,12 +122,9 @@ export class TabExpirationComponent implements OnInit {
 
     return this.search("selectDocuments").pipe(
       combineLatestWith(this.search("selectAddresses")),
-      map(([objects, addresses]) => {
-        this.objects = objects;
-        this.addresses = addresses;
-        this.totalHits =
-          (objects?.totalHits ?? 0) + (addresses?.totalHits ?? 0);
-      })
+      map(([objects, addresses]) =>
+        this.expiredData$.next(new ExpiredData(objects.hits, addresses.hits))
+      )
     );
   }
 
@@ -140,8 +145,16 @@ export class TabExpirationComponent implements OnInit {
     return { totalHits: filtered.length, hits: filtered };
   }
 
-  toggleFilter(val: boolean) {
-    this.filterUserId = val ? this.currentUser?.id : undefined;
+  getShownData(): ExpiredData {
+    if (this.isFiltered$.value && this.currentUserId != undefined) {
+      return this.expiredData$.value?.filterById(this.currentUserId);
+    } else {
+      return this.expiredData$.value;
+    }
+  }
+
+  toggleFilter() {
+    this.isFiltered$.next(!this.isFiltered$.value);
   }
 
   private updateOnError(error) {

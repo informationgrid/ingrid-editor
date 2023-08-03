@@ -5,7 +5,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import java.util.*
 
 data class UserInfo(
-    val userId: String? = null,
+    val id: Int? = null,
+    val login: String? = null,
     val name: String,
     val firstName: String,
     val lastName: String,

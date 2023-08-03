@@ -300,7 +300,8 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
             val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
             val userInfo = UserInfo(
-                userId = user.login,
+                id = dbUser?.id,
+                login = user.login,
                 name = user.firstName + ' ' + user.lastName,
                 lastName = user.lastName,
                 firstName = user.firstName,
