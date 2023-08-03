@@ -122,6 +122,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.keycloak:keycloak-admin-client:22.0.1'
+    
+
 
     // Markdown
     implementation "org.commonmark:commonmark:0.21.0"
@@ -178,6 +180,8 @@ dependencies {
 
     // iBus communication
     implementation('de.ingrid:ingrid-elasticsearch-tools:6.1.0')
+    // for javax.annotation-support for elasticsearch-tools
+    implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
 
     implementation('de.ingrid:ingrid-ibus-client:6.0.0') {
         exclude group: 'org.apache.logging.log4j'
