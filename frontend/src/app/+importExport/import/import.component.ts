@@ -120,7 +120,10 @@ export class ImportComponent implements OnInit {
     this.liveImportMessage
       .pipe(
         untilDestroyed(this),
-        tap((info) => (this.message = info))
+        tap((info) => {
+          // activate change detection, since sometimes view is not updated
+          setTimeout(() => (this.message = info));
+        })
       )
       .subscribe();
 
