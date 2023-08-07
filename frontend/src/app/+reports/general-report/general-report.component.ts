@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
-import { Subject } from "rxjs";
+import { firstValueFrom, Subject } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
@@ -107,9 +107,10 @@ export class GeneralReportComponent implements OnInit {
   }
 
   private async initFacets() {
-    return this.researchService
-      .getQuickFilter()
-      .pipe(tap((filters) => (this.facets = filters)))
-      .toPromise();
+    return firstValueFrom(
+      this.researchService
+        .getQuickFilter()
+        .pipe(tap((filters) => (this.facets = filters)))
+    );
   }
 }

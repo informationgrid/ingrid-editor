@@ -5,7 +5,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { Observable, of } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
@@ -136,14 +136,14 @@ export class FormChangeDeactivateGuard {
 
     if (action === "save") {
       const form = this.formStateService.getForm()?.value;
-      await this.documentService
-        .save({
+      await firstValueFrom(
+        this.documentService.save({
           data: form,
           isNewDoc: false,
           isAddress: isAddress,
           noVisualUpdates: true,
         })
-        .toPromise();
+      );
       this.documentService.reload$.next({
         uuid: currentUuid,
         forAddress: isAddress,

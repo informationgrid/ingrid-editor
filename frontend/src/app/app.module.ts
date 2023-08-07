@@ -93,6 +93,7 @@ import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.c
 import { pluginProvider } from "./plugin.provider";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { GermanDateAdapter } from "./services/german-date.adapter";
+import { firstValueFrom } from "rxjs";
 
 registerLocaleData(de);
 
@@ -145,16 +146,14 @@ export function ConfigLoader(
         (assigned) => assigned.id === rootPath
       );
       if (isAssignedToCatalog) {
-        // await catalogService.switchCatalog(rootPath).toPromise();
-        await http
-          .post<Catalog>(
+        await firstValueFrom(
+          http.post<Catalog>(
             configService.getConfiguration().backendUrl +
               "user/catalog/" +
               rootPath,
             null
           )
-          .toPromise()
-          .then(() => configService.getCurrentUserInfo());
+        ).then(() => configService.getCurrentUserInfo());
         return;
       }
 

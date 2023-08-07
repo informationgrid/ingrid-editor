@@ -21,7 +21,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { Subject } from "rxjs";
+import { firstValueFrom, Subject } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 
 export interface CreateOptions {
@@ -244,14 +244,14 @@ export class CreateNodeComponent implements OnInit {
 
   private saveForm(data: IgeDocument) {
     const pathIds = this.path.map((item) => item.id);
-    return this.documentService
-      .save({
+    return firstValueFrom(
+      this.documentService.save({
         data: data,
         isNewDoc: true,
         isAddress: this.forAddress,
         path: pathIds,
       })
-      .toPromise();
+    );
   }
 
   private navigateAfterSave(uuid: string) {

@@ -7,6 +7,7 @@ import {
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { FormGroup, UntypedFormGroup } from "@angular/forms";
+import { firstValueFrom } from "rxjs";
 
 export class FormUtils {
   static timestamp: number = 0;
@@ -42,9 +43,13 @@ export class FormUtils {
       const value = form.value;
       const decision = await this.showDecisionDialog(dialog);
       if (decision === "save") {
-        await documentService
-          .save({ data: value, isNewDoc: false, isAddress: isAddress })
-          .toPromise();
+        await firstValueFrom(
+          documentService.save({
+            data: value,
+            isNewDoc: false,
+            isAddress: isAddress,
+          })
+        );
       } else if (decision === "discard") {
         form.reset(undefined, { emitEvent: false });
       } else {
@@ -58,29 +63,30 @@ export class FormUtils {
   private static showDecisionDialog(
     dialog: MatDialog
   ): Promise<undefined | string> {
-    return dialog
-      .open(ConfirmDialogComponent, {
-        disableClose: true,
-        hasBackdrop: true,
-        data: (<ConfirmDialogData>{
-          title: "Änderungen speichern?",
-          message:
-            "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
-          buttons: [
-            { id: "cancel", text: "Abbrechen" },
-            { id: "discard", text: "Verwerfen", alignRight: true },
-            {
-              id: "save",
-              text: "Speichern",
-              alignRight: true,
-              emphasize: true,
-            },
-          ],
-        }) as ConfirmDialogData,
-      })
-      .afterClosed()
-      .pipe(first())
-      .toPromise();
+    return firstValueFrom(
+      dialog
+        .open(ConfirmDialogComponent, {
+          disableClose: true,
+          hasBackdrop: true,
+          data: (<ConfirmDialogData>{
+            title: "Änderungen speichern?",
+            message:
+              "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
+            buttons: [
+              { id: "cancel", text: "Abbrechen" },
+              { id: "discard", text: "Verwerfen", alignRight: true },
+              {
+                id: "save",
+                text: "Speichern",
+                alignRight: true,
+                emphasize: true,
+              },
+            ],
+          }) as ConfirmDialogData,
+        })
+        .afterClosed()
+        .pipe(first())
+    );
   }
 
   private static getDirtyState(form: UntypedFormGroup): Object {

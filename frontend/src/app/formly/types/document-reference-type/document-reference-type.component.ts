@@ -18,6 +18,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormUtils } from "../../../+form/form.utils";
 import { FormStateService } from "../../../+form/form-state.service";
+import { firstValueFrom } from "rxjs";
 
 interface Reference {
   isExternalRef: boolean;
@@ -174,14 +175,13 @@ export class DocumentReferenceTypeComponent
       return this.mapToDocumentReference(nodeEntity);
     }
 
-    return await this.docService
-      .load(item.uuid, false, false, true)
-      .pipe(
+    return await firstValueFrom(
+      this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
           return this.mapToDocumentReference(doc);
         })
       )
-      .toPromise();
+    );
   }
 
   private mapToDocumentReference(doc: IgeDocument): DocumentReference {

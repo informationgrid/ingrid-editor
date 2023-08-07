@@ -4,6 +4,7 @@ import { environment } from "../../../environments/environment";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { CatalogService } from "../../+catalog/services/catalog.service";
+import { firstValueFrom } from "rxjs";
 
 export class ConfigDataService {
   config: Configuration;
@@ -11,7 +12,7 @@ export class ConfigDataService {
   constructor(private httpClient: HttpClient) {}
 
   private getEnvironmentConfig(): Promise<Configuration> {
-    return this.httpClient.get<any>(environment.configFile).toPromise();
+    return firstValueFrom(this.httpClient.get<any>(environment.configFile));
   }
 
   /**
@@ -23,17 +24,18 @@ export class ConfigDataService {
    */
   async load(): Promise<any> {
     const config = await this.getEnvironmentConfig();
-    return this.httpClient
-      .get<any>(config.contextPath + "api/config")
-      .pipe(map((data) => ({ ...config, ...data })))
-      .toPromise();
+    return firstValueFrom(
+      this.httpClient
+        .get<any>(config.contextPath + "api/config")
+        .pipe(map((data) => ({ ...config, ...data })))
+    );
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {
     return (
-      this.httpClient
-        .get<any>(this.config.backendUrl + "info/currentUser")
-        .toPromise()
+      firstValueFrom(
+        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser")
+      )
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
         .then(ConfigDataService.mapUserInformation)

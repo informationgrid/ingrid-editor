@@ -1,6 +1,7 @@
 import { KeycloakOptions } from "keycloak-angular";
 import { AuthenticationService } from "./authentication.service";
 import { HttpClient } from "@angular/common/http";
+import { firstValueFrom } from "rxjs";
 
 export class AuthMockService extends AuthenticationService {
   constructor(private http: HttpClient) {
@@ -20,6 +21,6 @@ export class AuthMockService extends AuthenticationService {
   }
 
   login(): Promise<any> {
-    return this.http.get("/login", { responseType: "text" }).toPromise();
+    return firstValueFrom(this.http.get("/login", { responseType: "text" }));
   }
 }

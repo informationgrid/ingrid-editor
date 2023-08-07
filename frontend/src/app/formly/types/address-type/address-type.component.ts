@@ -19,6 +19,7 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../services/config/config.service";
+import { firstValueFrom } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -103,7 +104,7 @@ export class AddressTypeComponent
 
   private async callEditDialog(address?: AddressRef) {
     const foundAddresses = (
-      await this.documentService.find("", 1, true, true).toPromise()
+      await firstValueFrom(this.documentService.find("", 1, true, true))
     ).totalHits;
 
     if (foundAddresses) {

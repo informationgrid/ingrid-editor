@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, of, Subject } from "rxjs";
+import { firstValueFrom, Observable, of, Subject } from "rxjs";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
@@ -88,10 +88,11 @@ export class DynamicDatabase {
   }
 
   getPath(id: number): Promise<number[]> {
-    return this.docService
-      .getPath(id)
-      .pipe(map((paths) => paths.map((path) => path.id)))
-      .toPromise();
+    return firstValueFrom(
+      this.docService
+        .getPath(id)
+        .pipe(map((paths) => paths.map((path) => path.id)))
+    );
   }
 
   mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number): TreeNode[] {

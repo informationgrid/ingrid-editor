@@ -17,6 +17,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { TranslocoModule } from "@ngneat/transloco";
 import { NgIf } from "@angular/common";
+import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: "permission-table",
@@ -137,7 +138,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
   }
 
   getDocument(id: number): Promise<IgeDocument> {
-    return this.documentService.load(id, this.forAddress, false).toPromise();
+    return firstValueFrom(
+      this.documentService.load(id, this.forAddress, false)
+    );
   }
 
   updatePermission(element, level: PermissionLevel) {
