@@ -105,7 +105,7 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                     ?: false
             }
             ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
-            ?.map { CoupledResourceModel(null, it?.linkage?.url, it?.name?.value, true) } ?: emptyList()
+            ?.map { CoupledResourceModel(null, it?.linkage?.url, it?.name?.value, true, ) } ?: emptyList()
 
         return internalLinks + externalLinks
     }
