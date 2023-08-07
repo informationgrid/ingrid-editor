@@ -1,4 +1,11 @@
-<div class="timeout-wrapper" [class.warn]="timeout < 300">
+<div
+    class="timeout-wrapper"
+    [class.warn]="timeout < 300"
+    [class.auto-hide]="autoHide"
+    tabindex="0"
+    aria-description="Aktualisieren die Zeitspanne zum Auto-Logout."
+    (keyup.enter)="refreshSession()"
+>
     <span class="label">Logout in&nbsp;</span>
     <span *ngIf="timeout >= 300" class="time"
         >{{ timeout | time : "short" }}&nbsp;Minuten</span

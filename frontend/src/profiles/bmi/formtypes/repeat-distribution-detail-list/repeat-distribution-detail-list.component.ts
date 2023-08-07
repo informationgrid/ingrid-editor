@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -25,7 +25,7 @@ import {
   UploadFilesDialogComponent,
 } from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
 import { filter } from "rxjs/operators";
-import { LinkDialogComponent } from "../../../../app/formly/types/table/link-dialog/link-dialog.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "ige-repeat-distribution-detail-list",
@@ -48,6 +48,7 @@ import { LinkDialogComponent } from "../../../../app/formly/types/table/link-dia
     SharedPipesModule,
     FormErrorComponent,
     KeyValuePipe,
+    MatTooltipModule,
   ],
   standalone: true,
 })

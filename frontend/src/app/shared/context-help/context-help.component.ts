@@ -50,6 +50,10 @@ export class ContextHelpComponent implements OnInit, OnDestroy {
     }
   }
 
+  dismiss(): void {
+    this.dialogRef.close();
+  }
+
   ngOnDestroy(): void {
     clearInterval(this.timer);
   }

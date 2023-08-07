@@ -54,7 +54,7 @@
     </span>
     <ige-add-button
         *ngIf="props.useDialog && formControl.enabled"
-        [showLabel]="false"
+        [showTitle]="false"
         (add)="openDialog()"
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
@@ -70,7 +70,7 @@
     [class.error-btn]="
         showError && formControl.invalid && formControl.errors?.required
     "
-    [showLabel]="field.fieldGroup.length === 0"
+    [showTitle]="field.fieldGroup.length === 0"
     (add)="openDialog()"
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required

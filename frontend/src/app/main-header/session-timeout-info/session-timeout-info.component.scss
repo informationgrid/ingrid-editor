@@ -39,3 +39,20 @@
     opacity: 1;
   }
 }
+
+.timeout-wrapper.auto-hide {
+  opacity: 0;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+
+    button {
+      display: unset;
+    }
+  }
+
+  button {
+    display: none;
+  }
+}

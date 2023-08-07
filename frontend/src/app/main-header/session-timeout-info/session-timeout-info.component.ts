@@ -8,6 +8,7 @@ import { AuthenticationFactory } from "../../security/auth.factory";
 })
 export class SessionTimeoutInfoComponent implements OnInit {
   @Input() timeout: number;
+  @Input() autoHide: boolean = true;
 
   constructor(private authFactory: AuthenticationFactory) {}
 

@@ -148,12 +148,6 @@ export class SelectTypeComponent
     return undefined;
   }
 
-  _getAriaLabel() {
-    return this.props.attributes
-      ? this.props.attributes["aria-label"]
-      : undefined;
-  }
-
   private getSelectAllValue(options: any[]) {
     if (!this.selectAllValue || options !== this.selectAllValue.options) {
       const flatOptions: any[] = [];

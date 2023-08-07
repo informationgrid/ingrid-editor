@@ -1,4 +1,7 @@
-<mat-form-field [appearance]="props.appearance">
+<mat-form-field
+    [appearance]="props.appearance"
+    [attr.aria-label]="props.ariaLabel"
+>
     <mat-date-range-input
         [rangePicker]="picker"
         [formGroup]="rangeFormGroup"
@@ -8,12 +11,14 @@
             matStartDate
             placeholder="TT.MM.JJJJ"
             formControlName="start"
+            aria-label="von"
             (change)="updateFormControl()"
         />
         <input
             matEndDate
             placeholder="TT.MM.JJJJ"
             formControlName="end"
+            aria-label="bis"
             [errorStateMatcher]="errorStateMatcher"
             (change)="updateFormControl()"
         />

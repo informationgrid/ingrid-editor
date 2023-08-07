@@ -33,5 +33,7 @@ export class HeaderNavigationComponent implements OnInit {
           10;
     // scroll to position
     document.getElementById("form").scrollTo({ top: y, behavior: "smooth" });
+    // set autofocus to the section header
+    element.querySelector("h3").focus({ preventScroll: true });
   }
 }

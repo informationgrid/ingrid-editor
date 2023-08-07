@@ -8,11 +8,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 export class AddButtonComponent implements OnInit {
   @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";
   @Input() showRequiredError = false;
-  @Input() showLabel = true;
+  @Input() showTitle = true;
   @Input() buttonTitle = "Hinzufügen";
+
   @Input() set options(value: any[]) {
     if (value) this._options = value;
   }
+
+  // accessibility
+  @Input() ariaLabel: string;
 
   @Output() add = new EventEmitter();
 

@@ -5,11 +5,14 @@
     mixedCdkDragDrop
     orientation="horizontal"
     (dropped)="drop($event)"
+    [attr.aria-label]="props.ariaLabel"
 >
     <span
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDropList
         mixedCdkDropList
+        tabindex="0"
+        (keydown.enter)="removeItem(i)"
     >
         <mat-chip-option
             disableRipple
@@ -19,8 +22,6 @@
             [removable]="true"
             [selectable]="false"
             (removed)="removeItem(i)"
-            tabindex="0"
-            (keydown.enter)="removeItem(i)"
         >
             <mat-icon
                 *ngIf="props.showLanguage"
@@ -41,7 +42,7 @@
             <button
                 *ngIf="formControl.enabled"
                 matChipRemove
-                aria-label="Remove chip"
+                aria-label="Eintrag entfernen"
             >
                 <mat-icon>cancel</mat-icon>
             </button>
@@ -124,6 +125,7 @@
         [formControl]="inputControl"
         (keydown)="handleKeydown($event)"
         (blur)="inputControl.setValue('')"
+        [aria-label]="props.ariaLabel"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
@@ -238,6 +240,8 @@
             [errorStateMatcher]="matcher"
             (focusin)="hasFocus = true"
             (focusout)="hasFocus = false"
+            [attr.aria-label]="props.ariaLabel"
+            aria-description="Die Eingabe muss noch mit 'Return' bestätigt werden"
         />
         <div matSuffix>
             <mat-spinner

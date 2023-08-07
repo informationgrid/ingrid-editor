@@ -1,8 +1,17 @@
-<div class="anchor-navigation mat-body">
+<div
+    class="anchor-navigation mat-body"
+    role="menubar"
+    aria-label="Navigation zu einzelnem Formularsegment"
+>
     <ng-container *ngFor="let section of sections; let i = index">
-        <a mat-button class="link-button" (click)="scrollToSection(i)">
+        <button
+            mat-button
+            class="link-button"
+            role="menuitem"
+            (click)="scrollToSection(i)"
+        >
             {{ section }}
-        </a>
+        </button>
         <ng-container *ngIf="i !== sections.length - 1">|</ng-container>
     </ng-container>
 </div>

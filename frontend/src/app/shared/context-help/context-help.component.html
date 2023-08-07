@@ -7,11 +7,18 @@
             ></mat-icon>
         </div>
         <span class="text">{{ title }}</span>
-        <button mat-icon-button mat-dialog-close>
+        <!-- mat-dialog-close is unusable due to contrast accessibility -->
+        <button
+            mat-icon-button
+            aria-label="Eingabehilfe schließen"
+            matTooltip="Schließen"
+            (click)="dismiss()"
+        >
             <mat-icon>close</mat-icon>
         </button>
     </h2>
     <div
+        tabindex="0"
         mat-dialog-content
         [innerHTML]="description$ | async"
         [class.initialWidth]="notResized"

@@ -4,6 +4,8 @@
     [class.disabled]="disabled"
     [class.warning]="content.iconState === ''"
     [matTooltip]="stateInfo"
+    tabindex="0"
+    role="listitem"
 >
     <mat-card-content>
         <div class="header flex-row">
@@ -16,8 +18,8 @@
                 mat-icon-button
                 type="button"
                 class="menu-button"
-                matTooltip="Bearbeiten"
                 [matMenuTriggerFor]="linkedAddressMenu"
+                matTooltip="Bearbeiten"
             >
                 <mat-icon svgIcon="Mehr"></mat-icon>
             </button>

@@ -198,6 +198,7 @@ export class BmiDoctype extends BaseDoctype {
             showSearch: true,
             className: "flex-1",
             wrappers: ["form-field"],
+            ariaLabel: "Zeitliche Abdeckung der Daten",
             options: [
               { label: "am", value: "at" },
               { label: "seit", value: "since" },
@@ -209,6 +210,7 @@ export class BmiDoctype extends BaseDoctype {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
             required: true,
+            ariaLabel: "Zeitliche Abdeckung der Daten",
             expressions: {
               hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
             },
@@ -216,6 +218,7 @@ export class BmiDoctype extends BaseDoctype {
           this.addDateRange("timeSpanRange", null, {
             wrappers: [],
             required: true,
+            ariaLabel: "Zeitliche Abdeckung der Daten",
             expressions: {
               hide: "model?.rangeType?.key !== 'range'",
             },
@@ -245,6 +248,8 @@ export class BmiDoctype extends BaseDoctype {
         required: options?.required,
         backendUrl: this.configService.getConfiguration().backendUrl,
         infoText: options?.infoText,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldArray: {
         fieldGroup: options?.fields,

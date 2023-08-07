@@ -3,7 +3,13 @@
     beschriebenen Datenbestands. Nutzen Sie dazu den blauen „+“-Button auf der
     Karte.
     <br />
-    <a *ngIf="props.hasContextHelp" (click)="showContextHelp()"
+    <a
+        *ngIf="props.hasContextHelp"
+        tabindex="0"
+        role="button"
+        aria-label="Hilfe zur Kartenerstellung"
+        aria-haspopup="dialog"
+        (click)="showContextHelp()"
         >Hilfe zu Raumbezügen</a
     >
 </div>
@@ -26,6 +32,9 @@
         data-cy="spatialButton"
         color="primary"
         matTooltip="Raumbezug hinzufügen"
+        aria-haspopup="dialog"
+        [attr.aria-label]="props.ariaLabel"
+        aria-description="Raumbezug hinzufügen"
         (click)="openSpatialDialog()"
         [ngClass]="{
             'has-error': showError && formControl.errors?.required

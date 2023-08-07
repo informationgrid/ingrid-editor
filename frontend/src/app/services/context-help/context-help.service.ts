@@ -102,6 +102,8 @@ export class ContextHelpService {
         title: label,
         description$: helpText$,
       },
+      role: "dialog",
+      ariaLabel: label,
       backdropClass: "cdk-overlay-transparent-backdrop",
       hasBackdrop: false,
       closeOnNavigation: true,

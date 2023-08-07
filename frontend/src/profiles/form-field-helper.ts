@@ -27,6 +27,8 @@ export interface Options {
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
+  ariaLabel?: string;
+  ariaDescription?: string;
 }
 
 export interface DatePickerOptions extends Options {
@@ -205,6 +207,7 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         attributes: {
           style: "resize:vertical;",
+          "aria-label": label,
         },
         appearance: "outline",
         required: options?.required,
@@ -241,6 +244,8 @@ export class FormFieldHelper {
         required: options?.required,
         allowedTypes: options?.allowedTypes,
         max: options?.max,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       validators: {
         addressesPublished: {
@@ -311,6 +316,8 @@ export class FormFieldHelper {
         asAutocomplete: options?.asAutocomplete ?? false,
         asSimpleValues: options?.asSimpleValues,
         convert: options?.convert,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
     };
@@ -448,6 +455,9 @@ export class FormFieldHelper {
         keydown: options?.keydown,
         placeholder: options?.placeholder,
         hideInPreview: options?.hideInPreview ?? false,
+        attributes: {
+          "aria-label": label,
+        },
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
@@ -491,6 +501,8 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         contextHelpId: options?.contextHelpId,
+        ariaLabel: options?.ariaLabel ?? label ?? options?.fieldLabel,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
       hooks: options?.hooks,
@@ -555,6 +567,8 @@ export class FormFieldHelper {
         height: 386,
         limitTypes: options?.limitTypes,
         max: options?.max,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
     };
   }
@@ -577,6 +591,10 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
         datepickerOptions: options?.datepickerOptions,
+        attributes: {
+          "aria-label": options?.ariaLabel,
+          "aria-description": options?.ariaDescription,
+        },
       },
       expressions: expressions,
       validators: options?.validators,
@@ -612,6 +630,8 @@ export class FormFieldHelper {
         externalLabel: label,
         appearance: "outline",
         required: options?.required,
+        ariaLabel: options?.ariaLabel,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
       validators: options?.validators ?? {

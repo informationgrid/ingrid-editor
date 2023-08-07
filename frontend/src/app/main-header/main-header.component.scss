@@ -1,16 +1,7 @@
 @import "../../variables";
 
-ige-session-timeout-info {
-  display: none;
-}
-
 .header-row {
   color: $ige-secondary;
-
-  &:hover ige-session-timeout-info,
-  ige-session-timeout-info.show {
-    display: inline-block;
-  }
 }
 
 .center-header {
@@ -31,16 +22,15 @@ ige-session-timeout-info {
   text-overflow: fade;
 }
 
-.catalog-title {
-  display: inline-flex;
-  align-items: center;
-  color: $ige-primary;
-  cursor: pointer;
-  pointer-events: auto;
+.catalog-button {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.4px;
+  font-size: 12px !important;
+  color: $ige-primary !important;
 
-  &.empty-menu {
-    cursor: text;
-    pointer-events: none;
+  mat-icon {
+    margin-left: 0;
   }
 }
 
@@ -135,12 +125,16 @@ ige-session-timeout-info {
 }
 
 .user-popup-footer {
+  min-height: 40px;
+  justify-content: center;
   border-top: 1px solid $ige-background-bar;
-  //margin-bottom: -8px;
-  text-align: center;
 
-  button {
-    width: 100%;
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $ige-secondary;
+    text-transform: uppercase;
+    letter-spacing: 1.25px;
   }
 }
 
@@ -181,4 +175,10 @@ mat-card-title {
 .mat-mdc-menu-item[disabled] {
   opacity: unset;
   color: rgba(0, 0, 0, 0.6);
+}
+
+.popup-leading {
+  color: $ige-hint-color;
+  min-height: 48px;
+  padding: 0 16px;
 }

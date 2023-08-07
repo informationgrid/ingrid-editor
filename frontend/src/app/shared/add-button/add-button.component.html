@@ -6,9 +6,11 @@
             color="primary"
             mat-flat-button
             class="button-with-text primary"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
-            (click)="add.next()"
+            (click)="add.emit()"
+            [attr.aria-label]="ariaLabel"
+            aria-description="hinzufügen"
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -17,10 +19,12 @@
             type="button"
             mat-stroked-button
             class="button-with-text"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
-            (click)="add.next()"
-            [matTooltip]="showLabel ? '' : 'Hinzufügen'"
+            (click)="add.emit()"
+            [matTooltip]="showTitle ? '' : 'Hinzufügen'"
+            [attr.aria-label]="ariaLabel"
+            aria-description="hinzufügen"
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -31,9 +35,11 @@
             type="button"
             mat-stroked-button
             class="button-with-text"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
             [matMenuTriggerFor]="menuOptions"
+            [attr.aria-label]="ariaLabel"
+            aria-description="hinzufügen"
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -41,7 +47,7 @@
             <button
                 mat-menu-item
                 *ngFor="let option of _options"
-                (click)="add.next(option.key)"
+                (click)="add.emit(option.key)"
             >
                 {{ option.value }}
             </button>
@@ -54,6 +60,6 @@
 
     <ng-template #buttonContent>
         <mat-icon>add</mat-icon>
-        <span *ngIf="showLabel" class="btn-title">{{ buttonTitle }}</span>
+        <span *ngIf="showTitle" class="btn-title">{{ buttonTitle }}</span>
     </ng-template>
 </div>

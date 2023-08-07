@@ -25,17 +25,24 @@
             class="header-info flex-grow"
         >
             Katalog:
-            <span
-                class="catalog-title"
+            <button
+                class="catalog-button"
+                mat-button
                 [matTooltip]="currentCatalog"
                 [matTooltipShowDelay]="1000"
                 [matMenuTriggerFor]="catMenu"
-                [class.empty-menu]="otherAssignedCatalogs.length == 0"
-                >{{ currentCatalog }}
-                <mat-icon *ngIf="otherAssignedCatalogs.length > 0"
-                    >keyboard_arrow_down</mat-icon
-                >
-            </span>
+                [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
+                [disabled]="otherAssignedCatalogs.length == 0"
+                aria-label="Menü zur Auswahl der Kataloge"
+                aria-describedby="catalog-label"
+            >
+                <span id="catalog-label">{{ currentCatalog }}</span>
+                <mat-icon
+                    *ngIf="otherAssignedCatalogs.length > 0"
+                    iconPositionEnd
+                    >keyboard_arrow_down
+                </mat-icon>
+            </button>
             <mat-menu #catMenu="matMenu">
                 <span
                     *ngFor="let catalog of otherAssignedCatalogs"
@@ -53,6 +60,7 @@
                 class="user-popup pad-right"
                 mat-icon-button
                 [matMenuTriggerFor]="menu"
+                aria-label="Nutzerprofil"
                 matTooltip="Nutzerprofil"
                 data-cy="header-profile-button"
             >
@@ -81,14 +89,14 @@
                     Sprache: Deutsch
                     <mat-icon>arrow_drop_down</mat-icon>
                 </span>-->
-                <span
+                <button
                     mat-menu-item
                     [disableRipple]="true"
                     (click)="openProfileSettings()"
                 >
                     <mat-icon svgIcon="perm_identity-24px"></mat-icon>
                     Profil verwalten
-                </span>
+                </button>
                 <!--<span
                     mat-menu-item
                     disabled
@@ -98,16 +106,14 @@
                     <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
                     Einstellungen
                 </span>-->
-                <div class="user-popup-footer">
-                    <button
-                        mat-button
-                        color="primary"
-                        (click)="logout()"
-                        data-cy="logout-button"
-                    >
-                        Abmelden
-                    </button>
-                </div>
+                <button
+                    mat-menu-item
+                    class="user-popup-footer"
+                    (click)="logout()"
+                    data-cy="logout-button"
+                >
+                    <span class="label">Abmelden</span>
+                </button>
             </mat-menu>
 
             <button
@@ -115,7 +121,8 @@
                 class="user-popup"
                 mat-icon-button
                 [matMenuTriggerFor]="menuInfo"
-                matTooltip="Systemnavigation"
+                aria-label="Systemeinstellungen"
+                matTooltip="Systemeinstellungen"
                 data-cy="header-info-button"
             >
                 <mat-icon svgIcon="Mehr"></mat-icon>
@@ -130,10 +137,11 @@
                     >
                 </div>
 
-                <span mat-menu-item disabled class="category-item">
+                <div class="popup-leading flex-row align-items-center">
                     Verwaltung
-                </span>
+                </div>
                 <mat-divider></mat-divider>
+
                 <ng-container *ngFor="let group of menuItems">
                     <div *ngIf="isAdmin">
                         <!--                        <ng-container *ngFor="let entry of group.entries">-->
@@ -156,10 +164,12 @@
                         <!--                        </ng-container>-->
                     </div>
                 </ng-container>
-                <span mat-menu-item disabled class="category-item">
+
+                <div class="popup-leading flex-row align-items-center">
                     Informationen
-                </span>
+                </div>
                 <mat-divider></mat-divider>
+
                 <ng-container *ngFor="let item of menuInfos">
                     <a mat-menu-item href="{{ item.link }}" target="_blank">
                         {{ item.title }}

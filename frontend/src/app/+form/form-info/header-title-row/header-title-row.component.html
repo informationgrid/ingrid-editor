@@ -15,6 +15,7 @@
         [class.editable]="!disableEdit"
         (click)="!disableEdit && editTitle()"
         tabindex="0"
+        role="textbox"
         (keyup.enter)="!disableEdit && editTitle()"
     >
         <span class="flex-1">{{
@@ -49,9 +50,12 @@
         mat-icon-button
         data-cy="btn-more-header"
         class="dark menu-button btn-toggle-form-header"
-        [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
         [class.expanded]="showMore"
         (click)="toggleMoreInfo()"
+        [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
+        [attr.aria-label]="
+            (showMore ? 'Schließen' : 'Öffnen') + ' Details des Datensatzes'
+        "
     >
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
@@ -61,7 +65,8 @@
         mat-icon-button
         class="menu dark menu-button"
         [matMenuTriggerFor]="moreActionsMenu"
-        matTooltip="Bearbeiten"
+        matTooltip="Bbearbeiten"
+        aria-label="Datensatz bearbeiten"
     >
         <mat-icon svgIcon="Mehr"></mat-icon>
         <mat-menu #moreActionsMenu="matMenu">
