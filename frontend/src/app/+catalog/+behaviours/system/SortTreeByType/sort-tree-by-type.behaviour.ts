@@ -26,8 +26,10 @@ export class SortTreeByTypeBehaviour extends Plugin {
       return -1;
     } else if (a.type !== "FOLDER" && b.type === "FOLDER") {
       return 1;
-    } else {
+    } else if (a.type !== b.type) {
       return a.type.localeCompare(b.type);
+    } else {
+      return a.title.localeCompare(b.title);
     }
   };
 
