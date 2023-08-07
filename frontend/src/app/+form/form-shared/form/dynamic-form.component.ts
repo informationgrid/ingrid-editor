@@ -261,6 +261,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     FormUtils.addHotkeys(event, this.formToolbarService, this.readonly);
   }
 
+  @HostListener("window:beforeunload", ["$event"])
+  beforeUnloadHandler(event: Event) {
+    if (this.form?.dirty) {
+      event.returnValue = false;
+    }
+  }
+
   private initScrollBehavior() {
     const element = this.scrollForm.nativeElement;
     fromEvent(element, "scroll")

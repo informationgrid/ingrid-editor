@@ -82,7 +82,11 @@ export class MainHeaderComponent implements OnInit {
     );
   }
 
-  logout() {
+  async logout() {
+    const hasNavigated = await this.router.navigate([
+      `${ConfigService.catalogId}/dashboard`,
+    ]);
+    if (!hasNavigated) return;
     this.storageService.clear("ige-refresh-token");
     this.authFactory.get().logout();
   }

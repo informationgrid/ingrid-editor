@@ -59,8 +59,10 @@ export class FormChangeDeactivateGuard {
 
     return this.handleFormHasChanged(target).pipe(
       tap((leavePage) => {
-        if (leavePage)
+        if (leavePage) {
           this.handleBehaviourRegistration(currentState, nextState);
+          this.formStateService.getForm().reset();
+        }
       })
     );
   }
