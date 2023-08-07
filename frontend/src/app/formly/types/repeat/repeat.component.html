@@ -38,7 +38,10 @@
             ></formly-field>
             <button
                 *ngIf="formControl.enabled"
-                [disabled]="props.minLength && fieldRef < props.minLength"
+                [disabled]="
+                    props.minLength &&
+                    groupedFields[key].length <= props.minLength
+                "
                 mat-icon-button
                 class="close"
                 type="button"
