@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: url
+id: uuidRef
 docType:
   - InGridDataCollection
   - InGridGeoDataset
@@ -13,9 +13,9 @@ profile: ingrid
 
 
 # title, used as window title
-title: Verweisziel
+title: Verweisziel UUID
 ---
 
 # Verweisziel
 
-Angabe der Webseite (URL), auf die verwiesen werden soll.
+Angabe des Datensatzes (einer uuid), auf den verwiesen werden soll.
