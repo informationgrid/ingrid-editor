@@ -35,11 +35,13 @@
         "coupledResources": [
         @for(var resource : ForSupport.of(model.getCoupledResources()))
             {
-            @if(resource.get().getUuid() != null)
+            @if(resource.get().isExternalRef())
+                "identifier": "",
                 "uuid": "${resource.get().getUuid()}",
-            @else
                 "url": "${resource.get().getUrl()}",
                 "title": "${resource.get().getTitle()}",
+            @else
+                "uuid": "${resource.get().getUuid()}",
             @endif
             "isExternalRef": ${resource.get().isExternalRef()}
             }@if (!resource.isLast()),@endif

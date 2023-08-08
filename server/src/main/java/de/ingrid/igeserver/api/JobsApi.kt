@@ -114,5 +114,11 @@ interface JobsApi {
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun removeUnreferencedDocuments(principal: Principal): ResponseEntity<List<String>>
+
+    @PostMapping(
+        value = ["/jobs/update-external-coupled-resources"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String>
 }
 

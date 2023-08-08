@@ -750,6 +750,7 @@ data class CoupledResourceModel(
     val url: String?,
     val title: String?,
     val isExternalRef: Boolean,
+    val identifier: String? = null,
 )
 
 data class PointOfContact(
