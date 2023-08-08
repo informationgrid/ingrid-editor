@@ -117,8 +117,7 @@ export const fields = (codelistService: CodelistService) =>
           type: "number",
           wrappers: ["panel", "form-field"],
           props: {
-            externalLabel:
-              "Zeitraum der Gültigkeit von Datensätzen in Tagen (optional)",
+            externalLabel: "Zeitraum der Gültigkeit von Metadaten in Tagen",
             appearance: "outline",
           },
         },
