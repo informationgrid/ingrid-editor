@@ -79,7 +79,7 @@ export const getNewUserFormFields = (
         externalLabel: "E-Mail",
         appearance: "outline",
         description:
-          'An die angegebene Email-Adresse wird bei Klick auf "Anlegen" eine automatische Email mit dem Passwort versendet.',
+          'An die angegebene Mail-Adresse wird bei Klick auf "Anlegen" eine automatische E-Mail mit dem Passwort versendet.',
         required: true,
       },
       validators: {

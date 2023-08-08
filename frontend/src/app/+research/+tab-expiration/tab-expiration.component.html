@@ -1,7 +1,7 @@
-<page-template label="Verfallszeit">
+<page-template label="Abgelaufene Metadaten">
     <div left-side>
         <ng-container *ngIf="expiryDurationInDays; else expiryUnset">
-            Hier sehen Sie die Datensätze, deren Verfallszeitspanne abgelaufen
+            Hier sehen Sie die Metadaten, deren Verfallszeitspanne abgelaufen
             ist und auf die Sie Schreib- oder Leserechte haben.
         </ng-container>
         <ng-template #expiryUnset
@@ -22,7 +22,7 @@
             color="primary"
             (click)="onSearch.emit()"
             (keyup.enter)="onSearch.emit()"
-            aria-description="Aktualisieren die Tabelle der Verfallszeit"
+            aria-description="Aktualisieren die Tabelle der abgelaufenen Metadaten"
         >
             Aktualisieren
         </button>
@@ -41,7 +41,7 @@
                 class="leading flex-row align-items-center justify-content-center gap-12"
                 id="result_dec"
                 tabindex="0"
-                aria-label="Tabelle der Verfallszeit"
+                aria-label="Tabelle der abgelaufenen Metadaten"
                 aria-describedby="result_dec"
             >
                 <ng-container *ngIf="!isSearching; else searching">

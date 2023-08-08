@@ -129,10 +129,12 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private search(type: string) {
-    return this.researchService.search("", { type }).pipe(
-      catchError((error) => this.updateOnError(error)),
-      map((res) => this.filterByExpiry(res))
-    );
+    return this.researchService
+      .search("", { type: type, ignoreFolders: "exceptFolders" })
+      .pipe(
+        catchError((error) => this.updateOnError(error)),
+        map((res) => this.filterByExpiry(res))
+      );
   }
 
   private filterByExpiry(res: ResearchResponse): ResearchResponse {

@@ -34,7 +34,7 @@ const routes: Routes = [
         path: "expiration",
         component: TabExpirationComponent,
         data: {
-          title: "Verfallszeit",
+          title: "Abgelaufene Metadaten",
           tabIdentifier: "expiration",
         },
       },

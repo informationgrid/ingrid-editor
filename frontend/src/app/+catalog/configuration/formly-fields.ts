@@ -91,7 +91,7 @@ export const fields = (codelistService: CodelistService) =>
       wrappers: ["section"],
       key: "expiredDatasetConfig",
       props: {
-        label: "Abgelaufene Datensätze",
+        label: "Abgelaufene Metadaten",
       },
       fieldGroup: [
         {
@@ -99,8 +99,7 @@ export const fields = (codelistService: CodelistService) =>
           type: "checkbox",
           wrappers: ["panel"],
           props: {
-            externalLabel:
-              "Email über abgelaufene Datensätze an Ansprechpartner senden",
+            externalLabel: "E-Mail über abgelaufene Metadaten senden",
             appearance: "outline",
           },
         },
@@ -109,8 +108,7 @@ export const fields = (codelistService: CodelistService) =>
           type: "checkbox",
           wrappers: ["panel"],
           props: {
-            externalLabel:
-              "Email auch für weiterhin abgelaufene Datensätze senden",
+            externalLabel: "E-Mail nach erneutem Ablauf senden",
             appearance: "outline",
           },
         },
@@ -129,7 +127,7 @@ export const fields = (codelistService: CodelistService) =>
           type: "number",
           wrappers: ["panel", "form-field"],
           props: {
-            externalLabel: "Benachrichtigung vor Ablauf in Tagen (optional)",
+            externalLabel: "E-Mail vor Ablauf in Tagen (optional)",
             appearance: "outline",
           },
         },
