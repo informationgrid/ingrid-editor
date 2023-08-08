@@ -87,8 +87,10 @@ export class MainHeaderComponent implements OnInit {
       `${ConfigService.catalogId}`,
     ]);
     if (!hasNavigated) return;
-    this.storageService.clear("ige-refresh-token");
-    this.authFactory.get().logout();
+    setTimeout(() => {
+      this.storageService.clear("ige-refresh-token");
+      this.authFactory.get().logout();
+    });
   }
 
   getInitials(user: UserInfo) {
