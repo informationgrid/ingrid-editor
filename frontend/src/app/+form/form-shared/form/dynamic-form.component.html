@@ -64,6 +64,9 @@
                             [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
+                            <div class="requiredDescription">
+                                Mit * gekennzeichnete Felder sind Pflichtfelder.
+                            </div>
                             <formly-form
                                 [form]="form"
                                 [fields]="fields"
