@@ -8,8 +8,11 @@
             data-cy="create-title"
             placeholder="Eingeben..."
             autocomplete="off"
-            (keyup.enter)="create.next()"
+            (keyup.enter)="create.emit()"
             required
+            [attr.aria-label]="
+                isFolder ? 'Titel des Ordners' : 'Titel des Datensatzes'
+            "
         />
         <mat-error>Bitte geben Sie einen Titel ein</mat-error>
     </mat-form-field>

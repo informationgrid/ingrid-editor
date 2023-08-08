@@ -36,6 +36,17 @@ export class CopyCutPastePlugin extends Plugin {
 
   private query: TreeQuery | AddressTreeQuery;
 
+  // event element needs to be passed for restoring focus correctly,
+  // see https://github.com/angular/components/issues/17962
+  private eventEl: HTMLElement;
+
+  // create extended onEvent to store event element
+  private onEvent(id: string) {
+    return this.docEvents
+      .onEvent(id)
+      .pipe(tap((event) => (this.eventEl = event.data?.eventEl)));
+  }
+
   isAdmin = this.config.isAdmin();
 
   constructor(
@@ -78,9 +89,9 @@ export class CopyCutPastePlugin extends Plugin {
 
     // add event handler for revert
     const toolbarEventSubscription = [
-      this.docEvents.onEvent("COPY").subscribe(() => this.copy()),
-      this.docEvents.onEvent("CUT").subscribe(() => this.cut()),
-      this.docEvents.onEvent("COPYTREE").subscribe(() => this.copy(true)),
+      this.onEvent("COPY").subscribe(() => this.copy()),
+      this.onEvent("CUT").subscribe(() => this.cut()),
+      this.onEvent("COPYTREE").subscribe(() => this.copy(true)),
     ];
 
     // set button state according to selected documents
@@ -243,9 +254,12 @@ export class CopyCutPastePlugin extends Plugin {
           forAddress: this.forAddress,
           typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
+        delayFocusTrap: true,
+        ariaLabel: title,
       })
       .afterClosed()
       .pipe(
+        tap(() => this.eventEl?.focus()),
         filter((result) => result) // only confirmed dialog
       );
   }

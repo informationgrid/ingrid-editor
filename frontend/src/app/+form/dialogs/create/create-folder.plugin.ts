@@ -13,6 +13,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Injectable()
@@ -36,7 +37,8 @@ export class CreateFolderPlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private transloco: TranslocoService
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -124,6 +126,8 @@ export class CreateFolderPlugin extends Plugin {
         forAddress: this.forAddress,
         isFolder: true,
       } as CreateOptions,
+      restoreFocus: true,
+      ariaLabel: this.transloco.translate("toolbar.newFolder"),
     });
   }
 

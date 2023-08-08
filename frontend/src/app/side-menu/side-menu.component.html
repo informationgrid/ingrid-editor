@@ -1,10 +1,11 @@
 <mat-nav-list
     [class.collapsed]="!menuIsExpanded"
     *transloco="let t; read: 'menu'"
+    role="menu"
+    aria-label="Hauptmenü"
 >
     <a
         mat-list-item
-        tabindex="0"
         *ngFor="let item of menuItems | async"
         (click)="gotoPage(item.path)"
         (keydown.enter)="gotoPage(item.path)"
@@ -16,6 +17,8 @@
         [class.active]="
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
+        tabindex="0"
+        role="menuitem"
     >
         <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
         <p matListItemTitle>{{ t(item.path) }}</p>
@@ -40,7 +43,6 @@
     <a
         *ngIf="showDrawer | async"
         mat-list-item
-        tabindex="0"
         class="menu-toggle no-text-transform"
         (click)="toggleSidebar(!menuIsExpanded)"
         (keydown.enter)="toggleSidebar(!menuIsExpanded)"
@@ -48,6 +50,8 @@
         [matTooltipDisabled]="menuIsExpanded"
         matTooltipPosition="right"
         data-cy="menu-scale"
+        tabindex="0"
+        role="menuitem"
     >
         <mat-icon
             *ngIf="!menuIsExpanded"

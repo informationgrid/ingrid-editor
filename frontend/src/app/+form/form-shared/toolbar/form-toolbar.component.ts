@@ -37,7 +37,7 @@ export class FormToolbarComponent implements OnInit {
 
   ngOnInit() {}
 
-  sendEvent(id: string) {
-    this.formToolbarService.sendEvent(id);
+  sendEvent(id: string, eventEl?: HTMLElement) {
+    this.formToolbarService.sendEvent({ type: id, data: { eventEl } });
   }
 }

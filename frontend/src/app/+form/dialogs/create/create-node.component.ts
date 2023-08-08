@@ -123,13 +123,14 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
-    this.alreadySubmitted = true;
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
       (!this.isAdmin && !this.pathWithWritePermission)
     )
       return;
+
+    this.alreadySubmitted = true;
 
     if (this.isFolder || !this.forAddress) {
       await this.handleDocumentCreate();

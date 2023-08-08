@@ -106,6 +106,8 @@ export class PrintViewPlugin extends Plugin {
           model: current,
           modelPublished: published,
         },
+        restoreFocus: true,
+        ariaLabel: "Vorschau",
       });
     });
   }

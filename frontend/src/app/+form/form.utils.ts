@@ -11,6 +11,7 @@ import { firstValueFrom } from "rxjs";
 
 export class FormUtils {
   static timestamp: number = 0;
+
   static addHotkeys(
     event: KeyboardEvent,
     service: FormToolbarService,
@@ -24,7 +25,7 @@ export class FormUtils {
       event.preventDefault();
       let dif = event.timeStamp - FormUtils.timestamp;
       if (!readonly && !event.repeat && dif > 500) {
-        service.sendEvent("SAVE");
+        service.sendEvent({ type: "SAVE" });
         FormUtils.timestamp = event.timeStamp;
       }
     }

@@ -39,6 +39,17 @@ export class PublishPlugin extends SaveBase {
   eventValidate = "VALIDATE";
   private tree: TreeQuery | AddressTreeQuery;
 
+  // event element needs to be passed for restoring focus correctly,
+  // see https://github.com/angular/components/issues/17962
+  private eventEl: HTMLElement;
+
+  // create extended onEvent to store event element
+  private onEvent(id: string) {
+    return this.docEvents
+      .onEvent(id)
+      .pipe(tap((event) => (this.eventEl = event.data?.eventEl)));
+  }
+
   constructor(
     public formToolbarService: FormToolbarService,
     private modalService: ModalService,
@@ -63,21 +74,17 @@ export class PublishPlugin extends SaveBase {
 
     // add event handler for revert
     const toolbarEventSubscription = [
-      this.docEvents.onEvent(this.eventRevertId).subscribe(() => this.revert()),
-      this.docEvents
-        .onEvent(this.eventPublishId)
-        .subscribe(() => this.validateBeforePublish() && this.publish()),
-      this.docEvents
-        .onEvent(this.eventPlanPublishId)
-        .subscribe(
-          () => this.validateBeforePublish() && this.showPlanPublishingDialog()
-        ),
-      this.docEvents
-        .onEvent(this.eventUnpublishId)
-        .subscribe(() => this.showUnpublishDialog()),
-      this.docEvents
-        .onEvent(this.eventValidate)
-        .subscribe(() => this.validateDataset()),
+      this.onEvent(this.eventRevertId).subscribe(() => this.revert()),
+      this.onEvent(this.eventPublishId).subscribe(
+        () => this.validateBeforePublish() && this.publish()
+      ),
+      this.onEvent(this.eventPlanPublishId).subscribe(
+        () => this.validateBeforePublish() && this.showPlanPublishingDialog()
+      ),
+      this.onEvent(this.eventUnpublishId).subscribe(() =>
+        this.showUnpublishDialog()
+      ),
+      this.onEvent(this.eventValidate).subscribe(() => this.validateDataset()),
     ];
 
     // add behaviour to set active states for toolbar buttons
@@ -193,8 +200,10 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
+      .pipe(tap(() => this.eventEl?.focus()))
       .subscribe((decision) => {
         if (decision === "confirm") {
           this.saveWithData(this.getForm().value);
@@ -224,9 +233,13 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
-      .pipe(filter((confirmed) => confirmed))
+      .pipe(
+        tap(() => this.eventEl?.focus()),
+        filter((confirmed) => confirmed)
+      )
       .subscribe(() => {
         this.unpublish(this.getIdFromFormData());
       });
@@ -234,9 +247,14 @@ export class PublishPlugin extends SaveBase {
 
   private showPlanPublishingDialog() {
     this.dialog
-      .open(DelayedPublishDialogComponent)
+      .open(DelayedPublishDialogComponent, {
+        delayFocusTrap: true,
+      })
       .afterClosed()
-      .pipe(filter((date) => date))
+      .pipe(
+        tap(() => this.eventEl?.focus()),
+        filter((date) => date)
+      )
       .subscribe((date) => {
         this.saveWithData(this.getForm().value, date);
       });
@@ -282,8 +300,10 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
+      .pipe(tap(() => this.eventEl?.focus()))
       .subscribe((doRevert) => {
         if (doRevert) {
           this.documentService.revert(doc._id, this.forAddress).subscribe(
@@ -359,11 +379,14 @@ export class PublishPlugin extends SaveBase {
         console.log("backendValidation: ", result);
         if (!isValid || result instanceof IgeError) return;
 
-        this.modalService.confirmWith({
-          title: "Prüfung",
-          message: "Der Datensatz wurde erfolgreich geprüft.",
-          hideCancelButton: true,
-        });
+        this.modalService
+          .confirmWith({
+            title: "Prüfung",
+            message: "Der Datensatz wurde erfolgreich geprüft.",
+            hideCancelButton: true,
+          })
+          .pipe(tap(() => this.eventEl?.focus()))
+          .subscribe();
       });
     console.log("isValid: ", isValid);
   }

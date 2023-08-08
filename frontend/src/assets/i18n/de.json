@@ -28,7 +28,8 @@
   },
   "toolbar": {
     "newDocument": "Neuen Datensatz anlegen",
-    "newAddress": "Neue Adresse anlegen"
+    "newAddress": "Neue Adresse anlegen",
+    "newFolder": "Neuen Ordner anlegen"
   },
   "reports": {
     "form": "Daten"

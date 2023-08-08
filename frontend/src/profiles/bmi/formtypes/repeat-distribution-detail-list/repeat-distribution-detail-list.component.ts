@@ -195,6 +195,7 @@ export class RepeatDistributionDetailListComponent
               : JSON.parse(JSON.stringify(this.model[index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
+        delayFocusTrap: true,
         ariaLabel: "Link angeben",
       })
       .afterClosed()

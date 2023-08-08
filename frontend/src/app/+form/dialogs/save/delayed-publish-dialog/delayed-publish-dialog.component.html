@@ -16,7 +16,7 @@
             formControlName="date"
             igeFocus
             matInput
-            (keyup.enter)="setDateAndPublish()"
+            (keydown.enter)="setDateAndPublish()"
             [matDatepicker]="picker"
             placeholder="Datum auswählen"
         />

@@ -1,15 +1,15 @@
 <mat-toolbar>
-    <mat-toolbar-row>
+    <mat-toolbar-row role="toolbar" aria-orientation="horizontal">
         <ng-container *ngFor="let button of buttons_left">
             <button
                 *ngIf="!button.isSeparator && !button.menu"
                 mat-button
                 class="standard-toolbar-button"
                 [attr.data-cy]="'toolbar_' + button.eventId"
-                [matTooltip]="button.tooltip"
-                [matTooltipShowDelay]="1000"
                 (click)="sendEvent(button.eventId)"
                 [disabled]="!button.active || isNotReady"
+                [matTooltip]="button.tooltip"
+                [attr.aria-label]="button.tooltip"
             >
                 <mat-icon
                     class="material-icons-outlined"
@@ -20,15 +20,16 @@
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
                 <button
+                    #dropdownMenu
                     mat-button
                     class="drop-down"
                     [matMenuTriggerFor]="copyMenu"
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [disabled]="!button.active || isNotReady"
                     (menuOpened)="menu[button.id] = true"
                     (menuClosed)="menu[button.id] = false"
+                    [matTooltip]="button.tooltip"
+                    [attr.aria-label]="button.tooltip"
                 >
                     <mat-icon
                         class="material-icons-outlined"
@@ -45,7 +46,12 @@
                         mat-menu-item
                         [disabled]="!menuItem.active"
                         [attr.data-cy]="'copyMenu_' + menuItem.eventId"
-                        (click)="sendEvent(menuItem.eventId)"
+                        (click)="
+                            sendEvent(
+                                menuItem.eventId,
+                                dropdownMenu._elementRef.nativeElement
+                            )
+                        "
                     >
                         <span>{{ menuItem.label }}</span>
                     </button>
@@ -55,6 +61,7 @@
                 *ngIf="button.isSeparator"
                 class="separator"
                 [vertical]="true"
+                aria-hidden="true"
             ></mat-divider>
         </ng-container>
 
@@ -100,6 +107,7 @@
                         {{ button.label }}
                     </button>
                     <button
+                        #dropdownMenu
                         class="btnPublishMore"
                         mat-flat-button
                         color="primary"
@@ -122,7 +130,12 @@
                             mat-menu-item
                             [disabled]="!menuItem.active"
                             [attr.data-cy]="'toolbar_' + menuItem.eventId"
-                            (click)="sendEvent(menuItem.eventId)"
+                            (click)="
+                                sendEvent(
+                                    menuItem.eventId,
+                                    dropdownMenu._elementRef.nativeElement
+                                )
+                            "
                         >
                             <span>{{ menuItem.label }}</span>
                         </button>
