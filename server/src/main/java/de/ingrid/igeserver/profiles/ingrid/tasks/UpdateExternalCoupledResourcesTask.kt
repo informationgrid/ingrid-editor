@@ -30,27 +30,52 @@ class UpdateExternalCoupledResourcesTask(
     val mapper = jacksonObjectMapper()
 
     @Scheduled(cron = "\${cron.externalCoupledResources.expression}")
-    fun updateExternalCoupledResources() {
+    fun updateExternalCoupledResources(): String {
         setAdminAuthentication()
+        val summary = mutableMapOf<Int, Summary>()
         val urlCache = mutableMapOf<String, GetRecordUrlAnalysis>()
         getAllExternalCoupledResources().forEach {
-            updateResource(it, urlCache)
+            updateResource(it, urlCache, summary)
         }
 
+        printSummary(summary)
+        return summary.toString()
     }
 
-    private fun updateResource(resource: CoupledResourceResult, urlCache: MutableMap<String, GetRecordUrlAnalysis>) {
+    private fun printSummary(summaries: MutableMap<Int, Summary>) {
+        summaries.forEach { (catalogId, summary) ->
+            log.info("Summary for catalog: $catalogId")
+            log.info("Checked Coupled Resource URLs: " + summary.count)
+            log.info("Corrupted URLs: " + summary.corrupt)
+            log.info("Updated Coupled Resource Identifiers: " + summary.updated)
+        }
+    }
+
+    private fun updateResource(
+        resource: CoupledResourceResult,
+        urlCache: MutableMap<String, GetRecordUrlAnalysis>,
+        summaries: MutableMap<Int, Summary>
+    ) {
+        val summary = summaries.getOrPut(resource.catalogId) { Summary(0, 0, 0) }
+        
         resource.links.forEach {
             if (it.url == null) return@forEach
 
             try {
+                if (!urlCache.containsKey(it.url)) summary.count++
                 val record = urlCache[it.url] ?: capabilitiesService.analyzeGetRecordUrl(it.url)
+                
                 urlCache[it.url] = record
-                if (it.url != record.identifier || it.uuid != record.uuid) {
+                if (it.identifier != record.identifier || it.uuid != record.uuid) {
                     updateDocument(resource.id, it.url, record)
+                    summary.updated++
+                    log.info("External Coupled Resource Identifier changed from: " + it.identifier + " to: " + record.identifier + " for UUID: " + it.uuid)
+                } else {
+                    log.debug("Coupled Resource Identifier did not change");
                 }
             } catch (ex: FileNotFoundException) {
                 log.warn("Resource not found: ${it.url}")
+                summary.corrupt++
             }
         }
     }
@@ -75,7 +100,7 @@ class UpdateExternalCoupledResourcesTask(
         ClosableTransaction(transactionManager).use {
             return entityManager.createNativeQuery(
                 """
-    SELECT id, uuid, (data -> 'service' -> 'coupledResources') FROM document
+    SELECT id, uuid, (data -> 'service' -> 'coupledResources'), catalog_id FROM document
     WHERE (state = 'PUBLISHED' OR state = 'DRAFT' OR state = 'DRAFT_AND_PUBLISHED' OR state = 'PENDING')
       AND jsonb_path_exists(jsonb_strip_nulls(data), '$.service.coupledResources')
       AND EXISTS(SELECT
@@ -93,16 +118,21 @@ class UpdateExternalCoupledResourcesTask(
             result[0] as Int,
             result[1].toString(),
             mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
-                .filter { it.isExternalRef }
+                .filter { it.isExternalRef },
+            result[3] as Int
         )
     }
+
+    private data class Summary(var count: Int, var corrupt: Int, var updated: Int)
+
+    private data class CoupledResourceResult(val id: Int, val uuid: String, val links: List<CoupledResource>, val catalogId: Int)
+
+    private data class CoupledResource(
+        var uuid: String?,
+        var identifier: String?,
+        val url: String?,
+        val title: String?,
+        val isExternalRef: Boolean
+    )
 }
 
-data class CoupledResourceResult(val id: Int, val uuid: String, val links: List<CoupledResource>)
-data class CoupledResource(
-    var uuid: String?,
-    var identifier: String?,
-    val url: String?,
-    val title: String?,
-    val isExternalRef: Boolean
-)
