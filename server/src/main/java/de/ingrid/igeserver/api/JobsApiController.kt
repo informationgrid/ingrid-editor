@@ -7,6 +7,7 @@ import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
+import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
@@ -152,6 +153,15 @@ class JobsApiController @Autowired constructor(
         if (removeUnreferencedDocsTask == null) throw ServerException.withReason("RemoveUnreferencedDocsTask not available")
         
         val result = removeUnreferencedDocsTask?.start() ?: emptyList()
+        return ResponseEntity.ok(result)
+    }
+
+    @Autowired(required = false)
+    var updateExternalCoupledResourcesTask: UpdateExternalCoupledResourcesTask? = null
+    override fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String> {
+        if (updateExternalCoupledResourcesTask == null) throw ServerException.withReason("UpdateExternalCoupledResourcesTask not available")
+        
+        val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: ""
         return ResponseEntity.ok(result)
     }
 }
