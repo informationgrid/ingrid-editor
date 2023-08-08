@@ -9,6 +9,7 @@
             [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
             (click)="add.emit()"
+            aria-haspopup="true"
             [attr.aria-label]="ariaLabel"
             aria-description="hinzufügen"
         >
@@ -23,6 +24,7 @@
             [class.error-outline]="showRequiredError"
             (click)="add.emit()"
             [matTooltip]="showTitle ? '' : 'Hinzufügen'"
+            aria-haspopup="dialog"
             [attr.aria-label]="ariaLabel"
             aria-description="hinzufügen"
         >

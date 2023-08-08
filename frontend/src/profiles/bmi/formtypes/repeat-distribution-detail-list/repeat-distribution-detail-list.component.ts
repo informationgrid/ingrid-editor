@@ -84,6 +84,7 @@ export class RepeatDistributionDetailListComponent
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
         },
+        ariaLabel: "Dateien hochladen",
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -194,6 +195,7 @@ export class RepeatDistributionDetailListComponent
               : JSON.parse(JSON.stringify(this.model[index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
+        ariaLabel: "Link angeben",
       })
       .afterClosed()
       .subscribe((response) => {

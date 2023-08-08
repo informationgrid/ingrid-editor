@@ -62,6 +62,7 @@ export class SearchInputComponent {
   @Input() errorText: string;
   @Input() withWhiteBorder = true;
   @Input() focus = true;
+  @Input() ariaLabel: string = "Suche";
   @Output() buttonClick = new EventEmitter<string>();
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);

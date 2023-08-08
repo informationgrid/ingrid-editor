@@ -182,6 +182,7 @@ export class LeafletTypeComponent
           ...this.locations[locationIndex],
           limitTypes: this.props.limitTypes,
         },
+        ariaLabel: "Raumbezug hinzufügen",
       })
       .afterClosed()
       .subscribe((result: SpatialLocation) => {

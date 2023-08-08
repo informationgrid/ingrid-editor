@@ -20,6 +20,8 @@
         class="menu-button infoIcon"
         (click)="showContextHelp($event)"
         matTooltip="Eingabehilfe"
+        aria-haspopup="dialog"
+        [attr.aria-label]="'Eingabehilfe zu ' + props.ariaLabel"
     >
         <mat-icon
             class="material-icons-outlined"

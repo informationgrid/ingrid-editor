@@ -1,14 +1,14 @@
 <div class="label-wrapper">
-    <label
-        [attr.tabindex]="hasContextHelp ? 0 : null"
-        aria-haspopup="dialog"
-        (click)="showContextHelp($event)"
-        (keydown.enter)="showContextHelp($event)"
-    >
+    <label (click)="showContextHelp($event)">
         <div
             *ngIf="hasContextHelp"
-            class="contextHelpIcon"
+            class="context-help"
             (click)="showContextHelp($event)"
+            (keydown.enter)="showContextHelp($event)"
+            tabindex="0"
+            role="button"
+            aria-haspopup="dialog"
+            [attr.aria-label]="'Eingabehilfe zu ' + ariaLabel"
         >
             <mat-icon
                 class="material-icons-outlined"

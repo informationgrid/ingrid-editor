@@ -117,6 +117,7 @@ export class AddressTypeComponent
           },
           hasBackdrop: true,
           restoreFocus: true,
+          ariaLabel: "Adresse hinzufügen",
         })
         .afterClosed()
         .pipe(filter((data) => data));

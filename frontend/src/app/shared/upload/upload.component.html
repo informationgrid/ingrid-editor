@@ -24,7 +24,7 @@
             </button>
         </div>
 
-        <div class="upload-items">
+        <div class="upload-items" role="list">
             <ige-upload-item
                 *ngFor="
                     let file of filesForUpload | async;
@@ -36,6 +36,9 @@
                 (remove)="removeFile.next($event)"
                 (useExisting)="updateFileToUseExisting($event)"
                 (retryUpload)="retryUpload(file, $event)"
+                tabindex="0"
+                role="listitem"
+                [attr.aria-label]="file.transfer.name"
             ></ige-upload-item>
         </div>
 

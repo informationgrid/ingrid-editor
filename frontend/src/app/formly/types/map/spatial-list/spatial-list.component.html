@@ -3,6 +3,9 @@
         *ngFor="let location of typedLocations[type]"
         class="clickable small-padding-right wrapper"
         (click)="selectLocation.next(location.indexNumber)"
+        tabindex="0"
+        role="listitem"
+        [attr.aria-label]="location.title"
     >
         <mat-icon
             *ngIf="location.value || location.wkt"
@@ -66,9 +69,10 @@
             type="button"
             mat-icon-button
             class="menu-button"
-            matTooltip="Bearbeiten"
             [matMenuTriggerFor]="spatialRef"
             (click)="$event.stopPropagation()"
+            matTooltip="Bearbeiten"
+            aria-label="Bearbeiten"
         >
             <mat-icon svgIcon="Mehr"></mat-icon>
         </button>

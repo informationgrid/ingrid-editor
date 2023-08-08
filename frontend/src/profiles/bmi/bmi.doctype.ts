@@ -85,6 +85,7 @@ export class BmiDoctype extends BaseDoctype {
                 contextHelpId: "distribution_title",
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
+                ariaLabel: "Titel der Ressource",
               }),
               {
                 key: "link",
@@ -104,6 +105,7 @@ export class BmiDoctype extends BaseDoctype {
                   onClick: (docUuid, uri, $event) => {
                     this.uploadService.downloadFile(docUuid, uri, $event);
                   },
+                  ariaLabel: "URL der Ressource",
                 },
               },
               this.addDatepickerInline("modified", "Aktualisierungsdatum", {
@@ -111,6 +113,7 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "distribution_modified",
+                ariaLabel: "Aktualisierungsdatum der Ressource",
               }),
               this.addSelectInline("format", "Format", {
                 showSearch: true,
@@ -122,6 +125,7 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20003,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
+                ariaLabel: "Format der Ressource",
               }),
               this.addRepeatListInline("languages", "Sprachen der Ressource", {
                 view: "chip",
@@ -132,12 +136,20 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
                 contextHelpId: "language",
+                ariaLabel: "Sprachen der Ressource",
               }),
-              this.addTextAreaInline("description", "Beschreibung", {
-                wrappers: ["inline-help", "form-field"],
-                hasInlineContextHelp: true,
-                contextHelpId: "distribution_description",
-              }),
+              this.addTextAreaInline(
+                "description",
+                "Beschreibung",
+                {
+                  wrappers: ["inline-help", "form-field"],
+                  hasInlineContextHelp: true,
+                  contextHelpId: "distribution_description",
+                },
+                {
+                  ariaLabel: "Beschreibung der Ressource",
+                }
+              ),
               this.addSelectInline("license", "Lizenz", {
                 required: true,
                 showSearch: true,
@@ -145,6 +157,7 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20004,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
+                ariaLabel: "Lizenz der Ressource",
               }),
               this.addInputInline(
                 "byClause",
@@ -152,6 +165,8 @@ export class BmiDoctype extends BaseDoctype {
                 {
                   wrappers: ["inline-help", "form-field"],
                   hasInlineContextHelp: true,
+                  ariaLabel:
+                    'Namensnennungstext für "By"-Clauses der Ressource',
                 }
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
@@ -159,6 +174,7 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20005,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
+                ariaLabel: "Geplante Verfügbarkeit der Ressource",
               }),
             ]),
           ],

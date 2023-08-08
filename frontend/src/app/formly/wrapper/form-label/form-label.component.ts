@@ -17,6 +17,7 @@ import { MatIconModule } from "@angular/material/icon";
 })
 export class FormLabelComponent {
   @Input() hasContextHelp = false;
+  @Input() ariaLabel: string;
 
   @Output() contextHelp = new EventEmitter<HTMLElement>();
 

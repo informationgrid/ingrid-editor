@@ -207,12 +207,14 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         attributes: {
           style: "resize:vertical;",
-          "aria-label": label,
+          "aria-label": options?.ariaLabel ?? label,
         },
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
     };
@@ -456,8 +458,10 @@ export class FormFieldHelper {
         placeholder: options?.placeholder,
         hideInPreview: options?.hideInPreview ?? false,
         attributes: {
-          "aria-label": label,
+          "aria-label": options?.ariaLabel ?? label,
         },
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",

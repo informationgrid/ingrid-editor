@@ -7,6 +7,7 @@
         placeholder="https://..."
         [formControl]="control"
         (keyup)="updateValue()"
+        [attr.aria-label]="props.ariaLabel"
     />
     <mat-error>
         <formly-validation-message [field]="field"></formly-validation-message>
