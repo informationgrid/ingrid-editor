@@ -44,7 +44,7 @@ export class BmiDoctype extends BaseDoctype {
                   ? ctrl.value.some((row) => row.type.key === "publisher")
                   : false,
               message:
-                "Es muss die veröffentlichende Stelle als Adresse angegeben sein",
+                "Fehler: Es muss die veröffentlichende Stelle als Adresse angegeben sein",
             },
             onePublisher: {
               expression: (ctrl) =>
@@ -53,14 +53,14 @@ export class BmiDoctype extends BaseDoctype {
                       .length < 2
                   : true,
               message:
-                "Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
+                "Fehler: Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
             },
             publisherPublished: {
               expression: (ctrl) =>
                 ctrl.value
                   ? ctrl.value.every((row) => row.ref._state === "P")
                   : false,
-              message: "Alle Adressen müssen veröffentlicht sein",
+              message: "Fehler: Alle Adressen müssen veröffentlicht sein",
             },
           },
         }),
@@ -182,7 +182,7 @@ export class BmiDoctype extends BaseDoctype {
             requiredLicense: {
               expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
               message:
-                "Es muss für jede Ressource eine Lizenz angegeben werden.",
+                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden.",
             },
           },
         }),

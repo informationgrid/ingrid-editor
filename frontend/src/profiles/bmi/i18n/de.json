@@ -14,5 +14,18 @@
   "docType": {
     "BmiDoc": "Datensatz",
     "BmiAddressDoc": "Adresse"
+  },
+  "form": {
+    "validationMessages": {
+      "required": "Fehler: Dieses Feld muss ausgefüllt sein",
+      "email": "Fehler: Dieses Feld muss eine gültige E-Mail Adresse sein",
+      "emailInRepeat": "Fehler: Dieses Feld muss eine gültige E-Mail Adresse sein",
+      "lowercase": "Fehler: Dieses Feld darf keine Großbuchstaben enthalten",
+      "url": "Fehler: Verwenden Sie bitte eine gültige URL",
+      "matDatepickerMin": "Fehler: Das Datum liegt weiter zurück als erlaubt",
+      "matDatepickerMax": "Fehler: Das Datum ist größer als erlaubt",
+      "min": "Fehler: Der Wert darf nicht kleiner sein als {{value}}",
+      "max": "Fehler: Der Wert darf nicht größer sein als {{value}}"
+    }
   }
 }
