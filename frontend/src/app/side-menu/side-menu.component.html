@@ -24,6 +24,20 @@
     <div class="fillVertical"></div>
 
     <a
+        *ngIf="configuration.showAccessibilityLink"
+        mat-list-item
+        [href]="configuration.contextPath + 'barrierefreiheit'"
+        target="_blank"
+        data-cy="link-accessibility"
+        matTooltip="Barrierefreiheit"
+        matTooltipPosition="right"
+        [matTooltipDisabled]="menuIsExpanded"
+    >
+        <mat-icon matListItemIcon>info</mat-icon>
+        <p matListItemTitle>Barrierefreiheit</p>
+    </a>
+
+    <a
         *ngIf="showDrawer | async"
         mat-list-item
         tabindex="0"

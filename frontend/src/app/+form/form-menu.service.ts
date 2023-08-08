@@ -29,18 +29,6 @@ export class FormMenuService {
           console.log("Calling help");
         },
       },
-      this.configService.getConfiguration().showAccessibilityLink
-        ? {
-            title: "Barrierefreiheit",
-            name: "accessibility",
-            link:
-              this.configService.getConfiguration().contextPath +
-              "barrierefreiheit",
-            action: () => {
-              console.log("Calling Accessibility");
-            },
-          }
-        : null,
     ].filter(Boolean) as FormularMenuItem[],
   };
 

@@ -8,5 +8,10 @@
     "target": "http://localhost:8550",
     "secure": false,
     "logLevel": "debug"
+  },
+  "/barrierefreiheit": {
+    "target": "http://localhost:8550",
+    "secure": false,
+    "logLevel": "debug"
   }
 }
