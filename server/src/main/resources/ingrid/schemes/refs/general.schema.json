@@ -529,6 +529,9 @@
           "title": {
             "type": ["null", "string"]
           },
+          "uuidRef": {
+            "type": ["null", "string"]
+          },
           "explanation": {
             "type": ["null", "string"]
           }

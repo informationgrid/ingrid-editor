@@ -94,9 +94,6 @@ export class DocumentReferenceTypeComponent
           this.add(null, {
             uuid: item.uuid,
             isExternalRef: false,
-            state: item.state,
-            type: "InGridGeoDataset",
-            icon: "Geodatensatz",
           });
           this.props.change?.(this.field);
         }
