@@ -4,7 +4,6 @@ import {
   ValidatorFn,
   Validators,
 } from "@angular/forms";
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { isNotEmptyObject } from "../shared/utils";
 
 export const REGEX_URL = "^(https?://)([0-9a-z.-]+)\\.([0-9a-z.]{2,6})(/.*)?";
@@ -43,27 +42,12 @@ export function UrlValidator(control: UntypedFormControl): ValidationErrors {
     : { url: true };
 }
 
-export function UrlValidatorMessage(
-  error: any = null,
-  field: FormlyFieldConfig = null
-) {
-  return "Verwenden Sie bitte eine gültige URL";
-}
-
 export function LowercaseValidator(
   control: UntypedFormControl
 ): ValidationErrors {
   return control.value === control.value?.toLowerCase()
     ? null
     : { lowercase: true };
-}
-
-export function minValidationMessage(error: any, field: FormlyFieldConfig) {
-  return `Der Wert darf nicht kleiner sein als ${field.props.min}`;
-}
-
-export function maxValidationMessage(error: any, field: FormlyFieldConfig) {
-  return `Der Wert darf nicht größer sein als ${field.props.max}`;
 }
 
 export function patternWithMessage(

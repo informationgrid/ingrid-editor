@@ -4,10 +4,7 @@ import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { inject } from "@angular/core";
-import {
-  REGEX_URL,
-  UrlValidatorMessage,
-} from "../../../app/formly/input.validators";
+import { REGEX_URL } from "../../../app/formly/input.validators";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: number;
@@ -74,7 +71,8 @@ export class UvpShared extends BaseDoctype {
               ? regExp.test(field.value?.uri?.trim())
               : true;
           },
-          message: UrlValidatorMessage,
+          message: () =>
+            this.transloco.translate("form.validationMessages.url"),
         },
       },
     },

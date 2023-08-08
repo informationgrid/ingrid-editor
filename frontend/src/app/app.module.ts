@@ -39,7 +39,11 @@ import { FormsModule } from "@angular/forms";
 import de from "@angular/common/locales/de";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { AngularSplitModule } from "angular-split";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import {
+  FORMLY_CONFIG,
+  FormlyFieldConfig,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
@@ -94,6 +98,8 @@ import { pluginProvider } from "./plugin.provider";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { GermanDateAdapter } from "./services/german-date.adapter";
 import { firstValueFrom } from "rxjs";
+import { TranslocoService } from "@ngneat/transloco";
+import { registerTranslateExtension } from "./formly/translate.extension";
 
 registerLocaleData(de);
 
@@ -375,6 +381,14 @@ export function animationExtension(field: FormlyFieldConfig) {
       provide: RxStompService,
       useFactory: rxStompServiceFactory,
       deps: [ConfigService],
+    },
+
+    // Formly
+    {
+      provide: FORMLY_CONFIG,
+      multi: true,
+      useFactory: registerTranslateExtension,
+      deps: [TranslocoService],
     },
 
     // PLUGINS

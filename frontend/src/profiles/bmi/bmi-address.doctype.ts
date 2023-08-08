@@ -9,7 +9,6 @@ import { map } from "rxjs/operators";
 import {
   EmailValidator,
   UrlValidator,
-  UrlValidatorMessage,
 } from "../../app/formly/input.validators";
 
 @Injectable({
@@ -76,13 +75,15 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                 const type = ctrl.parent.value.type;
                 return type?.key === "4" ? UrlValidator(ctrl) === null : true;
               },
-              message: UrlValidatorMessage,
+              message: () =>
+                this.transloco.translate("form.validationMessages.url"),
             },
           },
         }),
       ],
     });
   }
+
   addAddressSection(options: Partial<AddressOptions> = {}): FormlyFieldConfig {
     return this.addGroup(
       "address",

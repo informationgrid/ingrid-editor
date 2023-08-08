@@ -62,12 +62,9 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
-  maxValidationMessage,
-  minValidationMessage,
   NotEmptyArrayValidator,
   PositiveNumValidator,
   UrlValidator,
-  UrlValidatorMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -239,44 +236,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "url", validation: UrlValidator },
         { name: "positiveNum", validation: PositiveNumValidator },
       ],
-      validationMessages: [
-        { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
-        {
-          name: "email",
-          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
-        },
-        {
-          name: "emailInRepeat",
-          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
-        },
-        {
-          name: "lowercase",
-          message: "Dieses Feld darf keine Großbuchstaben enthalten",
-        },
-        {
-          name: "url",
-          message: UrlValidatorMessage,
-        },
-        {
-          name: "matDatepickerMin",
-          message: "Das Datum liegt weiter zurück als erlaubt",
-        },
-        {
-          name: "matDatepickerMax",
-          message: "Das Datum ist größer als erlaubt",
-        },
-        {
-          name: "min",
-          message: minValidationMessage,
-        },
-        {
-          name: "max",
-          message: maxValidationMessage,
-        },
-      ] /*,
+      /*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
-      ]*/,
+      ]*/
     }),
     FormFieldsModule,
     SharedModule,
