@@ -311,10 +311,7 @@
       ],
       "coupledResources": [
         {
-          "icon": "Geodatensatz",
-          "type": "InGridGeoDataset",
           "uuid": "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-          "state": "P",
           "isExternalRef": false
         }
       ],
