@@ -370,6 +370,8 @@
       {
         "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
         "title": "Extern gekoppelter Datensatz",
+        "identifier": "",
+        "uuid": "",
         "isExternalRef": true
       }
     ],
