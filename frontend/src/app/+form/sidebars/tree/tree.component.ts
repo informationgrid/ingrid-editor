@@ -100,6 +100,7 @@ export class TreeComponent implements OnInit {
   dragManager: DragNDropUtils;
   isDragging = false;
   hasWriteToRootPermission = this.configService.hasWriteRootPermission();
+  initialized = false;
 
   constructor(
     private database: DynamicDatabase,
@@ -515,11 +516,15 @@ export class TreeComponent implements OnInit {
             this.handleExpandNodes(ids).then(() => {
               const node = this.dataSource.getNode(this.activeNodeId);
               this.selectNode(node);
+              this.initialized = true;
             });
           });
         });
     } else {
-      this.reloadTree().subscribe(() => this.handleActiveNodeSubscription());
+      this.reloadTree().subscribe(() => {
+        this.handleActiveNodeSubscription();
+        this.initialized = true;
+      });
     }
   }
 

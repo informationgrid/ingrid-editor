@@ -162,4 +162,7 @@
     </mat-tree-node>
 </mat-tree>
 
-<ige-empty-navigation *ngIf="!hasData"></ige-empty-navigation>
+<ige-empty-navigation *ngIf="initialized && !hasData"></ige-empty-navigation>
+<div *ngIf="!initialized" class="flex-row justify-content-center">
+    <mat-spinner></mat-spinner>
+</div>
