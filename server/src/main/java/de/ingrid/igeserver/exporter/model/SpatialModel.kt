@@ -78,4 +78,11 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
         return null
     }
+
+    fun getTitleWithArs(): String? {
+        if (this.title != null && this.ars != null) {
+            return "${this.title} (${this.ars})"
+        }
+        return this.title
+    }
 }

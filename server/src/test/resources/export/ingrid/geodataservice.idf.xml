@@ -22,7 +22,7 @@
                 <gco:CharacterString>service</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="100" uuid="FE8EDBF8-AC98-48AD-849F-8DC35D177481">
+                <idf:idfResponsibleParty type="0" uuid="FE8EDBF8-AC98-48AD-849F-8DC35D177481">
                     <gmd:organisationName>
                         <gco:CharacterString>Nds. Umweltministerium</gco:CharacterString>
                     </gmd:organisationName>

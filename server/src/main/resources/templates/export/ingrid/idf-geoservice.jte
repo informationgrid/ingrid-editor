@@ -9,7 +9,6 @@
 
 @template.template-idf(content = @`
     @template.ingrid.shared-general(page = page)
-
     <gmd:dataQualityInfo>
         <gmd:DQ_DataQuality>
             <gmd:scope>

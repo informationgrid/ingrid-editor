@@ -21,6 +21,7 @@ class GeodataserviceModelTransformer constructor(
     override val mdStandardName = "ISO19119"
     override val mdStandardVersion = "2005/PDAM 1"
     override val identificationType = "srv:SV_ServiceIdentification"
+    override val extentType = "srv:extent"
     override val description: String
         get() {
             var description = model.data.description ?: ""

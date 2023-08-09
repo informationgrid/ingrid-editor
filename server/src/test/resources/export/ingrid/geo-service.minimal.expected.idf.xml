@@ -18,7 +18,7 @@
                 <gco:CharacterString>service</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="3" uuid="B89BAB11-6024-43BF-B774-90A5C932C976">
+                <idf:idfResponsibleParty type="2" uuid="16466cb3-7dbc-4450-9b36-4d8f7917eef1">
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>

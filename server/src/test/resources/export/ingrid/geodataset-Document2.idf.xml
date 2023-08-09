@@ -22,7 +22,7 @@
                 <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
             </gmd:hierarchyLevel>
             <gmd:contact>
-                <idf:idfResponsibleParty type="100" uuid="FE8EDBF8-AC98-48AD-849F-8DC35D177481">
+                <idf:idfResponsibleParty type="0" uuid="FE8EDBF8-AC98-48AD-849F-8DC35D177481">
                     <gmd:organisationName>
                         <gco:CharacterString>KST PortalU</gco:CharacterString>
                     </gmd:organisationName>

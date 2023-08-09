@@ -57,7 +57,7 @@
 <gmd:contact>
     !{var address = page.getContact();}
     @if(address != null)
-        <idf:idfResponsibleParty type="100" uuid="${address.getUuid()}">
+        <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
             <gmd:organisationName>
                 <gco:CharacterString>${address.getNamePresentation()}</gco:CharacterString>
             </gmd:organisationName>
@@ -70,6 +70,11 @@
                             </gmd:electronicMailAddress>
                         </gmd:CI_Address>
                     </gmd:address>
+                    @if(address.getHoursOfService() != null)
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>
+                    </gmd:hoursOfService>
+                    @endif
                 </gmd:CI_Contact>
             </gmd:contactInfo>
             <gmd:role>
@@ -361,7 +366,7 @@
                 <gco:CharacterString>${version}</gco:CharacterString>
             </srv:serviceTypeVersion>
         @endfor
-        <gmd:extent>
+        <${page.getExtentType()}>
             <gmd:EX_Extent>
                 @if(spatial.getDescription() != null)
                     <gmd:description>
@@ -369,7 +374,7 @@
                     </gmd:description>
                 @endif
                 @for(SpatialModel ref : page.getSpatialReferences())
-                    @if(ref.getType().equals("free"))
+                    @if(ref.getType().equals("free") || ref.getType().equals("wfsgnde"))
                         @if(ref.getTitle() != null)
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
@@ -379,7 +384,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>${ref.getTitle()}</gco:CharacterString>
+                                                <gco:CharacterString>${ref.getTitleWithArs()}</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -489,11 +494,14 @@
                     </gmd:verticalElement>
                 @endif
             </gmd:EX_Extent>
-        </gmd:extent>
+        </${page.getExtentType()}>
     @if(page.getCouplingType() != null)
         <srv:couplingType>
             <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType" codeListValue="${page.getCouplingType()}"/>
         </srv:couplingType>
+    @endif
+    @if( page.getOperations().isEmpty() && page.getData().getService() != null )
+        <srv:containsOperations gco:nilReason="missing"/>
     @endif
     @for( Operation operation : page.getOperations() )
         <srv:containsOperations>

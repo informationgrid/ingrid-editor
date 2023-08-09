@@ -21,7 +21,7 @@
                 <gco:CharacterString>job</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="100" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                <idf:idfResponsibleParty type="0" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
                     <gmd:organisationName>
                         <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>

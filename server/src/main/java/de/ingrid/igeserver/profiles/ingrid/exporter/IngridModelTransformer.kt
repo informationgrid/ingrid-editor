@@ -144,6 +144,7 @@ open class IngridModelTransformer constructor(
     open val mdStandardName = "ISO19115"
     open val mdStandardVersion = "2003/Cor.1:2006"
     open val identificationType = "gmd:MD_DataIdentification"
+    open val extentType = "gmd:extent"
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValueModel(it, null)) }
@@ -279,7 +280,7 @@ open class IngridModelTransformer constructor(
     }
 
     // geodataservice
-    val serviceType = codelists.getValue("5300", data.service?.type, "iso")
+    val serviceType = codelists.getValue( if(model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { codelists.getValue("5153", it, "iso") } ?: emptyList()
     val couplingType = data.service?.couplingType?.key
     val operations = data.service?.operations ?: emptyList()
@@ -292,11 +293,9 @@ open class IngridModelTransformer constructor(
 
     val parentIdentifier: String? = data.parentIdentifier
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
-    var pointOfContact =
-        data.pointOfContact?.map { AddressModelTransformer(it.ref!!, codelists, it.type) } ?: emptyList()
+    var pointOfContact: List<AddressModelTransformer>
 
-    var contact =
-        data.pointOfContact?.firstOrNull { codelists.getValue("505", it.type, "iso").equals("pointOfContactMd") }?.ref
+    var contact: AddressModelTransformer?
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -322,6 +321,11 @@ open class IngridModelTransformer constructor(
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
         this.citationURL = namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
+        pointOfContact =
+            data.pointOfContact?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
+        contact =
+        data.pointOfContact?.filter { codelists.getValue("505", it.type, "iso").equals("pointOfContactMd") }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+
     }
 
     fun handleContent(value: String?): String? {
