@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.exports.ingrid
 
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -17,10 +16,9 @@ import de.ingrid.mdek.upload.Config
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.mockkObject
 import mockCodelists
 import org.springframework.test.context.ContextConfiguration
 
@@ -46,13 +44,10 @@ class Geodataservice : AnnotationSpec() {
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
-        mockkStatic(SpringContext::class)
-        MockKAnnotations.init(this)
-        every { SpringContext.getBean(DocumentService::class.java)  } answers {
-            mockk<DocumentService>()
+        mockkObject(SpringContext.Companion)
+        every { SpringContext.getBean(DocumentService::class.java) } answers {
+            documentService
         }
-
-
 
         mockCodelists(codelistHandler)
 
@@ -68,7 +63,7 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun minimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
@@ -80,7 +75,7 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun maximalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
 
         var result = exportJsonToXML(exporter, "/export/ingrid/geo-service.maximal.sample.json")
         // replace generated UUIDs and windows line endings
@@ -98,7 +93,7 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun downloadDiensteExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
@@ -106,7 +101,7 @@ class Geodataservice : AnnotationSpec() {
 
     @Test
     fun completeExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
 
         var result = exportJsonToXML(exporter, "/export/ingrid/geodataservice.json")
         // replace generated UUIDs and windows line endings
@@ -122,7 +117,7 @@ class Geodataservice : AnnotationSpec() {
 
     @Test
     fun completeLuceneExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
 
         var result = exportJsonToJson(indexExporter, "/export/ingrid/geodataservice.json")
         // replace generated UUIDs and windows line endings
@@ -134,5 +129,11 @@ class Geodataservice : AnnotationSpec() {
         // TODO: pending
         // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
     }
+
+    private fun createDocumentWrapper() =
+        DocumentWrapper().apply {
+            type = "testDocType"
+        }
+
 
 }
