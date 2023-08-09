@@ -45,7 +45,13 @@ export class UpdateCodelistComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup = this.fb.group({
-      id: this.fb.control(this.data.entry.id, this.checkForExistingId()),
+      id: this.fb.control(
+        {
+          value: this.data.entry.id,
+          disabled: this.data.entry.id !== undefined,
+        },
+        this.checkForExistingId()
+      ),
       description: this.fb.control(this.data.entry.description),
       data: this.fb.control(this.data.entry.data),
       fields: this.fb.array(
