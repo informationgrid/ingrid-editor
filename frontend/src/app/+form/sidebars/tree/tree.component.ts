@@ -517,6 +517,7 @@ export class TreeComponent implements OnInit {
               const node = this.dataSource.getNode(this.activeNodeId);
               this.selectNode(node);
               this.initialized = true;
+              this.cdr.detectChanges();
             });
           });
         });
@@ -524,6 +525,7 @@ export class TreeComponent implements OnInit {
       this.reloadTree().subscribe(() => {
         this.handleActiveNodeSubscription();
         this.initialized = true;
+        this.cdr.detectChanges();
       });
     }
   }
