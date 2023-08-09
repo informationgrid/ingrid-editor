@@ -76,6 +76,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         WHERE dw.uuid = doc.uuid
           AND doc.state != 'ARCHIVED'
           AND dw.catalog_id = cat.id 
+          AND doc.catalog_id = cat.id
           AND dw.deleted = 0
           AND cat.identifier = :catalogId 
           AND dw.uuid = :uuid
