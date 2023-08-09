@@ -119,9 +119,12 @@ class URLChecker @Autowired constructor(
 
     private fun checkAndReportUrl(info: UrlReport) {
         return try {
-            URL(info.url).openConnection().let {
+            (URL(info.url).openConnection() as HttpURLConnection).let {
+                it.connectTimeout = 10000
+                it.readTimeout = 5000
+                it.instanceFollowRedirects = true
                 it.connect()
-                info.status = (it as HttpURLConnection).responseCode
+                info.status = it.responseCode
                 info.success = urlRequestService.isSuccessCode(info.status)
             }
         } catch (ex: Exception) {
