@@ -102,7 +102,13 @@ export class DocumentReferenceTypeComponent
 
   showExternalRefDialog() {
     this.dialog
-      .open(SelectCswRecordDialog, { minWidth: 400 })
+      .open(SelectCswRecordDialog, {
+        data: {
+          asAtomDownloadService:
+            this.options.formState.mainModel.service.isAtomDownload,
+        },
+        minWidth: 400,
+      })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {
         if (item) {
