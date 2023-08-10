@@ -352,7 +352,15 @@ class PostMigrationTask(
         wrapper: DocumentWrapper,
         catalogIdentifier: String
     ) = listOf(DOCUMENT_STATE.PUBLISHED, DOCUMENT_STATE.DRAFT, DOCUMENT_STATE.DRAFT_AND_PUBLISHED, DOCUMENT_STATE.PENDING)
-        .map {documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)}
+        .map {
+            try {
+              documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
+            } catch (e: Exception) {
+                //no document with specific state found
+                null
+            }
+        }
+        .filterNotNull()
         .flatMap {
             documentService.getReferencedWrapperIds(catalogIdentifier, it)
         }
