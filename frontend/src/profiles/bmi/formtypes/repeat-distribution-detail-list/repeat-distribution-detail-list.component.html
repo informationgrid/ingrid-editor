@@ -36,7 +36,10 @@
             >
                 <mat-expansion-panel-header role="listitem">
                     <mat-panel-title>
-                        <mat-icon *ngIf="formControl.enabled" cdkDragHandle
+                        <mat-icon
+                            *ngIf="formControl.enabled"
+                            cdkDragHandle
+                            aria-hidden="true"
                             >drag_indicator
                         </mat-icon>
                         {{ model[i].title }}

@@ -139,7 +139,6 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
                 contextHelpId: "language",
-                ariaLabel: "Sprachen der Ressource",
               }),
               this.addTextAreaInline(
                 "description",
