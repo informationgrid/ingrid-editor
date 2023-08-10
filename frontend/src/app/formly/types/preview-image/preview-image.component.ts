@@ -191,7 +191,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           catchError((error) => {
             console.log(error);
             this.messageService.sendError(
-              "Das Bild konnte auf dem Server nicht mehr gefunden werden"
+              "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
             );
             return of(error);
           })
