@@ -64,7 +64,10 @@ export class BmiDoctype extends BaseDoctype {
             },
           },
         }),
-        this.addRepeatList("keywords", "Schlagworte", { view: "chip" }),
+        this.addRepeatList("keywords", "Schlagworte", {
+          view: "chip",
+          hint: "Mehrere Schlagworte durch Komma trennen, Eingabe mit Enter bestätigen.",
+        }),
       ]),
       this.addSection("Open Data", [
         this.addRepeatList("DCATThemes", "Open Data Kategorien", {
