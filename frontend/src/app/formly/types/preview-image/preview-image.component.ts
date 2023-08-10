@@ -25,7 +25,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { IgeError } from "../../../models/ige-error";
+import { FormMessageService } from "../../../services/form-message.service";
+import { of } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -48,6 +49,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private dialog = inject(MatDialog);
   private uploadService = inject(UploadService);
   private cdr = inject(ChangeDetectorRef);
+  private messageService = inject(FormMessageService);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -188,11 +190,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           tap((hash) => this.addUploadUri(uri, hash)),
           catchError((error) => {
             console.log(error);
-            const igeError = new IgeError(
+            this.messageService.sendError(
               "Das Bild konnte auf dem Server nicht mehr gefunden werden"
             );
-            igeError.detail = error.message;
-            throw igeError;
+            return of(error);
           })
         )
         .subscribe(() => this.cdr.detectChanges());
