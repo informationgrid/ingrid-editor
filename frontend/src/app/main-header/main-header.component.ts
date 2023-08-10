@@ -90,7 +90,7 @@ export class MainHeaderComponent implements OnInit {
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
       this.authFactory.get().logout();
-    });
+    }, 1000);
   }
 
   getInitials(user: UserInfo) {
