@@ -20,7 +20,7 @@
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
                 <button
-                    #dropdownMenu
+                    #actionsMenu
                     mat-button
                     class="drop-down"
                     [matMenuTriggerFor]="copyMenu"
@@ -47,10 +47,7 @@
                         [disabled]="!menuItem.active"
                         [attr.data-cy]="'copyMenu_' + menuItem.eventId"
                         (click)="
-                            sendEvent(
-                                menuItem.eventId,
-                                dropdownMenu._elementRef.nativeElement
-                            )
+                            actionsMenu.focus(); sendEvent(menuItem.eventId)
                         "
                     >
                         <span>{{ menuItem.label }}</span>
@@ -73,7 +70,6 @@
                     *ngIf="!button.isSeparator && !button.label"
                     mat-icon-button
                     [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active || isNotReady"
@@ -87,7 +83,6 @@
                     class="toolbar-save-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [disabled]="!button.active || isNotReady"
                     (click)="sendEvent(button.eventId)"
                 >
@@ -107,7 +102,7 @@
                         {{ button.label }}
                     </button>
                     <button
-                        #dropdownMenu
+                        #actionsMenu
                         class="btnPublishMore"
                         mat-flat-button
                         color="primary"
@@ -116,6 +111,7 @@
                         [matMenuTriggerFor]="publishMenu"
                         (menuOpened)="menu[button.id] = true"
                         (menuClosed)="menu[button.id] = false"
+                        aria-label="Mehr zur Veröffentlichung"
                     >
                         <mat-icon>{{
                             menu[button.id]
@@ -131,10 +127,7 @@
                             [disabled]="!menuItem.active"
                             [attr.data-cy]="'toolbar_' + menuItem.eventId"
                             (click)="
-                                sendEvent(
-                                    menuItem.eventId,
-                                    dropdownMenu._elementRef.nativeElement
-                                )
+                                actionsMenu.focus(); sendEvent(menuItem.eventId)
                             "
                         >
                             <span>{{ menuItem.label }}</span>

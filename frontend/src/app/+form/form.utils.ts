@@ -25,7 +25,7 @@ export class FormUtils {
       event.preventDefault();
       let dif = event.timeStamp - FormUtils.timestamp;
       if (!readonly && !event.repeat && dif > 500) {
-        service.sendEvent({ type: "SAVE" });
+        service.sendEvent("SAVE");
         FormUtils.timestamp = event.timeStamp;
       }
     }

@@ -94,6 +94,8 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
           id: id,
           forResponsibility: false,
         },
+        restoreFocus: true,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .subscribe((user) => {

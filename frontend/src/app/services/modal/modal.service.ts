@@ -27,6 +27,8 @@ export class ModalService {
         data: options,
         maxWidth: 700,
         hasBackdrop: hasBackdrop,
+        restoreFocus: true,
+        delayFocusTrap: true,
       })
       .afterClosed();
   }

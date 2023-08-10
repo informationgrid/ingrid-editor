@@ -80,8 +80,8 @@ export class FormToolbarService {
     this.toolbar$.next(this.buttons);
   }
 
-  sendEvent(docEvent: DocEvent) {
-    this.docEvents.sendEvent(docEvent);
+  sendEvent(id: string) {
+    this.docEvents.sendEvent({ type: id });
   }
 
   /**

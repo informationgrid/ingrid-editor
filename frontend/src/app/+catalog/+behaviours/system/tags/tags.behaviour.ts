@@ -78,6 +78,8 @@ export class TagsBehaviour extends Plugin {
     this.dialog
       .open(PublicationTypeDialog, {
         data: currentDocument._tags ?? "",
+        restoreFocus: true,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(

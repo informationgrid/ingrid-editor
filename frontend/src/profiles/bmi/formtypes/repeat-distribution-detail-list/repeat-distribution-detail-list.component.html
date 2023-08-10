@@ -85,7 +85,7 @@
                             [class.expanded]="showMore[i]"
                             (click)="showMore[i] = !showMore[i]"
                             [matTooltip]="showMore[i] ? 'Schließen' : 'Öffnen'"
-                            [attr.aria-description]="
+                            [attr.aria-label]="
                                 (showMore[i] ? 'Schließen' : 'Öffnen') +
                                 ' Details des Ressource'
                             "
@@ -96,6 +96,7 @@
                         </button>
                         <button
                             *ngIf="formControl.enabled"
+                            #moreButton
                             mat-icon-button
                             type="button"
                             class="menu-button"
@@ -103,15 +104,21 @@
                             (click)="$event.stopPropagation()"
                             (keydown)="$event.stopPropagation()"
                             matTooltip="Bearbeiten"
-                            aria-description="Ressource bearbeiten"
+                            aria-label="Ressource bearbeiten"
                         >
                             <mat-icon svgIcon="Mehr"></mat-icon>
 
                             <mat-menu #menu>
-                                <button mat-menu-item (click)="editItem(i)">
+                                <button
+                                    mat-menu-item
+                                    (click)="moreButton.focus(); editItem(i)"
+                                >
                                     Bearbeiten
                                 </button>
-                                <button mat-menu-item (click)="remove(i)">
+                                <button
+                                    mat-menu-item
+                                    (click)="moreButton.focus(); remove(i)"
+                                >
                                     Entfernen
                                 </button>
                             </mat-menu>

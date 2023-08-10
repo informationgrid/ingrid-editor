@@ -111,7 +111,6 @@ export class DeleteDocsPlugin extends Plugin {
               ],
             },
             restoreFocus: true,
-            ariaLabel: "Löschen",
           })
           .afterClosed()
           .pipe(filter((response) => response === "confirm"))

@@ -57,6 +57,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
             )
           ),
           codelistId: 4430,
+          ariaLabel: "Art des Kontakts",
         }),
         this.addInput("connection", "Verbindung", {
           fieldLabel: "Verbindung",
@@ -79,6 +80,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                 this.transloco.translate("form.validationMessages.url"),
             },
           },
+          ariaLabel: "Verbindung zur Art",
         }),
       ],
     });
@@ -98,6 +100,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                   fieldLabel: "Straße/Hausnummer",
                   className: "width-100",
                   wrappers: ["form-field"],
+                  ariaLabel: "Straße/Hausnummer der Anschrift",
                 }),
               ],
             },
@@ -107,11 +110,13 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
                   wrappers: ["form-field"],
+                  ariaLabel: "PLZ der Anschrift",
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
                   className: "flex-3",
                   wrappers: ["form-field"],
+                  ariaLabel: "Ort der Anschrift",
                 }),
               ],
             },
@@ -123,6 +128,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
               options: this.getCodelistForSelect(6200, "country"),
               codelistId: 6200,
               defaultValue: options?.defaultCountry,
+              ariaLabel: "Land der Anschrift",
             }),
           ],
         },

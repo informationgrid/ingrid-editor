@@ -21,7 +21,7 @@
         role="menuitem"
     >
         <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
-        <p matListItemTitle>{{ t(item.path) }}</p>
+        <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
     </a>
 
     <div class="fillVertical"></div>
@@ -32,12 +32,13 @@
         [href]="configuration.contextPath + 'barrierefreiheit'"
         target="_blank"
         data-cy="link-accessibility"
+        role="menuitem"
         matTooltip="Barrierefreiheit"
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
     >
         <mat-icon matListItemIcon>info</mat-icon>
-        <p matListItemTitle>Barrierefreiheit</p>
+        <p matListItemTitle aria-hidden="true">Barrierefreiheit</p>
     </a>
 
     <a
@@ -46,12 +47,12 @@
         class="menu-toggle no-text-transform"
         (click)="toggleSidebar(!menuIsExpanded)"
         (keydown.enter)="toggleSidebar(!menuIsExpanded)"
-        matTooltip="Vergrößern"
-        [matTooltipDisabled]="menuIsExpanded"
         matTooltipPosition="right"
         data-cy="menu-scale"
         tabindex="0"
         role="menuitem"
+        [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+        [matTooltipDisabled]="menuIsExpanded"
     >
         <mat-icon
             *ngIf="!menuIsExpanded"
@@ -63,6 +64,6 @@
             matListItemIcon
             svgIcon="Nav-zu"
         ></mat-icon>
-        <p matListItemTitle>Verkleinern</p>
+        <p matListItemTitle aria-hidden="true">Verkleinern</p>
     </a>
 </mat-nav-list>

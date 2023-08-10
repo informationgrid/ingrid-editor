@@ -84,7 +84,6 @@ export class RepeatDistributionDetailListComponent
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
         },
-        ariaLabel: "Dateien hochladen",
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -185,7 +184,6 @@ export class RepeatDistributionDetailListComponent
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
-        restoreFocus: true,
         disableClose: true,
         data: <FormDialogData>{
           fields: this.getFields(this.field.fieldArray),
@@ -195,8 +193,8 @@ export class RepeatDistributionDetailListComponent
               : JSON.parse(JSON.stringify(this.model[index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
+        restoreFocus: true,
         delayFocusTrap: true,
-        ariaLabel: "Link angeben",
       })
       .afterClosed()
       .subscribe((response) => {
