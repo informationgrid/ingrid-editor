@@ -60,8 +60,8 @@ data class ContainsOperation(
 data class SVOperationMetadata(
     val operationName: CharacterString?,
     val operationDescription: CharacterString?,
-    @JacksonXmlProperty(localName = "DCP") val dcp: List<DCPList>,
-    val connectPoint: List<ConnectPoint>,
+    @JacksonXmlProperty(localName = "DCP") val dcp: List<DCPList>?,
+    val connectPoint: List<ConnectPoint>?,
 )
 
 data class DCPList(
