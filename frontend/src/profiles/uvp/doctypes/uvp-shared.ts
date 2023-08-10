@@ -75,6 +75,10 @@ export class UvpShared extends BaseDoctype {
             this.transloco.translate("form.validationMessages.url"),
         },
       },
+      expressions: {
+        "props.label": (field) =>
+          field.formControl.value?.asLink ? "URL (Link)" : "Dateiname (Upload)",
+      },
     },
     {
       key: "validUntil",

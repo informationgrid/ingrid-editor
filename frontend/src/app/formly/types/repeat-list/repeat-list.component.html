@@ -141,6 +141,12 @@
             </div>
         </mat-option>
     </mat-select>
+    <!-- help info button -->
+    <ng-container
+        *ngIf="props.suffix"
+        matSuffix
+        [ngTemplateOutlet]="props.suffix"
+    ></ng-container>
     <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
 </mat-form-field>
 

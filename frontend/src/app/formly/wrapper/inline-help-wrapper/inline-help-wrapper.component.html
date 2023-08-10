@@ -13,6 +13,7 @@
 
 <!-- suffix template for info button that activates context help -->
 <ng-template #matSuffix>
+    <ng-container *ngTemplateOutlet="props._matSuffix"></ng-container>
     <button
         *ngIf="props.hasInlineContextHelp || props.hasContextHelp"
         type="button"

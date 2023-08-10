@@ -137,10 +137,12 @@
                     >
                 </div>
 
-                <div class="popup-leading flex-row align-items-center">
-                    Verwaltung
-                </div>
-                <mat-divider></mat-divider>
+                <ng-container *ngIf="menuItems.length > 0 && isAdmin">
+                    <div class="popup-leading flex-row align-items-center">
+                        Verwaltung
+                    </div>
+                    <mat-divider></mat-divider>
+                </ng-container>
 
                 <ng-container *ngFor="let group of menuItems">
                     <div *ngIf="isAdmin">

@@ -28,6 +28,7 @@ export class AddonsWrapperComponent
     }
 
     if (this.matSuffix) {
+      this.props._matSuffix = this.props.suffix;
       if (this.props?.addonRight?.icon != undefined) {
         this.props.suffix = this.matSuffix;
       } else {

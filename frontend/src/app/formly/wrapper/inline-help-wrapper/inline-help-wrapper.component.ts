@@ -38,6 +38,7 @@ export class InlineHelpWrapperComponent
     this.fieldId = <string>this.field.key;
 
     if (this.matSuffix && !this.props.isSuffixUnsupported) {
+      this.props._matSuffix = this.props.suffix;
       this.props.suffix = this.matSuffix;
     }
   }

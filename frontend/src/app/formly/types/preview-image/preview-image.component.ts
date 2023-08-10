@@ -70,6 +70,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           }
         },
       },
+      expressions: {
+        "props.label": (field) =>
+          field.formControl.value?.asLink ? "URL (Link)" : "Dateiname (Upload)",
+      },
     },
     {
       key: "fileDescription",
