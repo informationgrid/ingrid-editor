@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  OnDestroy,
   TemplateRef,
   ViewChild,
 } from "@angular/core";
@@ -13,7 +14,7 @@ import { FieldWrapper } from "@ngx-formly/core";
 })
 export class AddonsWrapperComponent
   extends FieldWrapper
-  implements AfterViewInit
+  implements AfterViewInit, OnDestroy
 {
   @ViewChild("matPrefix", { static: true }) matPrefix!: TemplateRef<any>;
   @ViewChild("matSuffix", { static: true }) matSuffix!: TemplateRef<any>;
@@ -35,6 +36,11 @@ export class AddonsWrapperComponent
         this.props.textSuffix = this.matSuffix;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    // we need to reset suffix to prevent infinite recursion
+    this.props.suffix = null;
   }
 
   addonRightClick($event: any) {
