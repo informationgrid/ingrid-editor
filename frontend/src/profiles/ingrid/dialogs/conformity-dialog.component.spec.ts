@@ -48,8 +48,13 @@ describe("ConformityDialogComponent", () => {
   let dateField: MatDatepickerInputHarness;
   let descriptionField: MatInputHarness;
   let inspireSpecification: MatSelectHarness;
+  let passField: MatSelectHarness;
   let loader: any;
   let inspireSpecificationAutocomplete: MatAutocompleteHarness;
+  let mockMatDialogRef: Partial<MatDialogRef<any>> = {
+    close: () => {},
+  };
+
   const createComponent = createComponentFactory({
     component: ConformityDialogComponent,
     imports: [
@@ -70,7 +75,7 @@ describe("ConformityDialogComponent", () => {
       MatAutocompleteModule,
     ],
     providers: [
-      { provide: MatDialogRef, useValue: {} },
+      { provide: MatDialogRef, useValue: mockMatDialogRef },
       { provide: MAT_DIALOG_DATA, useValue: [] },
       {
         provide: MAT_DATE_LOCALE,
@@ -116,11 +121,14 @@ describe("ConformityDialogComponent", () => {
     isInspireCheckbox = await loader.getHarness(MatCheckboxHarness);
     dateField = await loader.getHarness(MatDatepickerInputHarness);
     descriptionField = await loader.getHarness(MatInputHarness);
-    inspireSpecification = await loader.getHarness(MatSelectHarness);
-  });
-
-  it("should create the component", () => {
-    expect(spectator.component).toBeTruthy();
+    inspireSpecification = await loader.getHarness(
+      MatSelectHarness.with({
+        selector: "[data-cy='conformity-specification-id']",
+      })
+    );
+    passField = await loader.getHarness(
+      MatSelectHarness.with({ selector: "[data-cy='conformity-level-id']" })
+    );
   });
 
   it("should disable the date field when isInspire is true", async () => {
@@ -145,9 +153,22 @@ describe("ConformityDialogComponent", () => {
     await inspireSpecificationAutocomplete.enterText("text to enter");
     const options = await inspireSpecificationAutocomplete.getOptions();
     expect(options.length).toBe(2);
-    await inspireSpecificationAutocomplete.selectOption({ text: "Elf" });
+    await passField.clickOptions({ text: "konform" });
 
-    dateField.setValue("18.15.2019");
+    await dateField.setValue("18.15.2019");
+
+    const closeDialog = spyOn(mockMatDialogRef, "close");
+    spectator.component.submit();
+
+    expect(closeDialog).toHaveBeenCalledWith({
+      specification: { key: null, value: "text to enter" },
+      pass: { key: "1" },
+      publicationDate: new Date(
+        "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)"
+      ),
+      explanation: null,
+      isInspire: false,
+    });
   });
 
   it("should set date for INSPIRE specification", async () => {
@@ -160,7 +181,19 @@ describe("ConformityDialogComponent", () => {
 
     await inspireSpecification.clickOptions({ text: "Eins" });
 
+    await passField.clickOptions({ text: "konform" });
     expect(await dateField.getValue()).toBe("20.10.2009");
+
+    const closeDialog = spyOn(mockMatDialogRef, "close");
+    spectator.component.submit();
+
+    expect(closeDialog).toHaveBeenCalledWith({
+      specification: { key: "1" },
+      pass: { key: "1" },
+      publicationDate: "2009-10-20",
+      explanation: null,
+      isInspire: true,
+    });
   });
 
   function mockCodelists() {
