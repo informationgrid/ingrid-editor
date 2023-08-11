@@ -3,6 +3,8 @@ import { animate, style, transition, trigger } from "@angular/animations";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { DocumentService } from "../../../../services/document/document.service";
+import { MatDialog } from "@angular/material/dialog";
+import { forkJoin, timer } from "rxjs";
 
 @Component({
   selector: "ige-error-panel",
@@ -27,6 +29,8 @@ export class ErrorPanelComponent implements OnInit {
   private specialElements = ["ige-add-button", "ige-formly-leaflet-type"];
 
   private documentService = inject(DocumentService);
+
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit() {
     this.jumpToCurrentError();
@@ -61,13 +65,15 @@ export class ErrorPanelComponent implements OnInit {
       }
     }
 
-    // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
-    setTimeout(
-      () =>
-        (<HTMLElement>(
-          element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
-        ))?.focus(),
-      300
+    forkJoin([
+      // wait for all dialogs being dismissed to prevent focus being placed outside of dialogs
+      ...this.dialog.openDialogs.map((dialog) => dialog.afterClosed()),
+      // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
+      timer(300),
+    ]).subscribe(() =>
+      (<HTMLElement>(
+        element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
+      ))?.focus()
     );
   }
 
