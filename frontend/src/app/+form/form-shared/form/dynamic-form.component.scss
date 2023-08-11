@@ -36,6 +36,7 @@
 .form-content {
   display: flex;
   flex-direction: column;
+
   .form-inner {
     flex: 1;
     padding: 20px 24px 20px 36px;
@@ -85,5 +86,7 @@ pre {
 }
 
 .requiredDescription {
+  font-size: 14px;
+  color: $ige-hint-color;
   margin-bottom: 10px;
 }

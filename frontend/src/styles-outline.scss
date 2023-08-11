@@ -12,14 +12,14 @@
   &.cdk-focused.cdk-keyboard-focused,
   &[role="option"]:focus {
     outline-offset: -2px;
-    outline: $ige-outline;
+    outline: 2px solid $ige-primary;
   }
 }
 
 ige-side-menu .mdc-list-item {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: -2px;
-    outline: $ige-outline-light;
+    outline: 2px solid #fff;
   }
 }
 
@@ -28,7 +28,7 @@ ige-address-card .menu-button,
 ige-spatial-list .menu-button {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: -2px;
-    outline: $ige-outline-dark;
+    outline: 2px solid #000;
 
     .mat-mdc-button-persistent-ripple::before {
       background-color: unset;
@@ -44,30 +44,22 @@ mat-tree-node,
 ige-session-timeout-info [tabindex="0"] {
   &:focus {
     outline-offset: -2px;
-    outline: $ige-outline;
-  }
-}
-
-mat-form-field.mat-focused {
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-color: $ige-primary !important;
+    outline: 2px solid $ige-primary;
   }
 }
 
 .white-bg {
   &.white-border {
     .mat-mdc-text-field-wrapper {
-      border: $ige-outline-light;
+      border: 2px solid #fff;
 
       &:hover {
-        border: $ige-outline;
+        border: 2px solid $ige-secondary;
       }
     }
 
     &.mat-focused .mat-mdc-text-field-wrapper {
-      border: $ige-outline;
+      border: 2px solid $ige-secondary;
     }
   }
 
