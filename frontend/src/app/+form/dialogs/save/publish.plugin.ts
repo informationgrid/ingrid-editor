@@ -240,7 +240,6 @@ export class PublishPlugin extends SaveBase {
     this.dialog
       .open(DelayedPublishDialogComponent, {
         restoreFocus: true,
-        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((date) => date))
