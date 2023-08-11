@@ -1,4 +1,11 @@
 {
+  "pageTitle": {
+    "default": "IGE-NG",
+    "dashboard": "Übersicht",
+    "research": {
+      "sql": "Recherche: SQL"
+    }
+  },
   "menu": {
     "application": "INGRID",
     "application-suffix": " ",

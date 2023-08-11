@@ -17,6 +17,8 @@ import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
 import { PluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
+import { NavigationEnd, Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -36,10 +38,12 @@ export class AppComponent implements OnInit {
     private registry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private authFactory: AuthenticationFactory,
-    titleService: Title,
+    private titleService: Title,
     private profileService: ProfileService,
     private viewContainerRef: ViewContainerRef,
-    @Inject(PluginToken) private autoPlugins: Plugin[]
+    @Inject(PluginToken) private autoPlugins: Plugin[],
+    private router: Router,
+    private transloco: TranslocoService
   ) {
     this.loadProfile();
 
@@ -123,5 +127,18 @@ export class AppComponent implements OnInit {
         throttleTime(10000) // allow token refresh only every 10s once
       )
       .subscribe(() => this.authFactory.get().refreshToken());
+
+    this.router.events.subscribe((event: any) => {
+      if (event instanceof NavigationEnd) {
+        const splittedByParams = this.router.url.split(";");
+        const mappedPath = splittedByParams[0].split("/").slice(2).join(".");
+        const key = `pageTitle.${mappedPath}`;
+        let newTitle = this.transloco.translate(key);
+        if (key === newTitle) {
+          newTitle = this.transloco.translate("pageTitle.default");
+        }
+        this.titleService.setTitle(newTitle);
+      }
+    });
   }
 }
