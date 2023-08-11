@@ -1,6 +1,12 @@
-import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
-import { firstValueFrom, Subject } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
@@ -18,7 +24,7 @@ import { ProfileService } from "../../services/profile.service";
 })
 export class GeneralReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
-  chartDataPublished = new Subject<number[]>();
+  chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
 
   displayedColumns = [
@@ -95,7 +101,7 @@ export class GeneralReportComponent implements OnInit {
     });
 
     this.dataSource.data = data;
-    this.chartDataPublished.next([filteredPublished, filteredDrafts]);
+    this.chartDataPublished.set([filteredPublished, filteredDrafts]);
   }
 
   getIcon(type: string): string {

@@ -46,9 +46,7 @@
         <div class="info-cards flex-col gap-24">
             <div class="info-box flex-row gap-36">
                 <ige-card-box label="{{ t('application') }} Datensätze">
-                    <ige-chart
-                        [data]="chartDataPublished.asObservable()"
-                    ></ige-chart>
+                    <ige-chart [data]="chartDataPublished()"></ige-chart>
                 </ige-card-box>
             </div>
 
