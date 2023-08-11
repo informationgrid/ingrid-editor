@@ -5,7 +5,7 @@ import { PluginService } from "../../../app/services/plugin/plugin.service";
 @Injectable({ providedIn: "root" })
 export class InvekosPlugin extends Plugin {
   id = "plugin.ingrid.invekos";
-  name = "InVeKos-Daten";
+  name = "InVeKoS-Daten";
   description =
     "Ermöglicht die Eingabe von InVeKoS (Integriertes Verwaltungs- und Kontrollsystem) - Daten";
   group = "Datensätze";
