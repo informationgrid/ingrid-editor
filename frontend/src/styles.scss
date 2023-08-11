@@ -2,6 +2,7 @@
 @import "./material.override.scss";
 //@import "./material-fields.override.scss";
 @import "./styles-print.scss";
+@import "./styles-outline";
 
 html,
 body {
@@ -277,11 +278,13 @@ h1 {
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.width-25 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.25;
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.with-side-button ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.8;
     padding-right: 10px; // simulate gap used by multiple fields in one row
@@ -628,6 +631,7 @@ ige-one-column-wrapper formly-group {
 .flex-2 {
   flex: 2;
 }
+
 .flex-3 {
   flex: 3;
 }

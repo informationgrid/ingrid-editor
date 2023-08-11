@@ -53,12 +53,6 @@
   .close:focus {
     opacity: 1;
   }
-
-  &:focus,
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 1px 0 #000;
-  }
 }
 
 /*TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/

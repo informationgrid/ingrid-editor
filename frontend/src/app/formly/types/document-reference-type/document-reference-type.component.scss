@@ -19,7 +19,9 @@
 
   .remove-icon {
     opacity: 0.4;
-    &:hover {
+
+    &:hover,
+    &:focus {
       opacity: 1;
     }
   }

@@ -1,0 +1,78 @@
+/*
+ * styles to improve accessibility, specifically the outlines that appear only when an object is selected by tab.
+ * only focus-related pseudo-classes or classes should be used here.
+ */
+@import "src/variables";
+
+.mdc-button,
+.mdc-list-item,
+.mdc-icon-button,
+.mat-mdc-chip,
+.mat-expansion-panel-header {
+  &.cdk-focused.cdk-keyboard-focused,
+  &[role="option"]:focus {
+    outline-offset: -2px;
+    outline: $ige-outline;
+  }
+}
+
+ige-side-menu .mdc-list-item {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: $ige-outline-light;
+  }
+}
+
+form-toolbar :not(.save-buttons) > .mdc-button,
+ige-address-card .menu-button,
+ige-spatial-list .menu-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: $ige-outline-dark;
+
+    .mat-mdc-button-persistent-ripple::before {
+      background-color: unset;
+    }
+  }
+}
+
+mat-tree-node,
+[role="button"],
+[role="figure"],
+[role="heading"],
+[role="listitem"],
+ige-session-timeout-info [tabindex="0"] {
+  &:focus {
+    outline-offset: -2px;
+    outline: $ige-outline;
+  }
+}
+
+mat-form-field.mat-focused {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: $ige-primary !important;
+  }
+}
+
+.white-bg {
+  &.white-border {
+    .mat-mdc-text-field-wrapper {
+      border: $ige-outline-light;
+
+      &:hover {
+        border: $ige-outline;
+      }
+    }
+
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border: $ige-outline;
+    }
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: white;
+    border-radius: 4px;
+  }
+}

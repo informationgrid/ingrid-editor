@@ -3,19 +3,13 @@
     [disabled]="formControl.disabled"
     cdkDropListGroup
     mixedCdkDragDrop
-    orientation="horizontal"
     (dropped)="drop($event)"
-    role="list"
     [attr.aria-label]="props.ariaLabel"
 >
     <span
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDropList
         mixedCdkDropList
-        tabindex="0"
-        role="listitem"
-        (keydown.enter)="removeItem(i)"
-        aria-description="Klick auf die Eingabetaste zu entfernen"
     >
         <mat-chip-option
             disableRipple
@@ -42,7 +36,15 @@
                 <div class="label">{{ model[i][props.labelField] }}</div>
             </ng-container>
 
-            <button *ngIf="formControl.enabled" matChipRemove>
+            <button
+                *ngIf="formControl.enabled"
+                matChipRemove
+                [attr.aria-description]="
+                    props.labelField
+                        ? model[i][props.labelField]
+                        : getParameter(model[i]) + 'entfernen'
+                "
+            >
                 <mat-icon>cancel</mat-icon>
             </button>
         </mat-chip-option>
@@ -58,6 +60,7 @@
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
+    role="list"
 >
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
@@ -68,9 +71,15 @@
         class="clickable list-item"
         data-cy="list-item"
         tabindex="0"
-        (keydown.delete)="removeItem(i, $event)"
-        (keydown.backspace)="removeItem(i, $event)"
         (click)="this.onItemClick(model[i]?.key)"
+        (keyup.enter)="removeItem(i, $event)"
+        role="listitem"
+        [attr.aria-label]="
+            type === 'search'
+                ? model[i][props.labelField]
+                : getParameter(model[i])
+        "
+        aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
     >
         <div class="text-wrapper">
             <span class="list-display-element">
@@ -92,6 +101,7 @@
             mat-icon-button
             class="close gray"
             (click)="removeItem(i)"
+            tabindex="-1"
         >
             <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
             <mat-icon>close</mat-icon>

@@ -1,22 +1,5 @@
 @import "src/variables";
 
-.white-bg {
-  &.white-border {
-    .mat-mdc-text-field-wrapper {
-      border: 2px solid #ffffff;
-
-      &:hover {
-        border: 2px solid $ige-comment-color;
-      }
-    }
-  }
-
-  .mat-mdc-text-field-wrapper {
-    background-color: white;
-    border-radius: 4px;
-  }
-}
-
 button.mdc-button {
   text-transform: uppercase;
 }
@@ -111,6 +94,7 @@ mat-dialog-container.mat-mdc-dialog-container {
   .mat-mdc-dialog-surface {
     display: flex;
   }
+
   .mat-mdc-tab-body-content {
     overflow: auto !important;
   }
