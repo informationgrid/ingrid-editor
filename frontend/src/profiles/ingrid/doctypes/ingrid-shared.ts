@@ -340,6 +340,7 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
+              defaultValue: [],
               expressions: {
                 hide: "!formState.mainModel?.isInspireIdentified",
               },
@@ -1822,6 +1823,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   private addInVeKoSKeyword(formState: any, id: string) {
     const uri = `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${id}`;
+    if (!formState.mainModel.invekosKeywords)
+      formState.mainModel.invekosKeywords = [];
     const exists = formState.mainModel.invekosKeywords.some(
       (entry) => entry.key === uri
     );
