@@ -47,6 +47,7 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
+      wrappers: ["form-field", "inline-help"],
       props: {
         label: "Link",
         appearance: "outline",

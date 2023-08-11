@@ -73,7 +73,7 @@ export class UpdateCodelistComponent implements OnInit {
   }
 
   closeWithResult() {
-    const result = this.formGroup.value;
+    const result = this.formGroup.getRawValue();
     result.fields = result.fields.reduce((previousValue, currentValue) => {
       previousValue[currentValue.key] = currentValue.value;
       return previousValue;
