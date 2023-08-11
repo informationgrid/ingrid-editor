@@ -104,7 +104,6 @@ export class CreateDocumentPlugin extends Plugin {
         forAddress: this.forAddress,
         isFolder: false,
       } as CreateOptions,
-      restoreFocus: true,
     });
   }
 

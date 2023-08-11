@@ -193,7 +193,6 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
-        restoreFocus: true,
         delayFocusTrap: true,
       })
       .afterClosed()
@@ -226,7 +225,6 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
-        restoreFocus: true,
         delayFocusTrap: true,
       })
       .afterClosed()
@@ -238,9 +236,7 @@ export class PublishPlugin extends SaveBase {
 
   private showPlanPublishingDialog() {
     this.dialog
-      .open(DelayedPublishDialogComponent, {
-        restoreFocus: true,
-      })
+      .open(DelayedPublishDialogComponent)
       .afterClosed()
       .pipe(filter((date) => date))
       .subscribe((date) => {
@@ -288,7 +284,6 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
-        restoreFocus: true,
         delayFocusTrap: true,
       })
       .afterClosed()

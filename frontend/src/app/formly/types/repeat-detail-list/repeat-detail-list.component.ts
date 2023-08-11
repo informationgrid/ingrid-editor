@@ -73,7 +73,6 @@ export class RepeatDetailListComponent
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
-        restoreFocus: true,
         data: <FormDialogData>{
           fields: [this.field.fieldArray],
           model:

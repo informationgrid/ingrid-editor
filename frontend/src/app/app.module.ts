@@ -362,6 +362,7 @@ export function animationExtension(field: FormlyFieldConfig) {
         maxWidth: "min(950px, 90vw)",
         role: "dialog",
         autoFocus: "first-heading",
+        restoreFocus: true,
       },
     },
     {

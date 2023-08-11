@@ -105,7 +105,6 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
-        restoreFocus: true,
         data: {
           allowedUploadTypes: [
             "gif",
@@ -135,7 +134,6 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .open(LinkDialogComponent, {
         maxWidth: 600,
         hasBackdrop: true,
-        restoreFocus: true,
         data: {
           fields: this.linkFields,
           model: {},

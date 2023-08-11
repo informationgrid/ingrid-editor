@@ -254,7 +254,6 @@ export class CopyCutPastePlugin extends Plugin {
           forAddress: this.forAddress,
           typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
-        restoreFocus: true,
         delayFocusTrap: true,
       })
       .afterClosed()

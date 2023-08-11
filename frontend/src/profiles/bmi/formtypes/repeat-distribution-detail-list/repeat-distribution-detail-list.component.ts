@@ -77,7 +77,6 @@ export class RepeatDistributionDetailListComponent
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
-        restoreFocus: true,
         data: {
           currentItems: this.model,
           uploadFieldKey: this.getUploadFieldKey(),
@@ -193,7 +192,6 @@ export class RepeatDistributionDetailListComponent
               : JSON.parse(JSON.stringify(this.model[index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
-        restoreFocus: true,
         delayFocusTrap: true,
       })
       .afterClosed()

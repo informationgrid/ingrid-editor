@@ -82,7 +82,6 @@ export class DashboardComponent implements OnInit {
         forAddress: false,
         isFolder: false,
       } as CreateOptions,
-      restoreFocus: true,
     });
   }
 
@@ -98,7 +97,6 @@ export class DashboardComponent implements OnInit {
         forAddress: true,
         isFolder: false,
       } as CreateOptions,
-      restoreFocus: true,
     });
   }
 
@@ -125,7 +123,6 @@ export class DashboardComponent implements OnInit {
         forAddress: false,
         isFolder: true,
       } as CreateOptions,
-      restoreFocus: true,
     });
   }
 }

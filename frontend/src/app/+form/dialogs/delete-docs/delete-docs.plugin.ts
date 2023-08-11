@@ -110,7 +110,6 @@ export class DeleteDocsPlugin extends Plugin {
                 },
               ],
             },
-            restoreFocus: true,
           })
           .afterClosed()
           .pipe(filter((response) => response === "confirm"))

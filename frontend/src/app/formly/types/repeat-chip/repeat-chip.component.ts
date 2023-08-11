@@ -88,7 +88,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
           options: this.props.options,
           model: this.model,
         },
-        restoreFocus: true,
         hasBackdrop: true,
       })
       .afterClosed()
