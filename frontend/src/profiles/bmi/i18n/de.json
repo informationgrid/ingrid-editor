@@ -1,4 +1,7 @@
 {
+  "pageTitle": {
+    "default": "Open Data Editor Bund"
+  },
   "menu": {
     "application": "Open Data",
     "application-suffix": "Bund",
