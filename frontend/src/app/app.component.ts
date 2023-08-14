@@ -12,7 +12,7 @@ import { CodelistService } from "./services/codelist/codelist.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
-import { Subject } from "rxjs";
+import { combineLatest, Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
 import { PluginToken } from "./tokens/plugin.token";
@@ -128,7 +128,10 @@ export class AppComponent implements OnInit {
       )
       .subscribe(() => this.authFactory.get().refreshToken());
 
-    this.router.events.subscribe((event: any) => {
+    combineLatest([
+      this.transloco.selectTranslation(),
+      this.router.events,
+    ]).subscribe(([_, event]) => {
       if (event instanceof NavigationEnd) {
         const splittedByParams = this.router.url.split(";");
         const mappedPath = splittedByParams[0].split("/").slice(2).join(".");
