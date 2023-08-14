@@ -1,13 +1,20 @@
 <page-template label="Katalogspezifische Codelisten">
     <ng-container left-side>
-        <div>
-        Sie haben hier die Möglichkeit, bestehende Codelisten anzupassen.
-        Diese Änderungen sind nur in diesem Katalog sichtbar.
-        </div>
-        <pre>Wenn diese Änderungen auch in anderen Katalogen oder im Portal verwendet werden
-        sollen, dann müssen die Änderungen im Codelist-Repository durchgeführt werden.</pre>
-        <pre>Sie können einen Codelisteneintrag optional als Defaultwert einstellen. Bei einem neu-erstellten Datensatz wird das Feld, das diese Codeliste verwendet, mit dem eingestellten Defaultwert vorausgefüllt.
-        </pre>
+        <p>
+            Sie haben hier die Möglichkeit, bestehende Codelisten anzupassen.
+            Diese Änderungen sind nur in diesem Katalog sichtbar.
+        </p>
+        <p>
+            Wenn diese Änderungen auch in anderen Katalogen oder im Portal
+            verwendet werden sollen, dann müssen die Änderungen im
+            Codelist-Repository durchgeführt werden.
+        </p>
+        <p>
+            Sie können einen Codelisteneintrag optional als Defaultwert
+            einstellen. Bei einem neu-erstellten Datensatz wird das Feld, das
+            diese Codeliste verwendet, mit dem eingestellten Defaultwert
+            vorausgefüllt.
+        </p>
 
         <div>
             <button mat-button color="primary" (click)="resetAllCodelists()">
