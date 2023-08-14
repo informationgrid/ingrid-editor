@@ -213,7 +213,7 @@ export class BmiDoctype extends BaseDoctype {
       this.addSection("Zeitbezüge", [
         this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
           this.addSelect("rangeType", null, {
-            showSearch: true,
+            showSearch: false,
             className: "flex-1",
             wrappers: ["form-field"],
             ariaLabel: "Zeitliche Abdeckung der Daten",
