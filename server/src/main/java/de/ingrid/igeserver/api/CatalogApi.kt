@@ -23,7 +23,7 @@ interface CatalogApi {
     @Operation(responses = [], summary = "Get all catalogs")
     @ApiResponses(
         value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "200",
+            responseCode = "500",
             description = "Unexpected error"
         )]
     )

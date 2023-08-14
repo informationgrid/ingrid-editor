@@ -24,7 +24,7 @@ interface DatasetsApi {
         value = [ApiResponse(
             responseCode = "200",
             description = "The stored dataset, which might contain additional storage information."
-        ), ApiResponse(responseCode = "200", description = "Unexpected error")]
+        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
     fun createDataset(
         principal: Principal,
