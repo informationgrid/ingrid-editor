@@ -18,5 +18,6 @@ data class BoolFilter(
 
 data class ResearchPaging(
     val page: Int = 1,
-    val pageSize: Int = Int.MAX_VALUE
+    val pageSize: Int = Int.MAX_VALUE,
+    val offset: Int = 0
 )
