@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.2 (15.08.2023)
+
+### Bugfixes
+
+- Anpassung der Nominatim URL-Struktur (#5390)
+
 ## 1.4.1 (19.07.2023)
 
 ### Bugfixes
