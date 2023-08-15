@@ -11,7 +11,7 @@
     width: auto;
   }
 
-  mat-card-title {
+  mat-card-title h2 {
     font-size: 24px;
     color: $ige-primary;
     text-align: center;
@@ -19,6 +19,7 @@
     padding-bottom: 16px;
     line-height: 30px;
     font-weight: 400;
+    margin: 0px;
   }
 
   mat-card-content {
