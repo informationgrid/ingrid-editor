@@ -29,7 +29,6 @@
                 class="catalog-button"
                 mat-button
                 [matTooltip]="currentCatalog"
-                [matTooltipShowDelay]="1000"
                 [matMenuTriggerFor]="catMenu"
                 [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
                 [disabled]="otherAssignedCatalogs.length == 0"
@@ -47,6 +46,7 @@
                 <span
                     *ngFor="let catalog of otherAssignedCatalogs"
                     mat-menu-item
+                    class="menu-item"
                     (click)="chooseCatalog(catalog.id)"
                 >
                     {{ catalog.name }}

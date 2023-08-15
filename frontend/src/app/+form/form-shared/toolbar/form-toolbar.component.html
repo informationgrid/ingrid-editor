@@ -96,7 +96,6 @@
                         (click)="sendEvent(button.eventId)"
                         [attr.data-cy]="'toolbar_publish_now'"
                         [matTooltip]="button.tooltip"
-                        [matTooltipShowDelay]="1000"
                         [disabled]="!button.active || isNotReady"
                     >
                         {{ button.label }}

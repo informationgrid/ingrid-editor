@@ -16,6 +16,13 @@
   }
 }
 
+.mat-mdc-fab {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: 2px;
+    outline: 3px solid $ige-primary;
+  }
+}
+
 ige-side-menu .mdc-list-item {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: -2px;

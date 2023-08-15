@@ -112,6 +112,6 @@ mat-tab-nav-panel {
   min-width: 160px;
 }
 
-.mdc-floating-label--float-above {
-  color: rgba(0, 0, 0, 0.7) !important;
+.mat-focused .mdc-floating-label--float-above {
+  color: $ige-secondary-dark !important;
 }

@@ -22,7 +22,6 @@
     >
         <span
             [matTooltip]="item | breadCrumbTooltip"
-            [matTooltipShowDelay]="500"
             [class.selectable]="
                 selectable &&
                 (item.permission?.canRead || item.permission?.canWrite)

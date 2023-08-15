@@ -22,12 +22,15 @@
   text-overflow: fade;
 }
 
+.menu-item {
+  color: $ige-secondary;
+}
+
 .catalog-button {
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.4px;
   font-size: 12px !important;
-  color: $ige-primary !important;
 
   mat-icon {
     margin-left: 0;

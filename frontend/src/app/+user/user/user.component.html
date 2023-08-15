@@ -26,7 +26,6 @@
                             mat-stroked-button
                             data-cy="toolbar_add_user"
                             matTooltip="Benutzer hinzufügen"
-                            [matTooltipShowDelay]="1000"
                             (click)="showAddUsersDialog()"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
@@ -37,7 +36,6 @@
                             color="primary"
                             data-cy="toolbar_save_user"
                             matTooltip="Speichern"
-                            [matTooltipShowDelay]="1000"
                             (click)="saveUser()"
                             [disabled]="form?.invalid || !form?.dirty"
                         >

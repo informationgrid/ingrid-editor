@@ -21,7 +21,6 @@
                             mat-stroked-button
                             (click)="openAddGroupDialog()"
                             matTooltip="Gruppe hinzufügen"
-                            [matTooltipShowDelay]="1000"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
@@ -31,7 +30,6 @@
                             color="primary"
                             data-cy="toolbar_save_group"
                             matTooltip="Speichern"
-                            [matTooltipShowDelay]="1000"
                             (click)="saveGroup()"
                             [disabled]="form?.invalid || !form?.dirty"
                         >
