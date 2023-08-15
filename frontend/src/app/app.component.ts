@@ -133,12 +133,14 @@ export class AppComponent implements OnInit {
       this.router.events,
     ]).subscribe(([_, event]) => {
       if (event instanceof NavigationEnd) {
+        const mainTitle = this.transloco.translate("pageTitle.default");
         const splittedByParams = this.router.url.split(";");
         const mappedPath = splittedByParams[0].split("/").slice(2).join(".");
         const key = `pageTitle.${mappedPath}`;
-        let newTitle = this.transloco.translate(key);
-        if (key === newTitle) {
-          newTitle = this.transloco.translate("pageTitle.default");
+        const pageTitle = this.transloco.translate(key);
+        let newTitle = mainTitle;
+        if (key !== pageTitle) {
+          newTitle = newTitle + " - " + pageTitle;
         }
         this.titleService.setTitle(newTitle);
       }

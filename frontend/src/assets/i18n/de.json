@@ -2,8 +2,41 @@
   "pageTitle": {
     "default": "IGE-NG",
     "dashboard": "Übersicht",
+    "form": "Daten",
+    "address": "Adressen",
+    "profile": "Profil verwalten",
     "research": {
-      "sql": "Recherche: SQL"
+      "search": "Erweiterte Suche",
+      "sql": "Recherche: SQL",
+      "queries": "Gespeicherte Suchen"
+    },
+    "reports": {
+      "general": "Statistik",
+      "url-check": "URL-Pflege",
+      "expiration": "Abgelaufene Metadaten"
+    },
+    "manage": {
+      "user": "Benutzer",
+      "group": "Gruppen & Rechte"
+    },
+    "importExport": {
+      "import": "Import",
+      "export": "Export"
+    },
+    "catalogs": {
+      "codelists": "Katalog - Codelisten",
+      "form-behaviours": "Katalog - Verhalten",
+      "indexing": "Katalog - Indizierung",
+      "config": "Katalog - Konfiguration"
+    },
+    "settings": {
+      "general": "Verwaltung",
+      "codelist": "Codelist Repository",
+      "catalog": "Katalogverwaltung",
+      "ibus": "iBus Verwaltung",
+      "messages": "Benachrichtigungen",
+      "catalogAssignment": "Katalogzuweisung",
+      "contentManagement": "Inhalte"
     }
   },
   "menu": {
