@@ -164,12 +164,13 @@ export class DocumentService {
           type: "selectDocuments",
           ...model,
         },
-        "modified",
+        "contentmodified",
         "ASC",
         {
           page: 1,
           pageSize: 5,
-        }
+        },
+        ["selectOnlyPublished"]
       ),
       this.researchService.search(
         "",
@@ -177,12 +178,13 @@ export class DocumentService {
           type: "selectAddresses",
           ...model,
         },
-        "modified",
+        "contentmodified",
         "ASC",
         {
           page: 1,
           pageSize: 5,
-        }
+        },
+        ["selectOnlyPublished"]
       )
     )
       .pipe(

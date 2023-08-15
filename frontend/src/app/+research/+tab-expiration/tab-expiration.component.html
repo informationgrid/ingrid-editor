@@ -63,7 +63,7 @@
             <mat-divider aria-hidden="true" />
 
             <mat-tab-group *ngIf="obs.shownData?.totalHits">
-                <mat-tab label="Daten">
+                <mat-tab label="Daten" *ngIf="obs.shownData.objects.length">
                     <ng-template matTabContent>
                         <ige-expiration-table
                             [isSearching]="isSearching"
@@ -71,7 +71,10 @@
                         ></ige-expiration-table>
                     </ng-template>
                 </mat-tab>
-                <mat-tab label="Adressen">
+                <mat-tab
+                    label="Adressen"
+                    *ngIf="obs.shownData.addresses.length"
+                >
                     <ng-template matTabContent>
                         <ige-expiration-table
                             [isSearching]="isSearching"
