@@ -5,6 +5,7 @@
 ### Bugfixes
 
 - Anpassung der Nominatim URL-Struktur (#5390)
+- Paging Fix bei der Indexierung (#5339)
 
 ## 1.4.1 (19.07.2023)
 
