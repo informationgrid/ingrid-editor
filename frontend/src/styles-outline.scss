@@ -4,43 +4,76 @@
  */
 @import "src/variables";
 
+// border *inside of button with primary color
 .mdc-button,
 .mdc-list-item,
 .mdc-icon-button,
 .mat-mdc-chip,
 .mat-expansion-panel-header {
   &.cdk-focused.cdk-keyboard-focused,
-  &[role="option"]:focus {
+  &[role="option"]:focus,
+  &.mat-mdc-option-active {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
-  }
-}
 
-.mat-mdc-fab {
-  &.cdk-focused.cdk-keyboard-focused {
-    outline-offset: 2px;
-    outline: 3px solid $ige-primary;
-  }
-}
+    // remove surface highlight color in different components
+    --mat-mdc-button-ripple-color: unset;
+    --mat-mdc-button-persistent-ripple-color: unset;
 
-ige-side-menu .mdc-list-item {
-  &.cdk-focused.cdk-keyboard-focused {
-    outline-offset: -2px;
-    outline: 2px solid #fff;
-  }
-}
-
-form-toolbar :not(.save-buttons) > .mdc-button,
-ige-address-card .menu-button,
-ige-spatial-list .menu-button {
-  &.cdk-focused.cdk-keyboard-focused {
-    outline-offset: -2px;
-    outline: 2px solid #000;
-
-    .mat-mdc-button-persistent-ripple::before {
+    &:before,
+    .mat-mdc-button-persistent-ripple:before,
+    .mat-mdc-chip-focus-overlay {
       background-color: unset;
     }
   }
+
+  &.mat-mdc-option-active:not(.mdc-list-item--selected),
+  &.mat-mdc-menu-item.cdk-focused.cdk-keyboard-focused {
+    background: unset !important;
+  }
+}
+
+// border *outside of button with primary color
+.mat-mdc-fab,
+[mat-flat-button][color="primary"] {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: 2px;
+    outline: 3px solid $ige-primary;
+    --mat-mdc-button-persistent-ripple-color: unset;
+  }
+}
+
+// border inside of button with white color
+.mdc-tab,
+ige-side-menu .mdc-list-item,
+.dialog-title-wrapper .mdc-icon-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid #fff;
+    --mat-mdc-button-ripple-color: unset;
+
+    &:before {
+      background-color: unset;
+    }
+  }
+}
+
+// border inside of button with black color
+form-toolbar :not(.save-buttons) > .mdc-button,
+ige-address-card .menu-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid #000;
+    --mat-mdc-button-persistent-ripple-color: unset;
+  }
+}
+
+.mat-mdc-checkbox input:focus + .mdc-checkbox__ripple {
+  border: 2px solid $ige-primary;
+  --mdc-checkbox-selected-focus-state-layer-opacity: 1;
+  --mdc-checkbox-unselected-focus-state-layer-opacity: 1;
+  --mdc-checkbox-selected-focus-state-layer-color: transparent;
+  --mdc-checkbox-unselected-focus-state-layer-color: transparent;
 }
 
 mat-tree-node,
@@ -51,6 +84,13 @@ mat-tree-node,
 ige-session-timeout-info [tabindex="0"] {
   &:focus {
     outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+  }
+}
+
+h2[tabindex="0"] {
+  &:focus {
+    outline-offset: 2px;
     outline: 2px solid $ige-primary;
   }
 }

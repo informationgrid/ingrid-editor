@@ -844,11 +844,6 @@ ige-form-label + * {
   --mat-mdc-button-persistent-ripple-color: #ffffff;
 }
 
-// color for accessibility
-[mat-flat-button][color="primary"].cdk-keyboard-focused {
-  background-color: lighten($ige-secondary, 10%) !important;
-}
-
 // Context Buttons
 .mat-mdc-icon-button {
   &.table-options {
@@ -862,6 +857,7 @@ ige-form-label + * {
     width: 26px !important;
     height: 26px !important;
     line-height: 24px;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 !important;
@@ -967,7 +963,6 @@ mat-icon.mark-color .coloring {
     border-bottom: none;
     height: 56px !important;
 
-    &:focus,
     &:hover {
       background: lighten($ige-secondary, 8%);
     }

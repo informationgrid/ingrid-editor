@@ -33,6 +33,12 @@
 
   .menu-button {
     margin-right: 12px;
+
+    mat-icon {
+      ::ng-deep svg path {
+        fill: $ige-secondary;
+      }
+    }
   }
 
   .coordinates {

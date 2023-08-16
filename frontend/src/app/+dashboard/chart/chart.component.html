@@ -1,5 +1,5 @@
 <div
-    class="flex-1 flex-col"
+    class="flex-1 flex-col justify-content-center"
     *ngIf="dataMap"
     tabindex="0"
     role="figure"
@@ -44,8 +44,7 @@
 
     <div
         id="status"
-        class="wrapper flex-1 flex-row justify-content-space-between align-items-stretch"
-        [class.inline]="showPercentages && total > 0"
+        class="wrapper flex-row justify-content-space-between align-items-stretch"
     >
         <div class="box working">
             <div data-cy="editModeDocument" class="count">

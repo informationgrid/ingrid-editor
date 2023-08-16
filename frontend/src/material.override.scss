@@ -115,3 +115,15 @@ mat-tab-nav-panel {
 .mat-focused .mdc-floating-label--float-above {
   color: $ige-secondary-dark !important;
 }
+
+.timespan .mdc-text-field:not(.mdc-text-field--disabled) {
+  background-color: #f3f3f3;
+
+  &.mdc-text-field--focused {
+    background-color: white;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background-color: unset;
+  }
+}

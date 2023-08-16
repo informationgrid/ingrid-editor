@@ -139,6 +139,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           model: {},
           newEntry: true,
         } as FormDialogData,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))

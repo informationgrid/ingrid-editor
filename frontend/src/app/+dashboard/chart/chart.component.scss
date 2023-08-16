@@ -5,6 +5,7 @@
   flex-grow: 1;
   padding-bottom: 16px;
   display: flex;
+  position: relative;
 }
 
 .circular-chart {
@@ -89,13 +90,7 @@
 }
 
 .wrapper {
-  flex: 1 1 0 !important;
-  padding: 0 15%;
-
-  &.inline {
-    @media (min-width: 1400px) {
-      margin-top: -139px;
-      padding-bottom: 100px;
-    }
-  }
+  position: absolute;
+  width: 100%;
+  padding: 0 calc((100% - 400px) / 2 - 50px);
 }
