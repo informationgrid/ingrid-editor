@@ -182,6 +182,10 @@ class ZabbixService @Autowired constructor(
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output": ["hostid", "name", "status"],"selectTags": "extend","tags":[{"tag":"id","value":"$uuid","operator":"1"}]},"auth":"$apiKey","id":1}"""
         val response = requestApi(deleteJson)
         log.debug(response)
+        if(resultArrayIsEmpty(response)) {
+            log.debug("No host found for uuid $uuid")
+            return
+        }
         val hostId = getFromResultArray(response, "hostid")
         log.debug("Delete host $uuid")
         deleteHosts(listOf(hostId.asText()))
@@ -191,6 +195,8 @@ class ZabbixService @Autowired constructor(
         val array = response.get("result").get(field) as ArrayNode
         return array.map { it }
     }
+
+    private fun resultArrayIsEmpty(response: JsonNode) = response.get("result").size() == 0
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
 
