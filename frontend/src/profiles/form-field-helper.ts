@@ -164,6 +164,8 @@ export class FormFieldHelper {
         externalLabel: label,
         contextHelpId: options?.contextHelpId,
         required: options?.required,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldGroup: fields,
       expressions: {
@@ -390,6 +392,8 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
         addButtonTitle: options?.addButtonTitle,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
