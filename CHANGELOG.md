@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.3 (17.08.2023)
+
+### Bugfixes
+
+- Zabbix Job Fix: Dokumente ohne Überwachung konnten nicht gelöscht werden
+
 ## 1.4.2 (15.08.2023)
 
 ### Bugfixes
