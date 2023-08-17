@@ -12,7 +12,10 @@
                 mat-icon-button
                 class="toggle"
                 (click)="toggleSection(group.id)"
-                [matTooltip]="notExpanded[group.id] ? 'Öffnen' : 'Schließen'"
+                [matTooltip]="
+                    notExpanded[group.id] ? 'Aufklappen' : 'Zuklappen'
+                "
+                aria-label="Filter-Facette"
             >
                 <mat-icon
                     class="mat-icon-rtl-mirror expander animated"

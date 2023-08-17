@@ -58,6 +58,24 @@ ige-side-menu .mdc-list-item,
   }
 }
 
+.mat-mdc-tab-nav-panel .mdc-tab {
+  --mat-tab-header-active-label-text-color: #196ea2;
+  --mat-tab-header-active-focus-label-text-color: #196ea2;
+  --mdc-tab-indicator-active-indicator-color: #196ea2;
+  --mat-tab-header-active-focus-indicator-color: #196ea2;
+
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+
+    .mdc-tab__ripple:before {
+      opacity: unset;
+      --mat-tab-header-active-ripple-color: transparent;
+      --mat-tab-header-inactive-ripple-color: transparent;
+    }
+  }
+}
+
 // border inside of button with black color
 form-toolbar :not(.save-buttons) > .mdc-button,
 ige-address-card .menu-button {
@@ -81,6 +99,7 @@ mat-tree-node,
 [role="figure"],
 [role="heading"],
 [role="listitem"],
+[role="row"],
 ige-session-timeout-info [tabindex="0"] {
   &:focus {
     outline-offset: -2px;

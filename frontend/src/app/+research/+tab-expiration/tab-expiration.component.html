@@ -22,7 +22,7 @@
             color="primary"
             (click)="onSearch.emit()"
             (keyup.enter)="onSearch.emit()"
-            aria-description="Aktualisieren die Tabelle der abgelaufenen Metadaten"
+            aria-description="Die Tabelle der abgelaufenen Metadaten aktualisieren"
         >
             Aktualisieren
         </button>
@@ -30,7 +30,6 @@
             [ngModel]="isFiltered$.value"
             (click)="toggleFilter()"
             (keyup.enter)="toggleFilter()"
-            aria-description="Zeigen nur Datensätze für die, ich verantwortlich bin"
             >Nur Datensätze für die ich verantwortlich bin
         </mat-checkbox>
     </div>

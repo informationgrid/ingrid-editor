@@ -87,7 +87,7 @@ export class GeneralReportComponent implements OnInit {
     Object.keys(response.statsPerType).forEach((type) => {
       if (this.ignoredTypes.includes(type)) return;
       const stats = response.statsPerType[type];
-      data.push({
+      let entry: any = {
         icon: this.getIcon(type) ?? type,
         title: type,
         percentage:
@@ -97,7 +97,9 @@ export class GeneralReportComponent implements OnInit {
         count: stats.totalNum,
         published: stats.numPublished,
         working: stats.numDrafts,
-      });
+      };
+      entry = { ...entry, ariaLabel: this.getAriaLabelForRow(entry) };
+      data.push(entry);
     });
 
     this.dataSource.data = data;
@@ -118,5 +120,13 @@ export class GeneralReportComponent implements OnInit {
         .getQuickFilter()
         .pipe(tap((filters) => (this.facets = filters)))
     );
+  }
+
+  getAriaLabelForRow(entry) {
+    return `Typ: ${this.getTitle(entry.title)}, Prozent: ${
+      entry.percentage
+    }%, Anzahl: ${entry.count}, davon veröffentlicht: ${
+      entry.published
+    }, in Bearbeitung: ${entry.working}`;
   }
 }

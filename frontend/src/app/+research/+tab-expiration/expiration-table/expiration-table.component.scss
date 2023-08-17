@@ -1,8 +1,7 @@
 @import "src/variables";
 
 .mat-mdc-row {
-  &:hover:not(.readonly),
-  &:focus:not(.readonly) {
+  &:hover:not(.readonly) {
     background: rgba(0, 0, 0, 0.04) !important;
     cursor: pointer;
   }
