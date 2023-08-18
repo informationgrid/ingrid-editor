@@ -17,6 +17,7 @@
         [class.active]="
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
+        [title]="t(item.path)"
         tabindex="0"
         role="menuitem"
     >
@@ -32,6 +33,7 @@
         [href]="configuration.contextPath + 'barrierefreiheit'"
         target="_blank"
         data-cy="link-accessibility"
+        title="Barrierefreiheit"
         role="menuitem"
         matTooltip="Barrierefreiheit"
         matTooltipPosition="right"
@@ -51,6 +53,7 @@
         data-cy="menu-scale"
         tabindex="0"
         role="menuitem"
+        [title]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
         [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
         [matTooltipDisabled]="menuIsExpanded"
     >
