@@ -105,8 +105,8 @@ form-toolbar :not(.save-buttons) > .mdc-button {
     .mdc-radio__background:before {
       opacity: unset;
       border: 2px solid $ige-primary;
-      top: calc(-1 * (var(--mdc-radio-state-layer-size) - 18px) / 2);
-      left: calc(-1 * (var(--mdc-radio-state-layer-size) - 18px) / 2);
+      top: calc(-1 * (var(--mdc-radio-state-layer-size) - 17px) / 2);
+      left: calc(-1 * (var(--mdc-radio-state-layer-size) - 17px) / 2);
     }
   }
 

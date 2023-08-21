@@ -73,6 +73,7 @@ export class QueryManagerComponent implements OnInit {
             },
           ],
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))
