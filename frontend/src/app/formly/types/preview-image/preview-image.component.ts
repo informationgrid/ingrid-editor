@@ -10,6 +10,7 @@ import {
   catchError,
   distinctUntilChanged,
   filter,
+  map,
   startWith,
   tap,
 } from "rxjs/operators";
@@ -96,7 +97,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           const aLinks = a?.map((item) => item.fileName?.uri).join("");
           const bLinks = b?.map((item) => item.fileName?.uri).join("");
           return aLinks === bLinks;
-        })
+        }),
+        tap(() => (this.imageLinks = {}))
       )
       .subscribe((value) => this.createImageLinkUris(value));
   }
@@ -179,7 +181,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private createImageLinkUris(value: any[]) {
     value?.map((item, index) => {
       const uri = item.fileName?.uri;
-      if (!uri || this.imageLinks[uri] !== undefined) return;
+
+      // DON'T CACHE LINKS. hash links are temporary
+      // TODO: Rewrite to completely avoid temporary hashed links
+      //if (!uri || this.imageLinks[uri] !== undefined) return;
 
       if (item.fileName?.asLink) {
         this.imageLinks[uri] = uri;
