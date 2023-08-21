@@ -29,6 +29,10 @@
       "matDatepickerMax": "Fehler: Das Datum ist größer als erlaubt",
       "min": "Fehler: Der Wert darf nicht kleiner sein als {{value}}",
       "max": "Fehler: Der Wert darf nicht größer sein als {{value}}"
+    },
+    "create-dialog": {
+      "titleRequired": "Fehler: Bitte geben Sie einen Titel ein",
+      "missingWritePermission": "Fehler: Sie haben keine Schreibrechte auf den Zielordner. Bitte ändern Sie den Zielordner über \"Zielordner ändern\""
     }
   }
 }

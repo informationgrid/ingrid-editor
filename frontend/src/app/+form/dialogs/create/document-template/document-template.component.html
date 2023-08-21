@@ -1,4 +1,8 @@
-<div [formGroup]="form" class="flex-col">
+<div
+    [formGroup]="form"
+    class="flex-col"
+    *transloco="let t; read: 'form.create-dialog'"
+>
     <div class="dlg-field-label required">Titel</div>
     <mat-form-field appearance="outline" class="space-bottom">
         <input
@@ -14,7 +18,7 @@
                 isFolder ? 'Titel des Ordners' : 'Titel des Datensatzes'
             "
         />
-        <mat-error>Bitte geben Sie einen Titel ein</mat-error>
+        <mat-error>{{ t("titleRequired") }}</mat-error>
     </mat-form-field>
 
     <ng-content></ng-content>

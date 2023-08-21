@@ -126,7 +126,7 @@
 </div>
 
 <ng-template #destinationTemplate>
-    <div class="space-bottom">
+    <div class="space-bottom" *transloco="let t; read: 'form.create-dialog'">
         <div class="required dlg-field-label dlg-create-place no-top-padding">
             Zielordner
         </div>
@@ -138,8 +138,7 @@
             (select)="quickBreadcrumbChange($event)"
         ></ige-breadcrumb>
         <div *ngIf="!pathWithWritePermission" class="error-box">
-            Sie haben keine Schreibrechte auf den Zielordner. Bitte ändern Sie
-            den Zielordner über "Zielordner ändern"
+            {{ t("missingWritePermission") }}
         </div>
     </div>
 </ng-template>
