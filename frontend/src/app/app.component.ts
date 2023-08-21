@@ -140,7 +140,7 @@ export class AppComponent implements OnInit {
         const pageTitle = this.transloco.translate(key);
         let newTitle = mainTitle;
         if (key !== pageTitle) {
-          newTitle = newTitle + " - " + pageTitle;
+          newTitle = pageTitle + " | " + mainTitle;
         }
         this.titleService.setTitle(newTitle);
       }
