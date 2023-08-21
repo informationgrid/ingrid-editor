@@ -85,6 +85,8 @@ open class IngridModelTransformer constructor(
     data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
 
     val useConstraints = data.resource?.useConstraints?.map {
+         if (it.title == null) throw ServerException.withReason("Use constraint title is null ${it}")
+
         // special case for "Es gelten keine Bedingungen"
         val link =
             if (it.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
