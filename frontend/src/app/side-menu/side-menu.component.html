@@ -30,6 +30,7 @@
     <a
         *ngIf="configuration.showAccessibilityLink"
         mat-list-item
+        class="no-text-transform"
         [href]="configuration.contextPath + 'barrierefreiheit'"
         target="_blank"
         data-cy="link-accessibility"
@@ -39,8 +40,10 @@
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
     >
-        <mat-icon matListItemIcon>info</mat-icon>
-        <p matListItemTitle aria-hidden="true">Barrierefreiheit</p>
+        <mat-icon matListItemIcon svgIcon="info_outline"></mat-icon>
+        <p matListItemTitle aria-hidden="true">
+            Erklärung zur Barrierefreiheit
+        </p>
     </a>
 
     <a
