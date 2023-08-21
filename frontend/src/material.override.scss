@@ -132,6 +132,10 @@ mat-tab-nav-panel {
 .mat-mdc-form-field-hint {
   padding-top: 6px;
   line-height: 16px;
+
+  &.mat-mdc-form-field-bottom-align {
+    min-height: 16px;
+  }
 }
 
 mat-icon.dark-blue {
