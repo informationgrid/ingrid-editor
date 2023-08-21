@@ -133,3 +133,9 @@ mat-tab-nav-panel {
   padding-top: 6px;
   line-height: 16px;
 }
+
+mat-icon.dark-blue {
+  svg path {
+    fill: $ige-secondary;
+  }
+}

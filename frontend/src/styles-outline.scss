@@ -77,8 +77,7 @@ ige-side-menu .mdc-list-item,
 }
 
 // border inside of button with black color
-form-toolbar :not(.save-buttons) > .mdc-button,
-ige-address-card .menu-button {
+form-toolbar :not(.save-buttons) > .mdc-button {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: -2px;
     outline: 2px solid #000;
@@ -92,6 +91,28 @@ ige-address-card .menu-button {
   --mdc-checkbox-unselected-focus-state-layer-opacity: 1;
   --mdc-checkbox-selected-focus-state-layer-color: transparent;
   --mdc-checkbox-unselected-focus-state-layer-color: transparent;
+}
+
+.mat-mdc-slide-toggle,
+.mat-mdc-radio-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    .mdc-switch__ripple:after {
+      border: 2px solid $ige-primary;
+      opacity: unset !important;
+      background-color: unset !important;
+    }
+
+    .mdc-radio__background:before {
+      opacity: unset;
+      border: 2px solid $ige-primary;
+      top: calc(-1 * (var(--mdc-radio-state-layer-size) - 18px) / 2);
+      left: calc(-1 * (var(--mdc-radio-state-layer-size) - 18px) / 2);
+    }
+  }
+
+  .mdc-radio__background:before {
+    background-color: unset !important;
+  }
 }
 
 mat-tree-node,
