@@ -127,3 +127,9 @@ mat-tab-nav-panel {
     background-color: unset;
   }
 }
+
+.mat-mdc-form-field-error,
+.mat-mdc-form-field-hint {
+  padding-top: 6px;
+  line-height: 16px;
+}
