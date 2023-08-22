@@ -7,13 +7,10 @@
             ></mat-icon>
         </div>
         <span class="text">{{ title }}</span>
-        <!-- mat-dialog-close is unusable due to contrast accessibility -->
         <button
             mat-icon-button
-            matTooltip="Schließen"
-            aria-hidden="true"
+            mat-dialog-close
             aria-label="Eingabehilfe schließen"
-            (click)="dismiss()"
         >
             <mat-icon>close</mat-icon>
         </button>

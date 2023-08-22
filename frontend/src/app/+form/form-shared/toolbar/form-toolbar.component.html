@@ -1,5 +1,5 @@
 <mat-toolbar>
-    <mat-toolbar-row role="toolbar" aria-orientation="horizontal">
+    <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
         <ng-container *ngFor="let button of buttons_left">
             <button
                 *ngIf="!button.isSeparator && !button.menu"
@@ -82,8 +82,8 @@
                     mat-stroked-button
                     class="toolbar-save-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [matTooltip]="button.tooltip"
                     [disabled]="!button.active || isNotReady"
+                    [attr.aria-label]="button.label"
                     (click)="sendEvent(button.eventId)"
                 >
                     {{ button.label }}
@@ -95,8 +95,8 @@
                         color="primary"
                         (click)="sendEvent(button.eventId)"
                         [attr.data-cy]="'toolbar_publish_now'"
-                        [matTooltip]="button.tooltip"
                         [disabled]="!button.active || isNotReady"
+                        [attr.aria-label]="button.label"
                     >
                         {{ button.label }}
                     </button>
@@ -108,9 +108,11 @@
                         [disabled]="!button.active || isNotReady"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matMenuTriggerFor]="publishMenu"
+                        [matMenuTriggerRestoreFocus]="false"
                         (menuOpened)="menu[button.id] = true"
                         (menuClosed)="menu[button.id] = false"
-                        aria-label="Mehr zur Veröffentlichung"
+                        aria-label="Mehr zum Veröffentlichen"
+                        (click)="saveCurrentFocus()"
                     >
                         <mat-icon>{{
                             menu[button.id]
@@ -119,15 +121,17 @@
                         }}</mat-icon>
                     </button>
 
-                    <mat-menu #publishMenu="matMenu" class="publish-menu">
+                    <mat-menu
+                        #publishMenu="matMenu"
+                        class="publish-menu"
+                        (closed)="restoreFocus()"
+                    >
                         <button
                             *ngFor="let menuItem of button.menu"
                             mat-menu-item
                             [disabled]="!menuItem.active"
                             [attr.data-cy]="'toolbar_' + menuItem.eventId"
-                            (click)="
-                                actionsMenu.focus(); sendEvent(menuItem.eventId)
-                            "
+                            (click)="sendEvent(menuItem.eventId)"
                         >
                             <span>{{ menuItem.label }}</span>
                         </button>

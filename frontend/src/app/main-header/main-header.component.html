@@ -143,12 +143,8 @@
                     >
                         Verwaltung
                     </div>
-                    <mat-divider></mat-divider>
-                </ng-container>
-
-                <ng-container *ngFor="let group of menuItems">
-                    <div *ngIf="isAdmin">
-                        <!--                        <ng-container *ngFor="let entry of group.entries">-->
+                    <mat-divider aria-hidden="true"></mat-divider>
+                    <ng-container *ngFor="let group of menuItems">
                         <button
                             mat-menu-item
                             [routerLink]="[
@@ -157,16 +153,8 @@
                         >
                             {{ group.data?.title }}
                         </button>
-                        <!--<a
-                                *ngIf="!entry.isRouterLink"
-                                mat-menu-item
-                                href="{{ entry.link }}"
-                                target="_blank"
-                                >{{ entry.label }}</a
-                            >-->
-                        <mat-divider></mat-divider>
-                        <!--                        </ng-container>-->
-                    </div>
+                        <mat-divider aria-hidden="true"></mat-divider>
+                    </ng-container>
                 </ng-container>
 
                 <div
@@ -174,14 +162,14 @@
                 >
                     Informationen
                 </div>
-                <mat-divider></mat-divider>
+                <mat-divider aria-hidden="true"></mat-divider>
 
                 <ng-container *ngFor="let item of menuInfos">
                     <a mat-menu-item href="{{ item.link }}" target="_blank">
                         {{ item.title }}
                     </a>
 
-                    <mat-divider></mat-divider>
+                    <mat-divider aria-hidden="true"></mat-divider>
                 </ng-container>
                 <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>
