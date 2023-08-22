@@ -20,7 +20,7 @@
     </div>
     <mat-dialog-content class="hide-tab-header create-dlg-content">
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
-            <mat-tab label="Titel">
+            <mat-tab>
                 <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
                     <ige-document-template
                         *ngIf="isFolder || !forAddress; else addressForm"
