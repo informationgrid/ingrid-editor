@@ -45,6 +45,7 @@ class PostMigrationTask(
             ClosableTransaction(transactionManager).use {
                 doPostMigration(catalog)
                 removePostMigrationInfo(catalog)
+                log.info("Finished post migration for catalog: $catalog")
             }
         }
 
@@ -68,10 +69,10 @@ class PostMigrationTask(
     private fun doPostMigration(catalogIdentifier: String) {
         // Warning: Execution Order is important
         saveAllGroupsOfCatalog(catalogIdentifier)
+        initializeCatalogCodelistsAndQueries(catalogIdentifier)
         uvpAdaptFolderStructure(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
-        initializeCatalogCodelistsAndQueries(catalogIdentifier)
     }
 
     private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
