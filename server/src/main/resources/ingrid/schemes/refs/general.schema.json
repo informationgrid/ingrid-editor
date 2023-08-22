@@ -412,11 +412,11 @@
           "additionalProperties": false,
           "properties": {
             "end": {
-              "type": "string",
+              "type": ["string", "null"],
               "format": "date-time"
             },
             "start": {
-              "type": "string",
+              "type": ["string", "null"],
               "format": "date-time"
             }
           }
