@@ -1,9 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import {
-  DocEvent,
-  DocEventsService,
-} from "../../../services/event/doc-events.service";
+import { DocEventsService } from "../../../services/event/doc-events.service";
 
 export interface DefaultToolbarItem {
   id: string;
@@ -82,6 +79,12 @@ export class FormToolbarService {
 
   sendEvent(id: string) {
     this.docEvents.sendEvent({ type: id });
+  }
+
+  // trigger click event to open item menu
+  openItemMenu(className: string) {
+    const button: any = document.getElementsByClassName(className)?.item(0);
+    if (button) button.click();
   }
 
   /**

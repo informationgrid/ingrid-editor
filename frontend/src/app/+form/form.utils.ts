@@ -17,17 +17,24 @@ export class FormUtils {
     service: FormToolbarService,
     readonly: boolean
   ) {
-    if (event.ctrlKey && event.key === "s") {
-      // CTRL + S (Save)
+    // CTRL + ALT + S (save current document)
+    if (event.ctrlKey && event.altKey && event.key === "s") {
       console.log("SAVE");
       event.stopImmediatePropagation();
       event.stopPropagation();
-      event.preventDefault();
       let dif = event.timeStamp - FormUtils.timestamp;
       if (!readonly && !event.repeat && dif > 500) {
         service.sendEvent("SAVE");
         FormUtils.timestamp = event.timeStamp;
       }
+    }
+
+    // CTRL + ALT + V (trigger publish menu)
+    if (event.ctrlKey && event.altKey && event.key === "v") {
+      console.log("PUBLISH_MENU");
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+      service.openItemMenu("btnPublishMore");
     }
   }
 
