@@ -15,14 +15,16 @@
         [matTooltipDisabled]="!address || !disableEdit"
         [class.editable]="!disableEdit"
         (click)="!disableEdit && editTitle()"
-        tabindex="0"
-        role="heading"
-        aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
-        (keyup.enter)="!disableEdit && editTitle()"
     >
-        <span class="flex-1">{{
-            _form.get("title")?.value || "Kein Titel"
-        }}</span>
+        <span
+            class="flex-1"
+            tabindex="0"
+            role="textbox"
+            aria-label="Titel der Metadaten"
+            aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
+            (keyup.enter)="!disableEdit && editTitle()"
+            >{{ _form.get("title")?.value || "Kein Titel" }}</span
+        >
         <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
     </span>
 
@@ -54,10 +56,8 @@
         class="dark menu-button btn-toggle-form-header"
         [class.expanded]="showMore"
         (click)="toggleMoreInfo()"
+        aria-label="Details der Metadaten"
         [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
-        [attr.aria-label]="
-            (showMore ? 'Schließen' : 'Öffnen') + ' Details des Datensatzes'
-        "
     >
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
@@ -69,8 +69,7 @@
         mat-icon-button
         class="menu dark menu-button"
         [matMenuTriggerFor]="moreActionsMenu"
-        matTooltip="Bearbeiten"
-        aria-label="Datensatz bearbeiten"
+        matTooltip="Mehr Optionen"
     >
         <mat-icon svgIcon="Mehr"></mat-icon>
         <mat-menu #moreActionsMenu="matMenu">
