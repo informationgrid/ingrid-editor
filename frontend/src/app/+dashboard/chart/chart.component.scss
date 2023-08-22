@@ -76,7 +76,7 @@
 .box {
   text-align: center;
   color: $ige-icon-color;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 500;
 
   &.working {
@@ -92,5 +92,5 @@
 .wrapper {
   position: absolute;
   width: 100%;
-  padding: 0 calc((100% - 400px) / 2 - 50px);
+  padding: 0 calc((100% - 400px) / 2 - 100px);
 }
