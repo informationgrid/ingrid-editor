@@ -1,11 +1,4 @@
-<ige-form-error
-    *ngIf="
-        showError &&
-        formControl.invalid &&
-        formControl.errors &&
-        !formControl.hasError('required')
-    "
->
+<ige-form-error *ngIf="showError && formControl.invalid && formControl.errors">
     <div *ngFor="let error of formControl.errors | keyvalue">
         {{ error.value.message }}
     </div>

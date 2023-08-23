@@ -181,6 +181,10 @@ export class BmiDoctype extends BaseDoctype {
             ]),
           ],
           validators: {
+            requiredEntry: {
+              expression: (ctrl) => ctrl.value?.length > 0,
+              message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
+            },
             requiredLicense: {
               expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
               message:

@@ -69,7 +69,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
                 const type = ctrl.parent.value.type;
                 return type?.key === "3" ? EmailValidator(ctrl) === null : true;
               },
-              message: "Die Email ist ungültig",
+              message: "Fehler: Die E-Mail ist ungültig",
             },
             validUrl: {
               expression: (ctrl) => {

@@ -21,6 +21,7 @@
   "form": {
     "validationMessages": {
       "required": "Fehler: Dieses Feld muss ausgefüllt sein",
+      "createOneEntry": "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
       "email": "Fehler: Dieses Feld muss eine gültige E-Mail Adresse sein",
       "emailInRepeat": "Fehler: Dieses Feld muss eine gültige E-Mail Adresse sein",
       "lowercase": "Fehler: Dieses Feld darf keine Großbuchstaben enthalten",

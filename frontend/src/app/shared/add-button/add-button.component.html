@@ -55,10 +55,11 @@
             </button>
         </mat-menu>
     </ng-template>
-
-    <mat-error *ngIf="showRequiredError" class="error"
-        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
-    >
+    <ng-container *transloco="let t">
+        <mat-error *ngIf="showRequiredError" class="error">{{
+            t("form.validationMessages.createOneEntry")
+        }}</mat-error>
+    </ng-container>
 
     <ng-template #buttonContent>
         <mat-icon>add</mat-icon>

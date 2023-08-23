@@ -157,7 +157,9 @@
         matSuffix
         [ngTemplateOutlet]="props.suffix"
     ></ng-container>
-    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    <mat-error *transloco="let t">{{
+        t("form.validationMessages.createOneEntry")
+    }}</mat-error>
 </mat-form-field>
 
 <ng-container *ngIf="type === 'autocomplete'">

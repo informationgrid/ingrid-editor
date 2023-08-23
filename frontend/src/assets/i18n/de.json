@@ -109,6 +109,7 @@
     },
     "validationMessages": {
       "required": "Dieses Feld muss ausgefüllt sein",
+      "createOneEntry": "Bitte erstellen Sie mindestens einen Eintrag",
       "email": "Dieses Feld muss eine gültige E-Mail Adresse sein",
       "emailInRepeat": "Dieses Feld muss eine gültige E-Mail Adresse sein",
       "lowercase": "Dieses Feld darf keine Großbuchstaben enthalten",
