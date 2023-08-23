@@ -157,6 +157,7 @@ export class RepeatDistributionDetailListComponent
   private isNotInTable(file: LinkInfo) {
     const uploadKey = this.getUploadFieldKey();
     return (
+      !this.model ||
       this.model?.findIndex(
         (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri
       ) === -1
