@@ -12,6 +12,9 @@
             aria-haspopup="true"
             [attr.aria-label]="ariaLabel"
             aria-description="hinzufügen"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -26,7 +29,9 @@
             [matTooltip]="showTitle ? '' : 'Hinzufügen'"
             aria-haspopup="dialog"
             [attr.aria-label]="ariaLabel"
-            aria-description="hinzufügen"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -41,7 +46,9 @@
             [class.error-outline]="showRequiredError"
             [matMenuTriggerFor]="menuOptions"
             [attr.aria-label]="ariaLabel"
-            aria-description="hinzufügen"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -55,8 +62,9 @@
             </button>
         </mat-menu>
     </ng-template>
+
     <ng-container *transloco="let t">
-        <mat-error *ngIf="showRequiredError" class="error">{{
+        <mat-error #matError *ngIf="showRequiredError" class="error">{{
             t("form.validationMessages.createOneEntry")
         }}</mat-error>
     </ng-container>

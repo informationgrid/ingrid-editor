@@ -1,4 +1,7 @@
-<ige-form-error *ngIf="showError && formControl.invalid && formControl.errors">
+<ige-form-error
+    *ngIf="showError && formControl.invalid && formControl.errors"
+    [ariaLabel]="props.ariaLabel"
+>
     <div *ngFor="let error of formControl.errors | keyvalue">
         {{ error.value.message }}
     </div>

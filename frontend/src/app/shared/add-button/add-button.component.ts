@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from "@angular/core";
+import { MatError } from "@angular/material/form-field";
 
 @Component({
   selector: "ige-add-button",
@@ -17,6 +26,7 @@ export class AddButtonComponent implements OnInit {
 
   // accessibility
   @Input() ariaLabel: string;
+  @ViewChild("matError") matError: ElementRef;
 
   @Output() add = new EventEmitter();
 
