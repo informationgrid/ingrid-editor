@@ -75,6 +75,12 @@
             "type": {
               "const": "wfsgnde"
             },
+            "topic_type": {
+              "type": ["null", "string"]
+            },
+            "identifier": {
+              "type": ["null", "string"]
+            },
             "title": {
               "type": ["null", "string"]
             },
