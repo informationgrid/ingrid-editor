@@ -244,7 +244,6 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
-        @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())

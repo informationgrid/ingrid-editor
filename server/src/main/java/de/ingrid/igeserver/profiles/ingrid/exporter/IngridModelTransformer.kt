@@ -188,7 +188,15 @@ open class IngridModelTransformer constructor(
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
-    val freeKeywords = Thesaurus(
+    fun getFreeKeywords(): Thesaurus {
+        // if openData checkbox is checked, and keyword not already added, add "opendata"
+        if (data.isOpenData == true && freeKeywords.keywords.none { it.name == "opendata" }) {
+            freeKeywords.keywords += listOf(KeywordIso("opendata"))
+        }
+        return freeKeywords
+    }
+
+    private val freeKeywords = Thesaurus(
         keywords = data.keywords?.free?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = null,
         name = null,
@@ -245,8 +253,6 @@ open class IngridModelTransformer constructor(
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
-    val opendataKeyword =
-        if (data.isOpenData == true) Thesaurus(keywords = listOf(KeywordIso("opendata"))) else Thesaurus()
     val opendataCategoryKeywords = if (data.isOpenData == true) Thesaurus(
         name = "",
         keywords = this.data.openDataCategories?.map {
