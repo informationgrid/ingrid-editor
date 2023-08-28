@@ -1,9 +1,11 @@
 <page-template label="URL-Pflege">
     <div left-side>
         <div>
-            Beim Aufruf der URL-Pflege wird eine Prüfung der in allen Objekten
-            vorhandenen URLs durchgeführt. Sie können diese Prüfung später
-            wiederholen, indem Sie auf den Button "Prüfung starten" klicken.
+            Lassen Sie hier die vorhandenen URLs in allen Datensätzen auf ihre
+            korrekte Angabe und Erreichbarkeit prüfen. Nicht-erreichbare URLs
+            werden zusammen mit der jeweiligen Fehlermeldung (Stauts) in einer
+            Tabelle dargestellt, aus der Sie direkt auf die betroffenen
+            Datensätze springen können.
         </div>
 
         <p>
@@ -106,7 +108,6 @@
                             [href]="element.url"
                             target="_blank"
                             [matTooltip]="element.url"
-                            [matTooltipShowDelay]="500"
                             >{{ element.url }}</a
                         >
                     </td>

@@ -126,7 +126,6 @@ export class CreateFolderPlugin extends Plugin {
         forAddress: this.forAddress,
         isFolder: true,
       } as CreateOptions,
-      restoreFocus: true,
       ariaLabel: this.transloco.translate("toolbar.newFolder"),
     });
   }

@@ -77,14 +77,12 @@ export class RepeatDistributionDetailListComponent
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
-        restoreFocus: true,
         data: {
           currentItems: this.model,
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
         },
-        ariaLabel: "Dateien hochladen",
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -159,6 +157,7 @@ export class RepeatDistributionDetailListComponent
   private isNotInTable(file: LinkInfo) {
     const uploadKey = this.getUploadFieldKey();
     return (
+      !this.model ||
       this.model?.findIndex(
         (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri
       ) === -1
@@ -185,7 +184,6 @@ export class RepeatDistributionDetailListComponent
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
-        restoreFocus: true,
         disableClose: true,
         data: <FormDialogData>{
           fields: this.getFields(this.field.fieldArray),
@@ -196,7 +194,6 @@ export class RepeatDistributionDetailListComponent
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
         delayFocusTrap: true,
-        ariaLabel: "Link angeben",
       })
       .afterClosed()
       .subscribe((response) => {

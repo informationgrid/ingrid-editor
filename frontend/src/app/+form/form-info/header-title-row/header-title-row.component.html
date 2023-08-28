@@ -5,22 +5,26 @@
         *ngIf="!showTitleInput"
         class="label flex-1 flex-row justify-content-space-between"
         [matTooltip]="
-            t(
-                'form.titleTooltip.' +
-                    (_model.firstName ? 'Person' : 'Organisation')
-            )
+            !address || !disableEdit
+                ? undefined
+                : t(
+                      'form.titleTooltip.' +
+                          (_model.firstName ? 'Person' : 'Organisation')
+                  )
         "
         [matTooltipDisabled]="!address || !disableEdit"
-        [matTooltipShowDelay]="1000"
         [class.editable]="!disableEdit"
         (click)="!disableEdit && editTitle()"
-        tabindex="0"
-        role="textbox"
-        (keyup.enter)="!disableEdit && editTitle()"
     >
-        <span class="flex-1">{{
-            _form.get("title")?.value || "Kein Titel"
-        }}</span>
+        <span
+            class="flex-1"
+            tabindex="0"
+            role="textbox"
+            aria-label="Titel der Metadaten"
+            aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
+            (keyup.enter)="!disableEdit && editTitle()"
+            >{{ _form.get("title")?.value || "Kein Titel" }}</span
+        >
         <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
     </span>
 
@@ -52,21 +56,20 @@
         class="dark menu-button btn-toggle-form-header"
         [class.expanded]="showMore"
         (click)="toggleMoreInfo()"
+        aria-label="Details der Metadaten"
         [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
-        [attr.aria-label]="
-            (showMore ? 'Schließen' : 'Öffnen') + ' Details des Datensatzes'
-        "
     >
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
+    <div></div>
     <button
+        #moreButton
         *ngIf="showMoreActions && moreActions.length"
         data-cy="more-actions"
         mat-icon-button
         class="menu dark menu-button"
         [matMenuTriggerFor]="moreActionsMenu"
-        matTooltip="Bbearbeiten"
-        aria-label="Datensatz bearbeiten"
+        matTooltip="Mehr Optionen"
     >
         <mat-icon svgIcon="Mehr"></mat-icon>
         <mat-menu #moreActionsMenu="matMenu">
@@ -74,7 +77,7 @@
                 [attr.data-cy]="'action-' + action.name"
                 mat-menu-item
                 *ngFor="let action of moreActions"
-                (click)="action.action()"
+                (click)="moreButton.focus(); action.action()"
                 [disabled]="action.disabled"
             >
                 {{ action.title }}

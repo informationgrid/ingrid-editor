@@ -102,13 +102,10 @@ export class ContextHelpService {
         title: label,
         description$: helpText$,
       },
-      ariaLabel: label,
       backdropClass: "cdk-overlay-transparent-backdrop",
       hasBackdrop: false,
       closeOnNavigation: true,
       position: dialogPosition,
-      autoFocus: false,
-      restoreFocus: true,
     });
   }
 

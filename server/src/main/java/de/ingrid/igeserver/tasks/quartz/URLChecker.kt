@@ -11,6 +11,8 @@ import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 
 @Component
@@ -75,7 +77,9 @@ class URLChecker @Autowired constructor(
             }
             log.debug("Task finished: URLChecker for '${info.catalogId}'")
         } catch (ex: Exception) {
-            notifier.endMessage(notificationType, message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+            notifier.endMessage(
+                notificationType,
+                message.apply { this.errors.add("Exception occurred: ${ex.message}") })
             throw ex
         }
     }
@@ -114,9 +118,20 @@ class URLChecker @Autowired constructor(
     private fun calcProgress(current: Int, total: Int) = ((current / total.toDouble()) * 100).toInt()
 
     private fun checkAndReportUrl(info: UrlReport) {
-        val status = urlRequestService.getStatus(info.url)
-        info.status = status
-        info.success = urlRequestService.isSuccessCode(status)
+        return try {
+            (URL(info.url).openConnection() as HttpURLConnection).let {
+                it.connectTimeout = 10000
+                it.readTimeout = 5000
+                it.instanceFollowRedirects = true
+                it.connect()
+                info.status = it.responseCode
+                info.success = urlRequestService.isSuccessCode(info.status)
+            }
+        } catch (ex: Exception) {
+            log.warn("Error requesting URL '${info.url}': $ex")
+            info.status = 500
+            info.success = false
+        }
     }
 
     private data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)

@@ -255,7 +255,6 @@ export class CopyCutPastePlugin extends Plugin {
           typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
         delayFocusTrap: true,
-        ariaLabel: title,
       })
       .afterClosed()
       .pipe(

@@ -1,4 +1,4 @@
-<div class="navigation-bar-wrapper">
+<div class="navigation-bar-wrapper" *ngIf="model._type != 'FOLDER'">
     <div class="navigation-bar flex-row">
         <ige-document-icon
             [doc]="model"

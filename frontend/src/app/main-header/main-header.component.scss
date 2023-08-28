@@ -22,12 +22,15 @@
   text-overflow: fade;
 }
 
+.menu-item {
+  color: $ige-secondary;
+}
+
 .catalog-button {
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.4px;
   font-size: 12px !important;
-  color: $ige-primary !important;
 
   mat-icon {
     margin-left: 0;
@@ -179,6 +182,7 @@ mat-card-title {
 
 .popup-leading {
   color: $ige-hint-color;
+  font-size: 14px;
   min-height: 48px;
-  padding: 0 16px;
+  padding: 16px 16px 0;
 }

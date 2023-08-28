@@ -116,7 +116,6 @@ export class AddressTypeComponent
             allowedTypes: this.props.allowedTypes,
           },
           hasBackdrop: true,
-          restoreFocus: true,
           ariaLabel: "Adresse hinzufügen",
         })
         .afterClosed()
@@ -125,7 +124,6 @@ export class AddressTypeComponent
       return this.dialog
         .open(ConfirmDialogComponent, {
           hasBackdrop: true,
-          restoreFocus: true,
           data: <ConfirmDialogData>{
             message:
               "Es sind noch keine Adressen vorhanden. Bitte legen Sie eine neue an.",

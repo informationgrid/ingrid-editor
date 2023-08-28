@@ -31,6 +31,7 @@
                             matListItemIcon
                             [value]="entry"
                             [checked]="spatialSelection === entry"
+                            [aria-label]="entry.displayTitle"
                         ></mat-radio-button>
                         <div matListItemLine>
                             {{ entry.displayTitle }}

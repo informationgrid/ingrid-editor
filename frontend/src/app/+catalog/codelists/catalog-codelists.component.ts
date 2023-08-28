@@ -56,7 +56,6 @@ export class CatalogCodelistsComponent implements OnInit {
       .open(UpdateCodelistComponent, {
         minWidth: 650,
         hasBackdrop: true,
-        restoreFocus: true,
         disableClose: true,
         data: {
           ids: this.selectedCodelist.entries
@@ -78,7 +77,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
-          message: `Möchten Sie den Codelist-Eintrag "${entry.fields["de"]}" wirklich löschen:`,
+          message: `Möchten Sie den Codelist-Eintrag "${entry.fields["de"]}" wirklich löschen? Vergewissern Sie sich, dass dieser in den Datensätzen nicht verwendet wird, da diese ansonsten ungültig werden können.`,
           title: "Löschen",
           buttons: [
             { text: "Abbrechen" },

@@ -47,6 +47,7 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
+      wrappers: ["form-field", "inline-help"],
       props: {
         label: "Link",
         appearance: "outline",
@@ -74,6 +75,10 @@ export class UvpShared extends BaseDoctype {
           message: () =>
             this.transloco.translate("form.validationMessages.url"),
         },
+      },
+      expressions: {
+        "props.label": (field) =>
+          field.formControl.value?.asLink ? "URL (Link)" : "Dateiname (Upload)",
       },
     },
     {

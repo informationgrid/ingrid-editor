@@ -55,8 +55,12 @@ export class ExpirationTableComponent implements AfterViewInit {
 
   openDataset(element: IgeDocument) {
     if (this.isSearching) return;
-    const target = `${ConfigService.catalogId}/form`;
-    this.router.navigate([target, { id: element._uuid }]);
+    this.router.navigate([this.getTargetRoute(element), { id: element._uuid }]);
+  }
+
+  private getTargetRoute(element: IgeDocument): string {
+    const isAddress = element._category === "address";
+    return ConfigService.catalogId + (isAddress ? "/address" : "/form");
   }
 
   ngAfterViewInit(): void {

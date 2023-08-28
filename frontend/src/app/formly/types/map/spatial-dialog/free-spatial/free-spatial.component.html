@@ -22,14 +22,16 @@
             <mat-list dense style="overflow: auto" ngDefaultControl>
                 <ng-container *ngFor="let entry of nominatimResult">
                     <mat-list-item
-                        (click)="handleSelection(entry)"
                         class="clickable"
                         [title]="entry.display_name"
+                        (click)="handleSelection(entry)"
+                        (keyup.enter)="handleSelection(entry)"
                     >
                         <mat-radio-button
                             matListItemIcon
                             [value]="entry"
                             [checked]="spatialSelection === entry"
+                            [aria-label]="entry.display_name"
                         ></mat-radio-button>
                         <div matListItemLine>
                             {{ entry.display_name }}

@@ -1,11 +1,8 @@
-import { Component, OnInit } from "@angular/core";
-import {
-  ConfigService,
-  Configuration,
-} from "../services/config/config.service";
+import { Component, OnInit, signal } from "@angular/core";
+import { ConfigService } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { SessionQuery } from "../store/session.query";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
@@ -26,11 +23,10 @@ export class DashboardComponent implements OnInit {
   canCreateDataset: boolean;
   canImport: boolean;
 
-  private configuration: Configuration;
   recentDocs$: Observable<DocumentAbstract[]>;
   recentPublishedDocs$: Observable<DocumentAbstract[]>;
   oldestExpiredDocs$: Observable<DocumentAbstract[]>;
-  chartDataPublished = new Subject<number[]>();
+  chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
 
   constructor(
@@ -42,7 +38,6 @@ export class DashboardComponent implements OnInit {
     private messageService: MessageService
   ) {
     this.messages$ = this.messageService.messages$;
-    this.configuration = configService.getConfiguration();
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
     this.canImport = configService.hasPermission("can_import");
@@ -66,7 +61,7 @@ export class DashboardComponent implements OnInit {
 
   fetchStatistic() {
     this.docService.getStatistic().subscribe((response) => {
-      this.chartDataPublished.next([response.numDrafts, response.numPublished]);
+      this.chartDataPublished.set([response.numDrafts, response.numPublished]);
     });
   }
 

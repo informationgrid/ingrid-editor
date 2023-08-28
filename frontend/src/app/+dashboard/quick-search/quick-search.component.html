@@ -13,67 +13,71 @@
         #auto="matAutocomplete"
         class="quicksearch-auto ultra-dense"
     >
-        <div
-            class="result-header flex-row justify-content-space-between align-items-stretch"
-        >
-            <div>Suchvorschläge</div>
-            <div class="extra-large-spacing link-text">
-                <a (click)="openResearchPage()">
-                    <mat-icon
-                        svgIcon="Recherche"
-                        class="research-icon"
-                    ></mat-icon>
-                    Erweiterte Suche
+        <ng-container *ngIf="docs?.length > 0 || addresses?.length > 0">
+            <div
+                class="result-header flex-row justify-content-space-between align-items-stretch"
+            >
+                <div>Suchvorschläge</div>
+                <div class="extra-large-spacing link-text">
+                    <a (click)="openResearchPage()">
+                        <mat-icon
+                            svgIcon="Recherche"
+                            class="research-icon"
+                        ></mat-icon>
+                        Erweiterte Suche
+                    </a>
+                </div>
+            </div>
+
+            <div class="result-title">Daten ({{ numDocs }})</div>
+
+            <mat-option
+                *ngFor="let doc of docs"
+                class="multiline no-padding"
+                (onSelectionChange)="selectDoc.next(doc._uuid)"
+            >
+                <ige-document-list-item [doc]="doc"></ige-document-list-item>
+            </mat-option>
+
+            <div
+                *ngIf="numDocs > 5"
+                class="show-all-link link-text extra-large-spacing"
+            >
+                <a
+                    class="link-text"
+                    (click)="openResearchPage()"
+                    data-cy="all-link-data"
+                >
+                    <mat-icon>keyboard_arrow_right</mat-icon>
+                    Alle
                 </a>
             </div>
-        </div>
+            <div class="spacing"></div>
 
-        <div class="result-title">Daten ({{ numDocs }})</div>
-
-        <mat-option
-            *ngFor="let doc of docs"
-            class="multiline no-padding"
-            (onSelectionChange)="selectDoc.next(doc._uuid)"
-        >
-            <ige-document-list-item [doc]="doc"></ige-document-list-item>
-        </mat-option>
-
-        <div
-            *ngIf="numDocs > 5"
-            class="show-all-link link-text extra-large-spacing"
-        >
-            <a
-                class="link-text"
-                (click)="openResearchPage()"
-                data-cy="all-link-data"
+            <div class="result-title">Adressen ({{ numAddresses }})</div>
+            <mat-option
+                *ngFor="let address of addresses"
+                class="multiline no-padding"
+                (onSelectionChange)="selectAddress.next(address._uuid)"
             >
-                <mat-icon>keyboard_arrow_right</mat-icon>
-                Alle
-            </a>
-        </div>
-        <div class="spacing"></div>
+                <ige-document-list-item
+                    [doc]="address"
+                ></ige-document-list-item>
+            </mat-option>
 
-        <div class="result-title">Adressen ({{ numAddresses }})</div>
-        <mat-option
-            *ngFor="let address of addresses"
-            class="multiline no-padding"
-            (onSelectionChange)="selectAddress.next(address._uuid)"
-        >
-            <ige-document-list-item [doc]="address"></ige-document-list-item>
-        </mat-option>
-
-        <div
-            *ngIf="numAddresses > 5"
-            class="show-all-link link-text extra-large-spacing"
-        >
-            <a
-                class="link-text"
-                (click)="openResearchPage(true)"
-                data-cy="all-link-address"
+            <div
+                *ngIf="numAddresses > 5"
+                class="show-all-link link-text extra-large-spacing"
             >
-                <mat-icon>keyboard_arrow_right</mat-icon>
-                Alle
-            </a>
-        </div>
-    </mat-autocomplete>
+                <a
+                    class="link-text"
+                    (click)="openResearchPage(true)"
+                    data-cy="all-link-address"
+                >
+                    <mat-icon>keyboard_arrow_right</mat-icon>
+                    Alle
+                </a>
+            </div>
+        </ng-container></mat-autocomplete
+    >
 </div>

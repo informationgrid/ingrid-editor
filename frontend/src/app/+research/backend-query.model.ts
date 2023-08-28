@@ -46,7 +46,7 @@ export class BackendQuery {
           (groupId) => groupValue[groupId]
         );
         if (activeItemsFromGroup.length > 0) {
-          if (facetGroup.filter[0].parameters) {
+          if (facetGroup?.filter[0].parameters) {
             activeFilterIds.clauses.push({
               op: groupOperator,
               value: [

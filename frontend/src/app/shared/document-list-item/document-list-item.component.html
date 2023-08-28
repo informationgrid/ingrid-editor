@@ -28,7 +28,7 @@
             [doc]="doc"
             matListItemIcon
         ></ige-document-icon>
-        <h3 matListItemTitle class="doc-item-content">
+        <span matListItemTitle class="doc-item-content">
             <span class="card-title">{{ doc.title }}</span>
             <span
                 *ngIf="!hideDate"
@@ -36,7 +36,7 @@
                 [matTooltip]="doc._contentModified | date : 'dd.LL.yyyy HH:mm'"
                 >{{ doc._contentModified | dateAgo : "DE" }}</span
             >
-        </h3>
+        </span>
         <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
     </mat-list-option>
 </mat-selection-list>

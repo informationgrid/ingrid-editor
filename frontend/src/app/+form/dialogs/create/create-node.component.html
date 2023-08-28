@@ -5,7 +5,7 @@
     #contextNodeContainer
 >
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
-        <h2 mat-dialog-title>
+        <h2 mat-dialog-title [attr.aria-label]="title">
             <button
                 mat-icon-button
                 mat-dialog-close
@@ -19,7 +19,7 @@
     </div>
     <mat-dialog-content class="hide-tab-header create-dlg-content">
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
-            <mat-tab label="Titel">
+            <mat-tab>
                 <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
                     <ige-document-template
                         *ngIf="isFolder || !forAddress; else addressForm"
@@ -125,7 +125,7 @@
 </div>
 
 <ng-template #destinationTemplate>
-    <div class="space-bottom">
+    <div class="space-bottom" *transloco="let t; read: 'form.create-dialog'">
         <div class="required dlg-field-label dlg-create-place no-top-padding">
             Zielordner
         </div>
@@ -137,8 +137,7 @@
             (select)="quickBreadcrumbChange($event)"
         ></ige-breadcrumb>
         <div *ngIf="!pathWithWritePermission" class="error-box">
-            Sie haben keine Schreibrechte auf den Zielordner. Bitte ändern Sie
-            den Zielordner über "Zielordner ändern"
+            {{ t("missingWritePermission") }}
         </div>
     </div>
 </ng-template>

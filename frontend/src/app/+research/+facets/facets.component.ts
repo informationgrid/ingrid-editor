@@ -211,10 +211,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     data.limitTypes = ["free"];
 
     this.dialog
-      .open(SpatialDialogComponent, {
-        data: data,
-        restoreFocus: true,
-      })
+      .open(SpatialDialogComponent, { data: data })
       .afterClosed()
       .subscribe((result) => {
         if (result) this.updateLocation(result);

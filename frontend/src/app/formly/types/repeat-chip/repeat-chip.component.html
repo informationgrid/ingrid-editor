@@ -132,7 +132,9 @@
             >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
             trennen
         </mat-hint>
-        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+        <mat-error *transloco="let t">{{
+            t("form.validationMessages.createOneEntry")
+        }}</mat-error>
     </mat-form-field>
 </ng-container>
 
@@ -156,6 +158,8 @@
             </mat-select>
         </ng-container>
 
-        <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+        <mat-error *transloco="let t">{{
+            t("form.validationMessages.createOneEntry")
+        }}</mat-error>
     </mat-form-field>
 </ng-container>

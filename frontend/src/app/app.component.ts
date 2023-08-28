@@ -12,11 +12,13 @@ import { CodelistService } from "./services/codelist/codelist.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
-import { Subject } from "rxjs";
+import { combineLatest, Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
 import { PluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
+import { NavigationEnd, Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -36,10 +38,12 @@ export class AppComponent implements OnInit {
     private registry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
     private authFactory: AuthenticationFactory,
-    titleService: Title,
+    private titleService: Title,
     private profileService: ProfileService,
     private viewContainerRef: ViewContainerRef,
-    @Inject(PluginToken) private autoPlugins: Plugin[]
+    @Inject(PluginToken) private autoPlugins: Plugin[],
+    private router: Router,
+    private transloco: TranslocoService
   ) {
     this.loadProfile();
 
@@ -123,5 +127,23 @@ export class AppComponent implements OnInit {
         throttleTime(10000) // allow token refresh only every 10s once
       )
       .subscribe(() => this.authFactory.get().refreshToken());
+
+    combineLatest([
+      this.transloco.selectTranslation(),
+      this.router.events,
+    ]).subscribe(([_, event]) => {
+      if (event instanceof NavigationEnd) {
+        const mainTitle = this.transloco.translate("pageTitle.default");
+        const splittedByParams = this.router.url.split(";");
+        const mappedPath = splittedByParams[0].split("/").slice(2).join(".");
+        const key = `pageTitle.${mappedPath}`;
+        const pageTitle = this.transloco.translate(key);
+        let newTitle = mainTitle;
+        if (key !== pageTitle) {
+          newTitle = pageTitle + " | " + mainTitle;
+        }
+        this.titleService.setTitle(newTitle);
+      }
+    });
   }
 }

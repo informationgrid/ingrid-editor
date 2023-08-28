@@ -358,10 +358,11 @@ export function animationExtension(field: FormlyFieldConfig) {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: {
         panelClass: "mat-dialog-override",
-        autoFocus: "dialog",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
         role: "dialog",
+        autoFocus: "dialog",
+        restoreFocus: true,
       },
     },
     {

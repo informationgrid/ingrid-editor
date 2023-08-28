@@ -17,11 +17,12 @@
         [class.active]="
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
+        [title]="t(item.path)"
         tabindex="0"
         role="menuitem"
     >
         <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
-        <p matListItemTitle>{{ t(item.path) }}</p>
+        <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
     </a>
 
     <div class="fillVertical"></div>
@@ -29,15 +30,20 @@
     <a
         *ngIf="configuration.showAccessibilityLink"
         mat-list-item
+        class="no-text-transform"
         [href]="configuration.contextPath + 'barrierefreiheit'"
         target="_blank"
         data-cy="link-accessibility"
-        matTooltip="Barrierefreiheit"
+        title="Erklärung zur Barrierefreiheit"
+        role="menuitem"
+        matTooltip="Erklärung zur Barrierefreiheit"
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
     >
-        <mat-icon matListItemIcon>info</mat-icon>
-        <p matListItemTitle>Barrierefreiheit</p>
+        <mat-icon matListItemIcon svgIcon="info_outline"></mat-icon>
+        <p matListItemTitle aria-hidden="true">
+            Erklärung zur Barrierefreiheit
+        </p>
     </a>
 
     <a
@@ -46,12 +52,13 @@
         class="menu-toggle no-text-transform"
         (click)="toggleSidebar(!menuIsExpanded)"
         (keydown.enter)="toggleSidebar(!menuIsExpanded)"
-        matTooltip="Vergrößern"
-        [matTooltipDisabled]="menuIsExpanded"
         matTooltipPosition="right"
         data-cy="menu-scale"
         tabindex="0"
         role="menuitem"
+        [title]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+        [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+        [matTooltipDisabled]="menuIsExpanded"
     >
         <mat-icon
             *ngIf="!menuIsExpanded"
@@ -63,6 +70,6 @@
             matListItemIcon
             svgIcon="Nav-zu"
         ></mat-icon>
-        <p matListItemTitle>Verkleinern</p>
+        <p matListItemTitle aria-hidden="true">Verkleinern</p>
     </a>
 </mat-nav-list>

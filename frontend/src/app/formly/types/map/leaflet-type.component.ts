@@ -175,7 +175,6 @@ export class LeafletTypeComponent
       .open(SpatialDialogComponent, {
         width: "90%",
         disableClose: true,
-        restoreFocus: true,
         maxWidth: 1260,
         minWidth: 600,
         data: {

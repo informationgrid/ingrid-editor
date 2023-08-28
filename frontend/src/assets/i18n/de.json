@@ -1,4 +1,44 @@
 {
+  "pageTitle": {
+    "default": "IGE-NG",
+    "dashboard": "Übersicht",
+    "form": "Daten",
+    "address": "Adressen",
+    "profile": "Profil verwalten",
+    "research": {
+      "search": "Erweiterte Suche",
+      "sql": "Recherche: SQL",
+      "queries": "Gespeicherte Suchen"
+    },
+    "reports": {
+      "general": "Statistik",
+      "url-check": "URL-Pflege",
+      "expiration": "Abgelaufene Metadaten"
+    },
+    "manage": {
+      "user": "Benutzer",
+      "group": "Gruppen & Rechte"
+    },
+    "importExport": {
+      "import": "Import",
+      "export": "Export"
+    },
+    "catalogs": {
+      "codelists": "Katalog - Codelisten",
+      "form-behaviours": "Katalog - Verhalten",
+      "indexing": "Katalog - Indizierung",
+      "config": "Katalog - Konfiguration"
+    },
+    "settings": {
+      "general": "Verwaltung",
+      "codelist": "Codelist Repository",
+      "catalog": "Katalogverwaltung",
+      "ibus": "iBus Verwaltung",
+      "messages": "Benachrichtigungen",
+      "catalogAssignment": "Katalogzuweisung",
+      "contentManagement": "Inhalte"
+    }
+  },
   "menu": {
     "application": "INGRID",
     "application-suffix": " ",
@@ -22,7 +62,7 @@
     "importDocument": "Datensatz importieren",
     "mostRecent": "Zuletzt bearbeitet im Katalog",
     "mostRecentPublished": "Zuletzt veröffentlicht im Katalog",
-    "oldestExpired": "Abgelaufene Metadaten",
+    "oldestExpired": "Älteste abgelaufene Metadaten",
     "form": "Daten",
     "formSingular": "Datensatz"
   },
@@ -69,6 +109,7 @@
     },
     "validationMessages": {
       "required": "Dieses Feld muss ausgefüllt sein",
+      "createOneEntry": "Bitte erstellen Sie mindestens einen Eintrag",
       "email": "Dieses Feld muss eine gültige E-Mail Adresse sein",
       "emailInRepeat": "Dieses Feld muss eine gültige E-Mail Adresse sein",
       "lowercase": "Dieses Feld darf keine Großbuchstaben enthalten",
@@ -77,6 +118,10 @@
       "matDatepickerMax": "Das Datum ist größer als erlaubt",
       "min": "Der Wert darf nicht kleiner sein als {{value}}",
       "max": "Der Wert darf nicht größer sein als {{value}}"
+    },
+    "create-dialog": {
+      "titleRequired": "Bitte geben Sie einen Titel ein",
+      "missingWritePermission": "Sie haben keine Schreibrechte auf den Zielordner. Bitte ändern Sie den Zielordner über \"Zielordner ändern\""
     }
   },
   "spatial": {

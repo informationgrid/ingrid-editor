@@ -1,0 +1,157 @@
+/*
+ * styles to improve accessibility, specifically the outlines that appear only when an object is selected by tab.
+ * only focus-related pseudo-classes or classes should be used here.
+ */
+@import "src/variables";
+
+// border *inside of button with primary color
+.mdc-button,
+.mdc-list-item,
+.mdc-icon-button,
+.mat-mdc-chip,
+.mat-expansion-panel-header {
+  &.cdk-focused.cdk-keyboard-focused,
+  &[role="option"]:focus,
+  &.mat-mdc-option-active {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+
+    // remove surface highlight color in different components
+    --mat-mdc-button-ripple-color: unset;
+    --mat-mdc-button-persistent-ripple-color: unset;
+
+    &:before,
+    .mat-mdc-button-persistent-ripple:before,
+    .mat-mdc-chip-focus-overlay {
+      background-color: unset;
+    }
+  }
+
+  &.mat-mdc-option-active:not(.mdc-list-item--selected),
+  &.mat-mdc-menu-item.cdk-focused.cdk-keyboard-focused {
+    background: unset !important;
+  }
+}
+
+// border *outside of button with primary color
+.mat-mdc-fab,
+[mat-flat-button][color="primary"] {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: 2px;
+    outline: 3px solid $ige-primary;
+    --mat-mdc-button-persistent-ripple-color: unset;
+  }
+}
+
+// border inside of button with white color
+.mdc-tab,
+ige-side-menu .mdc-list-item,
+.dialog-title-wrapper .mdc-icon-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid #fff;
+    --mat-mdc-button-ripple-color: unset;
+
+    &:before {
+      background-color: unset;
+    }
+  }
+}
+
+.mat-mdc-tab-nav-panel .mdc-tab {
+  --mat-tab-header-active-label-text-color: #196ea2;
+  --mat-tab-header-active-focus-label-text-color: #196ea2;
+  --mdc-tab-indicator-active-indicator-color: #196ea2;
+  --mat-tab-header-active-focus-indicator-color: #196ea2;
+
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+
+    .mdc-tab__ripple:before {
+      opacity: unset;
+      --mat-tab-header-active-ripple-color: transparent;
+      --mat-tab-header-inactive-ripple-color: transparent;
+    }
+  }
+}
+
+// border inside of button with black color
+form-toolbar :not(.save-buttons) > .mdc-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    outline-offset: -2px;
+    outline: 2px solid #000;
+    --mat-mdc-button-persistent-ripple-color: unset;
+  }
+}
+
+.mat-mdc-checkbox input:focus + .mdc-checkbox__ripple {
+  border: 2px solid $ige-primary;
+  --mdc-checkbox-selected-focus-state-layer-opacity: 1;
+  --mdc-checkbox-unselected-focus-state-layer-opacity: 1;
+  --mdc-checkbox-selected-focus-state-layer-color: transparent;
+  --mdc-checkbox-unselected-focus-state-layer-color: transparent;
+}
+
+.mat-mdc-slide-toggle,
+.mat-mdc-radio-button {
+  &.cdk-focused.cdk-keyboard-focused {
+    .mdc-switch__ripple:after {
+      border: 2px solid $ige-primary;
+      opacity: unset !important;
+      background-color: unset !important;
+    }
+
+    .mdc-radio__background:before {
+      opacity: unset;
+      border: 2px solid $ige-primary;
+      top: -12px;
+      left: -12px;
+    }
+  }
+
+  .mdc-radio__background:before {
+    background-color: unset !important;
+  }
+}
+
+mat-tree-node,
+[role="button"],
+[role="figure"],
+[role="heading"],
+[role="listitem"],
+[role="row"],
+ige-session-timeout-info [tabindex="0"] {
+  &:focus {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+  }
+}
+
+h2[tabindex="0"] {
+  &:focus {
+    outline-offset: 2px;
+    outline: 2px solid $ige-primary;
+  }
+}
+
+.white-bg {
+  &.white-border {
+    .mat-mdc-text-field-wrapper {
+      border: 2px solid #fff;
+
+      &:hover {
+        border: 2px solid $ige-secondary;
+      }
+    }
+
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border: 2px solid $ige-secondary;
+    }
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: white;
+    border-radius: 4px;
+  }
+}

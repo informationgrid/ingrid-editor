@@ -10,7 +10,7 @@
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
         >
-        <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
+        <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
 
         <div class="center-header flex-grow">
             <ige-session-timeout-info
@@ -22,14 +22,13 @@
 
         <div
             *ngIf="currentCatalog$ | async as currentCatalog"
-            class="header-info flex-grow"
+            class="header-info flex-grow flex-row align-items-center justify-content-end"
         >
             Katalog:
             <button
                 class="catalog-button"
                 mat-button
                 [matTooltip]="currentCatalog"
-                [matTooltipShowDelay]="1000"
                 [matMenuTriggerFor]="catMenu"
                 [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
                 [disabled]="otherAssignedCatalogs.length == 0"
@@ -47,6 +46,7 @@
                 <span
                     *ngFor="let catalog of otherAssignedCatalogs"
                     mat-menu-item
+                    class="menu-item"
                     (click)="chooseCatalog(catalog.id)"
                 >
                     {{ catalog.name }}
@@ -137,14 +137,14 @@
                     >
                 </div>
 
-                <div class="popup-leading flex-row align-items-center">
-                    Verwaltung
-                </div>
-                <mat-divider></mat-divider>
-
-                <ng-container *ngFor="let group of menuItems">
-                    <div *ngIf="isAdmin">
-                        <!--                        <ng-container *ngFor="let entry of group.entries">-->
+                <ng-container *ngIf="menuItems.length > 0 && isAdmin">
+                    <div
+                        class="popup-leading upper-case flex-row align-items-center"
+                    >
+                        Verwaltung
+                    </div>
+                    <mat-divider aria-hidden="true"></mat-divider>
+                    <ng-container *ngFor="let group of menuItems">
                         <button
                             mat-menu-item
                             [routerLink]="[
@@ -153,29 +153,23 @@
                         >
                             {{ group.data?.title }}
                         </button>
-                        <!--<a
-                                *ngIf="!entry.isRouterLink"
-                                mat-menu-item
-                                href="{{ entry.link }}"
-                                target="_blank"
-                                >{{ entry.label }}</a
-                            >-->
-                        <mat-divider></mat-divider>
-                        <!--                        </ng-container>-->
-                    </div>
+                        <mat-divider aria-hidden="true"></mat-divider>
+                    </ng-container>
                 </ng-container>
 
-                <div class="popup-leading flex-row align-items-center">
+                <div
+                    class="popup-leading upper-case flex-row align-items-center"
+                >
                     Informationen
                 </div>
-                <mat-divider></mat-divider>
+                <mat-divider aria-hidden="true"></mat-divider>
 
                 <ng-container *ngFor="let item of menuInfos">
                     <a mat-menu-item href="{{ item.link }}" target="_blank">
                         {{ item.title }}
                     </a>
 
-                    <mat-divider></mat-divider>
+                    <mat-divider aria-hidden="true"></mat-divider>
                 </ng-container>
                 <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>

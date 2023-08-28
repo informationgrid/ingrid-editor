@@ -64,7 +64,10 @@ export class BmiDoctype extends BaseDoctype {
             },
           },
         }),
-        this.addRepeatList("keywords", "Schlagworte", { view: "chip" }),
+        this.addRepeatList("keywords", "Schlagworte", {
+          view: "chip",
+          hint: "Mehrere Schlagworte durch Komma trennen, Eingabe mit Enter bestätigen.",
+        }),
       ]),
       this.addSection("Open Data", [
         this.addRepeatList("DCATThemes", "Open Data Kategorien", {
@@ -92,13 +95,13 @@ export class BmiDoctype extends BaseDoctype {
                 type: "upload",
                 label: "Link",
                 class: "flex-2",
-                wrappers: ["inline-help"],
-                hasInlineContextHelp: true,
-                contextHelpId: "distribution_link",
+                wrappers: ["form-field", "inline-help"],
                 props: {
                   label: "Link",
                   appearance: "outline",
                   required: true,
+                  hasInlineContextHelp: true,
+                  contextHelpId: "distribution_link",
                   validators: {
                     validation: ["url"],
                   },
@@ -107,10 +110,16 @@ export class BmiDoctype extends BaseDoctype {
                   },
                   ariaLabel: "URL der Ressource",
                 },
+                expressions: {
+                  "props.label": (field) =>
+                    field.formControl.value?.asLink
+                      ? "URL (Link)"
+                      : "Dateiname (Upload)",
+                },
               },
               this.addDatepickerInline("modified", "Aktualisierungsdatum", {
                 placeholder: "TT.MM.JJJJ",
-                wrappers: ["form-field"],
+                wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "distribution_modified",
                 ariaLabel: "Aktualisierungsdatum der Ressource",
@@ -136,20 +145,13 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
                 contextHelpId: "language",
-                ariaLabel: "Sprachen der Ressource",
               }),
-              this.addTextAreaInline(
-                "description",
-                "Beschreibung",
-                {
-                  wrappers: ["inline-help", "form-field"],
-                  hasInlineContextHelp: true,
-                  contextHelpId: "distribution_description",
-                },
-                {
-                  ariaLabel: "Beschreibung der Ressource",
-                }
-              ),
+              this.addTextAreaInline("description", "Beschreibung", "bmi", {
+                wrappers: ["form-field", "inline-help"],
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_description",
+                ariaLabel: "Beschreibung der Ressource",
+              }),
               this.addSelectInline("license", "Lizenz", {
                 required: true,
                 showSearch: true,
@@ -179,6 +181,10 @@ export class BmiDoctype extends BaseDoctype {
             ]),
           ],
           validators: {
+            requiredEntry: {
+              expression: (ctrl) => ctrl.value?.length > 0,
+              message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
+            },
             requiredLicense: {
               expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
               message:
@@ -211,7 +217,7 @@ export class BmiDoctype extends BaseDoctype {
       this.addSection("Zeitbezüge", [
         this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
           this.addSelect("rangeType", null, {
-            showSearch: true,
+            showSearch: false,
             className: "flex-1",
             wrappers: ["form-field"],
             ariaLabel: "Zeitliche Abdeckung der Daten",

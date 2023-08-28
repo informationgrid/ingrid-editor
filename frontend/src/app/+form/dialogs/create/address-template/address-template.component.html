@@ -13,9 +13,7 @@
                     formControlName="firstName"
                     autocomplete="off"
                     (keyup.enter)="create.emit()"
-                    [attr.aria-label]="
-                        isPerson ? 'Titel der Person' : 'Titel der Organisation'
-                    "
+                    aria-label="Titel der Person"
                 />
             </mat-form-field>
         </div>
@@ -43,6 +41,7 @@
                 name="organization"
                 formControlName="organization"
                 (keyup.enter)="create.emit()"
+                aria-label="Titel der Organisation"
             />
         </mat-form-field>
     </ng-template>

@@ -1,13 +1,17 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
+import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -28,7 +32,9 @@ class PostMigrationTask(
     val catalogService: CatalogService,
     val groupService: GroupService,
     val documentService: DocumentService,
-    val aclService: IgeAclService
+    val docRepo: DocumentRepository,
+    val aclService: IgeAclService,
+    val codelistHandler: CodelistHandler,
 ) {
     val log = logger()
 
@@ -45,6 +51,7 @@ class PostMigrationTask(
             ClosableTransaction(transactionManager).use {
                 doPostMigration(catalog)
                 removePostMigrationInfo(catalog)
+                log.info("Finished post migration for catalog: $catalog")
             }
         }
 
@@ -68,10 +75,38 @@ class PostMigrationTask(
     private fun doPostMigration(catalogIdentifier: String) {
         // Warning: Execution Order is important
         saveAllGroupsOfCatalog(catalogIdentifier)
+        initializeCatalogCodelistsAndQueries(catalogIdentifier)
         uvpAdaptFolderStructure(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
-        initializeCatalogCodelistsAndQueries(catalogIdentifier)
+        fixSpatialSystems(catalogIdentifier)
+    }
+
+    private fun fixSpatialSystems(catalogIdentifier: String) {
+        val documents = docRepo.findAllByCatalog_Identifier(catalogIdentifier)
+        codelistHandler.fetchCodelists()
+
+        documents.forEach { doc ->
+            val data = doc.data
+            val spatial = data.get("spatial") as ObjectNode? ?: return@forEach
+            val spatialSystems = spatial.get("spatialSystems")  as ArrayNode? ?: return@forEach
+            if (!spatialSystems.isEmpty) {
+                spatialSystems.map { lookupSpatialSystem(it) }
+                spatial.set<ArrayNode>("spatialSystems", spatialSystems)
+                data.set<JsonNode>("spatial", spatial)
+                doc.data = data
+                docRepo.save(doc)
+            }
+        }
+    }
+
+
+    private fun lookupSpatialSystem(spatialSystem: JsonNode): JsonNode {
+        val potentialId = spatialSystem.get("value")?.asText() ?: return spatialSystem
+         if (codelistHandler.getCodelistEntry("100", potentialId) != null){
+            (spatialSystem as ObjectNode).put("key", potentialId)
+        }
+        return spatialSystem
     }
 
     private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
@@ -352,7 +387,15 @@ class PostMigrationTask(
         wrapper: DocumentWrapper,
         catalogIdentifier: String
     ) = listOf(DOCUMENT_STATE.PUBLISHED, DOCUMENT_STATE.DRAFT, DOCUMENT_STATE.DRAFT_AND_PUBLISHED, DOCUMENT_STATE.PENDING)
-        .map {documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)}
+        .map {
+            try {
+              documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
+            } catch (e: Exception) {
+                //no document with specific state found
+                null
+            }
+        }
+        .filterNotNull()
         .flatMap {
             documentService.getReferencedWrapperIds(catalogIdentifier, it)
         }

@@ -8,7 +8,6 @@ import { DocumentService } from "../../../services/document/document.service";
 import { FormUtils } from "../../form.utils";
 import { MatDialog } from "@angular/material/dialog";
 import { FormStateService } from "../../form-state.service";
-import { IgeDocument } from "../../../models/ige-document";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -27,8 +26,14 @@ export class FolderDashboardComponent {
     this.query.openedDocument$.pipe(untilDestroyed(this)).subscribe((doc) => {
       if (doc) this.updateChildren(doc);
     });
+    this._isAddress = value;
   }
 
+  get isAddress() {
+    return this._isAddress;
+  }
+
+  private _isAddress: boolean;
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);

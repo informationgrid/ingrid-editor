@@ -135,7 +135,6 @@ export class TableTypeComponent
     this.dialog
       .open(this.props.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
-        restoreFocus: true,
         minWidth: 600,
         data: {
           fields: this.props.columns.filter((column) => !column.hidden),
@@ -261,7 +260,6 @@ export class TableTypeComponent
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
-        restoreFocus: true,
         data: {
           currentItems: this.dataSource.data,
           uploadFieldKey: this.getUploadFieldKey(),
@@ -318,7 +316,6 @@ export class TableTypeComponent
       .open(LinkDialogComponent, {
         maxWidth: 600,
         hasBackdrop: true,
-        restoreFocus: true,
         data: {
           fields: this.props.columns,
           model: {},

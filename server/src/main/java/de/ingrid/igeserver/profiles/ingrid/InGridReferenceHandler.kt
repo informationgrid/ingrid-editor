@@ -22,6 +22,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
              document_wrapper dw,
              document doc
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'ingrid'
           AND dw.deleted = 0
           AND dw.category = 'data'

@@ -28,7 +28,7 @@
     <div main-content class="flex-col gap-36">
         <div class="chart-container">
             <ige-chart
-                [data]="chartDataPublished"
+                [data]="chartDataPublished()"
                 showPercentages="true"
             ></ige-chart>
         </div>
@@ -97,7 +97,9 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr
                     mat-row
+                    tabindex="0"
                     *matRowDef="let row; columns: displayedColumns"
+                    [attr.aria-label]="row.ariaLabel"
                 ></tr>
             </table>
         </ige-card-box>

@@ -5,6 +5,7 @@
         formControl.errors &&
         !formControl.hasError('required')
     "
+    [ariaLabel]="props?.ariaLabel"
 >
     <div *ngFor="let error of formControl.errors | keyvalue">
         {{ error.value.message }}

@@ -190,6 +190,7 @@ export class AssignedUserBehaviour extends Plugin {
           id: docId,
           forResponsibility: true,
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .subscribe(() => {
@@ -208,6 +209,7 @@ export class AssignedUserBehaviour extends Plugin {
           users: this.userService.users$.value,
           oldUser: oldUser,
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))

@@ -1,14 +1,13 @@
 <div
-    class="flex-1 flex-col"
-    *ngIf="dataMap | async as dataSeq"
+    class="flex-1 flex-col justify-content-center"
+    *ngIf="dataMap"
     tabindex="0"
     role="figure"
     aria-label="Struktur der gesamten Datensätze"
-    aria-describedby="status"
 >
-    <svg viewBox="0 0 36 36" class="circular-chart">
+    <svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
         <path
-            *ngIf="dataSeq.first != null"
+            *ngIf="dataMap.first != null"
             class="circle circle-1"
             [attr.stroke-dasharray]="strokeDash[0][0] + ', ' + strokeDash[0][1]"
             d="M18 2.0845
@@ -16,7 +15,7 @@
           a 15.9155 15.9155 0 0 1 0 -31.831"
         ></path>
         <path
-            *ngIf="dataSeq.second != null"
+            *ngIf="dataMap.second != null"
             class="circle circle-2"
             [attr.stroke-dasharray]="
                 '0, ' + strokeDash[1][0] + ', ' + strokeDash[1][1]
@@ -45,26 +44,25 @@
 
     <div
         id="status"
-        class="wrapper flex-1 flex-row justify-content-space-between align-items-stretch"
-        [class.inline]="showPercentages && total > 0"
+        class="wrapper flex-row justify-content-space-between align-items-stretch"
     >
         <div class="box working">
             <div data-cy="editModeDocument" class="count">
-                {{ dataSeq.first }}
+                {{ dataMap.first }}
             </div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq.first / total) * 100 ?? 0 | number : "1.0-0" }}%
+                {{ (dataMap.first / total) * 100 ?? 0 | number : "1.0-0" }}%
             </div>
         </div>
 
         <div class="box">
             <div data-cy="publishModeDocument" class="count">
-                {{ dataSeq.second }}
+                {{ dataMap.second }}
             </div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataSeq.second / total) * 100 ?? 0 | number : "1.0-0" }}%
+                {{ (dataMap.second / total) * 100 ?? 0 | number : "1.0-0" }}%
             </div>
         </div>
     </div>

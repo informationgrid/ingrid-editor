@@ -3,7 +3,6 @@
     [disabled]="formControl.disabled"
     cdkDropListGroup
     mixedCdkDragDrop
-    orientation="horizontal"
     (dropped)="drop($event)"
     [attr.aria-label]="props.ariaLabel"
 >
@@ -11,8 +10,6 @@
         *ngFor="let field of field.fieldGroup; let i = index"
         cdkDropList
         mixedCdkDropList
-        tabindex="0"
-        (keydown.enter)="removeItem(i)"
     >
         <mat-chip-option
             disableRipple
@@ -42,7 +39,11 @@
             <button
                 *ngIf="formControl.enabled"
                 matChipRemove
-                aria-label="Eintrag entfernen"
+                [attr.aria-description]="
+                    props.labelField
+                        ? model[i][props.labelField]
+                        : getParameter(model[i]) + 'entfernen'
+                "
             >
                 <mat-icon>cancel</mat-icon>
             </button>
@@ -59,6 +60,7 @@
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
+    role="list"
 >
     <div
         *ngFor="let field of field.fieldGroup; let i = index"
@@ -69,9 +71,15 @@
         class="clickable list-item"
         data-cy="list-item"
         tabindex="0"
-        (keydown.delete)="removeItem(i, $event)"
-        (keydown.backspace)="removeItem(i, $event)"
         (click)="this.onItemClick(model[i]?.key)"
+        (keyup.enter)="removeItem(i, $event)"
+        role="listitem"
+        [attr.aria-label]="
+            type === 'search'
+                ? model[i][props.labelField]
+                : getParameter(model[i])
+        "
+        aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
     >
         <div class="text-wrapper">
             <span class="list-display-element">
@@ -93,6 +101,7 @@
             mat-icon-button
             class="close gray"
             (click)="removeItem(i)"
+            tabindex="-1"
         >
             <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
             <mat-icon>close</mat-icon>
@@ -142,7 +151,15 @@
             </div>
         </mat-option>
     </mat-select>
-    <mat-error>Bitte erstellen Sie mindestens einen Eintrag</mat-error>
+    <!-- help info button -->
+    <ng-container
+        *ngIf="props.suffix"
+        matSuffix
+        [ngTemplateOutlet]="props.suffix"
+    ></ng-container>
+    <mat-error *transloco="let t">{{
+        t("form.validationMessages.createOneEntry")
+    }}</mat-error>
 </mat-form-field>
 
 <ng-container *ngIf="type === 'autocomplete'">

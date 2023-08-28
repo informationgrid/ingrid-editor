@@ -6,8 +6,14 @@
         class="toggle-ref-docs-btn"
         (click)="toggleList()"
         color="primary"
+        aria-label="Zugeordnete Datensätze"
+        aria-describedby="toggle-ref-desc"
+        [attr.aria-expanded]="showReferences"
     >
-        {{ totalHits }} {{ showReferences ? "Ausblenden" : "Anzeigen" }}
+        <span id="toggle-ref-desc"
+            >{{ totalHits }}
+            {{ showReferences ? "Ausblenden" : "Anzeigen" }}</span
+        >
     </button>
 
     <ng-container *ngIf="isLoading">

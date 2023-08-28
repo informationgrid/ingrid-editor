@@ -10,6 +10,7 @@ import { ExchangeService } from "../../../../app/+importExport/exchange.service"
 import { combineLatest, of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
+import { catchError } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable({ providedIn: "root" })
@@ -89,15 +90,23 @@ export class IsoViewPlugin extends Plugin {
       currentDocument._state === "PW"
         ? this.exportService.export(optionsOnlyPublished)
         : of(null),
-    ]).subscribe(async ([current, published]) => {
-      this.dialog.open(IsoViewComponent, {
-        data: {
-          uuid: currentDocument._uuid,
-          isoText: await current.body.text(),
-          isoTextPublished: await published?.body.text(),
-        },
+    ])
+      .pipe(
+        catchError((error) => {
+          throw new Error(
+            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind."
+          );
+        })
+      )
+      .subscribe(async ([current, published]) => {
+        this.dialog.open(IsoViewComponent, {
+          data: {
+            uuid: currentDocument._uuid,
+            isoText: await current.body.text(),
+            isoTextPublished: await published?.body.text(),
+          },
+        });
       });
-    });
   }
 
   unregisterForm() {

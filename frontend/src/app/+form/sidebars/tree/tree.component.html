@@ -54,6 +54,7 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="24"
         (click)="!disabledCondition(node) && selectNode(node, $event)"
+        (keydown.enter)="!disabledCondition(node) && selectNode(node, $event)"
         [class.drop]="isDragging && dragManager.dragNodeExpandOverNode === node"
         [class.active]="node._id === activeNodeId"
         [class.expanded]="node.isExpanded"
@@ -62,9 +63,8 @@
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
-        [attr.aria-label]="node.title"
         [attr.tabindex]="!disabledCondition(node) ? 0 : null"
-        (keydown.enter)="!disabledCondition(node) && selectNode(node, $event)"
+        [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div style="width: 100%">
             <div class="flex-row">
@@ -91,14 +91,17 @@
                     [checked]="selection.isSelected(node)"
                     (click)="$event.stopImmediatePropagation()"
                     (change)="selection.nodeSelectionToggle(node, $event)"
+                    [aria-label]="
+                        node.title +
+                        ' ' +
+                        (selection.isSelected(node) ? 'abwählen' : 'wählen')
+                    "
                 ></mat-checkbox>
                 <ige-document-icon
                     [doc]="node"
                     showDelay="1000"
                 ></ige-document-icon>
-                <span [matTooltipShowDelay]="1000" [matTooltip]="node.title">{{
-                    node.title
-                }}</span>
+                <span [matTooltip]="node.title">{{ node.title }}</span>
             </div>
         </div>
     </mat-tree-node>
@@ -114,6 +117,7 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="24"
         (click)="handleFolderClick(node, $event)"
+        (keydown.enter)="handleFolderClick(node, $event)"
         [class.drop]="isDragging && dragManager.dragNodeExpandOverNode === node"
         [class.active]="node._id === activeNodeId"
         [class.expanded]="node.isExpanded"
@@ -123,9 +127,8 @@
         [class.disabled]="disabledCondition(node)"
         [class.folder]="node.type === 'FOLDER'"
         [class]="node.tags"
-        [attr.aria-label]="node.title"
         [attr.tabindex]="!disabledCondition(node) ? 0 : null"
-        (keydown.enter)="handleFolderClick(node, $event)"
+        [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
         <div style="width: 100%">
             <div class="flex-row">
@@ -133,6 +136,7 @@
                     mat-icon-button
                     class="toggle"
                     matTreeNodeToggle
+                    tabindex="-1"
                     [disabled]="!isExpandable(node)"
                     [attr.aria-label]="'toggle ' + node.title"
                 >
@@ -151,6 +155,11 @@
                     (change)="selection.nodeSelectionToggle(node, $event)"
                     (click)="$event.stopImmediatePropagation()"
                     [checked]="selection.isSelected(node)"
+                    [aria-label]="
+                        node.title +
+                        ' ' +
+                        (selection.isSelected(node) ? 'abwählen' : 'wählen')
+                    "
                 ></mat-checkbox>
 
                 <span>{{ node.title }}</span>

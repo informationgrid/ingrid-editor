@@ -1,5 +1,5 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextHelpContainer>
-    <h2 mat-dialog-title cdkDragHandle>
+    <h2 mat-dialog-title cdkDragHandle [attr.aria-label]="title">
         <div class="infoIcon">
             <mat-icon
                 class="material-icons-outlined"
@@ -7,12 +7,10 @@
             ></mat-icon>
         </div>
         <span class="text">{{ title }}</span>
-        <!-- mat-dialog-close is unusable due to contrast accessibility -->
         <button
             mat-icon-button
+            mat-dialog-close
             aria-label="Eingabehilfe schließen"
-            matTooltip="Schließen"
-            (click)="dismiss()"
         >
             <mat-icon>close</mat-icon>
         </button>

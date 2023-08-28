@@ -87,6 +87,6 @@ class UrlRequestService {
     }
 
     fun isSuccessCode(status: Int): Boolean {
-        return status <= 400
+        return status < 400
     }
 }

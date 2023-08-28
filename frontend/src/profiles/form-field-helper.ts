@@ -36,6 +36,8 @@ export interface DatePickerOptions extends Options {
   placeholder?: string;
   datepickerOptions?: any;
   validators?: any;
+  suffix?: any;
+  prefix?: any;
 }
 
 export interface RepeatOptions extends Options {
@@ -71,6 +73,7 @@ export interface RepeatListOptions extends Options {
   asAutocomplete?: boolean;
   asSimpleValues?: boolean;
   convert?: (value) => any;
+  isSuffixUnsupported?: boolean;
 }
 
 export interface RepeatChipOptions extends Options {
@@ -161,6 +164,8 @@ export class FormFieldHelper {
         externalLabel: label,
         contextHelpId: options?.contextHelpId,
         required: options?.required,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldGroup: fields,
       expressions: {
@@ -224,11 +229,11 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options = {}
+    options: Options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       fieldLabel: label,
       ...options,
     });
@@ -308,6 +313,7 @@ export class FormFieldHelper {
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        isSuffixUnsupported: options?.isSuffixUnsupported,
         change: options?.change,
         remove: options?.remove,
         view: options?.view,
@@ -386,6 +392,8 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
         addButtonTitle: options?.addButtonTitle,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -595,6 +603,10 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
         datepickerOptions: options?.datepickerOptions,
+        addonRight: options?.suffix,
+        addonLeft: options?.prefix,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
         attributes: {
           "aria-label": options?.ariaLabel,
           "aria-description": options?.ariaDescription,
@@ -605,10 +617,10 @@ export class FormFieldHelper {
     };
   }
 
-  addDatepickerInline(id, label, options = {}) {
+  addDatepickerInline(id, label, options: any = {}) {
     return this.addDatepicker(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       ...options,
     });
   }

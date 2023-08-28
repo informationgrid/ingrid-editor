@@ -1,23 +1,27 @@
 <div *ngIf="showMore" [@slideDown] class="more-info">
     <div class="flex-row" *ngIf="model._type !== 'FOLDER' && !hideFields.state">
         <div>Status</div>
-        <div class="state" [class.working]="model._state === 'W'">
+        <div
+            class="state"
+            data-cy="header-state"
+            [class.working]="model._state === 'W'"
+        >
             {{ getState(model._state) }}
         </div>
     </div>
 
     <div *ngIf="!hideFields.type" class="flex-row">
         <div>Typ</div>
-        <div>{{ mapDocumentType(model._type) }}</div>
+        <div data-cy="header-type">{{ mapDocumentType(model._type) }}</div>
     </div>
     <div class="flex-row padding-below">
         <div>ID</div>
-        <div>{{ model._uuid }}</div>
+        <div data-cy="header-id">{{ model._uuid }}</div>
     </div>
 
     <div *ngIf="!hideFields.created" class="flex-row">
         <div>Erstellt am</div>
-        <div>
+        <div data-cy="header-created-on">
             <span [matTooltip]="model._created | date : 'long'">{{
                 model._created | date : "dd.MM.yyyy"
             }}</span>
@@ -34,7 +38,7 @@
     </div>
     <div *ngIf="!hideFields.modified" class="flex-row">
         <div>Geändert am</div>
-        <div>
+        <div data-cy="header-modified-on">
             <span [matTooltip]="model._contentModified | date : 'long'">{{
                 model._contentModified | date : "dd.MM.yyyy"
             }}</span>
@@ -54,8 +58,8 @@
         class="flex-row"
     >
         <div>Verantwortlich</div>
-        <div>
-            <span> {{ model._responsibleUser | fullName | async }} </span>
+        <div data-cy="header-responsible-user">
+            {{ model._responsibleUser | fullName | async }}
         </div>
     </div>
     <div
@@ -69,7 +73,10 @@
         >
             Metadaten-Datum
         </ige-form-label>
-        <span [matTooltip]="model._metadataDate | date : 'long'">
+        <span
+            [matTooltip]="model._metadataDate | date : 'long'"
+            data-cy="header-metadata-date"
+        >
             {{ model._metadataDate | date : "dd.MM.yyyy" }} (veröffentlichte
             Version)
         </span>

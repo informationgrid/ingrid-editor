@@ -130,11 +130,18 @@ export class TabExpirationComponent implements OnInit {
 
   private search(type: string) {
     return this.researchService
-      .search("", {
-        type: type,
-        ignoreFolders: "exceptFolders",
-        selectOnlyPublished: "document1.state = 'PUBLISHED'",
-      })
+      .search(
+        "",
+        {
+          type: type,
+          state: { exceptFolders: true },
+          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+        },
+        "contentmodified",
+        "ASC",
+        undefined,
+        ["selectOnlyPublished"]
+      )
       .pipe(
         catchError((error) => this.updateOnError(error)),
         map((res) => this.filterByExpiry(res))

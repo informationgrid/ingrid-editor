@@ -104,10 +104,6 @@ export class CreateDocumentPlugin extends Plugin {
         forAddress: this.forAddress,
         isFolder: false,
       } as CreateOptions,
-      restoreFocus: true,
-      ariaLabel: this.translocoService.translate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
-      ),
     });
   }
 

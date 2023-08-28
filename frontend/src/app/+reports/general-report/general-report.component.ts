@@ -1,6 +1,12 @@
-import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
-import { firstValueFrom, Subject } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
@@ -18,7 +24,7 @@ import { ProfileService } from "../../services/profile.service";
 })
 export class GeneralReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
-  chartDataPublished = new Subject<number[]>();
+  chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
 
   displayedColumns = [
@@ -81,7 +87,7 @@ export class GeneralReportComponent implements OnInit {
     Object.keys(response.statsPerType).forEach((type) => {
       if (this.ignoredTypes.includes(type)) return;
       const stats = response.statsPerType[type];
-      data.push({
+      let entry: any = {
         icon: this.getIcon(type) ?? type,
         title: type,
         percentage:
@@ -91,11 +97,13 @@ export class GeneralReportComponent implements OnInit {
         count: stats.totalNum,
         published: stats.numPublished,
         working: stats.numDrafts,
-      });
+      };
+      entry = { ...entry, ariaLabel: this.getAriaLabelForRow(entry) };
+      data.push(entry);
     });
 
     this.dataSource.data = data;
-    this.chartDataPublished.next([filteredPublished, filteredDrafts]);
+    this.chartDataPublished.set([filteredPublished, filteredDrafts]);
   }
 
   getIcon(type: string): string {
@@ -112,5 +120,13 @@ export class GeneralReportComponent implements OnInit {
         .getQuickFilter()
         .pipe(tap((filters) => (this.facets = filters)))
     );
+  }
+
+  getAriaLabelForRow(entry) {
+    return `Typ: ${this.getTitle(entry.title)}, Prozent: ${
+      entry.percentage
+    }%, Anzahl: ${entry.count}, davon veröffentlicht: ${
+      entry.published
+    }, in Bearbeitung: ${entry.working}`;
   }
 }
