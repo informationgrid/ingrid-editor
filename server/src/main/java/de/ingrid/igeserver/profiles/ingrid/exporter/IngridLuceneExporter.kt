@@ -26,7 +26,6 @@ class IngridLuceneExporter @Autowired constructor(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
 
-    val codelistTransformer = CodelistTransformer(codelistHandler)
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
@@ -38,6 +37,7 @@ class IngridLuceneExporter @Autowired constructor(
     fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
         val modelTransformer =
             IngridModelTransformer(
                 mapper.convertValue(json, IngridModel::class.java),

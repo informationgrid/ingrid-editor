@@ -33,6 +33,7 @@ class GeodatasetModelTransformer(
         }
     }
 
+    val featureCatalogueDescription = model.data.featureCatalogueDescription
     val isAdVCompatible = model.data.isAdVCompatible ?: false
     val featureTypes =
         model.data.featureCatalogueDescription?.featureTypes?.map { codelists.getValue("", it) } ?: emptyList()

@@ -38,12 +38,13 @@ class AddressModelTransformer(
     }
 
     val uuid = displayAddress.uuid
-    val namePresentation = displayAddress.getNamePresentation()
+    val namePresentation = displayAddress.organization ?: getIndividualName()
+    val organization = displayAddress.organization // TODO calc organization name
     val hoursOfService = displayAddress.hoursOfService
     val postBoxAddress = listOfNotNull(displayAddress.address.poBox, displayAddress.address.zipPoBox).joinToString(", ")
     val country =
         displayAddress.address.country?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it) }
-    val positionName = displayAddress.positionName
+    val positionName = displayAddress.positionName // TODO calc position name
     val zipCode = displayAddress.address.zipCode
     val zipPoBox = displayAddress.address.zipPoBox
     val poBox = displayAddress.address.poBox
@@ -51,7 +52,7 @@ class AddressModelTransformer(
     val city = displayAddress.address.city
     val email = displayAddress.email
 
-    val administrativeArea = codelist.getValue("110", displayAddress.address.administrativeArea)
+    val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
     val addressDocType = if (displayAddress.docType == "InGridOrganisationDoc") 0 else 2
 
 

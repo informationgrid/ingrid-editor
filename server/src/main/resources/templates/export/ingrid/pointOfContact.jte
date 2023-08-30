@@ -16,9 +16,9 @@
                         <gco:CharacterString>${address.getIndividualName()}</gco:CharacterString>
                     </gmd:individualName>
                 @endif
-                @if(address.getModel().getOrganization() != null)
+                @if(address.getOrganization() != null)
                     <gmd:organisationName>
-                        <gco:CharacterString>${address.getModel().getOrganization()}</gco:CharacterString>
+                        <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
                     </gmd:organisationName>
                 @endif
                 @if(address.getPositionName() != null)

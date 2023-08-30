@@ -132,7 +132,7 @@
                             <gmd:verticalElement>
                                 <gmd:EX_VerticalExtent>
                                     <gmd:minimumValue>
-                                        <gco:Real>12.0</gco:Real>
+                                        <gco:Real>12</gco:Real>
                                     </gmd:minimumValue>
                                     <gmd:maximumValue>
                                         <gco:Real>121212.0</gco:Real>

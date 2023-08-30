@@ -10,6 +10,7 @@
     @template.ingrid.shared-general(
     page = page,
     contentInfo = @`
+        @if (page.getFeatureCatalogueDescription() != null)
         <gmd:contentInfo>
             <gmd:MD_FeatureCatalogueDescription>
                 @if (page.isAdVCompatible())
@@ -48,6 +49,7 @@
                 @endfor
             </gmd:MD_FeatureCatalogueDescription>
         </gmd:contentInfo>
+        @endif
     `
     )
     @template.ingrid.dataQuality(page = page)

@@ -415,7 +415,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:transferSize>
-                                <gco:Real>12.0</gco:Real>
+                                <gco:Real>12</gco:Real>
                             </gmd:transferSize>
                             <gmd:offLine>
                                 <gmd:MD_Medium>

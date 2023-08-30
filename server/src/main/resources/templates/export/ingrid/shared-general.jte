@@ -257,7 +257,7 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
 
-        @if(page.getSpecificUsage() != null)
+        @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>
                 <gmd:specificUsage>
@@ -267,7 +267,7 @@
             </gmd:MD_Usage>
         </gmd:resourceSpecificUsage>
         @endif
-        @if( page.getUseLimitation() != null)
+        @if( TransformationTools.hasValue(page.getUseLimitation()))
             <gmd:resourceConstraints>
                 <gmd:MD_LegalConstraints>
                     <gmd:useLimitation>
@@ -276,7 +276,7 @@
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
         @endif
-        @if(page.getUseConstraints() != null && !page.getUseConstraints().isEmpty())
+        @if(TransformationTools.hasValue(page.getUseConstraints()))
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
                 <gmd:useConstraints>
@@ -286,16 +286,30 @@
                     <gmd:otherConstraints>
                         @template.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
-                    @if(useconstraint.getSource() != null && !useconstraint.getSource().isEmpty())
+                    @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
-                    @if(useconstraint.getJson() != null && !useconstraint.getJson().isEmpty())
+                    @if(TransformationTools.hasValue(useconstraint.getJson()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>${useconstraint.getJson()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
+                @endfor
+            </gmd:MD_LegalConstraints>
+        </gmd:resourceConstraints>
+        @endif
+        @if(TransformationTools.hasValue( page.getAvailabilityAccessConstraints()))
+        <gmd:resourceConstraints>
+            <gmd:MD_LegalConstraints>
+                <gmd:accessConstraints>
+                    <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                </gmd:accessConstraints>
+                @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
+                <gmd:otherConstraints>
+                    @template.ingrid.anchorOrCharacterString(model = accessConstraint)
+                </gmd:otherConstraints>
                 @endfor
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
@@ -423,7 +437,7 @@
                             </gmd:EX_BoundingPolygon>
                         </gmd:geographicElement>
                     @endif
-                    @if(ref.getArs() != null)
+                    @if(TransformationTools.hasValue(ref.getArs()))
                         <gmd:geographicElement>
                             <gmd:EX_GeographicDescription>
                                 <gmd:geographicIdentifier>
@@ -533,22 +547,40 @@ ${contentInfo}
         @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
                 <gmd:distributionFormat>
                     <gmd:MD_Format>
+                        @if(distributionFormat.getName() != null)
                         <gmd:name>
                             <gco:CharacterString>${page.getCodelists().getValue("1320",distributionFormat.getName())}</gco:CharacterString>
                         </gmd:name>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getVersion()))
                         <gmd:version>
                             <gco:CharacterString>${distributionFormat.getVersion()}</gco:CharacterString>
                         </gmd:version>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getSpecification()))
                         <gmd:specification>
                             <gco:CharacterString>${distributionFormat.getSpecification()}</gco:CharacterString>
                         </gmd:specification>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getCompression()))
                         <gmd:fileDecompressionTechnique>
                             <gco:CharacterString>${distributionFormat.getCompression()}</gco:CharacterString>
                         </gmd:fileDecompressionTechnique>
+                        @endif
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
         @endfor
         @if(page.getData().getOrderInfo() != null)
+            @if (page.getDistributionFormats().isEmpty())
+                <%--  always write format, here with nilReason children, see INGRID32-146--%>
+                <%--  NOW ALSO when distributor exists (was missing) !, see INGRID-2277--%>
+                <gmd:distributionFormat>
+                    <gmd:MD_Format>
+                        <gmd:name gco:nilReason="unknown" />
+                        <gmd:version gco:nilReason="unknown" />
+                    </gmd:MD_Format>
+                </gmd:distributionFormat>
+            @endif
         <gmd:distributor>
             <gmd:MD_Distributor>
                 <gmd:distributorContact>

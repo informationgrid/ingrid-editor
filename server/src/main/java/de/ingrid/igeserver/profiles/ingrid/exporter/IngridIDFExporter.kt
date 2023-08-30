@@ -34,7 +34,6 @@ class IngridIDFExporter @Autowired constructor(
 
     val log = logger()
 
-    val codelistTransformer = CodelistTransformer(codelistHandler)
 
 
     override val typeInfo = ExportTypeInfo(
@@ -81,6 +80,8 @@ class IngridIDFExporter @Autowired constructor(
 
     private fun getModelTransformer(json: Document, catalogId: String): IngridModelTransformer {
         val ingridModel = mapper.convertValue(json, IngridModel::class.java)
+
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,

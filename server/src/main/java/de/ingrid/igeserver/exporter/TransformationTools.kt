@@ -10,6 +10,13 @@ class TransformationTools {
     companion object {
         val log = logger()
 
+        @kotlin.jvm.JvmStatic
+        fun hasValue(s: String?) = !s.isNullOrEmpty()
+
+        @kotlin.jvm.JvmStatic
+        fun hasValue(s: List<Any>?) = !s.isNullOrEmpty()
+
+        @kotlin.jvm.JvmStatic
         fun getISORealFromIGCNumber(igcNumber: Float): String? {
             return try {
                 val n = igcNumber.toDouble()

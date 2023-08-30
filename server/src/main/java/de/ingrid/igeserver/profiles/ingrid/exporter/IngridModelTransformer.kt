@@ -5,6 +5,7 @@ import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -77,7 +78,7 @@ open class IngridModelTransformer constructor(
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
     val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(
-        if (it.fileName.asLink) it.fileName.uri
+        if (it.fileName.asLink) it.fileName.uri // TODO encode uri
         else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
         it.fileDescription
     )} ?: emptyList()
@@ -205,7 +206,7 @@ open class IngridModelTransformer constructor(
     val furtherLegalBasisKeywords = Thesaurus(
         keywords = data.extraInfo?.legalBasicsDescriptions?.map {
             KeywordIso(
-                name = codelists.getValue("1350", it),
+                name = codelists.getCatalogCodelistValue("1350", it),
                 link = null
             )
         } ?: emptyList(),
@@ -258,9 +259,9 @@ open class IngridModelTransformer constructor(
         name = "",
         keywords = this.data.openDataCategories?.map {
             KeywordIso(
-                codelists.getValue(
+                codelists.getData(
                     "6400",
-                    it
+                    it.key,
                 )
             )
         } ?: emptyList(),
@@ -270,6 +271,13 @@ open class IngridModelTransformer constructor(
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
+    val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
+        CharacterStringModel(
+            "(?<=\\\"de\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value ?: codelists.getValue("6010", it) ?: "",
+            "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
+        )
+
+    }
 
 
     val contentField: MutableList<String> = mutableListOf()
@@ -330,11 +338,16 @@ open class IngridModelTransformer constructor(
         val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
         this.citationURL = namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
-            data.pointOfContact?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
+            data.pointOfContact?.filter { addressIsPointContactMD(it).not() }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
+        // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
-        data.pointOfContact?.filter { codelists.getValue("505", it.type, "iso").equals("pointOfContactMd") }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+        data.pointOfContact?.filter { addressIsPointContactMD(it) }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+
 
     }
+
+    private fun addressIsPointContactMD(it: AddressRefModel) =
+        codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
 
     fun handleContent(value: String?): String? {
         if (value == null) return null

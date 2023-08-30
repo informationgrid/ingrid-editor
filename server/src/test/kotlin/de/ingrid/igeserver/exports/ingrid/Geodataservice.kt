@@ -1,7 +1,10 @@
 package de.ingrid.igeserver.exports.ingrid
 
+import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
+import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -48,14 +51,64 @@ class Geodataservice : AnnotationSpec() {
         every { SpringContext.getBean(DocumentService::class.java) } answers {
             documentService
         }
+        every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
+            val codelistId = secondArg<String>()
+            val entryId = thirdArg<String>()
+            when (codelistId + "_" + entryId){
+                "1350_1" -> "Baugesetzbuch (BauGB)"
+                "1350_2" -> "Atomgesetz (AtG)"
+                "111_1" -> "Provider 1"
+                "111_2" -> "Provider 2"
+                else -> codelistId + "_" + entryId
+            }
+        }
 
         mockCodelists(codelistHandler)
 
         every { catalogService.getCatalogById(any()) } answers {
             Catalog()
         }
+        every {
+            documentService.getLastPublishedDocument(
+                "test-catalog",
+                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                false
+            )
+        } answers {
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
+        }
+        every {
+            documentService.getLastPublishedDocument(
+                "test-catalog",
+                "14a37ded-4ca5-4677-bfed-3607bed3071d",
+                false
+            )
+        } answers {
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.json"))
+        }
+
+        val idToUiidMap = mutableMapOf(
+            Pair(1634, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
+            Pair(1652, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
+            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
+        )
+
+        val orgaParent = DocumentWrapper().apply {
+            id = 1638
+            type = "testDocType"
+            uuid = "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"
+        }
+
+        every { documentService.getWrapperByDocumentId(any() as Int) } answers {
+            val id = firstArg<Int>()
+            createDocumentWrapper().apply {
+                parent = if (id != 1638) orgaParent else null
+                uuid = idToUiidMap[id] ?: "random-uuid"
+            }
+        }
 
     }
+
 
     /*
     * export with only required inputs.
@@ -63,7 +116,6 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun minimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
@@ -75,8 +127,6 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun maximalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
-
         var result = exportJsonToXML(exporter, "/export/ingrid/geo-service.maximal.sample.json")
         // replace generated UUIDs and windows line endings
         result = result
