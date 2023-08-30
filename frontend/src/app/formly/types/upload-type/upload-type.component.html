@@ -1,7 +1,10 @@
-<input
-    matInput
-    placeholder="https://..."
-    [formControl]="control"
-    (keyup)="updateValue()"
-    [attr.aria-label]="props.ariaLabel"
-/>
+<mat-form-field appearance="outline" class="width-100">
+    <mat-label>{{ field.props.label }}</mat-label>
+    <input
+        matInput
+        placeholder="https://..."
+        [formControl]="control"
+        (keyup)="updateValue()"
+        [attr.aria-label]="props.ariaLabel"
+    />
+</mat-form-field>
