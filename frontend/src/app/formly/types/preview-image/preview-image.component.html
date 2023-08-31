@@ -1,8 +1,10 @@
 <div
-    *ngIf="field.fieldGroup.length"
-    class="image-container flex-row flex-wrap gap-12"
+    *ngIf="field.fieldGroup.length > 0"
+    class="image-container flex-row flex-wrap gap-24 row-gap-12"
+    cdkDropList
+    (cdkDropListDropped)="drop($event)"
 >
-    <mat-card *ngFor="let field of field.fieldGroup; let i = index">
+    <mat-card *ngFor="let field of field.fieldGroup; let i = index" cdkDrag>
         <!-- when switching between same datasets, the model might not be initialized for a short time -->
         <ng-container *ngIf="model">
             <div class="content">
@@ -10,6 +12,7 @@
                     [src]="imageLinks[model[i]?.fileName?.uri]"
                     [alt]="model[i]?.fileName?.uri"
                 />
+
                 <button
                     *ngIf="!formControl.disabled"
                     type="button"

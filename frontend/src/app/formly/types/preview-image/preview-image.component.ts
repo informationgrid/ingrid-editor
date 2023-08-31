@@ -16,6 +16,13 @@ import {
 } from "rxjs/operators";
 import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component";
 import {
+  CdkDragDrop,
+  CdkDropList,
+  CdkDrag,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
+
+import {
   FormDialogComponent,
   FormDialogData,
 } from "../table/form-dialog/form-dialog.component";
@@ -37,6 +44,9 @@ import { of } from "rxjs";
   standalone: true,
   imports: [
     MatButtonModule,
+
+    CdkDropList,
+    CdkDrag,
     MatCardModule,
     NgForOf,
     NgOptimizedImage,
@@ -86,7 +96,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     },
   ];
 
-  imageLinks: any = {};
+  imageLinks: any = [];
 
   ngOnInit(): void {
     this.formControl.valueChanges
@@ -98,7 +108,11 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           const bLinks = b?.map((item) => item.fileName?.uri).join("");
           return aLinks === bLinks;
         }),
-        tap(() => (this.imageLinks = {}))
+        tap(() => {
+          // No need to reset the imageLinks, resting causes the browser to rerender the
+          // images link after drag and drop
+          // this.imageLinks = {}
+        })
       )
       .subscribe((value) => this.createImageLinkUris(value));
   }
@@ -163,7 +177,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.imageLinks = {};
+          this.imageLinks = [];
           this.remove(index);
           this.add(index, result);
         }
@@ -213,5 +227,19 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     return (this.imageLinks[
       uri
     ] = `${ConfigService.backendApiUrl}upload/download/${hash}`);
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    moveItemInArray(
+      this.field.fieldGroup,
+      event.previousIndex,
+      event.currentIndex
+    );
+
+    moveItemInArray(this.model, event.previousIndex, event.currentIndex);
+    for (let i = 0; i < this.field.fieldGroup.length; i++) {
+      this.field.fieldGroup[i].key = `${i}`;
+    }
+    this.options.build(this.field);
   }
 }
