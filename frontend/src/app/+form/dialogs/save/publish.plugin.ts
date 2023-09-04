@@ -21,6 +21,7 @@ import { SessionStore } from "../../../store/session.store";
 import { FormMessageService } from "../../../services/form-message.service";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -47,6 +48,7 @@ export class PublishPlugin extends SaveBase {
     public dialog: MatDialog,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
+    private transloco: TranslocoService,
     messageService: FormMessageService,
     sessionStore: SessionStore
   ) {
@@ -175,7 +177,7 @@ export class PublishPlugin extends SaveBase {
 
   publish() {
     // show confirm dialog
-    const message = "Wollen Sie diesen Datensatz wirklich veröffentlichen?";
+    const message = this.transloco.translate("publish.confirmMessage");
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
