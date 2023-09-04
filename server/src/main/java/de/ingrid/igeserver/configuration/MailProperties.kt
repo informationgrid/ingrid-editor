@@ -6,6 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class MailProperties(
     val from: String,
     val subject: String,
+    val subjectDatasetWillExpire: String,
+    val subjectDatasetIsExpired: String,
     val subjectDeleteUser: String,
     val subjectResetPassword: String,
     val body: String,
