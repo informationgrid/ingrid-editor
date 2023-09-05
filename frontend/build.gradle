@@ -26,6 +26,14 @@ if (hasProperty('baseHref')) {
   buildArgs = ['run', 'prod', '--base-href', getProperty('baseHref')]
 }
 
+task yarnUpgrade(type: YarnTask, dependsOn: 'yarnSetup') {
+  args = ['set', 'version', 'stable']     // maybe with `yarn set version 3.x` also
+}
+
+task yarnInstall(type: YarnTask, dependsOn: 'yarnUpgrade') {
+  args = ['install', '--immutable']
+}
+
 task bundle(type: YarnTask) {
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
