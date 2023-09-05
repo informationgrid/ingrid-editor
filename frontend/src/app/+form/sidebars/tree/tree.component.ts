@@ -237,10 +237,6 @@ export class TreeComponent implements OnInit {
     return { node: node, parent: null };
   }
 
-  private formatTagsAsClasses(node: TreeNode) {
-    return node.tags.split(",").join(" ");
-  }
-
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
     return this.database.initialData(forceFromServer, this.forAddresses).pipe(
       map((docs) => this.database.mapDocumentsToTreeNodes(docs, 0)),
