@@ -237,12 +237,13 @@ class PostMigrationTask(
             documentService.docWrapperRepo.saveAndFlush(doc)
             documentService.aclService.updateParent(doc.id!!, newFolderId)
 
+            // update path of all descendants
+            replacePathIDinDescendants(catalogIdentifier, doc, doc.id!!, newFolderId)
 
+            // update parent and parentIdentifier of children
             foundChildren.forEach { child ->
                 child.wrapper.parent = newFolder
-                child.wrapper.path =
-                    child.wrapper.path.map { if (it == doc.id.toString()) newFolderId.toString() else it }
-                documentService.docWrapperRepo.save(child.wrapper)
+                documentService.docWrapperRepo.saveAndFlush(child.wrapper)
                 documentService.aclService.updateParent(doc.id!!, newFolderId)
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
@@ -253,7 +254,24 @@ class PostMigrationTask(
                 documentService.docRepo.saveAndFlush(child.document)
             }
 
-            transferRights(doc, newFolder, removeSourceDoc=false)
+            transferRights(doc, newFolder, removeSourceDoc = false)
+        }
+    }
+
+    private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
+        val children = documentService.findChildren(
+            catalogIdentifier,
+            doc.id
+        ).hits.map { it.wrapper }
+
+        // no paths to update
+        if (children.isEmpty()) return
+
+        children.forEach { child ->
+            child.path = child.path.map { if (it == oldId.toString()) newId.toString() else it }
+            documentService.docWrapperRepo.saveAndFlush(child)
+            // recursively update children
+            replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
         }
     }
 
