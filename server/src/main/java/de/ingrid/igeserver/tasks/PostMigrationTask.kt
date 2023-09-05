@@ -253,7 +253,7 @@ class PostMigrationTask(
                 documentService.docRepo.saveAndFlush(child.document)
             }
 
-            transferRights(doc, newFolder)
+            transferRights(doc, newFolder, removeSourceDoc=false)
         }
     }
 
