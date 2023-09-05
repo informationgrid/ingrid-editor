@@ -23,6 +23,7 @@ import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { DashboardModule } from "./dashboard.module";
 import { MessageService } from "../services/messages/message.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { getTranslocoModule } from "../transloco-testing.module";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -38,6 +39,7 @@ describe("DashboardComponent", () => {
       MatIconTestingModule,
       DashboardModule,
       HttpClientTestingModule,
+      getTranslocoModule(),
     ],
     declarations: [
       ChartComponent,

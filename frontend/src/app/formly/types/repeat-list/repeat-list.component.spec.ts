@@ -1,4 +1,3 @@
-import { RepeatListComponent } from "./repeat-list.component";
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
@@ -8,7 +7,6 @@ import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { of } from "rxjs";
-import { Codelist } from "../../../store/codelist/codelist.model";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
@@ -20,6 +18,7 @@ import { delay } from "rxjs/operators";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
+import { getTranslocoModule } from "../../../transloco-testing.module";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -39,6 +38,7 @@ describe("RepeatListComponent", () => {
       ReactiveFormsModule,
       MatIconTestingModule,
       RepeatDetailListComponent,
+      getTranslocoModule(),
     ],
   });
 
