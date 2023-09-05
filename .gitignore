@@ -68,3 +68,4 @@ server/server/build/tmp/
 /frontend/dist/
 /build-cache/
 /logs/log.log
+/frontend/.yarn/
