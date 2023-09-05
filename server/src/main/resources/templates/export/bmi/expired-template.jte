@@ -7,10 +7,14 @@
 !{var documents = ((List<ExpiredDataset>)map.get("datasets"));}
 !{var linkstub = ((String)map.get("linkstub"));}
 
-Dies ist eine Meldung von der Metadatenerfassungskomponente der InGrid® Software.
-Sie sind als Verantwortlicher eines Metadatensatzes eingetragen, bei dem das Verfallsdatum abgelaufen ist.
-Bitte prüfen Sie, ob die Angaben noch aktuell sind.
-Was ist jetzt zu tun?/ Weitere Informationen: https://t1p.de/ukmjf
+Guten Tag,
+
+Sie sind im Open Data Editor Bund als Verantwortlicher für Metadatensätze eingetragen, für die eine Wiedervorlage vorgesehen ist.
+Bitte prüfen Sie bei den unten aufgeführten Metadaten, ob die Angaben noch aktuell sind.
+Sie können die Angaben aktualisieren und neu veröffentlichen.
+Oder die Metadaten belassen wie sie sind, wenn keine Änderung notwendig ist.
+
+Zu prüfende Metadaten:
 
 @for( ExpiredDataset expDS : documents )
 Titel: ${expDS.getTitle()}
@@ -22,4 +26,5 @@ Direkter Link: ${linkstub + "/" + type + ";id=" + expDS.getUuid()}
 
 @endfor
 
-
+Vielen Dank und viele Grüße,
+Ihr Open-Data-Team
