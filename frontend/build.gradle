@@ -34,14 +34,12 @@ task yarnInstall(type: YarnTask, dependsOn: 'yarnUpgrade') {
   args = ['install', '--immutable']
 }
 
-task bundle(type: YarnTask) {
+task bundle(type: YarnTask, dependsOn: 'yarnInstall') {
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   inputs.dir('src')
   inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
 
   outputs.dir('build/dist')
-
-  dependsOn yarn_install
 
   args = buildArgs
 }
