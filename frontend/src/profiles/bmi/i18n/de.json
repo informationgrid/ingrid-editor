@@ -14,6 +14,9 @@
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
   },
+  "publish": {
+    "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?<br />Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten."
+  },
   "docType": {
     "BmiDoc": "Datensatz",
     "BmiAddressDoc": "Adresse"

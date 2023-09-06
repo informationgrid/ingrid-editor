@@ -51,6 +51,7 @@ const routes: Routes = [
       multi: true,
       useFactory: (reportService: ReportsService) => {
         reportService.addRoutes(routes[0].children);
+        routes[0].children = reportService.filterRoutes(routes[0].children);
         return routes;
       },
       deps: [ReportsService],

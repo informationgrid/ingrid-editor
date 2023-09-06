@@ -87,7 +87,8 @@
     "formSingular": "Datensatz"
   },
   "publish": {
-    "formWithPronoun": "Dieser Datensatz"
+    "formWithPronoun": "Dieser Datensatz",
+    "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },
   "docType": {
     "FOLDER": "Ordner"

@@ -33,6 +33,7 @@ export class SavePlugin extends SaveBase {
     public documentService: DocumentService,
     sessionStore: SessionStore,
     messageService: FormMessageService,
+
     @Inject(DOCUMENT) private _document: Document
   ) {
     super(sessionStore, messageService);
@@ -95,19 +96,22 @@ export class SavePlugin extends SaveBase {
   saveWithData(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    this.handleValidationOnSave();
+    // delay execution to reset error messages after publish state has been set to false
+    setTimeout(() => {
+      this.handleValidationOnSave();
 
-    return this.documentService
-      .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
-      .pipe(
-        catchError((error) =>
-          this.handleError(error, formData, this.forAddress, "SAVE")
-        ),
-        finalize(() =>
-          this.formToolbarService.setButtonState("toolBtnSave", true)
+      return this.documentService
+        .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
+        .pipe(
+          catchError((error) =>
+            this.handleError(error, formData, this.forAddress, "SAVE")
+          ),
+          finalize(() =>
+            this.formToolbarService.setButtonState("toolBtnSave", true)
+          )
         )
-      )
-      .subscribe();
+        .subscribe();
+    });
   }
 
   unregisterForm() {

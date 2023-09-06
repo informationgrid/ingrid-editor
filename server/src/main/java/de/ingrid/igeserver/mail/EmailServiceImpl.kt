@@ -31,6 +31,15 @@ class EmailServiceImpl @Autowired constructor(
         )
     }
 
+
+    fun sendDeletionEmail(to: String, firstName: String, lastName: String, login: String) {
+        sendEmail(
+            to,
+            mailProps.subjectDeleteUser,
+            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appSettings.host, login)
+        )
+    }
+
     fun sendResetPasswordEmail(to: String, firstName: String, lastName: String, password: String, login: String) {
         sendEmail(
             to,

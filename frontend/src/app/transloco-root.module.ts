@@ -1,14 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import {
+  provideTransloco,
   Translation,
-  TRANSLOCO_CONFIG,
-  TRANSLOCO_LOADER,
-  translocoConfig,
   TranslocoLoader,
   TranslocoModule,
 } from "@ngneat/transloco";
-import { Injectable, NgModule } from "@angular/core";
-import { environment } from "../environments/environment";
+import { Injectable, isDevMode, NgModule } from "@angular/core";
 import { ConfigService } from "./services/config/config.service";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { combineLatest, of } from "rxjs";
@@ -52,17 +49,17 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 @NgModule({
   exports: [TranslocoModule],
   providers: [
-    {
-      provide: TRANSLOCO_CONFIG,
-      useValue: translocoConfig({
+    provideTransloco({
+      config: {
         availableLangs: ["de", "en"],
         defaultLang: "de",
         // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
-        prodMode: environment.production,
-      }),
-    },
-    { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader },
+        prodMode: !isDevMode(),
+      },
+
+      loader: TranslocoHttpLoader,
+    }),
   ],
 })
 export class TranslocoRootModule {}

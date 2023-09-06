@@ -134,6 +134,18 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val deleted = catalogService.deleteUser(catalogId, login)
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
+            if (!developmentMode) {
+                keycloakService.getClient(principal).use { client ->
+                    val user = keycloakService.getUser(client, login)
+                    logger.info("Send deletion email to '${user.login}' (${user.email})")
+                    email.sendDeletionEmail(
+                        user.email,
+                        user.firstName,
+                        user.lastName,
+                        user.login
+                    )
+                }
+            }
             keycloakService.deleteUser(principal, login)
         }
 

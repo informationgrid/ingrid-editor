@@ -14,6 +14,7 @@ import { ConfigService } from "../../../../services/config/config.service";
 import { of, Subject } from "rxjs";
 import { recentDocuments } from "../../../../_test-data/documents";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { getTranslocoModule } from "../../../../transloco-testing.module";
 
 describe("DestinationSelectionComponent", () => {
   let spectator: Spectator<DestinationSelectionComponent>;
@@ -29,6 +30,7 @@ describe("DestinationSelectionComponent", () => {
       MatDialogModule,
       RouterTestingModule,
       MatSnackBarModule,
+      getTranslocoModule(),
     ],
     componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
