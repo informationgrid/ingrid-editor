@@ -9,6 +9,7 @@
 .mdc-list-item,
 .mdc-icon-button,
 .mat-mdc-chip,
+.mat-mdc-menu-item,
 .mat-expansion-panel-header {
   &.cdk-focused.cdk-keyboard-focused,
   &[role="option"]:focus,
@@ -19,6 +20,7 @@
     // remove surface highlight color in different components
     --mat-mdc-button-ripple-color: unset;
     --mat-mdc-button-persistent-ripple-color: unset;
+    --mat-menu-item-focus-state-layer-color: transparent;
 
     &:before,
     .mat-mdc-button-persistent-ripple:before,
@@ -27,8 +29,7 @@
     }
   }
 
-  &.mat-mdc-option-active:not(.mdc-list-item--selected),
-  &.mat-mdc-menu-item.cdk-focused.cdk-keyboard-focused {
+  &.mat-mdc-option-active:not(.mdc-list-item--selected) {
     background: unset !important;
   }
 }
