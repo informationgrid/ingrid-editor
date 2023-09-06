@@ -256,6 +256,8 @@ class PostMigrationTask(
 
             transferRights(doc, newFolder, removeSourceDoc = false)
         }
+        // save all groups again to update transferred rights
+        saveAllGroupsOfCatalog(catalogIdentifier)
     }
 
     private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
