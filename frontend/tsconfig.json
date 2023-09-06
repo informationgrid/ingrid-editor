@@ -13,7 +13,9 @@
     "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
     "lib": ["ES2022", "dom"],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "exclude": ["server/*", "e2e", "node_modules"]
 }

@@ -189,6 +189,15 @@ export abstract class IngridShared extends BaseDoctype {
                     : false,
                 message: "Es muss mindestens einen Ansprechpartner MD geben.",
               },
+              atLeastOnePointOfContactWhenAdV: {
+                expression: (ctrl, field) =>
+                  // equals Ansprechpartner
+                  !field.model.isAdVCompatible ||
+                  (ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key === "7")
+                    : false),
+                message: "Es muss mindestens einen Ansprechpartner geben.",
+              },
             },
           }),
         ]),

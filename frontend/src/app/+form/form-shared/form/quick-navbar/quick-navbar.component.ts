@@ -18,4 +18,9 @@ export class QuickNavbarComponent {
   @Input() model: IgeDocument;
 
   @Output() toggleOptionalFields = new EventEmitter<boolean>();
+  originalTooltip: string = "";
+
+  onDataReceived(data: string) {
+    this.originalTooltip = data;
+  }
 }

@@ -6,6 +6,7 @@ import { Route, Routes } from "@angular/router";
 })
 export class ReportsService {
   additionalRoutes: Route[] = [];
+  filter = undefined;
 
   constructor() {}
 
@@ -15,5 +16,13 @@ export class ReportsService {
 
   addRoutes(routes: Routes) {
     routes.push(...this.additionalRoutes);
+  }
+
+  setFilter(filter) {
+    this.filter = filter;
+  }
+
+  filterRoutes(routes: Routes) {
+    return this.filter ? routes.filter(this.filter) : routes;
   }
 }

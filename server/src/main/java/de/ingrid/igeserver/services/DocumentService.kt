@@ -464,7 +464,7 @@ class DocumentService @Autowired constructor(
         val docData = getDocumentFromCatalog(catalogId, id)
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
-        
+
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
         if (data.version !== dbVersion) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -523,7 +523,7 @@ class DocumentService @Autowired constructor(
             docRepo.save(docData.document)
 
             entityManager.detach(docData.document)
-            
+
             prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft)
@@ -577,7 +577,7 @@ class DocumentService @Autowired constructor(
                 data.version!!
             )
         }
-        
+
         val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
         docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
@@ -803,7 +803,7 @@ class DocumentService @Autowired constructor(
         lastPublished.state = DOCUMENT_STATE.WITHDRAWN
         lastPublished.isLatest = false
         docRepo.save(lastPublished)
-        
+
         // if no draft version exists, copy published version to draft and update state of published version
         val updatedDoc = if (onlyPublished) {
             // copy published version to draft
@@ -915,7 +915,7 @@ class DocumentService @Autowired constructor(
     fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
         val cleanedTags =
-            wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+            wrapper.tags.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags

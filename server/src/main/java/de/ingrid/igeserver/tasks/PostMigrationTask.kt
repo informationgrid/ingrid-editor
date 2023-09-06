@@ -1,13 +1,10 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.databind.node.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
@@ -77,6 +74,7 @@ class PostMigrationTask(
         saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         uvpAdaptFolderStructure(catalogIdentifier)
+        restructureObjectsWithChildren(catalogIdentifier)
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
@@ -89,7 +87,7 @@ class PostMigrationTask(
         documents.forEach { doc ->
             val data = doc.data
             val spatial = data.get("spatial") as ObjectNode? ?: return@forEach
-            val spatialSystems = spatial.get("spatialSystems")  as ArrayNode? ?: return@forEach
+            val spatialSystems = spatial.get("spatialSystems") as ArrayNode? ?: return@forEach
             if (!spatialSystems.isEmpty) {
                 spatialSystems.map { lookupSpatialSystem(it) }
                 spatial.set<ArrayNode>("spatialSystems", spatialSystems)
@@ -103,7 +101,7 @@ class PostMigrationTask(
 
     private fun lookupSpatialSystem(spatialSystem: JsonNode): JsonNode {
         val potentialId = spatialSystem.get("value")?.asText() ?: return spatialSystem
-         if (codelistHandler.getCodelistEntry("100", potentialId) != null){
+        if (codelistHandler.getCodelistEntry("100", potentialId) != null) {
             (spatialSystem as ObjectNode).put("key", potentialId)
         }
         return spatialSystem
@@ -180,6 +178,33 @@ class PostMigrationTask(
         return folderDoc.wrapper.id!!
     }
 
+    private fun createNewFolderFor(
+        migratedObject: DocumentWrapper,
+        title: String
+    ): Int {
+        val auth = SecurityContextHolder.getContext().authentication
+        val catalogIdentifier = migratedObject.catalog!!.identifier
+        val folderData = jacksonObjectMapper().createObjectNode()
+            .put("_type", "FOLDER")
+            .put("title", title)
+
+        val folderDoc =
+            documentService.createDocument(
+                auth as Principal,
+                catalogIdentifier,
+                folderData,
+                migratedObject.parent?.id,
+                false
+            )
+        documentService.docWrapperRepo.flush()
+        documentService.updateTags(
+            catalogIdentifier,
+            folderDoc.wrapper.id!!,
+            TagRequest(add = (migratedObject.tags + "migratedFromObject:${migratedObject.uuid}"), remove = emptyList())
+        )
+        return folderDoc.wrapper.id!!
+    }
+
     private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
         documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
@@ -190,6 +215,66 @@ class PostMigrationTask(
         removeOldStructure(catalogIdentifier)
         // save all groups again to update transferred rights
         saveAllGroupsOfCatalog(catalogIdentifier)
+    }
+
+    private fun restructureObjectsWithChildren(catalogIdentifier: String) {
+        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
+            val foundChildren = documentService.findChildren(
+                catalogIdentifier,
+                doc.id
+            ).hits
+
+            // only migrate objects with children
+            if (foundChildren.isEmpty()) return@forEach
+
+            val title = documentService.getDocumentByWrapperId(catalogIdentifier, doc.id!!).title
+            log.debug("Migrate document: ${doc.uuid} with ${foundChildren.size} children")
+
+            val newFolderId = createNewFolderFor(doc, title!!)
+            val newFolder = documentService.docWrapperRepo.findById(newFolderId).get()
+            doc.parent = newFolder
+            doc.path += newFolderId.toString()
+            documentService.docWrapperRepo.saveAndFlush(doc)
+            documentService.aclService.updateParent(doc.id!!, newFolderId)
+
+            // update path of all descendants
+            replacePathIDinDescendants(catalogIdentifier, doc, doc.id!!, newFolderId)
+
+            // update parent and parentIdentifier of children
+            foundChildren.forEach { child ->
+                child.wrapper.parent = newFolder
+                documentService.docWrapperRepo.saveAndFlush(child.wrapper)
+                documentService.aclService.updateParent(doc.id!!, newFolderId)
+
+                // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
+                if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) child.document.data.set<TextNode>(
+                    "parentIdentifier",
+                    TextNode(doc.uuid)
+                )
+                documentService.docRepo.saveAndFlush(child.document)
+            }
+
+            transferRights(doc, newFolder, removeSourceDoc = false)
+        }
+        // save all groups again to update transferred rights
+        saveAllGroupsOfCatalog(catalogIdentifier)
+    }
+
+    private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
+        val children = documentService.findChildren(
+            catalogIdentifier,
+            doc.id
+        ).hits.map { it.wrapper }
+
+        // no paths to update
+        if (children.isEmpty()) return
+
+        children.forEach { child ->
+            child.path = child.path.map { if (it == oldId.toString()) newId.toString() else it }
+            documentService.docWrapperRepo.saveAndFlush(child)
+            // recursively update children
+            replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
+        }
     }
 
     private fun removeOldStructure(catalogIdentifier: String) {
@@ -255,7 +340,11 @@ class PostMigrationTask(
         documentService.docWrapperRepo.saveAndFlush(doc)
     }
 
-    private fun transferRights(sourceDoc: DocumentWrapper, targetDoc: DocumentWrapper) {
+    private fun transferRights(
+        sourceDoc: DocumentWrapper,
+        targetDoc: DocumentWrapper,
+        removeSourceDoc: Boolean = true
+    ) {
         groupService
             .getAll(sourceDoc.catalog!!.identifier)
             .forEach { group ->
@@ -268,19 +357,32 @@ class PostMigrationTask(
                     }) {
                     group.permissions?.apply {
                         documents =
-                            if (initialDocs.any { it.get("id").asInt() == targetDoc.id!! })
-                                removeIDinPermissions(sourceDoc.id!!, initialDocs)
-                            else
-                                replaceIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialDocs)
+                            transformPermissions(initialDocs, targetDoc, sourceDoc, removeSourceDoc)
                         addresses =
-                            if (initialAdr.any { it.get("id").asInt() == targetDoc.id!! })
-                                removeIDinPermissions(sourceDoc.id!!, initialAdr)
-                            else
-                                replaceIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialAdr)
+                            transformPermissions(initialAdr, targetDoc, sourceDoc, removeSourceDoc)
                     }
                 }
 
             }
+    }
+
+    /**
+     * Transforms the permissions of a group by replacing the sourceDocId with the targetDocId. or just adding
+     * the targetDocId if not already in permissions
+     */
+    private fun transformPermissions(
+        initialDocs: List<JsonNode>,
+        targetDoc: DocumentWrapper,
+        sourceDoc: DocumentWrapper,
+        removeSourceDoc: Boolean,
+    ) = if (initialDocs.any { it.get("id").asInt() == targetDoc.id!! }) {
+        if (removeSourceDoc) removeIDinPermissions(sourceDoc.id!!, initialDocs) else initialDocs
+    } else {
+        if (removeSourceDoc) replaceIDinPermissions(
+            sourceDoc.id!!,
+            targetDoc.id!!,
+            initialDocs
+        ) else addIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialDocs)
     }
 
     private fun replaceIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
@@ -288,6 +390,13 @@ class PostMigrationTask(
             val docId = it.get("id").asInt()
             return@map (it as ObjectNode).put("id", if (docId == sourceId) targetId else docId)
         }
+    }
+
+
+    private fun addIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
+        val newPerm = permissions.find { it.get("id").asInt() == sourceId } as ObjectNode
+        newPerm.put("id", targetId)
+        return permissions + newPerm
     }
 
     private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> {

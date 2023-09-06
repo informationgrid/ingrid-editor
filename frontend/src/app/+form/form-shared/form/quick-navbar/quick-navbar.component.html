@@ -2,7 +2,8 @@
     <div class="navigation-bar flex-row">
         <ige-document-icon
             [doc]="model"
-            [explicitTooltip]="model.title"
+            (tooltipEmitter)="onDataReceived($event)"
+            [explicitTooltip]="originalTooltip + ': ' + model.title"
         ></ige-document-icon>
 
         <ige-header-navigation
