@@ -526,6 +526,22 @@
             <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType" codeListValue="${page.getCouplingType()}"/>
         </srv:couplingType>
     @endif
+    @if(page.isAtomDownload())
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>Download</gco:CharacterString>
+                </srv:operationName>
+                <srv:connectPoint>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
+                        </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                </srv:connectPoint>
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endif
     @if( page.getOperations().isEmpty() && page.getData().getService() != null )
         <srv:containsOperations gco:nilReason="missing"/>
     @endif
