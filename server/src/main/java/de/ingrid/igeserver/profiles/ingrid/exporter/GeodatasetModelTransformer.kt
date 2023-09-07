@@ -250,10 +250,10 @@ class GeodatasetModelTransformer(
     val lineageSourceDescriptions =
         data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
     val hasLineageInformation =
-        lineageStatement != null || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
+        !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty()
+    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty() || isAdVCompatible
 
 }
 
