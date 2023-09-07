@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
+import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
@@ -11,12 +12,14 @@ import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import mockCodelists
 
 class Geodataset : AnnotationSpec() {
@@ -40,10 +43,62 @@ class Geodataset : AnnotationSpec() {
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
-        mockCodelists(codelistHandler)
-
+        mockkObject(SpringContext)
+        every { SpringContext.getBean(DocumentService::class.java) } answers {
+            documentService
+        }
         every { catalogService.getCatalogById(any()) } answers {
             Catalog()
+        }
+        every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
+            val codelistId = secondArg<String>()
+            val entryId = thirdArg<String>()
+            when (codelistId + "_" + entryId){
+                "1350_1" -> "Baugesetzbuch (BauGB)"
+                "1350_2" -> "Atomgesetz (AtG)"
+                "111_1" -> "Provider 1"
+                "111_2" -> "Provider 2"
+                else -> codelistId + "_" + entryId
+            }
+        }
+        mockCodelists(codelistHandler)
+
+
+        val orgaParent = DocumentWrapper().apply {
+            id = 1638
+            type = "testDocType"
+            uuid = "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"
+        }
+
+        val idToUiidMap = mutableMapOf(
+            Pair(1662, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
+            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
+        )
+
+        every { documentService.getWrapperByDocumentId(any() as Int) } answers {
+            val id = firstArg<Int>()
+            createDocumentWrapper().apply {
+                parent = if (id != 1638) orgaParent else null
+                uuid = idToUiidMap[id] ?: "random-uuid"
+            }
+        }
+        every {
+            documentService.getLastPublishedDocument(
+                "test-catalog",
+                "14a37ded-4ca5-4677-bfed-3607bed3071d",
+                false
+            )
+        } answers {
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
+        }
+        every {
+            documentService.getLastPublishedDocument(
+                "test-catalog",
+                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                false
+            )
+        } answers {
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
         }
     }
 
@@ -53,7 +108,7 @@ class Geodataset : AnnotationSpec() {
     * */
     @Test
     fun minimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+//        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
@@ -191,5 +246,10 @@ class Geodataset : AnnotationSpec() {
         // TODO: pending
         // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.lucene.json")
     }
+
+    private fun createDocumentWrapper() =
+        DocumentWrapper().apply {
+            type = "testDocType"
+        }
 
 }

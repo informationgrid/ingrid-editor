@@ -10,7 +10,7 @@
     @template.ingrid.shared-general(
     page = page,
     contentInfo = @`
-        @if (page.getFeatureCatalogueDescription() != null)
+        @if (page.getHasContentInfo())
         <gmd:contentInfo>
             <gmd:MD_FeatureCatalogueDescription>
                 @if (page.isAdVCompatible())
