@@ -33,6 +33,8 @@ open class IngridModelTransformer constructor(
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
     val distributionFormats = data.distribution?.format ?: emptyList()
+    val isAtomDownload = data.service?.isAtomDownload == true
+    val atomDownloadURL: String?
     val digitalTransferOptions = data.digitalTransferOptions ?: emptyList()
 
     val resourceDateType = data.temporal.resourceDateType?.key
@@ -299,7 +301,24 @@ open class IngridModelTransformer constructor(
     val serviceType = codelists.getValue( if(model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { codelists.getValue("5153", it, "iso") } ?: emptyList()
     val couplingType = data.service?.couplingType?.key
-    val operations = data.service?.operations ?: emptyList()
+
+    val operations: List<DisplayOperation>
+
+    private fun getOperationName(name: KeyValueModel?): String? {
+        if (name == null) return null
+
+        val serviceType = data.service?.type
+        val codelistId = when (serviceType?.key) {
+            "1" -> "5105"
+            "2" -> "5110"
+            "3" -> "5120"
+            "4" -> "5130"
+            else -> null
+        }
+        return (if (codelistId == null) null else codelists.getValue(codelistId, name, "de")) ?: name.value
+    }
+
+
     val references = data.references ?: emptyList()
 
     // information system
@@ -342,6 +361,16 @@ open class IngridModelTransformer constructor(
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
         data.pointOfContact?.filter { addressIsPointContactMD(it) }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+        atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
+
+        operations = data.service?.operations?.map {
+            DisplayOperation(
+                getOperationName(it.name),
+                it.description,
+                it.methodCall,
+                citationURL
+            )
+        } ?: emptyList()
 
 
     }
@@ -356,7 +385,7 @@ open class IngridModelTransformer constructor(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty()
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload
     }
 
     fun hasCompleteVerticalExtent(): Boolean {
@@ -373,3 +402,10 @@ enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }
  * @param uri is either an external or internal url.
  */
 data class BrowseGraphic(val uri: String, val description: String?)
+
+data class DisplayOperation(
+    val name: String?,
+    val description: String?,
+    val methodCall: String?,
+    val identifierLink: String?
+)

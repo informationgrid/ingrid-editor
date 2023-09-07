@@ -6,6 +6,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
+@import de.ingrid.igeserver.profiles.ingrid.exporter.DisplayOperation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
@@ -508,7 +509,19 @@
                 @endif
             </gmd:EX_Extent>
         </${page.getExtentType()}>
-    @if(page.getCouplingType() != null)
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:coupledResource>
+            <srv:SV_CoupledResource>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                <srv:identifier>
+                    <gco:CharacterString>${operation.getIdentifierLink()}</gco:CharacterString>
+                </srv:identifier>
+            </srv:SV_CoupledResource>
+        </srv:coupledResource>
+    @endfor
+    @if(TransformationTools.hasValue(page.getCouplingType()))
         <srv:couplingType>
             <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType" codeListValue="${page.getCouplingType()}"/>
         </srv:couplingType>
@@ -516,26 +529,32 @@
     @if( page.getOperations().isEmpty() && page.getData().getService() != null )
         <srv:containsOperations gco:nilReason="missing"/>
     @endif
-    @for( Operation operation : page.getOperations() )
+    @for( DisplayOperation operation : page.getOperations() )
         <srv:containsOperations>
             <srv:SV_OperationMetadata>
                 <srv:operationName>
-                    <gco:CharacterString>${page.getCodelists().getValue("5110",operation.getName())}</gco:CharacterString>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
                 </srv:operationName>
-<%--                <srv:DCP>
-                    <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="${page.getCodelists().getValue("5180", operation.getPlatform())}"/>
-                </srv:DCP>--%>
-                @if(operation.getDescription() != null)
+                @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
                 </srv:operationDescription>
                 @endif
-                <srv:invocationName>
-                    <gco:CharacterString>${operation.getMethodCall()}</gco:CharacterString>
-                </srv:invocationName>
+                @if(TransformationTools.hasValue(operation.getMethodCall()))
+                <srv:connectPoint>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                        </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                </srv:connectPoint>
+                @endif
             </srv:SV_OperationMetadata>
         </srv:containsOperations>
     @endfor
+    @if(page.getOperations().isEmpty() && page.getData().getService() != null)
+        <srv:containsOperations gco:nilReason="missing"/>
+    @endif
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 
@@ -570,17 +589,17 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
         @endfor
+        @if (page.getDistributionFormats().isEmpty())
+            <%--  always write format, here with nilReason children, see INGRID32-146--%>
+            <%--  NOW ALSO when distributor exists (was missing) !, see INGRID-2277--%>
+            <gmd:distributionFormat>
+                <gmd:MD_Format>
+                    <gmd:name gco:nilReason="unknown" />
+                    <gmd:version gco:nilReason="unknown" />
+                </gmd:MD_Format>
+            </gmd:distributionFormat>
+        @endif
         @if(page.getData().getOrderInfo() != null)
-            @if (page.getDistributionFormats().isEmpty())
-                <%--  always write format, here with nilReason children, see INGRID32-146--%>
-                <%--  NOW ALSO when distributor exists (was missing) !, see INGRID-2277--%>
-                <gmd:distributionFormat>
-                    <gmd:MD_Format>
-                        <gmd:name gco:nilReason="unknown" />
-                        <gmd:version gco:nilReason="unknown" />
-                    </gmd:MD_Format>
-                </gmd:distributionFormat>
-            @endif
         <gmd:distributor>
             <gmd:MD_Distributor>
                 <gmd:distributorContact>
@@ -604,7 +623,7 @@ ${contentInfo}
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>
                     <gmd:onLine>
-                        <gmd:CI_OnlineResource>
+                        <idf:idfOnlineResource>
                             <gmd:linkage>
                                 <gmd:URL>${reference.getUrl()}</gmd:URL>
                             </gmd:linkage>
@@ -619,7 +638,8 @@ ${contentInfo}
                             <gmd:function>
                                 <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${page.getCodelists().getValue("2000", reference.getType(), "iso")}">${page.getCodelists().getValue("2000", reference.getType(), "iso")}</gmd:CI_OnLineFunctionCode>
                             </gmd:function>
-                        </gmd:CI_OnlineResource>
+                            <idf:attachedToField entry-id="${reference.getType().getKey()}" list-id="2000">${page.getCodelists().getValue("2000", reference.getType())}</idf:attachedToField>
+                        </idf:idfOnlineResource>
                     </gmd:onLine>
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
@@ -648,6 +668,25 @@ ${contentInfo}
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
         @endfor
+        @if(page.isAtomDownload())
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
+                            </gmd:name>
+                            <gmd:function>
+                                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                            </gmd:function>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        @endif
         @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>

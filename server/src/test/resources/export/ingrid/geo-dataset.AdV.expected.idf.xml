@@ -242,6 +242,17 @@
                                     </gmd:northBoundLatitude>
                                 </gmd:EX_GeographicBoundingBox>
                             </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
                         </gmd:EX_Extent>
                     </gmd:extent>
                 </gmd:MD_DataIdentification>

@@ -3,9 +3,7 @@ package de.ingrid.igeserver.exports.ingrid
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.convertToDocument
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
@@ -63,11 +61,19 @@ class Geodataservice : AnnotationSpec() {
             }
         }
 
+        every { catalogService.getCatalogById(any()) } answers {
+            Catalog().apply {
+                settings = CatalogSettings().apply {
+                    config = CatalogConfig().apply {
+                        //namespace = "namespace"
+                        atomDownloadUrl = "https://dev.informationgrid.eu/interface-search/dls/service/"
+                    }
+                }
+            }
+        }
+
         mockCodelists(codelistHandler)
 
-        every { catalogService.getCatalogById(any()) } answers {
-            Catalog()
-        }
         every {
             documentService.getLastPublishedDocument(
                 "test-catalog",
@@ -167,8 +173,6 @@ class Geodataservice : AnnotationSpec() {
 
     @Test
     fun completeLuceneExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
-
         var result = exportJsonToJson(indexExporter, "/export/ingrid/geodataservice.json")
         // replace generated UUIDs and windows line endings
         result = result
@@ -177,7 +181,7 @@ class Geodataservice : AnnotationSpec() {
 
         result shouldNotBe null
         // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
+         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
     }
 
     private fun createDocumentWrapper() =

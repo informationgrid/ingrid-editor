@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>C1209940-418E-4F4E-869F-81EB9276B98B</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -520,6 +524,17 @@
                                         <gco:Decimal>52.688663</gco:Decimal>
                                     </gmd:northBoundLatitude>
                                 </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
                             </gmd:geographicElement>
                             <gmd:temporalElement>
                                 <gmd:EX_TemporalExtent>

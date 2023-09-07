@@ -67,6 +67,7 @@ data class Service(
     val coupledResources: List<Any>?,
     val couplingType: KeyValueModel?,
     val hasAccessConstraints: Boolean?,
+    val isAtomDownload: Boolean?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -75,6 +76,7 @@ data class Reference(
     val type: KeyValueModel?,
     val explanation: String?,
     val url: String?,
+    val uuidRef: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

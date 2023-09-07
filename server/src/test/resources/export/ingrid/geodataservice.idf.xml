@@ -376,9 +376,6 @@
                             <srv:operationName>
                                 <gco:CharacterString>GetCapabilities</gco:CharacterString>
                             </srv:operationName>
-                            <srv:DCP>
-                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
-                            </srv:DCP>
                             <srv:operationDescription>
                                 <gco:CharacterString>Textliche Beschreibung der Funktionalität der Operation.</gco:CharacterString>
                             </srv:operationDescription>
@@ -396,9 +393,6 @@
                             <srv:operationName>
                                 <gco:CharacterString>Name der Operation2</gco:CharacterString>
                             </srv:operationName>
-                            <srv:DCP>
-                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
-                            </srv:DCP>
                             <srv:operationDescription>
                                 <gco:CharacterString>https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de2</gco:CharacterString>
                             </srv:operationDescription>

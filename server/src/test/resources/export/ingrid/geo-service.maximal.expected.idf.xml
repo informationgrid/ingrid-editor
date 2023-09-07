@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -599,6 +603,17 @@
                             </gmd:geographicElement>
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
                                     <gmd:extentTypeCode>
                                         <gco:Boolean>true</gco:Boolean>
                                     </gmd:extentTypeCode>
@@ -629,6 +644,17 @@
                                         <gco:Decimal>54.02584</gco:Decimal>
                                     </gmd:northBoundLatitude>
                                 </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/02">02</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
                             </gmd:geographicElement>
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
@@ -715,7 +741,7 @@
                                 <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
                             </srv:operationName>
                             <srv:identifier>
-                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/a910fde0-3910-413e-9c14-4fa86f3d12c2</gco:CharacterString>
+                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
                             </srv:identifier>
                         </srv:SV_CoupledResource>
                     </srv:coupledResource>
@@ -725,7 +751,7 @@
                                 <gco:CharacterString>DescribeFeatureType</gco:CharacterString>
                             </srv:operationName>
                             <srv:identifier>
-                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/a910fde0-3910-413e-9c14-4fa86f3d12c2</gco:CharacterString>
+                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
                             </srv:identifier>
                         </srv:SV_CoupledResource>
                     </srv:coupledResource>
@@ -737,13 +763,10 @@
                             <srv:operationName>
                                 <gco:CharacterString>Download</gco:CharacterString>
                             </srv:operationName>
-                            <srv:DCP>
-                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices">WebServices</srv:DCPList>
-                            </srv:DCP>
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9</gmd:URL>
+                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/ID_00000000-0000-0000-0000-000000000000</gmd:URL>
                                     </gmd:linkage>
                                 </gmd:CI_OnlineResource>
                             </srv:connectPoint>
@@ -754,9 +777,6 @@
                             <srv:operationName>
                                 <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
                             </srv:operationName>
-                            <srv:DCP>
-                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
-                            </srv:DCP>
                             <srv:operationDescription>
                                 <gco:CharacterString>OP Beschreibung</gco:CharacterString>
                             </srv:operationDescription>
@@ -774,11 +794,8 @@
                             <srv:operationName>
                                 <gco:CharacterString>DescribeFeatureType</gco:CharacterString>
                             </srv:operationName>
-                            <srv:DCP>
-                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
-                            </srv:DCP>
                             <srv:operationDescription>
-                                <gco:CharacterString>OP Beschreibung</gco:CharacterString>
+                                <gco:CharacterString>OP2 Beschreibung</gco:CharacterString>
                             </srv:operationDescription>
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
@@ -875,7 +892,7 @@
                             <gmd:onLine>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9</gmd:URL>
+                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/ID_00000000-0000-0000-0000-000000000000</gmd:URL>
                                     </gmd:linkage>
                                     <gmd:name>
                                         <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
