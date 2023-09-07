@@ -77,6 +77,15 @@ class Geodataservice : AnnotationSpec() {
         every {
             documentService.getLastPublishedDocument(
                 "test-catalog",
+                "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+                false
+            )
+        } answers {
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.sample.json"))
+        }
+        every {
+            documentService.getLastPublishedDocument(
+                "test-catalog",
                 "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
                 false
             )

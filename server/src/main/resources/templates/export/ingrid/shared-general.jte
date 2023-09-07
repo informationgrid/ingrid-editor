@@ -1,17 +1,14 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel;
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-@import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
 @import de.ingrid.igeserver.profiles.ingrid.exporter.DisplayOperation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.UseConstraint
 @import gg.jte.Content
 
 @param IngridModelTransformer page
@@ -568,9 +565,9 @@
             </srv:SV_OperationMetadata>
         </srv:containsOperations>
     @endfor
-    @if(page.getOperations().isEmpty() && page.getData().getService() != null)
-        <srv:containsOperations gco:nilReason="missing"/>
-    @endif
+    @for( OperatesOn operatesOn : page.getOperatesOn() )
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}"/>
+    @endfor
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 

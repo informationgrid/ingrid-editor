@@ -806,7 +806,7 @@
                             </srv:connectPoint>
                         </srv:SV_OperationMetadata>
                     </srv:containsOperations>
-                    <srv:operatesOn uuidref="C1209940-418E-4F4E-869F-81EB9276B98B" xlink:href="http://portalu.de/igc_testNS#KRZN/f4b077b0-91e1-49d3-aac6-826284562537"/>
+                    <srv:operatesOn uuidref="a910fde0-3910-413e-9c14-4fa86f3d12c2" xlink:href="https://registry.gdi-de.org/id/test-catalog/f4b077b0-91e1-49d3-aac6-826284562537"/>
                 </srv:SV_ServiceIdentification>
             </gmd:identificationInfo>
             <gmd:distributionInfo>
@@ -1030,8 +1030,8 @@
                     </gmd:lineage>
                 </gmd:DQ_DataQuality>
             </gmd:dataQualityInfo>
-            <idf:crossReference direction="OUT" uuid="C1209940-418E-4F4E-869F-81EB9276B98B">
-                <idf:objectName>Test-Datensatz Classic</idf:objectName>
+            <idf:crossReference direction="OUT" uuid="a910fde0-3910-413e-9c14-4fa86f3d12c2">
+                <idf:objectName>Test-Datensatz</idf:objectName>
                 <idf:objectType>1</idf:objectType>
                 <idf:attachedToField entry-id="3600" list-id="2000">Gekoppelte Daten</idf:attachedToField>
                 <idf:description>Hier ist die Beschreibung.</idf:description>

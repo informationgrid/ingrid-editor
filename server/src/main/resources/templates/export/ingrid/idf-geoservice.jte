@@ -1,3 +1,5 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
+@import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
@@ -97,5 +99,18 @@
             @endif
         </gmd:DQ_DataQuality>
     </gmd:dataQualityInfo>
+    @for( CrossReference cref : page.getCrossReferences() )
+        <idf:crossReference direction="${cref.getDirection()}" uuid="${cref.getUuid()}">
+            <idf:objectName>${cref.getObjectName()}</idf:objectName>
+            <idf:objectType>${cref.getObjectType()}</idf:objectType>
+            <idf:attachedToField entry-id="${cref.getRefType().getKey()}" list-id="2000">${page.getCodelists().getValue("2000", cref.getRefType())}</idf:attachedToField>
+            @if( TransformationTools.hasValue(cref.getDescription()))
+                <idf:description>${cref.getDescription()}</idf:description>
+            @endif
+            @if( TransformationTools.hasValue(cref.getGraphicOverview()))
+                <idf:graphicOverview>${cref.getGraphicOverview()}</idf:graphicOverview>
+            @endif
+        </idf:crossReference>
+    @endfor
     <idf:hasAccessConstraint>${page.getHasAccessConstraint()}</idf:hasAccessConstraint>
 `, abstract_text = page.getAbstractText())

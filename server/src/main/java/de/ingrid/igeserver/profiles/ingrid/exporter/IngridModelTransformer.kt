@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
@@ -13,6 +14,8 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -27,6 +30,9 @@ open class IngridModelTransformer constructor(
     val config: Config,
     val catalogService: CatalogService,
 ) {
+    companion object {
+        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
+    }
 
     var citationURL: String? = null
     val data = model.data
@@ -79,16 +85,18 @@ open class IngridModelTransformer constructor(
 
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
-    val browseGraphics = data.graphicOverviews?.map { BrowseGraphic(
-        if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-        else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
-        it.fileDescription
-    )} ?: emptyList()
+    val browseGraphics = data.graphicOverviews?.map {
+        BrowseGraphic(
+            if (it.fileName.asLink) it.fileName.uri // TODO encode uri
+            else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+            it.fileDescription
+        )
+    } ?: emptyList()
 
     data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
 
     val useConstraints = data.resource?.useConstraints?.map {
-         if (it.title == null) throw ServerException.withReason("Use constraint title is null ${it}")
+        if (it.title == null) throw ServerException.withReason("Use constraint title is null ${it}")
 
         // special case for "Es gelten keine Bedingungen"
         val link =
@@ -141,7 +149,7 @@ open class IngridModelTransformer constructor(
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
     val formatterNoSeparator = SimpleDateFormat("yyyyMMddHHmmssSSS")
-    var documentType = mapDocumentType()
+    var documentType = mapDocumentType(model.type)
 
 
     open val hierarchyLevel = "nonGeographicDataset"
@@ -175,7 +183,12 @@ open class IngridModelTransformer constructor(
             // string like "EPSG 3857: WGS 84 / Pseudo-Mercator"
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
-                if (endIndex > 0) "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5, endIndex)}" else null
+                if (endIndex > 0) "http://www.opengis.net/def/crs/EPSG/0/${
+                    referenceSystem.substring(
+                        5,
+                        endIndex
+                    )
+                }" else null
             }
             // could not match string
             else -> null
@@ -192,6 +205,7 @@ open class IngridModelTransformer constructor(
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
+
     fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
         if (data.isOpenData == true && freeKeywords.keywords.none { it.name == "opendata" }) {
@@ -222,6 +236,7 @@ open class IngridModelTransformer constructor(
         date = "2009-01-15",
         name = "UMTHES Thesaurus"
     )
+
     // TODO after thesauri are added
     val gemetKeywords = Thesaurus(
         date = "2012-07-20",
@@ -229,7 +244,12 @@ open class IngridModelTransformer constructor(
     )
 
     val serviceTypeKeywords = Thesaurus(
-        keywords = data.service?.classification?.map { KeywordIso(name = codelists.getValue("5200", it, "iso"), link = null) }
+        keywords = data.service?.classification?.map {
+            KeywordIso(
+                name = codelists.getValue("5200", it, "iso"),
+                link = null
+            )
+        }
             ?: emptyList(),
         date = "2008-06-01",
         name = "Service Classification, version 1.0"
@@ -239,7 +259,12 @@ open class IngridModelTransformer constructor(
         name = "German Environmental Classification - Topic, version 1.0"
     )
     val inspirePriorityKeywords = Thesaurus(
-        keywords = data.priorityDatasets?.map { KeywordIso(name = codelists.getValue("6350", it), link = codelists.getDataField("6350", it.key, "url")) }
+        keywords = data.priorityDatasets?.map {
+            KeywordIso(
+                name = codelists.getValue("6350", it),
+                link = codelists.getDataField("6350", it.key, "url")
+            )
+        }
             ?: emptyList(),
         date = "2018-04-04",
         name = "INSPIRE priority data set",
@@ -247,7 +272,14 @@ open class IngridModelTransformer constructor(
         showType = false
     )
     val spatialScopeKeyword = Thesaurus(
-        keywords = data.spatialScope?.let { listOf(KeywordIso(name = codelists.getValue("6360", it), link = codelists.getDataField("6360", it.key, "url"))) }
+        keywords = data.spatialScope?.let {
+            listOf(
+                KeywordIso(
+                    name = codelists.getValue("6360", it),
+                    link = codelists.getDataField("6360", it.key, "url")
+                )
+            )
+        }
             ?: emptyList(),
         date = "2019-05-22",
         name = "Spatial scope",
@@ -275,7 +307,8 @@ open class IngridModelTransformer constructor(
     val useLimitation = data.resource?.useLimitation
     val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         CharacterStringModel(
-            "(?<=\\\"de\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value ?: codelists.getValue("6010", it) ?: "",
+            "(?<=\\\"de\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
+                ?: codelists.getValue("6010", it) ?: "",
             "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
         )
 
@@ -284,8 +317,8 @@ open class IngridModelTransformer constructor(
 
     val contentField: MutableList<String> = mutableListOf()
 
-    private fun mapDocumentType(): String {
-        return when (model.type) {
+    private fun mapDocumentType(type: String): String {
+        return when (type) {
             "InGridSpecialisedTask" -> "0"
             "InGridGeoDataset" -> "1"
             "InGridLiterature" -> "2"
@@ -298,7 +331,8 @@ open class IngridModelTransformer constructor(
     }
 
     // geodataservice
-    val serviceType = codelists.getValue( if(model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
+    val serviceType =
+        codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { codelists.getValue("5153", it, "iso") } ?: emptyList()
     val couplingType = data.service?.couplingType?.key
 
@@ -318,12 +352,21 @@ open class IngridModelTransformer constructor(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "de")) ?: name.value
     }
 
+    val operatesOn = data.service?.coupledResources?.map {
+        if (it.isExternalRef) {
+            OperatesOn(it.uuid, it.identifier)
+        } else {
+            val identifier = this.getCitationFromGeodataset(it.uuid)
+            OperatesOn(it.uuid, identifier)
+        }
+
+    } ?: emptyList()
+
 
     val references = data.references ?: emptyList()
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
-
 
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -355,12 +398,15 @@ open class IngridModelTransformer constructor(
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
         val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
-        this.citationURL = namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
+        this.citationURL =
+            namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
-            data.pointOfContact?.filter { addressIsPointContactMD(it).not() }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
+            data.pointOfContact?.filter { addressIsPointContactMD(it).not() }
+                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
-        data.pointOfContact?.filter { addressIsPointContactMD(it) }?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+            data.pointOfContact?.filter { addressIsPointContactMD(it) }
+                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
         operations = data.service?.operations?.map {
@@ -371,9 +417,49 @@ open class IngridModelTransformer constructor(
                 citationURL
             )
         } ?: emptyList()
-
-
     }
+
+    private fun getCitationFromGeodataset(uuid: String?): String? {
+        if (uuid == null) return null
+        val model = jacksonObjectMapper().convertValue(
+            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+            IngridModel::class.java
+        )
+        val transformer = GeodatasetModelTransformer(
+            model,
+            catalogIdentifier,
+            codelists,
+            config,
+            catalogService
+        )
+        return transformer.citationURL
+    }
+
+
+
+    private val coupledCrossReferences = model.data.service?.coupledResources?.filter { !it.isExternalRef }?.map { getCrossReference(it.uuid, KeyValueModel("3600", null)) }?: emptyList()
+    private val referencedCrossReferences = model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }?.map  { getCrossReference(it.uuidRef!!, it.type) }?: emptyList()
+    val crossReferences = coupledCrossReferences + referencedCrossReferences
+
+
+    private fun getCrossReference(uuid: String, type: KeyValueModel): CrossReference {
+        val model = jacksonObjectMapper().convertValue(
+            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+            IngridModel::class.java
+        )
+
+        return CrossReference(
+            direction = "OUT",
+            uuid = uuid,
+            objectName = model.title,
+            objectType = mapDocumentType(model.type),
+            refType = type,
+            description = model.data.description,
+            graphicOverview = model.data.graphicOverviews?.firstOrNull()?.fileName?.uri
+        )
+    }
+
+
 
     private fun addressIsPointContactMD(it: AddressRefModel) =
         codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
@@ -408,4 +494,17 @@ data class DisplayOperation(
     val description: String?,
     val methodCall: String?,
     val identifierLink: String?
+)
+
+data class OperatesOn(val uuidref: String?, val href: String?)
+
+
+data class CrossReference(
+    val direction: String,
+    val uuid: String,
+    val objectName: String,
+    val objectType: String,
+    val refType: KeyValueModel,
+    val description: String?,
+    val graphicOverview: String?
 )
