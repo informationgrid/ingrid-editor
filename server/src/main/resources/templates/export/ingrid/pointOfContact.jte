@@ -103,7 +103,7 @@
                             codeListValue="${address.getCodelist().getValue("505", address.getType(), "iso")}" />
                 </gmd:role>
                 @for( AddressModelTransformer adr : address.getHierarchy())
-                    <idf:hierarchyParty uuid="${adr.getModel().getUuid()} ${}">
+                    <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
                         @if(adr.getIndividualName(false) != null )
                             <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>
                         @endif
