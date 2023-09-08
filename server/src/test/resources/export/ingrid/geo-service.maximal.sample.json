@@ -88,7 +88,7 @@
           "salutation": {
             "key": "2"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -160,7 +160,7 @@
           "salutation": {
             "key": "2"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -232,7 +232,7 @@
           "salutation": {
             "key": "1"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"

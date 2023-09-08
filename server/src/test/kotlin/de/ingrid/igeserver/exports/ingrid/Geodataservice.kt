@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.exports.ingrid
 
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
@@ -49,18 +48,55 @@ class Geodataservice : AnnotationSpec() {
         every { SpringContext.getBean(DocumentService::class.java) } answers {
             documentService
         }
+
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
             val codelistId = secondArg<String>()
             val entryId = thirdArg<String>()
-            when (codelistId + "_" + entryId){
+            when (codelistId + "_" + entryId) {
                 "1350_1" -> "Baugesetzbuch (BauGB)"
                 "1350_2" -> "Atomgesetz (AtG)"
                 "111_1" -> "Provider 1"
                 "111_2" -> "Provider 2"
+                "6250_7" -> "Hessen"
                 else -> codelistId + "_" + entryId
             }
         }
 
+        mockCatalog()
+        mockCodelists(codelistHandler)
+
+        val addresses = listOf(
+            MockDocument(
+                1638,
+                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                "/export/ingrid/address.organisation.sample.json",
+                type = "InGridOrganisationDoc"
+            ),
+            MockDocument(
+                1634,
+                "14a37ded-4ca5-4677-bfed-3607bed3071d",
+                "/export/ingrid/address.person.sample.json",
+                1638
+            ),
+            MockDocument(
+                1652,
+                "fc521f66-0f47-45fb-ae42-b14fc669942e",
+                "/export/ingrid/address.person2.sample.json",
+                1638
+            )
+        )
+
+        val dataset = MockDocument(
+            uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+            template = "/export/ingrid/geo-dataset.maximal.sample.json"
+        )
+
+        initDocumentMocks(addresses + dataset)
+
+
+    }
+
+    private fun mockCatalog() {
         every { catalogService.getCatalogById(any()) } answers {
             Catalog().apply {
                 settings = CatalogSettings().apply {
@@ -71,57 +107,42 @@ class Geodataservice : AnnotationSpec() {
                 }
             }
         }
+    }
 
-        mockCodelists(codelistHandler)
+    data class MockDocument(
+        val id: Number? = null,
+        val uuid: String,
+        val template: String,
+        val parent: Int? = null,
+        val type: String? = null,
+    )
 
-        every {
-            documentService.getLastPublishedDocument(
-                "test-catalog",
-                "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-                false
-            )
-        } answers {
-            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.sample.json"))
-        }
-        every {
-            documentService.getLastPublishedDocument(
-                "test-catalog",
-                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
-                false
-            )
-        } answers {
-            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
-        }
-        every {
-            documentService.getLastPublishedDocument(
-                "test-catalog",
-                "14a37ded-4ca5-4677-bfed-3607bed3071d",
-                false
-            )
-        } answers {
-            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.json"))
-        }
-
-        val idToUiidMap = mutableMapOf(
-            Pair(1634, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
-            Pair(1652, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
-            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
-        )
-
-        val orgaParent = DocumentWrapper().apply {
-            id = 1638
-            type = "testDocType"
-            uuid = "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"
-        }
-
-        every { documentService.getWrapperByDocumentId(any() as Int) } answers {
-            val id = firstArg<Int>()
-            createDocumentWrapper().apply {
-                parent = if (id != 1638) orgaParent else null
-                uuid = idToUiidMap[id] ?: "random-uuid"
+    private fun initDocumentMocks(documents: List<MockDocument>) {
+        documents.forEach { document ->
+            every {
+                documentService.getLastPublishedDocument(
+                    "test-catalog",
+                    document.uuid,
+                    false
+                )
+            } answers {
+                convertToDocument(SchemaUtils.getJsonFileContent(document.template))
+            }
+            if (document.id != null) {
+                every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {
+                    createDocumentWrapper().apply {
+                        id = document.id.toInt()
+                        type = document.type ?: "testDocType"
+                        parent = document.parent?.let {
+                            DocumentWrapper().apply {
+                                id = it
+                            }
+                        }
+                        uuid = document.uuid
+                    }
+                }
             }
         }
-
     }
 
 
@@ -190,7 +211,7 @@ class Geodataservice : AnnotationSpec() {
 
         result shouldNotBe null
         // TODO: pending
-         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
     }
 
     private fun createDocumentWrapper() =

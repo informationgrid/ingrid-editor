@@ -23,7 +23,7 @@
       "zip-code": "60314",
       "zip-po-box": "60314",
       "administrativeArea": {
-        "key": "8"
+        "key": "7"
       }
     },
     "contact": [
@@ -57,7 +57,7 @@
     "salutation": {
       "key": "2"
     },
-    "hideAddress": true,
+    "hideAddress": false,
     "positionName": "Position/nachgeordnete Abteilung",
     "academic-title": {
       "key": "1"

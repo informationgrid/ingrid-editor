@@ -1,0 +1,65 @@
+{
+  "title": "Musterfrau, Max",
+  "_id": 1652,
+  "_uuid": "fc521f66-0f47-45fb-ae42-b14fc669942e",
+  "_type": "InGridPersonDoc",
+  "_created": "2023-07-10T09:11:23.340756Z",
+  "_createdBy": "Super User",
+  "_modified": "2023-07-10T09:11:59.830622Z",
+  "_contentModified": "2023-07-10T09:11:59.831142Z",
+  "_contentModifiedBy": "Super User",
+  "_version": 3,
+  "data": {
+    "_parent": 1643,
+    "salutation": {
+      "key": "1"
+    },
+    "academic-title": {
+      "key": "1"
+    },
+    "firstName": "Max",
+    "lastName": "Musterfrau",
+    "contact": [
+      {
+        "type": {
+          "key": "3"
+        },
+        "connection": "musterfrau@wemove.com"
+      },
+      {
+        "type": {
+          "key": "1"
+        },
+        "connection": "123456789"
+      },
+      {
+        "type": {
+          "key": "2"
+        },
+        "connection": "123456789"
+      },
+      {
+        "type": {
+          "key": "4"
+        },
+        "connection": "https://musterfrau.com"
+      }
+    ],
+    "address": {
+      "street": "Musterfrau Str.",
+      "zip-code": "60314",
+      "city": "Frankfurt am Main",
+      "zip-po-box": "60314",
+      "po-box": "30151",
+      "administrativeArea": {
+        "key": "7"
+      },
+      "country": {
+        "key": "276"
+      }
+    },
+    "positionName": "Position/nachgeordnete Abteilung",
+    "hoursOfService": "Servicezeiten",
+    "hideAddress": false
+  }
+}
