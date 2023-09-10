@@ -85,7 +85,7 @@ export interface RepeatChipOptions extends Options {
 }
 
 export interface SelectOptions extends Options {
-  options?: any[] | Observable<any[]>;
+  options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
   codelistId?: number;
   fieldLabel?: string;
   externalLabel?: string;

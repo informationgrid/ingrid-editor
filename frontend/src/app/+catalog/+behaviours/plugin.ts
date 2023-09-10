@@ -14,7 +14,7 @@ import { Subscription } from "rxjs";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export abstract class Plugin {
-  id: string;
+  abstract id: string;
   abstract name: string;
   group: string;
   description: string;

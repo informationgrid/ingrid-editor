@@ -22,6 +22,7 @@ import { inject } from "@angular/core";
 import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -52,6 +53,7 @@ export abstract class IngridShared extends BaseDoctype {
   cookieService = inject(CookieService);
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
+  private behaviourService = inject(BehaviourService);
 
   options = {
     required: {
@@ -100,6 +102,12 @@ export abstract class IngridShared extends BaseDoctype {
     "320": "5",
     "321": "5",
   };
+  private showInVeKoSField: boolean = false;
+
+  isInitialized(): Promise<void> {
+    this.handleInVeKoSBehaviour();
+    return Promise.resolve();
+  }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addGroupSimple(
@@ -157,6 +165,33 @@ export abstract class IngridShared extends BaseDoctype {
           click: (field) =>
             setTimeout(() => this.handleIsInspireConformClick(field)),
         }),
+        this.showInVeKoSField
+          ? this.addSelect("invekos", "InVeKoS", {
+              allowNoValue: false,
+              defaultValue: { key: "none" },
+              expressions: {
+                hide: "!model.isInspireIdentified",
+              },
+              options: [
+                {
+                  label: "Kein InVeKOS Datensatz",
+                  value: "none",
+                },
+                {
+                  label: "InVeKoS/IACS",
+                  value: "iacs",
+                },
+                {
+                  label: "InVeKoS/IACS (GSAA)",
+                  value: "gsaa",
+                },
+                {
+                  label: "InVeKoS/IACS (LPIS)",
+                  value: "lpis",
+                },
+              ],
+            })
+          : null,
         options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addInput(
@@ -183,7 +218,7 @@ export abstract class IngridShared extends BaseDoctype {
             validators: {
               atLeastOneMD: {
                 expression: (ctrl) =>
-                  // equals Ansprechpartner MD
+                  // equals "Ansprechpartner MD"
                   ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "12")
                     : false,
@@ -191,12 +226,21 @@ export abstract class IngridShared extends BaseDoctype {
               },
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl, field) =>
-                  // equals Ansprechpartner
+                  // equals "Ansprechpartner"
                   !field.model.isAdVCompatible ||
                   (ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "7")
                     : false),
                 message: "Es muss mindestens einen Ansprechpartner geben.",
+              },
+              atLeastOneOtherAddress: {
+                expression: (ctrl, field) =>
+                  // not equals "Ansprechpartner MD"
+                  ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key !== "12")
+                    : false,
+                message:
+                  "Neben dem 'Ansprechpartner MD' muss mindestens eine weitere Adresse angegeben werden.",
               },
             },
           }),
@@ -1521,5 +1565,11 @@ export abstract class IngridShared extends BaseDoctype {
       case "InGridInformationSystem":
         return "6";
     }
+  }
+
+  private handleInVeKoSBehaviour() {
+    this.showInVeKoSField =
+      this.behaviourService.getBehaviour("plugin.ingrid.invekos")?.isActive ??
+      false;
   }
 }

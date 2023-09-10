@@ -66,5 +66,5 @@ export interface Doctype {
    */
   getIconClass?(doc: IgeDocument): string;
 
-  init(help: string[]);
+  init(help: string[]): Promise<void>;
 }
