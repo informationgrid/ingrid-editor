@@ -56,8 +56,12 @@ class Geodataset : AnnotationSpec() {
             when (codelistId + "_" + entryId){
                 "1350_1" -> "Baugesetzbuch (BauGB)"
                 "1350_2" -> "Atomgesetz (AtG)"
+                "1350_13" -> "Kreislaufwirtschafts- u. Abfallgesetz (KrW-/AbfG)"
+                "1350_15" -> "Landesabfallwirtschaftsgesetz (LAbfWG)"
+                "1350_26" -> "Umweltstatistikgesetz (Fass. 21.06.1994)"
                 "111_1" -> "Provider 1"
                 "111_2" -> "Provider 2"
+                "6250_7" -> "Hessen"
                 else -> codelistId + "_" + entryId
             }
         }
@@ -71,8 +75,10 @@ class Geodataset : AnnotationSpec() {
         }
 
         val idToUiidMap = mutableMapOf(
+            Pair(1634, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
             Pair(1662, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
-            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
+            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"),
+            Pair(0, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
         )
 
         every { documentService.getWrapperByDocumentId(any() as Int) } answers {
@@ -85,7 +91,7 @@ class Geodataset : AnnotationSpec() {
         every {
             documentService.getLastPublishedDocument(
                 "test-catalog",
-                "14a37ded-4ca5-4677-bfed-3607bed3071d",
+                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
                 false
             )
         } answers {
@@ -94,11 +100,11 @@ class Geodataset : AnnotationSpec() {
         every {
             documentService.getLastPublishedDocument(
                 "test-catalog",
-                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                "14a37ded-4ca5-4677-bfed-3607bed3071d",
                 false
             )
         } answers {
-            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.json"))
+            convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.json"))
         }
     }
 
@@ -110,6 +116,8 @@ class Geodataset : AnnotationSpec() {
     fun minimalExport() {
 //        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
+            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
     }
@@ -120,7 +128,7 @@ class Geodataset : AnnotationSpec() {
     * */
     @Test
     fun maximalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+//        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
 
         var result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.maximal.sample.json")
         // replace generated UUIDs and windows line endings
@@ -138,7 +146,7 @@ class Geodataset : AnnotationSpec() {
     * */
     @Test
     fun openDataMinimalExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
+//        every { documentService.getWrapperByDocumentId(any() as Int) } returns DocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.openData.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml")
