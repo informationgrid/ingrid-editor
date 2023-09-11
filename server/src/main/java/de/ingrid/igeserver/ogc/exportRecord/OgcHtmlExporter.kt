@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.exports.internal
+package de.ingrid.igeserver.ogc.exportRecord
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
@@ -14,25 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import kotlin.reflect.typeOf
 
 
 @Service
 class OgcHtmlExporter @Autowired constructor(
         @Lazy val documentService: DocumentService,
-        val catalogService: CatalogService
+        val catalogService: CatalogService,
 ) : IgeExporter {
 
-    override val typeInfo: ExportTypeInfo
-        get() = ExportTypeInfo(
-                DocumentCategory.DATA,
-                "html",
-                "htmlIGE",
-                "HTML Export des IGE",
-                MediaType.TEXT_HTML_VALUE,
-                "text/html",
-                listOf()
-        )
+    override val typeInfo = ExportTypeInfo(
+            DocumentCategory.DATA,
+            "html",
+            "htmlIGE",
+            "HTML Export des IGE",
+            MediaType.TEXT_HTML_VALUE,
+            "text/html",
+            emptyList(),
+            false
+    )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // TODO: move to utilities to prevent cycle
@@ -49,6 +48,11 @@ class OgcHtmlExporter @Autowired constructor(
         return htmlTransformation(exportData)
     }
 
+    fun runCollection(catalogId: String) {
+        val catalog = catalogService.getCatalogById(catalogId)
+        return
+    }
+
     private fun getPublished(catalogId: String, uuid: String): JsonNode? {
         return try {
             val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
@@ -59,7 +63,7 @@ class OgcHtmlExporter @Autowired constructor(
         }
     }
 
-    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode{
+    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
         return (draftVersion ?: publishedVersion) as ObjectNode
     }
 
@@ -68,30 +72,33 @@ class OgcHtmlExporter @Autowired constructor(
         return exportedObject as String
     }
 
-    private fun convertFieldToTable(node: JsonNode): String{
+    private fun convertFieldToTable(node: JsonNode): String {
         var table = "<table>"
-        if ( node.isTextual )
+        if (node.isTextual)
             table += "<td>${node.toString()}</td>" // addRow("", node.toString());
         else
-        node.fields().forEach {  element ->
-            val key = element.key ?: ""
-            val value = element.value
-            when (value.nodeType) {
-                JsonNodeType.NULL   -> table += addRow(key, "null");
-                JsonNodeType.STRING -> table += addRow(key, value.toString());
-                JsonNodeType.OBJECT -> table += addRow(key, convertFieldToTable(value));
-                JsonNodeType.ARRAY  -> { value.forEach { it -> table += addRow(key, convertFieldToTable(it)) } }
-                else -> table += addRow(key, value.toString())
+            node.fields().forEach { element ->
+                val key = element.key ?: ""
+                val value = element.value
+                when (value.nodeType) {
+                    JsonNodeType.NULL -> table += addRow(key, "null")
+                    JsonNodeType.STRING -> table += addRow(key, value.toString())
+                    JsonNodeType.OBJECT -> table += addRow(key, convertFieldToTable(value))
+                    JsonNodeType.ARRAY -> {
+                        value.forEach { it -> table += addRow(key, convertFieldToTable(it)) }
+                    }
+
+                    else -> table += addRow(key, value.toString())
+                }
             }
-        }
         return "$table</table>"
     }
 
-    private fun addRow(key: String, value: String): String{
+    private fun addRow(key: String, value: String): String {
         return "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
     }
 
-    private fun htmlTransformation(doc: ObjectNode): String{
+    private fun htmlTransformation(doc: ObjectNode): String {
         val table = convertFieldToTable(doc)
         return """
             <html>

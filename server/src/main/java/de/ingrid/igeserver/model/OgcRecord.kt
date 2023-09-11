@@ -1,9 +1,8 @@
 package de.ingrid.igeserver.model
 
+import com.fasterxml.jackson.databind.JsonNode
+import java.time.Instant
 import java.time.OffsetDateTime
-import java.util.*
-
-
 data class RecordCollection(
         val id: String,
         val title: String,
@@ -16,15 +15,45 @@ data class RecordCollection(
         val updated: OffsetDateTime?,
 )
 
-data class RecordOverview(
-        val title: String?,
-        val id: String?,
-        val data: String,
-        val created: Date?,
-        val updated: Date?,
+data class Record(
+        val id: JsonNode,
+        val conformsTo: List<String>?,
+        val type: String,
+        val time: RecordTime?,
+        val geometry: List<JsonNode>,
+        val properties: JsonNode?,
 )
+
+data class RecordTime(
+        val interval: List<String>,
+        val resolution: String
+)
+
+data class RecordsResponse(
+        val type: String,
+        val timeStamp: Instant?,
+        val numberReturned: Int?,
+        val numberMatched: Int,
+        val features: List<Record>,
+        val links: List<Link>?
+)
+
+data class Link(
+        val href: String,
+        val rel: String,
+        val type: String,
+        val title: String,
+)
+
 
 data class LimitAndOffset(
         val queryLimit: Int,
         val queryOffset: Int
+)
+
+data class Bbox(
+        val lowerLeftLongitude: Float,
+        val lowerLeftLatitude: Float,
+        val upperRightLongitude: Float,
+        val uppperRightLatitude: Float,
 )
