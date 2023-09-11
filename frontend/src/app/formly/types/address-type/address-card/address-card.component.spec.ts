@@ -7,6 +7,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { ProfileService } from "../../../../services/profile.service";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
+import { getTranslocoModule } from "../../../../transloco-testing.module";
 
 describe("AddressCardComponent", () => {
   let spectator: Spectator<AddressCardComponent>;
@@ -17,6 +18,7 @@ describe("AddressCardComponent", () => {
       MatDialogModule,
       MatIconTestingModule,
       DocumentIconModule,
+      getTranslocoModule(),
     ],
     declarations: [CodelistPipe],
     componentMocks: [CodelistService, ProfileService],

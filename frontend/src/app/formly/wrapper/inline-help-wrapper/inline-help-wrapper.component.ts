@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   TemplateRef,
   ViewChild,
@@ -17,7 +18,7 @@ import { ConfigService } from "../../../services/config/config.service";
 })
 export class InlineHelpWrapperComponent
   extends FieldWrapper
-  implements OnInit, AfterViewInit
+  implements OnInit, AfterViewInit, OnDestroy
 {
   @ViewChild("matSuffix", { static: true }) matSuffix!: TemplateRef<any>;
 
@@ -38,8 +39,14 @@ export class InlineHelpWrapperComponent
     this.fieldId = <string>this.field.key;
 
     if (this.matSuffix && !this.props.isSuffixUnsupported) {
+      this.props._matSuffix = this.props.suffix;
       this.props.suffix = this.matSuffix;
     }
+  }
+
+  ngOnDestroy(): void {
+    // we need to reset suffix to prevent infinite recursion
+    this.props.suffix = null;
   }
 
   showContextHelp(evt: MouseEvent) {

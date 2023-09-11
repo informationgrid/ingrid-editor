@@ -40,9 +40,19 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr
             mat-row
+            tabindex="0"
             *matRowDef="let row; columns: displayedColumns"
             [class.readonly]="isSearching"
             (click)="openDataset(row)"
+            (keyup.enter)="openDataset(row)"
+            [attr.aria-label]="
+                'Titel: ' +
+                row.title +
+                ', zuletzt bearbeitet: ' +
+                (row._contentModified | dateAgo : 'DE') +
+                ', Verantwortlicher: ' +
+                (row._responsibleUser | fullName | async)
+            "
         ></tr>
     </table>
 

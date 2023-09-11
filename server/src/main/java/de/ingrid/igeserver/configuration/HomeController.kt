@@ -1,23 +1,33 @@
 package de.ingrid.igeserver.configuration
 
 import de.ingrid.igeserver.api.ForbiddenException
+import de.ingrid.igeserver.services.SettingsService
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.view.RedirectView
 
 /**
  * Home redirection to swagger api documentation
  */
 @Controller
-class HomeController {
+class HomeController(val settingsService: SettingsService) {
 
     @GetMapping(value = ["/swagger"])
     fun swagger(): RedirectView {
         return RedirectView("swagger-ui/index.html")
+    }
+
+    @GetMapping(value = ["/barrierefreiheit"], produces = [MediaType.TEXT_HTML_VALUE])
+    @ResponseBody
+    fun accessibility(): String {
+        val page = settingsService.getItemAsList<LinkedHashMap<String, String>>("cms").find { it["pageId"] == "accessibility" }
+        val content = if (page?.get("content").isNullOrEmpty()) {
+            val inputStream = object {}.javaClass.classLoader.getResourceAsStream("content/accessibility.html")
+            inputStream?.bufferedReader()?.readText() ?: "FEHLER!!!"
+        } else page?.get("content") ?: ""
+        return content
     }
 
     @GetMapping(value = ["/accessDenied"])

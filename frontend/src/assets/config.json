@@ -2,7 +2,8 @@
   "contextPath": "/",
   "brokerUrl": "ws://localhost:8550/ws",
   "mapTileUrl": "//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
-  "nominatimUrl": "https://nominatim.openstreetmap.org",
+  "nominatimUrl": "https://nominatim.openstreetmap.org/search?q={query}&format=json&countrycodes={countries}",
+  "showAccessibilityLink": true,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,

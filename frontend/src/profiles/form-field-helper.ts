@@ -27,6 +27,8 @@ export interface Options {
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
+  ariaLabel?: string;
+  ariaDescription?: string;
 }
 
 export interface DatePickerOptions extends Options {
@@ -34,6 +36,8 @@ export interface DatePickerOptions extends Options {
   placeholder?: string;
   datepickerOptions?: any;
   validators?: any;
+  suffix?: any;
+  prefix?: any;
 }
 
 export interface RepeatOptions extends Options {
@@ -50,6 +54,7 @@ export interface RepeatDetailListOptions extends Options {
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
+  infoText?: string;
 }
 
 export interface RepeatListOptions extends Options {
@@ -68,6 +73,7 @@ export interface RepeatListOptions extends Options {
   asAutocomplete?: boolean;
   asSimpleValues?: boolean;
   convert?: (value) => any;
+  isSuffixUnsupported?: boolean;
 }
 
 export interface RepeatChipOptions extends Options {
@@ -158,6 +164,8 @@ export class FormFieldHelper {
         externalLabel: label,
         contextHelpId: options?.contextHelpId,
         required: options?.required,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldGroup: fields,
       expressions: {
@@ -204,11 +212,14 @@ export class FormFieldHelper {
         rows: options?.rows ?? "3",
         attributes: {
           style: "resize:vertical;",
+          "aria-label": options?.ariaLabel ?? label,
         },
         appearance: "outline",
         required: options?.required,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
     };
@@ -218,11 +229,11 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options = {}
+    options: Options = {}
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       fieldLabel: label,
       ...options,
     });
@@ -240,6 +251,8 @@ export class FormFieldHelper {
         required: options?.required,
         allowedTypes: options?.allowedTypes,
         max: options?.max,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       validators: {
         addressesPublished: {
@@ -300,6 +313,7 @@ export class FormFieldHelper {
         showSearch: options?.showSearch,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        isSuffixUnsupported: options?.isSuffixUnsupported,
         change: options?.change,
         remove: options?.remove,
         view: options?.view,
@@ -310,6 +324,8 @@ export class FormFieldHelper {
         asAutocomplete: options?.asAutocomplete ?? false,
         asSimpleValues: options?.asSimpleValues,
         convert: options?.convert,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
     };
@@ -376,6 +392,8 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
         addButtonTitle: options?.addButtonTitle,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -447,6 +465,11 @@ export class FormFieldHelper {
         keydown: options?.keydown,
         placeholder: options?.placeholder,
         hideInPreview: options?.hideInPreview ?? false,
+        attributes: {
+          "aria-label": options?.ariaLabel ?? label,
+        },
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
       modelOptions: {
         updateOn: options?.updateOn ?? "blur",
@@ -490,6 +513,8 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         contextHelpId: options?.contextHelpId,
+        ariaLabel: options?.ariaLabel ?? label ?? options?.fieldLabel,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
       hooks: options?.hooks,
@@ -554,6 +579,8 @@ export class FormFieldHelper {
         height: 386,
         limitTypes: options?.limitTypes,
         max: options?.max,
+        ariaLabel: options?.ariaLabel ?? label,
+        ariaDescription: options?.ariaDescription,
       },
     };
   }
@@ -576,16 +603,24 @@ export class FormFieldHelper {
         appearance: "outline",
         required: options?.required,
         datepickerOptions: options?.datepickerOptions,
+        addonRight: options?.suffix,
+        addonLeft: options?.prefix,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
+        attributes: {
+          "aria-label": options?.ariaLabel,
+          "aria-description": options?.ariaDescription,
+        },
       },
       expressions: expressions,
       validators: options?.validators,
     };
   }
 
-  addDatepickerInline(id, label, options = {}) {
+  addDatepickerInline(id, label, options: any = {}) {
     return this.addDatepicker(id, null, {
       fieldLabel: label,
-      wrappers: ["form-field"],
+      wrappers: options?.wrappers ?? ["form-field"],
       ...options,
     });
   }
@@ -611,6 +646,8 @@ export class FormFieldHelper {
         externalLabel: label,
         appearance: "outline",
         required: options?.required,
+        ariaLabel: options?.ariaLabel,
+        ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
       validators: options?.validators ?? {

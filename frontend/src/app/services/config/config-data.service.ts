@@ -4,6 +4,7 @@ import { environment } from "../../../environments/environment";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { CatalogService } from "../../+catalog/services/catalog.service";
+import { firstValueFrom } from "rxjs";
 
 export class ConfigDataService {
   config: Configuration;
@@ -11,7 +12,7 @@ export class ConfigDataService {
   constructor(private httpClient: HttpClient) {}
 
   private getEnvironmentConfig(): Promise<Configuration> {
-    return this.httpClient.get<any>(environment.configFile).toPromise();
+    return firstValueFrom(this.httpClient.get<any>(environment.configFile));
   }
 
   /**
@@ -23,17 +24,18 @@ export class ConfigDataService {
    */
   async load(): Promise<any> {
     const config = await this.getEnvironmentConfig();
-    return this.httpClient
-      .get<any>(config.contextPath + "api/config")
-      .pipe(map((data) => ({ ...config, ...data })))
-      .toPromise();
+    return firstValueFrom(
+      this.httpClient
+        .get<any>(config.contextPath + "api/config")
+        .pipe(map((data) => ({ ...config, ...data })))
+    );
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {
     return (
-      this.httpClient
-        .get<any>(this.config.backendUrl + "info/currentUser")
-        .toPromise()
+      firstValueFrom(
+        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser")
+      )
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
         .then(ConfigDataService.mapUserInformation)
@@ -72,24 +74,11 @@ export class ConfigDataService {
     );
   }
 
-  private static mapUserInformation(json) {
-    return <UserInfo>{
-      assignedCatalogs: json.assignedCatalogs ?? [],
-      name: json.name,
-      firstName: json.firstName,
-      lastName: json.lastName,
-      email: json.email,
-      role: json.role ?? "",
-      groups: json.groups ?? [],
-      userId: json.userId,
-      currentCatalog: CatalogService.mapCatalog(json.currentCatalog) ?? {},
-      catalogProfile: json.catalogProfile,
-      version: json.version,
-      externalHelp: json.externalHelp,
-      lastLogin: json.lastLogin ? new Date(json.lastLogin) : undefined,
-      useElasticsearch: json.useElasticsearch === true,
-      permissions: json.permissions ?? [],
-      parentProfile: json.parentProfile,
-    };
+  private static mapUserInformation(json): UserInfo {
+    const result = Object.assign({}, json);
+    result.currentCatalog =
+      CatalogService.mapCatalog(json.currentCatalog) ?? {};
+    result.lastLogin = json.lastLogin ? new Date(json.lastLogin) : undefined;
+    return result;
   }
 }

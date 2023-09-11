@@ -2,6 +2,10 @@
     *ngFor="let item of myModel; let i = index"
     class="item clickable"
     (click)="openReference(item)"
+    (keyup.enter)="openReference(item)"
+    tabindex="0"
+    role="listitem"
+    [attr.aria-label]="item.title"
 >
     <div class="title">
         <mat-icon
@@ -19,6 +23,7 @@
         type="button"
         class="remove-icon"
         (click)="removeItem(i, $event)"
+        [attr.aria-description]="item.title + ' entfernen'"
     >
         <mat-icon>clear</mat-icon>
     </button>

@@ -12,17 +12,20 @@ import org.springframework.security.access.prepost.PreAuthorize
 interface DocumentRepository : JpaRepository<Document, Int> {
 
     fun getByCatalogAndUuidAndIsLatestIsTrue(catalog: Catalog, uuid: String): Document
-    
+
     fun findAllByCatalogAndIsLatestIsTrueAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
-    
+
+    // caution! no deleted, latest checks. used for post-migration
+    fun  findAllByCatalog_Identifier(catalog_identifier: String): List<Document>
+
     fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DOCUMENT_STATE): Long
-    
+
     fun getByCatalog_IdentifierAndUuidAndState(
         catalog_identifier: String,
         uuid: String,
         state: DOCUMENT_STATE
     ): Document
-    
+
     @Modifying
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteAllByUuid(uuid: String)

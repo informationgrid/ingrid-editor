@@ -1,0 +1,74 @@
+@import "src/variables";
+
+ige-add-button {
+  display: block;
+  padding-bottom: 22px;
+}
+
+.cdk-drag {
+  background: $ige-background;
+}
+
+.cdk-drag-handle {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+mat-panel-description {
+  img {
+    vertical-align: middle;
+  }
+}
+
+.mat-mdc-list-item {
+  height: auto;
+  padding: 4px;
+  border-bottom: 2px solid #fff;
+
+  .type {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .url,
+  .explanation {
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+
+  .url {
+    -webkit-line-clamp: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .explanation {
+    -webkit-line-clamp: 2;
+  }
+}
+
+.expander {
+  transition: all 0.2s linear;
+
+  &.expanded {
+    transform: scale(1, -1);
+  }
+}
+
+mat-expansion-panel-header {
+  height: unset;
+  min-height: 60px;
+  padding: 0;
+}
+.mat-expansion-panel:first-of-type,
+.mat-expansion-panel:last-of-type {
+  border-radius: 0 !important;
+}
+
+.mat-expansion-panel-header-description {
+  margin: 0;
+}

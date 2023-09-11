@@ -148,6 +148,12 @@ export class CatalogService {
     };
   }
 
+  getExpiryDuration(): Observable<number> {
+    return this.getConfig().pipe(
+      map((config) => config.expiredDatasetConfig?.expiryDuration ?? 0)
+    );
+  }
+
   getConfig(): Observable<any> {
     return this.http
       .get<any>(this.configuration.backendUrl + "catalogConfig")

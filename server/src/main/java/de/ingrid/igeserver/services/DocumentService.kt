@@ -465,8 +465,20 @@ class DocumentService @Autowired constructor(
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
 
+        // check optimistic locking manually, since new versions can be created here when publishing e.g.
+        if (data.version !== dbVersion) {
+            throw ConcurrentModificationException.withConflictingResource(
+                docData.document.id.toString(),
+                dbVersion!!,
+                data.version!!
+            )
+        }
+
         // if we update a published document then create a new document with the correct latest flag
-        handleUpdateOnPublishedOnlyDocument(docData)
+        val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData)
+        if (newDatasetVersionCreated) {
+            data.version = docData.document.version
+        }
 
         val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
 
@@ -502,22 +514,28 @@ class DocumentService @Autowired constructor(
         docData: DocumentData,
         nextStateIsDraft: Boolean = true,
         delayedPublication: Boolean = false
-    ) {
+    ): Boolean {
+        var newVersionCreated = false
 
         if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
             docData.document.isLatest = false
             if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
             docRepo.save(docData.document)
 
+            entityManager.detach(docData.document)
+
             prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft)
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
             else DOCUMENT_STATE.PUBLISHED
+            newVersionCreated = true
         } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
             moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
+            newVersionCreated = true
         }
         docData.document.modified = dateService.now()
+        return newVersionCreated
     }
 
     private fun prepareDocumentForCopy(document: Document) {
@@ -551,10 +569,22 @@ class DocumentService @Autowired constructor(
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
 
-        handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
+        // check optimistic locking manually, since new versions can be created here when publishing e.g.
+        if (data.version !== dbVersion) {
+            throw ConcurrentModificationException.withConflictingResource(
+                docData.document.id.toString(),
+                dbVersion!!,
+                data.version!!
+            )
+        }
+
+        val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
         docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
 
+        if (newDatasetVersionCreated) {
+            data.version = docData.document.version
+        }
         val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
 
         val preUpdatePayload = PreUpdatePayload(docType, finalUpdatedDoc, docData.wrapper)
@@ -773,7 +803,7 @@ class DocumentService @Autowired constructor(
         lastPublished.state = DOCUMENT_STATE.WITHDRAWN
         lastPublished.isLatest = false
         docRepo.save(lastPublished)
-        
+
         // if no draft version exists, copy published version to draft and update state of published version
         val updatedDoc = if (onlyPublished) {
             // copy published version to draft
@@ -885,7 +915,7 @@ class DocumentService @Autowired constructor(
     fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
         val cleanedTags =
-            wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+            wrapper.tags.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags

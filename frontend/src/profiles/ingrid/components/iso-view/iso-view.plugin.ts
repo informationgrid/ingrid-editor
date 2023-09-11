@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -9,7 +8,9 @@ import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../app/store/address-tree/address-tree.query";
 import { ExchangeService } from "../../../../app/+importExport/exchange.service";
 import { combineLatest, of } from "rxjs";
-import { FormPluginsService } from "../../../../app/+form/form-shared/form-plugins.service";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
+import { PluginService } from "../../../../app/services/plugin/plugin.service";
+import { catchError } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable({ providedIn: "root" })
@@ -33,11 +34,11 @@ export class IsoViewPlugin extends Plugin {
     private exportService: ExchangeService
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     // add button to toolbar
     this.formToolbarService.addButton({
@@ -66,7 +67,10 @@ export class IsoViewPlugin extends Plugin {
         );
       });
 
-    this.subscriptions.push(toolbarEventSubscription, openedDocSubscription);
+    this.formSubscriptions.push(
+      toolbarEventSubscription,
+      openedDocSubscription
+    );
   }
 
   private showISODialog() {
@@ -86,23 +90,30 @@ export class IsoViewPlugin extends Plugin {
       currentDocument._state === "PW"
         ? this.exportService.export(optionsOnlyPublished)
         : of(null),
-    ]).subscribe(async ([current, published]) => {
-      this.dialog.open(IsoViewComponent, {
-        data: {
-          uuid: currentDocument._uuid,
-          isoText: await current.body.text(),
-          isoTextPublished: await published?.body.text(),
-        },
+    ])
+      .pipe(
+        catchError((error) => {
+          throw new Error(
+            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind."
+          );
+        })
+      )
+      .subscribe(async ([current, published]) => {
+        this.dialog.open(IsoViewComponent, {
+          data: {
+            uuid: currentDocument._uuid,
+            isoText: await current.body.text(),
+            isoTextPublished: await published?.body.text(),
+          },
+        });
       });
-    });
   }
 
-  unregister() {
-    super.unregister();
-    this.formToolbarService.removeButton("toolBtnIso");
-  }
+  unregisterForm() {
+    super.unregisterForm();
 
-  private handleError(error: any) {
-    return undefined;
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnIso");
+    }
   }
 }

@@ -22,11 +22,13 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
              document_wrapper dw,
              document doc
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'ingrid'
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
           AND doc.state != 'ARCHIVED'
+          AND doc.is_latest = true
     """.trimIndent()
 
 
@@ -101,6 +103,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
         return graphicOverviews
             .asSequence()
+            .filter { it.has("fileName") && it["fileName"].has("uri") }
             .map { jacksonObjectMapper().convertValue(it, LinkItem::class.java) }
             .filter { it.fileName.asLink }
             .map { it.fileName.uri }

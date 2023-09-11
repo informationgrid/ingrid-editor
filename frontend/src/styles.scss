@@ -2,6 +2,7 @@
 @import "./material.override.scss";
 //@import "./material-fields.override.scss";
 @import "./styles-print.scss";
+@import "./styles-outline";
 
 html,
 body {
@@ -277,11 +278,13 @@ h1 {
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.width-25 ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.25;
     padding-right: 10px; // simulate gap used by multiple fields in one row
     min-width: 130px;
   }
+
   &.with-side-button ige-one-column-wrapper > div > ige-form-label + * {
     flex: 0.8;
     padding-right: 10px; // simulate gap used by multiple fields in one row
@@ -298,7 +301,7 @@ h1 {
   }
 }
 
-ige-section-wrapper > h3 {
+ige-section-wrapper > h2 {
   color: $ige-primary;
   margin-top: 0;
   margin-bottom: 16px;
@@ -628,6 +631,7 @@ ige-one-column-wrapper formly-group {
 .flex-2 {
   flex: 2;
 }
+
 .flex-3 {
   flex: 3;
 }
@@ -840,11 +844,6 @@ ige-form-label + * {
   --mat-mdc-button-persistent-ripple-color: #ffffff;
 }
 
-// color for accessibility
-[mat-flat-button][color="primary"].cdk-keyboard-focused {
-  background-color: lighten($ige-secondary, 10%) !important;
-}
-
 // Context Buttons
 .mat-mdc-icon-button {
   &.table-options {
@@ -858,6 +857,7 @@ ige-form-label + * {
     width: 26px !important;
     height: 26px !important;
     line-height: 24px;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 !important;
@@ -963,7 +963,6 @@ mat-icon.mark-color .coloring {
     border-bottom: none;
     height: 56px !important;
 
-    &:focus,
     &:hover {
       background: lighten($ige-secondary, 8%);
     }
@@ -1105,6 +1104,15 @@ mat-icon.mark-color .coloring {
   border-radius: 4px;
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
     0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-handle {
+  cursor: move;
+  color: $ige-hint-color;
+
+  &:hover {
+    color: $ige-secondary;
+  }
 }
 
 .legend {
@@ -1350,4 +1358,11 @@ table.big-font {
   .mat-button-toggle-label-content {
     line-height: 30px;
   }
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }

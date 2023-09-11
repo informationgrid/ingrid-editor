@@ -24,20 +24,33 @@ export abstract class Plugin {
   _state?: string;
   forAddress = false;
   subscriptions: Subscription[] = [];
+  formSubscriptions: Subscription[] = [];
   fields?: FormlyFieldConfig[] = [];
   data?: any;
   hideInAddress = false;
 
   register(): void {
-    console.log("Register: ", this.name);
+    console.log("Register Plugin: ", this.name);
     this.isActive = true;
   }
 
+  registerForm(): void {
+    console.log("Register Form-Plugin: ", this.name);
+  }
+
   unregister(): void {
-    console.log("Unregister: ", this.name);
+    console.log("Unregister Plugin: ", this.name);
     this.isActive = false;
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];
+  }
+
+  unregisterForm(): void {
+    if (this.isActive) {
+      console.log("Unregister Form-Plugin: ", this.name);
+      this.formSubscriptions.forEach((sub) => sub.unsubscribe());
+      this.formSubscriptions = [];
+    }
   }
 
   update(): void {}

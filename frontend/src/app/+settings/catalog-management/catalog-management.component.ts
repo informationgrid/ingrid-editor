@@ -66,7 +66,7 @@ export class CatalogManagementComponent implements OnInit {
     this.catalogService.getCatalogs().subscribe();
 
     this.configService.$userInfo.subscribe((info) => {
-      this.currentUserID = info.userId;
+      this.currentUserID = info.login;
       this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
       this.currentCatalog = info.currentCatalog?.id;
     });

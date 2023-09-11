@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { QueryQuery } from "../../store/query/query.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter, tap } from "rxjs/operators";
+import { filter, finalize } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -54,7 +54,7 @@ export class TabSqlComponent implements OnInit {
     this.isSearching = true;
     this.researchService
       .searchBySQL(sql)
-      .pipe(tap(() => (this.isSearching = false)))
+      .pipe(finalize(() => (this.isSearching = false)))
       .subscribe(
         (result) => this.updateHits(result)
         // (error: HttpErrorResponse) => (this.error = error.error.errorText)

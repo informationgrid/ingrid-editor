@@ -1,12 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-} from "@angular/core";
-import { Observable } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { map, tap } from "rxjs/operators";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { UntilDestroy } from "@ngneat/until-destroy";
 
 /**
  * This functionality was much inspired by https://stackoverflow.com/questions/48601880/svg-counterclockwise
@@ -18,11 +11,14 @@ import { map, tap } from "rxjs/operators";
   styleUrls: ["./chart.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent implements OnInit {
-  @Input() data: Observable<number[]>;
+export class ChartComponent {
+  @Input() set data(values: number[]) {
+    if (values !== null) this.prepare(values);
+  }
+
   @Input() showPercentages: boolean;
 
-  dataMap: Observable<any>;
+  dataMap: any;
 
   total: number;
 
@@ -33,29 +29,23 @@ export class ChartComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    this.dataMap = this.data.pipe(
-      tap((values) => (this.total = this.calculateTotal(values))),
-      tap((values) => {
-        this.strokeDash = [
-          [
-            this.calculateAdjustedStrokeDash(values[1]),
-            this.calculateStrokeDash(values[0]),
-          ],
-          [
-            this.calculateStrokeDash(values[1]),
-            this.calculateAdjustedStrokeDash(values[0]),
-          ],
-        ];
-      }),
-      map((values) => {
-        return {
-          first: values[0] ?? 0,
-          second: values[1] ?? 0,
-        };
-      }),
-      untilDestroyed(this)
-    );
+  prepare(data: number[]) {
+    this.dataMap = {
+      first: data[0] ?? 0,
+      second: data[1] ?? 0,
+    };
+    this.total = this.calculateTotal(data);
+
+    this.strokeDash = [
+      [
+        this.calculateAdjustedStrokeDash(data[1]),
+        this.calculateStrokeDash(data[0]),
+      ],
+      [
+        this.calculateStrokeDash(data[1]),
+        this.calculateAdjustedStrokeDash(data[0]),
+      ],
+    ];
   }
 
   private calculateStrokeDash(dataVal) {

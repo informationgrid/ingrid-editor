@@ -64,6 +64,11 @@
                             [class.hide-optionals]="hideOptionalFields"
                             [class.hide]="model._type === 'FOLDER'"
                         >
+                            <div class="requiredDescription">
+                                *Pflichtangabe
+                                <br />STRG + ALT + S zum Speichern<br />STRG +
+                                ALT + V zum Veröffentlichen
+                            </div>
                             <formly-form
                                 [form]="form"
                                 [fields]="fields"

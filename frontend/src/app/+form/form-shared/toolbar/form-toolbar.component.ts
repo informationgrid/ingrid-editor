@@ -19,6 +19,7 @@ export class FormToolbarComponent implements OnInit {
   menu = {};
 
   isNotReady = false;
+  private currentFocusedEl: HTMLElement;
 
   constructor(
     private formToolbarService: FormToolbarService,
@@ -39,5 +40,14 @@ export class FormToolbarComponent implements OnInit {
 
   sendEvent(id: string) {
     this.formToolbarService.sendEvent(id);
+  }
+
+  // restoring focus must be handled manually, because custom shortcut can also trigger button click event.
+  saveCurrentFocus() {
+    this.currentFocusedEl = document.activeElement as HTMLElement;
+  }
+
+  restoreFocus() {
+    if (this.currentFocusedEl) this.currentFocusedEl.focus();
   }
 }

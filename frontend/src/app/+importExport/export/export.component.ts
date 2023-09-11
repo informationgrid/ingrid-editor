@@ -135,7 +135,7 @@ export class ExportComponent implements OnInit {
     return this.getErrorFromBlob(error).then((jsonError: IgeException) => {
       if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
         throw new IgeError(
-          "Veröffentlichte Version existiert nicht! In den Optionen können Sie auch Entwürfe exportieren."
+          "Es können nur veröffentlichte Versionen exportiert werden."
         );
       }
       throw new IgeError(jsonError.errorText);

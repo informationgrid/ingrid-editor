@@ -4,10 +4,10 @@ import { FieldWrapper } from "@ngx-formly/core";
 @Component({
   selector: "ige-section-wrapper",
   template: `
-    <h3>{{ props.label }}</h3>
+    <h2 tabindex="0" role="heading" *ngIf="props.label">{{ props.label }}</h2>
     <ng-container #fieldComponent></ng-container>
 
-    <mat-divider></mat-divider>
+    <mat-divider aria-hidden="true"></mat-divider>
   `,
   styleUrls: ["./section-wrapper.component.scss"],
 })

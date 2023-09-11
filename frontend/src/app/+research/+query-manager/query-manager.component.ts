@@ -73,6 +73,7 @@ export class QueryManagerComponent implements OnInit {
             },
           ],
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -101,7 +102,7 @@ export class QueryManagerComponent implements OnInit {
   }
 
   private addDeleteInfo(queries: QueryUI[]): QueryUI[] {
-    let currentUserId = this.configService.$userInfo.value.userId;
+    let currentUserId = this.configService.$userInfo.value.login;
     return queries.map((q) => {
       return {
         ...q,

@@ -5,7 +5,6 @@ import { BackendOption } from "../../app/store/codelist/codelist.model";
 import {
   EmailValidator,
   UrlValidator,
-  UrlValidatorMessage,
 } from "../../app/formly/input.validators";
 
 export interface AddressOptions {
@@ -53,7 +52,8 @@ export abstract class AddressShared extends BaseDoctype {
                 const type = ctrl.parent.value.type;
                 return type?.key === "4" ? UrlValidator(ctrl) === null : true;
               },
-              message: UrlValidatorMessage,
+              message: () =>
+                this.transloco.translate("form.validationMessages.url"),
             },
           },
         }),

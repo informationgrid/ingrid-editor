@@ -20,7 +20,8 @@ import {
 import { SessionStore } from "../../../store/session.store";
 import { FormMessageService } from "../../../services/form-message.service";
 import { IgeError } from "../../../models/ige-error";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { PluginService } from "../../../services/plugin/plugin.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -47,16 +48,16 @@ export class PublishPlugin extends SaveBase {
     public dialog: MatDialog,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
+    private transloco: TranslocoService,
     messageService: FormMessageService,
     sessionStore: SessionStore
   ) {
     super(sessionStore, messageService);
-    this.isActive = true;
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.setupTree();
 
@@ -84,7 +85,10 @@ export class PublishPlugin extends SaveBase {
     // add behaviour to set active states for toolbar buttons
     const behaviourSubscription = this.addBehaviour();
 
-    this.subscriptions.push(...toolbarEventSubscription, behaviourSubscription);
+    this.formSubscriptions.push(
+      ...toolbarEventSubscription,
+      behaviourSubscription
+    );
   }
 
   private setupTree() {
@@ -173,7 +177,7 @@ export class PublishPlugin extends SaveBase {
 
   publish() {
     // show confirm dialog
-    const message = "Wollen Sie diesen Datensatz wirklich veröffentlichen?";
+    const message = this.transloco.translate("publish.confirmMessage");
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -191,6 +195,7 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .subscribe((decision) => {
@@ -222,6 +227,7 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((confirmed) => confirmed))
@@ -280,6 +286,7 @@ export class PublishPlugin extends SaveBase {
           ],
         },
         maxWidth: 700,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .subscribe((doRevert) => {
@@ -295,11 +302,13 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnPublishSeparator");
-    this.formToolbarService.removeButton("toolBtnPublish");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnPublishSeparator");
+      this.formToolbarService.removeButton("toolBtnPublish");
+    }
   }
 
   /**

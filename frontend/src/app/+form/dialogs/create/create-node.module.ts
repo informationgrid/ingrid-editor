@@ -16,6 +16,7 @@ import { MatInputModule } from "@angular/material/input";
 import { SharedPipesModule } from "../../../directives/shared-pipes.module";
 import { SharedModule } from "../../../shared/shared.module";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     MatInputModule,
     SharedPipesModule,
     SharedModule,
+    TranslocoModule,
     DragDropModule,
   ],
   exports: [DestinationSelectionComponent],

@@ -27,6 +27,7 @@
             data-cy="btn-remove"
             mat-icon-button
             (click)="cancelFile()"
+            aria-label="entfernen"
         >
             <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
         </button>
@@ -34,6 +35,11 @@
             <button
                 mat-icon-button
                 (click)="file.transfer.paused ? resume() : pause()"
+                [attr.aria-label]="
+                    file.transfer.paused
+                        ? 'Hochladen fortsetzen'
+                        : 'Hochladen pausieren'
+                "
             >
                 <mat-icon class="gray">{{
                     file.transfer.paused ? "not_started" : "pause"

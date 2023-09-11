@@ -11,6 +11,7 @@ data class CatalogSettings(
 )
 
 // TODO refactor for profile specific settings
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CatalogConfig(
     val partner: String? = null,
     val provider: String? = null,
@@ -19,9 +20,17 @@ data class CatalogConfig(
     var atomDownloadUrl: String? = null,
     var spatialReference: Any? = null,
     val ibus: IBusConfig? = IBusConfig(),
+    val expiredDatasetConfig: ExpiredDatasetConfig? = null,
+)
+
+data class ExpiredDatasetConfig(
+    val emailEnabled: Boolean = false,
     val expiryDuration: Int? = null,
     val notifyDaysBeforeExpiry: Int? = null,
+    val repeatExpiry: Boolean = false,
 )
+
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig(
     val url: String? = null,

@@ -304,9 +304,9 @@ data class DateEvent(
 
 data class TimeRange(
     @JsonDeserialize(using = DateDeserializer::class)
-    val start: OffsetDateTime,
+    val start: OffsetDateTime?,
     @JsonDeserialize(using = DateDeserializer::class)
-    val end: OffsetDateTime
+    val end: OffsetDateTime?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

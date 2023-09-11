@@ -13,6 +13,7 @@
 
 <!-- suffix template for info button that activates context help -->
 <ng-template #matSuffix>
+    <ng-container *ngTemplateOutlet="props._matSuffix"></ng-container>
     <button
         *ngIf="props.hasInlineContextHelp || props.hasContextHelp"
         type="button"
@@ -20,6 +21,8 @@
         class="menu-button infoIcon"
         (click)="showContextHelp($event)"
         matTooltip="Eingabehilfe"
+        aria-haspopup="dialog"
+        [attr.aria-label]="'Eingabehilfe zu ' + props.ariaLabel"
     >
         <mat-icon
             class="material-icons-outlined"

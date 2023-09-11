@@ -102,3 +102,15 @@ export const copyToClipboardFn = () => {
     }
   };
 };
+
+/**
+ * @description Method to check if a date is expired by given day range from the current time.
+ * @param date - The date to check
+ * @param days - The number of days to locate the date of expiry
+ */
+export function isExpired(date: string, days: number): boolean {
+  const expiryDuration = 1000 * 60 * 60 * 24 * days;
+  const modifiedTime = new Date(date).getTime();
+  const expiryTime = modifiedTime + expiryDuration;
+  return Date.now() > expiryTime;
+}

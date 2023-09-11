@@ -19,7 +19,7 @@
     [multiple]="props.multiple"
     (selectionChange)="change($event)"
     [errorStateMatcher]="errorStateMatcher"
-    [aria-label]="_getAriaLabel()"
+    [aria-label]="props.ariaLabel"
     [aria-labelledby]="_getAriaLabelledby()"
     [disableOptionCentering]="props.disableOptionCentering"
 >

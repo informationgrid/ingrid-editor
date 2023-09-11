@@ -3,11 +3,14 @@
         class="header-row medium-spacing"
         [class.showShadow]="showShadow"
     >
-        <div class="header-logo"><img src="{{ t('logo') }}" /></div>
+        <div class="header-logo">
+            <img src="{{ t('logo') }}" alt="{{ t('logo-text') }}" />
+        </div>
         <span class="page-title-general"
-            ><strong>{{ t("application") }}</strong> EDITOR</span
+            ><strong>{{ t("application") }}</strong> EDITOR
+            <strong>{{ t("application-suffix") }}</strong></span
         >
-        <span class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</span>
+        <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
 
         <div class="center-header flex-grow">
             <ige-session-timeout-info
@@ -19,24 +22,31 @@
 
         <div
             *ngIf="currentCatalog$ | async as currentCatalog"
-            class="header-info flex-grow"
+            class="header-info flex-grow flex-row align-items-center justify-content-end"
         >
             Katalog:
-            <span
-                class="catalog-title"
+            <button
+                class="catalog-button"
+                mat-button
                 [matTooltip]="currentCatalog"
-                [matTooltipShowDelay]="1000"
                 [matMenuTriggerFor]="catMenu"
-                [class.empty-menu]="otherAssignedCatalogs.length == 0"
-                >{{ currentCatalog }}
-                <mat-icon *ngIf="otherAssignedCatalogs.length > 0"
-                    >keyboard_arrow_down</mat-icon
-                >
-            </span>
+                [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
+                [disabled]="otherAssignedCatalogs.length == 0"
+                aria-label="Menü zur Auswahl der Kataloge"
+                aria-describedby="catalog-label"
+            >
+                <span id="catalog-label">{{ currentCatalog }}</span>
+                <mat-icon
+                    *ngIf="otherAssignedCatalogs.length > 0"
+                    iconPositionEnd
+                    >keyboard_arrow_down
+                </mat-icon>
+            </button>
             <mat-menu #catMenu="matMenu">
                 <span
                     *ngFor="let catalog of otherAssignedCatalogs"
                     mat-menu-item
+                    class="menu-item"
                     (click)="chooseCatalog(catalog.id)"
                 >
                     {{ catalog.name }}
@@ -50,6 +60,7 @@
                 class="user-popup pad-right"
                 mat-icon-button
                 [matMenuTriggerFor]="menu"
+                aria-label="Nutzerprofil"
                 matTooltip="Nutzerprofil"
                 data-cy="header-profile-button"
             >
@@ -78,14 +89,14 @@
                     Sprache: Deutsch
                     <mat-icon>arrow_drop_down</mat-icon>
                 </span>-->
-                <span
+                <button
                     mat-menu-item
                     [disableRipple]="true"
                     (click)="openProfileSettings()"
                 >
                     <mat-icon svgIcon="perm_identity-24px"></mat-icon>
                     Profil verwalten
-                </span>
+                </button>
                 <!--<span
                     mat-menu-item
                     disabled
@@ -95,16 +106,14 @@
                     <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
                     Einstellungen
                 </span>-->
-                <div class="user-popup-footer">
-                    <button
-                        mat-button
-                        color="primary"
-                        (click)="logout()"
-                        data-cy="logout-button"
-                    >
-                        Abmelden
-                    </button>
-                </div>
+                <button
+                    mat-menu-item
+                    class="user-popup-footer"
+                    (click)="logout()"
+                    data-cy="logout-button"
+                >
+                    <span class="label">Abmelden</span>
+                </button>
             </mat-menu>
 
             <button
@@ -112,7 +121,8 @@
                 class="user-popup"
                 mat-icon-button
                 [matMenuTriggerFor]="menuInfo"
-                matTooltip="Systemnavigation"
+                aria-label="Systemeinstellungen"
+                matTooltip="Systemeinstellungen"
                 data-cy="header-info-button"
             >
                 <mat-icon svgIcon="Mehr"></mat-icon>
@@ -120,44 +130,47 @@
             <mat-menu #menuInfo="matMenu" class="info-menu user-popup-menu">
                 <div class="user-popup-header">
                     <mat-card-title
-                        ><strong>{{ t("application") }}</strong>
-                        EDITOR</mat-card-title
+                        ><strong>{{ t("application") }}</strong> EDITOR
+                        <strong>{{
+                            t("application-suffix")
+                        }}</strong></mat-card-title
                     >
                 </div>
 
-                <div *ngFor="let group of config.menuGroups">
-                    <div *ngIf="!group.adminOnly || isAdmin">
-                        <span mat-menu-item disabled class="category-item">{{
-                            group.title
-                        }}</span>
-                        <mat-divider></mat-divider>
-                        <ng-container *ngFor="let entry of group.entries">
-                            <button
-                                *ngIf="entry.isRouterLink"
-                                mat-menu-item
-                                [routerLink]="[catalogId + '/' + entry.link]"
-                            >
-                                {{ entry.label }}
-                            </button>
-                            <a
-                                *ngIf="!entry.isRouterLink"
-                                mat-menu-item
-                                href="{{ entry.link }}"
-                                target="_blank"
-                                >{{ entry.label }}</a
-                            >
-                            <mat-divider></mat-divider>
-                        </ng-container>
+                <ng-container *ngIf="menuItems.length > 0 && isAdmin">
+                    <div
+                        class="popup-leading upper-case flex-row align-items-center"
+                    >
+                        Verwaltung
                     </div>
-                </div>
-                <a
-                    mat-menu-item
-                    href="{{ externalHelp ?? '#' }}"
-                    target="_blank"
-                    >Hilfe</a
-                >
+                    <mat-divider aria-hidden="true"></mat-divider>
+                    <ng-container *ngFor="let group of menuItems">
+                        <button
+                            mat-menu-item
+                            [routerLink]="[
+                                catalogId + '/settings/' + group.path
+                            ]"
+                        >
+                            {{ group.data?.title }}
+                        </button>
+                        <mat-divider aria-hidden="true"></mat-divider>
+                    </ng-container>
+                </ng-container>
 
-                <mat-divider></mat-divider>
+                <div
+                    class="popup-leading upper-case flex-row align-items-center"
+                >
+                    Informationen
+                </div>
+                <mat-divider aria-hidden="true"></mat-divider>
+
+                <ng-container *ngFor="let item of menuInfos">
+                    <a mat-menu-item href="{{ item.link }}" target="_blank">
+                        {{ item.title }}
+                    </a>
+
+                    <mat-divider aria-hidden="true"></mat-divider>
+                </ng-container>
                 <div (click)="$event.stopPropagation()" class="versioninfo">
                     <div>Version</div>
                     <div>

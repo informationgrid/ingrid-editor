@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import {
   EventData,
   EventResponder,
@@ -22,20 +21,21 @@ import { DocEventsService } from "../../../../services/event/doc-events.service"
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
 import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { FormPluginsService } from "src/app/+form/form-shared/form-plugins.service";
 import { ConfigService } from "../../../../services/config/config.service";
 import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocumentService } from "../../../../services/document/document.service";
+import { PluginService } from "../../../../services/plugin/plugin.service";
+import { Plugin } from "../../plugin";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class AssignedUserBehaviour extends Plugin {
   id = "plugin.assigned.user";
   name = "Verantwortlicher Benutzer";
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
-  private isPrivileged: boolean;
+  private readonly isPrivileged: boolean;
 
   constructor(
     private eventService: EventService,
@@ -47,23 +47,25 @@ export class AssignedUserBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
-    private configService: ConfigService,
+    configService: ConfigService,
     private toast: MatSnackBar,
     private dialog: MatDialog
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
 
     let role = configService.$userInfo.getValue().role;
-    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    // TODO: this should be centralized (configService?)
+    this.isPrivileged =
+      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   formMenuId: MenuId;
 
-  // FIXME: The behaviour is not loaded in the user management view, as it is loaded as a FormPluginToken. Should work after the behaviour refactoring
-  register() {
-    super.register();
-    this.subscriptions.push(
+  registerForm() {
+    super.registerForm();
+
+    this.formSubscriptions.push(
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
         .subscribe((eventResponder) => this.handleEvent(eventResponder)),
@@ -94,8 +96,12 @@ export class AssignedUserBehaviour extends Plugin {
         this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
         this.formMenuService.addMenuItem(this.formMenuId, button);
       });
-      this.subscriptions.push(onDocLoad);
+      this.formSubscriptions.push(onDocLoad);
     }
+  }
+
+  register() {
+    super.register();
 
     // add menu item for user management
     let selectedUser: User;
@@ -111,10 +117,16 @@ export class AssignedUserBehaviour extends Plugin {
     });
   }
 
+  unregisterForm() {
+    super.unregisterForm();
+    if (this.isActive) {
+      this.formMenuService.removeMenuItem("address", "assign-user");
+      this.formMenuService.removeMenuItem("dataset", "assign-user");
+    }
+  }
+
   unregister() {
     super.unregister();
-    this.formMenuService.removeMenuItem("address", "assign-user");
-    this.formMenuService.removeMenuItem("dataset", "assign-user");
     this.formMenuService.removeMenuItem("user", "transfer-responsibility");
   }
 
@@ -178,6 +190,7 @@ export class AssignedUserBehaviour extends Plugin {
           id: docId,
           forResponsibility: true,
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .subscribe(() => {
@@ -196,6 +209,7 @@ export class AssignedUserBehaviour extends Plugin {
           users: this.userService.users$.value,
           oldUser: oldUser,
         },
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))

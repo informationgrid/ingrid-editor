@@ -105,6 +105,12 @@ export class McloudDoctype extends BaseDoctype {
                   }
                 },
               },
+              expressions: {
+                "props.label": (field) =>
+                  field.formControl.value?.asLink
+                    ? "URL (Link)"
+                    : "Dateiname (Upload)",
+              },
             },
             {
               key: "type",
@@ -202,7 +208,6 @@ export class McloudDoctype extends BaseDoctype {
             className: "flex-1",
             wrappers: ["form-field"],
             options: [
-              { label: "", value: undefined },
               { label: "am", value: "at" },
               { label: "seit", value: "since" },
               { label: "bis", value: "till" },

@@ -7,6 +7,7 @@
         [withWhiteBorder]="false"
         hint="Für eine breitere Suche können Sie Wildcards verwenden, z.B. Harz* oder *Talsperre"
         minWidth="100%"
+        ariaLabel="Suche im Geo-Thesaurus"
     ></ige-search-input>
 
     <div *ngIf="showWelcome" class="padding-vertical comment">
@@ -30,6 +31,7 @@
                             matListItemIcon
                             [value]="entry"
                             [checked]="spatialSelection === entry"
+                            [aria-label]="entry.displayTitle"
                         ></mat-radio-button>
                         <div matListItemLine>
                             {{ entry.displayTitle }}

@@ -1,5 +1,5 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextHelpContainer>
-    <h2 mat-dialog-title cdkDragHandle>
+    <h2 mat-dialog-title cdkDragHandle [attr.aria-label]="title">
         <div class="infoIcon">
             <mat-icon
                 class="material-icons-outlined"
@@ -7,11 +7,16 @@
             ></mat-icon>
         </div>
         <span class="text">{{ title }}</span>
-        <button mat-icon-button mat-dialog-close>
+        <button
+            mat-icon-button
+            mat-dialog-close
+            aria-label="Eingabehilfe schließen"
+        >
             <mat-icon>close</mat-icon>
         </button>
     </h2>
     <div
+        tabindex="0"
         mat-dialog-content
         [innerHTML]="description$ | async"
         [class.initialWidth]="notResized"

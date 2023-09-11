@@ -1,8 +1,9 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { UntypedFormGroup } from "@angular/forms";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
 export class UndoPlugin extends Plugin {
@@ -26,6 +27,7 @@ export class UndoPlugin extends Plugin {
     private docEvents: DocEventsService
   ) {
     super();
+    inject(PluginService).registerPlugin(this);
   }
 
   register() {

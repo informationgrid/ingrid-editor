@@ -18,6 +18,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormUtils } from "../../../+form/form.utils";
 import { FormStateService } from "../../../+form/form-state.service";
+import { firstValueFrom } from "rxjs";
 
 interface Reference {
   isExternalRef: boolean;
@@ -93,9 +94,6 @@ export class DocumentReferenceTypeComponent
           this.add(null, {
             uuid: item.uuid,
             isExternalRef: false,
-            state: item.state,
-            type: "InGridGeoDataset",
-            icon: "Geodatensatz",
           });
           this.props.change?.(this.field);
         }
@@ -104,13 +102,18 @@ export class DocumentReferenceTypeComponent
 
   showExternalRefDialog() {
     this.dialog
-      .open(SelectCswRecordDialog, { minWidth: 400 })
+      .open(SelectCswRecordDialog, {
+        data: {
+          asAtomDownloadService:
+            this.options.formState.mainModel.service.isAtomDownload,
+        },
+        minWidth: 400,
+      })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {
         if (item) {
           this.add(null, {
-            title: item.title,
-            url: item.url,
+            ...item,
             isExternalRef: true,
           });
           this.props.change?.(this.field);
@@ -175,14 +178,13 @@ export class DocumentReferenceTypeComponent
       return this.mapToDocumentReference(nodeEntity);
     }
 
-    return await this.docService
-      .load(item.uuid, false, false, true)
-      .pipe(
+    return await firstValueFrom(
+      this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
           return this.mapToDocumentReference(doc);
         })
       )
-      .toPromise();
+    );
   }
 
   private mapToDocumentReference(doc: IgeDocument): DocumentReference {

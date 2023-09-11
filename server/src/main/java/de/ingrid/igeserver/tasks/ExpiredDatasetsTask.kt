@@ -1,10 +1,14 @@
 package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.configuration.MailProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.IgeAclService
+import de.ingrid.igeserver.services.UserManagementService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
@@ -20,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import java.time.OffsetDateTime
-import java.util.*
 
 @Component
 class ExpiredDatasetsTask(
@@ -31,12 +34,12 @@ class ExpiredDatasetsTask(
     val documentService: DocumentService,
     val aclService: IgeAclService,
     private val keycloakService: UserManagementService,
-    val appSettings: GeneralProperties
+    val appSettings: GeneralProperties,
+    val mailProps: MailProperties,
 ) {
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    val repeatExpiryCheck = false
 
     val log = logger()
 
@@ -55,8 +58,12 @@ class ExpiredDatasetsTask(
     }
 
     private fun sendExpiryEmails(catalog: Catalog) {
-        val expiryDuration = catalog.settings?.config?.expiryDuration ?: -1
-        val notifyDaysBeforeExpiry = catalog.settings?.config?.notifyDaysBeforeExpiry ?: -1
+        val config = catalog.settings?.config?.expiredDatasetConfig ?: return
+        if (!config.emailEnabled) return;
+
+        val repeatExpiryCheck = config.repeatExpiry
+        val expiryDuration = config.expiryDuration ?: -1
+        val notifyDaysBeforeExpiry = config.notifyDaysBeforeExpiry ?: -1
 
         if (expiryDuration < 0) {
             log.info("Expiry duration not set for catalog ${catalog.name}")
@@ -69,15 +76,15 @@ class ExpiredDatasetsTask(
         // only fill if notify days before expiry is set
         var aboutToExpireDatasets = emptyList<ExpiredDataset>()
         if (notifyDaysBeforeExpiry >= 0) {
-            log.info("Notify days before expiry not set for catalog ${catalog.name}")
-
             val notifyDate =
-                OffsetDateTime.now().minusDays(expiryDuration.toLong()).minusDays(notifyDaysBeforeExpiry.toLong())
+                expireDate.plusDays(notifyDaysBeforeExpiry.toLong())
             aboutToExpireDatasets =
                 this.getDatasetsEditedBefore(catalog, notifyDate, ExpiryState.INITIAL, expireDate).map {
                     this.mapToDataset(it)
                 }
             log.info("Found ${aboutToExpireDatasets.size} datasets about to expire for catalog ${catalog.name}")
+        } else {
+            log.info("Notify days before expiry not set for catalog ${catalog.name}")
         }
 
         var expiredDatasets = this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.TO_BE_EXPIRED).map {
@@ -97,17 +104,21 @@ class ExpiredDatasetsTask(
 
         expiredDatasets = expiredDatasets + repeatExpiredDatasets
 
-        val linkstub = "${appSettings.host}/${catalog.name}"
+        val linkstub = "${appSettings.host}/${catalog.identifier}"
+        val catalogType = catalog.type
 
 
         try {
-            this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub)
-            this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub)
+            this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub, catalogType)
+            this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub, catalogType)
 
-             this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
-             this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
+            this.updateExpiryState(expiredDatasets, ExpiryState.EXPIRED)
+            this.updateExpiryState(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED)
         } catch (e: Exception) {
-            log.error("Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.", e)
+            log.error(
+                "Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.",
+                e
+            )
         }
     }
 
@@ -147,7 +158,7 @@ class ExpiredDatasetsTask(
             """
                 SELECT d.uuid, dw.responsibleUser.userId, d.title, d.modified, d.modifiedby, dw.category
                     FROM DocumentWrapper dw, Document d
-                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.deleted != 1 AND d.isLatest AND d.modified < :date 
+                    WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
                     $limitDateFilter
                     $expiryFilter
                     """
@@ -162,7 +173,8 @@ class ExpiredDatasetsTask(
     fun sendExpiryNotificationMails(
         expiredDatasetList: List<ExpiredDataset>,
         expiryState: ExpiryState = ExpiryState.EXPIRED,
-        linkstub: String
+        linkstub: String,
+        catalogType: String
     ) {
         val emailDatasetMap = this.createMailDatasetMap(expiredDatasetList)
         val it: Iterator<Map.Entry<String, List<ExpiredDataset>>> = emailDatasetMap.entries.iterator()
@@ -174,11 +186,18 @@ class ExpiredDatasetsTask(
                 val recipient = keycloakService.getUser(client, login).email
 
                 val subject =
-                    if (ExpiryState.EXPIRED == expiryState) "Ingrid: Dataset expired" else "Ingrid: Dataset will expire"
+                    if (ExpiryState.EXPIRED == expiryState) mailProps.subjectDatasetIsExpired else mailProps.subjectDatasetWillExpire
 
                 val output = StringOutput()
+
+                val baseTemplate =
+                    if (ExpiryState.EXPIRED == expiryState) "expired-template.jte" else "will-expire-template.jte"
+
+                // check if profile specific template exists, otherwise use default
+                val template =
+                    if (templateEngine.hasTemplate("${catalogType}/${baseTemplate}")) "${catalogType}/${baseTemplate}" else baseTemplate
                 templateEngine.render(
-                    if (ExpiryState.EXPIRED == expiryState) "ingrid/expired-template.jte" else "ingrid/will-expire-template.jte",
+                    template,
                     mapOf(
                         "map" to mapOf(
                             "datasets" to expDatasets,

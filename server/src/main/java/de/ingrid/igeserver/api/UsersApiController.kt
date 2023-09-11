@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
@@ -32,7 +33,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
-class UsersApiController : UsersApi {
+class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     private val logger = logger()
 
@@ -133,6 +134,18 @@ class UsersApiController : UsersApi {
         val deleted = catalogService.deleteUser(catalogId, login)
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
+            if (!developmentMode) {
+                keycloakService.getClient(principal).use { client ->
+                    val user = keycloakService.getUser(client, login)
+                    logger.info("Send deletion email to '${user.login}' (${user.email})")
+                    email.sendDeletionEmail(
+                        user.email,
+                        user.firstName,
+                        user.lastName,
+                        user.login
+                    )
+                }
+            }
             keycloakService.deleteUser(principal, login)
         }
 
@@ -297,8 +310,10 @@ class UsersApiController : UsersApi {
                 emptyList()
             }
 
+            val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
             val userInfo = UserInfo(
-                userId = user.login,
+                id = dbUser?.id,
+                login = user.login,
                 name = user.firstName + ' ' + user.lastName,
                 lastName = user.lastName,
                 firstName = user.firstName,
@@ -306,12 +321,13 @@ class UsersApiController : UsersApi {
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
                 groups = dbUser?.groups?.map { it.name!! }?.toSet(),
-                currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0),
+                currentCatalog = currentCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
-                permissions = permissions
+                permissions = permissions,
+                plugins = behaviourService.get(currentCatalog?.identifier ?: "???" )
             )
             userInfo.currentCatalog?.type?.let {
                 userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile

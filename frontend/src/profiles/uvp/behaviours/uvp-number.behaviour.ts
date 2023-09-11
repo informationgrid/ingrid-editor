@@ -1,5 +1,5 @@
-import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
+import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 
 export class UvpNumberBehaviour extends Plugin {
   id = "plugin.uvp.eia-number";

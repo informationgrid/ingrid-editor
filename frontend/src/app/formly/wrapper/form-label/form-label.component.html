@@ -1,17 +1,20 @@
-<div
-    *ngIf="hasContextHelp"
-    class="contextHelpIcon"
-    (click)="showContextHelp($event)"
->
-    <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
-</div>
-
 <div class="label-wrapper">
-    <label
-        [attr.tabindex]="hasContextHelp ? 0 : null"
-        (click)="showContextHelp($event)"
-        (keydown.enter)="showContextHelp($event)"
-    >
+    <label (click)="showContextHelp($event)">
+        <div
+            *ngIf="hasContextHelp"
+            class="context-help"
+            (click)="showContextHelp($event)"
+            (keydown.enter)="showContextHelp($event)"
+            tabindex="0"
+            role="button"
+            aria-haspopup="dialog"
+            [attr.aria-label]="'Eingabehilfe zu ' + ariaLabel"
+        >
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+            ></mat-icon>
+        </div>
         <ng-content></ng-content>
     </label>
 </div>

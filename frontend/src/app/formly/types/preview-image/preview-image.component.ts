@@ -10,6 +10,7 @@ import {
   catchError,
   distinctUntilChanged,
   filter,
+  map,
   startWith,
   tap,
 } from "rxjs/operators";
@@ -25,7 +26,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { IgeError } from "../../../models/ige-error";
+import { FormMessageService } from "../../../services/form-message.service";
+import { of } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -48,6 +50,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private dialog = inject(MatDialog);
   private uploadService = inject(UploadService);
   private cdr = inject(ChangeDetectorRef);
+  private messageService = inject(FormMessageService);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -67,6 +70,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
             return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
         },
+      },
+      expressions: {
+        "props.label": (field) =>
+          field.formControl.value?.asLink ? "URL (Link)" : "Dateiname (Upload)",
       },
     },
     {
@@ -90,7 +97,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           const aLinks = a?.map((item) => item.fileName?.uri).join("");
           const bLinks = b?.map((item) => item.fileName?.uri).join("");
           return aLinks === bLinks;
-        })
+        }),
+        tap(() => (this.imageLinks = {}))
       )
       .subscribe((value) => this.createImageLinkUris(value));
   }
@@ -99,7 +107,6 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     this.dialog
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
-        restoreFocus: true,
         data: {
           allowedUploadTypes: [
             "gif",
@@ -129,12 +136,12 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .open(LinkDialogComponent, {
         maxWidth: 600,
         hasBackdrop: true,
-        restoreFocus: true,
         data: {
           fields: this.linkFields,
           model: {},
           newEntry: true,
         } as FormDialogData,
+        delayFocusTrap: true,
       })
       .afterClosed()
       .pipe(filter((result) => result))
@@ -174,7 +181,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private createImageLinkUris(value: any[]) {
     value?.map((item, index) => {
       const uri = item.fileName?.uri;
-      if (!uri || this.imageLinks[uri] !== undefined) return;
+
+      // DON'T CACHE LINKS. hash links are temporary
+      // TODO: Rewrite to completely avoid temporary hashed links
+      //if (!uri || this.imageLinks[uri] !== undefined) return;
 
       if (item.fileName?.asLink) {
         this.imageLinks[uri] = uri;
@@ -188,11 +198,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           tap((hash) => this.addUploadUri(uri, hash)),
           catchError((error) => {
             console.log(error);
-            const igeError = new IgeError(
-              "Das Bild konnte auf dem Server nicht mehr gefunden werden"
+            this.messageService.sendError(
+              "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
             );
-            igeError.detail = error.message;
-            throw igeError;
+            return of(error);
           })
         )
         .subscribe(() => this.cdr.detectChanges());

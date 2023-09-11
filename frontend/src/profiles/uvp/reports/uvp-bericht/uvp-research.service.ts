@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter, map, switchMap } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import {
   ConfigService,
@@ -107,13 +107,13 @@ export class UvpResearchService {
   }
 
   private initUvpNumber() {
-    this.behaviourService
-      .getBehaviour("plugin.uvp.eia-number")
-      .pipe(
-        map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000),
-        switchMap((id) => this.codelistQuery.selectEntity(id)),
-        filter((id) => id !== undefined)
-      )
+    const uvpNumber =
+      this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
+        ?.uvpCodelist ?? 9000;
+
+    this.codelistQuery
+      .selectEntity(uvpNumber)
+      .pipe(filter((id) => id !== undefined))
       .subscribe((id) => {
         this.eiaNumbersCodelist = id;
         this.initialized$.next(true);

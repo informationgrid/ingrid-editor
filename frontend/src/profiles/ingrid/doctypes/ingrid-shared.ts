@@ -14,7 +14,7 @@ import {
 import { CookieService } from "../../../app/services/cookie.service";
 import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -188,6 +188,15 @@ export abstract class IngridShared extends BaseDoctype {
                     ? ctrl.value.some((address) => address.type?.key === "12")
                     : false,
                 message: "Es muss mindestens einen Ansprechpartner MD geben.",
+              },
+              atLeastOnePointOfContactWhenAdV: {
+                expression: (ctrl, field) =>
+                  // equals Ansprechpartner
+                  !field.model.isAdVCompatible ||
+                  (ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key === "7")
+                    : false),
+                message: "Es muss mindestens einen Ansprechpartner geben.",
               },
             },
           }),
@@ -537,13 +546,13 @@ export abstract class IngridShared extends BaseDoctype {
     item,
     thesaurus: string
   ): Promise<ThesaurusResult> {
-    const response = await http
-      .get<any[]>(
+    const response = await firstValueFrom(
+      http.get<any[]>(
         `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
           item
         )}&type=EXACT`
       )
-      .toPromise();
+    );
     const thesaurusName =
       thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
     if (response.length > 0) {
@@ -773,6 +782,9 @@ export abstract class IngridShared extends BaseDoctype {
               type: "number",
               expressions: {
                 "props.required": (field) => isNotEmptyObject(field.form.value),
+              },
+              validators: {
+                validation: ["positiveNum"],
               },
             }),
             this.addSelectInline("unit", "Einheit", {

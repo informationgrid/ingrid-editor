@@ -49,6 +49,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
+import { getTranslocoModule } from "../../../transloco-testing.module";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -91,6 +92,7 @@ describe("TreeComponent", () => {
       TranslocoModule,
       SharedDocumentItemModule,
       SearchInputComponent,
+      getTranslocoModule(),
     ],
     declarations: [
       TreeHeaderComponent,
@@ -794,6 +796,7 @@ describe("TreeComponent", () => {
           _contentModified: null,
           icon: "",
           isRoot: !options.parent,
+          isAddress: null,
           _tags: null,
         },
       ],

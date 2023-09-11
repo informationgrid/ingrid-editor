@@ -11,6 +11,9 @@
     cdkDropList
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)"
+    [attr.aria-label]="props?.ariaLabel"
+    aria-description="Liste der gewählten Adressen"
+    role="list"
 >
     <div
         *ngFor="let address of addresses; let i = index"
@@ -36,4 +39,5 @@
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "
+    [ariaLabel]="props?.ariaLabel"
 ></ige-add-button>

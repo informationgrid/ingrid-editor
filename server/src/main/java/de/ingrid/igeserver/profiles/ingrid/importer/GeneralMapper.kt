@@ -103,7 +103,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.getOrNull(0)
         val zipCode = address?.postalCode?.value
         val administrativeArea = address?.administrativeArea?.value
-            ?.let { codeListService.getCodeListEntryId("110", it, "name") }
+            ?.let { codeListService.getCatalogCodelistKey(catalogId, "6250", it) }
             ?.let { KeyValue(it) }
         val countryCode = address?.country?.value
             ?.let { UtilsCountryCodelist.getCodeFromShortcut3(it) }
@@ -750,6 +750,7 @@ data class CoupledResourceModel(
     val url: String?,
     val title: String?,
     val isExternalRef: Boolean,
+    val identifier: String? = null,
 )
 
 data class PointOfContact(

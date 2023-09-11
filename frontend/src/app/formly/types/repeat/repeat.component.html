@@ -5,6 +5,7 @@
         formControl.errors &&
         !formControl.hasError('required')
     "
+    [ariaLabel]="props?.ariaLabel"
 >
     <div *ngFor="let error of formControl.errors | keyvalue">
         {{ error.value.message }}
@@ -29,7 +30,7 @@
             [class.extended-gap]="props.hasExtendedGap"
             [cdkDragDisabled]="!canBeDragged"
         >
-            <mat-icon *ngIf="canBeDragged" cdkDragHandle>
+            <mat-icon *ngIf="canBeDragged" cdkDragHandle matTooltip="Sortieren">
                 drag_indicator
             </mat-icon>
             <formly-field
@@ -38,7 +39,10 @@
             ></formly-field>
             <button
                 *ngIf="formControl.enabled"
-                [disabled]="props.minLength && fieldRef < props.minLength"
+                [disabled]="
+                    props.minLength &&
+                    groupedFields[key].length <= props.minLength
+                "
                 mat-icon-button
                 class="close"
                 type="button"
@@ -58,5 +62,6 @@
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "
-    [showLabel]="groupedFieldsKeys.length == 0"
+    [showTitle]="groupedFieldsKeys.length == 0"
+    [matTooltip]="groupedFieldsKeys.length == 0 ? undefined : 'Hinzufügen'"
 ></ige-add-button>

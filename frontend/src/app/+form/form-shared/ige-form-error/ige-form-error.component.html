@@ -1,3 +1,7 @@
-<div class="form-error">
+<div
+    class="form-error"
+    [tabindex]="ariaLabel ? 0 : -1"
+    [attr.aria-description]="ariaLabel"
+>
     <ng-content></ng-content>
 </div>

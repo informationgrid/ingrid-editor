@@ -19,10 +19,7 @@
     "classification": [{ "key": "509" }],
     "coupledResources": [
       {
-        "icon": "Geodatensatz",
-        "type": "InGridGeoDataset",
         "uuid": "9d6e8a4a-de9c-4809-b4b2-c21721ed5967",
-        "state": "W",
         "isExternalRef": false
       }
     ],

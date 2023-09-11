@@ -175,13 +175,13 @@ export class LeafletTypeComponent
       .open(SpatialDialogComponent, {
         width: "90%",
         disableClose: true,
-        restoreFocus: true,
         maxWidth: 1260,
         minWidth: 600,
         data: {
           ...this.locations[locationIndex],
           limitTypes: this.props.limitTypes,
         },
+        ariaLabel: "Raumbezug hinzufügen",
       })
       .afterClosed()
       .subscribe((result: SpatialLocation) => {

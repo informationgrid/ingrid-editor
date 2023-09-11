@@ -1,6 +1,6 @@
 <div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
+    <h2 mat-dialog-title [attr.aria-label]="data.title">
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
             <mat-icon>close</mat-icon>
         </button>
         <span class="text">{{ data.title }}</span>
@@ -30,12 +30,15 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <div class="flex-col flex-1">
+    <div
+        class="flex-row flex-1"
+        [class.justify-content-space-between]="data.cookieId"
+    >
         <mat-checkbox *ngIf="data.cookieId" (change)="updateCookie($event)"
             >Hinweis nicht erneut anzeigen
         </mat-checkbox>
 
-        <div class="flex-row">
+        <div class="flex-row flex-1">
             <ng-container *ngIf="!data.hideCancelButton">
                 <button
                     *ngFor="let button of leftAlignedButtons"

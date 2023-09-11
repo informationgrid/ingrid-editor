@@ -414,18 +414,31 @@ class DatasetsApiController @Autowired constructor(
         id: Int,
     ): ResponseEntity<UserAccessResponse> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        // TODO: change structure to show permissions
+        val isSuperOrCatAdmin = authUtils.isAdmin(principal)
+
         val canWriteUsers =
             groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.WRITE).toMutableSet()
         val canOnlyReadUsers =
             groupService.getUsersWithAccess(principal, catalogId, id, BasePermission.READ).minus(canWriteUsers)
                 .toMutableSet()
 
-        // admins can always write
-        val admins =
-            catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }.toSet()
-        canWriteUsers.addAll(admins)
-        canOnlyReadUsers.removeAll(admins)
+
+        if (isSuperOrCatAdmin) {
+            //  only show admins to other admins
+            val admins =
+                catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
+                    .toSet()
+            // admins can always write
+            canWriteUsers.addAll(admins)
+            canOnlyReadUsers.removeAll(admins)
+        } else {
+            val principalManagedUsers = catalogService.getAllCatalogUserIds(principal)
+                .filter { catalogService.canEditUser(principal, it) }
+            val principalLogin = authUtils.getUsernameFromPrincipal(principal)
+            // filter list to only show users which the md-admin principal can edit + himself
+            canWriteUsers.retainAll { principalManagedUsers.contains(it.login) || it.login == principalLogin }
+            canOnlyReadUsers.retainAll { principalManagedUsers.contains(it.login) || it.login == principalLogin }
+        }
 
         return ResponseEntity.ok(UserAccessResponse(canOnlyReadUsers, canWriteUsers))
     }

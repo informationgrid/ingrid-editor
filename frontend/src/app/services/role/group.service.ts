@@ -79,7 +79,7 @@ export class GroupService {
         urs.map((ur) => {
           let user = GroupService.convertUserResponse(ur);
           // disable active user, as he cannot be edited in user view
-          if (user.login === this.configService.$userInfo.getValue().userId) {
+          if (user.login === this.configService.$userInfo.getValue().login) {
             user.readOnly = true;
           }
           return user;

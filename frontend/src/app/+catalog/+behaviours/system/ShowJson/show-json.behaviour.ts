@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { SessionStore } from "../../../../store/session.store";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { FormPluginsService } from "../../../../+form/form-shared/form-plugins.service";
+import { Plugin } from "../../plugin";
+import { PluginService } from "../../../../services/plugin/plugin.service";
 
 @Injectable()
 export class ShowJsonBehaviour extends Plugin {
@@ -21,11 +21,11 @@ export class ShowJsonBehaviour extends Plugin {
     private sessionStore: SessionStore
   ) {
     super();
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.formToolbarService.addButton({
       id: "toolBtnShowJsonSeparator",
@@ -46,7 +46,7 @@ export class ShowJsonBehaviour extends Plugin {
       .onEvent(this.eventShowJsonId)
       .subscribe(() => this.toggleJSONView());
 
-    this.subscriptions.push(toolbarEventSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   private toggleJSONView(forceState?: boolean) {
@@ -58,12 +58,14 @@ export class ShowJsonBehaviour extends Plugin {
     }));
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
-    this.formToolbarService.removeButton("toolBtnShowJson");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnShowJsonSeparator");
+      this.formToolbarService.removeButton("toolBtnShowJson");
 
-    this.toggleJSONView(false);
+      this.toggleJSONView(false);
+    }
   }
 }

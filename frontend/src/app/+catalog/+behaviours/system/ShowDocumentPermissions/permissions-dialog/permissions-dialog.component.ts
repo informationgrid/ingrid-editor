@@ -73,26 +73,26 @@ export class PermissionsDialogComponent implements OnInit {
   private buildTableData(response: any) {
     this.users = [
       ...this.createUsersWithPermission(
-        response.canOnlyRead,
-        PermissionLevel.READ
-      ),
-      ...this.createUsersWithPermission(
         response.canWrite,
         PermissionLevel.WRITE
       ),
     ];
+    // Only add readonly users if the dialog is not for responsibility
+    if (!this.forResponsibility) {
+      this.users.push(
+        ...this.createUsersWithPermission(
+          response.canOnlyRead,
+          PermissionLevel.READ
+        )
+      );
+    }
   }
 
   private createUsersWithPermission(
     users: User[],
     permission: PermissionLevel
   ): UserWithDocPermission[] {
-    const output = [];
-    for (const user of users) {
-      const createdUser = new UserWithDocPermission(user, permission);
-      output.push(createdUser);
-    }
-    return output;
+    return users.map((user) => new UserWithDocPermission(user, permission));
   }
 
   setAsResponsible() {

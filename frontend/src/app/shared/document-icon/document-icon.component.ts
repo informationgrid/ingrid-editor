@@ -1,4 +1,11 @@
-import { Component, HostBinding, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  HostBinding,
+  Input,
+  OnInit,
+  EventEmitter,
+  Output,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { DocumentUtils } from "../../services/document.utils";
@@ -22,6 +29,8 @@ export class DocumentIconComponent implements OnInit {
   }
   @Input() showDelay: number = 0;
   @Input() explicitTooltip: string;
+
+  @Output() tooltipEmitter = new EventEmitter<string>();
 
   documentState: string;
   hasTags = false;
@@ -60,6 +69,9 @@ export class DocumentIconComponent implements OnInit {
 
   private getTooltip(type: string, publicationType: string): string {
     const docType = this.translocoService.translate("docType." + type);
-    return docType + (publicationType ? ` (${publicationType})` : "");
+    const returnTooltip =
+      docType + (publicationType ? ` (${publicationType})` : "");
+    this.tooltipEmitter.emit(returnTooltip);
+    return returnTooltip;
   }
 }

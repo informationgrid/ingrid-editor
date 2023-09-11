@@ -1,7 +1,14 @@
 import { Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
-import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+} from "rxjs";
 import {
   catchError,
   filter,
@@ -38,6 +45,8 @@ import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { TagRequest } from "../../models/tag-request.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { CatalogService } from "../../+catalog/services/catalog.service";
+import { isExpired } from "../utils";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -57,11 +66,13 @@ export class DocumentService {
 
   private configuration: Configuration;
   private alternateAddressTitle: (IgeDocument) => string = null;
+
   constructor(
     private http: HttpClient,
     private configService: ConfigService,
     private modalService: ModalService,
     private dataService: DocumentDataService,
+    private catalogService: CatalogService,
     private messageService: FormMessageService,
     private profileService: ProfileService,
     private sessionStore: SessionStore,
@@ -135,6 +146,65 @@ export class DocumentService {
         map((result) => this.mapSearchResults(result)),
         tap((docs) =>
           this.sessionStore.update({ latestPublishedDocuments: docs.hits })
+        )
+      )
+      .subscribe();
+  }
+
+  findExpired(): void {
+    const model = {
+      ignoreFolders: "exceptFolders",
+      selectOnlyPublished: "document1.state = 'PUBLISHED'",
+    };
+    combineLatest(
+      this.catalogService.getExpiryDuration(),
+      this.researchService.search(
+        "",
+        {
+          type: "selectDocuments",
+          ...model,
+        },
+        "contentmodified",
+        "ASC",
+        {
+          page: 1,
+          pageSize: 5,
+        },
+        ["selectOnlyPublished"]
+      ),
+      this.researchService.search(
+        "",
+        {
+          type: "selectAddresses",
+          ...model,
+        },
+        "contentmodified",
+        "ASC",
+        {
+          page: 1,
+          pageSize: 5,
+        },
+        ["selectOnlyPublished"]
+      )
+    )
+      .pipe(
+        map(([days, docs, addresses]) => {
+          if (days == 0) return [];
+          // add annotation to addresses for distinction
+          addresses.hits.forEach((hit) => (hit.isAddress = true));
+          // combine all hits as observable
+          const combined = docs.hits
+            .concat(addresses.hits)
+            .filter((doc) => isExpired(doc._contentModified, days))
+            .sort(
+              (a, b) =>
+                new Date(a._contentModified).getTime() -
+                new Date(b._contentModified).getTime()
+            );
+          return this.mapToDocumentAbstracts(combined, null);
+        }),
+        tap((docs) =>
+          this.sessionStore.update({ oldestExpiredDocuments: docs })
         )
       )
       .subscribe();
@@ -739,6 +809,7 @@ export class DocumentService {
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
         isRoot: parentId === null,
+        isAddress: doc.isAddress,
       };
     });
   }

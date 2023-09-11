@@ -20,6 +20,7 @@ import { IgeError } from "../../models/ige-error";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { TransfersWithErrorInfo } from "./TransferWithErrors";
 import { UploadError, UploadService } from "./upload.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -35,7 +36,7 @@ import { UploadError, UploadService } from "./upload.service";
 })
 export class UploadComponent implements OnInit {
   /** Link text */
-  @Input() text = "Datei auswählen ...";
+  @Input() text = this.transloco.translate("form.placeholder.chooseFile");
   /** Name used in form which will be sent in HTTP request. */
   @Input() param = "file";
   /** Target URL for file uploading. */
@@ -58,6 +59,8 @@ export class UploadComponent implements OnInit {
   /* allow only specific file types when given */
   @Input() allowedUploadTypes: string[];
 
+  @Input() infoText: string;
+
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
   @Output() removeFile = new EventEmitter<string>();
@@ -69,10 +72,16 @@ export class UploadComponent implements OnInit {
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
 
+  /* characters that are forbidden within file name */
+  private forbiddenCharInName = "<>:'\"%$/|?*";
+
   // parameters to send with the upload information
   private additionalParameters: any;
 
-  constructor(private uploadService: UploadService) {}
+  constructor(
+    private uploadService: UploadService,
+    private transloco: TranslocoService
+  ) {}
 
   ngOnInit() {
     if (!this.target) {
@@ -137,8 +146,12 @@ export class UploadComponent implements OnInit {
     });
 
     this.flow.flowJs.on("filesAdded", (files) => {
-      if (!this.validateFileNames(files)) {
-        throw new IgeError("Der Dateiname darf kein '%' enthalten!");
+      const invalidFile = this.validateFileNames(files);
+      if (invalidFile != undefined) {
+        throw new IgeError(
+          `Der Dateiname von [${invalidFile.name}] enthält ein ungültiges Zeichen [${invalidFile.char}].
+          Bitte korrigieren Sie den Dateinamen und laden Sie die Datei erneut hoch.`
+        );
       }
       const invalidFormat = this.validateUploadTypes(files);
       if (invalidFormat != undefined) {
@@ -152,8 +165,14 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  private validateFileNames(files: flowjs.FlowFile[]): boolean {
-    return !files.some((file) => file.name.indexOf("%") !== -1);
+  // it returns the name of file and its invalid character when found
+  private validateFileNames(files: flowjs.FlowFile[]): { name; char } {
+    const forbiddenChars = this.forbiddenCharInName.split("");
+    for (const file of files) {
+      for (const char of forbiddenChars) {
+        if (file.name.includes(char)) return { name: file.name, char: char };
+      }
+    }
   }
 
   // it returns an invalid upload type when identified

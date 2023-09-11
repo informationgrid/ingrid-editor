@@ -78,25 +78,6 @@ export const fields = (codelistService: CodelistService) =>
       },
     },
     {
-      key: "expiryDuration",
-      type: "number",
-      wrappers: ["panel", "form-field"],
-      props: {
-        externalLabel:
-          "Zeitraum der Gültigkeit von Datensätzen in Tagen (optional)",
-        appearance: "outline",
-      },
-    },
-    {
-      key: "notifyDaysBeforeExpiry",
-      type: "number",
-      wrappers: ["panel", "form-field"],
-      props: {
-        externalLabel: "Benachrichtigung vor Ablauf in Tagen (optional)",
-        appearance: "outline",
-      },
-    },
-    {
       key: "spatialReference",
       type: "leaflet",
       wrappers: ["panel"],
@@ -105,5 +86,50 @@ export const fields = (codelistService: CodelistService) =>
         max: 1,
         height: 200,
       },
+    },
+    {
+      wrappers: ["section"],
+      key: "expiredDatasetConfig",
+      props: {
+        label: "Abgelaufene Metadaten",
+      },
+      fieldGroup: [
+        {
+          key: "emailEnabled",
+          type: "checkbox",
+          wrappers: ["panel"],
+          props: {
+            externalLabel: "E-Mail über abgelaufene Metadaten senden",
+            appearance: "outline",
+          },
+        },
+        {
+          key: "repeatExpiry",
+          type: "checkbox",
+          wrappers: ["panel"],
+          props: {
+            externalLabel: "E-Mail nach erneutem Ablauf senden",
+            appearance: "outline",
+          },
+        },
+        {
+          key: "expiryDuration",
+          type: "number",
+          wrappers: ["panel", "form-field"],
+          props: {
+            externalLabel: "Zeitraum der Gültigkeit von Metadaten in Tagen",
+            appearance: "outline",
+          },
+        },
+        {
+          key: "notifyDaysBeforeExpiry",
+          type: "number",
+          wrappers: ["panel", "form-field"],
+          props: {
+            externalLabel: "E-Mail vor Ablauf in Tagen (optional)",
+            appearance: "outline",
+          },
+        },
+      ],
     },
   ];

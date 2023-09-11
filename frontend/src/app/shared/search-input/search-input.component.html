@@ -14,21 +14,21 @@
         [igeFocus]="focus"
         [placeholder]="placeholder"
         data-cy="search"
-        aria-label="Search"
         [formControl]="query"
         [matAutocomplete]="autocompleteRef"
         [errorStateMatcher]="matcher"
         (focusin)="hasFocus = true"
         (focusout)="hasFocus = false"
+        [attr.aria-label]="ariaLabel"
     />
     <ng-template #noAutocomplete>
         <input
             matInput
             [igeFocus]="focus"
             [placeholder]="placeholder"
-            data-cy="search"
-            aria-label="Search"
             [formControl]="query"
+            data-cy="search"
+            [attr.aria-label]="ariaLabel"
         />
     </ng-template>
     <div matSuffix>
@@ -41,6 +41,7 @@
             mat-icon-button
             class="field-close"
             (click)="resetSearch()"
+            aria-label="Suche zurücksetzen"
         >
             <mat-icon class="gray">close</mat-icon>
         </button>

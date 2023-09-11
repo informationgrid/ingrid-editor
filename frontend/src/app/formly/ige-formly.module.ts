@@ -62,11 +62,9 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
-  maxValidationMessage,
-  minValidationMessage,
   NotEmptyArrayValidator,
+  PositiveNumValidator,
   UrlValidator,
-  UrlValidatorMessage,
 } from "./input.validators";
 import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
@@ -96,6 +94,7 @@ import { PreviewImageComponent } from "./types/preview-image/preview-image.compo
 import { GeothesaurusWfsgndeComponent } from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
 import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
+import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -150,6 +149,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "repeatDetailList",
           component: RepeatDetailListComponent,
+        },
+        {
+          name: "repeatDistributionDetailList",
+          component: RepeatDistributionDetailListComponent,
         },
         {
           name: "repeatChip",
@@ -231,45 +234,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         { name: "email", validation: EmailValidator },
         { name: "notEmptyArray", validation: NotEmptyArrayValidator },
         { name: "url", validation: UrlValidator },
+        { name: "positiveNum", validation: PositiveNumValidator },
       ],
-      validationMessages: [
-        { name: "required", message: "Dieses Feld muss ausgefüllt sein" },
-        {
-          name: "email",
-          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
-        },
-        {
-          name: "emailInRepeat",
-          message: "Dieses Feld muss eine gültige E-Mail Adresse sein",
-        },
-        {
-          name: "lowercase",
-          message: "Dieses Feld darf keine Großbuchstaben enthalten",
-        },
-        {
-          name: "url",
-          message: UrlValidatorMessage,
-        },
-        {
-          name: "matDatepickerMin",
-          message: "Das Datum liegt weiter zurück als erlaubt",
-        },
-        {
-          name: "matDatepickerMax",
-          message: "Das Datum ist größer als erlaubt",
-        },
-        {
-          name: "min",
-          message: minValidationMessage,
-        },
-        {
-          name: "max",
-          message: maxValidationMessage,
-        },
-      ] /*,
+      /*,
       wrappers: [
         { name: 'panel', component: OneColumnWrapperComponent },
-      ]*/,
+      ]*/
     }),
     FormFieldsModule,
     SharedModule,

@@ -18,4 +18,4 @@ title: Verweisziel
 
 # Verweisziel
 
-Angabe der Webseite (URL) oder des Objekts (uuid), auf die bzw. das verwiesen werden soll.
+Angabe der Webseite (URL), auf die verwiesen werden soll.

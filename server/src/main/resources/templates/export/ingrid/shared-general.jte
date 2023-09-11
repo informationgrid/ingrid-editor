@@ -244,7 +244,6 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
-        @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
@@ -272,7 +271,7 @@
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
         @endif
-        @if(page.getUseConstraints() != null)
+        @if(page.getUseConstraints() != null && !page.getUseConstraints().isEmpty())
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
                 <gmd:useConstraints>
@@ -282,12 +281,12 @@
                     <gmd:otherConstraints>
                         @template.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
-                    @if(useconstraint.getSource() != null)
+                    @if(useconstraint.getSource() != null && !useconstraint.getSource().isEmpty())
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
-                    @if(useconstraint.getJson() != null)
+                    @if(useconstraint.getJson() != null && !useconstraint.getJson().isEmpty())
                         <gmd:otherConstraints>
                             <gco:CharacterString>${useconstraint.getJson()}</gco:CharacterString>
                         </gmd:otherConstraints>

@@ -1,0 +1,208 @@
+<ige-form-error
+    *ngIf="showError && formControl.invalid && formControl.errors"
+    [ariaLabel]="props.ariaLabel"
+>
+    <div *ngFor="let error of formControl.errors | keyvalue">
+        {{ error.value.message }}
+    </div>
+</ige-form-error>
+
+<mat-accordion [multi]="!formControl.enabled">
+    <mat-list
+        *ngIf="field.fieldGroup.length"
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        (cdkDropListDropped)="drop($event)"
+        role="list"
+        [attr.aria-label]="props?.ariaLabel"
+    >
+        <mat-list-item
+            *ngFor="let item of field.fieldGroup; let i = index"
+            cdkDrag
+            [cdkDragDisabled]="formControl.disabled"
+            [class.clickable]="formControl.enabled"
+            [class.draggable]="formControl.enabled"
+        >
+            <mat-expansion-panel
+                hideToggle
+                [expanded]="!formControl.enabled"
+                [disabled]="!formControl.enabled"
+                (opened)="showMore[i] = true"
+                (closed)="showMore[i] = false"
+            >
+                <mat-expansion-panel-header role="listitem">
+                    <mat-panel-title>
+                        <mat-icon
+                            *ngIf="formControl.enabled"
+                            cdkDragHandle
+                            aria-hidden="true"
+                            >drag_indicator
+                        </mat-icon>
+                        {{ model[i].title }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <div class="flex-1 flex-col align-items-start">
+                            <a
+                                *ngIf="model[i].link.asLink"
+                                class="url no-text-transform icon-in-table"
+                                [href]="model[i].link.uri"
+                                (click)="$event.stopPropagation()"
+                                (keydown)="$event.stopPropagation()"
+                                target="_blank"
+                            >
+                                <img
+                                    width="20"
+                                    height="20"
+                                    src="assets/icons/external_link.svg"
+                                    alt="link"
+                                />
+                                {{ model[i].link.uri }}</a
+                            >
+                            <a
+                                *ngIf="!model[i].link.asLink"
+                                class="url no-text-transform icon-in-table"
+                                [href]="getDownloadURL(model[i].link.uri)"
+                                (click)="
+                                    handleCellClick(i, model[i].link, $event);
+                                    $event.stopPropagation()
+                                "
+                                (keydown)="$event.stopPropagation()"
+                                target="_blank"
+                            >
+                                <img
+                                    width="20"
+                                    height="20"
+                                    src="assets/icons/download.svg"
+                                />
+                                {{ model[i].link.uri }}</a
+                            >
+                        </div>
+                        <button
+                            *ngIf="formControl.enabled"
+                            mat-icon-button
+                            class="menu-button expander"
+                            [class.expanded]="showMore[i]"
+                            (click)="showMore[i] = !showMore[i]"
+                            [matTooltip]="showMore[i] ? 'Schließen' : 'Öffnen'"
+                            [attr.aria-label]="
+                                (showMore[i] ? 'Schließen' : 'Öffnen') +
+                                ' Details des Ressource'
+                            "
+                        >
+                            <mat-icon class="animated"
+                                >keyboard_arrow_down
+                            </mat-icon>
+                        </button>
+                        <button
+                            *ngIf="formControl.enabled"
+                            #moreButton
+                            mat-icon-button
+                            type="button"
+                            class="menu-button"
+                            [matMenuTriggerFor]="menu"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                            matTooltip="Bearbeiten"
+                            aria-label="Ressource bearbeiten"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+
+                            <mat-menu #menu>
+                                <button
+                                    mat-menu-item
+                                    (click)="moreButton.focus(); editItem(i)"
+                                >
+                                    Bearbeiten
+                                </button>
+                                <button
+                                    mat-menu-item
+                                    (click)="moreButton.focus(); remove(i)"
+                                >
+                                    Entfernen
+                                </button>
+                            </mat-menu>
+                        </button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div class="flex-1 flex-col align-items-start">
+                    <div *ngIf="model[i].description" class="explanation">
+                        {{ model[i].description }}
+                    </div>
+
+                    <div *ngIf="model[i].format?.key">
+                        <div class="type">
+                            Format: {{ model[i].format?.key }}
+                        </div>
+                    </div>
+                    <div *ngIf="model[i].languages?.length > 0">
+                        <div class="type">
+                            Sprachen:
+                            <span *ngFor="let language of model[i].languages">
+                                {{ language.key | codelist : "20007" | async }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="model[i].modified">
+                        <div class="type">
+                            Zuletzt Bearbeitet:
+                            {{ getDateString(model[i].modified) }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <a
+                            *ngIf="model[i].license?.key"
+                            class="url no-text-transform icon-in-table"
+                            [href]="model[i].license?.key"
+                            target="_blank"
+                        >
+                            {{
+                                model[i].license?.key
+                                    | codelist : "20004"
+                                    | async
+                            }}
+                        </a>
+                        <ng-container *ngIf="model[i].byClause"
+                            >Namensnennung:
+                            {{ model[i].byClause }}</ng-container
+                        >
+                    </div>
+                    <div *ngIf="model[i].availability?.key">
+                        {{
+                            model[i].availability?.key
+                                | codelist : "20005"
+                                | async
+                        }}
+                    </div>
+                </div>
+            </mat-expansion-panel>
+        </mat-list-item>
+    </mat-list>
+</mat-accordion>
+
+<div class="button-wrapper" *ngIf="formControl.enabled">
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="showUploadFilesDialog()"
+        [attr.aria-label]="props?.ariaLabel"
+        aria-haspopup="dialog"
+        aria-description="Dateien hochladen"
+    >
+        Dateien hochladen
+    </button>
+    oder
+    <button
+        type="button"
+        mat-stroked-button
+        color="primary"
+        (click)="openDialog()"
+        [attr.aria-label]="props?.ariaLabel"
+        aria-haspopup="dialog"
+        aria-description="Link angeben"
+    >
+        Link angeben
+    </button>
+</div>

@@ -11,7 +11,7 @@ import {
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { combineLatest, Observable, Subject } from "rxjs";
+import { combineLatest, firstValueFrom, Observable, Subject } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { UpdateType } from "../../../models/update-type.enum";
@@ -100,6 +100,7 @@ export class TreeComponent implements OnInit {
   dragManager: DragNDropUtils;
   isDragging = false;
   hasWriteToRootPermission = this.configService.hasWriteRootPermission();
+  initialized = false;
 
   constructor(
     private database: DynamicDatabase,
@@ -177,7 +178,7 @@ export class TreeComponent implements OnInit {
     this.setActiveNode.pipe(untilDestroyed(this)).subscribe(async (id) => {
       if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
         this.activeNodeId = id;
-        await this.reloadTree(true).toPromise();
+        await firstValueFrom(this.reloadTree(true));
         // reloadTree will jump to node
         return;
       }
@@ -515,11 +516,17 @@ export class TreeComponent implements OnInit {
             this.handleExpandNodes(ids).then(() => {
               const node = this.dataSource.getNode(this.activeNodeId);
               this.selectNode(node);
+              this.initialized = true;
+              this.cdr.detectChanges();
             });
           });
         });
     } else {
-      this.reloadTree().subscribe(() => this.handleActiveNodeSubscription());
+      this.reloadTree().subscribe(() => {
+        this.handleActiveNodeSubscription();
+        this.initialized = true;
+        this.cdr.detectChanges();
+      });
     }
   }
 

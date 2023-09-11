@@ -3,12 +3,16 @@
         *ngFor="let location of typedLocations[type]"
         class="clickable small-padding-right wrapper"
         (click)="selectLocation.next(location.indexNumber)"
+        tabindex="0"
+        role="listitem"
+        [attr.aria-label]="location.title"
     >
         <mat-icon
             *ngIf="location.value || location.wkt"
             [style.background-color]="location.color + '40'"
             [style.color]="location.color"
-            ><div></div>
+        >
+            <div></div>
         </mat-icon>
         <mat-icon
             *ngIf="!location.value && !location.wkt"
@@ -63,28 +67,38 @@
 
         <button
             *ngIf="!disabled"
+            #menuButton
             type="button"
             mat-icon-button
             class="menu-button"
-            matTooltip="Bearbeiten"
             [matMenuTriggerFor]="spatialRef"
             (click)="$event.stopPropagation()"
+            matTooltip="Bearbeiten"
+            aria-label="Bearbeiten"
         >
-            <mat-icon svgIcon="Mehr"></mat-icon>
+            <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
+            <mat-menu #spatialRef="matMenu">
+                <button
+                    mat-menu-item
+                    (click)="selectLocation.next(location.indexNumber)"
+                >
+                    Anzeigen
+                </button>
+                <button
+                    mat-menu-item
+                    (click)="
+                        menuButton.focus(); edit.next(location.indexNumber)
+                    "
+                >
+                    Bearbeiten
+                </button>
+                <button
+                    mat-menu-item
+                    (click)="menuButton.focus(); confirmRemove(location)"
+                >
+                    Löschen
+                </button>
+            </mat-menu>
         </button>
-        <mat-menu #spatialRef="matMenu">
-            <button
-                mat-menu-item
-                (click)="selectLocation.next(location.indexNumber)"
-            >
-                Anzeigen
-            </button>
-            <button mat-menu-item (click)="edit.next(location.indexNumber)">
-                Bearbeiten
-            </button>
-            <button mat-menu-item (click)="confirmRemove(location)">
-                Löschen
-            </button>
-        </mat-menu>
     </div>
 </ng-container>

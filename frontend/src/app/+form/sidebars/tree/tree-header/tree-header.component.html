@@ -9,6 +9,7 @@
         [indeterminate]="indeterminateToggleAll"
         (change)="toggleAllSelection.next($event.checked)"
         (keyup.enter)="toggleAllSelection.next(!checkToggleAll)"
+        aria-label="Alle Metadaten in der Baumansicht auswählen"
         >Alle
     </mat-checkbox>
     <button
@@ -16,6 +17,7 @@
         matSuffix
         (click)="deactivateMultiSelection()"
         data-cy="exit-multi-select-mode"
+        aria-label="Auswahlmodus abbrechen"
     >
         <mat-icon>cancel</mat-icon>
     </button>
@@ -32,6 +34,7 @@
                 matTooltip="Mehrfachauswahl"
                 (click)="activateMultiSelection()"
                 (keyup.enter)="activateMultiSelection()"
+                aria-label="Auswahl der Metadaten in der Baumansicht aktivieren"
             >
                 Auswahl
             </mat-checkbox>
@@ -52,6 +55,7 @@
                 class="reload-button"
                 matTooltip="Aktualisieren"
                 (click)="reloadTree()"
+                aria-label="Die Baumansicht der Metadaten neuladen"
             >
                 <mat-icon>refresh</mat-icon>
             </button>
@@ -67,6 +71,7 @@
             [focus]="false"
             placeholder="Suchen"
             showSearchIcon="true"
+            ariaLabel="Suche nach der Metadaten in der Baumansicht"
         ></ige-search-input>
 
         <mat-autocomplete

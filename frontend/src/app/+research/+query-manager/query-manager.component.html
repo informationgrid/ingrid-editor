@@ -7,14 +7,18 @@
             *ngFor="let type of queryTypes"
             [label]="type.label"
             data-cy="card-saved-queries"
+            role="list"
         >
             <div
                 *ngFor="
                     let query of type.queries | async;
                     trackBy: getIdentifier
                 "
+                tabindex="0"
+                role="listitem"
                 class="item clickable flex-row"
                 (click)="load(query.id)"
+                (keydown.enter)="load(query.id)"
             >
                 <mat-icon>star_outline</mat-icon>
                 <div>
@@ -31,6 +35,7 @@
                 }}</span>
                 <ng-container *ngIf="query.canDelete; else placeholder">
                     <button
+                        #editButton
                         mat-icon-button
                         class="menu-button"
                         matTooltip="Bearbeiten"
@@ -40,7 +45,10 @@
                         <mat-icon svgIcon="Mehr"></mat-icon>
                     </button>
                     <mat-menu #spatialRef="matMenu">
-                        <button mat-menu-item (click)="removeQuery(query.id)">
+                        <button
+                            mat-menu-item
+                            (click)="editButton.focus(); removeQuery(query.id)"
+                        >
                             Löschen
                         </button>
                     </mat-menu>

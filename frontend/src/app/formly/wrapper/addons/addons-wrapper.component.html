@@ -18,6 +18,7 @@
 <ng-container #fieldComponent></ng-container>
 
 <ng-template #matSuffix>
+    <ng-container *ngTemplateOutlet="props._matSuffix"></ng-container>
     <button
         *ngIf="props.addonRight?.isButton"
         type="button"

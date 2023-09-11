@@ -9,6 +9,9 @@ import { Component, Input, OnInit } from "@angular/core";
 export class FormErrorComponent implements OnInit {
   @Input() message: string;
 
+  // accessibility
+  @Input() ariaLabel: string;
+
   constructor() {}
 
   ngOnInit(): void {}

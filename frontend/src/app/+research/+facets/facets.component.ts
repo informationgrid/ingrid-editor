@@ -22,7 +22,7 @@ import {
   UntypedFormGroup,
 } from "@angular/forms";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter, map, take } from "rxjs/operators";
+import { filter, take } from "rxjs/operators";
 import {
   CodelistService,
   SelectOptionUi,
@@ -194,19 +194,12 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       let behaviourId = group.filter[0].codelistIdFromBehaviour;
       if (behaviourId) {
         const behaviourAndField = behaviourId.split("::");
-        this.behaviourService
-          .getBehaviour(behaviourAndField[0])
-          .pipe(
-            map(
-              (behaviour) =>
-                behaviour?.data?.[behaviourAndField[1]] ?? behaviourAndField[2]
-            )
-          )
-          .subscribe(
-            (id) =>
-              (this.codelistOptions[group.id] =
-                this.codelistService.observe(id))
-          );
+        const id =
+          this.behaviourService.getBehaviour(behaviourAndField[0])?.data?.[
+            behaviourAndField[1]
+          ] ?? behaviourAndField[2];
+
+        this.codelistOptions[group.id] = this.codelistService.observe(id);
       }
     }
   }
@@ -218,10 +211,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     data.limitTypes = ["free"];
 
     this.dialog
-      .open(SpatialDialogComponent, {
-        data: data,
-        restoreFocus: true,
-      })
+      .open(SpatialDialogComponent, { data: data })
       .afterClosed()
       .subscribe((result) => {
         if (result) this.updateLocation(result);

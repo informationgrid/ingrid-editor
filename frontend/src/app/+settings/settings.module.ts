@@ -35,6 +35,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
+import { ContentManagementComponent } from "./content-management/content-management.component";
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignm
     SharedModule,
     MatDatepickerModule,
     DragDropModule,
+    ContentManagementComponent,
   ],
 })
 export class SettingsModule {}

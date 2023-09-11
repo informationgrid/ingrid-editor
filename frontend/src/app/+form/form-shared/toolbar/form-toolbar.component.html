@@ -1,15 +1,15 @@
 <mat-toolbar>
-    <mat-toolbar-row>
+    <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
         <ng-container *ngFor="let button of buttons_left">
             <button
                 *ngIf="!button.isSeparator && !button.menu"
                 mat-button
                 class="standard-toolbar-button"
                 [attr.data-cy]="'toolbar_' + button.eventId"
-                [matTooltip]="button.tooltip"
-                [matTooltipShowDelay]="1000"
                 (click)="sendEvent(button.eventId)"
                 [disabled]="!button.active || isNotReady"
+                [matTooltip]="button.tooltip"
+                [attr.aria-label]="button.tooltip"
             >
                 <mat-icon
                     class="material-icons-outlined"
@@ -20,15 +20,16 @@
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
                 <button
+                    #actionsMenu
                     mat-button
                     class="drop-down"
                     [matMenuTriggerFor]="copyMenu"
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [disabled]="!button.active || isNotReady"
                     (menuOpened)="menu[button.id] = true"
                     (menuClosed)="menu[button.id] = false"
+                    [matTooltip]="button.tooltip"
+                    [attr.aria-label]="button.tooltip"
                 >
                     <mat-icon
                         class="material-icons-outlined"
@@ -45,7 +46,9 @@
                         mat-menu-item
                         [disabled]="!menuItem.active"
                         [attr.data-cy]="'copyMenu_' + menuItem.eventId"
-                        (click)="sendEvent(menuItem.eventId)"
+                        (click)="
+                            actionsMenu.focus(); sendEvent(menuItem.eventId)
+                        "
                     >
                         <span>{{ menuItem.label }}</span>
                     </button>
@@ -55,6 +58,7 @@
                 *ngIf="button.isSeparator"
                 class="separator"
                 [vertical]="true"
+                aria-hidden="true"
             ></mat-divider>
         </ng-container>
 
@@ -66,7 +70,6 @@
                     *ngIf="!button.isSeparator && !button.label"
                     mat-icon-button
                     [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     (click)="sendEvent(button.eventId)"
                     [disabled]="!button.active || isNotReady"
@@ -79,9 +82,8 @@
                     mat-stroked-button
                     class="toolbar-save-button"
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [matTooltip]="button.tooltip"
-                    [matTooltipShowDelay]="1000"
                     [disabled]="!button.active || isNotReady"
+                    [attr.aria-label]="button.label"
                     (click)="sendEvent(button.eventId)"
                 >
                     {{ button.label }}
@@ -93,21 +95,24 @@
                         color="primary"
                         (click)="sendEvent(button.eventId)"
                         [attr.data-cy]="'toolbar_publish_now'"
-                        [matTooltip]="button.tooltip"
-                        [matTooltipShowDelay]="1000"
                         [disabled]="!button.active || isNotReady"
+                        [attr.aria-label]="button.label"
                     >
                         {{ button.label }}
                     </button>
                     <button
+                        #actionsMenu
                         class="btnPublishMore"
                         mat-flat-button
                         color="primary"
                         [disabled]="!button.active || isNotReady"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matMenuTriggerFor]="publishMenu"
+                        [matMenuTriggerRestoreFocus]="false"
                         (menuOpened)="menu[button.id] = true"
                         (menuClosed)="menu[button.id] = false"
+                        aria-label="Mehr zum Veröffentlichen"
+                        (click)="saveCurrentFocus()"
                     >
                         <mat-icon>{{
                             menu[button.id]
@@ -116,7 +121,11 @@
                         }}</mat-icon>
                     </button>
 
-                    <mat-menu #publishMenu="matMenu" class="publish-menu">
+                    <mat-menu
+                        #publishMenu="matMenu"
+                        class="publish-menu"
+                        (closed)="restoreFocus()"
+                    >
                         <button
                             *ngFor="let menuItem of button.menu"
                             mat-menu-item

@@ -6,6 +6,7 @@
 >
     <ige-form-label
         [hasContextHelp]="props.hasContextHelp"
+        [ariaLabel]="props.ariaLabel"
         (contextHelp)="showContextHelp($event)"
     >
         {{ props.externalLabel }}<span *ngIf="props.required">*</span>

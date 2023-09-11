@@ -1,15 +1,27 @@
-<div class="timeout-wrapper" [class.warn]="timeout < 300">
-    <span class="label">Logout in&nbsp;</span>
-    <span *ngIf="timeout >= 300" class="time"
-        >{{ timeout | time : "short" }}&nbsp;Minuten</span
-    >
-    <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
+<div
+    class="timeout-wrapper"
+    [class.warn]="timeout < 300"
+    [class.auto-hide]="autoHide"
+    tabindex="0"
+    aria-labelledby="timeout-info"
+    aria-description="Klick auf die Eingabetaste, um die Zeitspanne zum Auto-Logout zurückzusetzen"
+    (keyup.enter)="refreshSession()"
+>
+    <span id="timeout-info" aria-hidden="true">
+        <span class="label">Logout in&nbsp;</span>
+        <span *ngIf="timeout >= 300" class="time"
+            >{{ timeout | time : "short" }}&nbsp;Minuten</span
+        >
+        <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
+    </span>
+
     <div class="separator"></div>
 
     <button
         mat-icon-button
         matTooltip="Aktualisieren"
         (click)="refreshSession()"
+        tabindex="-1"
     >
         <mat-icon>refresh</mat-icon>
     </button>

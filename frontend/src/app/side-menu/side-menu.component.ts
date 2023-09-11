@@ -1,7 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { ConfigService } from "../services/config/config.service";
+import {
+  ConfigService,
+  Configuration,
+} from "../services/config/config.service";
 import { MainMenuService } from "../menu/main-menu.service";
 import { NavigationEnd, Route, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
@@ -36,6 +39,7 @@ export class SideMenuComponent implements OnInit {
   currentRoute: string;
   toggleState = "collapsed";
   catalogId = ConfigService.catalogId;
+  configuration: Configuration;
 
   constructor(
     private router: Router,
@@ -45,6 +49,7 @@ export class SideMenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.configuration = this.configService.getConfiguration();
     this.session.isSidebarExpanded$.subscribe(
       (expanded) => (this.menuIsExpanded = expanded)
     );

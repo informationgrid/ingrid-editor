@@ -32,6 +32,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { FormlyModule } from "@ngx-formly/core";
 import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
+import { SharedPipesModule } from "../directives/shared-pipes.module";
 
 @NgModule({
   imports: [
@@ -61,6 +62,7 @@ import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler
     DragDropModule,
     FormlyModule,
     JobHandlerHeaderModule,
+    SharedPipesModule,
   ],
   providers: [CatalogService],
   declarations: [

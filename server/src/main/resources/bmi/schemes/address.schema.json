@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/BmiAddress",
+  "definitions": {
+    "BmiAddress": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "_type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "address": {
+          "$ref": "#/definitions/AddressClass"
+        },
+        "contact": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contact"
+          },
+          "minItems": 1
+        },
+        "organization": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "_uuid",
+        "_type",
+        "organization",
+        "contact"
+      ],
+      "title": "Address"
+    },
+    "AddressClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "street": {
+          "type": ["string", "null"]
+        },
+        "city": {
+          "type": ["string", "null"]
+        },
+        "zip-code": {
+          "type": ["string", "null"],
+          "format": "integer"
+        },
+        "country": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/KeyValue"
+            }
+          ]
+        }
+      },
+      "required": [
+      ],
+      "title": "AddressClass"
+    },
+    "Contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "connection": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "connection",
+        "type"
+      ],
+      "title": "Contact"
+    },
+    "KeyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "title": "KeyValue"
+    }
+  }
+}

@@ -106,8 +106,6 @@ export class ContextHelpService {
       hasBackdrop: false,
       closeOnNavigation: true,
       position: dialogPosition,
-      autoFocus: false,
-      restoreFocus: true,
     });
   }
 

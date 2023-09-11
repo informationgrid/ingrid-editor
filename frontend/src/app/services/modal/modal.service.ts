@@ -27,6 +27,7 @@ export class ModalService {
         data: options,
         maxWidth: 700,
         hasBackdrop: hasBackdrop,
+        delayFocusTrap: true,
       })
       .afterClosed();
   }
@@ -60,6 +61,7 @@ export class ModalService {
         maxWidth: 700,
         hasBackdrop: true,
         data: this.errors,
+        delayFocusTrap: true,
       });
       this.dialogRef.afterClosed().subscribe(() => {
         this.dialogRef = null;

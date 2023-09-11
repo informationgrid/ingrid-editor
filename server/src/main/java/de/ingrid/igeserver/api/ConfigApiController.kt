@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.services.IBusService
@@ -19,8 +20,8 @@ class ConfigApiController @Autowired constructor(
     @Autowired(required = false)
     var iBusService: IBusService? = null
 
-    @Value("\${keycloak.auth-server-url}")
-    lateinit var keycloakUrl: String
+    @Value("\${keycloak.auth-server-url-frontend}")
+    lateinit var keycloakUrlFrontend: String
 
     @Value("\${keycloak.realm}")
     lateinit var keycloakRealm: String
@@ -39,7 +40,7 @@ class ConfigApiController @Autowired constructor(
 
         return ResponseEntity.ok().body(
             FrontendConfiguration(
-                keycloakUrl = keycloakUrl,
+                keycloakUrl = keycloakUrlFrontend,
                 keycloakRealm = keycloakRealm,
                 keycloakClientId = keycloakClientId,
                 keycloakEnabled = keycloakEnabled,
@@ -69,5 +70,14 @@ class ConfigApiController @Autowired constructor(
 
     }
 
+    override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {
+        val cms = settingsService.getItemAsList<LinkedHashMap<String,String>>("cms")
+        return ResponseEntity.ok(cms)
+    }
+
+    override fun updateCMS(pages: List<CMSPage>): ResponseEntity<Unit> {
+        this.settingsService.updateItem("cms", pages)
+        return ResponseEntity.ok().build()
+    }
 
 }

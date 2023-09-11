@@ -5,15 +5,15 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { Observable, of } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
 import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
-import { BehaviourService } from "../services/behavior/behaviour.service";
 import { ConfigService } from "../services/config/config.service";
+import { PluginService } from "../services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
@@ -25,7 +25,7 @@ export class FormChangeDeactivateGuard {
     private dialog: MatDialog,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private behaviourService: BehaviourService
+    private pluginService: PluginService
   ) {
     // additionally to the catalog info in the url we also use additional 6 characters
     // to include slashes and `form` path
@@ -59,8 +59,10 @@ export class FormChangeDeactivateGuard {
 
     return this.handleFormHasChanged(target).pipe(
       tap((leavePage) => {
-        if (leavePage)
+        if (leavePage) {
           this.handleBehaviourRegistration(currentState, nextState);
+          this.formStateService.getForm().reset();
+        }
       })
     );
   }
@@ -75,7 +77,7 @@ export class FormChangeDeactivateGuard {
       nextState.url.indexOf(documentPath) !== 0
     ) {
       // unsubscribe from form plugins
-      this.behaviourService.registerState$.next({
+      this.pluginService.pluginState$.next({
         register: false,
         address: false,
       });
@@ -86,7 +88,7 @@ export class FormChangeDeactivateGuard {
         nextState.url.indexOf(addressPath) !== 0
       ) {
         // subscribe form plugins
-        this.behaviourService.registerState$.next({
+        this.pluginService.pluginState$.next({
           register: false,
           address: true,
         });
@@ -136,14 +138,14 @@ export class FormChangeDeactivateGuard {
 
     if (action === "save") {
       const form = this.formStateService.getForm()?.value;
-      await this.documentService
-        .save({
+      await firstValueFrom(
+        this.documentService.save({
           data: form,
           isNewDoc: false,
           isAddress: isAddress,
           noVisualUpdates: true,
         })
-        .toPromise();
+      );
       this.documentService.reload$.next({
         uuid: currentUuid,
         forAddress: isAddress,

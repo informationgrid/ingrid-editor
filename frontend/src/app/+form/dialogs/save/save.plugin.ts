@@ -1,6 +1,5 @@
 import { inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { IgeDocument } from "../../../models/ige-document";
@@ -13,7 +12,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
-import { FormPluginsService } from "../../form-shared/form-plugins.service";
+import { PluginService } from "../../../services/plugin/plugin.service";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -28,21 +27,21 @@ export class SavePlugin extends SaveBase {
   constructor(
     public formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private modalService: ModalService,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public documentService: DocumentService,
     sessionStore: SessionStore,
     messageService: FormMessageService,
+
     @Inject(DOCUMENT) private _document: Document
   ) {
     super(sessionStore, messageService);
-    inject(FormPluginsService).registerPlugin(this);
+    inject(PluginService).registerPlugin(this);
   }
 
-  register() {
-    super.register();
+  registerForm() {
+    super.registerForm();
 
     this.setupTree();
 
@@ -83,7 +82,7 @@ export class SavePlugin extends SaveBase {
       }
     );
 
-    this.subscriptions.push(toolbarEventSubscription, treeSubscription);
+    this.formSubscriptions.push(toolbarEventSubscription, treeSubscription);
   }
 
   private setupTree() {
@@ -97,25 +96,30 @@ export class SavePlugin extends SaveBase {
   saveWithData(formData: IgeDocument) {
     this.documentService.publishState$.next(false);
 
-    this.handleValidationOnSave();
+    // delay execution to reset error messages after publish state has been set to false
+    setTimeout(() => {
+      this.handleValidationOnSave();
 
-    return this.documentService
-      .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
-      .pipe(
-        catchError((error) =>
-          this.handleError(error, formData, this.forAddress, "SAVE")
-        ),
-        finalize(() =>
-          this.formToolbarService.setButtonState("toolBtnSave", true)
+      return this.documentService
+        .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
+        .pipe(
+          catchError((error) =>
+            this.handleError(error, formData, this.forAddress, "SAVE")
+          ),
+          finalize(() =>
+            this.formToolbarService.setButtonState("toolBtnSave", true)
+          )
         )
-      )
-      .subscribe();
+        .subscribe();
+    });
   }
 
-  unregister() {
-    super.unregister();
+  unregisterForm() {
+    super.unregisterForm();
 
-    this.formToolbarService.removeButton("toolBtnSave");
+    if (this.isActive) {
+      this.formToolbarService.removeButton("toolBtnSave");
+    }
   }
 
   private handleValidationOnSave() {

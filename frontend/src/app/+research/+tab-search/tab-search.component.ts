@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
 import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
-import { of } from "rxjs";
+import { firstValueFrom, of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
 import {
   catchError,
@@ -137,10 +137,11 @@ export class TabSearchComponent implements OnInit {
   }
 
   private async initFacets() {
-    return this.researchService
-      .getQuickFilter()
-      .pipe(tap((filters) => (this.facets = filters)))
-      .toPromise();
+    return firstValueFrom(
+      this.researchService
+        .getQuickFilter()
+        .pipe(tap((filters) => (this.facets = filters)))
+    );
   }
 
   resetSearchField() {

@@ -7,25 +7,34 @@ import {
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { FormGroup, UntypedFormGroup } from "@angular/forms";
+import { firstValueFrom } from "rxjs";
 
 export class FormUtils {
   static timestamp: number = 0;
+
   static addHotkeys(
     event: KeyboardEvent,
     service: FormToolbarService,
     readonly: boolean
   ) {
-    if (event.ctrlKey && event.key === "s") {
-      // CTRL + S (Save)
+    // CTRL + ALT + S (save current document)
+    if (event.ctrlKey && event.altKey && event.key === "s") {
       console.log("SAVE");
       event.stopImmediatePropagation();
       event.stopPropagation();
-      event.preventDefault();
       let dif = event.timeStamp - FormUtils.timestamp;
       if (!readonly && !event.repeat && dif > 500) {
         service.sendEvent("SAVE");
         FormUtils.timestamp = event.timeStamp;
       }
+    }
+
+    // CTRL + ALT + V (trigger publish menu)
+    if (event.ctrlKey && event.altKey && event.key === "v") {
+      console.log("PUBLISH_MENU");
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+      service.openItemMenu("btnPublishMore");
     }
   }
 
@@ -42,9 +51,13 @@ export class FormUtils {
       const value = form.value;
       const decision = await this.showDecisionDialog(dialog);
       if (decision === "save") {
-        await documentService
-          .save({ data: value, isNewDoc: false, isAddress: isAddress })
-          .toPromise();
+        await firstValueFrom(
+          documentService.save({
+            data: value,
+            isNewDoc: false,
+            isAddress: isAddress,
+          })
+        );
       } else if (decision === "discard") {
         form.reset(undefined, { emitEvent: false });
       } else {
@@ -58,29 +71,30 @@ export class FormUtils {
   private static showDecisionDialog(
     dialog: MatDialog
   ): Promise<undefined | string> {
-    return dialog
-      .open(ConfirmDialogComponent, {
-        disableClose: true,
-        hasBackdrop: true,
-        data: (<ConfirmDialogData>{
-          title: "Änderungen speichern?",
-          message:
-            "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
-          buttons: [
-            { id: "cancel", text: "Abbrechen" },
-            { id: "discard", text: "Verwerfen", alignRight: true },
-            {
-              id: "save",
-              text: "Speichern",
-              alignRight: true,
-              emphasize: true,
-            },
-          ],
-        }) as ConfirmDialogData,
-      })
-      .afterClosed()
-      .pipe(first())
-      .toPromise();
+    return firstValueFrom(
+      dialog
+        .open(ConfirmDialogComponent, {
+          disableClose: true,
+          hasBackdrop: true,
+          data: (<ConfirmDialogData>{
+            title: "Änderungen speichern?",
+            message:
+              "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?",
+            buttons: [
+              { id: "cancel", text: "Abbrechen" },
+              { id: "discard", text: "Verwerfen", alignRight: true },
+              {
+                id: "save",
+                text: "Speichern",
+                alignRight: true,
+                emphasize: true,
+              },
+            ],
+          }) as ConfirmDialogData,
+        })
+        .afterClosed()
+        .pipe(first())
+    );
   }
 
   private static getDirtyState(form: UntypedFormGroup): Object {

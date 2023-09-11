@@ -28,3 +28,8 @@
     top: 12px;
   }
 }
+
+::ng-deep.mdc-tooltip__surface {
+  // needed to override the default max-width which is too short
+  max-width: unset !important;
+}

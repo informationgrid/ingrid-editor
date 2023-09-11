@@ -1,10 +1,12 @@
 package de.ingrid.igeserver.model
 
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import java.util.*
 
 data class UserInfo(
-    val userId: String? = null,
+    val id: Int? = null,
+    val login: String? = null,
     val name: String,
     val firstName: String,
     val lastName: String,
@@ -18,7 +20,8 @@ data class UserInfo(
     val externalHelp: String?,
     val useElasticsearch: Boolean?,
     val permissions: List<String>,
-    var parentProfile: String? = null
+    var parentProfile: String? = null,
+    val plugins: List<Behaviour> = emptyList()
 )
 
 data class Version(val version: String?, val date: Date?, val commitId: String?)

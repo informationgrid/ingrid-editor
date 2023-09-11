@@ -39,7 +39,11 @@ import { FormsModule } from "@angular/forms";
 import de from "@angular/common/locales/de";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { AngularSplitModule } from "angular-split";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import {
+  FORMLY_CONFIG,
+  FormlyFieldConfig,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
@@ -59,7 +63,6 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
 import { AuthInterceptor } from "./security/keycloak/auth.interceptor";
 import { SharedDocumentItemModule } from "./shared/shared-document-item.module";
-import { pluginProvider } from "./plugin.provider";
 import { InlineHelpWrapperComponent } from "./formly/wrapper/inline-help-wrapper/inline-help-wrapper.component";
 import { FullWidthWrapperComponent } from "./formly/wrapper/full-width-wrapper.component";
 import { SessionTimeoutInterceptor } from "./services/session-timeout.interceptor";
@@ -91,9 +94,12 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { ButtonWrapperComponent } from "./formly/wrapper/button/button-wrapper.component";
-import { formPluginProvider } from "./form-plugin.provider";
+import { pluginProvider } from "./plugin.provider";
 import { DateAdapter, MAT_DATE_LOCALE } from "@angular/material/core";
 import { GermanDateAdapter } from "./services/german-date.adapter";
+import { firstValueFrom } from "rxjs";
+import { TranslocoService } from "@ngneat/transloco";
+import { registerTranslateExtension } from "./formly/translate.extension";
 
 registerLocaleData(de);
 
@@ -146,16 +152,14 @@ export function ConfigLoader(
         (assigned) => assigned.id === rootPath
       );
       if (isAssignedToCatalog) {
-        // await catalogService.switchCatalog(rootPath).toPromise();
-        await http
-          .post<Catalog>(
+        await firstValueFrom(
+          http.post<Catalog>(
             configService.getConfiguration().backendUrl +
               "user/catalog/" +
               rootPath,
             null
           )
-          .toPromise()
-          .then(() => configService.getCurrentUserInfo());
+        ).then(() => configService.getCurrentUserInfo());
         return;
       }
 
@@ -354,9 +358,11 @@ export function animationExtension(field: FormlyFieldConfig) {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: {
         panelClass: "mat-dialog-override",
-        autoFocus: "dialog",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
+        role: "dialog",
+        autoFocus: "dialog",
+        restoreFocus: true,
       },
     },
     {
@@ -365,7 +371,10 @@ export function animationExtension(field: FormlyFieldConfig) {
     },
     {
       provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
-      useValue: { disableTooltipInteractivity: true },
+      useValue: {
+        showDelay: 1000,
+        disableTooltipInteractivity: true,
+      },
     },
 
     // WebSocket
@@ -375,8 +384,15 @@ export function animationExtension(field: FormlyFieldConfig) {
       deps: [ConfigService],
     },
 
+    // Formly
+    {
+      provide: FORMLY_CONFIG,
+      multi: true,
+      useFactory: registerTranslateExtension,
+      deps: [TranslocoService],
+    },
+
     // PLUGINS
-    formPluginProvider,
     pluginProvider,
   ], // additional providers
   bootstrap: [AppComponent],

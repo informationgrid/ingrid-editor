@@ -1,20 +1,16 @@
-import { Injectable } from "@angular/core";
-import { Plugin } from "../../+catalog/+behaviours/plugin";
-import { BehaviourService } from "../../services/behavior/behaviour.service";
-
-@Injectable({
+/*@Injectable({
   providedIn: "root",
-})
+})*/
 export class FormPluginsService {
-  plugins: Plugin[] = [];
+  /*plugins: Plugin[] = [];
   initWithAddress: boolean = null;
 
   constructor(private behaviourService: BehaviourService) {
-    behaviourService.registerState$.subscribe((value) =>
+    /!*behaviourService.registerState$.subscribe((value) =>
       value.register
         ? this.init(this.plugins, value.address)
         : this.unregisterAll()
-    );
+    );*!/
   }
 
   registerPlugin(plugin: Plugin) {
@@ -46,5 +42,5 @@ export class FormPluginsService {
 
   private unregisterAll() {
     this.plugins.filter((p) => p.isActive).forEach((p) => p.unregister());
-  }
+  }*/
 }

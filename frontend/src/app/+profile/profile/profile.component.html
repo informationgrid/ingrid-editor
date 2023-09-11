@@ -8,7 +8,7 @@
         <div class="side-title">Benutzername</div>
         <div class="side-item">
             <mat-icon>login</mat-icon>
-            {{ userInfo.userId }}
+            {{ userInfo.login }}
         </div>
         <div class="side-title">Rolle</div>
         <div class="side-item">
@@ -31,7 +31,7 @@
 
     <section main-content>
         <div class="info-header-row flex-row">
-            <h3>Persönliche Daten</h3>
+            <h2>Persönliche Daten</h2>
             <button
                 data-cy="change-full-name-id"
                 mat-button
@@ -50,7 +50,7 @@
             <div>{{ userInfo.lastName }}</div>
         </div>
 
-        <h3>Kontakt</h3>
+        <h2>Kontakt</h2>
 
         <div
             class="info-row flex-row justify-content-start align-items-stretch"
@@ -75,7 +75,7 @@
             </ng-template>
         </div>
 
-        <h3>Sicherheit</h3>
+        <h2>Sicherheit</h2>
         <div class="info-row flex-row">
             <div>Passwort</div>
             <div>••••••</div>

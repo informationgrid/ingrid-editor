@@ -1,7 +1,11 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
     <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
         <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
+            <button
+                mat-icon-button
+                mat-dialog-close
+                aria-label="Dialog schließen"
+            >
                 <mat-icon>close</mat-icon>
             </button>
             <span class="text">Adresse hinzufügen</span>
@@ -26,8 +30,8 @@
         >
             <div>Adresstyp zuordnen für:</div>
             <div class="chosen-address">
-                <mat-icon [svgIcon]="selection?.icon"></mat-icon
-                ><span>{{ selection?.title }}</span>
+                <mat-icon [svgIcon]="selection?.icon"></mat-icon>
+                <span>{{ selection?.title }}</span>
             </div>
             <ige-document-list-item
                 data-cy="address-type-select"
@@ -72,6 +76,7 @@
                 data-cy="choose-address-next-step"
                 [disabled]="!selection || selection._type === 'FOLDER'"
                 (click)="activeStep = 2"
+                aria-label="Weiter zur Auswahl des Adresstyps"
             >
                 Weiter
             </button>
@@ -85,6 +90,7 @@
                     !selection || !selectedType || selection._type === 'FOLDER'
                 "
                 (click)="getResult()"
+                aria-label="Adresse mit Auswahl bestätigen"
             >
                 Übernehmen
             </button>

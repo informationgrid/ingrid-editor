@@ -9,14 +9,18 @@
     </h2>
 </div>
 <mat-dialog-content [formGroup]="form">
-    <mat-form-field appearance="outline" style="width: 100%">
+    <mat-form-field
+        appearance="outline"
+        class="width-100"
+        data-cy="datepicker-publish"
+    >
         <mat-label>Veröffentlichen am</mat-label>
         <input
             [min]="minDate"
             formControlName="date"
             igeFocus
             matInput
-            (keyup.enter)="setDateAndPublish()"
+            (keydown.enter)="setDateAndPublish()"
             [matDatepicker]="picker"
             placeholder="Datum auswählen"
         />

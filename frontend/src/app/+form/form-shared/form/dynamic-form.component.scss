@@ -36,6 +36,7 @@
 .form-content {
   display: flex;
   flex-direction: column;
+
   .form-inner {
     flex: 1;
     padding: 20px 24px 20px 36px;
@@ -82,4 +83,12 @@ pre {
 #sidebar::-webkit-scrollbar-thumb {
   background: #999999;
   border-radius: 20px;
+}
+
+.requiredDescription {
+  font-size: 14px;
+  line-height: 20px;
+  color: $ige-hint-color;
+  margin-left: 296px;
+  margin-bottom: 10px;
 }

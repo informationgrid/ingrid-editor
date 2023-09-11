@@ -41,6 +41,7 @@ export class UploadFilesDialogComponent implements OnInit {
   hasExtractZipOption: boolean;
   extractZipFiles = false;
   extractInProgress = false;
+  infoText;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -54,6 +55,7 @@ export class UploadFilesDialogComponent implements OnInit {
       uploadFieldKey: string;
       allowedUploadTypes?: string[];
       hasExtractZipOption?: boolean;
+      infoText?: String;
     }
   ) {
     this.docUuid = formStateService.getForm().get("_uuid").value;
@@ -62,6 +64,7 @@ export class UploadFilesDialogComponent implements OnInit {
     }`;
     this.allowedUploadTypes = data.allowedUploadTypes;
     this.hasExtractZipOption = data.hasExtractZipOption;
+    this.infoText = data.infoText;
   }
 
   ngOnInit(): void {}

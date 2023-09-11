@@ -9,12 +9,16 @@
             igeFocus
             data-cy="spatial-dialog-wkt"
             placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))"
+            aria-label="Begrenzungspolygon als WKT"
         ></textarea>
         <button
             mat-icon-button
             matSuffix
             class="hint"
             (click)="showHelpDialog()"
+            matTooltip="Eingabehilfe"
+            aria-haspopup="dialog"
+            aria-label="Eingabehilfe zu WKT"
         >
             <mat-icon class="material-icons-outlined" svgIcon="info-24px">
             </mat-icon>
@@ -37,7 +41,6 @@
     <ige-form-error *ngIf="error">{{ error }} </ige-form-error>
 
     <mat-hint class="hint-text-custom-style">
-        Zur Darstellung auf der Karte klicken Sie auf "Prüfen und
-        Anzeigen"</mat-hint
-    >
+        Zur Darstellung auf der Karte klicken Sie auf "Prüfen und Anzeigen"
+    </mat-hint>
 </div>

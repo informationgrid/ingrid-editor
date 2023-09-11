@@ -77,10 +77,14 @@ export class FormToolbarService {
     this.toolbar$.next(this.buttons);
   }
 
-  sendEvent(eventId: string) {
-    // remove focus to prevent sending event by pressing space bar when focus didn't change
-    (<HTMLButtonElement>document.activeElement).blur();
-    this.docEvents.sendEvent({ type: eventId });
+  sendEvent(id: string) {
+    this.docEvents.sendEvent({ type: id });
+  }
+
+  // trigger click event to open item menu
+  openItemMenu(className: string) {
+    const button: any = document.getElementsByClassName(className)?.item(0);
+    if (button) button.click();
   }
 
   /**

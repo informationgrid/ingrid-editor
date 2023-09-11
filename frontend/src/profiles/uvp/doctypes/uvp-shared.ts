@@ -3,12 +3,8 @@ import { SelectOptionUi } from "../../../app/services/codelist/codelist.service"
 import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { map } from "rxjs/operators";
 import { inject } from "@angular/core";
-import {
-  REGEX_URL,
-  UrlValidatorMessage,
-} from "../../../app/formly/input.validators";
+import { REGEX_URL } from "../../../app/formly/input.validators";
 
 export class UvpShared extends BaseDoctype {
   protected uvpNumberCodelistId: number;
@@ -17,7 +13,9 @@ export class UvpShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
 
   isInitialized(): Promise<void> {
-    return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
+    // return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
+    this.setUvpCodelistId();
+    return Promise.resolve();
   }
 
   dateTooBigValidator = {
@@ -49,6 +47,7 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
+      wrappers: ["form-field", "inline-help"],
       props: {
         label: "Link",
         appearance: "outline",
@@ -73,8 +72,13 @@ export class UvpShared extends BaseDoctype {
               ? regExp.test(field.value?.uri?.trim())
               : true;
           },
-          message: UrlValidatorMessage,
+          message: () =>
+            this.transloco.translate("form.validationMessages.url"),
         },
+      },
+      expressions: {
+        "props.label": (field) =>
+          field.formControl.value?.asLink ? "URL (Link)" : "Dateiname (Upload)",
       },
     },
     {
@@ -335,11 +339,9 @@ export class UvpShared extends BaseDoctype {
   }
 
   setUvpCodelistId() {
-    return this.behaviourService
-      .getBehaviour("plugin.uvp.eia-number")
-      .pipe(map((behaviour) => behaviour?.data?.uvpCodelist ?? 9000))
-      .toPromise()
-      .then((id) => (this.uvpNumberCodelistId = id));
+    this.uvpNumberCodelistId =
+      this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
+        ?.uvpCodelist ?? 9000;
   }
 
   private convertToIsoDate(date: Date | string) {

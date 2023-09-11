@@ -6,9 +6,15 @@
             color="primary"
             mat-flat-button
             class="button-with-text primary"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
-            (click)="add.next()"
+            (click)="add.emit()"
+            aria-haspopup="true"
+            [attr.aria-label]="ariaLabel"
+            aria-description="hinzufügen"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -17,10 +23,15 @@
             type="button"
             mat-stroked-button
             class="button-with-text"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
-            (click)="add.next()"
-            [matTooltip]="showLabel ? '' : 'Hinzufügen'"
+            (click)="add.emit()"
+            [matTooltip]="showTitle ? '' : 'Hinzufügen'"
+            aria-haspopup="dialog"
+            [attr.aria-label]="ariaLabel"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -31,9 +42,13 @@
             type="button"
             mat-stroked-button
             class="button-with-text"
-            [class.padding-btn]="showLabel"
+            [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
             [matMenuTriggerFor]="menuOptions"
+            [attr.aria-label]="ariaLabel"
+            [attr.aria-description]="
+                matError?.nativeElement?.textContent ?? 'hinzufügen'
+            "
         >
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
@@ -41,19 +56,21 @@
             <button
                 mat-menu-item
                 *ngFor="let option of _options"
-                (click)="add.next(option.key)"
+                (click)="add.emit(option.key)"
             >
                 {{ option.value }}
             </button>
         </mat-menu>
     </ng-template>
 
-    <mat-error *ngIf="showRequiredError" class="error"
-        >Bitte erstellen Sie mindestens einen Eintrag</mat-error
-    >
+    <ng-container *transloco="let t">
+        <mat-error #matError *ngIf="showRequiredError" class="error">{{
+            t("form.validationMessages.createOneEntry")
+        }}</mat-error>
+    </ng-container>
 
     <ng-template #buttonContent>
         <mat-icon>add</mat-icon>
-        <span *ngIf="showLabel" class="btn-title">{{ buttonTitle }}</span>
+        <span *ngIf="showTitle" class="btn-title">{{ buttonTitle }}</span>
     </ng-template>
 </div>
