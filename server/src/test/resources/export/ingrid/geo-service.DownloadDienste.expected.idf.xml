@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>9c00a83e-a7e5-4638-b529-92843a99c73f</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -18,7 +22,10 @@
                 <gco:CharacterString>service</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="2" uuid="16466cb3-7dbc-4450-9b36-4d8f7917eef1">
+                <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>
@@ -188,7 +195,7 @@
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/46565A0E-4FD0-41D6-9F5F-B154E0231345</gmd:URL>
+                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/9c00a83e-a7e5-4638-b529-92843a99c73f</gmd:URL>
                                     </gmd:linkage>
                                 </gmd:CI_OnlineResource>
                             </srv:connectPoint>
@@ -209,7 +216,7 @@
                             <gmd:onLine>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
-                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/46565A0E-4FD0-41D6-9F5F-B154E0231345</gmd:URL>
+                                        <gmd:URL>https://dev.informationgrid.eu/interface-search/dls/service/9c00a83e-a7e5-4638-b529-92843a99c73f</gmd:URL>
                                     </gmd:linkage>
                                     <gmd:name>
                                         <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>

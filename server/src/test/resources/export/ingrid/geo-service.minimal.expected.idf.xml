@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>8282cf1f-c681-4402-b41e-b32cd08a4220</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -18,7 +22,10 @@
                 <gco:CharacterString>service</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="2" uuid="16466cb3-7dbc-4450-9b36-4d8f7917eef1">
+                <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>

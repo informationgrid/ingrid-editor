@@ -1,7 +1,7 @@
 package de.ingrid.igeserver.exports.ingrid
 
+import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -13,12 +13,14 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
+import initDocumentMocks
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import mockCatalog
 import mockCodelists
 import org.springframework.test.context.ContextConfiguration
 
@@ -62,13 +64,13 @@ class Geodataservice : AnnotationSpec() {
             }
         }
 
-        mockCatalog()
+        mockCatalog(catalogService)
         mockCodelists(codelistHandler)
 
         val addresses = listOf(
             MockDocument(
                 1638,
-                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
                 "/export/ingrid/address.organisation.sample.json",
                 type = "InGridOrganisationDoc"
             ),
@@ -91,58 +93,7 @@ class Geodataservice : AnnotationSpec() {
             template = "/export/ingrid/geo-dataset.maximal.sample.json"
         )
 
-        initDocumentMocks(addresses + dataset)
-
-
-    }
-
-    private fun mockCatalog() {
-        every { catalogService.getCatalogById(any()) } answers {
-            Catalog().apply {
-                settings = CatalogSettings().apply {
-                    config = CatalogConfig().apply {
-                        //namespace = "namespace"
-                        atomDownloadUrl = "https://dev.informationgrid.eu/interface-search/dls/service/"
-                    }
-                }
-            }
-        }
-    }
-
-    data class MockDocument(
-        val id: Number? = null,
-        val uuid: String,
-        val template: String,
-        val parent: Int? = null,
-        val type: String? = null,
-    )
-
-    private fun initDocumentMocks(documents: List<MockDocument>) {
-        documents.forEach { document ->
-            every {
-                documentService.getLastPublishedDocument(
-                    "test-catalog",
-                    document.uuid,
-                    false
-                )
-            } answers {
-                convertToDocument(SchemaUtils.getJsonFileContent(document.template))
-            }
-            if (document.id != null) {
-                every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {
-                    createDocumentWrapper().apply {
-                        id = document.id.toInt()
-                        type = document.type ?: "testDocType"
-                        parent = document.parent?.let {
-                            DocumentWrapper().apply {
-                                id = it
-                            }
-                        }
-                        uuid = document.uuid
-                    }
-                }
-            }
-        }
+        initDocumentMocks(addresses + dataset, documentService)
     }
 
 
@@ -167,8 +118,6 @@ class Geodataservice : AnnotationSpec() {
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-            .replace("\r\n", "\n")
-
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.maximal.expected.idf.xml")
     }
@@ -179,7 +128,6 @@ class Geodataservice : AnnotationSpec() {
     * */
     @Test
     fun downloadDiensteExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
         val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
@@ -187,8 +135,6 @@ class Geodataservice : AnnotationSpec() {
 
     @Test
     fun completeExport() {
-        every { documentService.getWrapperByDocumentId(any() as Int) } returns createDocumentWrapper()
-
         var result = exportJsonToXML(exporter, "/export/ingrid/geodataservice.json")
         // replace generated UUIDs and windows line endings
         result = result
@@ -196,8 +142,7 @@ class Geodataservice : AnnotationSpec() {
             .replace("\r\n", "\n")
 
         result shouldNotBe null
-        // TODO: pending
-        // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.idf.xml")
+        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.idf.xml")
     }
 
 
@@ -210,14 +155,6 @@ class Geodataservice : AnnotationSpec() {
             .replace("\r\n", "\n")
 
         result shouldNotBe null
-        // TODO: pending
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
     }
-
-    private fun createDocumentWrapper() =
-        DocumentWrapper().apply {
-            type = "testDocType"
-        }
-
-
 }

@@ -539,7 +539,7 @@
             </srv:SV_OperationMetadata>
         </srv:containsOperations>
     @endif
-    @if( page.getOperations().isEmpty() && page.getData().getService() != null )
+    @if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
         <srv:containsOperations gco:nilReason="missing"/>
     @endif
     @for( DisplayOperation operation : page.getOperations() )

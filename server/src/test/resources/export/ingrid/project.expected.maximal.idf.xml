@@ -21,7 +21,7 @@
                 <gco:CharacterString>project</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="2" uuid="53DC4D57-1BA3-4647-8CBF-E57168FFE2FF">
+                <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
                     <gmd:organisationName>
                         <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>

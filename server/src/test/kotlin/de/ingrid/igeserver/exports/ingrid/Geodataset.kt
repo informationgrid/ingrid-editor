@@ -71,14 +71,13 @@ class Geodataset : AnnotationSpec() {
         val orgaParent = DocumentWrapper().apply {
             id = 1638
             type = "testDocType"
-            uuid = "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"
+            uuid = "25d56d6c-ed8d-4589-8c14-f8cfcb669115"
         }
 
         val idToUiidMap = mutableMapOf(
             Pair(1634, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
-            Pair(1662, "14a37ded-4ca5-4677-bfed-3607bed3071d"),
-            Pair(1638, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF"),
-            Pair(0, "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF")
+            Pair(1638, "25d56d6c-ed8d-4589-8c14-f8cfcb669115"),
+            Pair(0, "25d56d6c-ed8d-4589-8c14-f8cfcb669115")
         )
 
         every { documentService.getWrapperByDocumentId(any() as Int) } answers {
@@ -91,7 +90,7 @@ class Geodataset : AnnotationSpec() {
         every {
             documentService.getLastPublishedDocument(
                 "test-catalog",
-                "53DC4D57-1BA3-4647-8CBF-E57168FFE2FF",
+                "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
                 false
             )
         } answers {
