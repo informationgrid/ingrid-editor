@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>39d33dfb-8648-478c-930d-4ed0ed6f2872</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -58,7 +62,7 @@
                     <gmd:referenceSystemIdentifier>
                         <gmd:RS_Identifier>
                             <gmd:code>
-                                <gco:CharacterString>WGS84 / LCC Germany (E-N)</gco:CharacterString>
+                                <gco:CharacterString>WGS84 / LCC Deutschland (E-N)</gco:CharacterString>
                             </gmd:code>
                         </gmd:RS_Identifier>
                     </gmd:referenceSystemIdentifier>
@@ -76,7 +80,7 @@
                 </gmd:MD_ReferenceSystem>
             </gmd:referenceSystemInfo>
             <gmd:identificationInfo>
-                <gmd:MD_DataIdentification uuid="http://portalu.de/igc_testNS#KRZN/78E34100-ED80-3EC9-BABC-02FD5B736312">
+                <gmd:MD_DataIdentification uuid="https://registry.gdi-de.org/id/test-catalog/39d33dfb-8648-478c-930d-4ed0ed6f2872">
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>
@@ -141,36 +145,6 @@
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
-                                <gco:CharacterString>Natur</gco:CharacterString>
-                            </gmd:keyword>
-                            <gmd:keyword>
-                                <gco:CharacterString>Natura-2000</gco:CharacterString>
-                            </gmd:keyword>
-                            <gmd:type>
-                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-                            </gmd:type>
-                            <gmd:thesaurusName>
-                                <gmd:CI_Citation>
-                                    <gmd:title>
-                                        <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
-                                    </gmd:title>
-                                    <gmd:date>
-                                        <gmd:CI_Date>
-                                            <gmd:date>
-                                                <gco:Date>2009-01-15</gco:Date>
-                                            </gmd:date>
-                                            <gmd:dateType>
-                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
-                                            </gmd:dateType>
-                                        </gmd:CI_Date>
-                                    </gmd:date>
-                                </gmd:CI_Citation>
-                            </gmd:thesaurusName>
-                        </gmd:MD_Keywords>
-                    </gmd:descriptiveKeywords>
-                    <gmd:descriptiveKeywords>
-                        <gmd:MD_Keywords>
-                            <gmd:keyword>
                                 <gco:CharacterString>Schlagwort</gco:CharacterString>
                             </gmd:keyword>
                         </gmd:MD_Keywords>
@@ -192,6 +166,36 @@
                                         <gmd:CI_Date>
                                             <gmd:date>
                                                 <gco:Date>2020-05-05</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
+                        </gmd:MD_Keywords>
+                    </gmd:descriptiveKeywords>
+                    <gmd:descriptiveKeywords>
+                        <gmd:MD_Keywords>
+                            <gmd:keyword>
+                                <gco:CharacterString>Natur</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:keyword>
+                                <gco:CharacterString>Natura-2000</gco:CharacterString>
+                            </gmd:keyword>
+                            <gmd:type>
+                                <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            </gmd:type>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>UMTHES Thesaurus</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2009-01-15</gco:Date>
                                             </gmd:date>
                                             <gmd:dateType>
                                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
