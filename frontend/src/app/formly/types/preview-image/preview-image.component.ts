@@ -10,7 +10,6 @@ import {
   catchError,
   distinctUntilChanged,
   filter,
-  map,
   startWith,
   tap,
 } from "rxjs/operators";
@@ -56,6 +55,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     {
       key: "fileName",
       type: "upload",
+      wrappers: ["form-field"],
       props: {
         label: "URL",
         appearance: "outline",
