@@ -8,6 +8,7 @@ import {
 } from "../table/upload-files-dialog/upload-files-dialog.component";
 import {
   catchError,
+  debounceTime,
   distinctUntilChanged,
   filter,
   startWith,
@@ -93,6 +94,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .pipe(
         untilDestroyed(this),
         startWith(this.formControl.value),
+        debounceTime(100),
         distinctUntilChanged((a: any[], b: any[]) => {
           const aLinks = a?.map((item) => item.fileName?.uri).join("");
           const bLinks = b?.map((item) => item.fileName?.uri).join("");
