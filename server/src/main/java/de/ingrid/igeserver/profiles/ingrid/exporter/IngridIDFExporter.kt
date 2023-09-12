@@ -90,7 +90,7 @@ class IngridIDFExporter @Autowired constructor(
             "InGridGeoService" to GeodataserviceModelTransformer::class,
             "InGridProject" to IngridModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,
-            "InGridInformationSystem" to IngridModelTransformer::class
+            "InGridInformationSystem" to InformationSystemModelTransformer::class
         )
         val transformerClass = transformers[ingridModel.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel.type}")
         return transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService)

@@ -357,6 +357,11 @@
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
             </gmd:language>
         @endfor
+        @if(TransformationTools.hasValue(page.getSystemEnvironment()))
+            <gmd:environmentDescription>
+                <gco:CharacterString>Systemumgebung</gco:CharacterString>
+            </gmd:environmentDescription>
+        @endif
         @if(page.getDatasetCharacterSet() != null)
             <gmd:characterSet>
                 <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="${page.getDatasetCharacterSet()}"/>
@@ -666,7 +671,7 @@ ${contentInfo}
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>
                     <gmd:onLine>
-                        <gmd:CI_OnlineResource>
+                        <idf:idfOnlineResource>
                             <gmd:linkage>
                                 <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                             </gmd:linkage>
@@ -681,7 +686,8 @@ ${contentInfo}
                             <gmd:function>
                                 <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                             </gmd:function>
-                        </gmd:CI_OnlineResource>
+                            <idf:attachedToField entry-id="5066" list-id="2000">Link to Service</idf:attachedToField>
+                        </idf:idfOnlineResource>
                     </gmd:onLine>
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
