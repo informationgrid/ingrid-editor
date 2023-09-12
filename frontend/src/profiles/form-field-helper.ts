@@ -29,6 +29,7 @@ export interface Options {
   hideInPreview?: boolean;
   ariaLabel?: string;
   ariaDescription?: string;
+  validators?: any;
 }
 
 export interface DatePickerOptions extends Options {
@@ -328,6 +329,7 @@ export class FormFieldHelper {
         ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
+      validators: options?.validators,
     };
   }
 
