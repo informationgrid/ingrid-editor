@@ -21,7 +21,9 @@ export class InformationSystemDoctype extends IngridShared {
         advCompatible: true,
         openData: true,
       }),
-      this.addKeywordsSection(),
+      this.addKeywordsSection({
+        advProductGroup: true,
+      }),
 
       this.addSection("Fachbezug", [
         this.addSelect("serviceType", "Art des Dienstes", {

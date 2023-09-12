@@ -796,6 +796,7 @@ describe("TreeComponent", () => {
           _contentModified: null,
           icon: "",
           isRoot: !options.parent,
+          isAddress: null,
           _tags: null,
         },
       ],

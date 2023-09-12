@@ -35,6 +35,7 @@ interface KeywordSectionOptions {
   spatialScope?: boolean;
   thesaurusTopics?: boolean;
   inspireTopics?: boolean;
+  advProductGroup?: boolean;
 }
 
 interface AdditionalInformationSectionOptions {
@@ -276,17 +277,19 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection(
       "Verschlagwortung",
       [
-        this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
-          view: "chip",
-          asSelect: true,
-          showSearch: true,
-          options: this.getCodelistForSelect(8010, "advProductGroups"),
-          codelistId: 8010,
-          expressions: {
-            "props.required": "formState.mainModel?.isAdVCompatible",
-            className: "field.props.required ? '' : 'optional'",
-          },
-        }),
+        options.advProductGroup
+          ? this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
+              view: "chip",
+              asSelect: true,
+              showSearch: true,
+              options: this.getCodelistForSelect(8010, "advProductGroups"),
+              codelistId: 8010,
+              expressions: {
+                "props.required": "formState.mainModel?.isAdVCompatible",
+                className: "field.props.required ? '' : 'optional'",
+              },
+            })
+          : null,
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
               view: "chip",
@@ -583,7 +586,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
           }),
-          this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
+          this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
             asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),

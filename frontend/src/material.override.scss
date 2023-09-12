@@ -138,6 +138,13 @@ mat-tab-nav-panel {
   }
 }
 
+// related issue: https://github.com/angular/components/issues/14311
+.mat-mdc-form-field-icon-suffix {
+  gap: 3px;
+  display: flex;
+  align-items: center;
+}
+
 mat-icon.dark-blue {
   svg path {
     fill: $ige-secondary;

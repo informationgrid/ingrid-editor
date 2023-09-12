@@ -17,6 +17,7 @@ export interface DocumentAbstract {
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
   isRoot: boolean;
+  isAddress: boolean;
 }
 
 /**

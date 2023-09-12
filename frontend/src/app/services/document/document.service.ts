@@ -190,6 +190,9 @@ export class DocumentService {
       .pipe(
         map(([days, docs, addresses]) => {
           if (days == 0) return [];
+          // add annotation to addresses for distinction
+          addresses.hits.forEach((hit) => (hit.isAddress = true));
+          // combine all hits as observable
           const combined = docs.hits
             .concat(addresses.hits)
             .filter((doc) => isExpired(doc._contentModified, days))
@@ -806,6 +809,7 @@ export class DocumentService {
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
         isRoot: parentId === null,
+        isAddress: doc.isAddress,
       };
     });
   }

@@ -38,7 +38,7 @@
                 <div *ngIf="!model[i]?.fileName.asLink">
                     {{ model[i]?.fileName.value }}
                 </div>
-                <div *ngIf="model[i]?.fileDescription">
+                <div class="line-clamp-2" *ngIf="model[i]?.fileDescription">
                     {{ model[i]?.fileDescription }}
                 </div>
             </mat-card-footer>

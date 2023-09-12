@@ -49,11 +49,12 @@ mat-card {
     font-size: 14px;
 
     div:first-child {
-      padding-top: 5px;
+      margin-top: 5px;
+      line-break: anywhere;
     }
 
     div:last-child {
-      padding-bottom: 5px;
+      margin-bottom: 5px;
     }
   }
 }
