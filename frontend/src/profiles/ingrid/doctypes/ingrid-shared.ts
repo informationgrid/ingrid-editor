@@ -583,7 +583,7 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
           }),
-          this.addRepeatList("spatialSystems", "Raumbezugssysteme", {
+          this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
             asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(100, "spatialSystems"),
