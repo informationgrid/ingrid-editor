@@ -88,7 +88,7 @@ class IngridIDFExporter @Autowired constructor(
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
             "InGridLiterature" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
-            "InGridProject" to IngridModelTransformer::class,
+            "InGridProject" to ProjectModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,
             "InGridInformationSystem" to InformationSystemModelTransformer::class
         )

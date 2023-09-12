@@ -20,6 +20,8 @@ data class DataModel(
     val publication: Publication?,
     val methodText: String?,
     val baseDataText: String?,
+    val manager: String?,
+    val participants: String?,
     val implementationHistory: String?,
     val systemEnvironment: String?,
     val metadata: IngridMetadata,
