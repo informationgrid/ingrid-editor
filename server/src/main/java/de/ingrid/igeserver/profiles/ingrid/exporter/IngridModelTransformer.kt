@@ -95,24 +95,45 @@ open class IngridModelTransformer constructor(
 
     data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
 
-    val useConstraints = data.resource?.useConstraints?.map {
-        if (it.title == null) throw ServerException.withReason("Use constraint title is null ${it}")
+    val useConstraints = data.resource?.useConstraints?.map { constraint ->
+        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null ${constraint}")
 
         // special case for "Es gelten keine Bedingungen"
         val link =
-            if (it.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
+            if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
+
+        val baseJson = codelists.getData("6500", constraint.title?.key)
+        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty()}\""
+
+        val json = baseJson?.let { if(it.contains(",\"quelle\":\"\"".toRegex()) )
+            // replace existing source string
+            it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+        else
+            // add source string
+            it.replace("}$".toRegex(), "$sourceString}") }
 
         UseConstraintTemplate(
-            CharacterStringModel(codelists.getValue("6500", it.title)!!, link),
-            it.source,
-            codelists.getData("6500", it.title?.key)?.replace("quelle\":\"\"", "quelle\":\"${it.source.orEmpty()}\"")
+            CharacterStringModel(codelists.getValue("6500", constraint.title)!!, link),
+            constraint.source,
+            json
         )
 
     }
 
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
+    val georectified = gridSpatialRepresentation?.georectified
+    val georefenceable = gridSpatialRepresentation?.georeferenceable
     val cellGeometry = codelists.getValue("509", gridSpatialRepresentation?.cellGeometry, "iso")
+
+    val gridType = when (gridSpatialRepresentation?.type?.key) {
+        "basis" -> "GridSpatialRepresentation"
+        "rectified" -> "Georectified"
+        "referenced" -> "Georeferenceable"
+        else -> "GridSpatialRepresentation"
+    }
+
+
     val spatialReferences = data.spatial.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { it.ars != null }
     val regionKey = if (arsSpatial == null) null else KeyValueModel(

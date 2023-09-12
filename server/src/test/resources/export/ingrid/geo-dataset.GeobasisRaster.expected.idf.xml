@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>18c19e21-6931-4c8c-931e-79beefbfa7b2</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -61,7 +65,7 @@
                                 <gco:Integer>10</gco:Integer>
                             </gmd:dimensionSize>
                             <gmd:resolution>
-                                <gco:Scale uom="meter">20</gco:Scale>
+                                <gco:Scale uom="meter">20.0</gco:Scale>
                             </gmd:resolution>
                         </gmd:MD_Dimension>
                     </gmd:axisDimensionProperties>
@@ -74,7 +78,7 @@
                                 <gco:Integer>30</gco:Integer>
                             </gmd:dimensionSize>
                             <gmd:resolution>
-                                <gco:Scale uom="meter">40</gco:Scale>
+                                <gco:Scale uom="meter">40.0</gco:Scale>
                             </gmd:resolution>
                         </gmd:MD_Dimension>
                     </gmd:axisDimensionProperties>
@@ -102,7 +106,7 @@
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                <gco:CharacterString>Test-Datensatz mit Geobasisraster Classic</gco:CharacterString>
+                                <gco:CharacterString>Test-Datensatz mit Geobasisraster</gco:CharacterString>
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>
@@ -149,13 +153,13 @@
                         <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
                     </gmd:language>
                     <gmd:topicCategory>
+                        <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
+                    </gmd:topicCategory>
+                    <gmd:topicCategory>
                         <gmd:MD_TopicCategoryCode>structure</gmd:MD_TopicCategoryCode>
                     </gmd:topicCategory>
                     <gmd:topicCategory>
                         <gmd:MD_TopicCategoryCode>inlandWaters</gmd:MD_TopicCategoryCode>
-                    </gmd:topicCategory>
-                    <gmd:topicCategory>
-                        <gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
                     </gmd:topicCategory>
                     <gmd:extent>
                         <gmd:EX_Extent>

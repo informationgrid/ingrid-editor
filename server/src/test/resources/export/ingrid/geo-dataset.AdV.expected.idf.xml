@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>da35b8a7-4273-4d9f-a6ff-828462faf37d</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>

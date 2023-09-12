@@ -188,19 +188,19 @@
                                                 <gco:CharacterString>Postfach 30151, 60314 Frankfurt am Main</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Mustermann Stra.</gco:CharacterString>
+                                                <gco:CharacterString>Mustermann Str.</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:city>
                                                 <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
                                             </gmd:city>
                                             <gmd:administrativeArea>
-                                                <gco:CharacterString>Berlin</gco:CharacterString>
+                                                <gco:CharacterString>Hessen</gco:CharacterString>
                                             </gmd:administrativeArea>
                                             <gmd:postalCode>
                                                 <gco:CharacterString>60314</gco:CharacterString>
                                             </gmd:postalCode>
                                             <gmd:country>
-                                                <gco:CharacterString>ALB</gco:CharacterString>
+                                                <gco:CharacterString>DEU</gco:CharacterString>
                                             </gmd:country>
                                             <gmd:electronicMailAddress>
                                                 <gco:CharacterString>mustermann@wemove.com</gco:CharacterString>

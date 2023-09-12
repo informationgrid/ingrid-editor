@@ -20,6 +20,9 @@
             </gmd:hierarchyLevel>
             <gmd:contact>
                 <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                    </gmd:organisationName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>

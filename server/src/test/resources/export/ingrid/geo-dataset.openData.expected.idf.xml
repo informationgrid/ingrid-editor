@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>3d7f5936-3e7d-4361-b91c-d94a5620b69d</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -215,13 +219,24 @@
                             </gmd:geographicElement>
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
                                     <gmd:extentTypeCode>
                                         <gco:Boolean>true</gco:Boolean>
                                     </gmd:extentTypeCode>
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Berlin (110000000000)</gco:CharacterString>
+                                                <gco:CharacterString>Berlin (11)</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>

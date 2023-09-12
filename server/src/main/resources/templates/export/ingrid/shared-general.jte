@@ -97,7 +97,7 @@
 
 @if(page.getGridSpatialRepresentation() != null)
 <gmd:spatialRepresentationInfo>
-    <gmd:MD_GridSpatialRepresentation>
+    <gmd:MD_${page.getGridType()}>
         <gmd:numberOfDimensions>
             <gco:Integer>${page.getGridSpatialRepresentation().getNumberOfDimensions()}</gco:Integer>
         </gmd:numberOfDimensions>
@@ -124,7 +124,50 @@
         <gmd:transformationParameterAvailability>
             <gco:Boolean>true</gco:Boolean>
         </gmd:transformationParameterAvailability>
-    </gmd:MD_GridSpatialRepresentation>
+        @if(page.getGeorectified() != null)
+            @if(page.getGeorectified().getCheckPointAvailability() != null)
+                <gmd:controlPointAvailability>
+                <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
+            @endif
+            @if(TransformationTools.hasValue(page.getGeorectified().getCheckPointDescription()))
+                <gmd:checkPointDescription>
+                   <gco:CharacterString>${page.getGeorectified().getCheckPointDescription()}</gco:CharacterString>
+                </gmd:checkPointDescription>
+            @endif
+            @if(TransformationTools.hasValue(page.getGeorectified().getCornerPoints()))
+                <gmd:cornerPoints>
+                    <gml:Point gml:id="cornerPointId1">
+                        <gml:coordinates>${page.getGeorectified().getCornerPoints()}</gml:coordinates>
+                    </gml:Point>
+                </gmd:cornerPoints>
+            @endif
+            @if(page.getGeorectified().getPointInPixel() != null)
+                <gmd:pointInPixel>
+                    <gco:Boolean>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gco:Boolean>
+                </gmd:pointInPixel>
+            @else
+                <gmd:pointInPixel gco:nilReason="unknown"/>
+            @endif
+        @endif
+         @if(page.getGeorefenceable() != null)
+             @if(page.getGeorefenceable().getControlPointAvaliability() != null)
+                 <gmd:controlPointAvailability>
+                     <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
+                 </gmd:controlPointAvailability>
+             @endif
+             @if(page.getGeorefenceable().getOrientationParameterAvailability() != null)
+                <gmd:orientationParameterAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
+                </gmd:orientationParameterAvailability>
+             @endif
+             <gmd:georeferencedParameters>
+                 <gco:Record>
+                     <gco:CharacterString>Feld von Georeferenzierungsparameter</gco:CharacterString>
+                 </gco:Record>
+             </gmd:georeferencedParameters>
+         @endif
+    </gmd:MD_${page.getGridType()}>
 </gmd:spatialRepresentationInfo>
 @endif
 

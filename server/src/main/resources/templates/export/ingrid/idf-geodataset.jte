@@ -18,6 +18,9 @@
                         <gco:CharacterString>deutsch</gco:CharacterString>
                     </gmd:language>
                 @endif
+                <gmd:includedWithDataset>
+                    <gco:Boolean>false</gco:Boolean>
+                </gmd:includedWithDataset>
                 @for (String featureType : page.getFeatureTypes())
                     <gmd:featureTypes>
                         <gco:LocalName>${featureType}</gco:LocalName>
