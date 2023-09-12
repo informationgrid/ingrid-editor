@@ -568,6 +568,11 @@
     @for( OperatesOn operatesOn : page.getOperatesOn() )
         <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}"/>
     @endfor
+    @if(TransformationTools.hasValue(page.getSupplementalInformation()))
+        <gmd:supplementalInformation>
+            <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
+        </gmd:supplementalInformation>
+    @endif
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 

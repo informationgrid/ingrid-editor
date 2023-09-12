@@ -16,6 +16,8 @@ data class DataModel(
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
     val spatial: IngridSpatial,
+    val explanation: String?,
+    val methodText: String?,
     val metadata: IngridMetadata,
     val advProductGroups: List<KeyValueModel>?,
     val alternateTitle: String?,
@@ -40,6 +42,8 @@ data class DataModel(
     val portrayalCatalogueInfo: PortrayalCatalogueInfo?,
     val featureCatalogueDescription: FeatureCatalogueDescription?,
     val digitalTransferOptions: List<DigitalTransferOption>?,
+    val categoryCatalog: List<CategoryCatalog>?,
+    val databaseContent: List<DatabaseContent>?,
     val distribution: Distribution?,
     val orderInfo: String?,
     val references: List<Reference>?,
@@ -52,6 +56,20 @@ data class DataModel(
     val lineage: Lineage?,
     val service: Service?,
     val spatialScope: KeyValueModel?,
+)
+
+
+
+data class DatabaseContent(
+    val parameter: String?,
+    val moreInfo: String?,
+)
+
+data class CategoryCatalog(
+    val title: KeyValueModel?,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val date: OffsetDateTime?,
+    val edition: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

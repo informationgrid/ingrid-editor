@@ -363,6 +363,9 @@ open class IngridModelTransformer constructor(
     } ?: emptyList()
 
 
+    val supplementalInformation = data.explanation
+
+
     val references = data.references ?: emptyList()
 
     // information system

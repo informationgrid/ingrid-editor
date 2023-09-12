@@ -8,7 +8,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
-class GeodatasetModelTransformer(
+open class GeodatasetModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
@@ -19,7 +19,7 @@ class GeodatasetModelTransformer(
 ) {
 
     override val hierarchyLevel = "dataset"
-    override val hierarchyLevelName = null
+    override val hierarchyLevelName: String? = null
 
 
     init {

@@ -139,7 +139,6 @@ class Geodataservice : AnnotationSpec() {
         // replace generated UUIDs and windows line endings
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-            .replace("\r\n", "\n")
 
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.idf.xml")
