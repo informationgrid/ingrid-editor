@@ -5,7 +5,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 
-class InformationSystemModelTransformer constructor(
+class LiteratureModelTransformer constructor(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
@@ -15,13 +15,12 @@ class InformationSystemModelTransformer constructor(
     model, catalogIdentifier, codelistTransformer, config, catalogService
 ) {
 
-    override val hierarchyLevel = "application"
-    override val hierarchyLevelName = "application"
+    override val hierarchyLevelName = "document"
 
-    val baseDataText = data.baseDataText
-    val implementationHistory = data.implementationHistory
+    val publication = data.publication
+    val baseDataText = data.publication?.baseDataText
+    val publisherOrPlaceholder = if(publication?.publisher.isNullOrEmpty()) "Location of the editor" else publication?.publisher
 
-    fun hasDataQualityInfo() = (baseDataText.isNullOrEmpty() && implementationHistory.isNullOrEmpty()).not()
 
 }
 

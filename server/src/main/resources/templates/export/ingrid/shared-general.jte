@@ -13,6 +13,7 @@
 
 @param IngridModelTransformer page
 @param Content contentInfo = null
+@param Content additionalCitation = null
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -188,6 +189,9 @@
                     </gmd:MD_Identifier>
                 </gmd:identifier>
                 @endif
+
+                ${additionalCitation}
+
             </gmd:CI_Citation>
         </gmd:citation>
         <gmd:abstract>
@@ -241,6 +245,17 @@
             </gmd:MD_BrowseGraphic>
         </gmd:graphicOverview>
         @endfor
+
+       @if( TransformationTools.hasValue(page.getResourceFormat()) )
+        <gmd:resourceFormat>
+            <gmd:MD_Format>
+                <gmd:name>
+                    <gco:CharacterString>${page.getResourceFormat()}</gco:CharacterString>
+                </gmd:name>
+                <gmd:version gco:nilReason="inapplicable"/>
+            </gmd:MD_Format>
+        </gmd:resourceFormat>
+        @endif
 
 
 

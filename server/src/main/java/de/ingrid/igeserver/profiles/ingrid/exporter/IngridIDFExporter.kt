@@ -86,7 +86,7 @@ class IngridIDFExporter @Autowired constructor(
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridLiterature" to IngridModelTransformer::class,
+            "InGridLiterature" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
             "InGridProject" to IngridModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,

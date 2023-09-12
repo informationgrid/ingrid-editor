@@ -17,6 +17,7 @@ data class DataModel(
     val pointOfContact: List<AddressRefModel>?,
     val spatial: IngridSpatial,
     val explanation: String?,
+    val publication: Publication?,
     val methodText: String?,
     val baseDataText: String?,
     val implementationHistory: String?,
@@ -61,6 +62,30 @@ data class DataModel(
     val spatialScope: KeyValueModel?,
 )
 
+data class Publication(
+    val isbn: String?,
+    val pages: String?,
+    val author: String?,
+    val volume: String?,
+    val location: String?,
+    val publisher: String?,
+    val explanation: String?,
+    val publishedIn: String?,
+    val baseDataText: String?,
+    val documentType: KeyValueModel?,
+    val publicationDate: String?,
+    val publishingHouse: String?,
+    val bibliographicData: String?,
+    val placeOfPublication: String?,
+) {
+    fun hasSeriesInfo(): Boolean = listOfNotNull(
+        publishedIn,
+        volume,
+        pages,
+    ).any { it.isNotEmpty() }
+
+
+}
 
 
 data class DatabaseContent(

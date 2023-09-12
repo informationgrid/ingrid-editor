@@ -362,8 +362,12 @@ open class IngridModelTransformer constructor(
 
     } ?: emptyList()
 
+    // information system or Literature
+    val supplementalInformation = data.explanation ?: data.publication?.explanation
 
-    val supplementalInformation = data.explanation
+    // literature
+    val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
+
 
 
     val references = data.references ?: emptyList()
