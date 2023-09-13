@@ -340,6 +340,9 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
+              expressions: {
+                hide: "!formState.mainModel?.isInspireIdentified",
+              },
               options: [
                 {
                   label: "GSAA",
@@ -394,7 +397,7 @@ export abstract class IngridShared extends BaseDoctype {
                     }
                   },
                   message: (_, field: any) => {
-                    const invekos = field.formControl.root.value.invekos.key;
+                    const invekos = field.formControl.root.value.invekos?.key;
                     let extraMessage = "";
                     if (invekos === "gsaa") extraMessage = "und 'GSAA'";
                     else if (invekos === "lpis") extraMessage = "und 'LPIS'";
