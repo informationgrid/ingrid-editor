@@ -224,7 +224,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "12")
                     : false,
-                message: "Es muss mindestens einen Ansprechpartner MD geben.",
+                message: "Es muss mindestens einen 'Ansprechpartner MD' geben.",
               },
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl, field) =>
@@ -233,7 +233,7 @@ export abstract class IngridShared extends BaseDoctype {
                   (ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "7")
                     : false),
-                message: "Es muss mindestens einen Ansprechpartner geben.",
+                message: "Es muss mindestens einen 'Ansprechpartner' geben.",
               },
               atLeastOneOtherAddress: {
                 expression: (ctrl, field) =>
