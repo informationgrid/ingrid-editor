@@ -10,9 +10,7 @@
                 @for( KeywordIso keyword :  thesaurus.getKeywords())
                 <gmd:keyword>
                     @if(keyword.getLink() != null)
-                    <gmd:code>
                         <gmx:Anchor xlink:href="${keyword.getLink()}">${keyword.getName()}</gmx:Anchor>
-                    </gmd:code>
                     @else
                         <gco:CharacterString>${keyword.getName()}</gco:CharacterString>
                     @endif

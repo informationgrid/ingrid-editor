@@ -22,7 +22,7 @@ data class AddressModel(
     val lastName: String?,
     val organization: String?,
     val title: String?,
-    val contact: List<ContactModel>,
+    val contact: List<ContactModel> = emptyList(),
     val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
     var positionName: String?,
@@ -124,7 +124,6 @@ data class AddressModel(
             }
         }*/
 
-    fun getNamePresentation() = organization ?: "$lastName, $firstName"
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")
     val email: String? get() = contactType("3")
