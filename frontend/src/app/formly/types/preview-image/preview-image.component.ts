@@ -19,6 +19,7 @@ import {
   CdkDragDrop,
   CdkDropList,
   CdkDrag,
+  CdkDragPreview,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
 
@@ -47,6 +48,7 @@ import { of } from "rxjs";
 
     CdkDropList,
     CdkDrag,
+    CdkDragPreview,
     MatCardModule,
     NgForOf,
     NgOptimizedImage,
@@ -113,7 +115,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         tap(() => {
           // No need to reset the imageLinks, resting causes the browser to rerender the
           // images link after drag and drop
-          // this.imageLinks = {}
+          //this.imageLinks = {};
         })
       )
       .subscribe((value) => this.createImageLinkUris(value));

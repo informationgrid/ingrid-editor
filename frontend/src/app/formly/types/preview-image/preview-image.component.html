@@ -13,6 +13,7 @@
                     [alt]="model[i]?.fileName?.uri"
                 />
 
+                <mat-icon class="image-preview" *cdkDragPreview>image</mat-icon>
                 <button
                     *ngIf="!formControl.disabled"
                     type="button"
