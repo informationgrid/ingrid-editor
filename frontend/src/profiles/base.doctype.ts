@@ -126,18 +126,17 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.codelistService.observe(codelistId + "");
   }
 
-  init(help: string[]) {
+  async init(help: string[]): Promise<void> {
     this.helpIds = help;
-    return this.isInitialized().then(() => {
-      this.fields.push(...this.documentFields());
-      this.hasOptionalFields = this.hasOptionals(this.fields);
-      this.addCodelistDefaultValues(this.fields);
-      if (this.helpIds.length > 0) this.addContextHelp(this.fields);
-      this.getFieldMap(this.fields);
+    await this.isInitialized();
 
-      this.cleanFields = JSON.parse(JSON.stringify(this.fields));
-      console.debug(`Document type ${this.id} initialized`);
-    });
+    this.fields.push(...this.documentFields());
+    this.hasOptionalFields = this.hasOptionals(this.fields);
+    this.addCodelistDefaultValues(this.fields);
+    if (this.helpIds.length > 0) this.addContextHelp(this.fields);
+    this.getFieldMap(this.fields);
+    this.cleanFields = JSON.parse(JSON.stringify(this.fields));
+    console.debug(`Document type ${this.id} initialized`);
   }
 
   isInitialized() {

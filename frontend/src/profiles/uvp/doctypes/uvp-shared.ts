@@ -13,7 +13,6 @@ export class UvpShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
 
   isInitialized(): Promise<void> {
-    // return this.behaviourService ? this.setUvpCodelistId() : Promise.resolve();
     this.setUvpCodelistId();
     return Promise.resolve();
   }

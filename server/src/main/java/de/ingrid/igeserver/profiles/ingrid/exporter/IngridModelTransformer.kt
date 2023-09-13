@@ -11,6 +11,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -218,8 +219,9 @@ open class IngridModelTransformer constructor(
         date = "2009-01-15",
         name = "UMTHES Thesaurus"
     )
-    // TODO after thesauri are added
+    
     val gemetKeywords = Thesaurus(
+        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
     )
@@ -250,6 +252,16 @@ open class IngridModelTransformer constructor(
         link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
         showType = false
     )
+    val invekosKeywords = Thesaurus(
+        keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!)) }
+            ?: emptyList(),
+        date = "2021-03-22",
+        name = "IACS data",
+        link = "http://inspire.ec.europa.eu/metadata-codelist/IACSData",
+        showType = false
+    )
+
+    private fun mapInVeKoSKeyword(key: String): String = inVeKoSKeywordMapping[key] ?: key
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()

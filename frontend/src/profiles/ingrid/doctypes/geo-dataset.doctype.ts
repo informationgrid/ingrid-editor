@@ -29,11 +29,14 @@ export class GeoDatasetDoctype extends IngridShared {
   };
 
   documentFields = () => {
+    this.handleInVeKoSBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
         openData: true,
+        thesaurusTopics: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
           showSearch: true,
