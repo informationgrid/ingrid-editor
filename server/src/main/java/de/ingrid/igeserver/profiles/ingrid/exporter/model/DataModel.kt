@@ -27,6 +27,7 @@ data class DataModel(
     val isInspireIdentified: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val priorityDatasets: List<KeyValueModel>?,
+    val invekosKeywords: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
