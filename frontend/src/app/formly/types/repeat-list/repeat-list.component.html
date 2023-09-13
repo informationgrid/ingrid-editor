@@ -1,3 +1,7 @@
+<ige-form-error *ngIf="showError && !formControl.hasError('required')">
+    <formly-validation-message [field]="field"></formly-validation-message>
+</ige-form-error>
+
 <mat-chip-listbox
     *ngIf="props.view === 'chip' && field.fieldGroup?.length > 0"
     [disabled]="formControl.disabled"

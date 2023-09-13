@@ -88,7 +88,7 @@
           "salutation": {
             "key": "2"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -160,7 +160,7 @@
           "salutation": {
             "key": "2"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -232,7 +232,7 @@
           "salutation": {
             "key": "1"
           },
-          "hideAddress": true,
+          "hideAddress": false,
           "positionName": "Position/nachgeordnete Abteilung",
           "academic-title": {
             "key": "1"
@@ -341,7 +341,7 @@
         {
           "ars": "11",
           "type": "wfsgnde",
-          "title": "Berlin, Bundesland",
+          "title": "Berlin",
           "value": {
             "lat1": 52.35918,
             "lat2": 52.688663,
@@ -352,7 +352,7 @@
         {
           "ars": "02",
           "type": "wfsgnde",
-          "title": "Hamburg, Bundesland",
+          "title": "Hamburg",
           "value": {
             "lat1": 53.39813,
             "lat2": 54.02584,
@@ -439,7 +439,7 @@
         "specification": {
           "key": "10"
         },
-        "publicationDate": "2009-10-20"
+        "publicationDate": "2009-20-19T23:00:00.000Z"
       },
       {
         "pass": {

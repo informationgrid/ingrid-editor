@@ -244,6 +244,12 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           }
         },
+        "invekosKeywords": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
         "spatialScope": {
           "anyOf": [
             {

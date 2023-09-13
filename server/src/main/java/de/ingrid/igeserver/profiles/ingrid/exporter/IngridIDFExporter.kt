@@ -34,7 +34,6 @@ class IngridIDFExporter @Autowired constructor(
 
     val log = logger()
 
-    val codelistTransformer = CodelistTransformer(codelistHandler)
 
 
     override val typeInfo = ExportTypeInfo(
@@ -82,14 +81,16 @@ class IngridIDFExporter @Autowired constructor(
     private fun getModelTransformer(json: Document, catalogId: String): IngridModelTransformer {
         val ingridModel = mapper.convertValue(json, IngridModel::class.java)
 
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridLiterature" to IngridModelTransformer::class,
+            "InGridLiterature" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
-            "InGridProject" to IngridModelTransformer::class,
-            "InGridDataCollection" to IngridModelTransformer::class,
-            "InGridInformationSystem" to IngridModelTransformer::class
+            "InGridProject" to ProjectModelTransformer::class,
+            "InGridDataCollection" to DataCollectionModelTransformer::class,
+            "InGridInformationSystem" to InformationSystemModelTransformer::class
         )
         val transformerClass = transformers[ingridModel.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel.type}")
         return transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService)

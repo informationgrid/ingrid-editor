@@ -1,20 +1,19 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.KeyValueModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel;
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-@import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
+@import de.ingrid.igeserver.profiles.ingrid.exporter.DisplayOperation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.UseConstraint
 @import gg.jte.Content
 
 @param IngridModelTransformer page
 @param Content contentInfo = null
+@param Content additionalCitation = null
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -57,9 +56,9 @@
 <gmd:contact>
     !{var address = page.getContact();}
     @if(address != null)
-        <idf:idfResponsibleParty type="100" uuid="${address.getUuid()}">
+        <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
             <gmd:organisationName>
-                <gco:CharacterString>${address.getNamePresentation()}</gco:CharacterString>
+                <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
             </gmd:organisationName>
             <gmd:contactInfo>
                 <gmd:CI_Contact>
@@ -70,6 +69,11 @@
                             </gmd:electronicMailAddress>
                         </gmd:CI_Address>
                     </gmd:address>
+                    @if(address.getHoursOfService() != null)
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>
+                    </gmd:hoursOfService>
+                    @endif
                 </gmd:CI_Contact>
             </gmd:contactInfo>
             <gmd:role>
@@ -93,7 +97,7 @@
 
 @if(page.getGridSpatialRepresentation() != null)
 <gmd:spatialRepresentationInfo>
-    <gmd:MD_GridSpatialRepresentation>
+    <gmd:MD_${page.getGridType()}>
         <gmd:numberOfDimensions>
             <gco:Integer>${page.getGridSpatialRepresentation().getNumberOfDimensions()}</gco:Integer>
         </gmd:numberOfDimensions>
@@ -120,7 +124,50 @@
         <gmd:transformationParameterAvailability>
             <gco:Boolean>true</gco:Boolean>
         </gmd:transformationParameterAvailability>
-    </gmd:MD_GridSpatialRepresentation>
+        @if(page.getGeorectified() != null)
+            @if(page.getGeorectified().getCheckPointAvailability() != null)
+                <gmd:controlPointAvailability>
+                <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
+            @endif
+            @if(TransformationTools.hasValue(page.getGeorectified().getCheckPointDescription()))
+                <gmd:checkPointDescription>
+                   <gco:CharacterString>${page.getGeorectified().getCheckPointDescription()}</gco:CharacterString>
+                </gmd:checkPointDescription>
+            @endif
+            @if(TransformationTools.hasValue(page.getGeorectified().getCornerPoints()))
+                <gmd:cornerPoints>
+                    <gml:Point gml:id="cornerPointId1">
+                        <gml:coordinates>${page.getGeorectified().getCornerPoints()}</gml:coordinates>
+                    </gml:Point>
+                </gmd:cornerPoints>
+            @endif
+            @if(page.getGeorectified().getPointInPixel() != null)
+                <gmd:pointInPixel>
+                    <gco:Boolean>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gco:Boolean>
+                </gmd:pointInPixel>
+            @else
+                <gmd:pointInPixel gco:nilReason="unknown"/>
+            @endif
+        @endif
+         @if(page.getGeorefenceable() != null)
+             @if(page.getGeorefenceable().getControlPointAvaliability() != null)
+                 <gmd:controlPointAvailability>
+                     <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
+                 </gmd:controlPointAvailability>
+             @endif
+             @if(page.getGeorefenceable().getOrientationParameterAvailability() != null)
+                <gmd:orientationParameterAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
+                </gmd:orientationParameterAvailability>
+             @endif
+             <gmd:georeferencedParameters>
+                 <gco:Record>
+                     <gco:CharacterString>Feld von Georeferenzierungsparameter</gco:CharacterString>
+                 </gco:Record>
+             </gmd:georeferencedParameters>
+         @endif
+    </gmd:MD_${page.getGridType()}>
 </gmd:spatialRepresentationInfo>
 @endif
 
@@ -185,6 +232,9 @@
                     </gmd:MD_Identifier>
                 </gmd:identifier>
                 @endif
+
+                ${additionalCitation}
+
             </gmd:CI_Citation>
         </gmd:citation>
         <gmd:abstract>
@@ -239,6 +289,17 @@
         </gmd:graphicOverview>
         @endfor
 
+       @if( TransformationTools.hasValue(page.getResourceFormat()) )
+        <gmd:resourceFormat>
+            <gmd:MD_Format>
+                <gmd:name>
+                    <gco:CharacterString>${page.getResourceFormat()}</gco:CharacterString>
+                </gmd:name>
+                <gmd:version gco:nilReason="inapplicable"/>
+            </gmd:MD_Format>
+        </gmd:resourceFormat>
+        @endif
+
 
 
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
@@ -251,8 +312,10 @@
         @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
         @template.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getGemetKeywords())
+        @template.ingrid.descriptiveKeywords(thesaurus = page.getInvekosKeywords())
 
-        @if(page.getSpecificUsage() != null)
+        @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>
                 <gmd:specificUsage>
@@ -262,7 +325,7 @@
             </gmd:MD_Usage>
         </gmd:resourceSpecificUsage>
         @endif
-        @if( page.getUseLimitation() != null)
+        @if( TransformationTools.hasValue(page.getUseLimitation()))
             <gmd:resourceConstraints>
                 <gmd:MD_LegalConstraints>
                     <gmd:useLimitation>
@@ -271,7 +334,7 @@
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
         @endif
-        @if(page.getUseConstraints() != null && !page.getUseConstraints().isEmpty())
+        @if(TransformationTools.hasValue(page.getUseConstraints()))
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
                 <gmd:useConstraints>
@@ -281,16 +344,30 @@
                     <gmd:otherConstraints>
                         @template.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
-                    @if(useconstraint.getSource() != null && !useconstraint.getSource().isEmpty())
+                    @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
-                    @if(useconstraint.getJson() != null && !useconstraint.getJson().isEmpty())
+                    @if(TransformationTools.hasValue(useconstraint.getJson()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>${useconstraint.getJson()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
+                @endfor
+            </gmd:MD_LegalConstraints>
+        </gmd:resourceConstraints>
+        @endif
+        @if(TransformationTools.hasValue( page.getAvailabilityAccessConstraints()))
+        <gmd:resourceConstraints>
+            <gmd:MD_LegalConstraints>
+                <gmd:accessConstraints>
+                    <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                </gmd:accessConstraints>
+                @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
+                <gmd:otherConstraints>
+                    @template.ingrid.anchorOrCharacterString(model = accessConstraint)
+                </gmd:otherConstraints>
                 @endfor
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
@@ -340,6 +417,11 @@
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
             </gmd:language>
         @endfor
+        @if(TransformationTools.hasValue(page.getSystemEnvironment()))
+            <gmd:environmentDescription>
+                <gco:CharacterString>Systemumgebung</gco:CharacterString>
+            </gmd:environmentDescription>
+        @endif
         @if(page.getDatasetCharacterSet() != null)
             <gmd:characterSet>
                 <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="${page.getDatasetCharacterSet()}"/>
@@ -360,7 +442,7 @@
                 <gco:CharacterString>${version}</gco:CharacterString>
             </srv:serviceTypeVersion>
         @endfor
-        <gmd:extent>
+        <${page.getExtentType()}>
             <gmd:EX_Extent>
                 @if(spatial.getDescription() != null)
                     <gmd:description>
@@ -368,7 +450,7 @@
                     </gmd:description>
                 @endif
                 @for(SpatialModel ref : page.getSpatialReferences())
-                    @if(ref.getType().equals("free"))
+                    @if(ref.getType().equals("free") || ref.getType().equals("wfsgnde"))
                         @if(ref.getTitle() != null)
                             <gmd:geographicElement>
                                 <gmd:EX_GeographicDescription>
@@ -378,7 +460,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>${ref.getTitle()}</gco:CharacterString>
+                                                <gco:CharacterString>${ref.getTitleWithArs()}</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -418,7 +500,7 @@
                             </gmd:EX_BoundingPolygon>
                         </gmd:geographicElement>
                     @endif
-                    @if(ref.getArs() != null)
+                    @if(TransformationTools.hasValue(ref.getArs()))
                         <gmd:geographicElement>
                             <gmd:EX_GeographicDescription>
                                 <gmd:geographicIdentifier>
@@ -488,32 +570,74 @@
                     </gmd:verticalElement>
                 @endif
             </gmd:EX_Extent>
-        </gmd:extent>
-    @if(page.getCouplingType() != null)
+        </${page.getExtentType()}>
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:coupledResource>
+            <srv:SV_CoupledResource>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                <srv:identifier>
+                    <gco:CharacterString>${operation.getIdentifierLink()}</gco:CharacterString>
+                </srv:identifier>
+            </srv:SV_CoupledResource>
+        </srv:coupledResource>
+    @endfor
+    @if(TransformationTools.hasValue(page.getCouplingType()))
         <srv:couplingType>
             <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType" codeListValue="${page.getCouplingType()}"/>
         </srv:couplingType>
     @endif
-    @for( Operation operation : page.getOperations() )
+    @if(page.isAtomDownload())
         <srv:containsOperations>
             <srv:SV_OperationMetadata>
                 <srv:operationName>
-                    <gco:CharacterString>${page.getCodelists().getValue("5110",operation.getName())}</gco:CharacterString>
+                    <gco:CharacterString>Download</gco:CharacterString>
                 </srv:operationName>
-<%--                <srv:DCP>
-                    <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="${page.getCodelists().getValue("5180", operation.getPlatform())}"/>
-                </srv:DCP>--%>
-                @if(operation.getDescription() != null)
+                <srv:connectPoint>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
+                        </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                </srv:connectPoint>
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endif
+    @if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
+        <srv:containsOperations gco:nilReason="missing"/>
+    @endif
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
                 </srv:operationDescription>
                 @endif
-                <srv:invocationName>
-                    <gco:CharacterString>${operation.getMethodCall()}</gco:CharacterString>
-                </srv:invocationName>
+                @if(TransformationTools.hasValue(operation.getMethodCall()))
+                <srv:connectPoint>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                        </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                </srv:connectPoint>
+                @endif
             </srv:SV_OperationMetadata>
         </srv:containsOperations>
     @endfor
+    @for( OperatesOn operatesOn : page.getOperatesOn() )
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}"/>
+    @endfor
+    @if(TransformationTools.hasValue(page.getSupplementalInformation()))
+        <gmd:supplementalInformation>
+            <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
+        </gmd:supplementalInformation>
+    @endif
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
 
@@ -525,21 +649,39 @@ ${contentInfo}
         @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
                 <gmd:distributionFormat>
                     <gmd:MD_Format>
+                        @if(distributionFormat.getName() != null)
                         <gmd:name>
                             <gco:CharacterString>${page.getCodelists().getValue("1320",distributionFormat.getName())}</gco:CharacterString>
                         </gmd:name>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getVersion()))
                         <gmd:version>
                             <gco:CharacterString>${distributionFormat.getVersion()}</gco:CharacterString>
                         </gmd:version>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getSpecification()))
                         <gmd:specification>
                             <gco:CharacterString>${distributionFormat.getSpecification()}</gco:CharacterString>
                         </gmd:specification>
+                        @endif
+                        @if(TransformationTools.hasValue(distributionFormat.getCompression()))
                         <gmd:fileDecompressionTechnique>
                             <gco:CharacterString>${distributionFormat.getCompression()}</gco:CharacterString>
                         </gmd:fileDecompressionTechnique>
+                        @endif
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
         @endfor
+        @if (page.getDistributionFormats().isEmpty())
+            <%--  always write format, here with nilReason children, see INGRID32-146--%>
+            <%--  NOW ALSO when distributor exists (was missing) !, see INGRID-2277--%>
+            <gmd:distributionFormat>
+                <gmd:MD_Format>
+                    <gmd:name gco:nilReason="unknown" />
+                    <gmd:version gco:nilReason="unknown" />
+                </gmd:MD_Format>
+            </gmd:distributionFormat>
+        @endif
         @if(page.getData().getOrderInfo() != null)
         <gmd:distributor>
             <gmd:MD_Distributor>
@@ -564,7 +706,7 @@ ${contentInfo}
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>
                     <gmd:onLine>
-                        <gmd:CI_OnlineResource>
+                        <idf:idfOnlineResource>
                             <gmd:linkage>
                                 <gmd:URL>${reference.getUrl()}</gmd:URL>
                             </gmd:linkage>
@@ -579,7 +721,8 @@ ${contentInfo}
                             <gmd:function>
                                 <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${page.getCodelists().getValue("2000", reference.getType(), "iso")}">${page.getCodelists().getValue("2000", reference.getType(), "iso")}</gmd:CI_OnLineFunctionCode>
                             </gmd:function>
-                        </gmd:CI_OnlineResource>
+                            <idf:attachedToField entry-id="${reference.getType().getKey()}" list-id="2000">${page.getCodelists().getValue("2000", reference.getType())}</idf:attachedToField>
+                        </idf:idfOnlineResource>
                     </gmd:onLine>
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
@@ -588,7 +731,7 @@ ${contentInfo}
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>
                     <gmd:onLine>
-                        <gmd:CI_OnlineResource>
+                        <idf:idfOnlineResource>
                             <gmd:linkage>
                                 <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                             </gmd:linkage>
@@ -603,11 +746,31 @@ ${contentInfo}
                             <gmd:function>
                                 <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                             </gmd:function>
-                        </gmd:CI_OnlineResource>
+                            <idf:attachedToField entry-id="5066" list-id="2000">Link to Service</idf:attachedToField>
+                        </idf:idfOnlineResource>
                     </gmd:onLine>
                 </gmd:MD_DigitalTransferOptions>
             </gmd:transferOptions>
         @endfor
+        @if(page.isAtomDownload())
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
+                            </gmd:linkage>
+                            <gmd:name>
+                                <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
+                            </gmd:name>
+                            <gmd:function>
+                                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                            </gmd:function>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        @endif
         @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
             <gmd:transferOptions>
                 <gmd:MD_DigitalTransferOptions>

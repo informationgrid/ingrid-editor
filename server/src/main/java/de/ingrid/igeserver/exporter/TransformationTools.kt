@@ -10,6 +10,13 @@ class TransformationTools {
     companion object {
         val log = logger()
 
+        @kotlin.jvm.JvmStatic
+        fun hasValue(s: String?) = !s.isNullOrEmpty()
+
+        @kotlin.jvm.JvmStatic
+        fun hasValue(s: List<Any>?) = !s.isNullOrEmpty()
+
+        @kotlin.jvm.JvmStatic
         fun getISORealFromIGCNumber(igcNumber: Float): String? {
             return try {
                 val n = igcNumber.toDouble()
@@ -33,6 +40,7 @@ class TransformationTools {
         }
 
 
+        // TODO: move to MappingUtils class and refactor to use already present map iso639LanguageMapping
         @kotlin.jvm.JvmStatic
         fun getLanguageISO639_2Value(language: KeyValueModel): String {
             if (language.key == null) return language.value

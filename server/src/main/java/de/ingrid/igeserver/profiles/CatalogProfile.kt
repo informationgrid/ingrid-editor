@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import org.springframework.security.core.Authentication
 
 interface CatalogProfile {

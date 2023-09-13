@@ -142,17 +142,6 @@
       "references": [
         {
           "value": {
-            "lat1": 52.35918,
-            "lon1": 13.082744,
-            "lat2": 52.688663,
-            "lon2": 13.784928
-          },
-          "title": "Berlin, Gemeinde",
-          "type": "wfsgnde",
-          "ars": "110000000000"
-        },
-        {
-          "value": {
             "lat1": 52.338,
             "lon1": 13.088,
             "lat2": 52.676,
@@ -160,7 +149,18 @@
           },
           "title": "Berlin, Deutschland (administrative)",
           "type": "free",
-          "ars": "110000000000"
+          "ars": "11"
+        },
+        {
+          "value": {
+            "lat1": 52.35918,
+            "lon1": 13.082744,
+            "lat2": 52.688663,
+            "lon2": 13.784928
+          },
+          "title": "Berlin",
+          "type": "wfsgnde",
+          "ars": "11"
         }
       ],
       "spatialSystems": [

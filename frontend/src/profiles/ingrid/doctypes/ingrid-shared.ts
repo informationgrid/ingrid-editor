@@ -22,12 +22,15 @@ import { inject } from "@angular/core";
 import { ThesaurusReportComponent } from "../components/thesaurus-report.component";
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { MatSelectChange } from "@angular/material/select";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
   openData?: boolean;
   advCompatible?: boolean;
+  thesaurusTopics?: boolean;
 }
 
 interface KeywordSectionOptions {
@@ -53,6 +56,7 @@ export abstract class IngridShared extends BaseDoctype {
   cookieService = inject(CookieService);
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
+  private behaviourService = inject(BehaviourService);
 
   options = {
     required: {
@@ -101,6 +105,7 @@ export abstract class IngridShared extends BaseDoctype {
     "320": "5",
     "321": "5",
   };
+  showInVeKoSField: boolean = false;
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addGroupSimple(
@@ -158,6 +163,37 @@ export abstract class IngridShared extends BaseDoctype {
           click: (field) =>
             setTimeout(() => this.handleIsInspireConformClick(field)),
         }),
+        this.showInVeKoSField
+          ? this.addSelect("invekos", "InVeKoS", {
+              allowNoValue: false,
+              defaultValue: { key: "none" },
+              expressions: {
+                hide: "!model.isInspireIdentified",
+              },
+              options: [
+                {
+                  label: "Kein InVeKoS Datensatz",
+                  value: "none",
+                },
+                {
+                  label: "InVeKoS/IACS",
+                  value: "iacs",
+                },
+                {
+                  label: "InVeKoS/IACS (GSAA)",
+                  value: "gsaa",
+                },
+                {
+                  label: "InVeKoS/IACS (LPIS)",
+                  value: "lpis",
+                },
+              ],
+              change: (field, value: MatSelectChange) => {
+                console.log("Value changed:", value);
+                this.handleInVeKosChange(field, value, options.thesaurusTopics);
+              },
+            })
+          : null,
         options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addInput(
@@ -184,20 +220,29 @@ export abstract class IngridShared extends BaseDoctype {
             validators: {
               atLeastOneMD: {
                 expression: (ctrl) =>
-                  // equals Ansprechpartner MD
+                  // equals "Ansprechpartner MD"
                   ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "12")
                     : false,
-                message: "Es muss mindestens einen Ansprechpartner MD geben.",
+                message: "Es muss mindestens einen 'Ansprechpartner MD' geben.",
               },
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl, field) =>
-                  // equals Ansprechpartner
+                  // equals "Ansprechpartner"
                   !field.model.isAdVCompatible ||
                   (ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "7")
                     : false),
-                message: "Es muss mindestens einen Ansprechpartner geben.",
+                message: "Es muss mindestens einen 'Ansprechpartner' geben.",
+              },
+              atLeastOneOtherAddress: {
+                expression: (ctrl, field) =>
+                  // not equals "Ansprechpartner MD"
+                  ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key !== "12")
+                    : false,
+                message:
+                  "Neben dem 'Ansprechpartner MD' muss mindestens eine weitere Adresse angegeben werden.",
               },
             },
           }),
@@ -290,6 +335,82 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
+        this.showInVeKoSField
+          ? this.addRepeatList("invekosKeywords", "InVeKoS-Schlagworte", {
+              view: "chip",
+              asSelect: true,
+              showSearch: true,
+              expressions: {
+                hide: "!formState.mainModel?.isInspireIdentified",
+              },
+              options: [
+                {
+                  label: "GSAA",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/gsaa",
+                },
+                {
+                  label: "Im Umweltinteresse genutzte Fläche",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/ecologicalFocusArea",
+                },
+                {
+                  label: "InVeKoS",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/iacs",
+                },
+                {
+                  label: "Landwirtschaftliche Fläche",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/agriculturalArea",
+                },
+                {
+                  label: "LPIS",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/lpis",
+                },
+                {
+                  label: "Referenzparzelle",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel",
+                },
+              ],
+              validators: {
+                invekos: {
+                  expression: (ctrl) => {
+                    const invekosValue = ctrl.root.value.invekos?.key;
+                    if (invekosValue === "none") return true;
+
+                    const hasKeyword = (keyword: string) =>
+                      ctrl.value?.some(
+                        (item) =>
+                          item.key ===
+                          `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${keyword}`
+                      );
+
+                    if (invekosValue === "gsaa") {
+                      return hasKeyword("iacs") && hasKeyword("gsaa");
+                    } else if (invekosValue === "lpis") {
+                      return hasKeyword("iacs") && hasKeyword("lpis");
+                    } else {
+                      return hasKeyword("iacs");
+                    }
+                  },
+                  message: (_, field: any) => {
+                    const invekos = field.formControl.root.value.invekos?.key;
+                    let extraMessage = "";
+                    if (invekos === "gsaa") extraMessage = "und 'GSAA'";
+                    else if (invekos === "lpis") extraMessage = "und 'LPIS'";
+                    return (
+                      "Das Schlagwort 'InVeKoS'" +
+                      extraMessage +
+                      " ist verpflichtend"
+                    );
+                  },
+                },
+              },
+            })
+          : null,
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
               view: "chip",
@@ -308,6 +429,29 @@ export abstract class IngridShared extends BaseDoctype {
               remove: (field, $event) =>
                 options.thesaurusTopics &&
                 this.updateIsoCategory($event, field.options.formState, true),
+              validators: {
+                ...(this.showInVeKoSField && {
+                  invekos_gsaa: {
+                    expression: (ctrl) => {
+                      const invekosValue = ctrl.root.value.invekos?.key;
+                      if (invekosValue !== "gsaa") return true;
+
+                      return ctrl.value?.some((item) => item.key === "304");
+                    },
+                    message: "Das Schlagwort 'Bodennutzung' ist verpflichtend",
+                  },
+                  invekos_lpis: {
+                    expression: (ctrl) => {
+                      const invekosValue = ctrl.root.value.invekos?.key;
+                      if (invekosValue !== "lpis") return true;
+
+                      return ctrl.value?.some((item) => item.key === "202");
+                    },
+                    message:
+                      "Das Schlagwort 'Bodenbedeckung' ist verpflichtend",
+                  },
+                }),
+              },
             })
           : null,
         this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
@@ -363,6 +507,21 @@ export abstract class IngridShared extends BaseDoctype {
               required: this.options.required.topicCategories,
               remove: (field, event) =>
                 this.checkConnectedIsoCategory(event, field),
+              validators: {
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (ctrl) => {
+                      const invekosValue = ctrl.root.value.invekos?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
+
+                      return ctrl.value?.some((item) => item.key === "1");
+                    },
+                    message:
+                      "Das Schlagwort 'Landwirtschaft' ist verpflichtend",
+                  },
+                }),
+              },
             })
           : null,
         this.addGroupSimple("keywords", [
@@ -379,6 +538,23 @@ export abstract class IngridShared extends BaseDoctype {
               return item.alternativeLabel
                 ? `${item.label} (${item.alternativeLabel})`
                 : item.label;
+            },
+            validators: {
+              ...(this.showInVeKoSField && {
+                invekos: {
+                  expression: (ctrl) => {
+                    const invekosValue = ctrl.root.value.invekos?.key;
+                    if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                      return true;
+
+                    return ctrl.value?.some(
+                      (item) => item.label === "Gemeinsame Agrarpolitik"
+                    );
+                  },
+                  message:
+                    "Das Schlagwort 'Gemeinsame Agrarpolitik' ist verpflichtend",
+                },
+              }),
             },
           }),
           this.addRepeatList("umthes", "Umthes Schlagworte", {
@@ -715,6 +891,24 @@ export abstract class IngridShared extends BaseDoctype {
               codelistId: 502,
             }),
           ],
+          validators: {
+            ...(this.showInVeKoSField && {
+              invekos: {
+                expression: (ctrl) => {
+                  const invekosValue = ctrl.root.value.invekos?.key;
+                  if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                    return true;
+
+                  // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                  return ctrl.value?.some(
+                    (item) => item.referenceDateType?.key === "3"
+                  );
+                },
+                message:
+                  "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+              },
+            }),
+          },
         }),
         this.addGroup(
           null,
@@ -1523,6 +1717,126 @@ export abstract class IngridShared extends BaseDoctype {
         return "5";
       case "InGridInformationSystem":
         return "6";
+    }
+  }
+
+  protected handleInVeKoSBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour(
+      "plugin.ingrid.invekos"
+    );
+    this.showInVeKoSField = behaviour?.isActive ?? behaviour?.defaultActive;
+  }
+
+  private handleInVeKosChange(
+    field,
+    value: MatSelectChange,
+    hasThesaurusTopics: boolean
+  ) {
+    console.log("handle invekos change");
+    const formState = field.options.formState;
+
+    if (value.value.key === "none") return;
+
+    this.addInVeKoSKeyword(formState, "iacs");
+
+    if (value.value.key === "iacs") {
+      field.options.formState.updateModel();
+      return;
+    }
+
+    const executeAction = (value) => {
+      if (value === "gsaa") {
+        // INSPIRE Thema "Land use" Pflicht ("Bodennutzung")
+        this.addInspireTopic(formState, "304", hasThesaurusTopics);
+        this.addInVeKoSKeyword(formState, "gsaa");
+      }
+      if (value === "lpis") {
+        // INSPIRE Thema "Land cover" Pflicht ("Bodenbedeckung")
+        this.addInspireTopic(formState, "202", hasThesaurusTopics);
+        this.addInVeKoSKeyword(formState, "lpis");
+      }
+
+      if (value === "gsaa" || value === "lpis") {
+        // GEMET Schlagwort "Common Agricultural Policy" Pflicht
+        this.addGemet(formState, {
+          id: "http://www.eionet.europa.eu/gemet/concept/1600",
+          label: "Gemeinsame Agrarpolitik",
+          alternativeLabel: null,
+        });
+        // als Topic Category muss "farming" ausgewählt werden
+        this.addTopicCategory(formState, "1");
+      }
+
+      field.options.formState.updateModel();
+    };
+
+    const cookieId = "HIDE_INVEKOS_INFO";
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message:
+            "Dem Datensatz werden folgende Schlagworte hinzugefügt: <ul><li>InVeKoS: InVeKoS" +
+            (value.value.key === "gsaa"
+              ? " + GSAA"
+              : value.value.key === "lpis"
+              ? " + LPIS"
+              : "") +
+            "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
+            (value.value.key === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
+            "</li></ul>",
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed()
+      .subscribe((decision) => {
+        if (decision === "ok") executeAction(value.value.key);
+        else field.formControl.setValue({ key: "none" });
+      });
+  }
+
+  private addInspireTopic(
+    formState: any,
+    id: string,
+    hasThesaurusTopics: boolean
+  ) {
+    const exists = formState.mainModel.themes.some((entry) => entry.key === id);
+    if (!exists) {
+      const itemTheme = { key: id };
+      formState.mainModel.themes.push(itemTheme);
+      if (hasThesaurusTopics) {
+        this.updateIsoCategory(itemTheme, formState);
+      }
+    }
+  }
+
+  private addTopicCategory(formState: any, id: string) {
+    const exists = formState.mainModel.topicCategories.some(
+      (entry) => entry.key === id
+    );
+    if (!exists) {
+      const topicCategory = { key: id };
+      formState.mainModel.topicCategories.push(topicCategory);
+    }
+  }
+
+  private addInVeKoSKeyword(formState: any, id: string) {
+    const uri = `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${id}`;
+    const exists = formState.mainModel.invekosKeywords.some(
+      (entry) => entry.key === uri
+    );
+    if (!exists) {
+      const topicCategory = { key: uri };
+      formState.mainModel.invekosKeywords.push(topicCategory);
+    }
+  }
+
+  private addGemet(formState: any, item: any) {
+    const exists = formState.mainModel.keywords.gemet?.some(
+      (entry) => entry.id === item.id
+    );
+    if (!exists) {
+      formState.mainModel.keywords.gemet.push(item);
     }
   }
 }
