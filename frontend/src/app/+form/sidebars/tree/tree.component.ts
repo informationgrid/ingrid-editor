@@ -264,6 +264,9 @@ export class TreeComponent implements OnInit {
   }*/
 
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
+    // disable multi selection mode after a tree operation
+    this.selection.multiSelectionModeEnabled = false;
+
     switch (updateInfo.type) {
       case UpdateType.New:
         return this.addNewNodes(updateInfo);
