@@ -335,77 +335,79 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addRepeatList("invekosKeywords", "InVeKoS-Schlagworte", {
-          view: "chip",
-          asSelect: true,
-          showSearch: true,
-          options: [
-            {
-              label: "GSAA",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/gsaa",
-            },
-            {
-              label: "Im Umweltinteresse genutzte Fläche",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/ecologicalFocusArea",
-            },
-            {
-              label: "InVeKoS",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/iacs",
-            },
-            {
-              label: "Landwirtschaftliche Fläche",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/agriculturalArea",
-            },
-            {
-              label: "LPIS",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/lpis",
-            },
-            {
-              label: "Referenzparzelle",
-              value:
-                "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel",
-            },
-          ],
-          validators: {
-            invekos: {
-              expression: (ctrl) => {
-                const invekosValue = ctrl.root.value.invekos?.key;
-                if (invekosValue === "none") return true;
+        this.showInVeKoSField
+          ? this.addRepeatList("invekosKeywords", "InVeKoS-Schlagworte", {
+              view: "chip",
+              asSelect: true,
+              showSearch: true,
+              options: [
+                {
+                  label: "GSAA",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/gsaa",
+                },
+                {
+                  label: "Im Umweltinteresse genutzte Fläche",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/ecologicalFocusArea",
+                },
+                {
+                  label: "InVeKoS",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/iacs",
+                },
+                {
+                  label: "Landwirtschaftliche Fläche",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/agriculturalArea",
+                },
+                {
+                  label: "LPIS",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/lpis",
+                },
+                {
+                  label: "Referenzparzelle",
+                  value:
+                    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel",
+                },
+              ],
+              validators: {
+                invekos: {
+                  expression: (ctrl) => {
+                    const invekosValue = ctrl.root.value.invekos?.key;
+                    if (invekosValue === "none") return true;
 
-                const hasKeyword = (keyword: string) =>
-                  ctrl.value?.some(
-                    (item) =>
-                      item.key ===
-                      `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${keyword}`
-                  );
+                    const hasKeyword = (keyword: string) =>
+                      ctrl.value?.some(
+                        (item) =>
+                          item.key ===
+                          `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${keyword}`
+                      );
 
-                if (invekosValue === "gsaa") {
-                  return hasKeyword("iacs") && hasKeyword("gsaa");
-                } else if (invekosValue === "lpis") {
-                  return hasKeyword("iacs") && hasKeyword("lpis");
-                } else {
-                  return hasKeyword("iacs");
-                }
+                    if (invekosValue === "gsaa") {
+                      return hasKeyword("iacs") && hasKeyword("gsaa");
+                    } else if (invekosValue === "lpis") {
+                      return hasKeyword("iacs") && hasKeyword("lpis");
+                    } else {
+                      return hasKeyword("iacs");
+                    }
+                  },
+                  message: (_, field: any) => {
+                    const invekos = field.formControl.root.value.invekos.key;
+                    let extraMessage = "";
+                    if (invekos === "gsaa") extraMessage = "und 'GSAA'";
+                    else if (invekos === "lpis") extraMessage = "und 'LPIS'";
+                    return (
+                      "Das Schlagwort 'InVeKoS'" +
+                      extraMessage +
+                      " ist verpflichtend"
+                    );
+                  },
+                },
               },
-              message: (_, field: any) => {
-                const invekos = field.formControl.root.value.invekos.key;
-                let extraMessage = "";
-                if (invekos === "gsaa") extraMessage = "und 'GSAA'";
-                else if (invekos === "lpis") extraMessage = "und 'LPIS'";
-                return (
-                  "Das Schlagwort 'InVeKoS'" +
-                  extraMessage +
-                  " ist verpflichtend"
-                );
-              },
-            },
-          },
-        }),
+            })
+          : null,
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
               view: "chip",
