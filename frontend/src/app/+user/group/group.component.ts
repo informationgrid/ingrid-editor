@@ -3,6 +3,7 @@ import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   AbstractControl,
   FormControl,
@@ -63,7 +64,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
     public userService: UserService,
     private router: Router,
     private session: SessionQuery,
-    public groupQuery: GroupQuery
+    public groupQuery: GroupQuery,
+    private snackBar: MatSnackBar
   ) {
     this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
@@ -165,6 +167,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
       .subscribe((group) => {
         if (group && setActive) {
           this.updateGroupOnPage(group);
+          this.snackBar.open("Gruppe wurde gespeichert", "", {
+            panelClass: "green",
+          });
         }
       });
   }

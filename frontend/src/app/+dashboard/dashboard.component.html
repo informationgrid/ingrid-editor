@@ -82,7 +82,7 @@
                     <ige-document-list-item
                         [docs]="oldestExpiredDocs"
                         [hideDate]="false"
-                        (select)="openDocument($event._uuid)"
+                        (select)="openByType($event)"
                     ></ige-document-list-item>
                 </ige-card-box>
             </ng-container>

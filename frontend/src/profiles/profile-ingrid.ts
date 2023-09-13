@@ -34,6 +34,7 @@ import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolba
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
 import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
+import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 
 @Component({
   template: "",
@@ -52,6 +53,7 @@ export class InGridComponent implements OnInit {
   organisation = inject(IngridOrganisationDoctype);
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
+  invekos = inject(InvekosPlugin);
 
   protected docTypes = [
     this.folder,

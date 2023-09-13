@@ -288,9 +288,9 @@ ige-document-icon {
 }
 
 .folder.intranet .label {
-  color: red;
+  color: $ige-primary;
 }
 
 .folder.amtsintern .label {
-  color: blue;
+  color: $error-color;
 }
