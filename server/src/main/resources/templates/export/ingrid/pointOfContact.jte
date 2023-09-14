@@ -6,7 +6,6 @@
 @param List<AddressModelTransformer> addresses
 
 @for(AddressModelTransformer address : addresses)
-    @if( address.getType() != null)
         <gmd:pointOfContact>
             <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
                 @if(address.getIndividualName() != null )
@@ -97,11 +96,15 @@
                         @endif
                     </gmd:CI_Contact>
                 </gmd:contactInfo>
+                @if(address.getType() != null)
                 <gmd:role>
                     <gmd:CI_RoleCode
                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
                             codeListValue="${address.getCodelist().getValue("505", address.getType(), "iso")}" />
                 </gmd:role>
+                @else
+                <gmd:role gco:nilReason="inapplicable"/>
+                @endif
                 @for( AddressModelTransformer adr : address.getHierarchy())
                     <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
                         @if(adr.getIndividualName(false) != null )
@@ -115,5 +118,4 @@
                 @endfor
             </idf:idfResponsibleParty>
         </gmd:pointOfContact>
-    @endif
 @endfor
