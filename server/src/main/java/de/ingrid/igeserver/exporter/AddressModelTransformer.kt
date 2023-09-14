@@ -2,6 +2,9 @@ package de.ingrid.igeserver.exporter
 
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
+import java.text.SimpleDateFormat
+import java.time.OffsetDateTime
+import java.util.*
 
 class AddressModelTransformer(
     private val model: AddressModel,
@@ -76,7 +79,8 @@ class AddressModelTransformer(
     val email = displayAddress.email
     val postBoxAddress =
         listOfNotNull(
-            this.poBox?.let { "Postfach $it" },
+            // "Postbox" is a fixed string needed for portal display
+            this.poBox?.let { "Postbox $it" },
             this.zipPoBox?.let { it + this.city?.let { " $it" } }).filter { it.isNotEmpty() }
             .joinToString(", ")
     val homepage = displayAddress.homepage
@@ -85,6 +89,12 @@ class AddressModelTransformer(
 
     val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
     val addressDocType = if (displayAddress.docType == "InGridOrganisationDoc") 0 else 2
+
+
+    private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
+        formatter.format(Date.from(date.toInstant()))
+    val lastModified = formatDate(formatterISO, displayAddress.modified)
 
 
 }

@@ -4,10 +4,13 @@
 @import java.util.List
 
 @param List<AddressModelTransformer> addresses
+@param Boolean pointOfContactExport = true
 
 @for(AddressModelTransformer address : addresses)
+        @if(pointOfContactExport)
         <gmd:pointOfContact>
             <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
+        @endif
                 @if(address.getIndividualName() != null )
                     <gmd:individualName>
                         <gco:CharacterString>${address.getIndividualName()}</gco:CharacterString>
@@ -105,6 +108,11 @@
                 @else
                 <gmd:role gco:nilReason="inapplicable"/>
                 @endif
+                @if(!pointOfContactExport)
+                    <idf:last-modified>
+                        <gco:DateTime>${address.getLastModified()}</gco:DateTime>
+                    </idf:last-modified>
+                @endif
                 @for( AddressModelTransformer adr : address.getHierarchy())
                     <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
                         @if(adr.getIndividualName(false) != null )
@@ -116,6 +124,16 @@
                         <idf:addressType>${adr.getAddressDocType()}</idf:addressType>
                     </idf:hierarchyParty>
                 @endfor
+<%-- TODO               @if(!pointOfContactExport)--%>
+<%--                    <idf:objectReference uuid="1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9">--%>
+<%--                        <idf:objectName>Test-Geodatendienst Classic</idf:objectName>--%>
+<%--                        <idf:objectType>3</idf:objectType>--%>
+<%--                        <idf:description>Hier ist die Beschreibung.</idf:description>--%>
+<%--                        <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>--%>
+<%--                    </idf:objectReference>--%>
+<%--                @endif--%>
+        @if(pointOfContactExport)
             </idf:idfResponsibleParty>
         </gmd:pointOfContact>
+        @endif
 @endfor

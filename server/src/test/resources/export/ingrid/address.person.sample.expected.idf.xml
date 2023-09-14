@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+    <idf:head/>
+    <idf:body>
+        <idf:idfResponsibleParty xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+            <gmd:individualName>
+                <gco:CharacterString>Mustermann, Max, Herr Dr.</gco:CharacterString>
+            </gmd:individualName>
+            <gmd:organisationName>
+                <gco:CharacterString>Wemove Test</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+            </gmd:positionName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:phone>
+                        <gmd:CI_Telephone>
+                            <gmd:voice>
+                                <gco:CharacterString>123456789</gco:CharacterString>
+                            </gmd:voice>
+                            <gmd:facsimile>
+                                <gco:CharacterString>123456789</gco:CharacterString>
+                            </gmd:facsimile>
+                            <gmd:voice>
+                                <gco:CharacterString>23456789</gco:CharacterString>
+                            </gmd:voice>
+                        </gmd:CI_Telephone>
+                    </gmd:phone>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Postbox 30151,60314 Frankfurt am Main</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Mustermann Str.</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:city>
+                                <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                            </gmd:city>
+                            <gmd:administrativeArea>
+                                <gco:CharacterString>Hessen</gco:CharacterString>
+                            </gmd:administrativeArea>
+                            <gmd:postalCode>
+                                <gco:CharacterString>60314</gco:CharacterString>
+                            </gmd:postalCode>
+                            <gmd:country>
+                                <gco:CharacterString>DEU</gco:CharacterString>
+                            </gmd:country>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>mustermann@wemove.com</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                    <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>https://mustermann.com</gmd:URL>
+                            </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onlineResource>
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                    </gmd:hoursOfService>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role gco:nilReason="inapplicable"/>
+            <idf:last-modified>
+                <gco:DateTime>2023-07-07T16:07:27.000+02:00</gco:DateTime>
+            </idf:last-modified>
+            <idf:hierarchyParty uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                <idf:addressIndividualName>Mustermann, Max, Herr Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:objectReference uuid="13F94C1F-A8F4-4DA1-B9B6-FAD001B748BE">
+                <idf:objectName>Test-Projekt Classic</idf:objectName>
+                <idf:objectType>4</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="0EF21F30-224A-494B-8FB1-5EC339868BF2">
+                <idf:objectName>Test-Datensammlung Classic</idf:objectName>
+                <idf:objectType>5</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="93F65261-CB05-44A0-85A9-B9F0C4DB0944">
+                <idf:objectName>Test-Fachaufgabe Classic</idf:objectName>
+                <idf:objectType>0</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="18BA2648-285D-4D8B-AF0A-400A0ED80980">
+                <idf:objectName>Test-Informationssystem Classic</idf:objectName>
+                <idf:objectType>6</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="C1209940-418E-4F4E-869F-81EB9276B98B">
+                <idf:objectName>Test-Datensatz Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="8D358F48-B7F0-4722-A97C-66C682ACB039">
+                <idf:objectName>Test-Literatur Classic</idf:objectName>
+                <idf:objectType>2</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9">
+                <idf:objectName>Test-Geodatendienst Classic</idf:objectName>
+                <idf:objectType>3</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="05116569-E6CC-4290-8582-FD663509CACE">
+                <idf:objectName>Test-Datensatz OpenData Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Allgemeine Beschreibung.</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="D5417AF2-8E86-44ED-AC5E-E2A191C01378">
+                <idf:objectName>Test-Datensatz INSPIRE Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Allgemeine Beschreibung.</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="14B4B1DD-F449-4D09-BCF5-F428734C58F2">
+                <idf:objectName>Test-Datensatz AdV Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Feld von Beschreibung</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="12B2FCBC-D250-423F-B41E-BADA942C6BE0">
+                <idf:objectName>Test-Datensatz mit Vektor Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Feld von Beschreibung</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="D70FA2FA-5D70-4D69-ABC3-2F1E772E0BFE">
+                <idf:objectName>Test-Datensatz mit Geobasisraster Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Feld von Beschreibung</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="D401330F-0B82-4E04-9152-99EF767991DA">
+                <idf:objectName>Test-Datensatz mit Georektifiziertes Raster Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Feld von Beschreibung</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="893FC82D-DF27-4E6A-9BB2-489991792F06">
+                <idf:objectName>Test-Datensatz mit Georeferenzierbares Raster Classic</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Feld von Beschreibung</idf:description>
+            </idf:objectReference>
+        </idf:idfResponsibleParty>
+    </idf:body>
+</idf:html>

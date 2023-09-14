@@ -7,6 +7,12 @@
 
 !{var page = ((AddressModelTransformer)map.get("model"));}
 
-@template.template-idf(content = @`
-    @template.ingrid.pointOfContact(addresses = List.of(page))
+@template.template-idf(
+idfTag = "idfResponsibleParty",
+idfAdditionalAttributes = @`type="${page.getAddressDocType()}" uuid="${page.getUuid()}"`,
+content = @`
+    @template.ingrid.pointOfContact(
+    addresses = List.of(page),
+    pointOfContactExport = false,
+    )
 `)

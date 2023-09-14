@@ -185,7 +185,7 @@
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postfach 30151, 60314 Frankfurt am Main</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Mustermann Str.</gco:CharacterString>
