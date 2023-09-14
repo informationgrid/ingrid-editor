@@ -229,7 +229,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     Pair(doc, exporter.run(doc.document, catalogId))
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.message}"
+                    val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
                     log.error(errorMessage, ex)
                     message.errors.add(errorMessage)
                     sendNotification(category, message, index + (page * generalProperties.indexPageSize))

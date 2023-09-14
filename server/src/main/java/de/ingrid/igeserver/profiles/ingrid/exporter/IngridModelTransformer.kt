@@ -19,6 +19,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
+import org.springframework.dao.EmptyResultDataAccessException
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -461,18 +462,22 @@ open class IngridModelTransformer constructor(
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
-        val model = jacksonObjectMapper().convertValue(
-            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
-            IngridModel::class.java
-        )
-        val transformer = GeodatasetModelTransformer(
-            model,
-            catalogIdentifier,
-            codelists,
-            config,
-            catalogService
-        )
-        return transformer.citationURL
+        try {
+            val model = jacksonObjectMapper().convertValue(
+                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                IngridModel::class.java
+            )
+            val transformer = GeodatasetModelTransformer(
+                model,
+                catalogIdentifier,
+                codelists,
+                config,
+                catalogService
+            )
+            return transformer.citationURL
+        } catch (ex: EmptyResultDataAccessException) {
+            throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
+        }
     }
 
 
@@ -483,20 +488,24 @@ open class IngridModelTransformer constructor(
 
 
     private fun getCrossReference(uuid: String, type: KeyValueModel): CrossReference {
-        val model = jacksonObjectMapper().convertValue(
-            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
-            IngridModel::class.java
-        )
+        try {
+            val model = jacksonObjectMapper().convertValue(
+                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                IngridModel::class.java
+            )
 
-        return CrossReference(
-            direction = "OUT",
-            uuid = uuid,
-            objectName = model.title,
-            objectType = mapDocumentType(model.type),
-            refType = type,
-            description = model.data.description,
-            graphicOverview = model.data.graphicOverviews?.firstOrNull()?.fileName?.uri
-        )
+            return CrossReference(
+                direction = "OUT",
+                uuid = uuid,
+                objectName = model.title,
+                objectType = mapDocumentType(model.type),
+                refType = type,
+                description = model.data.description,
+                graphicOverview = model.data.graphicOverviews?.firstOrNull()?.fileName?.uri
+            )
+        } catch (e: EmptyResultDataAccessException) {
+            throw ServerException.withReason("A reference to another dataset '${uuid}' failed to export, since it has not been found in a published state.")
+        }
     }
 
 

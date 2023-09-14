@@ -2,12 +2,13 @@ package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.dao.EmptyResultDataAccessException
 
 
 /**
@@ -108,12 +109,16 @@ abstract class EntityType {
         return emptyList()
     }
 
-    private fun getDocumentForReferenceUuid(catalogId: String, uuid: String, options: UpdateReferenceOptions): JsonNode {
+    private fun getDocumentForReferenceUuid(
+        catalogId: String,
+        uuid: String,
+        options: UpdateReferenceOptions
+    ): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also { 
+        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also {
             it.document.data.put(FIELD_TAGS, wrapper.tags?.joinToString(","))
         }
-        
+
         val latestDocumentJson = documentService.convertToJsonNode(documentData.document)
 
         if (options.forExport) {
@@ -161,10 +166,10 @@ abstract class EntityType {
             try {
                 val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid, options)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
-            } catch (e: EmptyResultDataAccessException) {
+            } catch (ex: NotFoundException) {
                 // TODO: what to do with removed references?
-                logger.error("Referenced address was not found: $uuid -> Should we remove it?")
-                continue
+                logger.error("Referenced address was not found: $uuid -> Should we remove it from '${doc.uuid}'?")
+                throw ServerException.withReason("Document '${doc.uuid}' could not be indexed because referenced address was not found or has different publication condition: $uuid")
             }
         }
     }
