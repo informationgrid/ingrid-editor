@@ -9,6 +9,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
+@import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import gg.jte.Content
 
 @param IngridModelTransformer page
@@ -793,4 +794,27 @@ ${contentInfo}
     </gmd:MD_Distribution>
 </gmd:distributionInfo>
 @endif
+@if( page.getParentIdentifierReference() != null)
+    <idf:superiorReference uuid="${page.getParentIdentifierReference().getUuid()}">
+        <idf:objectName>${page.getParentIdentifierReference().getObjectName()}</idf:objectName>
+        <idf:objectType>${page.getParentIdentifierReference().getObjectType()}</idf:objectType>
+        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getDescription()))
+            <idf:description>${page.getParentIdentifierReference().getDescription()}</idf:description>
+        @endif
+    </idf:superiorReference>
+@endif
+@for( CrossReference cref : page.getCrossReferences() )
+    <idf:crossReference direction="${cref.getDirection()}" uuid="${cref.getUuid()}">
+        <idf:objectName>${cref.getObjectName()}</idf:objectName>
+        <idf:objectType>${cref.getObjectType()}</idf:objectType>
+        <idf:attachedToField entry-id="${cref.getRefType().getKey()}"
+                             list-id="2000">${page.getCodelists().getValue("2000", cref.getRefType())}</idf:attachedToField>
+        @if( TransformationTools.hasValue(cref.getDescription()))
+            <idf:description>${cref.getDescription()}</idf:description>
+        @endif
+        @if( TransformationTools.hasValue(cref.getGraphicOverview()))
+            <idf:graphicOverview>${cref.getGraphicOverview()}</idf:graphicOverview>
+        @endif
+    </idf:crossReference>
+@endfor
 

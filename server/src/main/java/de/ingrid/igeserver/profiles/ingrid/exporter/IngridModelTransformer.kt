@@ -487,6 +487,28 @@ open class IngridModelTransformer constructor(
     val crossReferences = coupledCrossReferences + referencedCrossReferences
 
 
+    private fun getSuperiorReference(): SuperiorReference? {
+        val uuid = data.parentIdentifier ?: return null
+        try {
+            val model = jacksonObjectMapper().convertValue(
+                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                IngridModel::class.java
+            )
+
+            return SuperiorReference(
+                uuid = uuid,
+                objectName = model.title,
+                objectType = mapDocumentType(model.type),
+                description = model.data.description,
+            )
+        } catch (e: EmptyResultDataAccessException) {
+            // No published reference found for parent identifier
+            return null
+        }
+    }
+
+    val parentIdentifierReference: SuperiorReference? = getSuperiorReference()
+
     private fun getCrossReference(uuid: String, type: KeyValueModel): CrossReference {
         try {
             val model = jacksonObjectMapper().convertValue(
@@ -556,4 +578,11 @@ data class CrossReference(
     val refType: KeyValueModel,
     val description: String?,
     val graphicOverview: String?
+)
+
+data class SuperiorReference(
+    val uuid: String,
+    val objectName: String,
+    val objectType: String,
+    val description: String?,
 )

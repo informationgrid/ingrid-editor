@@ -12,7 +12,7 @@
 !{var provider = ((String)map.get("provider"));}
 
 {
-    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
+    "iPlugId": "ige-ng:${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",

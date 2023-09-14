@@ -91,12 +91,15 @@ class Geodataset : AnnotationSpec() {
             )
         )
 
-        val dataset = MockDocument(
-            uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-            template = "/export/ingrid/geo-dataset.maximal.sample.json"
+        val datasets = listOf(
+            MockDocument(
+                uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+                template = "/export/ingrid/geo-dataset.maximal.sample.json"
+            ),
+            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
         )
 
-        initDocumentMocks(addresses + dataset, documentService)
+        initDocumentMocks(addresses + datasets, documentService)
     }
 
     /*
