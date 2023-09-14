@@ -11,6 +11,7 @@ import io.mockk.every
 fun mockCatalog(catalogService: CatalogService) {
     every { catalogService.getCatalogById(any()) } answers {
         Catalog().apply {
+            identifier = "test-catalog"
             settings = CatalogSettings().apply {
                 config = CatalogConfig().apply {
                     //namespace = "namespace"
@@ -35,7 +36,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             documentService.getLastPublishedDocument(
                 "test-catalog",
                 document.uuid,
-                false
+                any(),
             )
         } answers {
             convertToDocument(SchemaUtils.getJsonFileContent(document.template))
