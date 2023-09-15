@@ -45,6 +45,7 @@ open class IngridModelTransformer(
     val atomDownloadURL: String?
     val digitalTransferOptions = data.digitalTransferOptions ?: emptyList()
 
+    val isResourceRangeDefined = data.temporal.resourceRange?.start != null && data.temporal.resourceRange.end != null
     val resourceDateType = data.temporal.resourceDateType?.key
     val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
     val resourceBeginDate =
