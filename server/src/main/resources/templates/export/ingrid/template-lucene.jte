@@ -12,7 +12,7 @@
 !{var provider = ((String)map.get("provider"));}
 
 {
-    "iPlugId": "ige-ng:${catalog.getIdentifier()}",
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
@@ -43,11 +43,10 @@
     "organisation": "",
     "parent.object_node.obj_uuid": "",
     "t012_obj_adr.adr_id": "",
-    "t012_obj_adr.line": "1",
     "t012_obj_adr.mod_time": "",
-    "t012_obj_adr.special_name": "Ansprechpartner",
-    "t012_obj_adr.special_ref": "505",
-    "t012_obj_adr.typ": "7",
+    "t012_obj_adr.special_name": "",
+    "t012_obj_adr.special_ref": "",
+    "t012_obj_adr.typ": "",
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
@@ -61,7 +60,6 @@
         @endfor
         "t02_address.address_key": "",
         "t02_address.address_value": "${page.getContact().getModel().getTitle()}",
-        "t02_address.adr_id": "${page.handleContent(page.getContact().getModel().getUuid())}",
         "t02_address.city": "${page.getContact().getModel().getAddress().getCity()}",
         "t02_address.country_code": "${page.getCodelists().getValue("6200", page.getContact().getModel().getAddress().getCountry())}",
         "t02_address.country_key": "${page.getContact().getModel().getAddress().getCountryKey()}",
@@ -79,12 +77,10 @@
         "t02_address.postcode": "${page.getContact().getZipCode()}",
         "t02_address.responsible_uuid": "",
         "t02_address.street": "${page.getContact().getStreet()}",
-        "t02_address.title": "",
         "t02_address.title_key": "",
-        "t02_address.typ": "2",
     @endif
     "t03_catalogue.cat_name": "${catalog.getName()}",
-    "t03_catalogue.cat_namespace": "http://portalu.de/igc_testNS#",
+    "t03_catalogue.cat_namespace": "",
     "t03_catalogue.cat_uuid": "",
     "t03_catalogue.country_code": "Deutschland",
     "t03_catalogue.country_key": "276",
@@ -93,144 +89,175 @@
     "t03_catalogue.mod_time": "",
     "t03_catalogue.mod_uuid": "",
 
-"t03_catalogue.create_time": "19980616155917000",
-"t01_object.is_adv_compatible": "Y",
-"object_data_quality.measure_description": [
-"66",
-"h",
-"3",
-"mm",
-"%",
-"rat",
-"tol",
-"param1",
-"hl",
-"ter",
-"param2",
-"kk"
-],
-"object_types_catalogue.type_date": "20230221000000000",
-"t0113_dataset_reference.reference_date": "20230221000000000",
-"t011_obj_geo_symc.symbol_date": "20230221000000000",
-"t0110_avail_format.line": [
-"2",
-"1"
-],
-"spatial_ref_value.nativekey": [
-"",
-""
-],
-"object_conformity.degree_key": "1",
-"t017_url_ref.line": "1",
-"t011_obj_geo_spatial_rep.type": [
-"4",
-"2"
-],
-"t01_object.time_alle": "3",
-"t017_url_ref.datatype": "PDF",
-"t0112_media_option.medium_name": [
-"4",
-"14"
-],
-"publish_id": "1",
-"t017_url_ref.content": "Testverweis",
-"t011_obj_geo.referencesystem_id": [
-"DE_DHDN / GK_3_RP180",
-"EPSG 5676: DHDN / Gauss-Krüger Zone 2 (E-N)"
-],
-"object_types_catalogue.title_value": "von Drachenfels 94",
-"t015_legist.name": [
-"Weitere Rechtliche Grundlagen 1",
-"Weitere Rechtliche Grundlagen 2"
-],
-"object_access.line": "1",
-"spatial_ref_value.name_key": [
-"19",
-""
-],
-"t0110_avail_format.file_decompression_technique": [
-"5",
-"2"
-],
-"t012_obj_adr.typ": "7",
-"t1": "20230202000000000",
-"t01_object.org_obj_id": "",
-"t2": "99999999",
-"spatial_ref_value.name_value": [
-"Auenland",
-"Hannover"
-],
-"object_use_constraint.line": [
-"1",
-"2"
-],
-"spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
-"t01_object.metadata_standard_version": "",
-"spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
-"t01_object.dataset_usage": "Eignung/Nutzung\n test",
-"t0114_env_topic.line": [
-"1",
-"2"
-],
-"spatial_system.line": [
-"2",
-"1"
-],
-"object_data_language.data_language_value": [
-"Deutsch",
-"Dänisch"
-],
-"doi.type": "Dataset",
-"t011_obj_geo_symc.symbol_cat": "Ganzflächige Biotopkartierung 94",
-"t011_obj_geo.datasource_uuid": "test-identifikator",
-"t022_adr_adr.adr_to_id": [
-"372FF7BD-3959-4DCA-B8BB-33B9B5A8A843",
-"88A7D4E4-44E3-4C3E-9A4C-182EF47C9C7D",
-"FA2EAE76-71C5-45F7-BF62-28D975EE9817",
-"9618D3A9-9755-414B-9004-9F16E56843EA",
-"F06E904D-C9B9-4C13-B3DB-B9BB720C6876",
-"2939D350-9347-4B35-A603-9CF04877B435",
-"050514EF-CD29-4769-91A5-DDE0495B347F"
-],
-"t011_obj_geo.vector_topology_level": "",
-"spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
-"object_access.restriction_key": "1",
-"spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
-"t01_object.metadata_time": "",
-"t01_object.time_to": "",
-"t017_url_ref.special_ref": "9990",
-"t011_obj_geo_scale.scale": [
-"15",
-"4"
-],
-"t01_object.time_descr": "Test-Erläuterungen 2",
-"object_use.terms_of_use_value": "Anwendungseinschränkungen test",
-"object_data_quality.dq_element_id": [
-"112",
-"120",
-"112",
-"113",
-"125",
-"126",
-"128",
-"109",
-"115",
-"127",
-"109",
-"114"
-],
-"t01_object.time_period": "1",
-"object_types_catalogue.line": "1",
-"t01_object.vertical_extent_vdatum_value": "DE_DHHN85_NOH",
-"spatial_ref_value.topic_type": [],
-"object_conformity.specification_key": "12",
-"t0110_avail_format.name": [
-"AI",
-"3D-Shape"
-],
-"object_types_catalogue.title_key": "1",
-"t03_catalogue.mod_time": "20230221024908046",
-"searchterm_value.alternate_term": [],
+
+    "t01_object.org_obj_id": null,
+    @if("3".equals(page.getDocumentType()))
+    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().getHasAccessConstraints()}",
+    "t011_obj_serv.type": "${page.getServiceType()}",
+    "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    "t011_obj_serv_version.version_value": [
+        @for(var entry : ForSupport.of(page.getServiceTypeVersions()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+    @endif
+    "t02_address.typ": [
+    @for(var entry : ForSupport.of(page.getPointOfContact()))
+        "${entry.get().getAddressDocType()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t02_address.title": [
+    @for(var entry : ForSupport.of(page.getPointOfContact()))
+        "${page.getCodelists().getValue("4300", entry.get().getModel().getSalutation())}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t02_address.adr_id": [
+        "${page.handleContent(page.getContact().getModel().getUuid())}",
+    @for(var entry : ForSupport.of(page.getPointOfContact()))
+        "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t022_adr_adr.adr_from_id": [
+    @for(var entry : ForSupport.of(page.getPointOfContact()))
+        "${entry.get().getModel().getParent()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t011_obj_serv_op_connpoint.connect_point": [
+    @for(var entry : ForSupport.of(page.getServiceUrls()))
+        "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "additional_html_1": [
+    @for(var entry : ForSupport.of(page.getGraphicOverviews()))
+        "<img src='${entry.get().getFileName().getUri()}' height='100' class='preview_image' alt='${entry.get().getFileDescription()}' title='${entry.get().getFileDescription()}' >@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().getHasAccessConstraints())
+    "capabilities_url": "${page.getCapabilitiesUrl()}",
+    @endif
+    "refering_service_uuid": "${page.getReferingServiceUuid()}",
+    "t04_search.searchterm": [
+    @for(var entry : ForSupport.of(page.getKeywordsAsList()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "refering.object_reference.obj_uuid": "?",
+    "refering.object_reference.obj_class": "?",
+    "refering.object_reference.obj_name": "?",
+    "refering.object_reference.type": "?",
+    "refering.object_reference.version": "?",
+    
+    
+    "t017_url_ref.url_link": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t017_url_ref.content": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t017_url_ref.special_ref": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    
+    
+    "object_reference.obj_uuid": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        @if(entry.get().getUuidRef() != null)
+        "${entry.get().getUuidRef()}"@if (!entry.isLast()),@endif
+        @endif
+    @endfor
+    ],
+    "object_reference.obj_name": "?",
+    "object_reference.obj_class": "?",
+    "object_reference.type": "?",
+    "object_reference.version": "?",
+    
+    "t01_object.time_type": "?",
+    @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
+    "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    @endif
+    @if("since".equals(page.getResourceDateType()))
+        @if(page.getData().getTemporal().getResourceRange() != null && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
+        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+        "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+        @elseif (page.getData().getTemporal().getResourceDate() != null)
+        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+        @endif
+    @endif
+    @if("till".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
+    "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    @endif
+    "object_use_constraint.license_key": [
+    @for(var entry : ForSupport.of(page.getUseConstraints()))
+        "${entry.get().getTitleKey()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "object_use_constraint.license_value":  [
+    @for(var entry : ForSupport.of(page.getUseConstraints()))
+        "${entry.get().getTitle().getText()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "wkt_geo_text": "?",
+
+
+
+
+    "t03_catalogue.create_time": "",
+    "t01_object.is_adv_compatible": "",
+    "object_data_quality.measure_description": [],
+    "object_types_catalogue.type_date": "",
+    "t0113_dataset_reference.reference_date": "",
+    "t011_obj_geo_symc.symbol_date": "",
+    "t0110_avail_format.line": [],
+    "spatial_ref_value.nativekey": [],
+    "object_conformity.degree_key": "",
+    "t017_url_ref.line": "",
+    "t011_obj_geo_spatial_rep.type": [],
+    "t01_object.time_alle": "",
+    "t0112_media_option.medium_name": [],
+    "publish_id": "",
+    "t011_obj_geo.referencesystem_id": [],
+    "object_types_catalogue.title_value": "",
+    "t015_legist.name": [],
+    "object_access.line": "",
+    "spatial_ref_value.name_key": [],
+    "t0110_avail_format.file_decompression_technique": [],
+    "spatial_ref_value.name_value": [],
+    "object_use_constraint.line": [],
+    "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
+    "t01_object.metadata_standard_version": "",
+    "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
+    "t01_object.dataset_usage": "",
+    "t0114_env_topic.line": [],
+    "spatial_system.line": [],
+    "object_data_language.data_language_value": [],
+    "doi.type": "",
+    "t011_obj_geo_symc.symbol_cat": "",
+    "t011_obj_geo.datasource_uuid": "",
+    "t022_adr_adr.adr_to_id": [],
+    "t011_obj_geo.vector_topology_level": "",
+    "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
+    "object_access.restriction_key": "",
+    "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
+    "t01_object.metadata_time": "",
+    "t01_object.time_to": "",
+    "t011_obj_geo_scale.scale": [],
+    "t01_object.time_descr": "",
+    "object_use.terms_of_use_value": "",
+    "object_data_quality.dq_element_id": [],
+    "t01_object.time_period": "",
+    "object_types_catalogue.line": "",
+    "t01_object.vertical_extent_vdatum_value": "",
+    "spatial_ref_value.topic_type": [],
+    "object_conformity.specification_key": "",
+    "t0110_avail_format.name": [],
+    "object_types_catalogue.title_key": "",
+    "searchterm_value.alternate_term": [],
     "content": [
     @for(var entry : ForSupport.of(page.getContentField()))
         "${entry.get()}"@if (!entry.isLast()),@endif

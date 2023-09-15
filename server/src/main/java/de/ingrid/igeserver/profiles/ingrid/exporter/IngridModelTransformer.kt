@@ -95,7 +95,7 @@ open class IngridModelTransformer constructor(
         )
     } ?: emptyList()
 
-    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?)
+    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?, val titleKey: String?)
 
     val useConstraints = data.resource?.useConstraints?.map { constraint ->
         if (constraint.title == null) throw ServerException.withReason("Use constraint title is null ${constraint}")
@@ -117,10 +117,11 @@ open class IngridModelTransformer constructor(
         UseConstraintTemplate(
             CharacterStringModel(codelists.getValue("6500", constraint.title)!!, link),
             constraint.source,
-            json
+            json,
+            constraint.title?.key
         )
 
-    }
+    } ?: emptyList()
 
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
@@ -168,6 +169,7 @@ open class IngridModelTransformer constructor(
     }
 
     var catalog: Catalog
+    var namespace: String
 
     val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val formatterOnlyDate = SimpleDateFormat("yyyy-MM-dd")
@@ -219,7 +221,7 @@ open class IngridModelTransformer constructor(
         CharacterStringModel(referenceSystem, epsgLink)
     }
     open val description = data.description
-    val advProductGroups = data.advProductGroups?.map { codelists.getValue("8010", it) } ?: emptyList()
+    val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
     val dateEvents = data.temporal.events ?: emptyList()
 
@@ -336,6 +338,17 @@ open class IngridModelTransformer constructor(
     val inspireRelevantKeyword =
         if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
+    fun getKeywordsAsList() : List<String> {
+        val allKeywords = listOf(inspireRelevantKeyword, advCompatibleKeyword, opendataCategoryKeywords, getFreeKeywords(), invekosKeywords, spatialScopeKeyword, inspirePriorityKeywords, gemetKeywords, umthesKeywords, inspireKeywords)
+
+        return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
+    }
+    
+    fun getReferencesFromDocuments(): List<DocumentReference> {
+        // TODO
+        return emptyList()
+    }
+    
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
     val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
@@ -394,6 +407,19 @@ open class IngridModelTransformer constructor(
         }
 
     } ?: emptyList()
+    
+    // type is "Darstellungsdienste" and operation is "GetCapabilities"
+    val capabilitiesUrl = if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall ?: "" else ""
+    
+    fun getReferingServiceUuid(): String {
+        val containsNamespace = model.data.identifier?.contains("://") ?: false
+        return if (containsNamespace) {
+            "${model.uuid}@@${model.title}@@$capabilitiesUrl@@${model.data.identifier}"
+        } else {
+            val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
+            "${model.uuid}@@${model.title}@@$capabilitiesUrl@@${namespaceWithSlash}${model.data.identifier}"
+        }
+    }
 
     // information system or Literature
     val supplementalInformation = data.explanation ?: data.publication?.explanation
@@ -438,7 +464,7 @@ open class IngridModelTransformer constructor(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+        this.namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
         this.citationURL =
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
@@ -585,4 +611,12 @@ data class SuperiorReference(
     val objectName: String,
     val objectType: String,
     val description: String?,
+)
+
+data class DocumentReference(
+    val uuid: String,
+    val docTypeAsClass: Int,
+    val title: String,
+    val serviceType: String,
+    val serviceVersion: String
 )
