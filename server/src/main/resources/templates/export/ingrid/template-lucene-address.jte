@@ -25,6 +25,7 @@
         "dsc_ecs_address",
         "IDF_1.0"
     ],
+    "boost": 0.1,
     "t02_address.adr_id": "${page.getUuid()}",
     "t02_address.typ": "${page.getAddressDocType()}",
     "is_top_level": null,
