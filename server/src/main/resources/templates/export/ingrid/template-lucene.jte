@@ -141,11 +141,11 @@
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "refering.object_reference.obj_uuid": "?",
-    "refering.object_reference.obj_class": "?",
-    "refering.object_reference.obj_name": "?",
-    "refering.object_reference.type": "?",
-    "refering.object_reference.version": "?",
+    "refering.object_reference.obj_uuid": [],
+    "refering.object_reference.obj_class": [],
+    "refering.object_reference.obj_name": [],
+    "refering.object_reference.type": [],
+    "refering.object_reference.version": [],
     
     
     "t017_url_ref.url_link": [
@@ -172,12 +172,11 @@
         @endif
     @endfor
     ],
-    "object_reference.obj_name": "?",
-    "object_reference.obj_class": "?",
-    "object_reference.type": "?",
-    "object_reference.version": "?",
+    "object_reference.obj_name": [],
+    "object_reference.obj_class": [],
+    "object_reference.type": [],
+    "object_reference.version": [],
     
-    "t01_object.time_type": "?",
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     @endif
