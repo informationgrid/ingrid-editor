@@ -344,12 +344,12 @@ open class IngridModelTransformer(
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
     }
-    
+
     fun getReferencesFromDocuments(): List<DocumentReference> {
         // TODO
         return emptyList()
     }
-    
+
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
     val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
@@ -408,10 +408,10 @@ open class IngridModelTransformer(
         }
 
     } ?: emptyList()
-    
+
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl = if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall ?: "" else ""
-    
+
     fun getReferingServiceUuid(): String {
         val containsNamespace = model.data.identifier?.contains("://") ?: false
         return if (containsNamespace) {
@@ -431,6 +431,7 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
+    val referencesWithUuidRefs = references.filter { it.uuidRef != null }
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()

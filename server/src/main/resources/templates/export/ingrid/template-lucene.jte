@@ -146,8 +146,8 @@
     "refering.object_reference.obj_name": [],
     "refering.object_reference.type": [],
     "refering.object_reference.version": [],
-    
-    
+
+
     "t017_url_ref.url_link": [
     @for(var entry : ForSupport.of(page.getReferences()))
         "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
@@ -163,13 +163,9 @@
         "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    
-    
     "object_reference.obj_uuid": [
-    @for(var entry : ForSupport.of(page.getReferences()))
-        @if(entry.get().getUuidRef() != null && !entry.get().getUuidRef().isEmpty())
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         "${entry.get().getUuidRef()}"@if (!entry.isLast()),@endif
-        @endif
     @endfor
     ],
     "object_reference.obj_name": [
@@ -192,7 +188,7 @@
         ""@if (!entry.isLast()),@endif
     @endfor
     ],
-    
+
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     @endif
