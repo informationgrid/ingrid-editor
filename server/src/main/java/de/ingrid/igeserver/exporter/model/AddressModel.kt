@@ -90,17 +90,17 @@ data class AddressModel(
         }
 
 
-    private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
+    private fun addInternalFields(document: Document, wrapper: DocumentWrapper): AddressModel {
 
-        val visibleAddress = publishedParent.data.apply {
+        val visibleAddress = document.data.apply {
             put("_id", wrapper.id)
             put("_type", wrapper.type)
-            put("_uuid", publishedParent.uuid)
-            put("_created", publishedParent.created.toString())
-            put("_modified", publishedParent.modified.toString())
-            put("_contentModified", publishedParent.contentmodified.toString())
+            put("_uuid", document.uuid)
+            put("_created", document.created.toString())
+            put("_modified", document.modified.toString())
+            put("_contentModified", document.contentmodified.toString())
             put("_parent", wrapper.parent?.id)
-            put("title", publishedParent.title)
+            put("title", document.title)
         }
 
         return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
