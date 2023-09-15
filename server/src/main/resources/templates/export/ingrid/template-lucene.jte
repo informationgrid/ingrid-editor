@@ -172,10 +172,26 @@
         @endif
     @endfor
     ],
-    "object_reference.obj_name": [],
-    "object_reference.obj_class": [],
-    "object_reference.type": [],
-    "object_reference.version": [],
+    "object_reference.obj_name": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        ""@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "object_reference.obj_class": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        ""@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "object_reference.type": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        ""@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "object_reference.version": [
+    @for(var entry : ForSupport.of(page.getReferences()))
+        ""@if (!entry.isLast()),@endif
+    @endfor
+    ],
     
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",

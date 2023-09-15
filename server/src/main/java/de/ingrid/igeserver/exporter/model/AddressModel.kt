@@ -85,6 +85,7 @@ data class AddressModel(
             put("_modified", publishedParent.modified.toString())
             put("_contentModified", publishedParent.contentmodified.toString())
             put("_parent", wrapper.parent?.id)
+            put("title", publishedParent.title)
         }
 
         return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
