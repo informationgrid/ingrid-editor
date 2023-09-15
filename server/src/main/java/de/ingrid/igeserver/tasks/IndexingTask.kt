@@ -129,7 +129,7 @@ class IndexingTask @Autowired constructor(
 
                 // pre phase
                 val info = try {
-                    indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias)
+                    indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias, category)
                 } catch (ex: Exception) {
                     notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
                     return@categoryLoop // throw ServerException.withReason("Error in Index Pre-Phase + ${ex.message}")
@@ -138,7 +138,7 @@ class IndexingTask @Autowired constructor(
                 // TODO: configure index name
                 val indexInfo = IndexInfo().apply {
                     realIndexName = info.second
-                    toType = "base"
+                    toType = if (category == DocumentCategory.ADDRESS) "address" else "base"
                     toAlias = categoryAlias
                     docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
                 }
@@ -346,14 +346,14 @@ class IndexingTask @Autowired constructor(
         val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
         var oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         if (oldIndex == null) {
-            val (_, newIndex) = indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias)
+            val (_, newIndex) = indexPrePhase(categoryAlias, catalogProfile, format, elasticsearchAlias, category)
             oldIndex = newIndex
             indexManager.switchAlias(elasticsearchAlias, null, newIndex)
         }
 
         return IndexInfo().apply {
             realIndexName = oldIndex
-            toType = "base"
+            toType = if (category == DocumentCategory.ADDRESS) "address" else "base"
             toAlias = elasticsearchAlias
             docIdField = if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address else catalogProfile.indexIdField.document
         }
@@ -377,13 +377,14 @@ class IndexingTask @Autowired constructor(
         categoryAlias: String,
         catalogProfile: CatalogProfile,
         format: String,
-        elasticsearchAlias: String
+        elasticsearchAlias: String,
+        category: DocumentCategory
     ): Pair<String, String> {
         val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         val newIndex = IndexManager.getNextIndexName(categoryAlias, generalProperties.uuid, elasticsearchAlias)
         indexManager.createIndex(
             newIndex,
-            "base",
+            if (category == DocumentCategory.ADDRESS) "address" else "base",
             catalogProfile.getElasticsearchMapping(format),
             catalogProfile.getElasticsearchSetting(format)
         )
@@ -405,7 +406,7 @@ class IndexingTask @Autowired constructor(
             val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId, info.category == "ADDRESS")
+                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId, info.category == "address")
             )
         }
     }
@@ -429,7 +430,7 @@ class IndexingTask @Autowired constructor(
             .field("indexId", infoId)
             .field("iPlugName", prepareIPlugName(infoId))
             .field("linkedIndex", indexName)
-            .field("linkedType", "base")
+            .field("linkedType", if (forAddress) "address" else "base")
             .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
@@ -547,7 +548,7 @@ class IndexingTask @Autowired constructor(
             val oldIndex = indexManager.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
             val info = IndexInfo().apply {
                 realIndexName = oldIndex
-                toType = "base"
+                toType = if (category == "address") "address" else "base"
                 toAlias = elasticsearchAlias
             }
 
