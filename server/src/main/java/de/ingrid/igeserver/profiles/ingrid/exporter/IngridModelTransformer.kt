@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 
-open class IngridModelTransformer constructor(
+open class IngridModelTransformer(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
