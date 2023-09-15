@@ -58,6 +58,12 @@
             "t021_communication.descr": "",
             "t021_communication.line": "${entry.getIndex() + 1}",
         @endfor
+        "t02_address.adr_id": "${page.handleContent(page.getContact().getModel().getUuid())}",
+        "t02_address.adr_id": [
+            @for(var entry : ForSupport.of(page.getPointOfContact()))
+                "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
+            @endfor
+        ],
         "t02_address.address_key": "",
         "t02_address.address_value": "${page.getContact().getModel().getTitle()}",
         "t02_address.city": "${page.getContact().getModel().getAddress().getCity()}",
@@ -111,12 +117,6 @@
         "${page.getCodelists().getValue("4300", entry.get().getModel().getSalutation())}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "t02_address.adr_id": [
-        "${page.handleContent(page.getContact().getModel().getUuid())}",
-    @for(var entry : ForSupport.of(page.getPointOfContact()))
-        "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
-    @endfor
-    ],
     "t022_adr_adr.adr_from_id": [
     @for(var entry : ForSupport.of(page.getPointOfContact()))
         "${entry.get().getModel().getParent()}"@if (!entry.isLast()),@endif
@@ -167,7 +167,7 @@
     
     "object_reference.obj_uuid": [
     @for(var entry : ForSupport.of(page.getReferences()))
-        @if(entry.get().getUuidRef() != null)
+        @if(entry.get().getUuidRef() != null && !entry.get().getUuidRef().isEmpty())
         "${entry.get().getUuidRef()}"@if (!entry.isLast()),@endif
         @endif
     @endfor
