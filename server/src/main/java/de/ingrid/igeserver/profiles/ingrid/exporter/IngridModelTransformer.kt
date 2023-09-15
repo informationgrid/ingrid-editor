@@ -10,6 +10,7 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -380,7 +381,7 @@ open class IngridModelTransformer(
     // geodataservice
     val serviceType =
         codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
-    val serviceTypeVersions = data.service?.version?.map { codelists.getValue("5153", it, "iso") } ?: emptyList()
+    val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
     val couplingType = data.service?.couplingType?.key
 
     val operations: List<DisplayOperation>
@@ -397,6 +398,20 @@ open class IngridModelTransformer(
             else -> null
         }
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "de")) ?: name.value
+    }
+
+    private fun getVersion(name: KeyValueModel?): String? {
+        if (name == null) return null
+
+        val serviceType = data.service?.type
+        val codelistId = when (serviceType?.key) {
+            "1" -> "5151"
+            "2" -> "5152"
+            "3" -> "5153"
+            "4" -> "5154"
+            else -> null
+        }
+        return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
     val operatesOn = data.service?.coupledResources?.map {
@@ -537,10 +552,11 @@ open class IngridModelTransformer(
 
     val parentIdentifierReference: SuperiorReference? = getSuperiorReference()
 
-    private fun getCrossReference(uuid: String, type: KeyValueModel): CrossReference {
+    private fun getCrossReference(uuid: String, type: KeyValueModel, direction: String="OUT"): CrossReference? {
         try {
+            val doc = getLastPublishedDocument(uuid) ?: return null
             val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                doc,
                 IngridModel::class.java
             )
 
@@ -556,6 +572,15 @@ open class IngridModelTransformer(
         } catch (e: EmptyResultDataAccessException) {
             throw ServerException.withReason("A reference to another dataset '${uuid}' failed to export, since it has not been found in a published state.")
         }
+    }
+
+    fun getLastPublishedDocument(uuid: String): Document? {
+        return try {
+            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
+        }catch (e: Exception) {
+            null
+        }
+
     }
 
 

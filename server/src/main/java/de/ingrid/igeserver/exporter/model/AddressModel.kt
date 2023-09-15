@@ -85,7 +85,7 @@ data class AddressModel(
 
     fun getPublishedChildren(id: Int?, catalogIdent: String): List<AddressModel> =
         documentService!!.findChildrenDocs(catalogIdent, id, true).hits.map {
-            val doc = AddressModelTransformer.documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
+            val doc = documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
             this.addInternalFields(doc, it.wrapper)
         }
 
