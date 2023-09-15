@@ -931,10 +931,17 @@ class DocumentService @Autowired constructor(
     ): Set<Int> {
         if (document == null) return setOf()
 
+        return this.getReferencedUuids(document)
+            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }.toSet()
+    }
+
+    fun getReferencedUuids(
+        document: Document?
+    ): Set<String> {
+        if (document == null) return setOf()
+
         val docType = getDocumentType(document.type)
-        return docType.getReferenceIds(document)
-            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }
-            .toSet()
+        return docType.getReferenceIds(document).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {

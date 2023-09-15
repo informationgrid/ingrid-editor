@@ -2,6 +2,9 @@ package de.ingrid.igeserver.exporter
 
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -12,6 +15,11 @@ class AddressModelTransformer(
     val codelist: CodelistTransformer,
     val type: KeyValueModel? = null,
 ) {
+    companion object {
+        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
+    }
+
+
     private var displayAddress: AddressModel
     fun getModel() = displayAddress
 
@@ -94,8 +102,70 @@ class AddressModelTransformer(
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
         formatter.format(Date.from(date.toInstant()))
+
     val lastModified = formatDate(formatterISO, displayAddress.modified)
 
+    /**
+     * Get all published objects with references to this address.
+     */
+    fun getObjectReferences(): List<ObjectReference> {
+        val addressDoc = getLastPublishedDocument(catalogIdentifier, model.uuid)
+        return documentService!!.getReferencedUuids(addressDoc).map {
+            val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
 
+            ObjectReference(
+                doc.uuid,
+                doc.title ?: "",
+                doc.type,
+                doc.data.get("description")?.textValue(),
+                doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
+            )
+        }.filterNotNull()
+    }
+
+
+    /**
+     *  Get all published children of address including.
+     *  Addresses with the flag hideAddress are ignored.
+     *  @return List of children
+     */
+    fun getSubordinatedParties(): MutableList<SubordinatedParty> {
+        return model.getPublishedChildren(model.id, catalogIdentifier).filter { it.hideAddress == false }.map {
+            AddressModelTransformer(it, catalogIdentifier, codelist, type)
+        }.map {
+            SubordinatedParty(
+                it.uuid,
+                it.addressDocType,
+                it.getIndividualName(false),
+                it.model.organization
+            )
+        }.toMutableList()
+    }
+
+    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
+        return try {
+            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
+        }catch (e: Exception) {
+            null
+        }
+
+    }
+
+}
+
+data class ObjectReference(
+    val uuid: String,
+    val name: String,
+    val type: String,
+    val description: String?,
+    val graphicOverview: String?
+)
+
+data class SubordinatedParty(
+    val uuid: String,
+    val type: Int,
+    val individualName: String?,
+    val organisationName: String?
+) {
 }
 

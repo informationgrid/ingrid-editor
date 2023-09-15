@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import org.springframework.dao.EmptyResultDataAccessException
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,6 +53,7 @@ data class AddressModel(
      *  Get all ancestors of address including itself.
      *  Addresses with the flag hideAddress are ignored,
      *  but only if they have a parent themselves.
+     *  Addresses that are not published are ignored.
      *  @return List of ancestors
      */
     fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
@@ -61,19 +64,31 @@ data class AddressModel(
             return emptyList<AddressModel>().toMutableList()
         }
 
-        val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
+        val convertedDoc = try {
+            val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
+            addInternalFields(publishedDoc, doc)
+        } catch (ex: EmptyResultDataAccessException) {
+            // no published document found
+            null
+        }
 
-        val convertedDoc = addInternalFields(publishedDoc, doc)
 
         return if (doc.parent != null) {
             val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
-            // ignore hideAddress if address has no ancestors
-            if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
+            // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
+            if ( convertedDoc?.hideAddress != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
             ancestors
         } else {
-            mutableListOf(convertedDoc)
+            if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
         }
     }
+
+    fun getPublishedChildren(id: Int?, catalogIdent: String): List<AddressModel> =
+        documentService!!.findChildrenDocs(catalogIdent, id, true).hits.map {
+            val doc = AddressModelTransformer.documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
+            this.addInternalFields(doc, it.wrapper)
+        }
+
 
     private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
 
