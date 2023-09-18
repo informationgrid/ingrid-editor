@@ -509,12 +509,13 @@ open class IngridModelTransformer(
         this.citationURL =
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
-            data.pointOfContact?.filter { addressIsPointContactMD(it).not() }
+            data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
                 ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
-            data.pointOfContact?.filter { addressIsPointContactMD(it) }
+            data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
                 ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
         operations = data.service?.operations?.map {
@@ -649,6 +650,9 @@ open class IngridModelTransformer(
 
     private fun addressIsPointContactMD(it: AddressRefModel) =
         codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
+
+
+    private fun hasKnownAddressType(it: AddressRefModel): Boolean  =  codelists.getValue("505", it.type, "iso") != null
 
     fun handleContent(value: String?): String? {
         if (value == null) return null
