@@ -11,6 +11,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -87,17 +88,26 @@ open class IngridModelTransformer(
 
     val maintenanceNote = data.maintenanceInformation?.description
 
-    val graphicOverviews = data.graphicOverviews ?: emptyList()
+    val graphicOverviews = data.graphicOverviews
 
-    val browseGraphics = data.graphicOverviews?.map {
-        BrowseGraphic(
-            if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-            else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
-            it.fileDescription
-        )
-    } ?: emptyList()
+    val browseGraphics = generateBrowseGraphics(graphicOverviews)
 
-    data class UseConstraintTemplate(val title: CharacterStringModel, val source: String?, val json: String?, val titleKey: String?)
+    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?): List<BrowseGraphic> =
+        graphicOverviews?.map {
+            BrowseGraphic(
+                if (it.fileName.asLink) it.fileName.uri // TODO encode uri
+                else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+                it.fileDescription
+            )
+        } ?: emptyList()
+
+
+    data class UseConstraintTemplate(
+        val title: CharacterStringModel,
+        val source: String?,
+        val json: String?,
+        val titleKey: String?
+    )
 
     val useConstraints = data.resource?.useConstraints?.map { constraint ->
         if (constraint.title == null) throw ServerException.withReason("Use constraint title is null ${constraint}")
@@ -109,12 +119,14 @@ open class IngridModelTransformer(
         val baseJson = codelists.getData("6500", constraint.title?.key)
         val sourceString = ",\"quelle\":\"${constraint.source.orEmpty()}\""
 
-        val json = baseJson?.let { if(it.contains(",\"quelle\":\"\"".toRegex()) )
+        val json = baseJson?.let {
+            if (it.contains(",\"quelle\":\"\"".toRegex()))
             // replace existing source string
-            it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
-        else
+                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+            else
             // add source string
-            it.replace("}$".toRegex(), "$sourceString}") }
+                it.replace("}$".toRegex(), "$sourceString}")
+        }
 
         UseConstraintTemplate(
             CharacterStringModel(codelists.getValue("6500", constraint.title)!!, link),
@@ -340,8 +352,19 @@ open class IngridModelTransformer(
     val inspireRelevantKeyword =
         if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
-    fun getKeywordsAsList() : List<String> {
-        val allKeywords = listOf(inspireRelevantKeyword, advCompatibleKeyword, opendataCategoryKeywords, getFreeKeywords(), invekosKeywords, spatialScopeKeyword, inspirePriorityKeywords, gemetKeywords, umthesKeywords, inspireKeywords)
+    fun getKeywordsAsList(): List<String> {
+        val allKeywords = listOf(
+            inspireRelevantKeyword,
+            advCompatibleKeyword,
+            opendataCategoryKeywords,
+            getFreeKeywords(),
+            invekosKeywords,
+            spatialScopeKeyword,
+            inspirePriorityKeywords,
+            gemetKeywords,
+            umthesKeywords,
+            inspireKeywords
+        )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
     }
@@ -425,7 +448,9 @@ open class IngridModelTransformer(
     } ?: emptyList()
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
-    val capabilitiesUrl = if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall ?: "" else ""
+    val capabilitiesUrl =
+        if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall
+            ?: "" else ""
 
     fun getReferingServiceUuid(): String {
         val containsNamespace = model.data.identifier?.contains("://") ?: false
@@ -442,7 +467,6 @@ open class IngridModelTransformer(
 
     // literature
     val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
-
 
 
     val references = data.references ?: emptyList()
@@ -510,7 +534,7 @@ open class IngridModelTransformer(
                 documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
                 IngridModel::class.java
             )
-            val transformer = GeodatasetModelTransformer(
+            val transformer = IngridModelTransformer(
                 model,
                 catalogIdentifier,
                 codelists,
@@ -524,10 +548,13 @@ open class IngridModelTransformer(
     }
 
 
-
-    private val coupledCrossReferences = model.data.service?.coupledResources?.filter { !it.isExternalRef }?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) }?: emptyList()
-    private val referencedCrossReferences = model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }?.mapNotNull  { getCrossReference(it.uuidRef!!, it.type) }?: emptyList()
-    val crossReferences = coupledCrossReferences + referencedCrossReferences
+    private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
+        ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
+    private fun getReferencedCrossReferences() =
+        model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
+            ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
+            ?: emptyList()
+    fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferences()
 
 
     private fun getSuperiorReference(): SuperiorReference? {
@@ -552,25 +579,45 @@ open class IngridModelTransformer(
 
     val parentIdentifierReference: SuperiorReference? = getSuperiorReference()
 
-    private fun getCrossReference(uuid: String, type: KeyValueModel, direction: String="OUT"): CrossReference? {
-        try {
-            val doc = getLastPublishedDocument(uuid) ?: return null
-            val model = jacksonObjectMapper().convertValue(
-                doc,
-                IngridModel::class.java
-            )
+    private fun getCrossReference(
+        uuid: String,
+        type: KeyValueModel?,
+        direction: String = "OUT",
+        ignoreNotFound: Boolean = true
+    ): CrossReference? {
+        val refTrans = getLastPublishedModel(uuid)
+            ?: if (ignoreNotFound) {
+                return null
+            } else {
+                throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
+            }
 
-            return CrossReference(
-                direction = "OUT",
-                uuid = uuid,
-                objectName = model.title,
-                objectType = mapDocumentType(model.type),
-                refType = type,
-                description = model.data.description,
-                graphicOverview = model.data.graphicOverviews?.firstOrNull()?.fileName?.uri
-            )
-        } catch (e: EmptyResultDataAccessException) {
-            throw ServerException.withReason("A reference to another dataset '${uuid}' failed to export, since it has not been found in a published state.")
+        val refType = type
+            ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
+            ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
+            ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
+
+        return CrossReference(
+            direction = direction,
+            uuid = uuid,
+            objectName = refTrans.model.title,
+            objectType = refTrans.documentType,
+            refType = refType,
+            description = refTrans.description,
+            graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
+            serviceType = refTrans.serviceType,
+            serviceOperation = refTrans.operations.firstOrNull()?.name,
+            serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
+            serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
+            hasAccessConstraints = refTrans.availabilityAccessConstraints?.isNotEmpty() ?: false
+        )
+    }
+
+
+    private fun getIncomingReferences(): List<CrossReference> {
+        val doc = getLastPublishedDocument(model.uuid)
+        return documentService!!.getIncomingReferences(doc).mapNotNull {
+            getCrossReference(it, null, "IN")
         }
     }
 
@@ -583,6 +630,21 @@ open class IngridModelTransformer(
 
     }
 
+    private fun getLastPublishedModel(uuid: String?): IngridModelTransformer? {
+        if (uuid == null) return null
+
+        val model = jacksonObjectMapper().convertValue(
+            getLastPublishedDocument(uuid),
+            IngridModel::class.java
+        )
+        return IngridModelTransformer(
+            model,
+            catalogIdentifier,
+            codelists,
+            config,
+            catalogService
+        )
+    }
 
 
     private fun addressIsPointContactMD(it: AddressRefModel) =
@@ -630,7 +692,12 @@ data class CrossReference(
     val objectType: String,
     val refType: KeyValueModel,
     val description: String?,
-    val graphicOverview: String?
+    val graphicOverview: String?,
+    val serviceType: String? = null,
+    val serviceOperation: String? = null,
+    val serviceUrl: String? = null,
+    val serviceVersion: String? = null,
+    val hasAccessConstraints: Boolean = false
 )
 
 data class SuperiorReference(

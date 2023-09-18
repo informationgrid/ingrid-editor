@@ -815,6 +815,30 @@ ${contentInfo}
         @if( TransformationTools.hasValue(cref.getGraphicOverview()))
             <idf:graphicOverview>${cref.getGraphicOverview()}</idf:graphicOverview>
         @endif
+        @if(TransformationTools.hasValue(cref.getServiceType()))
+            <idf:serviceType>${cref.getServiceType()}</idf:serviceType>
+        @endif
+        @if(TransformationTools.hasValue(cref.getServiceOperation()))
+            <idf:serviceOperation>${cref.getServiceOperation()}</idf:serviceOperation>
+        @endif
+        @if(TransformationTools.hasValue(cref.getServiceUrl()))
+            <idf:serviceUrl>${cref.getServiceUrl()}</idf:serviceUrl>
+        @endif
+        @if(TransformationTools.hasValue(cref.getServiceVersion()))
+            <idf:serviceVersion>${cref.getServiceVersion()}</idf:serviceVersion>
+        @endif
+        @if(cref.getHasAccessConstraints())
+            <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
+        @endif
     </idf:crossReference>
 @endfor
-
+<idf:crossReference direction="IN" uuid="DB938B67-403B-4F23-B2A4-015C7B16FDB9">
+    <idf:objectName>WMS Eingriffs- und Kompensationsflächeninformationssystem (EKIS)</idf:objectName>
+    <idf:objectType>3</idf:objectType>
+    <idf:attachedToField entry-id="3210" list-id="2000">Basisdaten</idf:attachedToField>
+    <idf:description>Darstellungsdienst Eingriffs- und Kompensationsflächeninformationssytem, kurz EKIS. Auf Grundlage des § 17 Abs. 6 Bundesnaturschutzgesetz (BNatSchG) in Verbindung mit § 3 Naturschutzzuständigkeitsverordnung (NatSchZustV) führt das Landesamt für Umwelt das Eingriffs- und Kompensationsflächeninformationssystem (EKIS) des Landes Brandenburg. Das EKIS umfasst Sach- und Geoinformationen zu genehmigten Eingriffen in Natur und Landschaft (durch Vorhaben) und zu den Kompensationsmaßnahmen, die im Rahmen der Vorhabengenehmigung mit dem Ziel des Ausgleichs oder Ersatzes unvermeidbarer Beeinträchtigungen der Schutzgüter von Natur und Landschaft gem. § 15 BNatSchG festgelegt wurden. Ein Anspruch auf Vollständigkeit der Angaben sowie Korrektheit besteht nicht, aufgrund der z.T. unterschiedlichen Daten Ursprünge.</idf:description>
+    <idf:serviceType>view</idf:serviceType>
+    <idf:serviceOperation/>
+    <idf:serviceUrl>https://maps.brandenburg.de/services/wms/ekis?</idf:serviceUrl>
+    <idf:serviceVersion>OGC:WMS 1.3.0</idf:serviceVersion>
+</idf:crossReference>
