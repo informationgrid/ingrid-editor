@@ -576,8 +576,8 @@ open class IngridModelTransformer(
 
     fun getLastPublishedDocument(uuid: String): Document? {
         return try {
-            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
-        }catch (e: Exception) {
+            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+        } catch (e: Exception) {
             null
         }
 
