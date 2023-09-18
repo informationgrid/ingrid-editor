@@ -1,0 +1,60 @@
+{
+  "title": "Wemove Test",
+  "_version": 15,
+  "_type": "InGridOrganisationDoc",
+  "_created": "2023-07-03T15:35:47.866462Z",
+  "_modified": "2023-07-07T14:07:27.952322Z",
+  "_contentModified": "2023-07-07T14:07:27.95296Z",
+  "_createdBy": "Super User",
+  "_modifiedBy": "Super User",
+  "_contentModifiedBy": "Super User",
+  "_uuid": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+  "_id": 1638,
+  "_state": "P",
+  "data": {
+    "address": {
+      "city": "Frankfurt am Main",
+      "po-box": "60445",
+      "street": "Hanauer Landstr. 52",
+      "country": {
+        "key": "276"
+      },
+      "zip-code": "60314",
+      "zip-po-box": "60314",
+      "administrativeArea": {
+        "key": "7"
+      }
+    },
+    "contact": [
+      {
+        "type": {
+          "key": "3"
+        },
+        "connection": "mustermann@wemove.com"
+      },
+      {
+        "type": {
+          "key": "1"
+        },
+        "connection": "0123456789"
+      },
+      {
+        "type": {
+          "key": "2"
+        },
+        "connection": "0123456789"
+      },
+      {
+        "type": {
+          "key": "4"
+        },
+        "connection": "https://wemove.com"
+      }
+    ],
+    "organization": "Wemove Test",
+    "hideAddress": false,
+    "positionName": "Position/nachgeordnete Abteilung",
+    "hoursOfService": "Servicezeiten",
+    "_tags": ""
+  }
+}

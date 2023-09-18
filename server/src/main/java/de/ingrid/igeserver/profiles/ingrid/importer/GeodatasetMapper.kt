@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.profiles.ingrid.importer
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 
@@ -32,7 +34,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
     fun getLanguages(): List<String> {
         return identificationInfo?.language
             ?.mapNotNull { it.code?.codeListValue }
-            ?.map { mapLanguage(it) }
+            ?.map { iso639LanguageMapping[it] ?: throw ServerException.withReason("Could not map document language key: $it") }
             ?: emptyList()
     }
 

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+    <idf:head/>
+    <idf:body>
+        <idf:idfResponsibleParty xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" type="2" uuid="fc521f66-0f47-45fb-ae42-b14fc669942e" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+            <gmd:individualName>
+                <gco:CharacterString>Musterfrau, Max, Frau Dr.</gco:CharacterString>
+            </gmd:individualName>
+            <gmd:organisationName>
+                <gco:CharacterString>Wemove Test</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+            </gmd:positionName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:phone>
+                        <gmd:CI_Telephone>
+                            <gmd:voice>
+                                <gco:CharacterString>123456789</gco:CharacterString>
+                            </gmd:voice>
+                            <gmd:facsimile>
+                                <gco:CharacterString>123456789</gco:CharacterString>
+                            </gmd:facsimile>
+                            <gmd:voice>
+                                <gco:CharacterString>23456789</gco:CharacterString>
+                            </gmd:voice>
+                        </gmd:CI_Telephone>
+                    </gmd:phone>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Postbox 30151,60314 Frankfurt am Main</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Musterfrau Str.</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:city>
+                                <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                            </gmd:city>
+                            <gmd:administrativeArea>
+                                <gco:CharacterString>Hessen</gco:CharacterString>
+                            </gmd:administrativeArea>
+                            <gmd:postalCode>
+                                <gco:CharacterString>60314</gco:CharacterString>
+                            </gmd:postalCode>
+                            <gmd:country>
+                                <gco:CharacterString>DEU</gco:CharacterString>
+                            </gmd:country>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>musterfrau@wemove.com</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                    <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>https://musterfrau.com</gmd:URL>
+                            </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onlineResource>
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                    </gmd:hoursOfService>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role gco:nilReason="inapplicable"/>
+            <idf:last-modified>
+                <gco:DateTime>2023-07-10T11:11:59.000+02:00</gco:DateTime>
+            </idf:last-modified>
+            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:objectReference uuid="1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9">
+                <idf:objectName>Test-Geodatendienst Classic</idf:objectName>
+                <idf:objectType>3</idf:objectType>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:objectReference>
+        </idf:idfResponsibleParty>
+    </idf:body>
+</idf:html>

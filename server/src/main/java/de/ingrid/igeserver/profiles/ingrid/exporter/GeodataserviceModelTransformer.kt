@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
@@ -21,6 +22,7 @@ class GeodataserviceModelTransformer constructor(
     override val mdStandardName = "ISO19119"
     override val mdStandardVersion = "2005/PDAM 1"
     override val identificationType = "srv:SV_ServiceIdentification"
+    override val extentType = "srv:extent"
     override val description: String
         get() {
             var description = model.data.description ?: ""
@@ -45,6 +47,7 @@ class GeodataserviceModelTransformer constructor(
     val history = data.service?.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
     val hasAccessConstraint = model.data.service?.hasAccessConstraints ?: false
+
 
 
     init {

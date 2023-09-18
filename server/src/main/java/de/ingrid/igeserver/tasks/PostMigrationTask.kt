@@ -394,9 +394,10 @@ class PostMigrationTask(
 
 
     private fun addIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
-        val newPerm = permissions.find { it.get("id").asInt() == sourceId } as ObjectNode
+        val oldPerm = permissions.find { it.get("id").asInt() == sourceId } as ObjectNode? ?: return permissions
+        val newPerm = oldPerm.deepCopy()
         newPerm.put("id", targetId)
-        return permissions + newPerm
+        return permissions + listOf(newPerm)
     }
 
     private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> {

@@ -14,12 +14,12 @@ profile: ingrid
 
 
 # title, used as window title
-title: Raumbezugssystem
+title: Koordinatenreferenzsystem
 ---
 
-# Raumbezugssystem
+# Koordinatenreferenzsystem
 
-Angabe des Raumbezugssystems.
+Angabe des Koordinatenreferenzsystems.
 
 Für INSPIRE-interoperable Datensätze muss mindestens ein Eintrag mit einem EPSG-Code eingetragen sein.
 

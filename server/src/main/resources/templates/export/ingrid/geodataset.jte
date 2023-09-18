@@ -4,6 +4,7 @@
 
 {
     @template.ingrid.base(model = model)
+    "invekosKeywords": @template.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
     "subType": @template.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
         "language": @template.ingrid.partial.key-value(item = model.getLanguage()),

@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>da35b8a7-4273-4d9f-a6ff-828462faf37d</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -15,7 +19,7 @@
                 <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
             </gmd:hierarchyLevel>
             <gmd:contact>
-                <idf:idfResponsibleParty type="2" uuid="53DC4D57-1BA3-4647-8CBF-E57168FFE2FF">
+                <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
                     <gmd:organisationName>
                         <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>
@@ -97,7 +101,7 @@
                         <gco:CharacterString>Feld von Beschreibung</gco:CharacterString>
                     </gmd:abstract>
                     <gmd:pointOfContact>
-                        <idf:idfResponsibleParty type="2" uuid="53DC4D57-1BA3-4647-8CBF-E57168FFE2FF">
+                        <idf:idfResponsibleParty type="2" uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
                             <gmd:individualName>
                                 <gco:CharacterString>Mustermann, Max, Herr Dr.</gco:CharacterString>
                             </gmd:individualName>
@@ -125,7 +129,7 @@
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postfach 30151,60314 Frankfurt am Main</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Mustermann Str.</gco:CharacterString>
@@ -162,11 +166,11 @@
                             <gmd:role>
                                 <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
                             </gmd:role>
-                            <idf:hierarchyParty uuid="53DC4D57-1BA3-4647-8CBF-E57168FFE2FF">
+                            <idf:hierarchyParty uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
                                 <idf:addressIndividualName>Mustermann, Max, Herr Dr.</idf:addressIndividualName>
                                 <idf:addressType>2</idf:addressType>
                             </idf:hierarchyParty>
-                            <idf:hierarchyParty uuid="1C903F1F-D98A-4382-94B8-E45C173E0FC7">
+                            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                                 <idf:addressType>0</idf:addressType>
                             </idf:hierarchyParty>
@@ -241,6 +245,17 @@
                                         <gco:Decimal>52.688663</gco:Decimal>
                                     </gmd:northBoundLatitude>
                                 </gmd:EX_GeographicBoundingBox>
+                            </gmd:geographicElement>
+                            <gmd:geographicElement>
+                                <gmd:EX_GeographicDescription>
+                                    <gmd:geographicIdentifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:geographicIdentifier>
+                                </gmd:EX_GeographicDescription>
                             </gmd:geographicElement>
                         </gmd:EX_Extent>
                     </gmd:extent>

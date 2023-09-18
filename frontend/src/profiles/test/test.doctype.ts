@@ -233,6 +233,7 @@ export class TestDoctype extends BaseDoctype {
                   key: "link",
                   type: "upload",
                   label: "Link",
+                  wrappers: ["form-field"],
                   props: {
                     label: "Link",
                     appearance: "outline",

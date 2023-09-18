@@ -225,6 +225,9 @@ export class UserComponent
         if (loadUser) {
           this.form.markAsPristine();
           this.updateUsersAndLoad(user.id);
+          this.toast.open("Benutzer wurde gespeichert", "", {
+            panelClass: "green",
+          });
         }
       });
   }

@@ -29,6 +29,7 @@ export interface Options {
   hideInPreview?: boolean;
   ariaLabel?: string;
   ariaDescription?: string;
+  validators?: any;
 }
 
 export interface DatePickerOptions extends Options {
@@ -64,7 +65,7 @@ export interface RepeatListOptions extends Options {
   asSelect?: boolean;
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
-  options?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
+  options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
   view?: "chip" | "list";
   restCall?: (query: string) => Observable<any[]>;
   labelField?: string;
@@ -85,7 +86,7 @@ export interface RepeatChipOptions extends Options {
 }
 
 export interface SelectOptions extends Options {
-  options?: any[] | Observable<any[]>;
+  options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
   codelistId?: number;
   fieldLabel?: string;
   externalLabel?: string;
@@ -328,6 +329,7 @@ export class FormFieldHelper {
         ariaDescription: options?.ariaDescription,
       },
       expressions: expressions,
+      validators: options?.validators,
     };
   }
 

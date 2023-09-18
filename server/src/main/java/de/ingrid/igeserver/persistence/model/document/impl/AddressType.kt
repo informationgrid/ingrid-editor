@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : EntityType() {
-    
+
     @Autowired
     lateinit var codelistHandler: CodelistHandler
 
@@ -36,19 +36,20 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             doc.data.set<JsonNode>("address", address)
         }
         if (address!!.get("administrativeArea") == null) {
-            val value = convertIdToKeyValue(codelistHandler.getDefaultCatalogCodelistEntryId(doc.catalog?.identifier!!,"6250"))
-            address.set<JsonNode>("administrativeArea", value) 
-        }        
+            val value =
+                convertIdToKeyValue(codelistHandler.getDefaultCatalogCodelistEntryId(doc.catalog?.identifier!!, "6250"))
+            address.set<JsonNode>("administrativeArea", value)
+        }
         if (address.get("country") == null) {
             val value = convertIdToKeyValue(codelistHandler.getDefaultCodelistEntryId("6200"))
-            address.set<JsonNode>("country", value) 
+            address.set<JsonNode>("country", value)
         }
     }
 
     private fun convertIdToKeyValue(codelistEntryId: String?): JsonNode? {
         if (codelistEntryId.isNullOrEmpty()) return null
-        
-        return jacksonObjectMapper().createObjectNode().apply { 
+
+        return jacksonObjectMapper().createObjectNode().apply {
             put("key", codelistEntryId)
         }
     }
@@ -88,5 +89,21 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
         if (result.size > 0) {
             throw IsReferencedException.addressByPublishedDatasets(result.map { it["uuid"] as String })
         }
+    }
+
+    override fun getReferenceIds(doc: Document): List<String> {
+        // only return published documents. as this is used for export. and specificaly not for prePublish Check
+        val sqlQuery = """
+            SELECT DISTINCT d.uuid, title 
+            FROM document d, document_wrapper dw 
+            WHERE (
+                dw.deleted = 0
+                AND dw.uuid = d.uuid
+                AND d.state = 'PUBLISHED'
+                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
+            """.trimIndent()
+        val result = jdbcTemplate.queryForList(sqlQuery)
+
+        return result.map { it["uuid"] as String }
     }
 }

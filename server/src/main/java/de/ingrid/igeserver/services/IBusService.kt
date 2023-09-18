@@ -54,14 +54,14 @@ class IBusService @Autowired constructor(val settingsService: SettingsService, v
         }
     }
 
-    private fun getPlugDescription(urls: List<String>): PlugDescription {
+    /*private fun getPlugDescription(urls: List<String>): PlugDescription {
 
         // partner and provider will be written during indexing
-        return settingsService.getPlugDescription("", "", "unknown", false).apply {
+        return settingsService.getPlugDescription("", "", "unknown", false, catalog.name).apply {
             urls.forEach { addBusUrl(it) }
         }
 
-    }
+    }*/
 
     override fun call(p0: IngridCall?): IngridDocument {
         TODO("Not yet implemented")

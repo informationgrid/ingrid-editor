@@ -5,6 +5,10 @@
             <gmd:fileIdentifier>
                 <gco:CharacterString>55065077-0D06-4916-855F-F232311D7C07</gco:CharacterString>
             </gmd:fileIdentifier>
+            <idf:regionKey>
+                <key>110000000000</key>
+                <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11</url>
+            </idf:regionKey>
             <gmd:language>
                 <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
             </gmd:language>
@@ -21,7 +25,7 @@
                 <gco:CharacterString>job</gco:CharacterString>
             </gmd:hierarchyLevelName>
             <gmd:contact>
-                <idf:idfResponsibleParty type="100" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                <idf:idfResponsibleParty type="0" uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
                     <gmd:organisationName>
                         <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>

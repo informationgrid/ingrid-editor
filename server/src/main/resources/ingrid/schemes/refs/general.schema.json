@@ -53,7 +53,7 @@
             }
           },
           "fileDescription": {
-            "type": "string"
+            "type": ["null", "string"]
           }
         },
         "required": ["fileName"]

@@ -28,16 +28,16 @@
           "minItems": 1
         },
         "organization": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "publishArea": {
           "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
         "positionName": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "hoursOfService": {
-          "type": "string"
+          "type": ["null", "string"]
         }
       },
       "required": ["_uuid", "_type", "organization", "contact"],

@@ -9,6 +9,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import org.springframework.dao.EmptyResultDataAccessException
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,7 +23,7 @@ data class AddressModel(
     val lastName: String?,
     val organization: String?,
     val title: String?,
-    val contact: List<ContactModel>,
+    val contact: List<ContactModel> = emptyList(),
     val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
     var positionName: String?,
@@ -51,6 +52,7 @@ data class AddressModel(
      *  Get all ancestors of address including itself.
      *  Addresses with the flag hideAddress are ignored,
      *  but only if they have a parent themselves.
+     *  Addresses that are not published are ignored.
      *  @return List of ancestors
      */
     fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
@@ -61,30 +63,49 @@ data class AddressModel(
             return emptyList<AddressModel>().toMutableList()
         }
 
-        val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
+        val convertedDoc = try {
+            val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
+            addInternalFields(publishedDoc, doc)
+        } catch (ex: EmptyResultDataAccessException) {
+            // no published document found
+            null
+        }
 
-        val convertedDoc = addInternalFields(publishedDoc, doc)
 
         return if (doc.parent != null) {
             val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
-            // ignore hideAddress if address has no ancestors
-            if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
+            // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
+            if ( convertedDoc?.hideAddress != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
             ancestors
         } else {
-            mutableListOf(convertedDoc)
+            if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
         }
     }
 
-    private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
+    fun getPublishedChildren(id: Int?, catalogIdent: String): List<AddressModel> =
+        documentService!!.findChildrenDocs(catalogIdent, id, true).hits
+            .mapNotNull {
+                try {
+                    val doc =
+                        documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
+                    this.addInternalFields(doc, it.wrapper)
+                } catch (ex: EmptyResultDataAccessException) {
+                    null
+                }
+            }
 
-        val visibleAddress = publishedParent.data.apply {
+
+    private fun addInternalFields(document: Document, wrapper: DocumentWrapper): AddressModel {
+
+        val visibleAddress = document.data.apply {
             put("_id", wrapper.id)
             put("_type", wrapper.type)
-            put("_uuid", publishedParent.uuid)
-            put("_created", publishedParent.created.toString())
-            put("_modified", publishedParent.modified.toString())
-            put("_contentModified", publishedParent.contentmodified.toString())
+            put("_uuid", document.uuid)
+            put("_created", document.created.toString())
+            put("_modified", document.modified.toString())
+            put("_contentModified", document.contentmodified.toString())
             put("_parent", wrapper.parent?.id)
+            put("title", document.title)
         }
 
         return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
@@ -124,7 +145,6 @@ data class AddressModel(
             }
         }*/
 
-    fun getNamePresentation() = organization ?: "$lastName, $firstName"
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")
     val email: String? get() = contactType("3")

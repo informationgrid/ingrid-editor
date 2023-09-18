@@ -8,7 +8,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
-class GeodatasetModelTransformer(
+open class GeodatasetModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
@@ -19,7 +19,7 @@ class GeodatasetModelTransformer(
 ) {
 
     override val hierarchyLevel = "dataset"
-    override val hierarchyLevelName = null
+    override val hierarchyLevelName: String? = null
 
 
     init {
@@ -33,6 +33,7 @@ class GeodatasetModelTransformer(
         }
     }
 
+    val featureCatalogueDescription = model.data.featureCatalogueDescription
     val isAdVCompatible = model.data.isAdVCompatible ?: false
     val featureTypes =
         model.data.featureCatalogueDescription?.featureTypes?.map { codelists.getValue("", it) } ?: emptyList()
@@ -249,9 +250,10 @@ class GeodatasetModelTransformer(
     val lineageSourceDescriptions =
         data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
     val hasLineageInformation =
-        lineageStatement != null || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
+        !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
+    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty() || isAdVCompatible
 
 }
 
