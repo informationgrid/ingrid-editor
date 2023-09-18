@@ -1,5 +1,5 @@
 <div [class.hide]="dataSource.data.length == 0">
-    <mat-divider></mat-divider>
+    <mat-divider aria-hidden="true"></mat-divider>
     <table mat-table matSort class="width-100" [dataSource]="dataSource">
         <ng-container class="thin-column" matColumnDef="_type">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>

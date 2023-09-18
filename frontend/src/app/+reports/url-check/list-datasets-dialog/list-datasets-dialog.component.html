@@ -19,12 +19,12 @@
         ist enthalten in {{ data.datasets.length }} Datensätzen:
     </div>
     <mat-action-list>
-        <mat-divider></mat-divider>
+        <mat-divider aria-hidden="true"></mat-divider>
         <ng-container *ngFor="let item of data.datasets">
             <button mat-list-item (click)="close(item.uuid)">
                 {{ item.title }}
             </button>
-            <mat-divider></mat-divider>
+            <mat-divider aria-hidden="true"></mat-divider>
         </ng-container>
     </mat-action-list>
 </mat-dialog-content>
