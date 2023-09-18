@@ -36,6 +36,14 @@ class SettingsService @Autowired constructor(
             dataSourceDescription = "iPlug for indexing data of IGE-NG"
             proxyServiceURL = plugId
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"
+            // the following fields are necessary for datasets to be shown on catalog page in portal
+            if (forAddress) {
+                addField("t02_address.id")
+                addField("parent.address_node.addr_uuid")
+            } else {
+                addField("t01_object.id")
+                addField("parent.object_node.obj_uuid")
+            }
             if (partner != null) addPartner(partner)
             if (provider != null) addProvider(provider)
         }
