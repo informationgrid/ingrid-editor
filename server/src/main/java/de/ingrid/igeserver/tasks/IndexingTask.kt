@@ -424,7 +424,7 @@ class IndexingTask @Autowired constructor(
         forAddress: Boolean
     ): String? {
 
-        val plugId = "ige-ng_${catalog.id}"
+        val plugId = "ige-ng_${catalog.identifier}"
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
             .field("plugId", plugId)
             .field("indexId", infoId)
