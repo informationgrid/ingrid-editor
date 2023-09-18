@@ -610,7 +610,7 @@ open class IngridModelTransformer(
             serviceOperation = refTrans.operations.firstOrNull()?.name,
             serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
             serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
-            hasAccessConstraints = refTrans.availabilityAccessConstraints?.isNotEmpty() ?: false
+            hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
         )
     }
 
