@@ -115,9 +115,13 @@ data class Service(
     val explanation: String?,
     val coupledResources: List<CoupledResource>?,
     val couplingType: KeyValueModel?,
-    val hasAccessConstraints: Boolean?,
+    val hasAccessConstraints: Boolean? = false,
     val isAtomDownload: Boolean?,
-)
+) {
+    fun hasAccessConstraintsOrFalse() : Boolean {
+        return hasAccessConstraints ?: false
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(

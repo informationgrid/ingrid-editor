@@ -88,7 +88,7 @@ open class IngridModelTransformer(
 
     val maintenanceNote = data.maintenanceInformation?.description
 
-    val graphicOverviews = data.graphicOverviews
+    val graphicOverviews = data.graphicOverviews ?: emptyList()
 
     val browseGraphics = generateBrowseGraphics(graphicOverviews)
 
