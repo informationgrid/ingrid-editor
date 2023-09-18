@@ -50,7 +50,7 @@
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
-    "t01_object.id": "${page.handleContent(page.getModel().getId())}",
+    "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)
         @for(var entry : ForSupport.of((page.getContact().getModel().getContact())))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",

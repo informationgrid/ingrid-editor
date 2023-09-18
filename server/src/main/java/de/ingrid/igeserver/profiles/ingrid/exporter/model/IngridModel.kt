@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridModel(
-    @JsonProperty("_id") val id: String,
+    // @JsonProperty("_id") val id: String,
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_type") val type: String,
     val title: String,
