@@ -41,7 +41,7 @@
     "boost": 1,
     "children.object_node.obj_uuid": [],
     "organisation": "",
-    "parent.object_node.obj_uuid": "",
+    "parent.object_node.obj_uuid": "${page.getParentIdentifier()}",
     "t012_obj_adr.adr_id": "",
     "t012_obj_adr.mod_time": "",
     "t012_obj_adr.special_name": "",
@@ -50,6 +50,7 @@
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
+    "t01_object.id": "${page.handleContent(page.getModel().getId())}",
     @if(page.getContact() != null)
         @for(var entry : ForSupport.of((page.getContact().getModel().getContact())))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",

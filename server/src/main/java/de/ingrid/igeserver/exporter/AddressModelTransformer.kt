@@ -75,6 +75,7 @@ class AddressModelTransformer(
             .joinToString(", ")
     }
 
+    val id = displayAddress.id
     val uuid = displayAddress.uuid
     val hoursOfService = displayAddress.hoursOfService
     val country =
@@ -97,6 +98,8 @@ class AddressModelTransformer(
 
     val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
     val addressDocType = if (displayAddress.docType == "InGridOrganisationDoc") 0 else 2
+    val getParentUuid = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).lastOrNull { it.id != model.id }?.uuid
+        ?: ""
 
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")

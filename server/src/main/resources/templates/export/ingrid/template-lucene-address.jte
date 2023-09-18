@@ -27,9 +27,11 @@
     ],
     "boost": 0.1,
     "t02_address.adr_id": "${page.getUuid()}",
+    "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",
     "is_top_level": null,
     "t02_address.parents.title": [],
+    "parent.address_node.addr_uuid": "${page.getGetParentUuid()}",
     "t021_communication.commtype_key": [
     @for(var entry : ForSupport.of(page.getModel().getContact()))
         "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
