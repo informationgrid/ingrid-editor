@@ -78,6 +78,8 @@
                 <ige-card-box
                     *ngIf="oldestExpiredDocs.length"
                     label="{{ t('oldestExpired') }}"
+                    endBtnTitle="Zur übersicht"
+                    (endBtnOnClick)="goToExpiryPage()"
                 >
                     <ige-document-list-item
                         [docs]="oldestExpiredDocs"

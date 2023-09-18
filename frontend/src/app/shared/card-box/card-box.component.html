@@ -1,9 +1,17 @@
 <mat-card appearance="outlined" class="no-box-shadow">
-    <mat-card-title class="text-card-title"
-        ><h2>{{ label }}</h2></mat-card-title
-    >
+    <mat-card-title>
+        <h2>{{ label }}</h2>
+    </mat-card-title>
     <mat-card-content>
         <mat-divider aria-hidden="true"></mat-divider>
         <ng-content></ng-content>
     </mat-card-content>
+    <button
+        *ngIf="endBtnTitle"
+        mat-flat-button
+        color="primary"
+        (click)="endBtnOnClick.emit()"
+    >
+        {{ endBtnTitle }}
+    </button>
 </mat-card>
