@@ -67,7 +67,6 @@
 "advProductGroups": @template.ingrid.partial.key-values(list = model.getAdvProductGroups()),
 "themes": @template.ingrid.partial.key-values(list = model.getThemes()),
 "priorityDatasets": @template.ingrid.partial.key-values(list = model.getPriorityDatasets()),
-"invekosKeywords": @template.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
 "openDataCategories": @template.ingrid.partial.key-values(list = model.getOpenDataCategories()),
 "spatialScope": @template.ingrid.partial.key-value(item = model.getSpatialScope()),
 "keywords": {
