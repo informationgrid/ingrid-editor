@@ -6,10 +6,16 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "value": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "title": "KeyValue"
@@ -25,7 +31,10 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": ["ref", "type"],
+      "required": [
+        "ref",
+        "type"
+      ],
       "title": "PointOfContact"
     },
     "graphicOverviews": {
@@ -53,10 +62,15 @@
             }
           },
           "fileDescription": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
-        "required": ["fileName"]
+        "required": [
+          "fileName"
+        ]
       }
     },
     "events": {
@@ -73,7 +87,10 @@
             "$ref": "#/definitions/KeyValue"
           }
         },
-        "required": ["referenceDateType", "referenceDate"],
+        "required": [
+          "referenceDateType",
+          "referenceDate"
+        ],
         "title": "events"
       },
       "minItems": 1
@@ -89,7 +106,10 @@
           }
         },
         "description": {
-          "type": ["null", "string"]
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "spatialSystems": {
           "type": "array",
@@ -112,10 +132,16 @@
               ]
             },
             "maximumValue": {
-              "type": ["null", "number"]
+              "type": [
+                "null",
+                "number"
+              ]
             },
             "minimumValue": {
-              "type": ["null", "number"]
+              "type": [
+                "null",
+                "number"
+              ]
             },
             "unitOfMeasure": {
               "anyOf": [
@@ -130,7 +156,10 @@
           }
         }
       },
-      "required": ["references", "spatialSystems"]
+      "required": [
+        "references",
+        "spatialSystems"
+      ]
     },
     "Date": {
       "type": "object",
@@ -207,10 +236,16 @@
             ]
           },
           "mediumNote": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "transferSize": {
-            "type": ["null", "number"]
+            "type": [
+              "null",
+              "number"
+            ]
           }
         }
       }
@@ -249,13 +284,22 @@
         "additionalProperties": false,
         "properties": {
           "denominator": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           },
           "distanceDPI": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           },
           "distanceMeter": {
-            "type": ["number", "null"]
+            "type": [
+              "number",
+              "null"
+            ]
           }
         }
       }
@@ -345,19 +389,34 @@
       }
     },
     "explanation": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "methodText": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "systemEnvironment": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "baseDataText": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "orderInfo": {
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "temporal": {
       "type": "object",
@@ -408,21 +467,36 @@
           ]
         },
         "resourceRange": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "end": {
-              "type": ["string", "null"],
-              "format": "date-time"
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "end": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "start": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              }
             },
-            "start": {
-              "type": ["string", "null"],
-              "format": "date-time"
+            {
+              "type": "null"
             }
-          }
+          ]
         }
       },
-      "required": ["events"]
+      "required": [
+        "events"
+      ]
     },
     "keywords": {
       "type": "object",
@@ -461,7 +535,10 @@
             "type": "string"
           },
           "alternativeLabel": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       }
@@ -527,13 +604,22 @@
             "$ref": "#/definitions/KeyValue"
           },
           "title": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "uuidRef": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "explanation": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       }

@@ -77,6 +77,7 @@ class AddressModelTransformer(
 
     val id = displayAddress.id
     val uuid = displayAddress.uuid
+    val isFolder = model.docType == "FOLDER"
     val hoursOfService = displayAddress.hoursOfService
     val country =
         displayAddress.address.country?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it) }

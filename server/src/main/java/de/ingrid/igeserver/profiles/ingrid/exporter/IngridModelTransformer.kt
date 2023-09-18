@@ -40,6 +40,7 @@ open class IngridModelTransformer(
 
     var citationURL: String? = null
     val data = model.data
+    val isFolder = model.type == "FOLDER"
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
     val distributionFormats = data.distribution?.format ?: emptyList()

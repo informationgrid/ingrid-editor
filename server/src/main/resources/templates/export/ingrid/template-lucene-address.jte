@@ -26,6 +26,7 @@
         "IDF_1.0"
     ],
     "boost": 0.1,
+    "isfolder": ${page.isFolder()},
     "t02_address.adr_id": "${page.getUuid()}",
     "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",

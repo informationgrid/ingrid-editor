@@ -47,6 +47,7 @@ class IngridLuceneExporter @Autowired constructor(
             "InGridInformationSystem" -> "ingrid/template-lucene.jte"
             "InGridOrganisationDoc" -> "ingrid/template-lucene-address.jte"
             "InGridPersonDoc" -> "ingrid/template-lucene-address.jte"
+            "FOLDER" -> "ingrid/template-lucene-folder.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }
