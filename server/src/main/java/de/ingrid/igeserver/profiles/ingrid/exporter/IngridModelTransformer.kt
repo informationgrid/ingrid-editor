@@ -452,6 +452,20 @@ open class IngridModelTransformer(
         if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall
             ?: "" else ""
 
+    fun getCapabilitiesUrlsFromService(): List<String> {
+        return if (model.type == "InGridGeoDataset") {
+            val doc = getLastPublishedDocument(model.uuid)
+            documentService?.getIncomingReferences(doc)
+                ?.map { documentService!!.getLastPublishedDocument(catalogIdentifier, it) }
+                ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
+                ?.mapNotNull {
+                    it.data.get("service").get("operations")
+                        .firstOrNull { it.get("name").get("key").asText() == "1" }?.get("methodCall")?.asText()
+                } ?: emptyList()
+        } else emptyList()
+        
+    }
+    
     fun getReferingServiceUuid(): String {
         val containsNamespace = model.data.identifier?.contains("://") ?: false
         return if (containsNamespace) {

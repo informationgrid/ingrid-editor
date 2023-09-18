@@ -135,6 +135,12 @@
     ],
     @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().getHasAccessConstraints())
     "capabilities_url": "${page.getCapabilitiesUrl()}",
+    @elseif("1".equals(page.getDocumentType()))
+    "capabilities_url": [
+        @for(var entry : ForSupport.of(page.getCapabilitiesUrlsFromService()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
     @endif
     "refering_service_uuid": "${page.getReferingServiceUuid()}",
     "t04_search.searchterm": [
