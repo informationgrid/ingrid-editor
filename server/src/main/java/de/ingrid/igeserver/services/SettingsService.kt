@@ -27,12 +27,12 @@ class SettingsService @Autowired constructor(
         this.updateItem("ibus", config)
     }
 
-    fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean): PlugDescription {
+    fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {
         val pd = PlugDescription().apply {
             put("useRemoteElasticsearch", true)
             val datatypes = if (forAddress) addressDataTypes else objectDataTypes
             datatypes.forEach { addDataType(it) }
-            dataSourceName = "IGE-NG"
+            dataSourceName = name
             dataSourceDescription = "iPlug for indexing data of IGE-NG"
             proxyServiceURL = plugId
             iPlugClass = "de.ingrid.mdek.job.IgeSearchPlug"

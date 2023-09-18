@@ -120,7 +120,7 @@ class IndexingTask @Autowired constructor(
                     // add plugdescription for correct usage in iBus, since data and address index have the same
                     // plugId, both need the plugdescription info
                     val plugInfo =
-                        IPlugInfo(elasticsearchAlias, null, "none", category.value, partner, provider, catalogId)
+                        IPlugInfo(elasticsearchAlias, null, "none", category.value, partner, provider, catalog)
                     updateIBusInformation(plugInfo)
                     return@categoryLoop
                 }
@@ -168,7 +168,7 @@ class IndexingTask @Autowired constructor(
                         category.value,
                         partner,
                         provider,
-                        catalogId
+                        catalog
                     )
                     indexPostPhase(plugInfo)
                     log.debug("Task finished: Indexing for $catalogId")
@@ -406,7 +406,7 @@ class IndexingTask @Autowired constructor(
             val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
             indexManager.updateIPlugInformation(
                 plugIdInfo,
-                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalogId, info.category == "address")
+                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalog, info.category == "address")
             )
         }
     }
@@ -420,11 +420,11 @@ class IndexingTask @Autowired constructor(
         totalCount: Int?,
         partner: String?,
         provider: String?,
-        catalogId: String?,
+        catalog: Catalog,
         forAddress: Boolean
     ): String? {
 
-        val plugId = "ige-ng_$catalogId"
+        val plugId = "ige-ng_${catalog.id}"
         val xContentBuilder: XContentBuilder = XContentFactory.jsonBuilder().startObject()
             .field("plugId", plugId)
             .field("indexId", infoId)
@@ -434,7 +434,7 @@ class IndexingTask @Autowired constructor(
             .field("adminUrl", appProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
-            .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId, forAddress))
+            .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId, forAddress, catalog.name))
             .startObject("indexingState")
             .field("numProcessed", count)
             .field("totalDocs", totalCount)
@@ -577,5 +577,5 @@ data class IPlugInfo(
     val category: String,
     val partner: String?,
     val provider: String?,
-    val catalogId: String
+    val catalog: Catalog
 )
