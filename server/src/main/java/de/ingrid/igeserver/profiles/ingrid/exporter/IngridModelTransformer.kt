@@ -525,8 +525,8 @@ open class IngridModelTransformer(
 
 
 
-    private val coupledCrossReferences = model.data.service?.coupledResources?.filter { !it.isExternalRef }?.map { getCrossReference(it.uuid, KeyValueModel("3600", null)) }?: emptyList()
-    private val referencedCrossReferences = model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }?.map  { getCrossReference(it.uuidRef!!, it.type) }?: emptyList()
+    private val coupledCrossReferences = model.data.service?.coupledResources?.filter { !it.isExternalRef }?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) }?: emptyList()
+    private val referencedCrossReferences = model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }?.mapNotNull  { getCrossReference(it.uuidRef!!, it.type) }?: emptyList()
     val crossReferences = coupledCrossReferences + referencedCrossReferences
 
 

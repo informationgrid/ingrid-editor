@@ -118,7 +118,9 @@ class AddressModelTransformer(
                 doc.title ?: "",
                 doc.type,
                 doc.data.get("description")?.textValue(),
-                doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
+                if (doc.data.has("graphicOverviews")) {
+                    doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
+                } else null
             )
         }.filterNotNull()
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -84,10 +83,16 @@ data class AddressModel(
     }
 
     fun getPublishedChildren(id: Int?, catalogIdent: String): List<AddressModel> =
-        documentService!!.findChildrenDocs(catalogIdent, id, true).hits.map {
-            val doc = documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
-            this.addInternalFields(doc, it.wrapper)
-        }
+        documentService!!.findChildrenDocs(catalogIdent, id, true).hits
+            .mapNotNull {
+                try {
+                    val doc =
+                        documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
+                    this.addInternalFields(doc, it.wrapper)
+                } catch (ex: EmptyResultDataAccessException) {
+                    null
+                }
+            }
 
 
     private fun addInternalFields(document: Document, wrapper: DocumentWrapper): AddressModel {
