@@ -2,7 +2,6 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.RecordCollection
-import de.ingrid.igeserver.model.RecordsResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.Explode
@@ -16,6 +15,7 @@ import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
@@ -184,7 +184,7 @@ interface OgcRecordApi {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#_operation_5)" +
                     "\n\n[Additional Source: DRAFT OGC API - Features - Part 3: Filtering](https://docs.ogc.org/DRAFTS/19-079r1.html#_requirements_class_filter)"
             ) @RequestParam(value = "filter", required = false) filter: String?,
-            ): ResponseEntity<RecordsResponse>
+            ): ResponseEntity<ByteArray>
 
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
@@ -222,7 +222,7 @@ interface OgcRecordApi {
 
 
     @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Delete Record by ID of Catalog by ID")
+    @Operation(responses = [], summary = "Remove a resource from a collection. (Delete Record)")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "204", description = "Successful operation"),
@@ -239,34 +239,34 @@ interface OgcRecordApi {
 
 
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Import a complete dataset")
+    @Operation(summary = "Add a new resource instance to a collection. (Import Record)")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
         ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
-    fun createDataset(
+    fun postDataset(
             @RequestHeader allHeaders: Map<String, String>,
-            principal: Principal,
-            @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+            principal: Authentication, // Principal,
+            @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
-            @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
-            @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean,
+            @Parameter(description = "## Address Document \n **Custom Parameter** \n\nIs this an address document?") @RequestParam(required = false) address: @Valid Boolean,
+            @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?,
     ): ResponseEntity<JsonNode>
 
 
 
-    @PatchMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Update a record")
+    @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @Operation(summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
         ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
-    fun updateDataset(
-            principal: Principal,
+    fun putDataset(
+            @RequestHeader allHeaders: Map<String, String>,
+            principal: Authentication,
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
-            @Parameter(description = "The data to be stored.", required = true) @RequestBody data: @Valid JsonNode,
-
+            @Parameter(description = "The data to be stored.", required = true) @RequestBody data: String,
             @Parameter(description = "If we want to delay the publication set this date.") @RequestParam(
                     value = "publishDate",
                     required = false

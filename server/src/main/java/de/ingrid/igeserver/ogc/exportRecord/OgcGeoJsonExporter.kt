@@ -43,6 +43,10 @@ class OgcGeoJsonExporter @Autowired constructor(
         } else {
             Pair(version, null)
         }
+
+        val dataset = versions.first ?: versions.second
+        val isAddress: Boolean = if(dataset?.get("address") == null) false else true
+        if(isAddress) return dataset as Any
         val record = addExportWrapper(catalogId, versions.first, versions.second)
         return convertToJsonNode(record)
     }
@@ -59,20 +63,7 @@ class OgcGeoJsonExporter @Autowired constructor(
 
     private fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): Record {
 
-//        val profile = catalogService.getCatalogById(catalogId).type
-
-//        return jacksonObjectMapper().createObjectNode().apply {
-//            put("_export_date", OffsetDateTime.now().toString())
-//            put("_version", "1.0.0")
-//            put("_profile", profile)
-//            set<ObjectNode>("resources", jacksonObjectMapper().createObjectNode().apply {
-//                publishedVersion?.let { set<JsonNode>("published", publishedVersion) }
-//                draftVersion?.let { set<JsonNode>("draft", draftVersion) }
-//            })
-//        }
-
         val dataset = publishedVersion ?: draftVersion
-//        val dataset = ObjectMapper().convertValue<JsonNode>(recordData!!)
 
         val geometry: MutableList<JsonNode> = mutableListOf()
         val interval: MutableList<String> = mutableListOf()

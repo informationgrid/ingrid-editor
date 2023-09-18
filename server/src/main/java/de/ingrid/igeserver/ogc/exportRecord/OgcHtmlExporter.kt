@@ -100,21 +100,17 @@ class OgcHtmlExporter @Autowired constructor(
 
     private fun htmlTransformation(doc: ObjectNode): String {
         val table = convertFieldToTable(doc)
+        val title = doc.get("title")
         return """
-            <html>
-                <head>
-                    <title>OGC Record API</title>
-                </head>
-                <body>
-                    <style>
-                        body { font-family: Sans-Serif; background-color: lightGray; padding-bottom: 50px }
-                        table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
-                        td { vertical-align: top; outline: 2px solid lightGray; background-color: white;}}   
-                    </style>
-                    <h1>OGC Record API</h1>
+                 <style>
+                    body { font-family: Sans-Serif; padding-bottom: 50px }
+                    table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
+                    td { vertical-align: top; outline: 2px solid lightGray; background-color: white;}}
+                </style>
+                <div class="record" style="margin: 40px 10px; padding: 10px; outline: solid; background: lightgray;">
+                    <h1>Record: $title</h1>
                     $table
-                </body>
-            </html>
+                </div>
         """
     }
 
