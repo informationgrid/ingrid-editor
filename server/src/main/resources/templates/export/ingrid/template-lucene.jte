@@ -41,7 +41,7 @@
     "boost": 1,
     "children.object_node.obj_uuid": [],
     "organisation": "",
-    "parent.object_node.obj_uuid": "",
+    "parent.object_node.obj_uuid": "${page.getParentIdentifier()}",
     "t012_obj_adr.adr_id": "",
     "t012_obj_adr.mod_time": "",
     "t012_obj_adr.special_name": "",
@@ -50,6 +50,7 @@
     "t01_object.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getModel().get_contentModified())}",
     "t01_object.obj_class": "${page.handleContent(page.getDocumentType())}",
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
+    "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)
         @for(var entry : ForSupport.of((page.getContact().getModel().getContact())))
             "t021_communication.comm_type": "${entry.get().getType().getValue()}",
@@ -98,7 +99,7 @@
 
     "t01_object.org_obj_id": null,
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().getHasAccessConstraints()}",
+    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
     "t011_obj_serv.type": "${page.getServiceType()}",
     "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
     "t011_obj_serv_version.version_value": [
@@ -128,12 +129,18 @@
     @endfor
     ],
     "additional_html_1": [
-    @for(var entry : ForSupport.of(page.getGraphicOverviews()))
-        "<img src='${entry.get().getFileName().getUri()}' height='100' class='preview_image' alt='${entry.get().getFileDescription()}' title='${entry.get().getFileDescription()}' >"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getBrowseGraphics()))
+        "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().getHasAccessConstraints())
+    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
     "capabilities_url": "${page.getCapabilitiesUrl()}",
+    @elseif("1".equals(page.getDocumentType()))
+    "capabilities_url": [
+        @for(var entry : ForSupport.of(page.getCapabilitiesUrlsFromService()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
     @endif
     "refering_service_uuid": "${page.getReferingServiceUuid()}",
     "t04_search.searchterm": [

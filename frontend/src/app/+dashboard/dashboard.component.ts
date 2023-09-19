@@ -104,6 +104,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate([`${ConfigService.catalogId}/importExport/import`]);
   }
 
+  goToExpiryPage(): void {
+    this.router.navigate([`${ConfigService.catalogId}/reports/expiration`]);
+  }
+
   openByType(doc: DocumentAbstract) {
     doc.isAddress ? this.openAddress(doc._uuid) : this.openDocument(doc._uuid);
   }

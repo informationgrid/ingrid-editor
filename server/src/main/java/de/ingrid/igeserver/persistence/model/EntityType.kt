@@ -97,6 +97,13 @@ abstract class EntityType {
     }
 
     /**
+     * Get all document UUIDs which reference this document
+     */
+    open fun getIncomingReferenceIds(doc: Document): List<String> {
+        return emptyList()
+    }
+
+    /**
      * Replace document/address references with their latest version
      */
     open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
@@ -116,7 +123,7 @@ abstract class EntityType {
     ): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also {
-            it.document.data.put(FIELD_TAGS, wrapper.tags?.joinToString(","))
+            it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
         }
 
         val latestDocumentJson = documentService.convertToJsonNode(documentData.document)

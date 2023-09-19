@@ -100,6 +100,7 @@ class Geodataset : AnnotationSpec() {
         )
 
         initDocumentMocks(addresses + datasets, documentService)
+        every { documentService.getIncomingReferences(any()) } answers { emptySet() }
     }
 
     /*

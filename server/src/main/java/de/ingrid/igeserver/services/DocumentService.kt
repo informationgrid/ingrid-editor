@@ -919,7 +919,7 @@ class DocumentService @Autowired constructor(
     fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
         val cleanedTags =
-            wrapper.tags.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+            wrapper.tags.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true }
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags
@@ -942,6 +942,15 @@ class DocumentService @Autowired constructor(
 
         val docType = getDocumentType(document.type)
         return docType.getReferenceIds(document).toSet()
+    }
+
+    fun getIncomingReferences(
+        document: Document?
+    ): Set<String> {
+        if (document == null) return setOf()
+
+        val docType = getDocumentType(document.type)
+        return docType.getIncomingReferenceIds(document).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {
