@@ -133,7 +133,7 @@
         "<img src='${entry.get().getFileName().getUri()}' height='100' class='preview_image' alt='${entry.get().getFileDescription()}' title='${entry.get().getFileDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().getHasAccessConstraints())
+    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
     "capabilities_url": "${page.getCapabilitiesUrl()}",
     @elseif("1".equals(page.getDocumentType()))
     "capabilities_url": [
