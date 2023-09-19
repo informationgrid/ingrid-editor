@@ -113,7 +113,7 @@ class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, model.uuid)
-        return documentService!!.getReferencedUuids(addressDoc).map {
+        return documentService!!.getIncomingReferences(addressDoc).map {
             val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
 
             ObjectReference(
