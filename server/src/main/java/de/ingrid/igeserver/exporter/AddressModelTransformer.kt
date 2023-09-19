@@ -65,7 +65,7 @@ class AddressModelTransformer(
                 catalogIdentifier,
                 codelist
             )
-        }
+        }.reversed()
 
     private fun determineEldestAncestor(): AddressModel? =
         model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).firstOrNull()
