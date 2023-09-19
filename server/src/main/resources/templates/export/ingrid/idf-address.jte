@@ -13,6 +13,6 @@ idfAdditionalAttributes = @`type="${page.getAddressDocType()}" uuid="${page.getU
 content = @`
     @template.ingrid.pointOfContact(
     addresses = List.of(page),
-    pointOfContactExport = false,
+    isAddressExport = true,
     )
 `)

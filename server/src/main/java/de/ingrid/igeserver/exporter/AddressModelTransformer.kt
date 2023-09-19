@@ -28,6 +28,9 @@ class AddressModelTransformer(
         displayAddress = determineDisplayAddress()
     }
 
+    private val ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
+
+
     fun getIndividualName(useDisplayAddress: Boolean): String? {
         val address = if (useDisplayAddress) displayAddress else model
 
@@ -51,27 +54,27 @@ class AddressModelTransformer(
 
 
     private fun determineDisplayAddress(): AddressModel {
-        val nonHiddenAddress = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
+        val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
         } else model
     }
 
-    fun getHierarchy(): List<AddressModelTransformer> =
-        model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).map {
+    fun getHierarchy(reverseOrder: Boolean): List<AddressModelTransformer> =
+        ancestorAddressesIncludingSelf.map {
             AddressModelTransformer(
                 it,
                 catalogIdentifier,
                 codelist
             )
-        }.reversed()
+        }.let{ if (reverseOrder) it.reversed() else it }
 
     private fun determineEldestAncestor(): AddressModel? =
-        model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).firstOrNull()
+        ancestorAddressesIncludingSelf.firstOrNull()
 
     private fun determinePositionNameFromAncestors(): String {
-        val ancestorsWithoutEldest = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).drop(1)
+        val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest.filter { !it.positionName.isNullOrEmpty() }.map { it.positionName }
             .joinToString(", ")
     }
@@ -100,8 +103,8 @@ class AddressModelTransformer(
     val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
     val addressDocType = getAddressDocType(displayAddress.docType)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
-    
-    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).apply { pop() }
+
+    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
 
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
