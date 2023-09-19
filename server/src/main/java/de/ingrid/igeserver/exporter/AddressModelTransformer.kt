@@ -5,6 +5,7 @@ import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import org.jetbrains.kotlin.backend.common.pop
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -97,9 +98,10 @@ class AddressModelTransformer(
     val fax = displayAddress.fax
 
     val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
-    val addressDocType = if (displayAddress.docType == "InGridOrganisationDoc") 0 else 2
-    val getParentUuid = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).lastOrNull { it.id != model.id }?.uuid
-        ?: ""
+    val addressDocType = getAddressDocType(displayAddress.docType)
+    fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
+    
+    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).apply { pop() }
 
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -135,16 +137,18 @@ class AddressModelTransformer(
      *  @return List of children
      */
     fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return model.getPublishedChildren(model.id, catalogIdentifier).filter { it.hideAddress == false }.map {
-            AddressModelTransformer(it, catalogIdentifier, codelist, type)
-        }.map {
-            SubordinatedParty(
-                it.uuid,
-                it.addressDocType,
-                it.getIndividualName(false),
-                it.model.organization
-            )
-        }.toMutableList()
+        return model.getPublishedChildren(model.id, catalogIdentifier)
+            .filter { it.hideAddress == false }
+            .map {
+                AddressModelTransformer(it, catalogIdentifier, codelist, type)
+            }.map {
+                SubordinatedParty(
+                    it.uuid,
+                    it.addressDocType,
+                    it.getIndividualName(false),
+                    it.model.organization
+                )
+            }.toMutableList()
     }
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {

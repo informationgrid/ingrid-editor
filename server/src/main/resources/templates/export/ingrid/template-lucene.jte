@@ -129,8 +129,8 @@
     @endfor
     ],
     "additional_html_1": [
-    @for(var entry : ForSupport.of(page.getGraphicOverviews()))
-        "<img src='${entry.get().getFileName().getUri()}' height='100' class='preview_image' alt='${entry.get().getFileDescription()}' title='${entry.get().getFileDescription()}' >"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getBrowseGraphics()))
+        "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
     @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
