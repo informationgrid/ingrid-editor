@@ -1,9 +1,19 @@
 :host {
   overflow: auto;
 }
+
 .save-search-button {
   padding-top: 12px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.example-button {
+  letter-spacing: 0;
+  font-weight: unset;
+  align-self: start;
+  border-radius: 20px;
+  text-transform: none;
+  background-color: #e0e0e0;
 }

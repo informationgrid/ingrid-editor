@@ -1,6 +1,6 @@
 <ng-container *ngIf="columnsMap">
     <div class="result-table-header">
-        <div class="result" tabindex="0">
+        <div class="result">
             {{ isLoading ? "Suche" : totalHits + " Ergebnisse gefunden" }}
             <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
         </div>

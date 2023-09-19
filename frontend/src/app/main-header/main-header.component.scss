@@ -20,6 +20,14 @@
   text-align-last: end;
   overflow: hidden;
   text-overflow: fade;
+
+  &.single {
+    color: $ige-text-color;
+
+    button {
+      color: $ige-text-color;
+    }
+  }
 }
 
 .menu-item {

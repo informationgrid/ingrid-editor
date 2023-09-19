@@ -36,6 +36,7 @@
 
 // border *outside of button with primary color
 .mat-mdc-fab,
+.mat-button-toggle,
 [mat-flat-button][color="primary"] {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: 2px;

@@ -5,13 +5,17 @@
             erweiterte Suche nicht ausreicht.
         </p>
         <p>Hier sind ein paar Beispiele:</p>
-        <mat-chip-set>
-            <mat-chip
+
+        <div *ngIf="sqlExamples.length" class="flex-col gap-6">
+            <button
+                mat-flat-button
+                class="example-button"
                 *ngFor="let example of sqlExamples"
                 (click)="updateSqlControl(example.value)"
-                >{{ example.label }}</mat-chip
             >
-        </mat-chip-set>
+                {{ example.label }}
+            </button>
+        </div>
     </div>
 
     <div main-header>
