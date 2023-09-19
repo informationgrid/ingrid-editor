@@ -391,9 +391,14 @@ class OgcRecordService @Autowired constructor(
         val alternateLinks = links.filter { it.rel == "alternate"}
         val nextLinks = links.filter { it.rel == "next"}
         val prevLinks = links.filter { it.rel == "prev"}
+        val collectionLinks = links.filter { it.rel == "collection"}
 
         var htmlSelf = ""
         for(link in selfLinks) htmlSelf += link.title + ": <a href=" + link.href + ">" + link.href + "</a>"
+
+        var htmlCollection = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Links to Collection</div><nav class=\"dropdown-content\">"
+        for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
+        htmlCollection += "</nav></div>"
 
         var htmlAlternate = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Alternate Formats</div><nav class=\"dropdown-content\">"
         for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
@@ -412,7 +417,7 @@ class OgcRecordService @Autowired constructor(
                 <h1>OGC Record API</h1>
                 $htmlSelf
                 <div class="grid-container">
-                    $htmlAlternate $htmlPrev $htmlNext
+                    $htmlAlternate $htmlCollection $htmlPrev $htmlNext
                 </div>
             </header>
              <style>
