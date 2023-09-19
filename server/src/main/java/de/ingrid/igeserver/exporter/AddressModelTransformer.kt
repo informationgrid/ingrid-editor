@@ -24,11 +24,14 @@ class AddressModelTransformer(
     private var displayAddress: AddressModel
     fun getModel() = displayAddress
 
+    // needs to be set in during init phase
+    private val ancestorAddressesIncludingSelf: MutableList<AddressModel>
+
     init {
+        ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
         displayAddress = determineDisplayAddress()
     }
 
-    private val ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
 
 
     fun getIndividualName(useDisplayAddress: Boolean): String? {
