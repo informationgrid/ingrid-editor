@@ -213,6 +213,7 @@ open class IngridModelTransformer(
 
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
+    val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
@@ -463,9 +464,9 @@ open class IngridModelTransformer(
                         .firstOrNull { it.get("name").get("key").asText() == "1" }?.get("methodCall")?.asText()
                 } ?: emptyList()
         } else emptyList()
-        
+
     }
-    
+
     fun getReferingServiceUuid(): String {
         val containsNamespace = model.data.identifier?.contains("://") ?: false
         return if (containsNamespace) {

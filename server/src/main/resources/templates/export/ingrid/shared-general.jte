@@ -176,8 +176,31 @@
     </gmd:spatialRepresentationInfo>
 @endif
 
-
-
+@for(VectorSpatialRepresentation vec : page.getVectorSpatialRepresentation())
+    <gmd:spatialRepresentationInfo>
+        <gmd:MD_VectorSpatialRepresentation>
+            <gmd:topologyLevel>
+                <gmd:MD_TopologyLevelCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_TopologyLevelCode" codeListValue="${page.getCodelists().getValue("528", vec.getTopologyLevel(), "iso")}"/>
+            </gmd:topologyLevel>
+            @if(vec.getGeometricObjectType() != null || vec.getGeometricObjectCount() != null)
+                <gmd:geometricObjects>
+                    <gmd:MD_GeometricObjects>
+                        @if(vec.getGeometricObjectType() != null)
+                            <gmd:geometricObjectType>
+                                <gmd:MD_GeometricObjectTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode" codeListValue="${page.getCodelists().getValue("515", vec.getGeometricObjectType(), "iso")}"/>
+                            </gmd:geometricObjectType>
+                        @endif
+                        @if(vec.getGeometricObjectCount() != null)
+                            <gmd:geometricObjectCount>
+                                <gco:Integer>${vec.getGeometricObjectCount()}</gco:Integer>
+                            </gmd:geometricObjectCount>
+                        @endif
+                    </gmd:MD_GeometricObjects>
+                </gmd:geometricObjects>
+            @endif
+        </gmd:MD_VectorSpatialRepresentation>
+    </gmd:spatialRepresentationInfo>
+@endfor
 
 @for(CharacterStringModel spatialSystem : page.getSpatialSystems())
     <gmd:referenceSystemInfo>
