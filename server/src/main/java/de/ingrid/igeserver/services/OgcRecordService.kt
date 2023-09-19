@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImporterFactory
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
@@ -14,6 +17,7 @@ import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.w3c.dom.Node
 import org.xml.sax.InputSource
@@ -43,10 +47,25 @@ class OgcRecordService @Autowired constructor(
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
         private val internalExporter: InternalExporter,
         private val documentService: DocumentService,
+        private val importService: ImportService
 ) {
     val apiHost = "http://localhost:8550"
 
-    fun prepareDataForImport(catalogId: String, mimeType: String, docData: String, publish: Boolean): List<String> {
+    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication){
+        val docArray = prepareDataForImport(collectionId, contentType, data)
+        for( doc in docArray ) {
+            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, doc)
+            importService.importAnalyzedDatasets(
+                    principal = principal,
+                    catalogId = collectionId,
+                    analysis = optimizedImportAnalysis,
+                    options = options,
+                    message = Message()
+            )
+        }
+    }
+
+    private fun prepareDataForImport(catalogId: String, mimeType: String, docData: String): List<String> {
         val documents: MutableList<String> = mutableListOf()
         if (mimeType == "application/xml") {
             val parsedXml = parseXmlWithMultipleDocs(docData, catalogId)

@@ -268,23 +268,14 @@ interface OgcRecordApi {
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
             @Parameter(description = "The data to be stored.", required = true) @RequestBody data: String,
-            @Parameter(description = "If we want to delay the publication set this date.") @RequestParam(
+            @Parameter(description = "## Delay Publish on Date \n **Custom Parameter** \n\n If we want to delay the publication set this date.") @RequestParam(
                     value = "publishDate",
                     required = false
             ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
-            @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
+            @Parameter(description = "## Publish Record \n **Custom Parameter** \n\n If we want to store the published version then this parameter has to be set to true.") @RequestParam(
                     value = "publish",
                     required = false
-            ) publish: Boolean,
-            @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
-                    "\n\n### ! Not yet implemented !" +
-                    "\n\nWhile OGC API - Records does not specify any mandatory encoding, support for the following encodings is recommended." +
-                    "\n\nTo support browsing the catalogue and its records with a web browser and to enable search engines to crawl and index the catalogue, implementations SHOULD consider supporting an HTML encoding." +
-                    "\n\nIf the records can be represented for the intended use in GeoJSON, implementations SHOULD consider supporting GeoJSON as an encoding for records and catalogues (i.e. record collections)." +
-                    "\n\nIf a catalogue (i.e. record collection) can be represented for the intended use in JSON, implementations SHOULD consider supporting JSON as an encoding for a catalogue (i.e. record collection)." +
-                    "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
-                    "\n\n### Supported formats: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'"
-            ) @RequestParam(value = "f", required = false) format: String?,
+            ) publish: Boolean?,
     ): ResponseEntity<JsonNode>
 
 

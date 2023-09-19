@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
@@ -24,7 +23,6 @@ class OgcRecordApiController @Autowired constructor(
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-        private val importService: ImportService,
         private val exporterFactory: ExporterFactory,
         val scheduler: SchedulerService,
         ) : OgcRecordApi {
@@ -67,70 +65,21 @@ class OgcRecordApiController @Autowired constructor(
 
     override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, address: Boolean, publish: Boolean?): ResponseEntity<JsonNode> {
         val contentType = allHeaders["content-type"]!!
-        val publishRecord = publish ?: false
-
-        val docArray = ogcRecordService.prepareDataForImport(collectionId, contentType, data, publishRecord)
-
-        for( doc in docArray ) {
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, doc)
-            importService.importAnalyzedDatasets(
-                    principal = principal,
-                    catalogId = collectionId,
-                    analysis = optimizedImportAnalysis,
-                    options = ImportOptions( publish = publishRecord),
-                    message = Message()
-            )
-        }
-
+        // import via importer
+        val options = ImportOptions( publish = publish ?: false)
+        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal)
         return ResponseEntity.ok().build()
     }
 
-    override fun putDataset(
-            allHeaders: Map<String, String>,
-            principal: Authentication,
-            collectionId: String,
-            recordId: String,
-            data: String,
-            publishDate: Date?,
-            publish: Boolean,
-            format: String?,
-    ): ResponseEntity<JsonNode> {
-        // using importer
+    override fun putDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String, publishDate: Date?, publish: Boolean? ): ResponseEntity<JsonNode> {
         val contentType = allHeaders["content-type"]!!
         // check if document exists
         documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
-        val docArray = ogcRecordService.prepareDataForImport(collectionId, contentType, data, publish)
-
-        for( doc in docArray ) {
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, doc)
-            importService.importAnalyzedDatasets(
-                    principal = principal,
-                    catalogId = collectionId,
-                    analysis = optimizedImportAnalysis,
-                    options = ImportOptions( publish = publish, overwriteDatasets = true),
-                    message = Message()
-            )
-        }
-
+        // import via importer
+        val options = ImportOptions( publish = publish ?: true , overwriteAddresses = true, overwriteDatasets = true)
+        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal)
         return ResponseEntity.ok().build()
-
-//        // using updateDocument of DocumentService
-//        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
-//        val wrapperId = wrapper.id!!
-//
-//        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-//        val resultDoc = if (publish) {
-//            val doc = documentService.convertToDocument(data)
-//            documentService.publishDocument(principal, catalogId, wrapperId, doc, publishDate)
-//        } else {
-//            val doc = documentService.convertToDocument(data)
-//            documentService.updateDocument(principal, catalogId, wrapperId, doc)
-//        }
-//
-//        val node = documentService.convertToJsonNode(resultDoc.document)
-//        return ResponseEntity.ok(node)
     }
-
 
     override fun getRecord(collectionId: String, recordId: String, format: String?, draft: Boolean?): ResponseEntity<ByteArray> {
         val record = ogcRecordService.prepareRecord(collectionId, recordId, format, draft)
