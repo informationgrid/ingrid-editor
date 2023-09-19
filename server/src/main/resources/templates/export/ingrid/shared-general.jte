@@ -562,7 +562,7 @@
                 </gmd:geographicElement>
             @endif
         @endfor
-        @if(page.getResourceDateType() != null)
+        @if(page.getResourceDateType() != null && page.getHasAnyResourceDate())
             <gmd:temporalElement>
                 <gmd:EX_TemporalExtent>
                     <gmd:extent>

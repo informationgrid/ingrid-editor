@@ -56,6 +56,7 @@ open class IngridModelTransformer(
     val resourceEndDate =
         (if (resourceDateType.equals("till")) data.temporal.resourceDate
         else data.temporal.resourceRange?.end)
+    val hasAnyResourceDate = listOf(data.temporal.resourceDate, resourceBeginDate, resourceEndDate).any { it != null }
     val resourceBeginIndeterminatePosition =
         if (resourceDateType.equals("till")) "indeterminatePosition=\"unknown\"" else ""
     val resourceEndIndeterminatePosition =
