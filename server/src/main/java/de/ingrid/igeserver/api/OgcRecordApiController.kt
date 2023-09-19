@@ -133,12 +133,7 @@ class OgcRecordApiController @Autowired constructor(
 
 
     override fun getRecord(collectionId: String, recordId: String, format: String?, draft: Boolean?): ResponseEntity<ByteArray> {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
-        val wrapperId = wrapper.id!!
-
-        val record = ogcRecordService.prepareRecord(collectionId, recordId, wrapperId, format, draft)
-
-//        val responseHeaders = ogcRecordService.responseHeaders(format, null)
+        val record = ogcRecordService.prepareRecord(collectionId, recordId, format, draft)
 
         val mimeType = record.second
         val responseHeaders = HttpHeaders()
@@ -147,9 +142,8 @@ class OgcRecordApiController @Autowired constructor(
     }
 
 
-    override fun getRecords(collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
+    override fun getRecords(collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String?, draft: Boolean? ): ResponseEntity<ByteArray> {
         val formatType = format ?: "internal"
-        val draft = false
 
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = formatType)
         val mimeType: String = exporter.typeInfo.dataType
@@ -161,7 +155,7 @@ class OgcRecordApiController @Autowired constructor(
 
         // links: next previous self
         val totalHits = researchRecords.totalHits
-        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId)
+        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, format)
 
         // query all record details in right response format via exporter
         val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, mimeType, totalHits, links, draft)

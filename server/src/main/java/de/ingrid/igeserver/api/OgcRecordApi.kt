@@ -184,6 +184,7 @@ interface OgcRecordApi {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#_operation_5)" +
                     "\n\n[Additional Source: DRAFT OGC API - Features - Part 3: Filtering](https://docs.ogc.org/DRAFTS/19-079r1.html#_requirements_class_filter)"
             ) @RequestParam(value = "filter", required = false) filter: String?,
+            @Parameter(description = "Request Draft Version.") @RequestParam(value = "draft", required = false) draft: Boolean?,
             ): ResponseEntity<ByteArray>
 
 

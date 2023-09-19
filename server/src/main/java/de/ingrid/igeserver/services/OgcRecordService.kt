@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.exporter.model.AddressModel.Companion.documentService
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImporterFactory
@@ -43,6 +42,7 @@ class OgcRecordService @Autowired constructor(
         private val importerFactory: ImporterFactory,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
         private val internalExporter: InternalExporter,
+        private val documentService: DocumentService,
 ) {
     val apiHost = "http://localhost:8550"
 
@@ -284,12 +284,12 @@ class OgcRecordService @Autowired constructor(
         )
     }
 
-    fun prepareRecord(catalogId: String, recordId: String, wrapperId: Int, format: String?, draft: Boolean?): Pair<ByteArray, String> {
+    fun prepareRecord(catalogId: String, recordId: String, format: String?, draft: Boolean?): Pair<ByteArray, String> {
         val record = exportRecord(recordId, catalogId, format, draft)
         val mimeType = record.exportFormat.toString()
 
-        val recordList: List<ExportResult> = listOf(record)
-        val unwrappedRecord = removeDefaultWrapper(mimeType, recordList, format, draft)
+        val singleRecordInList: List<ExportResult> = listOf(record)
+        val unwrappedRecord = removeDefaultWrapper(mimeType, singleRecordInList, format, draft)
         val wrappedRecord = addWrapperToRecords(unwrappedRecord, mimeType, format, null, null, true)
 
         return Pair(wrappedRecord, mimeType)
@@ -314,7 +314,7 @@ class OgcRecordService @Autowired constructor(
                     val jsonNode = mapper.readValue(record.result, JsonNode::class.java)
                     if (draft == true) jsonNode.get("resources").get("draft") else jsonNode.get("resources").get("published")
                 } else {
-                    mapper.readValue(record.result, Record::class.java)
+                    mapper.readValue(record.result, JsonNode::class.java)
                 }
                 response.add(wrapperlessRecord)
             }
@@ -339,7 +339,7 @@ class OgcRecordService @Autowired constructor(
         }
         if(mimeType == "text/xml") wrappedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><datasets>$responseRecords</datasets>"
         if(mimeType == "application/json"){
-            val jsonDocs = responseRecords as List<Any>
+            val jsonDocs = responseRecords as List<JsonNode>
             if(format == "geojson") {
                 if(singleRecord == true) {
                     val mapper = jacksonObjectMapper()
@@ -351,7 +351,7 @@ class OgcRecordService @Autowired constructor(
                             timeStamp = Instant.now(),
                             numberReturned = jsonDocs.size,
                             numberMatched = totalHits as Int,
-                            features = jsonDocs as List<Record>,
+                            features = jsonDocs,
                             links = links
                     )
                     val jsonResponse = convertObject2Json(response)
@@ -360,7 +360,7 @@ class OgcRecordService @Autowired constructor(
             } else {
                 // internal json format
                 val recordArray = jacksonObjectMapper().createArrayNode()
-                for( record in jsonDocs as List<JsonNode>) recordArray.add(convertObject2Json(record))
+                for( record in jsonDocs) recordArray.add(convertObject2Json(record))
                 wrappedResponse = recordArray.toString()
             }
         }
@@ -446,12 +446,12 @@ class OgcRecordService @Autowired constructor(
     }
 
     private fun exportRecord(recordId: String, catalogId: String, format: String?, draft: Boolean?): ExportResult {
-        val wrapper = documentService!!.getWrapperByCatalogAndDocumentUuid(catalogId, recordId)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, recordId)
         val id = wrapper.id!!
         val options = ExportRequestParameter(
                 id = id,
                 exportFormat = format ?: "internal",
-                useDraft = draft ?: false
+                useDraft = draft ?: true
         )
         return exportService.export(catalogId, options)
     }

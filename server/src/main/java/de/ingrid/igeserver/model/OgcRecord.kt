@@ -34,7 +34,7 @@ data class RecordsResponse(
         val timeStamp: Instant?,
         val numberReturned: Int?,
         val numberMatched: Int,
-        val features: List<Record>,
+        val features: List<JsonNode>,
         val links: List<Link>?
 )
 
