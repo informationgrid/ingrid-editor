@@ -32,7 +32,10 @@ import javax.xml.transform.stream.StreamResult
 data class XmlMetadata(
         var dataset: List<Metadata>,
 )
-
+data class SupportFormat(
+        var format: String,
+        var mimeType: String
+)
 @Service
 class OgcRecordService @Autowired constructor(
         private val catalogService: CatalogService,
@@ -179,42 +182,67 @@ class OgcRecordService @Autowired constructor(
         return LimitAndOffset(queryLimit, queryOffset)
     }
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, catalogId: String): List<Link> { // HttpHeaders {
+    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, catalogId: String, requestedFormat: String?): List<Link> { // HttpHeaders {
         val list: MutableList<Link> = mutableListOf()
 
-        val (queryLimit, queryOffset) = pageLimitAndOffset(offset, limit)
+        val supportedFormats: List<SupportFormat> = listOf(
+                SupportFormat( "internal", "application/json"),
+                SupportFormat( "geojson", "application/json"),
+                SupportFormat( "ingridISO", "text/html"),
+                SupportFormat( "html", "text/html")
+        )
 
+        // prepare pageing numbers
+        val (queryLimit, queryOffset) = pageLimitAndOffset(offset, limit)
         val nextOffset: Int = queryOffset + queryLimit
         val prevOffset: Int = if (queryOffset < queryLimit) 0 else queryOffset - queryLimit
 
+        // prepare string fragments
         val baseUrl = "${apiHost}/collections/${catalogId}"
-        val limitString = if (limit !== null) "?limit=${queryLimit}" else ""
-        val questionMarkOrAmpersand = (if (limit == null && offset !== null) "?" else if (limit !== null && offset !== null) "&" else "")
+        val recordBaseUrl = "$baseUrl/items?f="
+        val limitString = if (limit !== null) "&limit=${queryLimit}" else ""
+        val selfOffsetString = if (offset !== null) "&offset=${queryOffset}" else ""
+        val prevOffsetString = "&offset=$prevOffset"
+        val nextOffsetString = "&offset=$nextOffset"
 
+        // add self Link to list
+        list.add(createLink(
+                url = recordBaseUrl + requestedFormat + limitString + selfOffsetString,
+                "self",
+                (supportedFormats.find{ it.format == (requestedFormat ?: "internal") })?.mimeType!!,
+                "Link to this response"
+        ))
 
-        val collectionLink = baseUrl
-        list.add(createLink(collectionLink, "collection", "application/geo+json", "Link to this response"))
-
-        val selfLink = baseUrl + "/items" + limitString + questionMarkOrAmpersand + (if (offset !== null) "offset=${queryOffset}" else "")
-        list.add(createLink(selfLink, "self", "application/geo+json", "Link to this response"))
-
-        if (totalHits > nextOffset) {
-            val nextLink = baseUrl + "/items" + (if (limitString.isEmpty()) "?" else "$limitString&") + "offset=$nextOffset"
-            list.add(createLink(nextLink, "next", "application/geo+json", "Link to next records"))
-        }
-
-        if (queryOffset != 0) {
-            val prevLink = baseUrl + "/items" + (if (limitString.isEmpty()) "?" else "$limitString&") + "offset=$prevOffset"
-            list.add(createLink(prevLink, "prev", "application/geo+json", "Link to previous records"))
+        // add alternate, next, previous links for each format
+        for(supported in supportedFormats) {
+            val format = supported.format
+            list.add(createLink(
+                    url = baseUrl + "?f=" + supported.format,
+                    "collection",
+                    supported.mimeType,
+                    "Link to the containing collection in format '$format' "
+            ))
+            if (format != requestedFormat) list.add(createLink(
+                    url = recordBaseUrl + supported.format + limitString + selfOffsetString,
+                    "alternate",
+                    supported.mimeType,
+                    "Link to this response in format '$format' "
+            ))
+            if (totalHits > nextOffset) list.add(createLink(
+                    url = recordBaseUrl + format + limitString + nextOffsetString,
+                    "next",
+                    supported.mimeType,
+                    "Link to the next set of records in format '$format' "
+            ))
+            if (queryOffset != 0) list.add(createLink(
+                    url = recordBaseUrl + format + limitString + prevOffsetString,
+                    "prev",
+                    supported.mimeType,
+                    "Link to the previous set of records in format '$format' "
+            ))
         }
 
         return list
-//        val responseHeaders = HttpHeaders()
-//        responseHeaders.add("Link", selfLink)
-//        if(totalHits > nextOffset) responseHeaders.add("Link", nextLink)
-//        if(queryOffset != 0) responseHeaders.add("Link", prevLink)
-//
-//        return responseHeaders
     }
 
     private fun createLink(url: String, rel: String, type: String, title: String): Link {
@@ -302,7 +330,13 @@ class OgcRecordService @Autowired constructor(
     private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: String?, totalHits: Int?, links: List<Link>?, singleRecord: Boolean?): ByteArray { // prepareWrappedResponse
         var wrappedResponse = ""
 
-        if(mimeType == "text/html") wrappedResponse = "<html><head><title>Ingrid - OGC Record API</title></head><body>$responseRecords</body></html>"
+        if(mimeType == "text/html") {
+            var linksInHtml = ""
+            if(singleRecord == false) {
+                linksInHtml += convertLinksToHtml(links!!)
+            }
+            wrappedResponse = "<html><head><title>Ingrid - OGC Record API</title></head><body>$linksInHtml$responseRecords</body></html>"
+        }
         if(mimeType == "text/xml") wrappedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><datasets>$responseRecords</datasets>"
         if(mimeType == "application/json"){
             val jsonDocs = responseRecords as List<Any>
@@ -331,6 +365,84 @@ class OgcRecordService @Autowired constructor(
             }
         }
         return wrappedResponse.toByteArray()
+    }
+
+    private fun convertLinksToHtml(links: List<Link>): String{
+        val selfLinks = links.filter { it.rel == "self"}
+        val alternateLinks = links.filter { it.rel == "alternate"}
+        val nextLinks = links.filter { it.rel == "next"}
+        val prevLinks = links.filter { it.rel == "prev"}
+
+        var htmlSelf = ""
+        for(link in selfLinks) htmlSelf += link.title + ": <a href=" + link.href + ">" + link.href + "</a>"
+
+        var htmlAlternate = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Alternate Formats</div><nav class=\"dropdown-content\">"
+        for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
+        htmlAlternate += "</nav></div>"
+
+        var htmlNext = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Next Page</div><nav class=\"dropdown-content\">"
+        for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
+        htmlNext += "</nav></div>"
+
+        var htmlPrev = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Previous Page</div><nav class=\"dropdown-content\">"
+        for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
+        htmlPrev += "</nav></div>"
+
+        return """
+            <header>
+                <h1>OGC Record API</h1>
+                $htmlSelf
+                <div class="grid-container">
+                    $htmlAlternate $htmlPrev $htmlNext
+                </div>
+            </header>
+             <style>
+                header {
+                    background: #28225b;
+                    color: #ffffff;
+                    padding: 10px;
+                }
+                header a{
+                    color: #ffffff
+                }
+                .grid-container {
+                    display: grid;
+                    gap: 10px;
+                    grid-template-columns: auto auto auto;
+                    padding: 10px;
+                }
+                .grid-item {
+                }
+                .dorpdownTitle{
+                    width: 100%;
+                }
+                .dropdown { 
+                    display: inline-block; 
+                    position: relative; 
+                } 
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    width: 100%;
+                    overflow: auto;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                }
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                }
+                .dropdown-content a {
+                    display: block;
+                  color: #000000;
+                  background-color: #ffffff;
+                  padding: 5px;
+                  text-decoration: none;
+              }
+              .dropdown-content a:hover {
+                  color: #FFFFFF;
+                  background-color: #196ea2;
+              }
+          </style>
+        """.trimIndent()
     }
 
     private fun exportRecord(recordId: String, catalogId: String, format: String?, draft: Boolean?): ExportResult {
