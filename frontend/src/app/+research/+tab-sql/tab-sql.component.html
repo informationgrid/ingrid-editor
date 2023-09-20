@@ -9,7 +9,7 @@
         <div *ngIf="sqlExamples.length" class="flex-col gap-6">
             <button
                 mat-flat-button
-                class="example-button"
+                class="chip-button"
                 *ngFor="let example of sqlExamples"
                 (click)="updateSqlControl(example.value)"
             >
