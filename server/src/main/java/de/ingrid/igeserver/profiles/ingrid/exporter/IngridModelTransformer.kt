@@ -242,10 +242,18 @@ open class IngridModelTransformer(
     val dateEvents = data.temporal.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
-        keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = null) } ?: emptyList(),
+        keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = mapToInspireLink(it.key)) } ?: emptyList(),
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
+
+    private fun mapToInspireLink(key: String?): String? {
+        return when (key) {
+            "304" -> "http://inspire.ec.europa.eu/theme/lu" // land use
+            "202" -> "http://inspire.ec.europa.eu/theme/lc" // land cover
+            else -> null
+        }
+    }
 
     fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
@@ -273,16 +281,19 @@ open class IngridModelTransformer(
     )
 
     val umthesKeywords = Thesaurus(
-        keywords = data.keywords?.umthes?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
+        keywords = data.keywords?.umthes?.map { KeywordIso(name = it.label, link = it.id) } ?: emptyList(),
         date = "2009-01-15",
         name = "UMTHES Thesaurus"
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
+        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) } ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
     )
+
+    private fun adaptGemetLinks(url: String?): String? =
+        url?.replace("http:", "https:")?.replace("gemet/concept", "gemet/en/concept")
 
     val serviceTypeKeywords = Thesaurus(
         keywords = data.service?.classification?.map {
@@ -328,9 +339,9 @@ open class IngridModelTransformer(
         showType = false
     )
     val invekosKeywords = Thesaurus(
-        keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!)) }
+        keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!), link = it.key) }
             ?: emptyList(),
-        date = "2021-03-22",
+        date = "2021-06-08",
         name = "IACS data",
         link = "http://inspire.ec.europa.eu/metadata-codelist/IACSData",
         showType = false
