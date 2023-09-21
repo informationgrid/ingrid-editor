@@ -180,10 +180,6 @@ export abstract class IngridShared extends BaseDoctype {
                   value: "none",
                 },
                 {
-                  label: "InVeKoS/IACS",
-                  value: "iacs",
-                },
-                {
                   label: "InVeKoS/IACS (GSAA)",
                   value: "gsaa",
                 },
@@ -193,7 +189,6 @@ export abstract class IngridShared extends BaseDoctype {
                 },
               ],
               change: (field, value: MatSelectChange) => {
-                console.log("Value changed:", value);
                 this.handleInVeKosChange(field, value, options.thesaurusTopics);
               },
             })
@@ -1743,11 +1738,6 @@ export abstract class IngridShared extends BaseDoctype {
     if (value.value.key === "none") return;
 
     this.addInVeKoSKeyword(formState, "iacs");
-
-    if (value.value.key === "iacs") {
-      field.options.formState.updateModel();
-      return;
-    }
 
     const executeAction = (value) => {
       if (value === "gsaa") {
