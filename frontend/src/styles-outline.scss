@@ -42,6 +42,7 @@
     outline-offset: 2px;
     outline: 3px solid $ige-primary;
     --mat-mdc-button-persistent-ripple-color: unset;
+    --mat-standard-button-toggle-focus-state-layer-opacity: 0;
   }
 }
 

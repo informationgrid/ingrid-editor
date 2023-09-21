@@ -1,5 +1,14 @@
 @import "src/variables";
 
+::placeholder {
+  color: $ige-placeholder-color !important;
+}
+
+:root {
+  --mat-select-placeholder-text-color: $ige-placeholder-color !important;
+  --mdc-outlined-text-field-label-text-color: $ige-hint-color;
+}
+
 button.mdc-button {
   text-transform: uppercase;
 }
