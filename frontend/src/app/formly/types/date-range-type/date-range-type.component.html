@@ -1,7 +1,5 @@
-<mat-form-field
-    [appearance]="props.appearance"
-    [attr.aria-label]="props.ariaLabel"
->
+<mat-form-field [appearance]="props.appearance">
+    <mat-label *ngIf="field.props?.label">{{ field.props.label }}</mat-label>
     <mat-date-range-input
         [rangePicker]="picker"
         [formGroup]="rangeFormGroup"

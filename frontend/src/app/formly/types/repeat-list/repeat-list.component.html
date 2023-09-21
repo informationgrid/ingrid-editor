@@ -8,7 +8,7 @@
     cdkDropListGroup
     mixedCdkDragDrop
     (dropped)="drop($event)"
-    [attr.aria-label]="props.ariaLabel"
+    [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
 >
     <span
         *ngFor="let field of field.fieldGroup; let i = index"
@@ -78,11 +78,7 @@
         (click)="this.onItemClick(model[i]?.key)"
         (keyup.enter)="removeItem(i, $event)"
         role="listitem"
-        [attr.aria-label]="
-            type === 'search'
-                ? model[i][props.labelField]
-                : getParameter(model[i])
-        "
+        [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
         aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
     >
         <div class="text-wrapper">
@@ -138,7 +134,7 @@
         [formControl]="inputControl"
         (keydown)="handleKeydown($event)"
         (blur)="inputControl.setValue('')"
-        [aria-label]="props.ariaLabel"
+        [aria-labelledby]="field | fieldToAriaLabelledBy"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
@@ -261,7 +257,7 @@
             [errorStateMatcher]="matcher"
             (focusin)="hasFocus = true"
             (focusout)="hasFocus = false"
-            [attr.aria-label]="props.ariaLabel"
+            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
             aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
         />
         <div matSuffix>

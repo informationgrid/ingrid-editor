@@ -5,6 +5,7 @@
     [attr.data-cy]="key ?? props.externalLabel"
 >
     <ige-form-label
+        [fieldId]="field.id"
         [hasContextHelp]="props.hasContextHelp"
         [ariaLabel]="props.ariaLabel"
         (contextHelp)="showContextHelp($event)"
