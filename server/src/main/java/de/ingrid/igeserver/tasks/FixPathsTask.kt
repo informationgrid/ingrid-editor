@@ -47,7 +47,7 @@ class FixPathsTask(
     }
 
 
-    private fun migratePaths(catalogIdentifier: String) {
+    fun migratePaths(catalogIdentifier: String) {
         val docWrappersRoot = entityManager.createQuery(sqlRootDocumentWrapper)
             .setParameter("catalogIdentifier", catalogIdentifier)
             .resultList
