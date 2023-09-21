@@ -227,6 +227,9 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       }
       setTimeout(() => this.inputControl.setValue(""));
     }
+
+    // update validation message
+    this.formControl.updateValueAndValidity();
   }
 
   addValueObject(value: any) {
