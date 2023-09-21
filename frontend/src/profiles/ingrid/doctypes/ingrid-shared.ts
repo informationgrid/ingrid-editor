@@ -59,10 +59,14 @@ export abstract class IngridShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
 
   options = {
+    dynamicRequired: {
+      accessConstraints: "formState.mainModel?.isInspireIdentified",
+    },
     required: {
       freeKeywords: false,
       useLimitation: false,
       topicCategories: true,
+      accessConstraints: false,
     },
   };
 
@@ -1226,14 +1230,14 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
           asSelect: false,
           showSearch: true,
-          required: true,
+          required: this.options.required.accessConstraints,
           options: this.getCodelistForSelect(
             6010,
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
           expressions: {
-            "props.required": "formState.mainModel?.isInspireIdentified",
+            "props.required": this.options.dynamicRequired.accessConstraints,
             className: "field.props.required ? '' : 'optional'",
           },
         }),

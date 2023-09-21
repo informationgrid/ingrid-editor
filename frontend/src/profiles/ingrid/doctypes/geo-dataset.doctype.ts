@@ -21,6 +21,7 @@ export class GeoDatasetDoctype extends IngridShared {
     required: {
       statement: true,
       subType: true,
+      identifier: true,
     },
     dynamicRequired: {
       citation:
@@ -59,7 +60,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
-          required: true,
+          required: this.geodatasetOptions.required.identifier,
           wrappers: ["panel", "button", "form-field"],
           className: "flex-3 ",
           expressions: {
