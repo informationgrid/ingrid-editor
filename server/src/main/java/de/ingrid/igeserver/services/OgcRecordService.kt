@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.InputSource
 import java.io.StringReader
 import java.io.StringWriter
 import java.security.Principal
+import java.text.SimpleDateFormat
 import java.time.Instant
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.Transformer
@@ -39,6 +41,12 @@ data class SupportFormat(
         var format: String,
         var mimeType: String
 )
+data class QueryMetadata(
+        var numberReturned: Int,
+        var numberMatched: Int,
+        var timeStamp: Instant?,
+)
+
 @Service
 class OgcRecordService @Autowired constructor(
         private val catalogService: CatalogService,
@@ -207,7 +215,7 @@ class OgcRecordService @Autowired constructor(
         val supportedFormats: List<SupportFormat> = listOf(
                 SupportFormat( "internal", "application/json"),
                 SupportFormat( "geojson", "application/json"),
-                SupportFormat( "ingridISO", "text/html"),
+                SupportFormat( "ingridISO", "text/xml"),
                 SupportFormat( "html", "text/html")
         )
 
@@ -309,16 +317,28 @@ class OgcRecordService @Autowired constructor(
 
         val singleRecordInList: List<ExportResult> = listOf(record)
         val unwrappedRecord = removeDefaultWrapper(mimeType, singleRecordInList, format, draft)
-        val wrappedRecord = addWrapperToRecords(unwrappedRecord, mimeType, format, null, null, true)
+        val wrappedRecord = addWrapperToRecords(unwrappedRecord, mimeType, format,  null, true, null)
 
         return Pair(wrappedRecord, mimeType)
     }
 
-    fun prepareRecords(records: ResearchResponse, catalogId: String, format: String?, mimeType: String, totalHits: Int, links: List<Link>, draft: Boolean?): ByteArray {
+    fun prepareRecords(records: ResearchResponse, catalogId: String, format: String?, mimeType: String, links: List<Link>, draft: Boolean?, queryMetadata: QueryMetadata): ByteArray {
         val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, catalogId, format, draft) }
         val unwrappedRecords = removeDefaultWrapper(mimeType, recordList, format, draft)
-        return addWrapperToRecords(unwrappedRecords, mimeType, format, totalHits, links, false)
+        return addWrapperToRecords(unwrappedRecords, mimeType, format, links, false, queryMetadata)
     }
+
+    private fun exportRecord(recordId: String, catalogId: String, format: String?, draft: Boolean?): ExportResult {
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, recordId)
+        val id = wrapper.id!!
+        val options = ExportRequestParameter(
+                id = id,
+                exportFormat = format ?: "internal",
+                useDraft = draft ?: true
+        )
+        return exportService.export(catalogId, options)
+    }
+
 
     private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: String?, draft: Boolean?): Any{
         return if (mimeType == "text/xml") {
@@ -326,10 +346,10 @@ class OgcRecordService @Autowired constructor(
             for (record in recordList) response += record.result.toString(Charsets.UTF_8).substringAfter("?>")
             response
         } else if (mimeType == "application/json") {
-            val response: MutableList<Any> = mutableListOf()
+            val response: MutableList<JsonNode> = mutableListOf()
             for (record in recordList) {
                 val mapper = jacksonObjectMapper()
-                val wrapperlessRecord: Any = if(format == "internal"){
+                val wrapperlessRecord: JsonNode = if(format == "internal"){
                     val jsonNode = mapper.readValue(record.result, JsonNode::class.java)
                     if (draft == true) jsonNode.get("resources").get("draft") else jsonNode.get("resources").get("published")
                 } else {
@@ -346,80 +366,142 @@ class OgcRecordService @Autowired constructor(
             recordList
         }
     }
-    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: String?, totalHits: Int?, links: List<Link>?, singleRecord: Boolean?): ByteArray { // prepareWrappedResponse
+    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: String?, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
-
-        if(mimeType == "text/html") {
-            var linksInHtml = ""
-            if(singleRecord == false) {
-                linksInHtml += convertLinksToHtml(links!!)
-            }
-            wrappedResponse = "<html><head><title>Ingrid - OGC Record API</title></head><body>$linksInHtml$responseRecords</body></html>"
-        }
-        if(mimeType == "text/xml") wrappedResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><datasets>$responseRecords</datasets>"
-        if(mimeType == "application/json"){
-            val jsonDocs = responseRecords as List<JsonNode>
-            if(format == "geojson") {
-                if(singleRecord == true) {
-                    val mapper = jacksonObjectMapper()
-                    val resp = mapper.convertValue(responseRecords, JsonNode::class.java)
-                    wrappedResponse = resp.toString()
-                } else {
-                    val response: Any = RecordsResponse(
-                            type = "FeatureCollection",
-                            timeStamp = Instant.now(),
-                            numberReturned = jsonDocs.size,
-                            numberMatched = totalHits as Int,
-                            features = jsonDocs,
-                            links = links
-                    )
-                    val jsonResponse = convertObject2Json(response)
-                    wrappedResponse = jsonResponse.toString()
-                }
-            } else {
-                // internal json format
-                val recordArray = jacksonObjectMapper().createArrayNode()
-                for( record in jsonDocs) recordArray.add(convertObject2Json(record))
-                wrappedResponse = recordArray.toString()
-            }
-        }
+        if(mimeType == "text/html") wrappedResponse = wrapperForHtml(responseRecords as String, links, queryMetadata)
+        if(mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
+        if(mimeType == "application/json")  wrappedResponse = wrapperForJson(responseRecords as List<JsonNode>, links, queryMetadata, singleRecord, format)
         return wrappedResponse.toByteArray()
     }
+    private fun convertObject2Json(data: Any): ObjectNode{
+        val mapper = jacksonObjectMapper()
+        mapper.registerModule(JavaTimeModule())
+        mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val node = mapper.convertValue(data, ObjectNode::class.java)
+        node.fields().forEach { entry ->
+            node.replace(entry.key, entry.value)
+        }
+        return node
+    }
 
-    private fun convertLinksToHtml(links: List<Link>): String{
-        val selfLinks = links.filter { it.rel == "self"}
-        val alternateLinks = links.filter { it.rel == "alternate"}
-        val nextLinks = links.filter { it.rel == "next"}
-        val prevLinks = links.filter { it.rel == "prev"}
-        val collectionLinks = links.filter { it.rel == "collection"}
+    private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: String?): String {
+        var wrappedResponse: JsonNode
+        val mapper = jacksonObjectMapper()
+        if(format == "geojson" && singleRecord == true) {
+                wrappedResponse = mapper.convertValue(responseRecords, JsonNode::class.java)
+        } else if(format == "geojson" && singleRecord == false) {
+                val response = RecordsResponse(
+                        type = "FeatureCollection",
+                        timeStamp = queryMetadata!!.timeStamp,
+                        numberReturned = queryMetadata.numberReturned,
+                        numberMatched = queryMetadata.numberMatched,
+                        features = responseRecords,
+                        links = links
+                )
+                wrappedResponse = convertObject2Json(response)
+        }else {
+            // internal json format
+            val recordArray = mapper.createArrayNode()
+            for( record in responseRecords) recordArray.add(convertObject2Json(record))
+            wrappedResponse = recordArray
+        }
+        return wrappedResponse.toString()
+    }
 
-        var htmlSelf = ""
-        for(link in selfLinks) htmlSelf += link.title + ": <a href=" + link.href + ">" + link.href + "</a>"
+    private fun wrapperForXml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String{
+        val xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><datasets>$responseRecords</datasets>"
+        if(links == null && queryMetadata == null) return xmlString
 
-        var htmlCollection = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Links to Collection</div><nav class=\"dropdown-content\">"
-        for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
-        htmlCollection += "</nav></div>"
+        val xmlInput = InputSource(StringReader(xmlString))
+        val dbf = DocumentBuilderFactory.newInstance()
+        val doc = dbf.newDocumentBuilder().parse(xmlInput)
+        val wrapper = doc.getElementsByTagName("datasets")
+        val wrapperElement = wrapper.item(0) as Element
 
-        var htmlAlternate = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Alternate Formats</div><nav class=\"dropdown-content\">"
-        for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
-        htmlAlternate += "</nav></div>"
+        if(queryMetadata != null) {
+            wrapperElement.setAttribute("numberReturned", queryMetadata.numberReturned.toString())
+            wrapperElement.setAttribute("numberMatched", queryMetadata.numberMatched.toString())
+            wrapperElement.setAttribute("timeStamp", queryMetadata.timeStamp.toString())
+        }
 
-        var htmlNext = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Next Page</div><nav class=\"dropdown-content\">"
-        for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
-        htmlNext += "</nav></div>"
+        if(links != null){
+            val xmlLinks = links.filter { it.type == "text/xml"}
+            val selfLink =  (xmlLinks.find { it.rel == "self" })?.href
+            val collectionLink = (links.find { it.rel == "collection" })?.href
+            val prevLink = (xmlLinks.find { it.rel == "prev" })?.href
+            val nextLink =  (xmlLinks.find { it.rel == "next" })?.href
 
-        var htmlPrev = "<div class='grid-item dropdown'><div class='dorpdownTitle'>Previous Page</div><nav class=\"dropdown-content\">"
-        for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
-        htmlPrev += "</nav></div>"
+            if (selfLink != null) wrapperElement.setAttribute("self", selfLink)
+            if (collectionLink != null) wrapperElement.setAttribute("collection", collectionLink)
+            if (prevLink != null) wrapperElement.setAttribute("prev", prevLink)
+            if (nextLink != null) wrapperElement.setAttribute("next", nextLink)
+
+            val alternateLinks = links.filter { it.rel == "alternate"}
+            val alternates: MutableList<String> = mutableListOf()
+            for (alternate in alternateLinks) alternates.add(alternate.href)
+            wrapperElement.setAttribute("alternate", alternates.toString())
+        }
+
+        return xmlNodeToString(doc)
+    }
+
+    private fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String{
+        var metadata =""
+        var linksElements = ""
+        var selfLink = ""
+
+        if(queryMetadata != null) {
+            val numberMatched = queryMetadata.numberMatched
+            val numberReturned = queryMetadata.numberReturned
+            val timeStamp = queryMetadata.timeStamp
+            metadata += """
+                <p>numberMatched: $numberMatched</p>
+                <p>numberReturned: $numberReturned</p>
+                <p>timeStamp: $timeStamp</p>
+            """.trimIndent()
+        }
+
+        if(links != null) {
+            val selfLinks = links.filter { it.rel == "self"}
+            val alternateLinks = links.filter { it.rel == "alternate"}
+            val nextLinks = links.filter { it.rel == "next"}
+            val prevLinks = links.filter { it.rel == "prev"}
+            val collectionLinks = links.filter { it.rel == "collection"}
+
+            for(link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
+
+            var htmlCollection = "<div class='grid-item dropdown'><div class='dropdownTitle'>Links to Collection</div><nav class=\"dropdown-content\">"
+            for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlCollection += "</nav></div>"
+
+            var htmlAlternate = "<div class='grid-item dropdown'><div class='dropdownTitle'>Alternate Formats</div><nav class=\"dropdown-content\">"
+            for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlAlternate += "</nav></div>"
+
+            var htmlNext = "<div class='grid-item dropdown'><div class='dropdownTitle'>Next Page</div><nav class=\"dropdown-content\">"
+            for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlNext += "</nav></div>"
+
+            var htmlPrev = "<div class='grid-item dropdown'><div class='dropdownTitle'>Previous Page</div><nav class=\"dropdown-content\">"
+            for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlPrev += "</nav></div>"
+
+            linksElements += htmlAlternate + htmlCollection + htmlPrev + htmlNext
+        }
 
         return """
+            <html>
+                <head><title>Ingrid - OGC Record API</title></head>
+            <body>
             <header>
                 <h1>OGC Record API</h1>
-                $htmlSelf
+                $selfLink
+                $metadata
                 <div class="grid-container">
-                    $htmlAlternate $htmlCollection $htmlPrev $htmlNext
+                    $linksElements
                 </div>
             </header>
+            $responseRecords
              <style>
                 header {
                     background: #28225b;
@@ -432,12 +514,12 @@ class OgcRecordService @Autowired constructor(
                 .grid-container {
                     display: grid;
                     gap: 10px;
-                    grid-template-columns: auto auto auto;
+                    grid-template-columns: auto auto auto auto;
                     padding: 10px;
                 }
                 .grid-item {
                 }
-                .dorpdownTitle{
+                .dropdownTitle{
                     width: 100%;
                 }
                 .dropdown { 
@@ -466,40 +548,8 @@ class OgcRecordService @Autowired constructor(
                   background-color: #196ea2;
               }
           </style>
+          </body></html>
         """.trimIndent()
     }
-
-    private fun exportRecord(recordId: String, catalogId: String, format: String?, draft: Boolean?): ExportResult {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, recordId)
-        val id = wrapper.id!!
-        val options = ExportRequestParameter(
-                id = id,
-                exportFormat = format ?: "internal",
-                useDraft = draft ?: true
-        )
-        return exportService.export(catalogId, options)
-    }
-
-    private fun convertObject2Json(dataClassObject: Any): ObjectNode{
-        val mapper = jacksonObjectMapper()
-        mapper.registerModule(JavaTimeModule())
-
-        val node = mapper.convertValue(dataClassObject, ObjectNode::class.java)
-        node.fields().forEach { entry ->
-            node.replace(entry.key, entry.value)
-        }
-        return node
-    }
-
-    //    private fun prepareJsonExport(record: ExportResult, format: String?, draft: Boolean?): Any {
-//        val useDraft = draft ?: false
-//        val exportFormat = format ?: "internal"
-//        return if(exportFormat == "internal"){
-//            val jsonNode = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-//            if (useDraft) jsonNode.get("resources").get("draft") else jsonNode.get("resources").get("published")
-//        } else {
-//            jacksonObjectMapper().readValue(record.result, Record::class.java)
-//        }
-//    }
 
 }

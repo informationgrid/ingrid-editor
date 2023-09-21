@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 import org.springframework.security.core.Authentication
+import java.time.Instant
 
 @RestController
 //@RequestMapping(path = ["/api"])
@@ -105,9 +106,13 @@ class OgcRecordApiController @Autowired constructor(
         // links: next previous self
         val totalHits = researchRecords.totalHits
         val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, format)
-
+        val queryMetadata = QueryMetadata(
+                numberReturned = queryLimit ,
+                numberMatched = totalHits,
+                Instant.now()
+        )
         // query all record details in right response format via exporter
-        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, mimeType, totalHits, links, draft)
+        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, mimeType, links, draft, queryMetadata)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", mimeType)
