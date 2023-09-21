@@ -3,6 +3,7 @@ package de.ingrid.igeserver.services
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
@@ -464,7 +465,7 @@ class DocumentService @Autowired constructor(
         val docData = getDocumentFromCatalog(catalogId, id)
         val docType = getDocumentType(docData.wrapper.type)
         val dbVersion = docData.document.version
-        
+
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
         if (data.version !== dbVersion) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -523,7 +524,7 @@ class DocumentService @Autowired constructor(
             docRepo.save(docData.document)
 
             entityManager.detach(docData.document)
-            
+
             prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft)
@@ -546,11 +547,13 @@ class DocumentService @Autowired constructor(
 
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
         try {
-            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
+            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid, resolveLinks = false)
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
         } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */
+        } catch (ex: ServerException) { /* maybe not existing address reference? -> do nothing */
+            log.warn("The last published document could not be loaded correctly: ${ex.message}. Ignore error to be able to publish latest draft.")
         }
     }
 
@@ -577,7 +580,7 @@ class DocumentService @Autowired constructor(
                 data.version!!
             )
         }
-        
+
         val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
         docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
@@ -772,11 +775,12 @@ class DocumentService @Autowired constructor(
         return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
-    fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false): Document {
+    fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false, resolveLinks: Boolean = true): Document {
         val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         entityManager.detach(doc)
         return expandInternalReferences(
             doc,
+            resolveLinks = resolveLinks,
             options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
         )
     }
@@ -803,7 +807,7 @@ class DocumentService @Autowired constructor(
         lastPublished.state = DOCUMENT_STATE.WITHDRAWN
         lastPublished.isLatest = false
         docRepo.save(lastPublished)
-        
+
         // if no draft version exists, copy published version to draft and update state of published version
         val updatedDoc = if (onlyPublished) {
             // copy published version to draft
@@ -915,7 +919,7 @@ class DocumentService @Autowired constructor(
     fun updateTags(catalogId: String, wrapperId: Int, tags: TagRequest): List<String>? {
         val wrapper = docWrapperRepo.getReferenceById(wrapperId)
         val cleanedTags =
-            wrapper.tags?.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true } ?: emptyList()
+            wrapper.tags.filter { tags.add?.contains(it) != true && tags.remove?.contains(it) != true }
         wrapper.tags = (cleanedTags + (tags.add ?: emptyList()))
         docWrapperRepo.save(wrapper)
         return wrapper.tags
@@ -927,10 +931,26 @@ class DocumentService @Autowired constructor(
     ): Set<Int> {
         if (document == null) return setOf()
 
+        return this.getReferencedUuids(document)
+            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }.toSet()
+    }
+
+    fun getReferencedUuids(
+        document: Document?
+    ): Set<String> {
+        if (document == null) return setOf()
+
         val docType = getDocumentType(document.type)
-        return docType.getReferenceIds(document)
-            .map { getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it).id!! }
-            .toSet()
+        return docType.getReferenceIds(document).toSet()
+    }
+
+    fun getIncomingReferences(
+        document: Document?
+    ): Set<String> {
+        if (document == null) return setOf()
+
+        val docType = getDocumentType(document.type)
+        return docType.getIncomingReferenceIds(document).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {

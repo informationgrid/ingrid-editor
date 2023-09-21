@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
+    <idf:head/>
+    <idf:body>
+        <idf:idfResponsibleParty xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" type="0" uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd">
+            <gmd:organisationName>
+                <gco:CharacterString>Wemove Test</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+            </gmd:positionName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:phone>
+                        <gmd:CI_Telephone/>
+                    </gmd:phone>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Postbox 123,P123 Frankfurt</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:deliveryPoint>
+                                <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
+                            </gmd:deliveryPoint>
+                            <gmd:city>
+                                <gco:CharacterString>Frankfurt</gco:CharacterString>
+                            </gmd:city>
+                            <gmd:administrativeArea>
+                                <gco:CharacterString>Hessen</gco:CharacterString>
+                            </gmd:administrativeArea>
+                            <gmd:postalCode>
+                                <gco:CharacterString>60</gco:CharacterString>
+                            </gmd:postalCode>
+                            <gmd:country>
+                                <gco:CharacterString>DEU</gco:CharacterString>
+                            </gmd:country>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>test@wemove.com</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                    <gmd:hoursOfService>
+                        <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                    </gmd:hoursOfService>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role gco:nilReason="inapplicable"/>
+            <idf:last-modified>
+                <gco:DateTime>2023-07-06T20:08:14.766+02:00</gco:DateTime>
+            </idf:last-modified>
+            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:subordinatedParty uuid="372FF7BD-3959-4DCA-B8BB-33B9B5A8A843">
+                <idf:addressIndividualName>Copy Test Address</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="88A7D4E4-44E3-4C3E-9A4C-182EF47C9C7D">
+                <idf:addressOrganisationName>Wemove Test Einheit</idf:addressOrganisationName>
+                <idf:addressType>1</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="24587C8E-D55D-458D-8C10-8BD0661722D4">
+                <idf:addressOrganisationName>cutAddress</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="414A4118-BBFA-44FD-B9E5-BC30F0B96810">
+                <idf:addressOrganisationName>Zu löschende Institution</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="2C96C9D0-0785-3E2A-8B09-417A239A7D51">
+                <idf:addressIndividualName>Fr. Stutenbecker</idf:addressIndividualName>
+                <idf:addressOrganisationName>Senatsverwaltung für Stadtentwicklung und Umwelt Berlin</idf:addressOrganisationName>
+                <idf:addressType>2</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="C82683A2-3FC1-3646-82EC-80188F82DBB2">
+                <idf:addressOrganisationName>Senatsverwaltung für Stadtentwicklung und Umwelt Berlin</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="74F1AC34-34F0-37D7-8B16-774F2D53F952">
+                <idf:addressIndividualName>Fr. Nagel</idf:addressIndividualName>
+                <idf:addressOrganisationName>Senatsverwaltung für Stadtentwicklung und Umwelt Berlin</idf:addressOrganisationName>
+                <idf:addressType>2</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="F69871F3-81FD-496A-965B-36C1750B172D">
+                <idf:addressOrganisationName>Test-Einheit</idf:addressOrganisationName>
+                <idf:addressType>1</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                <idf:addressIndividualName>Mustermann, Max, Herr Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:subordinatedParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:subordinatedParty>
+            <idf:objectReference uuid="204F2475-4871-4527-B567-8635F3684E1E">
+                <idf:objectName>Datensammlung ktt (ohne Adv kompatibel)</idf:objectName>
+                <idf:objectType>5</idf:objectType>
+                <idf:description>Datensammlung ktt Internet</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="336D3B90-DFB4-4FFE-87AA-917A8AE7840F">
+                <idf:objectName>Datensammlung ktt Internet</idf:objectName>
+                <idf:objectType>5</idf:objectType>
+                <idf:description>Datensammlung ktt Internet</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="24AD8055-3AC8-4EB0-A9C8-1A80FFA874F2">
+                <idf:objectName>Datensammlung ktt (mit Adv kompatibel)</idf:objectName>
+                <idf:objectType>5</idf:objectType>
+                <idf:description>Datensammlung ktt Internet</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="B46C9BF7-5512-4AC7-8CE6-103B76F131B6">
+                <idf:objectName>Metadata-date-test</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>This description has changed</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="ABD56EC9-F382-4DE0-AC23-B143E8E31711">
+                <idf:objectName>Metadata-date-test</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>This description has changed</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="46CA300E-B6BD-43B4-9071-94C6EBAF2D30">
+                <idf:objectName>Zeitbezug Validation Test</idf:objectName>
+                <idf:objectType>3</idf:objectType>
+                <idf:description>Zeitbezug Validation Test</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="A0C548DD-3A55-4DEA-B5D9-513C45E37A7F">
+                <idf:objectName>Regionalschlüssel Test</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>test</idf:description>
+            </idf:objectReference>
+            <idf:objectReference uuid="2D630ED1-181D-48C7-92F8-98473BECF603">
+                <idf:objectName>Fachaufgabe Vorschaugrafik URL</idf:objectName>
+                <idf:objectType>0</idf:objectType>
+                <idf:description>Vorschaugrafik Test</idf:description>
+                <idf:graphicOverview>https://www.ingrid-oss.eu/latest/images/ingrid_overview.png</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="352747FF-1920-40B6-97C5-6D6ADC2D34F8">
+                <idf:objectName>Fachaufgabe Vorschaugrafik Upload</idf:objectName>
+                <idf:objectType>0</idf:objectType>
+                <idf:description>Vorschaugrafik Upload</idf:description>
+                <idf:graphicOverview>ingrid-group_ige-iplug-test/newNode/Frog.jpg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="F53BFF14-1DE0-462C-9EAC-BFD03F1B1688">
+                <idf:objectName>Geodatensatz mit Vorschaugrafik Upload</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:description>Geodatensatz mit Vorschaugrafik</idf:description>
+                <idf:graphicOverview>ingrid-group_ige-iplug-test/newNode/Frog.jpg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="7DA1D9FA-5EBA-48A0-8C59-ABCF2C450B54">
+                <idf:objectName>Geodatendienst Vorschaugrafik URL</idf:objectName>
+                <idf:objectType>3</idf:objectType>
+                <idf:description>Geodatendienst mit Vorschaugrafik per URL</idf:description>
+                <idf:serviceType>view</idf:serviceType>
+                <idf:serviceOperation>GetCapabilities</idf:serviceOperation>
+                <idf:serviceUrl>Adresse</idf:serviceUrl>
+                <idf:graphicOverview>https://www.ingrid-oss.eu/latest/images/ingrid_overview.png</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="2E6CDB6D-B76C-428E-9E7F-BC5952400FBC">
+                <idf:objectName>Vorschaugrafik Fachaufgabe Gorilla</idf:objectName>
+                <idf:objectType>0</idf:objectType>
+                <idf:description>Vorschaugrafik Fachaufgabe Gorilla</idf:description>
+                <idf:graphicOverview>ingrid-group_ige-iplug-test/newNode/Gorilla.jpg</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="55065077-0D06-4916-855F-F232311D7C07">
+                <idf:objectName>Komplett Gefüllte Fachaufgabe</idf:objectName>
+                <idf:objectType>0</idf:objectType>
+                <idf:description>Komplett Gefüllte Fachaufgabe Beschreibung</idf:description>
+                <idf:graphicOverview>https://test.test</idf:graphicOverview>
+            </idf:objectReference>
+            <idf:objectReference uuid="B24FBEEA-4D11-468A-BCA1-05259ED18C76">
+                <idf:objectName>Testgeodatendienst</idf:objectName>
+                <idf:objectType>3</idf:objectType>
+                <idf:description>Testgeodatendienst Beschreibung</idf:description>
+                <idf:serviceType>view</idf:serviceType>
+                <idf:serviceOperation>GetCapabilities</idf:serviceOperation>
+                <idf:serviceUrl>http://atlas.wsv.bund.de/bwastr/wms?request=GetCapabilities</idf:serviceUrl>
+                <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
+                <idf:graphicOverview>https://dev.informationgrid.eu/ingrid-portal-mdek-application/start.jsp?lang=de</idf:graphicOverview>
+            </idf:objectReference>
+        </idf:idfResponsibleParty>
+    </idf:body>
+</idf:html>

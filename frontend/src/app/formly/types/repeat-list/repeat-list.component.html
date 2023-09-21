@@ -1,3 +1,7 @@
+<ige-form-error *ngIf="showError && !formControl.hasError('required')">
+    <formly-validation-message [field]="field"></formly-validation-message>
+</ige-form-error>
+
 <mat-chip-listbox
     *ngIf="props.view === 'chip' && field.fieldGroup?.length > 0"
     [disabled]="formControl.disabled"
@@ -209,9 +213,9 @@
         ></ng-container>
 
         <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
-        <mat-error>{{
+        <mat-error *transloco="let t">{{
             inputControl.errors?.mustBeEmpty
-                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                ? t("form.validationMessages.commitWithEnter")
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>
@@ -258,7 +262,7 @@
             (focusin)="hasFocus = true"
             (focusout)="hasFocus = false"
             [attr.aria-label]="props.ariaLabel"
-            aria-description="Die Eingabe muss noch mit 'Return' bestätigt werden"
+            aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
         />
         <div matSuffix>
             <mat-spinner
@@ -276,9 +280,9 @@
             </button>
         </div>
         <mat-hint>{{ props.hint }} </mat-hint>
-        <mat-error>{{
+        <mat-error *transloco="let t">{{
             inputControl.errors?.mustBeEmpty
-                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                ? t("form.validationMessages.commitWithEnter")
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>

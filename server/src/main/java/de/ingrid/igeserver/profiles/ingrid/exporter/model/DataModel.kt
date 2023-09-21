@@ -16,6 +16,15 @@ data class DataModel(
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
     val spatial: IngridSpatial,
+    val vectorSpatialRepresentation: List<VectorSpatialRepresentation>?,
+    val explanation: String?,
+    val publication: Publication?,
+    val methodText: String?,
+    val baseDataText: String?,
+    val manager: String?,
+    val participants: String?,
+    val implementationHistory: String?,
+    val systemEnvironment: String?,
     val metadata: IngridMetadata,
     val advProductGroups: List<KeyValueModel>?,
     val alternateTitle: String?,
@@ -27,6 +36,7 @@ data class DataModel(
     val isInspireIdentified: Boolean?,
     val openDataCategories: List<KeyValueModel>?,
     val priorityDatasets: List<KeyValueModel>?,
+    val invekosKeywords: List<KeyValueModel>?,
     val temporal: Temporal,
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
@@ -40,6 +50,8 @@ data class DataModel(
     val portrayalCatalogueInfo: PortrayalCatalogueInfo?,
     val featureCatalogueDescription: FeatureCatalogueDescription?,
     val digitalTransferOptions: List<DigitalTransferOption>?,
+    val categoryCatalog: List<CategoryCatalog>?,
+    val databaseContent: List<DatabaseContent>?,
     val distribution: Distribution?,
     val orderInfo: String?,
     val references: List<Reference>?,
@@ -54,6 +66,51 @@ data class DataModel(
     val spatialScope: KeyValueModel?,
 )
 
+
+data class VectorSpatialRepresentation(
+    val topologyLevel: KeyValueModel?,
+    val geometricObjectType: KeyValueModel?,
+    val geometricObjectCount: Int?,
+)
+
+data class Publication(
+    val isbn: String?,
+    val pages: String?,
+    val author: String?,
+    val volume: String?,
+    val location: String?,
+    val publisher: String?,
+    val explanation: String?,
+    val publishedIn: String?,
+    val baseDataText: String?,
+    val documentType: KeyValueModel?,
+    val publicationDate: String?,
+    val publishingHouse: String?,
+    val bibliographicData: String?,
+    val placeOfPublication: String?,
+) {
+    fun hasSeriesInfo(): Boolean = listOfNotNull(
+        publishedIn,
+        volume,
+        pages,
+    ).any { it.isNotEmpty() }
+
+
+}
+
+
+data class DatabaseContent(
+    val parameter: String?,
+    val moreInfo: String?,
+)
+
+data class CategoryCatalog(
+    val title: KeyValueModel?,
+    @JsonDeserialize(using = DateDeserializer::class)
+    val date: OffsetDateTime?,
+    val edition: String?
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
     val classification: List<KeyValueModel>?,
@@ -64,17 +121,32 @@ data class Service(
     val systemEnvironment: String?,
     val implementationHistory: String?,
     val explanation: String?,
-    val coupledResources: List<Any>?,
+    val coupledResources: List<CoupledResource>?,
     val couplingType: KeyValueModel?,
-    val hasAccessConstraints: Boolean?,
-)
+    val hasAccessConstraints: Boolean? = false,
+    val isAtomDownload: Boolean?,
+) {
+    fun hasAccessConstraintsOrFalse() : Boolean {
+        return hasAccessConstraints ?: false
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
-    val title: String?,
-    val type: KeyValueModel?,
+    val title: String,
+    val type: KeyValueModel,
     val explanation: String?,
     val url: String?,
+    val uuidRef: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class CoupledResource(
+    val title: String?,
+    val url: String?,
+    val identifier: String?,
+    val uuid: String,
+    val isExternalRef: Boolean
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -220,7 +292,25 @@ data class GridSpatialRepresentation(
     val transformationParameterAvailability: Boolean,
     val numberOfDimensions: Int?,
     val cellGeometry: KeyValueModel?,
+    val georectified: Georectified?,
+    val georeferenceable: Georeferenceable?,
 )
+
+data class Georectified(
+    val checkPointAvailability: Boolean?,
+    val checkPointDescription: String?,
+    val cornerPoints: String?,
+    val pointInPixel: KeyValueModel?,//2100
+)
+
+data class Georeferenceable(
+    val orientationParameterAvailability: Boolean?,
+    val controlPointAvaliability: Boolean?,
+    val parameters: String?,
+)
+
+
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(

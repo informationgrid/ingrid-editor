@@ -134,7 +134,7 @@
             "lat2": 52.688663,
             "lon2": 13.784928
           },
-          "title": "Berlin, Bundesland",
+          "title": "Berlin",
           "type": "wfsgnde",
           "ars": "11"
         }
@@ -201,7 +201,7 @@
     "extraInfo": {
       "legalBasicsDescriptions": [
         {
-          "key": "1"
+          "key": "2"
         },
         {
           "key": "31"

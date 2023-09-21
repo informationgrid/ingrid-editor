@@ -6,6 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
+import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
@@ -196,6 +198,14 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
+    fun getInVeKoSKeywords(): List<KeyValue> {
+        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "IACS data" }
+            ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
+            ?.map { inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first() }
+            ?.map { KeyValue(it) } ?: emptyList()
+    }
+
     fun getOpenDataCategories(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
@@ -237,7 +247,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             "Service Classification, version 1.0",
             "INSPIRE priority data set",
             "Spatial scope",
-            "Further legal basis"
+            "Further legal basis",
+            "IACS data"
         )
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -337,7 +348,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getLanguage(): KeyValue {
-        val languageKey = mapLanguage(metadata.language?.codelist?.codeListValue!!)
+        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!] ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
         return KeyValue(languageKey)
     }
 
@@ -621,42 +632,6 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
             ?.any { it == value } ?: false
-    }
-
-    // TODO: use mapper from export by refactoring same functionality
-    fun mapLanguage(languageValue: String): String {
-        return when (languageValue) {
-            "ger" -> "150"
-            "eng" -> "123"
-            "bul" -> "65"
-            "cze" -> "101"
-            "dan" -> "103"
-            "spa" -> "401"
-            "fin" -> "134"
-            "fre" -> "137"
-            "gre" -> "164"
-            "hun" -> "183"
-            "dut" -> "116"
-            "pol" -> "346"
-            "por" -> "348"
-            "rum" -> "360"
-            "slo" -> "385"
-            "slv" -> "386"
-            "ita" -> "202"
-            "est" -> "126"
-            "lav" -> "247"
-            "lit" -> "251"
-            "nno" -> "312"
-            "rus" -> "363"
-            "swe" -> "413"
-            "mlt" -> "284"
-            "wen" -> "467"
-            "hsb" -> "182"
-            "dsb" -> "113"
-            "fry" -> "142"
-            "nds" -> "306"
-            else -> throw ServerException.withReason("Could not map document language key: language.key")
-        }
     }
 
 }

@@ -13,7 +13,7 @@ open class NotFoundException: ClientException {
 
         private const val ERROR_CODE_MISSING_RESOURCE = "RESOURCE_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_RESOURCE = "Resource of type '\${resourceType}' with id '\${resourceId}' is missing."
-        private const val ERROR_TEXT_MISSING_HASH = "No Resource of found for hash '\${resourceId}'."
+        private const val ERROR_TEXT_MISSING_HASH = "No Resource of found for hash '\${hash}'."
 
         private const val ERROR_CODE_MISSING_USER_CATALOG = "CATALOG_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_USER_CATALOG = "The user '\${user}' is not assigned to any catalog."

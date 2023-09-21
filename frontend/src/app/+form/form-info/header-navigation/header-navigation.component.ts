@@ -34,6 +34,13 @@ export class HeaderNavigationComponent implements OnInit {
     // scroll to position
     document.getElementById("form").scrollTo({ top: y, behavior: "smooth" });
     // set autofocus to the section header
-    element.querySelector("h2")?.focus({ preventScroll: true });
+    const focusTarget = this.getFocusable(element);
+    focusTarget?.focus({ preventScroll: true });
+  }
+
+  private getFocusable(el: Element): HTMLElement {
+    const selectors =
+      'button, input, textarea, select, [tabindex]:not([tabindex="-1"])';
+    return el.querySelectorAll(selectors)?.item(0) as HTMLElement;
   }
 }

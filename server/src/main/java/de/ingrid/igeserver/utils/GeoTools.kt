@@ -21,13 +21,16 @@ fun convertWktToGml32(wkt: String): String {
     encoder.isOmitXMLDeclaration = true
 
     return encoder.encodeAsString(geometry, qName)
-        .replace(
-            Regex("<gml:(Point|MultiPoint|LineString|MultiLineString|Polygon|MultiPolygon|MultiGeometry)\\b"),
-            """<gml:$1 gml:id="$1_ID_${UUID.randomUUID()}""""
-        ).run {
+        .run {
+            // remove all attributes from root element
             val str = substring(indexOf(' '), indexOf('>'))
             replace(str, "")
         }
+        // add gml:id attribute to root element
+        .replace(
+            Regex("<gml:(Point|MultiPoint|LineString|MultiLineString|Polygon|MultiPolygon|MultiGeometry)\\b"),
+            """<gml:$1 gml:id="$1_ID_${UUID.randomUUID()}""""
+        )
 }
 
 fun convertGml32ToWkt(input: String?): String? {

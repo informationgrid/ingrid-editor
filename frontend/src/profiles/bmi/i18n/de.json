@@ -14,6 +14,9 @@
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?"
   },
+  "publish": {
+    "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?<br />Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten."
+  },
   "docType": {
     "BmiDoc": "Datensatz",
     "BmiAddressDoc": "Adresse"
@@ -29,7 +32,8 @@
       "matDatepickerMin": "Fehler: Das Datum liegt weiter zurück als erlaubt",
       "matDatepickerMax": "Fehler: Das Datum ist größer als erlaubt",
       "min": "Fehler: Der Wert darf nicht kleiner sein als {{value}}",
-      "max": "Fehler: Der Wert darf nicht größer sein als {{value}}"
+      "max": "Fehler: Der Wert darf nicht größer sein als {{value}}",
+      "commitWithEnter": "Fehler: Der Inhalt muss noch mit der Eingabetaste bestätigt werden"
     },
     "create-dialog": {
       "titleRequired": "Fehler: Bitte geben Sie einen Titel ein",

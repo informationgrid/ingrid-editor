@@ -204,7 +204,9 @@ export class BmiDoctype extends BaseDoctype {
         }),
       ]),
       this.addSection("Raumbezüge", [
-        this.addSpatial("spatial", "Raumbezüge"),
+        this.addSpatial("spatial", "Raumbezüge", {
+          limitTypes: ["free", "wkt"],
+        }),
         this.addSelect(
           "politicalGeocodingLevel",
           "Ebene der geopolitischen Abdeckung",

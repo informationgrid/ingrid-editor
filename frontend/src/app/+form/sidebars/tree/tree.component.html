@@ -126,7 +126,7 @@
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
         [class.folder]="node.type === 'FOLDER'"
-        [class]="node.tags"
+        [class]="node.tags?.split(',')?.join(' ')"
         [attr.tabindex]="!disabledCondition(node) ? 0 : null"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >

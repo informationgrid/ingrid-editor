@@ -38,10 +38,6 @@
         <ng-container *ngIf="{ shownData: shownData | async } as obs">
             <div
                 class="leading flex-row align-items-center justify-content-center gap-12"
-                id="result_dec"
-                tabindex="0"
-                aria-label="Tabelle der abgelaufenen Metadaten"
-                aria-describedby="result_dec"
             >
                 <ng-container *ngIf="!isSearching; else searching">
                     <ng-container

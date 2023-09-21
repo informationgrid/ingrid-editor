@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import java.time.OffsetDateTime
-import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridModel(
+    // @JsonProperty("_id") val id: String,
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_type") val type: String,
     val title: String,

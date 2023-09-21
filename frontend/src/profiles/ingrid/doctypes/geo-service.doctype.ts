@@ -63,6 +63,7 @@ export class GeoServiceDoctype extends IngridShared {
         priorityDataset: true,
         spatialScope: true,
         inspireTopics: true,
+        advProductGroup: true,
       }),
 
       this.addSection("Fachbezug", [

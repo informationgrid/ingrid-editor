@@ -1,7 +1,7 @@
 {
   "title": "Test-Datensatz",
   "_id": 1631,
-  "_uuid": "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+  "_uuid": "C1209940-418E-4F4E-869F-81EB9276B98B",
   "_type": "InGridGeoDataset",
   "_created": "2023-06-30T09:31:30.695002Z",
   "_createdBy": "Super User",
@@ -373,7 +373,7 @@
         {
           "ars": "11",
           "type": "wfsgnde",
-          "title": "Berlin, Bundesland",
+          "title": "Berlin",
           "value": {
             "lat1": 52.35918,
             "lat2": 52.688663,
@@ -453,7 +453,7 @@
         "specification": {
           "key": "12"
         },
-        "publicationDate": "2010-12-08T00:00:00.000Z"
+        "publicationDate": "2010-12-07T23:00:00.000Z"
       }
     ],
     "extraInfo": {

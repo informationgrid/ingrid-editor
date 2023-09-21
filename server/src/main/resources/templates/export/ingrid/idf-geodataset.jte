@@ -10,6 +10,7 @@
     @template.ingrid.shared-general(
     page = page,
     contentInfo = @`
+        @if (page.getHasContentInfo())
         <gmd:contentInfo>
             <gmd:MD_FeatureCatalogueDescription>
                 @if (page.isAdVCompatible())
@@ -17,6 +18,9 @@
                         <gco:CharacterString>deutsch</gco:CharacterString>
                     </gmd:language>
                 @endif
+                <gmd:includedWithDataset>
+                    <gco:Boolean>false</gco:Boolean>
+                </gmd:includedWithDataset>
                 @for (String featureType : page.getFeatureTypes())
                     <gmd:featureTypes>
                         <gco:LocalName>${featureType}</gco:LocalName>
@@ -48,6 +52,7 @@
                 @endfor
             </gmd:MD_FeatureCatalogueDescription>
         </gmd:contentInfo>
+        @endif
     `
     )
     @template.ingrid.dataQuality(page = page)

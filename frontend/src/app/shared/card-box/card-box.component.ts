@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
   selector: "ige-card-box",
@@ -7,6 +7,10 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class CardBoxComponent implements OnInit {
   @Input() label: string;
+
+  // button besides label, if provided
+  @Input() endBtnTitle: string;
+  @Output() endBtnOnClick = new EventEmitter<void>();
 
   constructor() {}
 

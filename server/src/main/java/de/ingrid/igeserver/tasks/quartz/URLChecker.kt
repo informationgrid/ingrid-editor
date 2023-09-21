@@ -37,7 +37,7 @@ class URLChecker @Autowired constructor(
         val notificationType = MessageTarget(NotificationType.URL_CHECK, info.catalogId)
 
         try {
-            if (info.referenceHandler == null) {
+            if (info.referenceHandler == null) { 
                 val msg = "No class defined to get URLs from catalog with profile ${info.profile}"
                 log.warn(msg)
                 message.apply {

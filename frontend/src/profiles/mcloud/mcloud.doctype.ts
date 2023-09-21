@@ -82,6 +82,7 @@ export class McloudDoctype extends BaseDoctype {
               type: "upload",
               label: "Link",
               class: "flex-2",
+              wrappers: ["form-field"],
               props: {
                 label: "Link",
                 appearance: "outline",

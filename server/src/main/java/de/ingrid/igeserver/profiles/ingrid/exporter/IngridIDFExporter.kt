@@ -3,7 +3,9 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -34,7 +36,6 @@ class IngridIDFExporter @Autowired constructor(
 
     val log = logger()
 
-    val codelistTransformer = CodelistTransformer(codelistHandler)
 
 
     override val typeInfo = ExportTypeInfo(
@@ -71,6 +72,8 @@ class IngridIDFExporter @Autowired constructor(
             "InGridProject" -> "ingrid/idf-project.jte"
             "InGridDataCollection" -> "ingrid/idf-dataCollection.jte"
             "InGridInformationSystem" -> "ingrid/idf-informationSystem.jte"
+            "InGridOrganisationDoc" -> "ingrid/idf-address.jte"
+            "InGridPersonDoc" -> "ingrid/idf-address.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }
@@ -79,20 +82,34 @@ class IngridIDFExporter @Autowired constructor(
 
     private val mapper = ObjectMapper().registerKotlinModule()
 
-    private fun getModelTransformer(json: Document, catalogId: String): IngridModelTransformer {
-        val ingridModel = mapper.convertValue(json, IngridModel::class.java)
+    private fun getModelTransformer(json: Document, catalogId: String): Any {
+        var ingridModel: IngridModel? = null
+        var addressModel: AddressModel? = null
+        try {
+            ingridModel = mapper.convertValue(json, IngridModel::class.java)
+        } catch (e: Exception) {
+            addressModel = mapper.convertValue(json, AddressModel::class.java)
+        }
+        val isAddress = addressModel != null
+
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridLiterature" to IngridModelTransformer::class,
+            "InGridLiterature" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
-            "InGridProject" to IngridModelTransformer::class,
-            "InGridDataCollection" to IngridModelTransformer::class,
-            "InGridInformationSystem" to IngridModelTransformer::class
+            "InGridProject" to ProjectModelTransformer::class,
+            "InGridDataCollection" to DataCollectionModelTransformer::class,
+            "InGridInformationSystem" to InformationSystemModelTransformer::class,
+            "InGridOrganisationDoc" to AddressModelTransformer::class,
+            "InGridPersonDoc" to AddressModelTransformer::class
         )
-        val transformerClass = transformers[ingridModel.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel.type}")
-        return transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService)
+        val transformerClass = transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        return if(isAddress)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null)
+        else
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService)
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
