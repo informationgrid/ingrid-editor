@@ -65,7 +65,7 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addRepeatList("keywords", "Schlagworte", {
           view: "chip",
-          hint: "Mehrere Schlagworte durch Komma trennen, Eingabe mit Enter bestätigen.",
+          hint: "Mehrere Schlagworte durch Komma trennen und mit der Eingabetaste bestätigen.",
         }),
       ]),
       this.addSection("Open Data", [

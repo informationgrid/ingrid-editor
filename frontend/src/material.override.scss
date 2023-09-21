@@ -4,11 +4,6 @@
   color: $ige-placeholder-color !important;
 }
 
-:root {
-  --mat-select-placeholder-text-color: $ige-placeholder-color !important;
-  --mdc-outlined-text-field-label-text-color: $ige-hint-color;
-}
-
 button.mdc-button {
   text-transform: uppercase;
 }
@@ -20,8 +15,9 @@ mat-form-field:hover .mdc-notched-outline__trailing {
 }
 
 ige-side-menu .mat-mdc-list-item {
-  &.dark:hover {
-    background-color: lighten($ige-secondary, 8%);
+  &:hover::before,
+  &:focus::before {
+    opacity: 0;
   }
 
   &:hover {
@@ -115,6 +111,10 @@ mat-tab-nav-panel {
 
 .mat-mdc-tab-links > a {
   min-width: 160px;
+}
+
+.mdc-floating-label--float-above {
+  color: $ige-text-color !important;
 }
 
 .mat-focused .mdc-floating-label--float-above {
