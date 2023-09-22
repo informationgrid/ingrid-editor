@@ -40,9 +40,9 @@ class AddressModelTransformer(
         // format: "lastName, firstName, salutation academicTitle"
         val salutation = codelist.getValue("4300", address.salutation)
         val academicTitle = codelist.getValue("4305", address.academicTitle)
-        val namePostFix = listOfNotNull(salutation, academicTitle).joinToString(" ")
+        val namePostFix = listOf(salutation, academicTitle).filter { !it.isNullOrBlank() }.joinToString(" ")
         val individualName =
-            listOfNotNull(address.lastName, address.firstName, namePostFix).joinToString(", ")
+            listOf(address.lastName, address.firstName, namePostFix).filter { !it.isNullOrBlank() }.joinToString(", ")
 
         return individualName.ifBlank { null }
     }
