@@ -34,10 +34,9 @@ class InternalCatalogExporter @Autowired constructor(
                 listOf()
         )
 
-    override fun run(catalog: Catalog): Any {
+    override fun run(catalog: Catalog): JsonNode {
         val newCatalogObject = mapCatalogToRecordCollection(catalog)
-        val jsonCatalog = convertToJsonNode(newCatalogObject)
-        return jsonCatalog
+        return convertToJsonNode(newCatalogObject)
     }
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {

@@ -31,7 +31,7 @@ interface OgcRecordApi {
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
-    fun catalogs(
+    fun getCatalogs(
             principal: Principal,
             // PARAMETER : f
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
@@ -43,7 +43,7 @@ interface OgcRecordApi {
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
             "\n\n### Supported formats: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'"
             ) @RequestParam(value = "f", required = false) format: String?,
-    ): ResponseEntity<List<RecordCollection>>
+    ): ResponseEntity<ByteArray>
 
 
 
@@ -53,7 +53,7 @@ interface OgcRecordApi {
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
-    fun catalogById(
+    fun getCatalog(
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             // PARAMETER : f
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
@@ -184,7 +184,6 @@ interface OgcRecordApi {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#_operation_5)" +
                     "\n\n[Additional Source: DRAFT OGC API - Features - Part 3: Filtering](https://docs.ogc.org/DRAFTS/19-079r1.html#_requirements_class_filter)"
             ) @RequestParam(value = "filter", required = false) filter: String?,
-            @Parameter(description = "Request Draft Version.") @RequestParam(value = "draft", required = false) draft: Boolean?,
             ): ResponseEntity<ByteArray>
 
 
@@ -217,7 +216,6 @@ interface OgcRecordApi {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                     "\n\n### Example: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'\n\n• get response in ISO with value 'ingridISO' \n\n get response in IDF JSON with value 'indexInGridIDF'"
             ) @RequestParam(value = "f", required = false) format: String?,
-            @Parameter(description = "Request Draft Version.") @RequestParam(value = "draft", required = false) draft: Boolean?,
     ): ResponseEntity<ByteArray>
 
 

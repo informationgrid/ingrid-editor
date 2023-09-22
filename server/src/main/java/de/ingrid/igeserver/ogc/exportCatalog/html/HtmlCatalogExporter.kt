@@ -65,21 +65,18 @@ class HtmlCatalogExporter @Autowired constructor(
 
     private fun htmlTransformation(doc: ObjectNode): String{
         val table = convertFieldToTable(doc)
+        val title = doc.get("name")
         return """
-            <html>
-                <head>
-                    <title>OGC Record API</title>
-                </head>
-                <body>
+
                     <style>
-                        body { font-family: Sans-Serif; background-color: lightGray; padding-bottom: 50px }
                         table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
                         td { vertical-align: top; outline: 2px solid lightGray; background-color: white;}}   
                     </style>
-                    <h1>OGC Record API</h1>
-                    $table
-                </body>
-            </html>
+                    <div class="catalog" style="margin: 40px 10px; padding: 10px; outline: solid; background: lightgray;">
+                        <h2>Collection: $title</h2>
+                        $table
+                    </div>
+
         """
     }
 }
