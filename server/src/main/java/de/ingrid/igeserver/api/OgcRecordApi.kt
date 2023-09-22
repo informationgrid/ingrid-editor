@@ -276,5 +276,18 @@ interface OgcRecordApi {
             ) publish: Boolean?,
     ): ResponseEntity<JsonNode>
 
+    @PostMapping(value = ["collection/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
+    @Operation(summary = "Insert, Update, Delete Records via CSW-t")
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful operation."),
+        ApiResponse(responseCode = "500", description = "Unexpected error")
+    ])
+    fun postCSWT(
+            @RequestHeader allHeaders: Map<String, String>,
+            principal: Authentication,
+            @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
+            @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
+    ): ResponseEntity<ByteArray>
+
 
 }

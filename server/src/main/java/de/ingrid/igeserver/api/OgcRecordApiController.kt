@@ -122,4 +122,9 @@ class OgcRecordApiController @Autowired constructor(
         return ResponseEntity.ok().headers(responseHeaders).body(records)
     }
 
+    override fun postCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String): ResponseEntity<ByteArray> {
+        val response = ogcRecordService.prepareCSWT(principal, collectionId, data)
+
+        return ResponseEntity.ok().build()
+    }
 }

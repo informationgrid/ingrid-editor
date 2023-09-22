@@ -592,4 +592,8 @@ class OgcRecordService @Autowired constructor(
         """.trimIndent()
     }
 
+    fun prepareCSWT(principal: Authentication, collectionId: String, data: String): String{
+
+        return ""
+    }
 }
