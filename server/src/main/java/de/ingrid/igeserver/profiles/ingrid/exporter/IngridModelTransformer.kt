@@ -665,7 +665,7 @@ open class IngridModelTransformer(
             getLastPublishedDocument(uuid),
             IngridModel::class.java
         )
-        return IngridModelTransformer(
+        return if (model == null) null else IngridModelTransformer(
             model,
             catalogIdentifier,
             codelists,
