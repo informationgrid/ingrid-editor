@@ -168,13 +168,14 @@ class IndexService @Autowired constructor(
             .addScalar("uuid")
             .addScalar("id")
             .addScalar("type")
+            .addScalar("parent_id")
             .addScalar("ibus")
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
 
         return result.map {
-            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as String)
+            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as String)
         }.map {
             // FOLDERS do not have a published version
             val document = if (it.type == "FOLDER") {
@@ -183,7 +184,13 @@ class IndexService @Autowired constructor(
                 documentService.getLastPublishedDocument(catalogId, it.uuid)
             }
             DocumentIndexInfo(
-                document.apply { wrapperId = it.wrapperId },
+                document.apply {
+                    wrapperId = it.wrapperId
+                    if (it.parentId != null) {
+                        val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
+                        data.put(FIELD_PARENT, parentWrapper.uuid)
+                    }
+                },
                 it.ibus.split(",").map { it.toInt() }
             )
         }
@@ -201,7 +208,7 @@ class IndexService @Autowired constructor(
 
         val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
         var sql = """
-                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type,
+                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id,
                 CASE 
                     ${iBusSelector.joinToString(" ")}
                     ELSE '-1' END AS IBUS
@@ -298,5 +305,6 @@ data class IndexDocumentResult(
     val uuid: String,
     val wrapperId: Int,
     val type: String,
+    val parentId: Int?,
     val ibus: String
 )

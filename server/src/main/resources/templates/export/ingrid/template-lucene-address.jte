@@ -30,7 +30,6 @@
     "t02_address.adr_id": "${page.getUuid()}",
     "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",
-    "is_top_level": null,
 
     "t02_address.lastname": "${page.getModel().getLastName()}",
     "t02_address.firstname": "${page.getModel().getFirstName()}",

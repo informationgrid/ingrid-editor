@@ -9,4 +9,9 @@ data class FolderModel(
     @JsonProperty("_id") val id: Int,
     @JsonProperty("_type") val docType: String,
     val title: String?,
+    val data: FolderDataModel
+)
+
+data class FolderDataModel(
+    val _parent: String?,
 )

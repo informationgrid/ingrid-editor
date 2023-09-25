@@ -31,5 +31,6 @@
     "title": "${page.getModel().getTitle()}",
     "t01_object.org_obj_id": null,
     "t01_object.obj_class": "1000",
+    "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
     "isfolder": "true"
 }
