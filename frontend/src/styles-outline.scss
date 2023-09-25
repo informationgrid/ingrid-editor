@@ -119,13 +119,19 @@ form-toolbar :not(.save-buttons) > .mdc-button {
 }
 
 mat-tree-node,
-[role="button"],
-[role="figure"],
 [role="heading"],
 [role="listitem"],
 [role="row"],
 ige-session-timeout-info [tabindex="0"] {
   &:focus {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+  }
+}
+
+.cdk-focused.cdk-keyboard-focused {
+  [role="button"],
+  &[role="button"] {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
   }
