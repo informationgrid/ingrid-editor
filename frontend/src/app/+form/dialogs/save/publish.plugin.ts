@@ -167,7 +167,11 @@ export class PublishPlugin extends SaveBase {
       if (formIsInvalid || hasOtherErrors) {
         if (hasOtherErrors) console.warn("Other errors:", validation.errors);
         this.modalService.showIgeError(
-          new IgeError("Es müssen alle Felder korrekt ausgefüllt werden.")
+          new IgeError(
+            "Es müssen alle Felder korrekt ausgefüllt werden. " +
+              "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
+              "STRG + ALT + Pfeiltaste-links zum nächsten Fehler."
+          )
         );
         return false;
       }
