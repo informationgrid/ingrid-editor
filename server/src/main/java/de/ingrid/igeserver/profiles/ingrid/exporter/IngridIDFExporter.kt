@@ -53,6 +53,8 @@ class IngridIDFExporter @Autowired constructor(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
+        if (doc.type == "FOLDER") return ""
+        
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
