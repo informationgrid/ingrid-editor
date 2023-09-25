@@ -10,7 +10,7 @@
             [class.error-outline]="showRequiredError"
             (click)="add.emit()"
             aria-haspopup="true"
-            [attr.aria-label]="ariaLabel"
+            [attr.aria-labelledby]="ariaLabelledBy"
             aria-description="hinzufügen"
             [attr.aria-description]="
                 matError?.nativeElement?.textContent ?? 'hinzufügen'
@@ -28,7 +28,7 @@
             (click)="add.emit()"
             [matTooltip]="showTitle ? '' : 'Hinzufügen'"
             aria-haspopup="dialog"
-            [attr.aria-label]="ariaLabel"
+            [attr.aria-labelledby]="ariaLabelledBy"
             [attr.aria-description]="
                 matError?.nativeElement?.textContent ?? 'hinzufügen'
             "
@@ -45,7 +45,7 @@
             [class.padding-btn]="showTitle"
             [class.error-outline]="showRequiredError"
             [matMenuTriggerFor]="menuOptions"
-            [attr.aria-label]="ariaLabel"
+            [attr.aria-labelledby]="ariaLabelledBy"
             [attr.aria-description]="
                 matError?.nativeElement?.textContent ?? 'hinzufügen'
             "

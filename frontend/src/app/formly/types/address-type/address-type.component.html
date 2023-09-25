@@ -39,5 +39,5 @@
     [showRequiredError]="
         showError && formControl.invalid && formControl.errors?.required
     "
-    [ariaLabel]="props?.ariaLabel"
+    [ariaLabelledBy]="field | fieldToAriaLabelledBy"
 ></ige-add-button>

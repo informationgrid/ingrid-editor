@@ -1,6 +1,6 @@
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -8,6 +8,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { TreeQuery } from "../../../app/store/tree/tree.query";
 
 @Injectable({
   providedIn: "root",
@@ -27,6 +28,8 @@ export class GeoServiceDoctype extends IngridShared {
       classification: true,
     },
   };
+
+  tree = inject(TreeQuery);
 
   private mapServiceTypeToVersionCodelist = {
     "1": 5151,
@@ -165,6 +168,20 @@ export class GeoServiceDoctype extends IngridShared {
                   "props.required":
                     "formState.mainModel?.service?.couplingType?.key === 'tight'",
                   className: "field.props.required ? '' : 'optional'",
+                },
+                validators: {
+                  allPublished: {
+                    expression: (ctrl) =>
+                      ctrl.value
+                        ? ctrl.value
+                            .filter((row) => row.isExternalRef === false)
+                            .every(
+                              (row) =>
+                                this.tree.getByUuid(row.uuid)._state === "P"
+                            )
+                        : false,
+                    message: "Alle Datensätze müssen veröffentlicht sein.",
+                  },
                 },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {

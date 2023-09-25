@@ -23,6 +23,7 @@
         <div
             *ngIf="currentCatalog$ | async as currentCatalog"
             class="header-info flex-grow flex-row align-items-center justify-content-end"
+            [class.single]="otherAssignedCatalogs.length == 0"
         >
             Katalog:
             <button

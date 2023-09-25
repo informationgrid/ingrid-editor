@@ -1,5 +1,9 @@
 @import "src/variables";
 
+::placeholder {
+  color: $ige-placeholder-color !important;
+}
+
 button.mdc-button {
   text-transform: uppercase;
 }
@@ -11,12 +15,9 @@ mat-form-field:hover .mdc-notched-outline__trailing {
 }
 
 ige-side-menu .mat-mdc-list-item {
-  &.light {
-    background-color: $ige-secondary;
-  }
-
-  &.dark:hover {
-    background-color: lighten($ige-secondary, 8%);
+  &:hover::before,
+  &:focus::before {
+    opacity: 0;
   }
 
   &:hover {
@@ -112,6 +113,10 @@ mat-tab-nav-panel {
   min-width: 160px;
 }
 
+.mdc-floating-label--float-above {
+  color: $ige-text-color !important;
+}
+
 .mat-focused .mdc-floating-label--float-above {
   color: $ige-secondary-dark !important;
 }
@@ -148,5 +153,28 @@ mat-tab-nav-panel {
 mat-icon.dark-blue {
   svg path {
     fill: $ige-secondary;
+  }
+}
+
+.mat-button-toggle-group-appearance-standard {
+  overflow: unset !important;
+
+  mat-button-toggle:first-of-type {
+    border-radius: 6px 0 0 6px;
+  }
+
+  mat-button-toggle:last-of-type {
+    border-radius: 0 6px 6px 0;
+  }
+
+  mat-button-toggle {
+    color: $ige-secondary;
+  }
+
+  mat-button-toggle.mat-button-toggle-checked {
+    z-index: 1;
+    color: white;
+    font-weight: 500;
+    background-color: $ige-primary;
   }
 }

@@ -80,6 +80,7 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
             FROM document d, document_wrapper dw 
             WHERE (
                 dw.deleted = 0
+                AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND (d.state = 'PENDING' OR d.state = 'PUBLISHED')
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
@@ -91,13 +92,14 @@ class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Entit
         }
     }
 
-    override fun getReferenceIds(doc: Document): List<String> {
+    override fun getIncomingReferenceIds(doc: Document): List<String> {
         // only return published documents. as this is used for export. and specificaly not for prePublish Check
         val sqlQuery = """
             SELECT DISTINCT d.uuid, title 
             FROM document d, document_wrapper dw 
             WHERE (
                 dw.deleted = 0
+                AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');

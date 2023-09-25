@@ -13,11 +13,9 @@
         [matTooltip]="t(item.path)"
         matTooltipPosition="right"
         [matTooltipDisabled]="menuIsExpanded"
-        [class.light]="!item.data?.onlyAdmin"
         [class.active]="
             currentRoute?.indexOf(catalogId + '/' + item.path) === 0
         "
-        [title]="t(item.path)"
         tabindex="0"
         role="menuitem"
     >

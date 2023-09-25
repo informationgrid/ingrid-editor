@@ -5,10 +5,10 @@
 @import java.util.List
 
 @param List<AddressModelTransformer> addresses
-@param Boolean pointOfContactExport = true
+@param Boolean isAddressExport = false
 
 @for(AddressModelTransformer address : addresses)
-    @if(pointOfContactExport)
+    @if(!isAddressExport)
         <gmd:pointOfContact>
         <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
     @endif
@@ -109,12 +109,12 @@
     @else
         <gmd:role gco:nilReason="inapplicable" />
     @endif
-    @if(!pointOfContactExport)
+    @if(isAddressExport)
         <idf:last-modified>
             <gco:DateTime>${address.getLastModified()}</gco:DateTime>
         </idf:last-modified>
     @endif
-    @for( AddressModelTransformer adr : address.getHierarchy())
+    @for( AddressModelTransformer adr : address.getHierarchy(isAddressExport))
         <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
             @if(adr.getIndividualName(false) != null )
                 <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>
@@ -125,7 +125,7 @@
             <idf:addressType>${adr.getAddressDocType()}</idf:addressType>
         </idf:hierarchyParty>
     @endfor
-    @if(!pointOfContactExport)
+    @if(isAddressExport)
         @for( SubordinatedParty subordinatedParty : address.getSubordinatedParties())
             <idf:subordinatedParty uuid="${subordinatedParty.getUuid()}">
                 @if(TransformationTools.hasValue(subordinatedParty.getIndividualName()))
@@ -150,7 +150,7 @@
             </idf:objectReference>
         @endfor
     @endif
-    @if(pointOfContactExport)
+    @if(!isAddressExport)
         </idf:idfResponsibleParty>
         </gmd:pointOfContact>
     @endif

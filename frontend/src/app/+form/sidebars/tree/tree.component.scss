@@ -92,6 +92,7 @@ mat-tree-node {
     line-height: 0;
     vertical-align: middle;
   }
+
   //}
 
   &.rootNode {
@@ -122,6 +123,7 @@ mat-tree-node {
     margin-top: -1px;
     padding-top: 10px;
   }
+
   &:not(.rootNode) + &.active.rootNode {
     /* Do not cover for active nodes*/
     margin-top: 0;
@@ -157,6 +159,7 @@ mat-tree-node {
       line-clamp: 4;
       -webkit-box-orient: vertical;
     }
+
     mat-checkbox {
       padding-right: 10px;
       height: 0;
@@ -187,6 +190,7 @@ mat-tree-node {
 
   .quick-child-selection {
     display: none;
+
     button {
       margin-right: 10px;
     }
@@ -214,6 +218,7 @@ mat-tree-node {
   &.active + .mat-tree-node {
     margin-top: 0 !important;
   }
+
   &.active > div {
     border-top-color: transparent !important;
     border-bottom-color: transparent !important;
@@ -281,8 +286,9 @@ mat-tree-node {
 
 // TODO: use class disabled instead?
 .readonly {
-  color: $ige-comment-color;
+  color: $ige-placeholder-color;
 }
+
 ige-document-icon {
   margin-right: 6px;
 }

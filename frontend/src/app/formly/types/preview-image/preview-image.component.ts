@@ -96,8 +96,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         startWith(this.formControl.value),
         debounceTime(100),
         distinctUntilChanged((a: any[], b: any[]) => {
-          const aLinks = a?.map((item) => item.fileName?.uri).join("");
-          const bLinks = b?.map((item) => item.fileName?.uri).join("");
+          const aLinks = a?.map((item) => JSON.stringify(item)).join("");
+          const bLinks = b?.map((item) => JSON.stringify(item)).join("");
           return aLinks === bLinks;
         }),
         tap(() => (this.imageLinks = {}))
@@ -164,8 +164,11 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       })
       .afterClosed()
       .subscribe((result) => {
+        const isUnchanged =
+          JSON.stringify(this.model[index]) === JSON.stringify(result);
+        if (isUnchanged) return;
+
         if (result) {
-          this.imageLinks = {};
           this.remove(index);
           this.add(index, result);
         }

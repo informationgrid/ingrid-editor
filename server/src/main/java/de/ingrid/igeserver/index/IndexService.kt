@@ -16,6 +16,7 @@ import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
+import org.jetbrains.kotlin.utils.indexOfFirst
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
@@ -205,36 +206,65 @@ class IndexService @Autowired constructor(
         return sql
     }
 
+    /**
+     * For all iBus conditions special SQL conditions are created including information to which iBus the dataset 
+     * is going to be sent. First we get all possible combinations of the conditions and determine the indexes
+     * which iBus is used for a condition. This is especially important when two or more iBus conditions are the
+     * same.
+     */
     private fun getConditionsForIBus(
         iBusConditions: List<String>
-    ): MutableList<String> {
-        val iBusSelector = mutableListOf<String>()
+    ): List<String> {
+        val iBusSelector = mutableListOf<Pair<Set<Int>, String>>()
+
         for (i in iBusConditions.size downTo 1) {
-            val kombinationen = iBusConditions.combinations(i)
-            for (kombination in kombinationen) {
-                val indexKombination = kombination.map { iBusConditions.indexOf(it) }
+            val combinations = iBusConditions.combinations(i)
+            combinations.forEach { combination ->
+                val indexCombinations = getCombinationOfIndexes(combination, iBusConditions)
+
                 iBusSelector.add(
-                    "WHEN (" + kombination.joinToString(" AND ") + ") THEN '${
-                        indexKombination.joinToString(
-                            ","
-                        )
-                    }'"
+                    Pair(
+                        indexCombinations,
+                        "WHEN (" + combination.toSet().joinToString(" AND ") + ") THEN '${
+                            indexCombinations.joinToString(
+                                ","
+                            )
+                        }'"
+                    )
                 )
             }
         }
+        
+        // remove redundant selections when two or more iBus conditions are the same
         return iBusSelector
+            .map { it.first }
+            .toSet()
+            .mapNotNull { a -> iBusSelector.find { it.first == a }?.second }
     }
 
-    private fun <T> List<T>.combinations(k: Int): List<List<T>> {
-        if (k > size) return emptyList()
-        if (k == 0) return listOf(emptyList())
+    private fun getCombinationOfIndexes(
+        combination: List<String>,
+        iBusConditions: List<String>
+    ) = combination.flatMap { entry ->
+        val indexList = mutableListOf<Int>()
+        var currentIndex = iBusConditions.indexOf(entry)
+        while (currentIndex != -1) {
+            indexList.add(currentIndex)
+            currentIndex = iBusConditions.indexOfFirst(currentIndex + 1) { it == entry }
+        }
+        indexList
+    }.toSet()
 
-        val result = mutableListOf<List<T>>()
+    private fun List<String>.combinations(length: Int): List<List<String>> {
+        if (length > size) return emptyList()
+        if (length == 0) return listOf(emptyList())
+
+        val result = mutableListOf<List<String>>()
 
         for (i in indices) {
             val element = this[i]
             val remaining = subList(i + 1, size)
-            val combinations = remaining.combinations(k - 1)
+            val combinations = remaining.combinations(length - 1)
             for (combination in combinations) {
                 result.add(listOf(element) + combination)
             }
