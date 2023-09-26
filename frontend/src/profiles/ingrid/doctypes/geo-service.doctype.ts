@@ -169,20 +169,6 @@ export class GeoServiceDoctype extends IngridShared {
                     "formState.mainModel?.service?.couplingType?.key === 'tight'",
                   className: "field.props.required ? '' : 'optional'",
                 },
-                validators: {
-                  allPublished: {
-                    expression: (ctrl) =>
-                      ctrl.value
-                        ? ctrl.value
-                            .filter((row) => row.isExternalRef === false)
-                            .every(
-                              (row) =>
-                                this.tree.getByUuid(row.uuid)._state === "P"
-                            )
-                        : false,
-                    message: "Alle Datensätze müssen veröffentlicht sein.",
-                  },
-                },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {
                 showSearch: true,
