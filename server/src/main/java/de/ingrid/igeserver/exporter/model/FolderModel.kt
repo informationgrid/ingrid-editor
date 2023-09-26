@@ -12,6 +12,7 @@ data class FolderModel(
     val data: FolderDataModel
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class FolderDataModel(
     val _parent: String?,
 )
