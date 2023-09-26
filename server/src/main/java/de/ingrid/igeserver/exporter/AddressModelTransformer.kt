@@ -5,7 +5,6 @@ import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
-import org.jetbrains.kotlin.backend.common.pop
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -110,6 +109,9 @@ class AddressModelTransformer(
 
     val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
 
+    fun getNextParent(): String? {
+        return documentService!!.getWrapperByDocumentId(model.id).parent?.uuid
+    }
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -182,6 +184,4 @@ data class SubordinatedParty(
     val type: Int,
     val individualName: String?,
     val organisationName: String?
-) {
-}
-
+)

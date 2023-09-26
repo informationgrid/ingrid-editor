@@ -51,6 +51,10 @@
     @endif
     "summary": "${page.getModel().getPositionName()}",
 
+    @if(page.getNextParent() != null)
+    "parent.address_node.addr_uuid": "${page.getNextParent()}",
+    @endif
+
 @for(var entry : ForSupport.of(page.getParentAddresses()))
     @if(entry.isFirst())
         "parent.address_node.addr_uuid": "${entry.get().getUuid()}",
