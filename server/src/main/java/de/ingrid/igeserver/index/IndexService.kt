@@ -122,7 +122,7 @@ class IndexService @Autowired constructor(
                 .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
             if (types.contains("internet") || types.isEmpty()) {
                 if (conditions.isNotEmpty()) conditions += " OR"
-                conditions += " document_wrapper.tags is null OR '{}' = document_wrapper.tags"
+                conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
             }
             "($conditions)"
         }
