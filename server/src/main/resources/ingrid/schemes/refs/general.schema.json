@@ -296,7 +296,7 @@
             "$ref": "#/definitions/KeyValue"
           },
           "edition": {
-            "type": "string"
+            "type": ["null", "string"]
           }
         }
       }
@@ -408,18 +408,25 @@
           ]
         },
         "resourceRange": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "end": {
-              "type": ["string", "null"],
-              "format": "date-time"
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "end": {
+                  "type": ["string", "null"],
+                  "format": "date-time"
+                },
+                "start": {
+                  "type": ["string", "null"],
+                  "format": "date-time"
+                }
+              }
             },
-            "start": {
-              "type": ["string", "null"],
-              "format": "date-time"
+            {
+              "type": "null"
             }
-          }
+          ]
         }
       },
       "required": ["events"]
