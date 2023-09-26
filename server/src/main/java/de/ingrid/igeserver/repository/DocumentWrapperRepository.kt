@@ -32,6 +32,9 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d")
     fun getAll(): List<DocumentWrapper?>
+    
+    @Query("SELECT d.parent FROM DocumentWrapper d WHERE d.id = ?1")
+    fun getParentWrapper(id: Int): DocumentWrapper?
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(

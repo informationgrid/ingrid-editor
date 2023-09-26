@@ -109,9 +109,7 @@ class AddressModelTransformer(
 
     val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
 
-    fun getNextParent(): String? {
-        return documentService!!.getWrapperByDocumentId(model.id).parent?.uuid
-    }
+    fun getNextParent() = documentService!!.getParentWrapper(model.id)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
