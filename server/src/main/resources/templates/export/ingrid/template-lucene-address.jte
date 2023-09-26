@@ -26,7 +26,6 @@
         "IDF_1.0"
     ],
     "boost": 0.1,
-    "isfolder": ${page.isFolder()},
     "t02_address.adr_id": "${page.getUuid()}",
     "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",
@@ -61,9 +60,7 @@
     "t02_address${entry.getIndex() + 1}.adr_id": "${entry.get().getUuid()}",
     "t02_address${entry.getIndex() + 1}.typ": "${page.getAddressDocType(entry.get().getDocType())}",
     "title${entry.getIndex() + 1}": "${entry.get().getOrganization()}",
-    @if(!"FOLDER".equals(entry.get().getDocType()))
-        "t02_address.parents.title": "${entry.get().getOrganization()}",
-    @endif
+    "t02_address.parents.title": "${entry.get().getOrganization()}",
 @endfor
 
     "t021_communication.commtype_key": [

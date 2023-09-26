@@ -14,8 +14,8 @@ class SettingsService @Autowired constructor(
     val repoSettings: SettingsRepository
 ) {
 
-    private val objectDataTypes = listOf("default", "dsc_ecs", "metadata", "IDF_1.0")
-    private val addressDataTypes = listOf("default", "dsc_ecs", "metadata", "dsc_ecs_address", "address", "IDF_1.0")
+//    private val objectDataTypes = listOf("default", "dsc_ecs", "metadata", "IDF_1.0")
+    private val allCombinedDataTypes = listOf("default", "dsc_ecs", "metadata", "dsc_ecs_address", "address", "IDF_1.0")
 
     fun getIBusConfig(): List<IBusConfig> {
         val iBusJson = repoSettings.findByKey("ibus")?.value ?: return emptyList()
@@ -30,8 +30,8 @@ class SettingsService @Autowired constructor(
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {
         val pd = PlugDescription().apply {
             put("useRemoteElasticsearch", true)
-            val datatypes = if (forAddress) addressDataTypes else objectDataTypes
-            datatypes.forEach { addDataType(it) }
+//            val datatypes = if (forAddress) allCombinedDataTypes else objectDataTypes
+            allCombinedDataTypes.forEach { addDataType(it) }
             dataSourceName = name
             dataSourceDescription = "iPlug for indexing data of IGE-NG"
             proxyServiceURL = plugId
