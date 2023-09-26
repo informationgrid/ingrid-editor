@@ -24,6 +24,8 @@ class LuceneExporter @Autowired constructor(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     fun run(doc: Document, catalogId: String): Any {
+        if (doc.type == "FOLDER") return ""
+
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
         templateEngine.render("uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
