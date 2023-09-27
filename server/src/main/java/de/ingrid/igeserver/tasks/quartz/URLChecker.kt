@@ -55,7 +55,7 @@ class URLChecker @Autowired constructor(
 
             notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
 
-            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds)
 
             val urls = with(convertToUrlList(docs)) {
                 forEachIndexed { index, urlReport ->
@@ -89,9 +89,11 @@ class URLChecker @Autowired constructor(
 
         val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
+        val docIdsAsString = dataMap.getString("groupDocIds")
+        val groupDocIds: List<Int> = if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
         val referenceHandler = referenceHandlerFactory.get(profile)
 
-        return JobInfo(profile, catalogId, referenceHandler)
+        return JobInfo(profile, catalogId, referenceHandler, groupDocIds)
     }
 
     private fun convertToUrlList(
@@ -134,5 +136,10 @@ class URLChecker @Autowired constructor(
         }
     }
 
-    private data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)
+    private data class JobInfo(
+        val profile: String,
+        val catalogId: String,
+        val referenceHandler: ReferenceHandler?,
+        val groupDocIds: List<Int>
+    )
 }

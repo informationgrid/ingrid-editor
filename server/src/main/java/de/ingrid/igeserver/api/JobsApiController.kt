@@ -10,6 +10,7 @@ import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
@@ -34,7 +35,8 @@ class JobsApiController @Autowired constructor(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
     val referenceHandlerFactory: ReferenceHandlerFactory,
-    val urlRequestService: UrlRequestService
+    val urlRequestService: UrlRequestService,
+    val aclService: IgeAclService
 ) : JobsApi {
 
     val log = logger()
@@ -74,6 +76,7 @@ class JobsApiController @Autowired constructor(
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
+            put("groupDocIds", aclService.getDocumentIdsForGroups(principal).joinToString(","))
         }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
         return ResponseEntity.ok().build()
