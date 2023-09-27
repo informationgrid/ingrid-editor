@@ -516,7 +516,7 @@
             ]
           },
           "number": {
-            "type": "number"
+            "type": ["null", "number"]
           }
         }
       }
