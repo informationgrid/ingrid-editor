@@ -8,6 +8,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatLineModule } from "@angular/material/core";
 import { DocumentIconModule } from "./document-icon/document-icon.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
+import { A11yModule } from "@angular/cdk/a11y";
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
     MatDividerModule,
     DocumentIconModule,
     SharedPipesModule,
+    A11yModule,
   ],
   declarations: [DocumentListItemComponent],
   exports: [

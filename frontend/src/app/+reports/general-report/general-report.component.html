@@ -97,6 +97,7 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr
                     mat-row
+                    cdkMonitorElementFocus
                     tabindex="0"
                     *matRowDef="let row; columns: displayedColumns"
                     [attr.aria-label]="row.ariaLabel"

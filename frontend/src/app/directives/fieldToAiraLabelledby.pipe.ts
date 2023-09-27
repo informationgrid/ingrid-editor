@@ -3,6 +3,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Pipe({
   name: "fieldToAriaLabelledBy",
+  standalone: true,
 })
 export class FieldToAiraLabelledbyPipe implements PipeTransform {
   constructor() {}

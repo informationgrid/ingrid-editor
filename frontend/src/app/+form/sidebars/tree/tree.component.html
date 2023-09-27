@@ -63,6 +63,7 @@
         [class.rootNode]="node.level === 0"
         [class.afterExpanded]="node.afterExpanded"
         [class.disabled]="disabledCondition(node)"
+        cdkMonitorElementFocus
         [attr.tabindex]="!disabledCondition(node) ? 0 : null"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
@@ -127,6 +128,7 @@
         [class.disabled]="disabledCondition(node)"
         [class.folder]="node.type === 'FOLDER'"
         [class]="node.tags?.split(',')?.join(' ')"
+        cdkMonitorElementFocus
         [attr.tabindex]="!disabledCondition(node) ? 0 : null"
         [attr.aria-label]="t('docType.' + node.type) + ' ' + node.title"
     >
