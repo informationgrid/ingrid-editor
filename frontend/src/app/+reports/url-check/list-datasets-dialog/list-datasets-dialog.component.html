@@ -22,7 +22,7 @@
         <mat-divider aria-hidden="true"></mat-divider>
         <ng-container *ngFor="let item of data.datasets">
             <button mat-list-item (click)="close(item.uuid)">
-                {{ item.title }}
+                {{ item.title }} ({{ item.field }})
             </button>
             <mat-divider aria-hidden="true"></mat-divider>
         </ng-container>
