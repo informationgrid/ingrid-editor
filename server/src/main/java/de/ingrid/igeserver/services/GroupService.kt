@@ -102,7 +102,6 @@ class GroupService @Autowired constructor(
         aclService as JdbcMutableAclService
 
         val sid = GrantedAuthoritySid("GROUP_${group.id}")
-        val legacySid = GrantedAuthoritySid("GROUP_${group.name}")
 
         getAllDocPermissions(group).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("id").asInt())
@@ -112,7 +111,7 @@ class GroupService @Autowired constructor(
             for (index in acl.entries.size - 1 downTo 0) {
                 // only remove ACE from current SID (the readAclById-function can be called with SIDs,
                 // however it is not reliable and returns often ACEs from all SIDs!)
-                if (acl.entries[index].sid == sid || acl.entries[index].sid == legacySid) {
+                if (acl.entries[index].sid == sid) {
                     acl.deleteAce(index)
                 }
             }

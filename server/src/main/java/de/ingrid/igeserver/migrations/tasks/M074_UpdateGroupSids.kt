@@ -6,6 +6,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,12 +17,15 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Update all groups to correctly init aces. now with group id instead of name
+ * Update all group sids with group id instead of name
  */
 @Service
 class M074_UpdateGroups : MigrationBase("0.74") {
 
     private var log = logger()
+
+    @Autowired
+    lateinit var entityManager: EntityManager
 
     @Autowired
     lateinit var groupService: GroupService
@@ -41,7 +45,7 @@ class M074_UpdateGroups : MigrationBase("0.74") {
                 setAuthentication()
                 catalogService.getCatalogs().forEach { catalog: Catalog ->
                     log.info("Update Catalog: " + catalog.name)
-                    saveAllGroupsOfCatalog(catalog.identifier)
+                    updateGroupSidsOfCatalog(catalog.identifier)
                 }
             } catch (e: NotFoundException) {
                 log.debug("Cannot update acl entries to include BasePermission.ADMINISTRATION")
@@ -49,13 +53,27 @@ class M074_UpdateGroups : MigrationBase("0.74") {
         }
     }
 
-    private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
-        groupService
-            .getAll(catalogIdentifier)
-            .forEach { group ->
-                groupService.update(catalogIdentifier, group.id!!, group, true)
-            }
+
+    private fun updateGroupSidsOfCatalog(catalogIdentifier: String) {
+
+        ClosableTransaction(transactionManager).use {
+            groupService
+                .getAll(catalogIdentifier)
+                .forEach { group ->
+                    val legacySid = "GROUP_" + group.name
+                    val newSid = "GROUP_" + group.id
+
+                    val sql = """
+                                UPDATE acl_sid
+                                SET sid = '$newSid'
+                                WHERE sid = '$legacySid';
+                            """.trimIndent()
+
+                    entityManager.createNativeQuery(sql).executeUpdate()
+                }
+        }
     }
+
 
     private fun setAuthentication() {
         val auth: Authentication =
