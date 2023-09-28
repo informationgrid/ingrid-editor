@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
@@ -247,7 +248,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             val docsWithoutAccess = docs.filter { !groupService.hasAnyGroupAccess(catalogId, userGroups, it.id!!) }
             if (docsWithoutAccess.isNotEmpty()) {
                 val docIds = docsWithoutAccess.map { it.uuid }
-                throw ClientException.withReason("User ${newResponsibleUser.userId} has no access to documents with ids: $docIds")
+                throw TransferResponsibilityException.withReason("User ${newResponsibleUser.userId} has no access to documents with ids: $docIds", data = mapOf("docIds" to docIds))
             }
         }
 

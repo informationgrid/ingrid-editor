@@ -2,6 +2,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 
 export class IgeError {
   message: string;
+  items?: string[];
   status?: number;
   stacktrace?: any;
   detail?: string;

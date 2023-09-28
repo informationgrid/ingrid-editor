@@ -59,10 +59,16 @@ export class TransferResponsibilityDialogComponent implements OnInit {
       .transferResponsibility(this.oldUser.id, this.selectedUser.id)
       .pipe(
         catchError((err) => {
-          console.log(err);
-          console.log("err");
           const httpError = err.error;
-          throw new IgeError(httpError.errorText);
+          if (httpError.errorCode === "TRANSFER_RESPONSIBILITY_EXCEPTION") {
+            const igeError = new IgeError(
+              `Der Nutzer ${this.selectedUser.login} kann Verantwortung nicht übernehmen, da er keine ausreichenden Berechtigungen auf folgende Datensätze hat:`
+            );
+            igeError.items = httpError.data.docIds;
+            throw igeError;
+          } else {
+            throw err;
+          }
         })
       )
       .subscribe(() => {
