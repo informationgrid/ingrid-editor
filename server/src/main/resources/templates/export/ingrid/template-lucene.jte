@@ -41,7 +41,7 @@
     "boost": 1,
     "children.object_node.obj_uuid": [],
     "organisation": "",
-    "parent.object_node.obj_uuid": "${page.getParentIdentifier()}",
+    "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
     "t012_obj_adr.adr_id": "",
     "t012_obj_adr.mod_time": "",
     "t012_obj_adr.special_name": "",

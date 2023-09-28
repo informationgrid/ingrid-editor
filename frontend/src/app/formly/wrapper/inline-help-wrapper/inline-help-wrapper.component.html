@@ -22,7 +22,7 @@
         (click)="showContextHelp($event)"
         matTooltip="Eingabehilfe"
         aria-haspopup="dialog"
-        [attr.aria-label]="'Eingabehilfe zu ' + props.ariaLabel"
+        [attr.aria-label]="field | fieldToAriaLabel"
     >
         <mat-icon
             class="material-icons-outlined"

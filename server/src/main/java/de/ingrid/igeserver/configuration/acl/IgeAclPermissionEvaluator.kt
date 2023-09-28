@@ -79,7 +79,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
         }*/
     }
-    
+
     private fun checkPermission(
         authentication: Authentication,
         oid: ObjectIdentity,
@@ -131,13 +131,13 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             // permission being a child of a node with WRITE_ONLY_SUBTREE permission
             try {
                 // check if WRITE_ONLY_SUBTREE Permission was used
-                if (acl != null && permission == "WRITE"
+                if (acl != null && requiredPermission.contains(BasePermission.WRITE)
                     && acl.parentAcl != null
                     && acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
                 ) {
                     logger.debug("Access is granted for WRITE_ONLY_SUBTREE permission and not being root")
                     return true
-                } else if (acl == null && permission == "WRITE") { // actually more "CREATE"
+                } else if (acl == null && requiredPermission.contains(BasePermission.WRITE)) { // actually more "CREATE"
 
                 }
             } catch (nfe: NotFoundException) {

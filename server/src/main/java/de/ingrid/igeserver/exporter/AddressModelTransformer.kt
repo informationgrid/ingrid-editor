@@ -5,7 +5,6 @@ import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
-import org.jetbrains.kotlin.backend.common.pop
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -40,9 +39,9 @@ class AddressModelTransformer(
         // format: "lastName, firstName, salutation academicTitle"
         val salutation = codelist.getValue("4300", address.salutation)
         val academicTitle = codelist.getValue("4305", address.academicTitle)
-        val namePostFix = listOfNotNull(salutation, academicTitle).joinToString(" ")
+        val namePostFix = listOf(salutation, academicTitle).filter { !it.isNullOrBlank() }.joinToString(" ")
         val individualName =
-            listOfNotNull(address.lastName, address.firstName, namePostFix).joinToString(", ")
+            listOf(address.lastName, address.firstName, namePostFix).filter { !it.isNullOrBlank() }.joinToString(", ")
 
         return individualName.ifBlank { null }
     }
@@ -84,6 +83,7 @@ class AddressModelTransformer(
 
     val id = displayAddress.id
     val uuid = displayAddress.uuid
+    val isFolder = model.docType == "FOLDER"
     val hoursOfService = displayAddress.hoursOfService
     val country =
         displayAddress.address.country?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it) }
@@ -109,6 +109,7 @@ class AddressModelTransformer(
 
     val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
 
+    fun getNextParent() = documentService!!.getParentWrapper(model.id)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -181,6 +182,4 @@ data class SubordinatedParty(
     val type: Int,
     val individualName: String?,
     val organisationName: String?
-) {
-}
-
+)

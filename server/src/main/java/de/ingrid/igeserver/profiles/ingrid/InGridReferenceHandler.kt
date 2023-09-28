@@ -15,6 +15,8 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
 
     override fun getProfile() = InGridProfile.id
 
+    override val urlFields = listOf("uri", "url", "methodCall")
+
     private val sqlUrls = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data -> 'graphicOverviews' as graphicOverviews, doc.title, doc.type
         ,doc.data -> 'references' as references, doc.data -> 'service' as service, doc.data -> 'serviceUrls' as serviceUrls

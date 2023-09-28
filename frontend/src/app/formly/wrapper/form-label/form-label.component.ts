@@ -7,15 +7,17 @@ import {
 } from "@angular/core";
 import { NgIf } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "ige-form-label",
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
-  imports: [NgIf, MatIconModule],
+  imports: [NgIf, MatIconModule, MatTooltipModule],
   standalone: true,
 })
 export class FormLabelComponent {
+  @Input() fieldId: string;
   @Input() hasContextHelp = false;
   @Input() ariaLabel: string;
 

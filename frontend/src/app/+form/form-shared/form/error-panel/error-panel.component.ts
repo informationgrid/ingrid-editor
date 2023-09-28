@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
+import { Component, HostListener, inject, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
@@ -34,6 +34,22 @@ export class ErrorPanelComponent implements OnInit {
 
   ngOnInit() {
     this.jumpToCurrentError();
+  }
+
+  // shortcuts for accessibility
+  @HostListener("window: keydown", ["$event"])
+  hotKeys(event: KeyboardEvent) {
+    if (!event.ctrlKey || !event.altKey) return;
+
+    // CTRL + ALT + ArrowLeft (to previous error)
+    if (event.key == "ArrowLeft") {
+      this.jumpToPreviousError();
+    }
+
+    // CTRL + ALT + ArrowRight (to next error)
+    if (event.key == "ArrowRight") {
+      this.jumpToNextError();
+    }
   }
 
   jumpToNextError() {

@@ -122,7 +122,7 @@ class IndexService @Autowired constructor(
                 .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
             if (types.contains("internet") || types.isEmpty()) {
                 if (conditions.isNotEmpty()) conditions += " OR"
-                conditions += " document_wrapper.tags is null OR '{}' = document_wrapper.tags"
+                conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
             }
             "($conditions)"
         }
@@ -167,16 +167,30 @@ class IndexService @Autowired constructor(
             .unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("id")
+            .addScalar("type")
+            .addScalar("parent_id")
             .addScalar("ibus")
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
 
         return result.map {
-            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String)
+            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as String)
         }.map {
+            // FOLDERS do not have a published version
+            val document = if (it.type == "FOLDER") {
+                documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
+            } else {
+                documentService.getLastPublishedDocument(catalogId, it.uuid)
+            }
             DocumentIndexInfo(
-                documentService.getLastPublishedDocument(catalogId, it.uuid).apply { wrapperId = it.wrapperId },
+                document.apply {
+                    wrapperId = it.wrapperId
+                    if (it.parentId != null) {
+                        val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
+                        data.put(FIELD_PARENT, parentWrapper.uuid)
+                    }
+                },
                 it.ibus.split(",").map { it.toInt() }
             )
         }
@@ -192,13 +206,14 @@ class IndexService @Autowired constructor(
         val profileConditions = profile.additionalPublishConditions(catalogId)
         val iBusSelector = getConditionsForIBus(iBusConditions)
 
+        val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
         var sql = """
-                SELECT document_wrapper.uuid, document_wrapper.id,
+                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id,
                 CASE 
                     ${iBusSelector.joinToString(" ")}
                     ELSE '-1' END AS IBUS
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
-                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND document1.state = 'PUBLISHED' AND deleted = 0 AND catalog.identifier = ? AND 
+                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND (document1.state = 'PUBLISHED' $indexFolders) AND deleted = 0 AND catalog.identifier = ? AND 
                 (${iBusConditions.joinToString(" OR ")})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
@@ -289,5 +304,7 @@ class IndexService @Autowired constructor(
 data class IndexDocumentResult(
     val uuid: String,
     val wrapperId: Int,
+    val type: String,
+    val parentId: Int?,
     val ibus: String
 )

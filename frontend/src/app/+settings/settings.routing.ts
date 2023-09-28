@@ -52,6 +52,7 @@ export const settingsRoutes: Routes = [
       {
         path: "messages",
         component: MessagesManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Benachrichtigungen",
           roles: ["admin"],
@@ -61,6 +62,7 @@ export const settingsRoutes: Routes = [
       {
         path: "catalogAssignment",
         component: CatalogAssignmentComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Katalogzuweisung",
           permission: "manage_all_catalogs",
@@ -69,6 +71,7 @@ export const settingsRoutes: Routes = [
       {
         path: "contentManagement",
         component: ContentManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Inhalte",
           permission: "manage_all_catalogs",

@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { SharedPipesModule } from "../../../directives/shared-pipes.module";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { SharedModule } from "../../../shared/shared.module";
+import { A11yModule } from "@angular/cdk/a11y";
 
 @Component({
   selector: "ige-expiration-table",
@@ -31,6 +32,7 @@ import { SharedModule } from "../../../shared/shared.module";
     DatePipe,
     MatTooltipModule,
     SharedModule,
+    A11yModule,
   ],
 })
 export class ExpirationTableComponent implements AfterViewInit {

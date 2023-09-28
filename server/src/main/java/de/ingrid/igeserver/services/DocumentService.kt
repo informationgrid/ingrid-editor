@@ -116,6 +116,8 @@ class DocumentService @Autowired constructor(
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
 
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
+    
+    fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
 
     fun getWrapperByCatalogAndDocumentUuid(
         catalogIdentifier: String,

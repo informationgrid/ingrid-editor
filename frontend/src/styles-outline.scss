@@ -12,7 +12,6 @@
 .mat-mdc-menu-item,
 .mat-expansion-panel-header {
   &.cdk-focused.cdk-keyboard-focused,
-  &[role="option"]:focus,
   &.mat-mdc-option-active {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
@@ -42,6 +41,7 @@
     outline-offset: 2px;
     outline: 3px solid $ige-primary;
     --mat-mdc-button-persistent-ripple-color: unset;
+    --mat-standard-button-toggle-focus-state-layer-opacity: 0;
   }
 }
 
@@ -87,7 +87,7 @@ form-toolbar :not(.save-buttons) > .mdc-button {
   }
 }
 
-.mat-mdc-checkbox input.cdk-keyboard-focused + .mdc-checkbox__ripple {
+.mdc-checkbox input.cdk-keyboard-focused + .mdc-checkbox__ripple {
   border: 2px solid $ige-primary;
   --mdc-checkbox-selected-focus-state-layer-opacity: 1;
   --mdc-checkbox-unselected-focus-state-layer-opacity: 1;
@@ -117,14 +117,14 @@ form-toolbar :not(.save-buttons) > .mdc-button {
   }
 }
 
-mat-tree-node,
-[role="button"],
-[role="figure"],
-[role="heading"],
-[role="listitem"],
-[role="row"],
-ige-session-timeout-info [tabindex="0"] {
-  &:focus {
+// custom components, e.g. role, tabindex
+.cdk-keyboard-focused {
+  &[role="row"],
+  [role="button"],
+  &[role="button"],
+  &[role="option"],
+  &[tabindex="0"],
+  &mat-tree-node {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
   }

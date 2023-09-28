@@ -27,6 +27,8 @@ class IndexExporter @Autowired constructor(val idfExporter: IDFExporter, val luc
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        if (doc.type == "FOLDER") return "{}"
+
         val idf = idfExporter.run(doc, catalogId)
         val luceneDoc = luceneExporter.run(doc, catalogId) as String
 

@@ -25,6 +25,7 @@ import {
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
+import { A11yModule } from "@angular/cdk/a11y";
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler
     MatDialogModule,
     MatPaginatorModule,
     JobHandlerHeaderModule,
+    A11yModule,
   ],
   providers: [
     {
