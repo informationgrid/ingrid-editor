@@ -5,5 +5,7 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Geben Sie das Datenformat der Ressource an.</p>
-<p>Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.</p>
+Geben Sie das Datenformat der Ressource an.
+
+DCAT-AP sieht zur Kennzeichnung des Dateiformats vor, dass das EU Vokabular "File Type" des Publications Office zu verwenden ist.<br />
+**Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.**
