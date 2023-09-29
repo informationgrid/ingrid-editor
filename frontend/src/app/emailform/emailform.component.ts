@@ -12,7 +12,7 @@ import {
   Validators,
 } from "@angular/forms";
 
-import { UserService } from "./../services/user/user.service";
+import { UserService } from "../services/user/user.service";
 
 @Component({
   selector: "ige-emailform",
@@ -22,6 +22,9 @@ import { UserService } from "./../services/user/user.service";
 export class EmailformComponent implements OnInit {
   @Input()
   initialEmail: string;
+
+  @Input()
+  canAutocomplete = false;
 
   @Output()
   onClose = new EventEmitter<String>();
