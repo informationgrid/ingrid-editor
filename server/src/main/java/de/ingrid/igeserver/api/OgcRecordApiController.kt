@@ -2,9 +2,9 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExporterFactory
-import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.ogc.CswtService
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +25,7 @@ class OgcRecordApiController @Autowired constructor(
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
         private val exporterFactory: ExporterFactory,
+        private val cswtService: CswtService,
         val scheduler: SchedulerService,
         ) : OgcRecordApi {
 
@@ -59,26 +60,30 @@ class OgcRecordApiController @Autowired constructor(
 
 
     override fun deleteDataset(principal: Principal, collectionId: String, recordId: String): ResponseEntity<Void> {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
-        wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
+        ogcRecordService.deleteRecord(principal, collectionId, recordId)
         return ResponseEntity.ok().build()
     }
 
     override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, address: Boolean, publish: Boolean?): ResponseEntity<JsonNode> {
+        if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+
         val contentType = allHeaders["content-type"]!!
         // import via importer
         val options = ImportOptions( publish = publish ?: false)
-        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal)
+        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null)
         return ResponseEntity.ok().build()
     }
 
+
     override fun putDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String, publishDate: Date?, publish: Boolean? ): ResponseEntity<JsonNode> {
+        if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+
         val contentType = allHeaders["content-type"]!!
-        // check if document exists
-        documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
+//        // check if document exists
+//        documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         // import via importer
         val options = ImportOptions( publish = publish ?: true , overwriteAddresses = true, overwriteDatasets = true)
-        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal)
+        ogcRecordService.importDocuments(options, collectionId, contentType, data, principal, recordMustExist = true, recordId)
         return ResponseEntity.ok().build()
     }
 
@@ -95,6 +100,8 @@ class OgcRecordApiController @Autowired constructor(
 
 
     override fun getRecords(collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
+        if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+        ogcRecordService.verifyBbox(bbox)
         val definedFormat = format ?: defaultFormat
 
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = definedFormat)
@@ -109,7 +116,7 @@ class OgcRecordApiController @Autowired constructor(
         val totalHits = researchRecords.totalHits
         val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, definedFormat)
         val queryMetadata = QueryMetadata(
-                numberReturned = queryLimit ,
+                numberReturned = if(totalHits < queryLimit) totalHits else queryLimit,
                 numberMatched = totalHits,
                 Instant.now()
         )
@@ -122,9 +129,11 @@ class OgcRecordApiController @Autowired constructor(
         return ResponseEntity.ok().headers(responseHeaders).body(records)
     }
 
-    override fun postCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String): ResponseEntity<ByteArray> {
-        val response = ogcRecordService.prepareCSWT(principal, collectionId, data)
 
+    override fun handleCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String): ResponseEntity<ByteArray> {
+        val options = ImportOptions(publish = true , overwriteAddresses = true, overwriteDatasets = true)
+        cswtService.cswTransaction(data, collectionId, principal, options)
+//        cswtService.prepareCSWT(principal, collectionId, data)
         return ResponseEntity.ok().build()
     }
 }

@@ -241,6 +241,7 @@ interface OgcRecordApi {
     @Operation(summary = "Add a new resource instance to a collection. (Import Record)")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+        ApiResponse(responseCode = "404", description = "Not found"),
         ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
     fun postDataset(
@@ -258,6 +259,7 @@ interface OgcRecordApi {
     @Operation(summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+        ApiResponse(responseCode = "404", description = "Not found"),
         ApiResponse(responseCode = "500", description = "Unexpected error")]
     )
     fun putDataset(
@@ -280,9 +282,10 @@ interface OgcRecordApi {
     @Operation(summary = "Insert, Update, Delete Records via CSW-t")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
+        ApiResponse(responseCode = "404", description = "Not found"),
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
-    fun postCSWT(
+    fun handleCSWT(
             @RequestHeader allHeaders: Map<String, String>,
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,

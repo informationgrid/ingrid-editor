@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xml.sax.InputSource
@@ -32,6 +35,7 @@ import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import kotlin.math.abs
 
 
 data class XmlMetadata(
@@ -66,10 +70,25 @@ class OgcRecordService @Autowired constructor(
             throw ClientException.withReason("Format '$format' not supported")
         }
     }
-    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication){
+
+    @Transactional
+    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
         val docArray = prepareDataForImport(collectionId, contentType, data)
         for( doc in docArray ) {
             val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, doc)
+            if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
+                    val id = optimizedImportAnalysis.existingDatasets[0].uuid
+                if(!recordMustExist) {
+                    throw ServerException.withReason("Import Failed: Record with ID '$id' already exists.")
+                } else {
+                    if(recordId != id) throw ServerException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
+                }
+            } else {
+                if(recordMustExist) {
+//                    val id = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId!!).id
+                    throw ServerException.withReason("Update failed: Record with ID '$recordId' does not exist.")
+                }
+            }
             importService.importAnalyzedDatasets(
                     principal = principal,
                     catalogId = collectionId,
@@ -129,7 +148,7 @@ class OgcRecordService @Autowired constructor(
     }
 
     @Throws(java.lang.Exception::class)
-    private fun xmlNodeToString(newDoc: Node): String {
+    fun xmlNodeToString(newDoc: Node): String {
         val domSource = DOMSource(newDoc)
         val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
         val sw = StringWriter()
@@ -207,9 +226,11 @@ class OgcRecordService @Autowired constructor(
 
     fun pageLimitAndOffset(offset: Int?, limit: Int?): LimitAndOffset {
         val defaultLimit = 10
+        val minLimit = 1
         val maxLimit = Int.MAX_VALUE
-        var queryLimit: Int = limit ?: defaultLimit
-        if (queryLimit > maxLimit) queryLimit = maxLimit
+        val queryLimit: Int = limit ?: defaultLimit
+        if(queryLimit < minLimit || queryLimit > maxLimit) throw InvalidParameterException.withInvalidParameters("limit")
+//        if (queryLimit > maxLimit) queryLimit = maxLimit
         val queryOffset: Int = if (offset === null) 0 else {
             if (offset < 0) 0 else offset
         }
@@ -353,6 +374,11 @@ class OgcRecordService @Autowired constructor(
                 created = catalog.created,
                 updated = catalog.modified,
         )
+    }
+
+    fun deleteRecord(principal: Principal, collectionId: String, recordId: String) {
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
+        wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
     fun prepareRecord(catalogId: String, recordId: String, format: String): Pair<ByteArray, String> {
@@ -592,8 +618,32 @@ class OgcRecordService @Autowired constructor(
         """.trimIndent()
     }
 
-    fun prepareCSWT(principal: Authentication, collectionId: String, data: String): String{
 
-        return ""
+    fun verifyBbox(bbox: List<Float>?){
+        if(bbox == null) return
+        // http://localhost:8550/collections/ogctestkatalog/items?bbox=49.738177,8.176039,50.288841,9.340528
+
+        // verify 4 values
+        val size = bbox.size
+        if( size != 4) throw ServerException.withReason("Bbox Error: Bbox must have 4 values; found $size values")
+
+        val array = bbox.chunked(2) { it[0] to it[1] }
+
+        // verify long and lat format
+        for(coordinate in array) {
+            // check if longitude is in range of -180 to 180
+            if(abs(coordinate.first) > 180) throw ClientException.withReason("Bbox Error: Value '${coordinate.first}' does not represent a longitude.")
+            // check if latitude is in range of -90 to 90
+            if(abs(coordinate.second) > 90) throw ClientException.withReason("Bbox Error: Value '${coordinate.second}' does not represent a latitude.")
+        }
+
+        // verify valid bbox
+        val long1 = array[0].first //bbox[0]
+        val lat1 = array[0].second //bbox[1]
+        val long2 = array[1].first //bbox[2]
+        val lat2 = array[1].second //bbox[3]
+        if(long1 > long2 && lat1 > lat2 ) throw ClientException.withReason("Bbox Error: Wrong order of bbox values.")
     }
+
+
 }
