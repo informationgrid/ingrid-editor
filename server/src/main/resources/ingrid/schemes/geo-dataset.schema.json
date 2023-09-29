@@ -499,7 +499,7 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           },
           "edition": {
-            "type": "string"
+            "type": ["null", "string"]
           }
         }
       }
