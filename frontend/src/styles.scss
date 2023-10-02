@@ -145,12 +145,6 @@ button.button-next-to-input {
   }
 }
 
-mat-button-toggle.mat-button-toggle-checked {
-  background-color: $ige-check-color !important;
-  color: white !important;
-  font-weight: 500;
-}
-
 .leaflet-control-attribution a {
   font-size: 11px;
 }
@@ -495,10 +489,6 @@ formly-wrapper-mat-form-field > mat-form-field {
 
 ige-form-wrapper formly-field.ige-date-picker mat-form-field {
   //width: inherit;
-}
-
-::placeholder {
-  color: $ige-placeholder-color !important;
 }
 
 .fieldContainer {

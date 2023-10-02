@@ -8,7 +8,7 @@
     cdkDropListGroup
     mixedCdkDragDrop
     (dropped)="drop($event)"
-    [attr.aria-label]="props.ariaLabel"
+    [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
 >
     <span
         *ngFor="let field of field.fieldGroup; let i = index"
@@ -78,11 +78,7 @@
         (click)="this.onItemClick(model[i]?.key)"
         (keyup.enter)="removeItem(i, $event)"
         role="listitem"
-        [attr.aria-label]="
-            type === 'search'
-                ? model[i][props.labelField]
-                : getParameter(model[i])
-        "
+        [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
         aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
     >
         <div class="text-wrapper">
@@ -138,7 +134,7 @@
         [formControl]="inputControl"
         (keydown)="handleKeydown($event)"
         (blur)="inputControl.setValue('')"
-        [aria-label]="props.ariaLabel"
+        [aria-labelledby]="field | fieldToAriaLabelledBy"
     >
         <mat-option *ngIf="props.showSearch">
             <ngx-mat-select-search
@@ -213,9 +209,9 @@
         ></ng-container>
 
         <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
-        <mat-error>{{
+        <mat-error *transloco="let t">{{
             inputControl.errors?.mustBeEmpty
-                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                ? t("form.validationMessages.commitWithEnter")
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>
@@ -261,8 +257,8 @@
             [errorStateMatcher]="matcher"
             (focusin)="hasFocus = true"
             (focusout)="hasFocus = false"
-            [attr.aria-label]="props.ariaLabel"
-            aria-description="Die Eingabe muss noch mit 'Return' bestätigt werden"
+            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
+            aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
         />
         <div matSuffix>
             <mat-spinner
@@ -280,9 +276,9 @@
             </button>
         </div>
         <mat-hint>{{ props.hint }} </mat-hint>
-        <mat-error>{{
+        <mat-error *transloco="let t">{{
             inputControl.errors?.mustBeEmpty
-                ? "Der Inhalt muss noch mit 'Return' bestätigt werden"
+                ? t("form.validationMessages.commitWithEnter")
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>

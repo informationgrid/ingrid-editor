@@ -15,7 +15,11 @@
     >
 </div>
 
-<div #leaflet [class.passive]="!hasAnyLocations"></div>
+<div
+    #leaflet
+    [class.passive]="!hasAnyLocations"
+    aria-label="Karte der Raumbezüge"
+></div>
 
 <div
     *ngIf="formControl.enabled"

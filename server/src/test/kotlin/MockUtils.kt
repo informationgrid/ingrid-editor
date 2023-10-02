@@ -7,10 +7,12 @@ import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import io.mockk.every
+import org.springframework.dao.EmptyResultDataAccessException
 
 fun mockCatalog(catalogService: CatalogService) {
     every { catalogService.getCatalogById(any()) } answers {
         Catalog().apply {
+            identifier = "test-catalog"
             settings = CatalogSettings().apply {
                 config = CatalogConfig().apply {
                     //namespace = "namespace"
@@ -24,7 +26,7 @@ fun mockCatalog(catalogService: CatalogService) {
 data class MockDocument(
     val id: Number? = null,
     val uuid: String,
-    val template: String,
+    val template: String? = null,
     val parent: Int? = null,
     val type: String? = null,
 )
@@ -35,10 +37,11 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             documentService.getLastPublishedDocument(
                 "test-catalog",
                 document.uuid,
-                false
+                any(),
             )
         } answers {
-            convertToDocument(SchemaUtils.getJsonFileContent(document.template))
+            if (document.template != null) convertToDocument(SchemaUtils.getJsonFileContent(document.template))
+            else throw EmptyResultDataAccessException(1)
         }
         if (document.id != null) {
             every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {

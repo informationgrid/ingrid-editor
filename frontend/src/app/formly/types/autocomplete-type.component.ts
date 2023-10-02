@@ -33,6 +33,7 @@ export class AutocompleteTypeComponent
   ngOnInit() {
     this.formControl.valueChanges
       .pipe(
+        untilDestroyed(this),
         startWith(<string>this.formControl.value ?? ""),
         map((value) => {
           let name = typeof value === "string" ? value : value?.value;

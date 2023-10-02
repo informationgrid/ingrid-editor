@@ -25,7 +25,7 @@ export class AddButtonComponent implements OnInit {
   }
 
   // accessibility
-  @Input() ariaLabel: string;
+  @Input() ariaLabelledBy: string;
   @ViewChild("matError") matError: ElementRef;
 
   @Output() add = new EventEmitter();

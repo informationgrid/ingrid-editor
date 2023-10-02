@@ -2,7 +2,10 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
@@ -26,26 +29,59 @@ class IngridLuceneExporter @Autowired constructor(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
 
-
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogService.getCatalogById(catalogId)
-        templateEngine.render("ingrid/template-lucene.jte", getMapFromObject(doc, catalog), output)
+        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalog), output)
         return output.toString()
+    }
+
+    private fun getTemplateForDoctype(type: String): String {
+        return when (type) {
+            "InGridSpecialisedTask" -> "ingrid/template-lucene.jte"
+            "InGridGeoDataset" -> "ingrid/template-lucene.jte"
+            "InGridLiterature" -> "ingrid/template-lucene.jte"
+            "InGridGeoService" -> "ingrid/template-lucene.jte"
+            "InGridProject" -> "ingrid/template-lucene.jte"
+            "InGridDataCollection" -> "ingrid/template-lucene.jte"
+            "InGridInformationSystem" -> "ingrid/template-lucene.jte"
+            "InGridOrganisationDoc" -> "ingrid/template-lucene-address.jte"
+            "InGridPersonDoc" -> "ingrid/template-lucene-address.jte"
+            else -> {
+                throw ServerException.withReason("Cannot get template for type: $type")
+            }
+        }
     }
 
     fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
+
+        var ingridModel: IngridModel? = null
+        var addressModel: AddressModel? = null
+        try {
+            ingridModel = mapper.convertValue(json, IngridModel::class.java)
+        } catch (e: Exception) {
+            addressModel = mapper.convertValue(json, AddressModel::class.java)
+        }
+        val isAddress = addressModel != null
+
         val modelTransformer =
-            IngridModelTransformer(
-                mapper.convertValue(json, IngridModel::class.java),
-                catalog.identifier,
-                codelistTransformer,
-                config,
-                catalogService
-            )
+            if (isAddress)
+                AddressModelTransformer(
+                    addressModel!!,
+                    catalog.identifier,
+                    codelistTransformer
+                )
+            else
+                IngridModelTransformer(
+                    ingridModel!!,
+                    catalog.identifier,
+                    codelistTransformer,
+                    config,
+                    catalogService
+                )
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer,

@@ -19,16 +19,11 @@ $ige-check-color: #398c32; /* Green, checkboxes and radio buttons */
 $ige-check-background-color: #ecffebff;
 $ige-icon-color: #333; /* Icons toolbar, data set */
 
-$ige-text-color: rgba(
-  0,
-  0,
-  0,
-  0.87
-); /* Dark grey, default text color - before #181818 - from material theme */
-$ige-hint-color: rgba(0, 0, 0, 0.6); /* Middle grey - from material theme */
-$ige-placeholder-color: rgba(
-  0,
-  0,
-  0,
-  0.6
-); /* Light grey, i.e. placeholder, icons */
+/* default text color - before #181818 - from material theme */
+$ige-text-color: rgba(0, 0, 0, 0.87);
+
+/* from material theme */
+$ige-hint-color: rgba(0, 0, 0, 0.6);
+
+/* placeholder, icons */
+$ige-placeholder-color: rgba(0, 0, 0, 0.6);

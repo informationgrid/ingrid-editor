@@ -595,7 +595,7 @@ export class TreeComponent implements OnInit {
       // this.moveNodes([dropInfo.srcNode._id], droppedNode._id);
     }
 
-    this.dragManager.handleDragEnd();
+    this.handleDragEnd();
   }
 
   handleDragStart($event: DragEvent, node: any) {

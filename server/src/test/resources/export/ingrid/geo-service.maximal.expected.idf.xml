@@ -144,7 +144,7 @@
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postfach 30151, 60314 Frankfurt am Main</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Mustermann Str.</gco:CharacterString>
@@ -217,7 +217,7 @@
                                     <gmd:address>
                                         <gmd:CI_Address>
                                             <gmd:deliveryPoint>
-                                                <gco:CharacterString>Postfach 30151, 60314 Frankfurt am Main</gco:CharacterString>
+                                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
                                             </gmd:deliveryPoint>
                                             <gmd:deliveryPoint>
                                                 <gco:CharacterString>Musterfrau Str.</gco:CharacterString>
@@ -923,6 +923,13 @@
                     </gmd:transferOptions>
                 </gmd:MD_Distribution>
             </gmd:distributionInfo>
+            <idf:crossReference direction="OUT" uuid="a910fde0-3910-413e-9c14-4fa86f3d12c2">
+                <idf:objectName>Test-Datensatz</idf:objectName>
+                <idf:objectType>1</idf:objectType>
+                <idf:attachedToField entry-id="3600" list-id="2000">Gekoppelte Daten</idf:attachedToField>
+                <idf:description>Hier ist die Beschreibung.</idf:description>
+                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
+            </idf:crossReference>
             <gmd:dataQualityInfo>
                 <gmd:DQ_DataQuality>
                     <gmd:scope>
@@ -1030,13 +1037,6 @@
                     </gmd:lineage>
                 </gmd:DQ_DataQuality>
             </gmd:dataQualityInfo>
-            <idf:crossReference direction="OUT" uuid="a910fde0-3910-413e-9c14-4fa86f3d12c2">
-                <idf:objectName>Test-Datensatz</idf:objectName>
-                <idf:objectType>1</idf:objectType>
-                <idf:attachedToField entry-id="3600" list-id="2000">Gekoppelte Daten</idf:attachedToField>
-                <idf:description>Hier ist die Beschreibung.</idf:description>
-                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
-            </idf:crossReference>
             <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
             <idf:abstract>
                 <gco:CharacterString>Hier ist die Beschreibung.</gco:CharacterString>

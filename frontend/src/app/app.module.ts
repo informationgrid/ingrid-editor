@@ -100,6 +100,7 @@ import { GermanDateAdapter } from "./services/german-date.adapter";
 import { firstValueFrom } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 import { registerTranslateExtension } from "./formly/translate.extension";
+import { FieldToAriaLabelPipe } from "./directives/fieldToAiraLabel.pipe";
 
 registerLocaleData(de);
 
@@ -221,6 +222,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     InlineHelpWrapperComponent,
     SideMenuComponent,
     TimePipe,
+    FieldToAriaLabelPipe,
     MainHeaderComponent,
     SessionTimeoutInfoComponent,
     InitCatalogComponent,

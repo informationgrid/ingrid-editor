@@ -1,7 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseDoctype } from "../base.doctype";
 import { inject, Injectable } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
 import { map } from "rxjs/operators";
@@ -66,7 +65,7 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addRepeatList("keywords", "Schlagworte", {
           view: "chip",
-          hint: "Mehrere Schlagworte durch Komma trennen, Eingabe mit Enter bestätigen.",
+          hint: "Mehrere Schlagworte durch Komma trennen und mit der Eingabetaste bestätigen.",
         }),
       ]),
       this.addSection("Open Data", [
@@ -88,7 +87,6 @@ export class BmiDoctype extends BaseDoctype {
                 contextHelpId: "distribution_title",
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
-                ariaLabel: "Titel der Ressource",
               }),
               {
                 key: "link",
@@ -108,7 +106,6 @@ export class BmiDoctype extends BaseDoctype {
                   onClick: (docUuid, uri, $event) => {
                     this.uploadService.downloadFile(docUuid, uri, $event);
                   },
-                  ariaLabel: "URL der Ressource",
                 },
                 expressions: {
                   "props.label": (field) =>
@@ -122,7 +119,6 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
                 contextHelpId: "distribution_modified",
-                ariaLabel: "Aktualisierungsdatum der Ressource",
               }),
               this.addSelectInline("format", "Format", {
                 showSearch: true,
@@ -134,12 +130,11 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20003,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
-                ariaLabel: "Format der Ressource",
               }),
-              this.addRepeatListInline("languages", "Sprachen der Ressource", {
+              this.addRepeatListInline("languages", "Sprachen", {
                 view: "chip",
                 asSelect: true,
-                placeholder: "Sprachen der Ressource",
+                placeholder: "Sprachen",
                 options: this.getCodelistForSelect(20007, "null"),
                 codelistId: 20007,
                 wrappers: ["inline-help"],
@@ -150,7 +145,6 @@ export class BmiDoctype extends BaseDoctype {
                 wrappers: ["form-field", "inline-help"],
                 hasInlineContextHelp: true,
                 contextHelpId: "distribution_description",
-                ariaLabel: "Beschreibung der Ressource",
               }),
               this.addSelectInline("license", "Lizenz", {
                 required: true,
@@ -159,7 +153,6 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20004,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
-                ariaLabel: "Lizenz der Ressource",
               }),
               this.addInputInline(
                 "byClause",
@@ -167,8 +160,6 @@ export class BmiDoctype extends BaseDoctype {
                 {
                   wrappers: ["inline-help", "form-field"],
                   hasInlineContextHelp: true,
-                  ariaLabel:
-                    'Namensnennungstext für "By"-Clauses der Ressource',
                 }
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
@@ -176,7 +167,6 @@ export class BmiDoctype extends BaseDoctype {
                 codelistId: 20005,
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
-                ariaLabel: "Geplante Verfügbarkeit der Ressource",
               }),
             ]),
           ],
@@ -222,7 +212,6 @@ export class BmiDoctype extends BaseDoctype {
             showSearch: false,
             className: "flex-1",
             wrappers: ["form-field"],
-            ariaLabel: "Zeitliche Abdeckung der Daten",
             options: [
               { label: "am", value: "at" },
               { label: "seit", value: "since" },
@@ -233,16 +222,16 @@ export class BmiDoctype extends BaseDoctype {
           this.addDatepicker("timeSpanDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
+            fieldLabel: "Datum",
             required: true,
-            ariaLabel: "Zeitliche Abdeckung der Daten",
             expressions: {
               hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
             wrappers: [],
+            fieldLabel: "Datum",
             required: true,
-            ariaLabel: "Zeitliche Abdeckung der Daten",
             expressions: {
               hide: "model?.rangeType?.key !== 'range'",
             },
@@ -272,8 +261,6 @@ export class BmiDoctype extends BaseDoctype {
         required: options?.required,
         backendUrl: this.configService.getConfiguration().backendUrl,
         infoText: options?.infoText,
-        ariaLabel: options?.ariaLabel ?? label,
-        ariaDescription: options?.ariaDescription,
       },
       fieldArray: {
         fieldGroup: options?.fields,

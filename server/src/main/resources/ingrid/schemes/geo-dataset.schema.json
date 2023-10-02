@@ -244,6 +244,14 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           }
         },
+        "invekos": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
+          }
+        },
         "invekosKeywords": {
           "type": "array",
           "items": {

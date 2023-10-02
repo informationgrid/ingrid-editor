@@ -28,10 +28,10 @@
           "minItems": 1
         },
         "firstName": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "lastName": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "salutation": {
           "anyOf": [
@@ -64,10 +64,10 @@
           ]
         },
         "positionName": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "hoursOfService": {
-          "type": "string"
+          "type": ["null", "string"]
         },
         "hideAddress": {
           "type": "boolean"

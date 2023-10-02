@@ -37,7 +37,10 @@
                 >{{ doc._contentModified | dateAgo : "DE" }}</span
             >
         </span>
-        <mat-divider *ngIf="i < allDocs.length - 1"></mat-divider>
+        <mat-divider
+            *ngIf="i < allDocs.length - 1"
+            aria-hidden="true"
+        ></mat-divider>
     </mat-list-option>
 </mat-selection-list>
 

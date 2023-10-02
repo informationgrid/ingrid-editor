@@ -16,6 +16,7 @@ data class DataModel(
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
     val spatial: IngridSpatial,
+    val vectorSpatialRepresentation: List<VectorSpatialRepresentation>?,
     val explanation: String?,
     val publication: Publication?,
     val methodText: String?,
@@ -63,6 +64,13 @@ data class DataModel(
     val lineage: Lineage?,
     val service: Service?,
     val spatialScope: KeyValueModel?,
+)
+
+
+data class VectorSpatialRepresentation(
+    val topologyLevel: KeyValueModel?,
+    val geometricObjectType: KeyValueModel?,
+    val geometricObjectCount: Int?,
 )
 
 data class Publication(
@@ -115,9 +123,13 @@ data class Service(
     val explanation: String?,
     val coupledResources: List<CoupledResource>?,
     val couplingType: KeyValueModel?,
-    val hasAccessConstraints: Boolean?,
+    val hasAccessConstraints: Boolean? = false,
     val isAtomDownload: Boolean?,
-)
+) {
+    fun hasAccessConstraintsOrFalse() : Boolean {
+        return hasAccessConstraints ?: false
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(

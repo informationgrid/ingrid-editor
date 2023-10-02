@@ -19,7 +19,11 @@
     padding-bottom: 16px;
     line-height: 30px;
     font-weight: 400;
-    margin: 0px;
+    margin: 0;
+  }
+
+  button {
+    align-self: end;
   }
 
   mat-card-content {

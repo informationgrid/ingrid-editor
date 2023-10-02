@@ -59,10 +59,14 @@ export abstract class IngridShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
 
   options = {
+    dynamicRequired: {
+      accessConstraints: "formState.mainModel?.isInspireIdentified",
+    },
     required: {
       freeKeywords: false,
       useLimitation: false,
       topicCategories: true,
+      accessConstraints: false,
     },
   };
 
@@ -176,10 +180,6 @@ export abstract class IngridShared extends BaseDoctype {
                   value: "none",
                 },
                 {
-                  label: "InVeKoS/IACS",
-                  value: "iacs",
-                },
-                {
                   label: "InVeKoS/IACS (GSAA)",
                   value: "gsaa",
                 },
@@ -189,7 +189,6 @@ export abstract class IngridShared extends BaseDoctype {
                 },
               ],
               change: (field, value: MatSelectChange) => {
-                console.log("Value changed:", value);
                 this.handleInVeKosChange(field, value, options.thesaurusTopics);
               },
             })
@@ -340,6 +339,7 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
+              defaultValue: [],
               expressions: {
                 hide: "!formState.mainModel?.isInspireIdentified",
               },
@@ -1225,14 +1225,14 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
           asSelect: false,
           showSearch: true,
-          required: true,
+          required: this.options.required.accessConstraints,
           options: this.getCodelistForSelect(
             6010,
             "availabilityAccessConstraints"
           ),
           codelistId: 6010,
           expressions: {
-            "props.required": "formState.mainModel?.isInspireIdentified",
+            "props.required": this.options.dynamicRequired.accessConstraints,
             className: "field.props.required ? '' : 'optional'",
           },
         }),
@@ -1739,11 +1739,6 @@ export abstract class IngridShared extends BaseDoctype {
 
     this.addInVeKoSKeyword(formState, "iacs");
 
-    if (value.value.key === "iacs") {
-      field.options.formState.updateModel();
-      return;
-    }
-
     const executeAction = (value) => {
       if (value === "gsaa") {
         // INSPIRE Thema "Land use" Pflicht ("Bodennutzung")
@@ -1822,6 +1817,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   private addInVeKoSKeyword(formState: any, id: string) {
     const uri = `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${id}`;
+    if (!formState.mainModel.invekosKeywords)
+      formState.mainModel.invekosKeywords = [];
     const exists = formState.mainModel.invekosKeywords.some(
       (entry) => entry.key === uri
     );

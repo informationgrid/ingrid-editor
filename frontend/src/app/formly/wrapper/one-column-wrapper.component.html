@@ -2,9 +2,10 @@
     class="flex-row"
     [class.hasContextHelp]="props.hasContextHelp"
     [class.required]="props.required"
-    [attr.data-cy]="key ?? props.externalLabel"
+    [attr.data-cy]="props.contextHelpId ?? key ?? props.externalLabel"
 >
     <ige-form-label
+        [fieldId]="field.id"
         [hasContextHelp]="props.hasContextHelp"
         [ariaLabel]="props.ariaLabel"
         (contextHelp)="showContextHelp($event)"

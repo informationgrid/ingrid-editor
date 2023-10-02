@@ -36,11 +36,13 @@
 
 // border *outside of button with primary color
 .mat-mdc-fab,
+.mat-button-toggle,
 [mat-flat-button][color="primary"] {
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: 2px;
     outline: 3px solid $ige-primary;
     --mat-mdc-button-persistent-ripple-color: unset;
+    --mat-standard-button-toggle-focus-state-layer-opacity: 0;
   }
 }
 
@@ -117,13 +119,19 @@ form-toolbar :not(.save-buttons) > .mdc-button {
 }
 
 mat-tree-node,
-[role="button"],
-[role="figure"],
 [role="heading"],
 [role="listitem"],
 [role="row"],
 ige-session-timeout-info [tabindex="0"] {
   &:focus {
+    outline-offset: -2px;
+    outline: 2px solid $ige-primary;
+  }
+}
+
+.cdk-focused.cdk-keyboard-focused {
+  [role="button"],
+  &[role="button"] {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
   }
