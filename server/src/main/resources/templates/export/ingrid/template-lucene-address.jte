@@ -29,7 +29,6 @@
     "t02_address.adr_id": "${page.getUuid()}",
     "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",
-    "is_top_level": null,
 
     "t02_address.lastname": "${page.getModel().getLastName()}",
     "t02_address.firstname": "${page.getModel().getFirstName()}",
@@ -52,6 +51,10 @@
     @endif
     "summary": "${page.getModel().getPositionName()}",
 
+    @if(page.getNextParent() != null)
+    "parent.address_node.addr_uuid": "${page.getNextParent()}",
+    @endif
+
 @for(var entry : ForSupport.of(page.getParentAddresses()))
     @if(entry.isFirst())
         "parent.address_node.addr_uuid": "${entry.get().getUuid()}",
@@ -61,9 +64,7 @@
     "t02_address${entry.getIndex() + 1}.adr_id": "${entry.get().getUuid()}",
     "t02_address${entry.getIndex() + 1}.typ": "${page.getAddressDocType(entry.get().getDocType())}",
     "title${entry.getIndex() + 1}": "${entry.get().getOrganization()}",
-    @if(!"FOLDER".equals(entry.get().getDocType()))
-        "t02_address.parents.title": "${entry.get().getOrganization()}",
-    @endif
+    "t02_address.parents.title": "${entry.get().getOrganization()}",
 @endfor
 
     "t021_communication.commtype_key": [

@@ -8,7 +8,7 @@ import {
 } from "../../../../services/event/event.service";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { filter } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -66,9 +66,6 @@ export class AssignedUserBehaviour extends Plugin {
     super.registerForm();
 
     this.formSubscriptions.push(
-      this.eventService
-        .respondToEvent(IgeEvent.DELETE_USER)
-        .subscribe((eventResponder) => this.handleEvent(eventResponder)),
       this.docEvents.onEvent("OPEN_ASSIGN_USER_DIALOG").subscribe((event) => {
         this.openAssignUserDialog(event.data.id);
       })
@@ -108,7 +105,10 @@ export class AssignedUserBehaviour extends Plugin {
     this.subscriptions.push(
       this.userService.selectedUser$.subscribe((user) => {
         selectedUser = user;
-      })
+      }),
+      this.eventService
+        .respondToEvent(IgeEvent.DELETE_USER)
+        .subscribe((eventResponder) => this.handleEvent(eventResponder))
     );
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",

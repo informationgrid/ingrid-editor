@@ -267,6 +267,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MixedCdkDragDropModule,
     PrintViewDialogComponent,
     MatPseudoCheckboxModule,
+    FieldToAiraLabelledbyPipe,
   ],
   providers: [
     {
@@ -318,14 +319,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
     UpdateGetCapabilitiesComponent,
-    FieldToAiraLabelledbyPipe,
   ],
   exports: [
     ReactiveFormsModule,
     FormsModule,
     FormlyModule,
     ContextHelpComponent,
-    FieldToAiraLabelledbyPipe,
   ],
 })
 export class IgeFormlyModule {}

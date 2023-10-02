@@ -170,7 +170,7 @@ export class PublishPlugin extends SaveBase {
           new IgeError(
             "Es müssen alle Felder korrekt ausgefüllt werden. " +
               "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
-              "STRG + ALT + Pfeiltaste-links zum nächsten Fehler."
+              "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler."
           )
         );
         return false;

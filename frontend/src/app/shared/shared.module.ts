@@ -34,6 +34,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "./search-input/search-input.component";
 import { DocumentIconModule } from "./document-icon/document-icon.module";
 import { FullNamePipe } from "../directives/full-name.pipe";
+import { A11yModule } from "@angular/cdk/a11y";
 
 @NgModule({
   imports: [
@@ -61,6 +62,7 @@ import { FullNamePipe } from "../directives/full-name.pipe";
     TranslocoModule,
     DocumentIconModule,
     SearchInputComponent,
+    A11yModule,
   ],
   declarations: [
     TreeComponent,

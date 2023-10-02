@@ -109,7 +109,7 @@ internal class KeycloakConfig {
         return http.build();
     }
 
-    
+
     @Bean
     fun jwtDecoder(): JwtDecoder {
         if (keycloakProxyUrl != null) {
@@ -224,7 +224,7 @@ class KeycloakRealmRoleConverter(
 
             // add groups
             groups.forEach {
-                grantedAuthorities.add(SimpleGrantedAuthority("GROUP_${it.name}"))
+                grantedAuthorities.add(SimpleGrantedAuthority("GROUP_${it.id}"))
                 if (it.permissions?.rootPermission == RootPermissionType.WRITE) {
                     grantedAuthorities.add(SimpleGrantedAuthority("SPECIAL_write_root"))
                 } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {

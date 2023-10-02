@@ -11,6 +11,7 @@ import java.time.OffsetDateTime
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
     val description: String?,
+    val _parent: String?,
     val parentIdentifier: String?,
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
