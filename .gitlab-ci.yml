@@ -1,0 +1,20 @@
+stages:
+  - build
+
+build-html:
+  artifacts:
+    paths:
+      - public/**/*.html
+  image: asciidoctor/docker-asciidoctor
+  script:
+    - >
+      asciidoctor -a data-uri \
+        -a toc=left \
+        -a sectnums \
+        -a reproducible \
+        -a icons=font \
+        -a source-highlighter=Pygments \
+        -a experimental \
+        -D public \
+        -R docs '**/*.adoc'
+  stage: build

@@ -1,0 +1,109 @@
+= Permissions / Authorisation
+
+Since Keycloak is only used for authentication the app has to take care of the authorisation. Authorisation is needed to
+allow a user access to a resource. A resource can be dataset (document or address), a whole page (e.g. import) or even a
+single action on a page (may view all users but not manipulate them).
+
+== Technical implementation
+
+Authorisation is implemented by Spring Security and the domain object security (ACLs). With Spring Security resources
+can be restricted to specific user roles. Functions can be annotated to prevent illegal access:
+
+| Annotation     | Erklärung                                                           |
+| -------------- | ------------------------------------------------------------------- |
+| @PreAuthorize  | check before a function is executed                                 |
+| @PostAuthorize | check after a function is executed                                  |
+| @PreFilter     | check multiple resources for permission before function is executed |
+| @PostFilter    | check multiple resources for permission after function is executed  |
+
+These annotations can be used with expressions, to check for a role or a more fine-grained permission. This looks like:
+
+```kotlin
+@PreAuthorize("hasRole('USER')")
+fun create(contact: Contact)
+
+@PreAuthorize("hasPermission(#contact, 'admin')")
+fun deletePermission(contact: Contact, recipient: Sid, permission: Permission)
+```
+
+Normally a resource is checked directly before it's accessed, which is done at a `Repository`.
+
+== Spring Data Repositories
+
+The abstraction of the database is done by repositories. A repository is an interface which extends the
+interface `JpaRepository`. Out of the box it already delivers CRUD-operations onto the database. For special database
+queries we only need to add another function to the interface where the name follows the convention. Then the SQL will
+be automatically generated from the function name.
+
+It's also possible to define your own query as JPA-Query or native query.
+
+To secure access to a database resource, we only have to add an annotation to the interface function.
+
+Database access should be protected in those repositories to prevent security holes.
+
+== Permission check
+
+Whenever a permission is checked with the expression `hasPermission(...)`, the corresponding configured class
+`IgeAclPermissionEvaluator` is responsible.
+
+The implementation does the following things:
+
+- allow access if principal has role `ige-super-admin` or `cat-admin`
+- or check if a user has rights to access the requested resource
+
+The latter one is more complex and will be explained below in more detail. In short the users' groups are checked if
+they contain the permission (read/write) for the requested resource.
+
+== Spring ACL
+
+In order to manage access to resources (RBAC), Spring offers an Access Control List (ACL) library to simplify the
+process. As a prerequisite four tables are needed in the database:
+
+| Table               | Description                                                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| acl_sid             | Each group represents a SID                                                                                                                              |
+| acl_class           | Each protected resource type is defined as its class, e.g. `DocumentWrapper`                                                                             |
+| acl_object_identity | Every resource must be listed, before it can be protected. Moreover it's possible to create the entries hierarchically, in order to inherit permissions. |
+| acl_entry           | Here the actual permission (read/write/subtree) is listed. Each permission is connected to a SID (group) and an object identity (UUID)                   |
+
+When a permission for a resource is checked, it uses the following procedure:
+
+- get ACL of a object identity (UUID)
+- check if requested permission is given to this UUID
+- if not, get the parent ACL and check permission there (inheritance is used by default)
+- only if the resource or one of its parents has the correct permission, access will be allowed
+- otherwise an `Access denied` Exception will be thrown.
+
+== Principal
+
+A principal contains the currently logged in user with additional information about the roles and groups it belongs to.
+When the application is accessed by the browser it first is checked for authentication through Keycloak and after a
+successful login a special Keycloak Principal is available in the API-Controller.
+
+When running scheduling tasks, which need to access the database, we have to use a principal with the correct
+permissions. Otherwise we would be denied access, since no principal is present during a scheduled task, since no
+external user action initiated the request.
+
+To work around this problem, a principal needs to be created manually for the task, with the necessary access rights.
+This can be done the following way:
+
+```kotlin
+val auth: Authentication =
+    UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+SecurityContextHolder.getContext().authentication = auth
+```
+
+Here's a principal created with the role `cat-admin`, which will be used during the permission checks.
+
+== Roles
+
+The IGE-NG supports the following roles:
+
+- ige-super-admin - full access to every IGE-NG instance
+- cat-admin - full access to a defined IGE-NG instance
+- md-admin - limited access to a defined IGE-NG instance with user management
+- author - limited access to a defined IGE-NG instance to limited access to resources
+
+At the time of this writing these roles are mapped to a list of permissions, which can be used to allow access to functions. These functions can be either in the frontend or the backend. Instead of using the role of a user, you should use the permission to check for access. This is more fine granular and can be more easily adapted during future changes.
+
+The mapping of the permissions to a role can be found in the class `CatalogService.getPermissions()`
