@@ -645,6 +645,11 @@
             <srv:operationName>
                 <gco:CharacterString>Download</gco:CharacterString>
             </srv:operationName>
+            <srv:DCP>
+                <srv:DCPList
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                        codeListValue="WebServices" />
+            </srv:DCP>
             <srv:connectPoint>
                 <gmd:CI_OnlineResource>
                     <gmd:linkage>
@@ -670,6 +675,7 @@
                 </srv:operationDescription>
             @endif
             @if(TransformationTools.hasValue(operation.getMethodCall()))
+                <srv:DCP gco:nilReason="missing"></srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>

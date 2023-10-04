@@ -451,12 +451,19 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    val operatesOn = data.service?.coupledResources?.map {
+    fun getOperatesOn() = data.service?.coupledResources?.map {
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
-            val identifier = this.getCitationFromGeodataset(it.uuid)
-            OperatesOn(it.uuid, identifier)
+            val identifier = getLastPublishedDocument(it.uuid)?.data?.get("identifier")?.asText() ?: it.uuid
+            val containsNamespace = identifier.contains("://")
+            val completeIdentifier = if (containsNamespace) {
+                identifier
+            } else {
+                val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
+                namespaceWithSlash + identifier
+            }
+            OperatesOn(it.uuid, completeIdentifier)
         }
 
     } ?: emptyList()
