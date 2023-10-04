@@ -5,7 +5,6 @@ build-html:
   artifacts:
     paths:
       - public/**/*.html
-  image: asciidoctor/docker-asciidoctor
   script:
     - >
       asciidoctor -a data-uri \
@@ -18,5 +17,5 @@ build-html:
         -D public \
         -R docs '**/*.adoc'
   tags:
-    - dev
+    - ige-ng-asciidoc
   stage: build
