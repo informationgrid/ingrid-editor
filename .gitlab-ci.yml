@@ -17,4 +17,6 @@ build-html:
         -a experimental \
         -D public \
         -R docs '**/*.adoc'
+  tags:
+    - dev
   stage: build
