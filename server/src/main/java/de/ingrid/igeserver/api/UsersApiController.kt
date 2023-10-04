@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.exceptions.MailException
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -121,7 +122,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(user)
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = [MailException::class])
     override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
@@ -139,12 +140,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 keycloakService.getClient(principal).use { client ->
                     val user = keycloakService.getUser(client, login)
                     logger.info("Send deletion email to '${user.login}' (${user.email})")
-                    email.sendDeletionEmail(
-                        user.email,
-                        user.firstName,
-                        user.lastName,
-                        user.login
-                    )
+                    try {
+                        email.sendDeletionEmail(
+                            user.email,
+                            user.firstName,
+                            user.lastName,
+                            user.login
+                        )
+                    } catch (ex: Exception) {
+                        throw MailException.withException(ex)
+                    }
                 }
             }
             keycloakService.deleteUser(principal, login)

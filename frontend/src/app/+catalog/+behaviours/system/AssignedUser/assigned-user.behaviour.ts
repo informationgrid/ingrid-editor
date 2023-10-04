@@ -8,7 +8,7 @@ import {
 } from "../../../../services/event/event.service";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { filter, tap } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -113,7 +113,7 @@ export class AssignedUserBehaviour extends Plugin {
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",
       name: "transfer-responsibility",
-      action: () => this.openTransferResponsibilityDialog(selectedUser),
+      action: () => this.handleTransferResponsibility(selectedUser),
     });
   }
 
@@ -136,7 +136,6 @@ export class AssignedUserBehaviour extends Plugin {
 
     this.userService.getAssignedDatasets(user.id).subscribe((datasets) => {
       if (datasets.length > 0) {
-        success = false;
         this.dialog
           .open(ConfirmDialogComponent, {
             data: {
@@ -147,10 +146,12 @@ export class AssignedUserBehaviour extends Plugin {
           })
           .afterClosed()
           .pipe(filter((result) => result))
-          .subscribe(() => {
-            // this.openTransferResponsibilityDialog(user);
-            console.log("//TODO transfer responsibility");
+          .subscribe(async () => {
+            const handled = await this.handleTransferResponsibility(user);
+            const responseData = this.buildResponse(handled);
+            eventResponder.eventResponseHandler(responseData);
           });
+        return;
       } else {
         success = true;
       }
@@ -201,20 +202,26 @@ export class AssignedUserBehaviour extends Plugin {
       });
   }
 
-  openTransferResponsibilityDialog(oldUser: User) {
-    this.dialog
-      .open(TransferResponsibilityDialogComponent, {
-        width: "780px",
-        data: {
-          users: this.userService.users$.value,
-          oldUser: oldUser,
-        },
-        delayFocusTrap: true,
-      })
-      .afterClosed()
-      .pipe(filter((result) => result))
-      .subscribe(() => {
-        this.toast.open("Verantwortung übertragen.");
-      });
+  handleTransferResponsibility(oldUser: User): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.dialog
+        .open(TransferResponsibilityDialogComponent, {
+          width: "780px",
+          data: {
+            users: this.userService.users$.value,
+            oldUser: oldUser,
+          },
+          delayFocusTrap: true,
+        })
+        .afterClosed()
+        .subscribe((result) => {
+          if (result) {
+            this.toast.open("Verantwortung übertragen.");
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+    });
   }
 }
