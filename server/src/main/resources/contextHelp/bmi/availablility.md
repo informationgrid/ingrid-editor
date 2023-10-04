@@ -5,4 +5,6 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Die Verfügbarkeit der Daten</p>
+Verfügbarkeit der Daten, als Auswahl aus einer festen Liste von Werten via DCAT-AP URIs.
+
+Die Verfügbarkeit gibt an, wie lange die Informationen voraussichtlich zur Verfügung stehen werden.

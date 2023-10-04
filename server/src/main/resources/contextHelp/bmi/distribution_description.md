@@ -5,4 +5,4 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Geben Sie hier an, welche Angabe zum Urheber bei Lizenzen mit Namensnennung gemacht werden muss.</p>
+Geben Sie hier eine Freitextbeschreibung der verknüpften Ressource an, also der hinzugefügten Daten.

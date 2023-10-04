@@ -5,4 +5,6 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Die Sprache der Ressource.</p>
+Die Sprache der Ressource.
+
+Diese Eigenschaft kann wiederholt werden, sofern die Ressource in mehreren Sprachen vorliegt.

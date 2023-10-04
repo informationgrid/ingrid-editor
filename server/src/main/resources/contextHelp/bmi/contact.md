@@ -5,4 +5,4 @@ docType: BmiAddressDoc
 profile: bmi
 ---
 
-Es muss mindestens eine Email-Adresse angegeben werden.
+Es muss mindestens eine E-Mail-Adresse angegeben werden.

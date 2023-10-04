@@ -5,14 +5,14 @@ docType: BmiDoc
 profile: bmi
 ---
 
-Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:
+Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:<br />
 
 ## Freier Raumbezug
 Der "Freie Raumbezug" wird auf einer Karte festgelegt. Eine Ortssuche kann verwendet werden, um den Raumbezug ortsbezogen auszuwählen.
 
 ## Raumbezug (WKT)
-Die Erfassung eines Raumbezuges als Well Known Text (WKT, https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) ermöglicht die freie Angabe von geometrischen Gebilden.
-Unterstützt werden momentan nur Polygone mit einer Außengrenze und Innengrenzen (Löcher), Points und Linestrings.
+Die Erfassung eines Raumbezuges als Well Known Text (WKT, https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) ermöglicht die freie Angabe von geometrischen Gebilden.<br />
+**Unterstützt werden momentan nur Polygone mit einer Außengrenze und Innengrenzen (Löcher), Points und Linestrings.**
 
 Beispiel:
 >  POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))  

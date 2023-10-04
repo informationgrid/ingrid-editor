@@ -5,4 +5,4 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Aktualisierungsdatum des Datensatz.</p>
+Geben Sie hier das Datum der letzten Aktualisierung bzw. Modifikation der Ressource an.
