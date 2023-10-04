@@ -1,10 +1,10 @@
 stages:
   - build
 
-build-html:
+pages:
   artifacts:
     paths:
-      - public/**/*.html
+      - public
   script:
     - >
       asciidoctor -a data-uri \
