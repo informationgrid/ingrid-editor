@@ -172,7 +172,7 @@ class IgeAclService @Autowired constructor(
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
     }
 
-    private fun hasRootAccess(groups: Set<Group>) =
+    fun hasRootAccess(groups: Set<Group>) =
         groups.any {
             listOf(
                 RootPermissionType.READ,
@@ -180,7 +180,7 @@ class IgeAclService @Autowired constructor(
             ).contains(it.permissions?.rootPermission)
         }
 
-    fun getDocumentIdsForGroups(principal: Principal): List<Int> {
+    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String): List<Int> {
         val groups = authUtils.getCurrentUserRoles()
         val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
         return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)

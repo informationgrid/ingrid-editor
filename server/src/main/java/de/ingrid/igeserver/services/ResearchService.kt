@@ -2,8 +2,6 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
@@ -58,10 +56,11 @@ class ResearchService {
 
     }
 
+    
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
         val groups = authUtils.getCurrentUserRoles()
-        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootAccess(groups)
         val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
         // if a user has no groups then user is not allowed anything
@@ -83,14 +82,6 @@ class ResearchService {
 
         return ResearchResponse(totalHits, map)
     }
-
-    private fun hasRootAccess(groups: Set<Group>) =
-            groups.any {
-                listOf(
-                        RootPermissionType.READ,
-                        RootPermissionType.WRITE
-                ).contains(it.permissions?.rootPermission)
-            }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
