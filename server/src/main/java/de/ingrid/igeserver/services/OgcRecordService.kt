@@ -8,6 +8,7 @@ import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.InvalidParameterException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
@@ -326,8 +327,12 @@ class OgcRecordService @Autowired constructor(
     }
 
     private fun exportCatalog(collectionId: String, exporter: OgcCatalogExporter): Any {
-        val catalogData = catalogService.getCatalogById(collectionId)
-        return exporter.run(catalogData)
+        try {
+            val catalogData: Catalog = catalogService.getCatalogById(collectionId)
+            return exporter.run(catalogData)
+        } catch (e: Exception) {
+            throw NotFoundException.withMissingResource(collectionId, "collection")
+        }
     }
 
     private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: String): Any{

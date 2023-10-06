@@ -20,7 +20,6 @@ import java.time.Instant
 //@RequestMapping(path = ["/api"])
 class OgcRecordApiController @Autowired constructor(
         private val catalogService: CatalogService,
-        private val documentService: DocumentService,
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
