@@ -1,67 +1,119 @@
 package de.ingrid.igeserver.ogc
 
-import de.ingrid.igeserver.IgeServer
-import org.apache.http.HttpResponse
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import IntegrationTest
+import com.ninjasquad.springmockk.MockkBean
+import de.ingrid.igeserver.exports.ingrid.exportJsonToJson
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.services.*
+import io.mockk.every
+import io.mockk.mockk
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlConfig
-import java.io.IOException
+import org.springframework.http.MediaType
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
+class ExceptionTests : IntegrationTest() {
 
-class ExceptionTests {
+    val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
+
+    @MockkBean(relaxed = true)
+    private lateinit var catalogService: CatalogService
+
+    @MockkBean(relaxed = true)
+    private lateinit var documentService: DocumentService
+
+    @MockkBean(relaxed = true)
+    private lateinit var exportService: ExportService
+
+    @MockkBean(relaxed = true)
+    private lateinit var exporter: IngridIDFExporter
+
+//    private val catalogService = mockk<CatalogService>()
+
+    val ogcRecordService = mockk<OgcRecordService>()
+
 
     @Autowired
-    private val utils: IntegrationTestUtils = IntegrationTestUtils()
+    lateinit var mockMvc: MockMvc
 
-    @Autowired
-    private val testUtils: TestUtils = TestUtils()
+    @Before
+    fun beforeTest() {
+        every {
+            mockPrincipal.authorities
+        }.returns(listOf(SimpleGrantedAuthority("cat-admin")))
+        every {
+            mockPrincipal.principal
+        }.returns("user1")
+
+//        mockCatalog(catalogService)
+//        val addresses = listOf(
+//                MockDocument(
+//                        1638,
+//                        "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+//                        "/export/ingrid/address.organisation.sample.json",
+//                        type = "InGridOrganisationDoc"
+//                ),
+//                MockDocument(
+//                        1634,
+//                        "14a37ded-4ca5-4677-bfed-3607bed3071d",
+//                        "/export/ingrid/address.person.sample.json",
+//                        1638
+//                ),
+//                MockDocument(
+//                        1652,
+//                        "fc521f66-0f47-45fb-ae42-b14fc669942e",
+//                        "/export/ingrid/address.person2.sample.json",
+//                        1638
+//                )
+//        )
+//
+//        val datasets = listOf(
+//                MockDocument(
+//                        uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+//                        template = "/export/ingrid/geo-dataset.maximal.sample.json"
+//                ),
+//                MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
+//        )
+//
+//        initDocumentMocks(addresses + datasets, documentService)
+    }
 
 
-//    @BeforeEach
-//    @Throws(IOException::class)
-//    fun initialize() {
-//        // ensure index is empty
-//        val query: Query = getBuilderWithMatchAllQuery().build()
-//        val numDocuments: Long = operations.count(query, Any::class.java, IndexCoordinates.of(testIndex))
-//        org.junit.Assert.assertEquals(0, numDocuments)
-//        // ensure basic collection is in DB
-//        val payload: String = readXml("integration", "collection", "payload", "correct")
-//        val responsePost = utils.post("/collections/$collectionId", payload, "application/rdf+xml")
-//        org.junit.Assert.assertEquals(200, responsePost!!.statusLine.statusCode.toLong())
+//    @Test
+//    fun getCollectionByNonExistingId() {
+//        every { catalogService.getCatalogById("no-can-do") } throws Exception()
+//        mockMvc.perform(get("/collections/no-can-do").principal(mockPrincipal))
+//                .andDo(print())
+//                .andExpect(status().isNotFound)
+//    }
+
+//    @Test
+//    fun getCollection() {
+//        mockMvc.perform(get("/collections/test-catalog").principal(mockPrincipal))
+//            .andDo(print())
+//            .andExpect(status().isOk)
+//    }
+
+    //
+//    @Test
+//    fun getCollectionNonExistingExporter() {
+//
 //    }
 
 
-    @Throws(IOException::class)
-    private fun validRecordPayload(): String? {
-        return testUtils.readXml("ogc", "internal", "singleRecord", extension = "json")
-    }
-
-    @DisplayName("POST valid Record to non-existing collection")
     @Test
-    @Throws(IOException::class)
-    fun postRecordIfCollectionMissing() {
-        val nonExistingCollectionId = "no-can-do"
-        val response: HttpResponse? = utils.post("/collections/$nonExistingCollectionId/items", validRecordPayload(), "application/json")
-        assertEquals(404, response?.statusLine?.statusCode?.toLong())
-    }
+    fun getRecord() {
+        val result = exportJsonToJson(exporter, "/export/ingrid/data-collection.sample.maximal.json")
+//        every { ogcRecordService.prepareRecord("test-catalog", "93CD0919-5A2F-4286-B731-645C34614AA1", "application/json") } returns Pair(result.toByteArray(), "application/json")
 
-    @DisplayName("POST valid Record to existing collection")
-    @Test
-    @Throws(IOException::class)
-    fun postRecordIfCollectionPresent() {
-        val collectionId = "ogctestcatalog"
-        val response: HttpResponse? = utils.post("/collections/$collectionId/items", validRecordPayload(), "application/json")
-        assertEquals(200, response?.statusLine?.statusCode?.toLong())
+        every { exportService.export("a910fde0-3910-413e-9c14-4fa86f3d12c2", any())} returns ExportResult(result.toByteArray(), "filename", exportFormat = MediaType.valueOf("application/json") )
+        mockMvc.perform(get("/collections/test-catalog/items/a910fde0-3910-413e-9c14-4fa86f3d12c2").principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk)
     }
 
 
