@@ -251,6 +251,7 @@ interface OgcRecordApi {
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
             @Parameter(description = "## Address Document \n **Custom Parameter** \n\nIs this an address document?") @RequestParam(required = false) address: @Valid Boolean,
             @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?,
+            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Dataset to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: Int?,
     ): ResponseEntity<JsonNode>
 
 

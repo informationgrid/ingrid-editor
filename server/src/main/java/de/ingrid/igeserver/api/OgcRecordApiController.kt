@@ -64,12 +64,12 @@ class OgcRecordApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, address: Boolean, publish: Boolean?): ResponseEntity<JsonNode> {
+    override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, address: Boolean, publish: Boolean?, parentId: Int?): ResponseEntity<JsonNode> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
 
         val contentType = allHeaders["content-type"]!!
         // import via importer
-        val options = ImportOptions( publish = publish ?: false)
+        val options = ImportOptions( publish = publish ?: false, parentDocument = parentId)
         ogcRecordService.importDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null)
         return ResponseEntity.ok().build()
     }
