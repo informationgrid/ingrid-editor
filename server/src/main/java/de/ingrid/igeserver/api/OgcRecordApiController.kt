@@ -30,7 +30,7 @@ class OgcRecordApiController @Autowired constructor(
         ) : OgcRecordApi {
 
     val log = logger()
-    val defaultFormat = "geojson"
+    val defaultFormat = "internal"
 
     override fun getCatalogs(principal: Principal, format: String?): ResponseEntity<ByteArray> {
         val definedFormat = format ?: defaultFormat
