@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
@@ -416,8 +417,8 @@ open class IngridModelTransformer(
     }
 
     // geodataservice
-    val serviceType =
-        codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
+    fun getServiceType(type: KeyValueModel? = null) =
+        codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", type ?: data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
     val couplingType = data.service?.couplingType?.key
 
@@ -564,27 +565,6 @@ open class IngridModelTransformer(
         } ?: emptyList()
     }
 
-    private fun getCitationFromGeodataset(uuid: String?): String? {
-        if (uuid == null) return null
-        try {
-            val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
-                IngridModel::class.java
-            )
-            val transformer = IngridModelTransformer(
-                model,
-                catalogIdentifier,
-                codelists,
-                config,
-                catalogService
-            )
-            return transformer.citationURL
-        } catch (ex: EmptyResultDataAccessException) {
-            throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
-        }
-    }
-
-
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
         ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
     private fun getReferencedCrossReferences() =
@@ -628,26 +608,53 @@ open class IngridModelTransformer(
             } else {
                 throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
             }
+        val service = refTrans.data.get("service")
 
-        val refType = type
-            ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
-            ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
+        val refType = type // type is null only for incoming references, where we don't know the type yet
+            ?: getRefTypeFromIncomingReference(refTrans.data)
             ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
 
+        val firstOperation = service?.get("operations")?.get(0)
         return CrossReference(
             direction = direction,
             uuid = uuid,
-            objectName = refTrans.model.title,
-            objectType = refTrans.documentType,
+            objectName = refTrans.title!!,
+            objectType = mapDocumentType(refTrans.type),
             refType = refType,
-            description = refTrans.description,
-            graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
-            serviceType = refTrans.serviceType,
-            serviceOperation = refTrans.operations.firstOrNull()?.name,
-            serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
-            serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
-            hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
+            description = refTrans.data.get("description").asText(),
+            graphicOverview = generateBrowseGraphics(
+                listOfNotNull(convertToGraphicOverview(refTrans.data.get("graphicOverviews")?.get(0)))
+            ).firstOrNull()?.uri,
+            serviceType = getServiceType(createKeyValueFromJsonNode(service?.get("type"))),
+            serviceOperation = 
+                    getOperationName(createKeyValueFromJsonNode(firstOperation?.get("name"))),
+            serviceUrl = service?.get("operations")?.get(0)?.get("identifierLink")?.asText(),
+            serviceVersion = getVersion(createKeyValueFromJsonNode(service?.get("version"))),
+            hasAccessConstraints = service?.get("hasAccessConstraints")?.asBoolean() ?: false
         )
+    }
+    
+    private fun getRefTypeFromIncomingReference(data: JsonNode): KeyValueModel? {
+        val asCoupledResource = data.get("service")?.get("coupledResources")
+            ?.filter { !it.get("isExternalRef").asBoolean() }
+            ?.find { it.get("uuid").asText() == this.model.uuid }
+        
+        if (asCoupledResource != null) return KeyValueModel("3600", null)
+            
+        val asReference = data.get("references")
+            ?.find { it.get("uuidRef").asText() == this.model.uuid }
+        
+        return if (asReference != null) {
+            createKeyValueFromJsonNode(asReference.get("type"))
+        } else null
+    }
+    
+    private fun createKeyValueFromJsonNode(json: JsonNode?): KeyValueModel {
+        return KeyValueModel(json?.get("key")?.asText(), json?.get("value")?.asText())
+    }
+    
+    private fun convertToGraphicOverview(json: JsonNode?): GraphicOverview? {
+        return null
     }
 
 
@@ -667,20 +674,10 @@ open class IngridModelTransformer(
 
     }
 
-    private fun getLastPublishedModel(uuid: String?): IngridModelTransformer? {
+    private fun getLastPublishedModel(uuid: String?): Document? {
         if (uuid == null) return null
 
-        val model = jacksonObjectMapper().convertValue(
-            getLastPublishedDocument(uuid),
-            IngridModel::class.java
-        )
-        return if (model == null) null else IngridModelTransformer(
-            model,
-            catalogIdentifier,
-            codelists,
-            config,
-            catalogService
-        )
+        return getLastPublishedDocument(uuid)
     }
 
 

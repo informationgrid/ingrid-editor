@@ -479,9 +479,9 @@
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
     @endfor
-    @if(TransformationTools.hasValue(page.getServiceType()))
+    @if(TransformationTools.hasValue(page.getServiceType(null)))
         <srv:serviceType>
-            <gco:LocalName>${page.getServiceType()}</gco:LocalName>
+            <gco:LocalName>${page.getServiceType(null)}</gco:LocalName>
         </srv:serviceType>
     @endif
     @for(String version : page.getServiceTypeVersions())
