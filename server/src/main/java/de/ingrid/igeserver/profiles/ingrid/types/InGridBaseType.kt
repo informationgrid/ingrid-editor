@@ -39,7 +39,7 @@ abstract class InGridBaseType @Autowired constructor(val jdbcTemplate: JdbcTempl
                 AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
-                AND (data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}"}]' OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]')
+                AND (data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]')
                 )
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
