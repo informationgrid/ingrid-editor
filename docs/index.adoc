@@ -25,7 +25,14 @@ It also disables Keycloak.
 | elasticsearch 
 | Activate export to Elasticsearch during publishing and indexing 
 
+| ibus | Use configuation for an iBus
+
 | mcloud | Activates importer, exporter and datatypes for the mCLOUD-Profile
+
+| uvp | Support for management of UVP documents
+
+| ingrid | Support for management of Geo-Datasets and Services with export to ISO-19139 format
+
 |===
 
 ==== Dependency Injection
