@@ -478,16 +478,7 @@ More information can be found in the FAQ.md.
 ====
 [source,kotlin]
 ----
-@Service
-class M017_TestMigration : MigrationBase("0.17") {
-
-    private var log = logger()
-
-    override fun exec() {
-        log.info("Executing migration 0.17")
-    }
-
-}
+include::../server/src/main/java/de/ingrid/igeserver/migrations/tasks/M020_AddCodelistTable.kt[lines=12..]
 ----
 ====
 
