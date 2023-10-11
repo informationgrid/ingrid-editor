@@ -18,7 +18,6 @@ class InGridKommunalStComponent extends InGridComponent {
     this.geoDataset.geodatasetOptions.required.statement = false;
     this.geoDataset.geodatasetOptions.required.subType = false;
     this.geoDataset.geodatasetOptions.dynamicRequired.citation = undefined;
-    this.geoDataset.geodatasetOptions.required.identifier = false;
 
     [
       this.specialisedTask,
