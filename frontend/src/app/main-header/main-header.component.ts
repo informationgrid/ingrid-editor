@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, NgZone, OnInit } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -14,6 +14,7 @@ import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { settingsRoutes } from "../+settings/settings.routing";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
+import { LogoutService } from "../services/logout.service";
 
 @Component({
   selector: "ige-main-header",
@@ -45,7 +46,9 @@ export class MainHeaderComponent implements OnInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
+    private logoutService: LogoutService,
+    private zone: NgZone
   ) {}
 
   ngOnInit() {
@@ -83,10 +86,15 @@ export class MainHeaderComponent implements OnInit {
   }
 
   async logout() {
+    this.logoutService.setShowLogoutContainer(true);
     const hasNavigated = await this.router.navigate([
       `${ConfigService.catalogId}`,
     ]);
-    if (!hasNavigated) return;
+
+    if (!hasNavigated) {
+      this.logoutService.setShowLogoutContainer(false);
+      return;
+    }
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
       this.authFactory.get().logout();
