@@ -455,7 +455,7 @@ open class IngridModelTransformer(
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
-            val identifier = getLastPublishedDocument(it.uuid)?.data?.get("identifier")?.asText() ?: it.uuid
+            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
             val completeIdentifier = if (containsNamespace) {
                 identifier
@@ -586,7 +586,7 @@ open class IngridModelTransformer(
 
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
-        ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
+        ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
