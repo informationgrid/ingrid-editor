@@ -644,7 +644,7 @@ open class IngridModelTransformer(
             graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
             serviceType = refTrans.serviceType,
             serviceOperation = refTrans.operations.firstOrNull()?.name,
-            serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
+            serviceUrl = refTrans.operations.firstOrNull()?.methodCall,
             serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
             hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
         )
