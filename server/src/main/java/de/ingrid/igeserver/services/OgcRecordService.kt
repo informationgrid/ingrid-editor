@@ -100,10 +100,10 @@ class OgcRecordService @Autowired constructor(
         }
     }
 
-    private fun prepareDataForImport(catalogId: String, mimeType: String, docData: String): List<String> {
+    private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String): List<String> {
         val documents: MutableList<String> = mutableListOf()
         if (mimeType == "application/xml") {
-            val parsedXml = parseXmlWithMultipleDocs(docData, catalogId)
+            val parsedXml = parseXmlWithMultipleDocs(docData, collectionId)
             for (doc in parsedXml) {
                 documents.add(doc)
             }
@@ -117,12 +117,12 @@ class OgcRecordService @Autowired constructor(
 
             for (doc in jsonData) {
                 if (jsonFormat == "internal") {
-                    val internalDoc = internalExporter.addExportWrapper(catalogId, doc, null)
+                    val internalDoc = internalExporter.addExportWrapper(collectionId, doc, null)
                     documents.add(internalDoc.toString())
                 }
                 if (jsonFormat == "geojson") {
                     val relevantNode = doc.get("properties")
-                    val geoJsonDoc = internalExporter.addExportWrapper(catalogId, relevantNode, null)
+                    val geoJsonDoc = internalExporter.addExportWrapper(collectionId, relevantNode, null)
                     documents.add(geoJsonDoc.toString())
                 }
             }
@@ -130,7 +130,7 @@ class OgcRecordService @Autowired constructor(
         return documents
     }
 
-    private fun parseXmlWithMultipleDocs(data: String, catalogId: String): List<String> {
+    private fun parseXmlWithMultipleDocs(data: String, collectionId: String): List<String> {
         val documents: MutableList<String> = mutableListOf()
 
         val xmlInput = InputSource(StringReader(data))
@@ -238,7 +238,7 @@ class OgcRecordService @Autowired constructor(
         return LimitAndOffset(queryLimit, queryOffset)
     }
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, catalogId: String, requestedFormat: String): List<Link> {
+    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: String): List<Link> {
         val list: MutableList<Link> = mutableListOf()
 
         val supportedFormats: List<SupportFormat> = listOf(
@@ -254,7 +254,7 @@ class OgcRecordService @Autowired constructor(
         val prevOffset: Int = if (queryOffset < queryLimit) 0 else queryOffset - queryLimit
 
         // prepare string fragments
-        val baseUrl = "${apiHost}/collections/${catalogId}"
+        val baseUrl = "${apiHost}/collections/${collectionId}"
         val recordBaseUrl = "$baseUrl/items?f="
         val limitString = if (limit !== null) "&limit=${queryLimit}" else ""
         val selfOffsetString = if (offset !== null) "&offset=${queryOffset}" else ""
@@ -386,8 +386,8 @@ class OgcRecordService @Autowired constructor(
         wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
-    fun prepareRecord(catalogId: String, recordId: String, format: String): Pair<ByteArray, String> {
-        val record = exportRecord(recordId, catalogId, format)
+    fun prepareRecord(collectionId: String, recordId: String, format: String): Pair<ByteArray, String> {
+        val record = exportRecord(recordId, collectionId, format)
         val mimeType = record.exportFormat.toString()
 
         val singleRecordInList: List<ExportResult> = listOf(record)
@@ -396,15 +396,15 @@ class OgcRecordService @Autowired constructor(
         return Pair(wrappedRecord, mimeType)
     }
 
-    fun prepareRecords(records: ResearchResponse, catalogId: String, format: String, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
-        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, catalogId, format) }
+    fun prepareRecords(records: ResearchResponse, collectionId: String, format: String, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
+        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(mimeType, recordList, format)
         return addWrapperToRecords(unwrappedRecords, mimeType, format, links, false, queryMetadata)
     }
 
-    private fun exportRecord(recordId: String, catalogId: String, format: String): ExportResult {
+    private fun exportRecord(recordId: String, collectionId: String, format: String): ExportResult {
         checkFormatSupport(format)
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, recordId)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
         val options = ExportRequestParameter(
                 id = id,
@@ -412,7 +412,7 @@ class OgcRecordService @Autowired constructor(
                 // TODO context of ingridISO exporter: check why address documents need to called as drafts
                 useDraft = (format == "ingridISO" && wrapper.category == "address")
         )
-        return exportService.export(catalogId, options)
+        return exportService.export(collectionId, options)
     }
 
 
