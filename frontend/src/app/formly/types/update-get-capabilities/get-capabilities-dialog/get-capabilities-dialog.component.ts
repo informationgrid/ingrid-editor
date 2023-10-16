@@ -132,7 +132,7 @@ export class GetCapabilitiesDialogComponent {
         data: <PasteDialogOptions>{
           forAddress: true,
           titleText: "Ordner auswählen",
-          typeToInsert: "FOLDER",
+          typeToInsert: "InGridOrganisationDoc",
           buttonText: "Auswählen",
         },
       })

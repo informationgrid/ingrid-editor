@@ -455,7 +455,7 @@ open class IngridModelTransformer(
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
-            val identifier = getLastPublishedDocument(it.uuid)?.data?.get("identifier")?.asText() ?: it.uuid
+            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
             val completeIdentifier = if (containsNamespace) {
                 identifier
@@ -586,7 +586,7 @@ open class IngridModelTransformer(
 
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
-        ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
+        ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
@@ -634,6 +634,7 @@ open class IngridModelTransformer(
             ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
             ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
 
+        val getCapOperation = refTrans.operations.firstOrNull { it.name == "GetCapabilities" }
         return CrossReference(
             direction = direction,
             uuid = uuid,
@@ -643,8 +644,8 @@ open class IngridModelTransformer(
             description = refTrans.description,
             graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
             serviceType = refTrans.serviceType,
-            serviceOperation = refTrans.operations.firstOrNull()?.name,
-            serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
+            serviceOperation = getCapOperation?.name,
+            serviceUrl = getCapOperation?.methodCall,
             serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
             hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
         )
