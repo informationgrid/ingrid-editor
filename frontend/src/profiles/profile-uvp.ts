@@ -18,7 +18,7 @@ import { PluginService } from "../app/services/plugin/plugin.service";
 })
 class UVPComponent {
   constructor(
-    profileService: ProfileService,
+    private profileService: ProfileService,
     reportsService: ReportsService,
     folder: FolderDoctype,
     approvalProcedureDoctype: ApprovalProcedureDoctype,
@@ -55,9 +55,9 @@ class UVPComponent {
   }
 
   private modifyFormHeader() {
-    /*    service.updateUIProfileStore({
-      hideFormHeaderInfos: ["type"],
-    });*/
+    this.profileService.updateUIProfileStore({
+      hideFormHeaderInfos: ["_metadataDate"],
+    });
   }
 
   private addBehaviour(
