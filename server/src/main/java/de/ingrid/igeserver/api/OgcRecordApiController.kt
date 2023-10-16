@@ -25,6 +25,7 @@ class OgcRecordApiController @Autowired constructor(
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
         private val exporterFactory: ExporterFactory,
         private val cswtService: CswtService,
+        private val documentService: DocumentService,
         val scheduler: SchedulerService,
         ) : OgcRecordApi {
 
@@ -63,25 +64,29 @@ class OgcRecordApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, address: Boolean, publish: Boolean?, parentId: Int?): ResponseEntity<JsonNode> {
+    override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, parentId: String?): ResponseEntity<JsonNode> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+
+        val parentIdentifier: Int? = if(!parentId.isNullOrBlank()) {
+            (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, parentId)).id
+        } else null
 
         val contentType = allHeaders["content-type"]!!
         // import via importer
-        val options = ImportOptions( publish = publish ?: false, parentDocument = parentId)
+        val options = ImportOptions( publish = true, parentDocument = parentIdentifier)
         ogcRecordService.importDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null)
         return ResponseEntity.ok().build()
     }
 
 
-    override fun putDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String, publishDate: Date?, publish: Boolean? ): ResponseEntity<JsonNode> {
+    override fun putDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
 
         val contentType = allHeaders["content-type"]!!
 //        // check if document exists
 //        documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         // import via importer
-        val options = ImportOptions( publish = publish ?: true , overwriteAddresses = true, overwriteDatasets = true)
+        val options = ImportOptions( publish = true , overwriteAddresses = true, overwriteDatasets = true)
         ogcRecordService.importDocuments(options, collectionId, contentType, data, principal, recordMustExist = true, recordId)
         return ResponseEntity.ok().build()
     }
@@ -129,8 +134,14 @@ class OgcRecordApiController @Autowired constructor(
     }
 
 
-    override fun handleCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String): ResponseEntity<ByteArray> {
-        val options = ImportOptions(publish = true , overwriteAddresses = true, overwriteDatasets = true)
+    override fun handleCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, parentId: String?): ResponseEntity<ByteArray> {
+
+        val parentIdentifier: Int? = if(!parentId.isNullOrBlank()) {
+            (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, parentId)).id
+        } else null
+//        if(!parentId.isNullOrBlank()) parentIdentifier = (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, parentId)).id
+
+        val options = ImportOptions(publish = true, parentDocument = parentIdentifier, overwriteAddresses = true, overwriteDatasets = true)
         cswtService.cswTransaction(data, collectionId, principal, options)
 //        cswtService.prepareCSWT(principal, collectionId, data)
         return ResponseEntity.ok().build()

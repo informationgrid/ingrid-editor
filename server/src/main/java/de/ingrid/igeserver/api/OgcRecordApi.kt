@@ -246,12 +246,10 @@ interface OgcRecordApi {
     )
     fun postDataset(
             @RequestHeader allHeaders: Map<String, String>,
-            principal: Authentication, // Principal,
+            principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
-            @Parameter(description = "## Address Document \n **Custom Parameter** \n\nIs this an address document?") @RequestParam(required = false) address: @Valid Boolean,
-            @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(value = "publish", required = false) publish: Boolean?,
-            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Dataset to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: Int?,
+            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Dataset to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: String?,
     ): ResponseEntity<JsonNode>
 
 
@@ -269,14 +267,6 @@ interface OgcRecordApi {
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
             @Parameter(description = "The data to be stored.", required = true) @RequestBody data: String,
-            @Parameter(description = "## Delay Publish on Date \n **Custom Parameter** \n\n If we want to delay the publication set this date.") @RequestParam(
-                    value = "publishDate",
-                    required = false
-            ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
-            @Parameter(description = "## Publish Record \n **Custom Parameter** \n\n If we want to store the published version then this parameter has to be set to true.") @RequestParam(
-                    value = "publish",
-                    required = false
-            ) publish: Boolean?,
     ): ResponseEntity<JsonNode>
 
     @PostMapping(value = ["collection/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
@@ -291,7 +281,8 @@ interface OgcRecordApi {
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
-    ): ResponseEntity<ByteArray>
+            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Datasets to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: String?,
+            ): ResponseEntity<ByteArray>
 
 
 }
