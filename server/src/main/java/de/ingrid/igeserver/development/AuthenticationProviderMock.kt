@@ -31,7 +31,7 @@ class AuthenticationProviderMock : AuthenticationProvider {
 
         val user = BasicUserPrincipal(userId)
         val userDb = userRepo.findByUserId(userId)
-        val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.name}") } ?: emptyList()
+        val groups = userDb?.groups?.map { SimpleGrantedAuthority("GROUP_${it.id}") } ?: emptyList()
         val role = userDb?.role?.name
         val roles = if (role == null) {
             emptyList()

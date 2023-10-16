@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 @import java.util.Map
@@ -69,7 +70,7 @@
             </gmd:DQ_DataQuality>
         </gmd:dataQualityInfo>
     @endif
-    @if(page.getHistory() != null)
+    @if(TransformationTools.hasValue(page.getHistory()))
         <gmd:dataQualityInfo>
             <gmd:DQ_DataQuality>
                 <gmd:scope>

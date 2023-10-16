@@ -53,7 +53,7 @@ data class AddressModel(
      *  Addresses with the flag hideAddress are ignored,
      *  but only if they have a parent themselves.
      *  Addresses that are not published are ignored.
-     *  @return List of ancestors
+     *  @return List of ancestors from eldest to youngest including self
      */
     fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
         if (id == null) return mutableListOf()

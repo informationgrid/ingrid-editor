@@ -187,32 +187,6 @@ export class UserComponent
     this.userService.getUsers().subscribe(() => this.loadUser(userId));
   }
 
-  deleteUser(user: User) {
-    this.eventService
-      .sendEventAndContinueOnSuccess(IgeEvent.DELETE_USER, user)
-      .subscribe(() => this.openDeleteUserDialog(user));
-  }
-
-  private openDeleteUserDialog(user: User) {
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: "Benutzer löschen",
-          message: `Möchten Sie den Benutzer "${user.login}" wirklich löschen?`,
-        } as ConfirmDialogData,
-      })
-      .afterClosed()
-      .pipe(
-        filter((result) => result),
-        switchMap(() => this.userService.deleteUser(user.id))
-      )
-      .subscribe(() => {
-        this.userService.selectedUser$.next(null);
-        this.selectedUser = null;
-        this.userService.fetchUsers();
-      });
-  }
-
   saveUser(user?: User, loadUser: boolean = true): void {
     this.showLoading();
 

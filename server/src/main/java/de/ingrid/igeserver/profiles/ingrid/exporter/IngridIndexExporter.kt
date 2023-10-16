@@ -63,8 +63,10 @@ class IngridIndexExporter @Autowired constructor(
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
 
-        val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
-        luceneJson.put("idf", idfFingerprintChecked)
+        if (doc.type != "FOLDER") {
+            val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
+            luceneJson.put("idf", idfFingerprintChecked)
+        }
 
         return luceneJson.toPrettyString()
     }
@@ -111,6 +113,8 @@ class IngridIndexExporter @Autowired constructor(
 
     override fun calculateFingerprint(doc: Any): String {
         doc as ElasticDocument
+        if (doc["idf"] == null) return ""
+        
         val idf = doc["idf"] as String
         val idfDoc = convertStringToDocument(idf)
 

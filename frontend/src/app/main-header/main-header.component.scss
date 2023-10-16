@@ -1,5 +1,15 @@
 @import "../../variables";
 
+// accessibility css
+:host {
+  overflow-y: hidden;
+  position: relative;
+
+  mat-toolbar {
+    min-width: 1024px;
+  }
+}
+
 .header-row {
   color: $ige-secondary;
 }
@@ -20,6 +30,14 @@
   text-align-last: end;
   overflow: hidden;
   text-overflow: fade;
+
+  &.single {
+    color: $ige-text-color;
+
+    button {
+      color: $ige-text-color;
+    }
+  }
 }
 
 .menu-item {
@@ -159,20 +177,6 @@ mat-card-title {
 
 .last-login {
   margin-bottom: 0;
-}
-
-// usability css on mobile devices
-@media (max-width: 420px) {
-  .page-title-general,
-  .center-header {
-    display: none;
-  }
-  .main-page-title {
-    padding-left: unset;
-  }
-  .header-info {
-    margin-left: unset;
-  }
 }
 
 .mat-mdc-menu-item[disabled] {

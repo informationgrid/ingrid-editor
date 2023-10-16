@@ -1,6 +1,6 @@
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -8,6 +8,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { TreeQuery } from "../../../app/store/tree/tree.query";
 
 @Injectable({
   providedIn: "root",
@@ -27,6 +28,8 @@ export class GeoServiceDoctype extends IngridShared {
       classification: true,
     },
   };
+
+  tree = inject(TreeQuery);
 
   private mapServiceTypeToVersionCodelist = {
     "1": 5151,

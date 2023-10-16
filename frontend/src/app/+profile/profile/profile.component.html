@@ -59,6 +59,7 @@
             <ige-emailform
                 *ngIf="editingEmail; else editMail"
                 [initialEmail]="userInfo.email"
+                [canAutocomplete]="true"
                 (onClose)="changeEmail($event)"
             >
             </ige-emailform>

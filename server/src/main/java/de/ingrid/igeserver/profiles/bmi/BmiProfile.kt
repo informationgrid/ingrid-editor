@@ -445,11 +445,18 @@ class BmiProfile @Autowired constructor(
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
+        val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
+
+        val newPermissions: MutableList<String> = permissions.toMutableList()
+
+        if(isCatAdmin) {
+            newPermissions.add(Permissions.manage_all_catalogs.name)
+        }
 
         return  if(isSuperAdmin) {
-            permissions
+            newPermissions
         } else {
-            permissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
+            newPermissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
                     && !permission.equals(Permissions.can_export.name))
             }
         }

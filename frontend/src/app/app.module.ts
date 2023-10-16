@@ -67,7 +67,6 @@ import { InlineHelpWrapperComponent } from "./formly/wrapper/inline-help-wrapper
 import { FullWidthWrapperComponent } from "./formly/wrapper/full-width-wrapper.component";
 import { SessionTimeoutInterceptor } from "./services/session-timeout.interceptor";
 import { SessionTimeoutInfoComponent } from "./main-header/session-timeout-info/session-timeout-info.component";
-import { TimePipe } from "./directives/time.pipe";
 import { FormFieldsModule } from "./form-fields/form-fields.module";
 import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
@@ -100,6 +99,7 @@ import { GermanDateAdapter } from "./services/german-date.adapter";
 import { firstValueFrom } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 import { registerTranslateExtension } from "./formly/translate.extension";
+import { FieldToAriaLabelPipe } from "./directives/fieldToAiraLabel.pipe";
 
 registerLocaleData(de);
 
@@ -220,9 +220,7 @@ export function animationExtension(field: FormlyFieldConfig) {
     SectionWrapper,
     InlineHelpWrapperComponent,
     SideMenuComponent,
-    TimePipe,
     MainHeaderComponent,
-    SessionTimeoutInfoComponent,
     InitCatalogComponent,
     AddonsWrapperComponent,
     ButtonWrapperComponent,
@@ -298,6 +296,8 @@ export function animationExtension(field: FormlyFieldConfig) {
     TranslocoRootModule,
     SharedModule,
     ClipboardModule,
+    SessionTimeoutInfoComponent,
+    FieldToAriaLabelPipe,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap

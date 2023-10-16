@@ -268,12 +268,12 @@
     <gmd:abstract>
         <gco:CharacterString>${page.getDescription()}</gco:CharacterString>
     </gmd:abstract>
-    @if( page.getPurpose() != null )
+    @if( TransformationTools.hasValue(page.getPurpose()) )
         <gmd:purpose>
             <gco:CharacterString>${page.getPurpose()}</gco:CharacterString>
         </gmd:purpose>
     @endif
-    @if( page.getStatus() != null )
+    @if( TransformationTools.hasValue(page.getStatus()) )
         <gmd:status>
             <gmd:MD_ProgressCode
                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ProgressCode"
@@ -318,7 +318,7 @@
                 <gmd:fileName>
                     <gco:CharacterString>${browseGraphic.getUri()}</gco:CharacterString>
                 </gmd:fileName>
-                @if( browseGraphic.getDescription() != null)
+                @if( TransformationTools.hasValue(browseGraphic.getDescription()) )
                     <gmd:fileDescription>
                         <gco:CharacterString>${browseGraphic.getDescription()}</gco:CharacterString>
                     </gmd:fileDescription>
@@ -467,7 +467,7 @@
             <gco:CharacterString>page.getSystemEnvironment()</gco:CharacterString>
         </gmd:environmentDescription>
     @endif
-    @if(page.getDatasetCharacterSet() != null)
+    @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
         <gmd:characterSet>
             <gmd:MD_CharacterSetCode
                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode"
@@ -479,7 +479,7 @@
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
     @endfor
-    @if(page.getServiceType() != null)
+    @if(TransformationTools.hasValue(page.getServiceType()))
         <srv:serviceType>
             <gco:LocalName>${page.getServiceType()}</gco:LocalName>
         </srv:serviceType>
@@ -491,14 +491,14 @@
     @endfor
     <${page.getExtentType()}>
     <gmd:EX_Extent>
-        @if(spatial.getDescription() != null)
+        @if(TransformationTools.hasValue(spatial.getDescription()))
             <gmd:description>
                 <gco:CharacterString>${spatial.getDescription()}</gco:CharacterString>
             </gmd:description>
         @endif
         @for(SpatialModel ref : page.getSpatialReferences())
             @if(ref.getType().equals("free") || ref.getType().equals("wfsgnde"))
-                @if(ref.getTitle() != null)
+                @if(TransformationTools.hasValue(ref.getTitle()))
                     <gmd:geographicElement>
                         <gmd:EX_GeographicDescription>
                             <gmd:extentTypeCode>
@@ -645,6 +645,11 @@
             <srv:operationName>
                 <gco:CharacterString>Download</gco:CharacterString>
             </srv:operationName>
+            <srv:DCP>
+                <srv:DCPList
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                        codeListValue="WebServices" />
+            </srv:DCP>
             <srv:connectPoint>
                 <gmd:CI_OnlineResource>
                     <gmd:linkage>
@@ -670,6 +675,7 @@
                 </srv:operationDescription>
             @endif
             @if(TransformationTools.hasValue(operation.getMethodCall()))
+                <srv:DCP gco:nilReason="missing"></srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
@@ -733,7 +739,7 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
             @endif
-            @if(page.getData().getOrderInfo() != null)
+            @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
@@ -766,7 +772,7 @@ ${contentInfo}
                                 <gmd:name>
                                     <gco:CharacterString>${reference.getTitle()}</gco:CharacterString>
                                 </gmd:name>
-                                @if(reference.getExplanation() != null)
+                                @if(TransformationTools.hasValue(reference.getExplanation()))
                                     <gmd:description>
                                         <gco:CharacterString>${reference.getExplanation()}</gco:CharacterString>
                                     </gmd:description>
@@ -794,7 +800,7 @@ ${contentInfo}
                                 <gmd:name>
                                     <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
                                 </gmd:name>
-                                @if(serviceUrl.getDescription() != null)
+                                @if(TransformationTools.hasValue(serviceUrl.getDescription()))
                                     <gmd:description>
                                         <gco:CharacterString>${serviceUrl.getDescription()}</gco:CharacterString>
                                     </gmd:description>

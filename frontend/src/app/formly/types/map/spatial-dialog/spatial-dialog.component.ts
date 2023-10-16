@@ -119,8 +119,21 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       }
     }
 
-    // @ts-ignore
-    setTimeout(() => (<Map>this.leafletReference)._onResize());
+    setTimeout(() => {
+      // @ts-ignore
+      (<Map>this.leafletReference)._onResize();
+
+      // ignore buttons for restricted accessibility
+      const buttons =
+        this.leaflet.nativeElement.querySelectorAll('[role="button"]');
+      this.setTabIgnore(buttons);
+    });
+  }
+
+  private setTabIgnore(elements) {
+    for (const element of elements) {
+      element.setAttribute("tabindex", -1);
+    }
   }
 
   returnResult() {

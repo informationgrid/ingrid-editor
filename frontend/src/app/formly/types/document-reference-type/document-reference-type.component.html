@@ -1,3 +1,7 @@
+<ige-form-error *ngIf="showError">
+    <formly-validation-message [field]="field"></formly-validation-message>
+</ige-form-error>
+
 <div
     *ngFor="let item of myModel; let i = index"
     class="item clickable"

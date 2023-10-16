@@ -32,6 +32,7 @@ class PostMigrationTask(
     val docRepo: DocumentRepository,
     val aclService: IgeAclService,
     val codelistHandler: CodelistHandler,
+    val fixPathsTask: FixPathsTask,
 ) {
     val log = logger()
 
@@ -78,6 +79,7 @@ class PostMigrationTask(
         enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
+        fixPathsTask.migratePaths(catalogIdentifier)
     }
 
     private fun fixSpatialSystems(catalogIdentifier: String) {

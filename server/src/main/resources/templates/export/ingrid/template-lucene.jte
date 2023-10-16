@@ -41,7 +41,12 @@
     "boost": 1,
     "children.object_node.obj_uuid": [],
     "organisation": "",
-    "parent.object_node.obj_uuid": "${page.getParentIdentifier()}",
+    "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
+    "t011_obj_serv.coupling_type": "${page.getCouplingType()}",
+    "t011_obj_serv.has_atom_download": "${page.isAtomDownload() ? 'Y' : 'N'}",
+    @if(page.isAtomDownload())
+    "download_service": "atom",
+    @endif
     "t012_obj_adr.adr_id": "",
     "t012_obj_adr.mod_time": "",
     "t012_obj_adr.special_name": "",

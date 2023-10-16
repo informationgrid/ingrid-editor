@@ -1,0 +1,26 @@
+default:
+  image: asciidoctor/docker-asciidoctor
+  services:
+    - asciidoctor/docker-asciidoctor
+
+stages:
+  - build
+
+pages:
+  artifacts:
+    paths:
+      - public
+  script:
+    - >
+      asciidoctor -a data-uri \
+        -a toc=left \
+        -a sectnums \
+        -a reproducible \
+        -a icons=font \
+        -a source-highlighter=Pygments \
+        -a experimental \
+        -D public \
+        -R docs '**/*.adoc'
+  tags:
+    - ige-ng-asciidoc
+  stage: build

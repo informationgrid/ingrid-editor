@@ -16,6 +16,7 @@ import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
+import org.jetbrains.kotlin.utils.indexOfFirst
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
@@ -121,7 +122,7 @@ class IndexService @Autowired constructor(
                 .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
             if (types.contains("internet") || types.isEmpty()) {
                 if (conditions.isNotEmpty()) conditions += " OR"
-                conditions += " document_wrapper.tags is null OR '{}' = document_wrapper.tags"
+                conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
             }
             "($conditions)"
         }
@@ -166,16 +167,30 @@ class IndexService @Autowired constructor(
             .unwrap(NativeQuery::class.java)
             .addScalar("uuid")
             .addScalar("id")
+            .addScalar("type")
+            .addScalar("parent_id")
             .addScalar("ibus")
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
 
         return result.map {
-            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String)
+            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as String)
         }.map {
+            // FOLDERS do not have a published version
+            val document = if (it.type == "FOLDER") {
+                documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
+            } else {
+                documentService.getLastPublishedDocument(catalogId, it.uuid)
+            }
             DocumentIndexInfo(
-                documentService.getLastPublishedDocument(catalogId, it.uuid).apply { wrapperId = it.wrapperId },
+                document.apply {
+                    wrapperId = it.wrapperId
+                    if (it.parentId != null) {
+                        val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
+                        data.put(FIELD_PARENT, parentWrapper.uuid)
+                    }
+                },
                 it.ibus.split(",").map { it.toInt() }
             )
         }
@@ -191,13 +206,14 @@ class IndexService @Autowired constructor(
         val profileConditions = profile.additionalPublishConditions(catalogId)
         val iBusSelector = getConditionsForIBus(iBusConditions)
 
+        val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
         var sql = """
-                SELECT document_wrapper.uuid, document_wrapper.id,
+                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id,
                 CASE 
                     ${iBusSelector.joinToString(" ")}
                     ELSE '-1' END AS IBUS
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
-                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND document1.state = 'PUBLISHED' AND deleted = 0 AND catalog.identifier = ? AND 
+                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND (document1.state = 'PUBLISHED' $indexFolders) AND deleted = 0 AND catalog.identifier = ? AND 
                 (${iBusConditions.joinToString(" OR ")})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
@@ -205,36 +221,65 @@ class IndexService @Autowired constructor(
         return sql
     }
 
+    /**
+     * For all iBus conditions special SQL conditions are created including information to which iBus the dataset 
+     * is going to be sent. First we get all possible combinations of the conditions and determine the indexes
+     * which iBus is used for a condition. This is especially important when two or more iBus conditions are the
+     * same.
+     */
     private fun getConditionsForIBus(
         iBusConditions: List<String>
-    ): MutableList<String> {
-        val iBusSelector = mutableListOf<String>()
+    ): List<String> {
+        val iBusSelector = mutableListOf<Pair<Set<Int>, String>>()
+
         for (i in iBusConditions.size downTo 1) {
-            val kombinationen = iBusConditions.combinations(i)
-            for (kombination in kombinationen) {
-                val indexKombination = kombination.map { iBusConditions.indexOf(it) }
+            val combinations = iBusConditions.combinations(i)
+            combinations.forEach { combination ->
+                val indexCombinations = getCombinationOfIndexes(combination, iBusConditions)
+
                 iBusSelector.add(
-                    "WHEN (" + kombination.joinToString(" AND ") + ") THEN '${
-                        indexKombination.joinToString(
-                            ","
-                        )
-                    }'"
+                    Pair(
+                        indexCombinations,
+                        "WHEN (" + combination.toSet().joinToString(" AND ") + ") THEN '${
+                            indexCombinations.joinToString(
+                                ","
+                            )
+                        }'"
+                    )
                 )
             }
         }
+        
+        // remove redundant selections when two or more iBus conditions are the same
         return iBusSelector
+            .map { it.first }
+            .toSet()
+            .mapNotNull { a -> iBusSelector.find { it.first == a }?.second }
     }
 
-    private fun <T> List<T>.combinations(k: Int): List<List<T>> {
-        if (k > size) return emptyList()
-        if (k == 0) return listOf(emptyList())
+    private fun getCombinationOfIndexes(
+        combination: List<String>,
+        iBusConditions: List<String>
+    ) = combination.flatMap { entry ->
+        val indexList = mutableListOf<Int>()
+        var currentIndex = iBusConditions.indexOf(entry)
+        while (currentIndex != -1) {
+            indexList.add(currentIndex)
+            currentIndex = iBusConditions.indexOfFirst(currentIndex + 1) { it == entry }
+        }
+        indexList
+    }.toSet()
 
-        val result = mutableListOf<List<T>>()
+    private fun List<String>.combinations(length: Int): List<List<String>> {
+        if (length > size) return emptyList()
+        if (length == 0) return listOf(emptyList())
+
+        val result = mutableListOf<List<String>>()
 
         for (i in indices) {
             val element = this[i]
             val remaining = subList(i + 1, size)
-            val combinations = remaining.combinations(k - 1)
+            val combinations = remaining.combinations(length - 1)
             for (combination in combinations) {
                 result.add(listOf(element) + combination)
             }
@@ -259,5 +304,7 @@ class IndexService @Autowired constructor(
 data class IndexDocumentResult(
     val uuid: String,
     val wrapperId: Int,
+    val type: String,
+    val parentId: Int?,
     val ibus: String
 )

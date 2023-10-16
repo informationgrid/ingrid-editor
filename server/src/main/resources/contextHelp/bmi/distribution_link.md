@@ -5,4 +5,8 @@ docType: BmiDoc
 profile: bmi
 ---
 
-<p>Die URL zum Datensatz.</p>
+Die URL zum Datensatz, genauer zur Distribution eines Datensatzes in einem spezifischen Format.
+
+Bitte geben Sie den Link vollständig an, mit Protokoll z.B. *https://meineDaten.domain/meineDaten*
+
+**Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.**

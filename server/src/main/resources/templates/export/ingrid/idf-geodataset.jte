@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Citation
 @import java.util.Map
@@ -42,7 +43,7 @@
                                     </gmd:dateType>
                                 </gmd:CI_Date>
                             </gmd:date>
-                            @if (citation.getEdition() != null)
+                            @if (TransformationTools.hasValue(citation.getEdition()))
                                 <gmd:edition>
                                     <gco:CharacterString>${citation.getEdition()}</gco:CharacterString>
                                 </gmd:edition>
@@ -74,7 +75,7 @@
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
-                    @if (citation.getEdition() != null)
+                    @if (TransformationTools.hasValue(citation.getEdition()))
                     <gmd:edition>
                         <gco:CharacterString>${citation.getEdition()}</gco:CharacterString>
                     </gmd:edition>

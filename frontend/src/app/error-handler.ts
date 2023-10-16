@@ -86,6 +86,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Der Datensatz liegt veröffentlicht vor und darf nicht unter einen unveröffentlichten Datensatz verschoben werden.";
       case "UNPUBLISH-CHILD_IS_PUBLISHED":
         return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
+      case "MAIL_ERROR":
+        return `Es gab ein Problem beim Versenden der Email: ${error.errorText}`;
       default:
         return null;
     }

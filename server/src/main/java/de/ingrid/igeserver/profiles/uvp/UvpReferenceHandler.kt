@@ -16,6 +16,7 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
 
     override fun getProfile() = UvpProfile.id
 
+    override val urlFields = listOf("uri")
 
     val sqlStepsDraftAndPending = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type

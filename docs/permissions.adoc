@@ -1,10 +1,10 @@
-# Permissions / Authorisation
+= Permissions / Authorisation
 
 Since Keycloak is only used for authentication the app has to take care of the authorisation. Authorisation is needed to
 allow a user access to a resource. A resource can be dataset (document or address), a whole page (e.g. import) or even a
 single action on a page (may view all users but not manipulate them).
 
-## Technical implementation
+== Technical implementation
 
 Authorisation is implemented by Spring Security and the domain object security (ACLs). With Spring Security resources
 can be restricted to specific user roles. Functions can be annotated to prevent illegal access:
@@ -28,7 +28,7 @@ fun deletePermission(contact: Contact, recipient: Sid, permission: Permission)
 
 Normally a resource is checked directly before it's accessed, which is done at a `Repository`.
 
-## Spring Data Repositories
+== Spring Data Repositories
 
 The abstraction of the database is done by repositories. A repository is an interface which extends the
 interface `JpaRepository`. Out of the box it already delivers CRUD-operations onto the database. For special database
@@ -41,7 +41,7 @@ To secure access to a database resource, we only have to add an annotation to th
 
 Database access should be protected in those repositories to prevent security holes.
 
-## Permission check
+== Permission check
 
 Whenever a permission is checked with the expression `hasPermission(...)`, the corresponding configured class
 `IgeAclPermissionEvaluator` is responsible.
@@ -54,7 +54,7 @@ The implementation does the following things:
 The latter one is more complex and will be explained below in more detail. In short the users' groups are checked if
 they contain the permission (read/write) for the requested resource.
 
-## Spring ACL
+== Spring ACL
 
 In order to manage access to resources (RBAC), Spring offers an Access Control List (ACL) library to simplify the
 process. As a prerequisite four tables are needed in the database:
@@ -74,7 +74,7 @@ When a permission for a resource is checked, it uses the following procedure:
 - only if the resource or one of its parents has the correct permission, access will be allowed
 - otherwise an `Access denied` Exception will be thrown.
 
-## Principal
+== Principal
 
 A principal contains the currently logged in user with additional information about the roles and groups it belongs to.
 When the application is accessed by the browser it first is checked for authentication through Keycloak and after a
@@ -95,7 +95,7 @@ SecurityContextHolder.getContext().authentication = auth
 
 Here's a principal created with the role `cat-admin`, which will be used during the permission checks.
 
-## Roles
+== Roles
 
 The IGE-NG supports the following roles:
 

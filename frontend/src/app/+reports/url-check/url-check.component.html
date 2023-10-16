@@ -150,6 +150,12 @@
                             <div
                                 class="clickable-text"
                                 (click)="loadDataset(element.datasets[0].uuid)"
+                                [matTooltip]="
+                                    element.datasets[0].title +
+                                    ' (' +
+                                    element.datasets[0].field +
+                                    ')'
+                                "
                             >
                                 <!--                    <mat-icon [svgIcon]="element.type"></mat-icon>-->
                                 {{ element.datasets[0].title }} ({{

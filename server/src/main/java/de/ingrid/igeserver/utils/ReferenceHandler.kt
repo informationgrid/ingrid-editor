@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.utils
 
+import de.ingrid.igeserver.api.messaging.DatasetInfo
 import de.ingrid.igeserver.api.messaging.UrlReport
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -14,30 +15,19 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
     abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
 
     abstract fun getProfile(): String
+    
+    abstract val urlFields: List<String>
 
     open fun replaceUrl(catalogId: String, source: UrlReport, replaceUrl: String): Int {
-        val query = replaceUrlSql.format(source.url, replaceUrl)
-//        val queryCount = countReplaceUrlSql.format(source.url)
         var updatedDocs = 0
 
         source.datasets.forEach { doc ->
             // there should be something to be updated unless the information is deprecated
-            val count = entityManager.createNativeQuery(countReplaceUrlSql)
-                .unwrap(NativeQuery::class.java)
-                .setParameter("catalogId", catalogId)
-                .setParameter("uuid", doc.uuid)
-                .setParameter("uri", source.url)
-                .resultList.size
-
-            log.debug("count: $count")
-
+            val count = getUrlCount(catalogId, doc, source, urlFields)
             if (count > 0) {
-                // result does not really return the updated documents!
-                entityManager.createNativeQuery(query)
-                    .setParameter("catalogId", catalogId)
-                    .setParameter("uuid", doc.uuid)
-                    .executeUpdate()
-
+                urlFields.forEach {
+                    doReplaceWithUrlField(it, catalogId, doc.uuid, source.url, replaceUrl)
+                }
                 updatedDocs += count
             }
         }
@@ -45,12 +35,38 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         return updatedDocs
     }
 
+    private fun getUrlCount(
+        catalogId: String,
+        doc: DatasetInfo,
+        source: UrlReport,
+        urlFields: List<String>
+    ) = entityManager.createNativeQuery(countReplaceUrlSql(urlFields))
+        .unwrap(NativeQuery::class.java)
+        .setParameter("catalogId", catalogId)
+        .setParameter("uuid", doc.uuid)
+        .setParameter("uri", source.url)
+        .resultList.size
+
+    private fun doReplaceWithUrlField(
+        urlField: String,
+        catalogId: String,
+        uuid: String,
+        sourceUrl: String,
+        replaceUrl: String
+    ) {
+        val query = replaceUrlSql(urlField).format(sourceUrl, replaceUrl)
+        entityManager.createNativeQuery(query)
+            .setParameter("catalogId", catalogId)
+            .setParameter("uuid", uuid)
+            .executeUpdate()
+    }
+
     protected fun queryDocs(
         sql: String,
         jsonbField: String,
         filterByDocId: Int?,
         catalogId: String? = null,
-        extraJsonbFields : Array<String>?  = null
+        extraJsonbFields: Array<String>? = null
 
     ): List<Array<Any?>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
@@ -64,14 +80,14 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
             .addScalar("title")
             .addScalar("type").apply {
                 extraJsonbFields?.forEach { field ->
-                addScalar(field)
-            }
-        }.resultList as List<Array<Any?>>
+                    addScalar(field)
+                }
+            }.resultList as List<Array<Any?>>
     }
 
-    private val replaceUrlSql = """
+    private fun replaceUrlSql(urlField: String) = """
         UPDATE document doc
-        SET data = replace(doc.data\:\:text, '"uri": "%s"', '"uri": "%s"')\:\:jsonb
+        SET data = replace(doc.data\:\:text, '"$urlField": "%s"', '"$urlField": "%s"')\:\:jsonb
         FROM document_wrapper dw, catalog cat
         WHERE dw.uuid = doc.uuid
           AND doc.state != 'ARCHIVED'
@@ -82,17 +98,19 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
           AND dw.uuid = :uuid
     """.trimIndent()
 
-    private val countReplaceUrlSql = """
-        SELECT doc.id
-        FROM document doc, document_wrapper dw, catalog cat
-        WHERE dw.uuid = doc.uuid 
-        AND doc.state != 'ARCHIVED' 
-        AND dw.catalog_id = cat.id
-        AND dw.deleted = 0
-        AND cat.identifier = :catalogId 
-        AND dw.uuid = :uuid
-        AND doc.data\:\:text ilike CONCAT('%"uri"\: "',:uri, '"%')
-     """.trimIndent()
+    private fun countReplaceUrlSql(urlFields: List<String>): String {
+        return """
+            SELECT doc.id
+            FROM document doc, document_wrapper dw, catalog cat
+            WHERE dw.uuid = doc.uuid 
+            AND doc.state != 'ARCHIVED' 
+            AND dw.catalog_id = cat.id
+            AND dw.deleted = 0
+            AND cat.identifier = :catalogId 
+            AND dw.uuid = :uuid
+            AND (${urlFields.joinToString(" OR ") { """(doc.data\:\:text ilike CONCAT('%"$it"\: "',:uri, '"%'))""" }})
+         """.trimIndent()
+    }
 }
 
 data class DocumentLinks(

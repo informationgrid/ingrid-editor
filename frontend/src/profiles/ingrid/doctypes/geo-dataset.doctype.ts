@@ -21,6 +21,7 @@ export class GeoDatasetDoctype extends IngridShared {
     required: {
       statement: true,
       subType: true,
+      identifier: true,
     },
     dynamicRequired: {
       citation:
@@ -59,7 +60,7 @@ export class GeoDatasetDoctype extends IngridShared {
           }),
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
-          required: true,
+          required: this.geodatasetOptions.required.identifier,
           wrappers: ["panel", "button", "form-field"],
           className: "flex-3 ",
           expressions: {
@@ -69,7 +70,7 @@ export class GeoDatasetDoctype extends IngridShared {
               const currentCatalog =
                 this.configService.$userInfo.value.currentCatalog;
               const namespace =
-                currentCatalog.settings.config?.namespace ??
+                this.addSuffix(currentCatalog.settings.config?.namespace) ??
                 `https://registry.gdi-de.org/id/${currentCatalog.id}/`;
               return value?.indexOf("://") >= 0
                 ? ""
@@ -502,5 +503,15 @@ export class GeoDatasetDoctype extends IngridShared {
       ],
       { fieldGroupClassName: "flex-row" }
     );
+  }
+
+  private addSuffix(url: string) {
+    if (!url) {
+      return url;
+    }
+    if (url?.endsWith("/") == true) {
+      return url;
+    }
+    return url + "/";
   }
 }

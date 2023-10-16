@@ -51,7 +51,7 @@ class MyAuthenticationProvider(
 
             // add groups
             groups
-                .map { it.name }
+                .map { it.id }
                 .forEach { grantedAuthorities.add(SimpleGrantedAuthority("GROUP_$it")) }
 
 

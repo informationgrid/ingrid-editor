@@ -5,7 +5,6 @@ import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
-import org.jetbrains.kotlin.backend.common.pop
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -24,9 +23,15 @@ class AddressModelTransformer(
     private var displayAddress: AddressModel
     fun getModel() = displayAddress
 
+    // needs to be set in during init phase
+    private val ancestorAddressesIncludingSelf: MutableList<AddressModel>
+
     init {
+        ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
         displayAddress = determineDisplayAddress()
     }
+
+
 
     fun getIndividualName(useDisplayAddress: Boolean): String? {
         val address = if (useDisplayAddress) displayAddress else model
@@ -34,9 +39,9 @@ class AddressModelTransformer(
         // format: "lastName, firstName, salutation academicTitle"
         val salutation = codelist.getValue("4300", address.salutation)
         val academicTitle = codelist.getValue("4305", address.academicTitle)
-        val namePostFix = listOfNotNull(salutation, academicTitle).joinToString(" ")
+        val namePostFix = listOf(salutation, academicTitle).filter { !it.isNullOrBlank() }.joinToString(" ")
         val individualName =
-            listOfNotNull(address.lastName, address.firstName, namePostFix).joinToString(", ")
+            listOf(address.lastName, address.firstName, namePostFix).filter { !it.isNullOrBlank() }.joinToString(", ")
 
         return individualName.ifBlank { null }
     }
@@ -51,33 +56,34 @@ class AddressModelTransformer(
 
 
     private fun determineDisplayAddress(): AddressModel {
-        val nonHiddenAddress = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
+        val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
         } else model
     }
 
-    fun getHierarchy(): List<AddressModelTransformer> =
-        model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).map {
+    fun getHierarchy(reverseOrder: Boolean): List<AddressModelTransformer> =
+        ancestorAddressesIncludingSelf.map {
             AddressModelTransformer(
                 it,
                 catalogIdentifier,
                 codelist
             )
-        }.reversed()
+        }.let{ if (reverseOrder) it.reversed() else it }
 
     private fun determineEldestAncestor(): AddressModel? =
-        model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).firstOrNull()
+        ancestorAddressesIncludingSelf.firstOrNull()
 
     private fun determinePositionNameFromAncestors(): String {
-        val ancestorsWithoutEldest = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).drop(1)
+        val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest.filter { !it.positionName.isNullOrEmpty() }.map { it.positionName }
             .joinToString(", ")
     }
 
     val id = displayAddress.id
     val uuid = displayAddress.uuid
+    val isFolder = model.docType == "FOLDER"
     val hoursOfService = displayAddress.hoursOfService
     val country =
         displayAddress.address.country?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it) }
@@ -100,9 +106,10 @@ class AddressModelTransformer(
     val administrativeArea = codelist.getCatalogCodelistValue("6250", displayAddress.address.administrativeArea)
     val addressDocType = getAddressDocType(displayAddress.docType)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
-    
-    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).apply { pop() }
 
+    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
+
+    fun getNextParent() = documentService!!.getParentWrapper(model.id)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -175,6 +182,4 @@ data class SubordinatedParty(
     val type: Int,
     val individualName: String?,
     val organisationName: String?
-) {
-}
-
+)

@@ -5,4 +5,4 @@ docType: BmiAddressDoc
 profile: bmi
 ---
 
-Die Anschrift wird nur bei Adressen vom Typ Ansprechpartner veröffentlicht.
+**HINWEIS**: Die Anschrift wird nur veröffentlicht, wenn die Adresse als *"Ansprechpartner"* einem Metadatensatz hinzugefügt wird.

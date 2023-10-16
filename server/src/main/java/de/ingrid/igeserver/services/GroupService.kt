@@ -101,7 +101,7 @@ class GroupService @Autowired constructor(
     private fun removeAllPermissionsFromGroup(group: Group) {
         aclService as JdbcMutableAclService
 
-        val sid = GrantedAuthoritySid("GROUP_${group.name}")
+        val sid = GrantedAuthoritySid("GROUP_${group.id}")
 
         getAllDocPermissions(group).forEach {
             val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, it.get("id").asInt())
@@ -184,7 +184,7 @@ class GroupService @Autowired constructor(
                 aclService.createAcl(objIdentity)
             }
 
-            val sid = GrantedAuthoritySid("GROUP_${group.name}")
+            val sid = GrantedAuthoritySid("GROUP_${group.id}")
 
             addACEs(acl, it, sid)
             aclService.updateAcl(acl)
@@ -272,7 +272,7 @@ class GroupService @Autowired constructor(
 
 
     fun getSidsForGroup(group: Group): List<Sid> {
-        val sids = mutableListOf(GrantedAuthoritySid("GROUP_${group.name}"))
+        val sids = mutableListOf(GrantedAuthoritySid("GROUP_${group.id}"))
         if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
             sids += (GrantedAuthoritySid("SPECIAL_write_root"))
         } else if (group.permissions?.rootPermission == RootPermissionType.READ) {
