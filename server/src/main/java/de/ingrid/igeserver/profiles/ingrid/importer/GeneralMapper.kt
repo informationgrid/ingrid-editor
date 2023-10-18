@@ -47,9 +47,12 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return description.substring(0, beginOfExtra).trim()
     }
 
-    fun getPointOfContacts(): List<PointOfContact> {
+    fun getPointOfContacts(): List<PointOfContact>? {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
+        if (mainContact[0].responsibleParty == null) {
+            return null
+        }
         return (mainContact + additionalContacts).map {
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
             val organization = it.responsibleParty?.organisationName?.value

@@ -1,6 +1,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
 @import gg.jte.support.ForSupport
-@param GeneralMapper model 
+@param GeneralMapper model
 
 "title": "${model.getTitle()}",
 "_uuid": "${model.getUuid()}",
@@ -12,6 +12,7 @@
 "description": "${model.getDescription()}",
 "alternateTitle": "${model.getAlternateTitle()}",
 "parentIdentifier": "${model.getParentUuid()}",
+@if(model.getPointOfContacts() != null)
 "pointOfContact": [
 @for(var contact : ForSupport.of(model.getPointOfContacts()))
     {
@@ -52,6 +53,7 @@
     }@if (!contact.isLast()),@endif
 @endfor
 ],
+@endif
 "graphicOverviews": [
 @for(var image : ForSupport.of(model.getGraphicOverviews()))
     {
