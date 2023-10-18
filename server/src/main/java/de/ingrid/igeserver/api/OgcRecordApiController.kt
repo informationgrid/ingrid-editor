@@ -103,7 +103,7 @@ class OgcRecordApiController @Autowired constructor(
     }
 
 
-    override fun getRecords(collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
+    override fun getRecords(principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
         ogcRecordService.verifyBbox(bbox)
         val definedFormat = format ?: defaultFormat
@@ -114,7 +114,7 @@ class OgcRecordApiController @Autowired constructor(
         // create research query
         val (queryLimit, queryOffset) = ogcRecordService.pageLimitAndOffset(offset, limit)
         val query = ogcRecordService.buildRecordsQuery(queryLimit, queryOffset, type, bbox, datetime)
-        val researchRecords: ResearchResponse = researchService.query(collectionId, query)
+        val researchRecords: ResearchResponse = researchService.query(collectionId, query, principal)
 
         // links: next previous self
         val totalHits = researchRecords.totalHits

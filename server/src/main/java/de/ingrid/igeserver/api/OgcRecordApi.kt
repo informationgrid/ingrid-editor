@@ -82,6 +82,7 @@ interface OgcRecordApi {
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun getRecords(
+            principal: Authentication,
             // PARAMETER : collectionId
             @Parameter(description = "## Collection ID \n **OGC Parameter**" +
                     "\n\n The identifier for a specific record collection (i.e. catalogue identifier).",
