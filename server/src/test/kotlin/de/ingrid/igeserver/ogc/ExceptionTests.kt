@@ -1,120 +1,112 @@
 package de.ingrid.igeserver.ogc
 
 import IntegrationTest
-import com.ninjasquad.springmockk.MockkBean
-import de.ingrid.igeserver.exports.ingrid.exportJsonToJson
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import io.mockk.every
 import io.mockk.mockk
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.transaction.PlatformTransactionManager
 
+
+@WithMockUser(username = "user1", authorities = ["cat-admin"])
 class ExceptionTests : IntegrationTest() {
 
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
 
-    @MockkBean(relaxed = true)
-    private lateinit var catalogService: CatalogService
+    @Autowired
+    lateinit var entityManager: EntityManager
 
-    @MockkBean(relaxed = true)
-    private lateinit var documentService: DocumentService
-
-    @MockkBean(relaxed = true)
-    private lateinit var exportService: ExportService
-
-    @MockkBean(relaxed = true)
-    private lateinit var exporter: IngridIDFExporter
-
-//    private val catalogService = mockk<CatalogService>()
-
-    val ogcRecordService = mockk<OgcRecordService>()
-
+    @Autowired
+    lateinit var transactionManager: PlatformTransactionManager
 
     @Autowired
     lateinit var mockMvc: MockMvc
 
+    val collectionId = "test_catalog_ogc"
+    val wrongCollectionId = "no-can-do"
+    val recordId = "b08533dc-f3cd-46ea-a12e-d7f799d59330"
+    val wrongRecordId = "wrong3dc-f3cd-46ea-a12e-d7f79invalid"
+    val formats = listOf("internal", "geojson", "html") // , "ingridISO")
+
     @Before
     fun beforeTest() {
+//        clearAllMocks()
+        execSQL("/ogc/data.sql")
         every {
             mockPrincipal.authorities
         }.returns(listOf(SimpleGrantedAuthority("cat-admin")))
         every {
             mockPrincipal.principal
         }.returns("user1")
-
-//        mockCatalog(catalogService)
-//        val addresses = listOf(
-//                MockDocument(
-//                        1638,
-//                        "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
-//                        "/export/ingrid/address.organisation.sample.json",
-//                        type = "InGridOrganisationDoc"
-//                ),
-//                MockDocument(
-//                        1634,
-//                        "14a37ded-4ca5-4677-bfed-3607bed3071d",
-//                        "/export/ingrid/address.person.sample.json",
-//                        1638
-//                ),
-//                MockDocument(
-//                        1652,
-//                        "fc521f66-0f47-45fb-ae42-b14fc669942e",
-//                        "/export/ingrid/address.person2.sample.json",
-//                        1638
-//                )
-//        )
-//
-//        val datasets = listOf(
-//                MockDocument(
-//                        uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-//                        template = "/export/ingrid/geo-dataset.maximal.sample.json"
-//                ),
-//                MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
-//        )
-//
-//        initDocumentMocks(addresses + datasets, documentService)
+        every {
+            mockPrincipal.isAuthenticated
+        }.returns(true)
     }
 
 
-//    @Test
-//    fun getCollectionByNonExistingId() {
-//        every { catalogService.getCatalogById("no-can-do") } throws Exception()
-//        mockMvc.perform(get("/collections/no-can-do").principal(mockPrincipal))
-//                .andDo(print())
-//                .andExpect(status().isNotFound)
-//    }
+    @Test
+    fun getCollection() {
+        mockMvc.perform(get("/collections/$collectionId"))
+            .andDo(print())
+            .andExpect(status().isOk)
+    }
 
-//    @Test
-//    fun getCollection() {
-//        mockMvc.perform(get("/collections/test-catalog").principal(mockPrincipal))
-//            .andDo(print())
-//            .andExpect(status().isOk)
-//    }
-
-    //
-//    @Test
-//    fun getCollectionNonExistingExporter() {
-//
-//    }
+    @Test
+    fun getCollectionByWrongCollectionId() {
+        mockMvc.perform(get("/collections/$wrongCollectionId"))
+            .andDo(print())
+            .andExpect(status().isNotFound)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'collection' with id '$wrongCollectionId' is missing."))
+    }
 
 
     @Test
     fun getRecord() {
-        val result = exportJsonToJson(exporter, "/export/ingrid/data-collection.sample.maximal.json")
-//        every { ogcRecordService.prepareRecord("test-catalog", "93CD0919-5A2F-4286-B731-645C34614AA1", "application/json") } returns Pair(result.toByteArray(), "application/json")
-
-        every { exportService.export("a910fde0-3910-413e-9c14-4fa86f3d12c2", any())} returns ExportResult(result.toByteArray(), "filename", exportFormat = MediaType.valueOf("application/json") )
-        mockMvc.perform(get("/collections/test-catalog/items/a910fde0-3910-413e-9c14-4fa86f3d12c2").principal(mockPrincipal))
+        for(format in formats) {
+            mockMvc.perform(get("/collections/$collectionId/items/$recordId").param("f", format))
                 .andDo(print())
                 .andExpect(status().isOk)
+        }
     }
 
+    @Test
+    fun getRecordByWrongRecordId() {
+        mockMvc.perform(get("/collections/$collectionId/items/$wrongRecordId"))
+            .andDo(print())
+            .andExpect(status().isNotFound)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
+    }
+
+    @Test
+    fun getRecordByWrongCollectionIdAndRightRecordId() {
+        mockMvc.perform(get("/collections/$wrongCollectionId/items/$recordId"))
+            .andDo(print())
+            .andExpect(status().isNotFound)
+//            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
+    }
+
+//    @Test
+//    fun getRecords() {
+//        mockMvc.perform(get("/collections/$collectionId/items").principal(mockPrincipal))
+//            .andDo(print())
+//            .andExpect(status().isOk)
+//    }
+
+    private fun execSQL(sqlFile: String) {
+        val sql = {}.javaClass.getResource(sqlFile)?.readText()!!
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(sql)
+                .executeUpdate()
+        }
+    }
 
 }
