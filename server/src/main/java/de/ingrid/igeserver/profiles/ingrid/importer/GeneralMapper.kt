@@ -434,6 +434,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     fun getAccessConstraints(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.resourceConstraints
+            ?.filter { it.legalConstraint?.accessConstraints != null || it.legalConstraint?.otherConstraints != null }
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
                     if (constraint.isAnchor) {
