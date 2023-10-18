@@ -304,10 +304,8 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 if (link == null || link.trim() == "") continue
 
                 url.url = link
-//                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
-//                if (type != null) url.type = type
-                url.type = KeyValue("9999", "Unspezifischer Verweis")
-                url.title = "Verweis"
+                url.type = KeyValue(null, "Informationen im Internet")
+                url.title = link
 
                 urls.add(url)
             }
@@ -541,7 +539,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return null;
     }
 
-    protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
+    protected fun getKeyValue(codelistId: String, value: String?, valueField: String = "de"): KeyValue? {
+        if (value == null) return null
+        
         if (codelistId == "6200" && value.lowercase() == "de") {
             val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
             return KeyValue(id, null)

@@ -66,16 +66,25 @@ export class GetCapabilitiesService {
         model.spatial.references = this.mapBoundingBox(value);
       if (key === "conformities")
         model.conformanceResult = this.mapConformities(value);
-      if (key === "coupledResources")
+      if (key === "coupledResources") {
         model.service.coupledResources = await this.handleCoupledResources(
           value,
           model._parent
         );
+        if (value?.length > 0) {
+          model.service.couplingType = {
+            key: "tight",
+          };
+        }
+      }
       if (key === "operations")
         model.service.operations = this.mapOperations(value);
       if (key === "resourceLocators") urlReferences.push(...value);
-      if (key === "serviceType")
+      if (key === "serviceType") {
         model.service.classification = this.mapClassification(value);
+        if (value === "WCS") model.service.explanation = "WCS Service";
+      }
+
       if (key === "timeReference")
         model.temporal.events = this.mapEvents(value);
       if (key === "timeSpan")
@@ -110,6 +119,7 @@ export class GetCapabilitiesService {
     return bboxes.map((box) => {
       return {
         type: "free",
+        title: box.name,
         value: {
           lat1: box.latitude1,
           lon1: box.longitude1,
@@ -156,7 +166,7 @@ export class GetCapabilitiesService {
     return value.map((item) => {
       return {
         referenceDate: item.date,
-        referenceDateType: { key: item.type },
+        referenceDateType: { key: item.type + "" },
       };
     });
   }
@@ -268,7 +278,7 @@ export class GetCapabilitiesService {
       });
 
     const state =
-      !value.state.key && !value.state.value
+      !value.state?.key && !value.state?.value
         ? null
         : {
             key: value.state.key,
