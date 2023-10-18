@@ -287,7 +287,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
                 val titleOrArs = geoIdentifierCode?.value
-                
+
                 if (titleOrArs != null) {
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
@@ -434,7 +434,6 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
     fun getAccessConstraints(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.resourceConstraints
-            ?.filter { it.legalConstraint?.accessConstraints != null }
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
                     if (constraint.isAnchor) {
