@@ -73,4 +73,9 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<SpatialResponse>>
 
+    @Operation
+    @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun aiSearch(principal: Principal, @RequestBody query: String): ResponseEntity<String>
+    
 }

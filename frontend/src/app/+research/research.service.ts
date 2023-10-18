@@ -336,4 +336,12 @@ export class ResearchService {
         }
       });*/
   }
+
+  askAI(question: string) {
+    return this.http.post(
+      `${this.configuration.backendUrl}search/ai`,
+      question,
+      { responseType: "text" }
+    );
+  }
 }
