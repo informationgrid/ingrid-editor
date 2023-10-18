@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from "@angular/core";
+import { Component, EventEmitter, NgZone, OnInit, Output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -14,7 +14,6 @@ import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { settingsRoutes } from "../+settings/settings.routing";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
-import { LogoutService } from "../services/logout.service";
 
 @Component({
   selector: "ige-main-header",
@@ -38,7 +37,7 @@ export class MainHeaderComponent implements OnInit {
     (item) => item.path !== ""
   );
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
-
+  @Output() hideOnLogoutEvent: EventEmitter<void> = new EventEmitter<void>();
   constructor(
     private configService: ConfigService,
     private catalogService: CatalogService,
@@ -47,7 +46,6 @@ export class MainHeaderComponent implements OnInit {
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
     private formMenuService: FormMenuService,
-    private logoutService: LogoutService,
     private zone: NgZone
   ) {}
 
@@ -86,14 +84,14 @@ export class MainHeaderComponent implements OnInit {
   }
 
   async logout() {
-    this.logoutService.setShowLogoutContainer(true);
     const hasNavigated = await this.router.navigate([
       `${ConfigService.catalogId}`,
     ]);
 
     if (!hasNavigated) {
-      this.logoutService.setShowLogoutContainer(false);
       return;
+    } else {
+      this.hideOnLogout();
     }
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
@@ -101,6 +99,9 @@ export class MainHeaderComponent implements OnInit {
     }, 1000);
   }
 
+  hideOnLogout() {
+    this.hideOnLogoutEvent.emit();
+  }
   getInitials(user: UserInfo) {
     const initials = (user?.firstName[0] ?? "") + (user?.lastName[0] ?? "");
     return initials.length === 0 ? "??" : initials;

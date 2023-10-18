@@ -31,6 +31,8 @@ export class AppComponent implements OnInit {
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
   showTestBadge: boolean;
 
+  isLoggingout = false;
+
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
     private configService: ConfigService,
@@ -75,6 +77,9 @@ export class AppComponent implements OnInit {
       titleService.setTitle(titleService.getTitle() + " TEST");
   }
 
+  onHideDiv() {
+    this.isLoggingout = true;
+  }
   private loadIcons() {
     // useful tool for merging SVG files: merge-svg-files via npm
     this.registry.addSvgIconSet(

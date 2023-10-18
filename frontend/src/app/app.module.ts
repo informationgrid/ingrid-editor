@@ -100,7 +100,6 @@ import { firstValueFrom } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 import { registerTranslateExtension } from "./formly/translate.extension";
 import { FieldToAriaLabelPipe } from "./directives/fieldToAiraLabel.pipe";
-import { LogoutContainerComponent } from "./logout-container/logout-container.component";
 
 registerLocaleData(de);
 
@@ -225,7 +224,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     InitCatalogComponent,
     AddonsWrapperComponent,
     ButtonWrapperComponent,
-    LogoutContainerComponent,
   ],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
