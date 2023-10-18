@@ -3,6 +3,7 @@
 :highlightjs-languages: kotlin
 :toc: left
 :toclevels: 3
+:stylesheet: ingrid.css
 
 == Introduction
 
@@ -403,31 +404,33 @@ The object should represent the JSON format, in which the document is stored in 
 An exporter is used to transform the data of a document into another format.
 Multiple exporter can be written, which can be chosen during the export process in the frontend.
 
-image:images/Exporter.svg["Exporter"]
+[plantuml]
+----
+@startuml
+interface IgeExporter {
+    run()
+    toString()
+    calculateFingerprint()
+}
+IgeExporter <|-- Exporter1
 
-[ditaa]
-....
- +--------+    +--------+----+    /---------------\
- |Document| <--+   Exporter  + <--|               |
- |  type  |    |             |    |   Exporter    |
- |  model |    |             |    |    Factory    |
- |        |    |             |    |               |
- +---+----+    +-------------+    \---------------/
-                     |
-                     v
-              +-------------+
-              |             |
-              |  Template   |
-              |             |
-              +------+------+
-....
+Template1 <- Exporter1
+Exporter1 -> Model1
+
+IgeExporter <|-- Exporter2
+Template2 <- Exporter2
+Exporter2 -> Model2
+
+ExporterFactory "1" o-- "n" IgeExporter
+@enduml
+----
 
 A profile can offer multiple export formats.
 You need to create a new service, which should only be active if the profile is.
 This service must implement the interface `IgeExporter` and return a typeInfo with a description of the exporter.
 This is also used in the frontend, to choose from a collection of exporters.
 
-It's recommended to use the [Pebble template engine](https://pebbletemplates.io/) for creating the exported document.
+It's recommended to use the https://jte.gg/[Java Template Engine (jte)] for creating the exported document.
 In combination with a model-class, the template can be easily filled with all the information.
 When the model-class implements one of the provided interfaces, e.g. `DCAT` then the same template can be even used for multiple document types.
 
@@ -452,6 +455,32 @@ That means that all documents of all catalogs are united in that single database
 The data model is shown here:
 
 image:images/DocumentWrapper.svg["Data model"]
+
+[plantuml]
+----
+@startuml
+
+DocumentWrapper "uuid" --> Document
+class DocumentWrapper {}
+class Document {}
+
+class Info {
+--
+name
+description
+cron
+type
+version
+}
+class Behaviours {
+--
+    id
+active
+data
+}
+
+@enduml
+----
 
 A `DocumentWrapper` manages different versions of a document.
 A document is normally stored in the draft-field.
