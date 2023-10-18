@@ -175,34 +175,35 @@ class Wms130CapabilitiesParser(
         val address = AddressBean()
         setNameInAddressBean(
             address,
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactPersonPrimary/wms:ContactPerson")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactPerson")
         )
         address.organization =
             xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactPersonPrimary/wms:ContactOrganization"
+                "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactOrganization"
             )
 
         address.email =
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactElectronicMailAddress")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactElectronicMailAddress")
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
 
-        address.street = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Address")
-        address.city = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:City")
+        address.street = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Address")
+        address.city = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:City")
         address.postcode =
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:PostCode")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:PostCode")
         address.country = getKeyValue(
             "6200",
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Country")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Country")
         )
         address.state = getKeyValue(
             "110",
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:StateOrProvince"),
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:StateOrProvince"),
             "name"
         )
-        address.phone = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactVoiceTelephone")
+        address.phone = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactVoiceTelephone")
+        // address.fax = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactFacsimileTelephone")
         return address
     }
 
