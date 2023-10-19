@@ -117,16 +117,22 @@ export class GetCapabilitiesService {
 
   private mapBoundingBox(bboxes: Location[]): any {
     return bboxes.map((box) => {
-      return {
-        type: "free",
-        title: box.name,
-        value: {
-          lat1: box.latitude1,
-          lon1: box.longitude1,
-          lat2: box.latitude2,
-          lon2: box.longitude2,
-        },
-      };
+      return box.latitude1 === null
+        ? {
+            type: "free",
+            title: box.name,
+            value: null,
+          }
+        : {
+            type: "free",
+            title: box.name,
+            value: {
+              lat1: box.latitude1,
+              lon1: box.longitude1,
+              lat2: box.latitude2,
+              lon2: box.longitude2,
+            },
+          };
     });
   }
 

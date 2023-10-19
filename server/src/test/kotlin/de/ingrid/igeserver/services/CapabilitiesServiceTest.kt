@@ -169,8 +169,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "www.geoinfo.hamburg.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "www.geoinfo.hamburg.de"
                     )
                 )
                 timeSpan shouldBe null
@@ -250,8 +250,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "https://geoservices.krzn.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "https://geoservices.krzn.de"
                     )
                 )
                 timeSpan shouldBe null
@@ -363,8 +363,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.BlueOx.org/contactUs",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.BlueOx.org/contactUs"
                     )
                 )
                 timeSpan shouldBe null
@@ -460,8 +460,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://hostname/"
                     )
                 )
                 timeSpan shouldBe null
@@ -589,8 +589,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/my-online-resource",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://hostname/my-online-resource"
                     )
                 )
                 timeSpan shouldBe null
@@ -680,8 +680,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.geodatenzentrum.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.geodatenzentrum.de"
                     )
                 )
                 /*timeSpan null
@@ -751,8 +751,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.cubewerx.com/~pvretano",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.cubewerx.com/~pvretano"
                     )
                 )
                 timeSpan shouldBe null
@@ -976,8 +976,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "mailto:voges@conterra.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "mailto:voges@conterra.de"
                     )
                 )
                 resourceLocators shouldBe listOf(

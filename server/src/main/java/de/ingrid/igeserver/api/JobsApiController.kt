@@ -7,14 +7,17 @@ import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
+import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -34,7 +37,9 @@ class JobsApiController @Autowired constructor(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
     val referenceHandlerFactory: ReferenceHandlerFactory,
-    val urlRequestService: UrlRequestService
+    val urlRequestService: UrlRequestService,
+    val aclService: IgeAclService,
+    val authUtils: AuthUtils
 ) : JobsApi {
 
     val log = logger()
@@ -69,11 +74,22 @@ class JobsApiController @Autowired constructor(
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getCatalogById(catalogId).type
-        val jobKey = JobKey.jobKey(URLChecker.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
 
+        // get only documents with write permission
+        val groups = authUtils.getCurrentUserRoles()
+        var docIds = emptyList<Int>()
+        val hasWriteRoot = groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
+        if (!hasWriteRoot) {
+            docIds = listOf("writeTree", "writeTreeExceptParent").flatMap {
+                aclService.getDocumentIdsForGroups(principal, it)
+            }
+        }
+        
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
+            put("groupDocIds", docIds.joinToString(","))
         }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
         return ResponseEntity.ok().build()
@@ -163,5 +179,10 @@ class JobsApiController @Autowired constructor(
         
         val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: ""
         return ResponseEntity.ok(result)
+    }
+    
+    private fun getJobIdString(id: String, principal: Principal): String {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        return "${id}_$userId"
     }
 }

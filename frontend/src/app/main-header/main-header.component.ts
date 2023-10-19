@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -21,6 +21,8 @@ import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
   styleUrls: ["./main-header.component.scss"],
 })
 export class MainHeaderComponent implements OnInit {
+  @Output() onLogout = new EventEmitter<void>();
+
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
@@ -86,7 +88,13 @@ export class MainHeaderComponent implements OnInit {
     const hasNavigated = await this.router.navigate([
       `${ConfigService.catalogId}`,
     ]);
-    if (!hasNavigated) return;
+
+    if (!hasNavigated) {
+      return;
+    }
+
+    this.onLogout.emit();
+
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
       this.authFactory.get().logout();

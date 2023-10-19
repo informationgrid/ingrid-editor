@@ -76,7 +76,7 @@ internal class KeycloakConfig {
                 }
             }
             authorizeRequests {
-                authorize("/barrierefreiheit", permitAll)
+                // secure api-routes except a few necessary ones
                 authorize("/api/config", permitAll)
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
