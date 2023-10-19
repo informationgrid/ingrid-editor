@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgZone, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -21,6 +21,8 @@ import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
   styleUrls: ["./main-header.component.scss"],
 })
 export class MainHeaderComponent implements OnInit {
+  @Output() onLogout = new EventEmitter<void>();
+
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
@@ -37,7 +39,7 @@ export class MainHeaderComponent implements OnInit {
     (item) => item.path !== ""
   );
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
-  @Output() hideOnLogoutEvent: EventEmitter<void> = new EventEmitter<void>();
+
   constructor(
     private configService: ConfigService,
     private catalogService: CatalogService,
@@ -45,8 +47,7 @@ export class MainHeaderComponent implements OnInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
-    private formMenuService: FormMenuService,
-    private zone: NgZone
+    private formMenuService: FormMenuService
   ) {}
 
   ngOnInit() {
@@ -90,18 +91,16 @@ export class MainHeaderComponent implements OnInit {
 
     if (!hasNavigated) {
       return;
-    } else {
-      this.hideOnLogout();
     }
+
+    this.onLogout.emit();
+
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
       this.authFactory.get().logout();
     }, 1000);
   }
 
-  hideOnLogout() {
-    this.hideOnLogoutEvent.emit();
-  }
   getInitials(user: UserInfo) {
     const initials = (user?.firstName[0] ?? "") + (user?.lastName[0] ?? "");
     return initials.length === 0 ? "??" : initials;

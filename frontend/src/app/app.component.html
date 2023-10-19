@@ -1,5 +1,5 @@
-<div class="wrapper" [class.hideMainContainer]="isLoggingout">
-    <ige-main-header (hideOnLogoutEvent)="onHideDiv()"></ige-main-header>
+<div class="wrapper" [class.hide]="isLoggingout">
+    <ige-main-header (onLogout)="isLoggingout = true"></ige-main-header>
     <div *ngIf="showTestBadge" class="test-instance">TEST</div>
     <mat-drawer-container class="flex-1" [autosize]="true">
         <mat-drawer mode="side" [opened]="true" disableClose>

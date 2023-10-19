@@ -77,9 +77,6 @@ export class AppComponent implements OnInit {
       titleService.setTitle(titleService.getTitle() + " TEST");
   }
 
-  onHideDiv() {
-    this.isLoggingout = true;
-  }
   private loadIcons() {
     // useful tool for merging SVG files: merge-svg-files via npm
     this.registry.addSvgIconSet(
