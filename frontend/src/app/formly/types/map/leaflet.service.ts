@@ -40,7 +40,7 @@ export class LeafletService {
     "#FFBC00",
     "#FF7500",
     "#DE2525",
-    "#DE2525",
+    "#b711c2",
     "#2C4EB7",
   ];
   private wktTools: WktTools;
