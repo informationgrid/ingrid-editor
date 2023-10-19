@@ -31,6 +31,8 @@ export class AppComponent implements OnInit {
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
   showTestBadge: boolean;
 
+  isLoggingout = false;
+
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
     private configService: ConfigService,
