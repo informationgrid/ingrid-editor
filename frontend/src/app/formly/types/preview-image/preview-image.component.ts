@@ -16,10 +16,10 @@ import {
 } from "rxjs/operators";
 import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component";
 import {
-  CdkDragDrop,
-  CdkDropList,
   CdkDrag,
+  CdkDragDrop,
   CdkDragPreview,
+  CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
 
@@ -113,9 +113,9 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           return aLinks === bLinks;
         }),
         tap(() => {
-          // No need to reset the imageLinks, resting causes the browser to rerender the
-          // images link after drag and drop
-          //this.imageLinks = {};
+          // we need to reset the imageLinks so when we open another document
+          // we do not start to access the previous images
+          this.imageLinks = [];
         })
       )
       .subscribe((value) => this.createImageLinkUris(value));
@@ -196,35 +196,40 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     );
   }
 
+  /**
+   * The uploaded images are protected and cannot simply be accessed within an
+   * img-src-link. Therefore, we request temporary access to the resource, which
+   * is unprotected for a short time.
+   */
   private createImageLinkUris(value: any[]) {
-    value?.map((item, index) => {
+    value?.forEach((item) => {
       const uri = item.fileName?.uri;
-
-      // DON'T CACHE LINKS. hash links are temporary
-      // TODO: Rewrite to completely avoid temporary hashed links
-      //if (!uri || this.imageLinks[uri] !== undefined) return;
 
       if (item.fileName?.asLink) {
         this.imageLinks[uri] = uri;
         return;
       }
 
-      const docUuid = this.formControl.root.value._uuid;
-      return this.uploadService
-        .getFile(docUuid, uri)
-        .pipe(
-          tap((hash) => this.addUploadUri(uri, hash)),
-          catchError((error) => {
-            console.log(error);
-            this.messageService.sendError(
-              "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
-            );
-            return of(error);
-          })
-        )
-        .subscribe(() => this.cdr.detectChanges());
+      this.updateTemporaryImageUrl(uri);
     });
     this.cdr.detectChanges();
+  }
+
+  private updateTemporaryImageUrl(uri: string) {
+    const docUuid = this.formControl.root.value._uuid;
+    return this.uploadService
+      .getFile(docUuid, uri)
+      .pipe(
+        tap((hash) => this.addUploadUri(uri, hash)),
+        catchError((error) => {
+          console.log(error);
+          this.messageService.sendError(
+            "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
+          );
+          return of(error);
+        })
+      )
+      .subscribe(() => this.cdr.detectChanges());
   }
 
   private addUploadUri(uri: string, hash: String) {
@@ -245,5 +250,27 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       this.field.fieldGroup[i].key = `${i}`;
     }
     this.options.build(this.field);
+  }
+
+  /**
+   * Since the uploaded images are protected, we are going to use the already
+   * downloaded image data to be used during dragging
+   */
+  prepareForDrag(filename: any, index: number) {
+    if (filename.asLink) return;
+    this.imageLinks[filename.uri] = this.getBase64StringFromImage(index);
+    this.cdr.detectChanges();
+  }
+
+  private getBase64StringFromImage(index: number) {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    const img: HTMLImageElement = document.querySelector(
+      "img.preview-image-" + index
+    );
+    canvas.height = img.naturalHeight;
+    canvas.width = img.naturalWidth;
+    context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+    return canvas.toDataURL();
   }
 }
