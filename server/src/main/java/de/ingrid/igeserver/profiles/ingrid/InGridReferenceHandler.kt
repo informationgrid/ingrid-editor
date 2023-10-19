@@ -34,10 +34,10 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     """.trimIndent()
 
 
-    override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
+    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>): List<DocumentLinks> {
         val extraJsonbFields = arrayOf("references", "service", "serviceUrls")
 
-        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId, extraJsonbFields)
+        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId, extraJsonbFields, groupDocIds)
         return mapQueryResults(result)
     }
 
