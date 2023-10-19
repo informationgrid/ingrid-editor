@@ -36,6 +36,8 @@ import { UploadService } from "../../../shared/upload/upload.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FormMessageService } from "../../../services/form-message.service";
 import { of } from "rxjs";
+import { REGEX_URL } from "../../input.validators";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -63,6 +65,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private uploadService = inject(UploadService);
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(FormMessageService);
+  private translocoService = inject(TranslocoService);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -72,6 +75,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       props: {
         label: "URL",
         appearance: "outline",
+        required: true,
         onClick: (docUuid, uri, $event) => {
           // this.uploadService.downloadFile(docUuid, uri, $event);
         },
@@ -82,6 +86,18 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           } else {
             return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
+        },
+      },
+      validators: {
+        url: {
+          expression: (field) => {
+            const regExp = new RegExp(REGEX_URL);
+            return field.value?.asLink
+              ? regExp.test(field.value?.uri?.trim())
+              : true;
+          },
+          message: () =>
+            this.translocoService.translate("form.validationMessages.url"),
         },
       },
       expressions: {
