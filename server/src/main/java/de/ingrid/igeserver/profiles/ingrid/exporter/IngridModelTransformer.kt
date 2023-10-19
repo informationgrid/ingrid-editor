@@ -419,7 +419,7 @@ open class IngridModelTransformer(
     val serviceType =
         codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
-    val couplingType = data.service?.couplingType?.key
+    val couplingType = data.service?.couplingType?.key ?: "loose"
 
     val operations: List<DisplayOperation>
 
