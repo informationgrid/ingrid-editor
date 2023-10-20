@@ -1,13 +1,14 @@
 import { Component, OnInit } from "@angular/core";
 import { QueryQuery } from "../../store/query/query.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter, finalize } from "rxjs/operators";
+import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { SqlQuery } from "../../store/query/query.model";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -17,18 +18,23 @@ import { UntypedFormControl } from "@angular/forms";
 })
 export class TabSqlComponent implements OnInit {
   sql = new UntypedFormControl("");
+  request = new FormControl<string>("");
 
   sqlExamples = this.researchService.sqlExamples;
 
   isSearching = false;
 
   result: any;
+  aiSearchEnabled =
+    this.config.isSuperAdmin() &&
+    (this.config.getConfiguration().featureFlags.openAISearch ?? false);
 
   constructor(
     private queryQuery: QueryQuery,
     private researchService: ResearchService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    private config: ConfigService,
   ) {}
 
   ngOnInit(): void {
@@ -92,5 +98,34 @@ export class TabSqlComponent implements OnInit {
 
   private updateHits(result: ResearchResponse) {
     this.result = result;
+  }
+
+  askForSQL(question: string) {
+    this.isSearching = true;
+    this.researchService
+      .askAI(question)
+      .pipe(
+        finalize(() => (this.isSearching = false)),
+        map((answer) => this.adaptAnswer(answer)),
+      )
+      .subscribe((answer) => {
+        this.sql.setValue(answer);
+        this.search(answer);
+      });
+  }
+
+  private adaptAnswer(answer: string) {
+    const start = answer.indexOf("WHERE");
+    const end = answer.indexOf("```", start);
+    let adaptedAnswer =
+      start === -1
+        ? ""
+        : end === -1
+        ? answer.substring(start)
+        : answer.substring(start, end);
+    return (
+      "SELECT document1.*, document_wrapper.category FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
+      adaptedAnswer
+    );
   }
 }

@@ -8,6 +8,7 @@
     "showTestBadge": false,
     "AP3": true,
     "AP4": false,
-    "NotForDemo": true
+    "NotForDemo": true,
+    "openAISearch": false
   }
 }

@@ -123,6 +123,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.keycloak:keycloak-admin-client:22.0.4'
     
+    // OpenAI
+    // import Kotlin API client BOM
+    implementation platform('com.aallam.openai:openai-client-bom:3.5.0')
+
+    // define dependencies without versions
+    implementation 'com.aallam.openai:openai-client'
+    runtimeOnly 'io.ktor:ktor-client-okhttp'
+    implementation "io.ktor:ktor-client-java"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
 
     // Markdown
