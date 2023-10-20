@@ -4,11 +4,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '1.8.21'
-    ext.spring_boot_version = '3.0.9'
+    ext.kotlin_version = '1.9.10'
+    ext.spring_boot_version = '3.1.5'
 //    ext.hibernate_version = '6.2.1.Final'
-    ext.kotest_version = '5.6.2'
-    ext.jte_version = '2.3.2'
+    ext.kotest_version = '5.7.2'
+    ext.jte_version = '3.1.2'
     ext.geotools_version = '28.2'
 }
 
@@ -20,15 +20,15 @@ plugins {
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
     id "org.springframework.boot" version "$spring_boot_version"
-    id "io.spring.dependency-management" version "1.1.0"
+    id "io.spring.dependency-management" version "1.1.3"
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.3.1'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
     id "com.gorylenko.gradle-git-properties" version "2.4.1"
     id 'io.kotest' version '0.4.10'
-    id "com.github.ben-manes.versions" version "0.46.0"
+    id "com.github.ben-manes.versions" version "0.49.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.2.7.Final"
+    id "org.hibernate.orm" version "6.3.1.Final"
 }
 
 repositories {
@@ -87,9 +87,9 @@ if (hasProperty('buildProfile')) {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.2.0'
-    implementation 'org.apache.tika:tika-core:2.7.0'
-    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.1'
+    implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.3.0'
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.3'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -115,13 +115,13 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.39'
+    implementation 'net.pwall.json:json-kotlin-schema:0.42'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:22.0.1'
+    implementation 'org.keycloak:keycloak-admin-client:22.0.4'
     
 
 
@@ -130,21 +130,21 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
-    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.21.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.21.0'
 
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.5.4'
+    implementation 'org.postgresql:postgresql:42.6.0'
     implementation "org.hibernate.orm:hibernate-core"
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.3.2'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.6.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation 'de.ingrid:ingrid-codelist-service:6.1.0'
+    implementation 'de.ingrid:ingrid-codelist-service:6.3.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
 
     // GeoTools
@@ -170,20 +170,20 @@ dependencies {
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
-    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.2' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.4'
-    testImplementation "com.ninja-squad:springmockk:4.0.0"
+    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.3' // to wire dependencies using Spring
+    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:6.1.0')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:6.3.0')
     // for javax.annotation-support for elasticsearch-tools
     implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
 
-    implementation('de.ingrid:ingrid-ibus-client:6.0.0') {
+    implementation('de.ingrid:ingrid-ibus-client:6.3.0') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
