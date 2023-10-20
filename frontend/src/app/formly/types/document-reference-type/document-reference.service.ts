@@ -19,14 +19,17 @@ export interface GetRecordAnalysis {
 export class DocumentReferenceService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
   analyzeGetRecordUrl(url: string): Observable<GetRecordAnalysis> {
     return this.http.post<GetRecordAnalysis>(
       `${this.configuration.backendUrl}getCapabilities/analyzeGetRecordUrl`,
-      url
+      url,
     );
   }
 }

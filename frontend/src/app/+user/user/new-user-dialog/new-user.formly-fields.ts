@@ -4,7 +4,7 @@ import { SelectOptionUi } from "../../../services/codelist/codelist.service";
 
 export const getNewUserFormFields = (
   roles: SelectOptionUi[],
-  logins: SelectOptionUi[]
+  logins: SelectOptionUi[],
 ): FormlyFieldConfig[] => {
   return [
     {

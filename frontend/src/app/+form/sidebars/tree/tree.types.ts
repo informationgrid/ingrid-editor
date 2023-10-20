@@ -10,7 +10,7 @@ export class ShortTreeNode {
       canWrite: true,
       canOnlyWriteSubtree: false,
     },
-    public disabled = false
+    public disabled = false,
   ) {}
 
   isSelectable() {
@@ -23,5 +23,8 @@ export class ShortTreeNode {
 }
 
 export class TreeAction {
-  constructor(public type: TreeActionType, public id: number) {}
+  constructor(
+    public type: TreeActionType,
+    public id: number,
+  ) {}
 }

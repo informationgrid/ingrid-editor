@@ -63,7 +63,7 @@ describe("DashboardComponent", () => {
     spectator = createComponent();
     const dataService = spectator.inject<DocumentService>(DocumentService);
     dataService.getStatistic.and.returnValue(
-      of({ totalNum: 5, numDrafts: 3, numPublished: 2 })
+      of({ totalNum: 5, numDrafts: 3, numPublished: 2 }),
     );
   });
 
@@ -82,7 +82,7 @@ describe("DashboardComponent", () => {
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(
-      'ige-card-box[data-cy="card-latest-docs"] .card-title'
+      'ige-card-box[data-cy="card-latest-docs"] .card-title',
     );
     console.log(recentDocs.length);
     console.log(recentDocs[0]);

@@ -16,7 +16,7 @@ export class FeatureFlagDirective implements OnInit {
   constructor(
     private vcr: ViewContainerRef,
     private tpl: TemplateRef<any>,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   ngOnInit() {

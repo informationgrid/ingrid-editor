@@ -44,7 +44,7 @@ export class LiteratureDoctype extends IngridShared {
                     wrappers: ["inline-help", "form-field"],
                   }),
                 ],
-                { wrappers: [] }
+                { wrappers: [] },
               ),
               this.addGroup(
                 null,
@@ -63,13 +63,13 @@ export class LiteratureDoctype extends IngridShared {
                     wrappers: ["inline-help", "form-field"],
                   }),
                 ],
-                { wrappers: [] }
+                { wrappers: [] },
               ),
             ],
             {
               fieldGroupClassName: "",
               className: "optional",
-            }
+            },
           ),
           this.addTextArea("location", "Standort", this.id, {
             className: "optional flex-1",
@@ -101,14 +101,14 @@ export class LiteratureDoctype extends IngridShared {
                 {
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
-                }
+                },
               ),
               this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
               }),
             ],
-            { className: "optional" }
+            { className: "optional" },
           ),
         ]),
       ]),

@@ -12,7 +12,10 @@ export class DashboardDocsHeaderComponent implements OnInit {
   @Input() canCreateDatasets: boolean;
   @Input() canImport: boolean;
 
-  constructor(private docEvents: DocEventsService, private router: Router) {}
+  constructor(
+    private docEvents: DocEventsService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {}
 

@@ -23,7 +23,7 @@ export class AutosavePlugin extends Plugin {
   constructor(
     private formStateService: FormStateService,
     private docEvents: DocEventsService,
-    private session: SessionQuery
+    private session: SessionQuery,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -36,7 +36,7 @@ export class AutosavePlugin extends Plugin {
     this.timeout$
       .pipe(
         filter(() => this.formStateService.getForm()?.dirty),
-        filter((time) => sessionDuration - time > this.tenMinutes)
+        filter((time) => sessionDuration - time > this.tenMinutes),
       )
       .subscribe((time) => this.docEvents.sendEvent({ type: "SAVE" }));
   }

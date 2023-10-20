@@ -11,7 +11,7 @@ export class SelectOptionPipe implements PipeTransform {
 
   transform(
     value: string,
-    options: Observable<SelectOptionUi[]>
+    options: Observable<SelectOptionUi[]>,
   ): Observable<string> {
     if (!options) {
       return of(value);

@@ -132,7 +132,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           // we need to reset the imageLinks so when we open another document
           // we do not start to access the previous images
           this.imageLinks = [];
-        })
+        }),
       )
       .subscribe((value) => this.createImageLinkUris(value));
   }
@@ -208,7 +208,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     files.forEach((file) =>
       this.add(null, {
         fileName: { uri: file.uri, asLink: false, value: file.file },
-      })
+      }),
     );
   }
 
@@ -240,10 +240,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         catchError((error) => {
           console.log(error);
           this.messageService.sendError(
-            "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
+            "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden",
           );
           return of(error);
-        })
+        }),
       )
       .subscribe(() => this.cdr.detectChanges());
   }
@@ -258,7 +258,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     moveItemInArray(
       this.field.fieldGroup,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
 
     moveItemInArray(this.model, event.previousIndex, event.currentIndex);
@@ -282,7 +282,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     const img: HTMLImageElement = document.querySelector(
-      "img.preview-image-" + index
+      "img.preview-image-" + index,
     );
     canvas.height = img.naturalHeight;
     canvas.width = img.naturalWidth;

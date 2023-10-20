@@ -2,15 +2,12 @@
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
 import { FieldWrapper, FormlyConfig } from "@ngx-formly/core";
 import {
-  trigger,
+  animate,
+  group,
   state,
   style,
   transition,
-  animate,
-  group,
-  query,
-  stagger,
-  keyframes,
+  trigger,
 } from "@angular/animations";
 
 @Component({
@@ -28,14 +25,14 @@ import {
         style({
           height: "*",
           opacity: "1",
-        })
+        }),
       ),
       state(
         "false",
         style({
           height: "0",
           opacity: "0",
-        })
+        }),
       ),
       transition("true => false", [
         group([
@@ -43,13 +40,13 @@ import {
             "200ms ease-in-out",
             style({
               opacity: "0",
-            })
+            }),
           ),
           animate(
             "200ms ease-in-out",
             style({
               height: "0",
-            })
+            }),
           ),
         ]),
       ]),
@@ -59,13 +56,13 @@ import {
             "200ms ease-in-out",
             style({
               height: "*",
-            })
+            }),
           ),
           animate(
             "200ms ease-in-out",
             style({
               opacity: "1",
-            })
+            }),
           ),
         ]),
       ]),

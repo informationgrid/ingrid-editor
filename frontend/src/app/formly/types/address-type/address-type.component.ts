@@ -37,7 +37,7 @@ export class AddressTypeComponent
     private dialog: MatDialog,
     private router: Router,
     private documentService: DocumentService,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
   ) {
     super();
   }
@@ -61,7 +61,7 @@ export class AddressTypeComponent
           });
           this.removeDuplicates();
           this.updateFormControl(this.addresses);
-        }
+        },
       );
     });
   }
@@ -78,9 +78,9 @@ export class AddressTypeComponent
             });
             this.removeDuplicates();
             this.updateFormControl(this.addresses);
-          }
+          },
         );
-      }
+      },
     );
   }
 
@@ -94,7 +94,7 @@ export class AddressTypeComponent
             (item.type.key === null && item.type.value === value.type.value);
           const sameUuid = item.ref._uuid === value.ref._uuid;
           return sameType && sameUuid;
-        })
+        }),
     );
     if (unique.length !== this.addresses.length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
@@ -144,10 +144,10 @@ export class AddressTypeComponent
         .pipe(
           filter((response) => response === "confirm"),
           tap((_) =>
-            this.router.navigate([`${ConfigService.catalogId}/address`])
+            this.router.navigate([`${ConfigService.catalogId}/address`]),
           ),
           // no address to return
-          map((_) => undefined)
+          map((_) => undefined),
         );
     }
   }
@@ -176,7 +176,7 @@ export class AddressTypeComponent
   // TODO: let ige-form-error handle all error messages
   getFirstError() {
     return Object.values(this.formControl.errors).map(
-      (error) => error.message
+      (error) => error.message,
     )[0];
   }
 

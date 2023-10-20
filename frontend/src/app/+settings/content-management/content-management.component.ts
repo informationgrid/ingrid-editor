@@ -27,7 +27,7 @@ export class ContentManagementComponent implements OnInit {
   ngOnInit(): void {
     this.configService.getCMSPages().subscribe((pages) => {
       const accessibility = pages.find(
-        (item) => item.pageId === "accessibility"
+        (item) => item.pageId === "accessibility",
       );
       this.accessibility.setValue(accessibility?.content ?? "");
     });

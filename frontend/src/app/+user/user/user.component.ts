@@ -23,14 +23,14 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, finalize, map, switchMap, tap } from "rxjs/operators";
+import { filter, finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { EventService, IgeEvent } from "../../services/event/event.service";
+import { EventService } from "../../services/event/event.service";
 import {
   FormMenuService,
   FormularMenuItem,
@@ -71,14 +71,14 @@ export class UserComponent
     private formMenuService: FormMenuService,
     private session: SessionQuery,
     private toast: MatSnackBar,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {
     this.model = new FrontendUser();
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,
         this.groupSelectCallback,
-        this.roleChangeCallback
+        this.roleChangeCallback,
       );
     });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
@@ -141,7 +141,7 @@ export class UserComponent
             }
             this.selectedUserRole = user.role;
           }),
-          untilDestroyed(this)
+          untilDestroyed(this),
         )
         .subscribe();
     });
@@ -267,7 +267,7 @@ export class UserComponent
         .afterClosed()
         .pipe(
           tap((response) => (response ? this.handleAction(response) : null)),
-          map((response) => response === "discard" || response === "save")
+          map((response) => response === "discard" || response === "save"),
         );
     }
 

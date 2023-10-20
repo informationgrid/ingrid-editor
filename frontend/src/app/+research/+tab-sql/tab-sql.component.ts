@@ -28,7 +28,7 @@ export class TabSqlComponent implements OnInit {
     private queryQuery: QueryQuery,
     private researchService: ResearchService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -36,7 +36,7 @@ export class TabSqlComponent implements OnInit {
       .selectActive()
       .pipe(
         untilDestroyed(this),
-        filter((a) => a && a.type === "sql")
+        filter((a) => a && a.type === "sql"),
       )
       .subscribe((entity: SqlQuery) => {
         this.researchService.setActiveQuery(null);
@@ -56,7 +56,7 @@ export class TabSqlComponent implements OnInit {
       .searchBySQL(sql)
       .pipe(finalize(() => (this.isSearching = false)))
       .subscribe(
-        (result) => this.updateHits(result)
+        (result) => this.updateHits(result),
         // (error: HttpErrorResponse) => (this.error = error.error.errorText)
       );
   }
@@ -78,8 +78,8 @@ export class TabSqlComponent implements OnInit {
                 "",
                 {
                   panelClass: "green",
-                }
-              )
+                },
+              ),
             );
         }
       });

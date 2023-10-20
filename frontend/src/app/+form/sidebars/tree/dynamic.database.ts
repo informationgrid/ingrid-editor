@@ -23,7 +23,7 @@ export class DynamicDatabase {
   constructor(
     private docService: DocumentService,
     private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {}
 
   init(forAdresses: boolean): void {
@@ -36,16 +36,17 @@ export class DynamicDatabase {
   /** Initial data from database */
   initialData(
     forceFromServer?: boolean,
-    isAddress?: boolean
+    isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     const children = this.getChildren(null, forceFromServer, isAddress);
     if (this.hideReadOnly) {
       return children.pipe(
         map((docs) =>
           docs.filter(
-            (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
-          )
-        )
+            (doc) =>
+              doc.hasWritePermission || doc.hasOnlySubtreeWritePermission,
+          ),
+        ),
       );
     } else {
       return children;
@@ -55,7 +56,7 @@ export class DynamicDatabase {
   getChildren(
     parentId: number,
     forceFromServer?: boolean,
-    isAddress?: boolean
+    isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     let children;
     if (forceFromServer) {
@@ -74,9 +75,10 @@ export class DynamicDatabase {
       return moreChildren.pipe(
         map((docs) =>
           docs.filter(
-            (doc) => doc.hasWritePermission || doc.hasOnlySubtreeWritePermission
-          )
-        )
+            (doc) =>
+              doc.hasWritePermission || doc.hasOnlySubtreeWritePermission,
+          ),
+        ),
       );
     } else {
       return moreChildren;
@@ -91,7 +93,7 @@ export class DynamicDatabase {
     return firstValueFrom(
       this.docService
         .getPath(id)
-        .pipe(map((paths) => paths.map((path) => path.id)))
+        .pipe(map((paths) => paths.map((path) => path.id))),
     );
   }
 
@@ -111,8 +113,8 @@ export class DynamicDatabase {
           false,
           doc.hasWritePermission,
           doc.hasOnlySubtreeWritePermission,
-          doc._tags
-        )
+          doc._tags,
+        ),
     );
   }
 }

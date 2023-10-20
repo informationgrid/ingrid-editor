@@ -69,7 +69,7 @@ export class HeaderMoreComponent implements OnInit {
       "all",
       "modifiedMetadata",
       "Metadaten-Datum",
-      null
+      null,
     );
   }
 }

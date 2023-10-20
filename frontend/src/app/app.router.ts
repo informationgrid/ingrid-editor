@@ -20,7 +20,7 @@ export const routes: Routes = [
         path: "dashboard",
         loadChildren: () =>
           import("./+dashboard/dashboard.module").then(
-            (m) => m.DashboardModule
+            (m) => m.DashboardModule,
           ),
         canActivate: [AuthGuard],
         data: {
@@ -78,7 +78,7 @@ export const routes: Routes = [
         path: "importExport",
         loadChildren: () =>
           import("./+importExport/import-export.module").then(
-            (m) => m.ImportExportModule
+            (m) => m.ImportExportModule,
           ),
         canActivate: [AuthGuard],
         data: {
@@ -158,7 +158,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
       .subscribe((user) => {
         const catalogId = user.currentCatalog.id;
         this.routesToCache = this.routesToCache.map(
-          (route) => "/" + catalogId + route
+          (route) => "/" + catalogId + route,
         );
       });
   }
@@ -166,13 +166,13 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
   public shouldDetach(_route: ActivatedRouteSnapshot): boolean {
     return this.routesToCache.some(
       // @ts-ignore
-      (definiton) => _route._routerState.url.indexOf(definiton) === 0
+      (definiton) => _route._routerState.url.indexOf(definiton) === 0,
     );
   }
 
   public store(
     route: ActivatedRouteSnapshot,
-    handle: DetachedRouteHandle
+    handle: DetachedRouteHandle,
   ): void {
     if (!route.routeConfig) return;
     this.handlers.set(route.routeConfig, handle);
@@ -190,7 +190,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
 
   public shouldReuseRoute(
     future: ActivatedRouteSnapshot,
-    curr: ActivatedRouteSnapshot
+    curr: ActivatedRouteSnapshot,
   ): boolean {
     return future.routeConfig === curr.routeConfig;
   }

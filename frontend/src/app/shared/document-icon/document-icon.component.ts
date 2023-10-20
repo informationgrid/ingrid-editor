@@ -1,9 +1,9 @@
 import {
   Component,
+  EventEmitter,
   HostBinding,
   Input,
   OnInit,
-  EventEmitter,
   Output,
 } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
@@ -39,7 +39,7 @@ export class DocumentIconComponent implements OnInit {
 
   constructor(
     private translocoService: TranslocoService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {}
@@ -53,7 +53,7 @@ export class DocumentIconComponent implements OnInit {
     this.documentState = DocumentUtils.getStateClass(
       state,
       type,
-      publicationType
+      publicationType,
     );
     this.hasTags = publicationType?.length > 0;
     this.tooltip = this.getTooltip(type, publicationType);

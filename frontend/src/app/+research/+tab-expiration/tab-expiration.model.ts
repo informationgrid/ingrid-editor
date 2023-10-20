@@ -14,7 +14,7 @@ export class ExpiredData {
   filterById(id: number): ExpiredData {
     return new ExpiredData(
       this._filterById(id, this.objects),
-      this._filterById(id, this.addresses)
+      this._filterById(id, this.addresses),
     );
   }
 

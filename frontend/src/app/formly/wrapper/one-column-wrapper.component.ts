@@ -25,7 +25,7 @@ export class OneColumnWrapperComponent
 
   constructor(
     public configService: ConfigService,
-    public contextHelpService: ContextHelpService
+    public contextHelpService: ContextHelpService,
   ) {
     super();
   }
@@ -41,7 +41,7 @@ export class OneColumnWrapperComponent
       this.formState.mainModel?._type,
       this.field.props.contextHelpId || this.fieldId,
       this.props.externalLabel,
-      infoElement
+      infoElement,
     );
   }
 }

@@ -17,7 +17,7 @@ export class GeneralTable {
 
       const pageNumber = Math.max(
         0,
-        Math.floor(indexInDatasource / this.paginator.pageSize)
+        Math.floor(indexInDatasource / this.paginator.pageSize),
       );
 
       this.paginator.pageIndex = pageNumber;
@@ -31,7 +31,7 @@ export class GeneralTable {
 
   setSelectionToItem(value: string | number, key: string) {
     this.selection.select(
-      this.dataSource.data.find((group) => group[key] == value)
+      this.dataSource.data.find((group) => group[key] == value),
     );
   }
 }

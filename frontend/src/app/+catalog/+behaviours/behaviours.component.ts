@@ -30,7 +30,7 @@ export class BehavioursComponent implements OnInit {
     private builder: FormlyFormBuilder,
     private route: ActivatedRoute,
     private behaviourService: BehaviourService,
-    pluginService: PluginService
+    pluginService: PluginService,
   ) {
     this.plugins = pluginService.plugins.filter((plugin) => !plugin.hide);
   }
@@ -41,7 +41,7 @@ export class BehavioursComponent implements OnInit {
     // this.behaviourService.applyActiveStates(this.plugins);
     this.pluginsGrouped = this.groupBy(
       this.plugins,
-      (plugin: Plugin) => plugin.group || "Andere"
+      (plugin: Plugin) => plugin.group || "Andere",
     );
     this.fields = this.createModelFromPlugins(this.plugins);
   }
@@ -51,14 +51,14 @@ export class BehavioursComponent implements OnInit {
       (previous, current, index, a, field = callback(current)) => (
         (previous[field] || (previous[field] = [])).push(current), previous
       ),
-      {}
+      {},
     );
   }
 
   save() {
     // TODO: improve by saving only modified behaviours states
     const updatedBehaviours = this.plugins.map((item) =>
-      this.mapBehaviourForBackend(item)
+      this.mapBehaviourForBackend(item),
     );
 
     this.behaviourService.saveBehaviours(updatedBehaviours);
@@ -74,7 +74,7 @@ export class BehavioursComponent implements OnInit {
 
   hasDirtyForm() {
     return Object.keys(this.fields).some(
-      (key) => this.fields[key].active.dirty || this.fields[key].form.dirty
+      (key) => this.fields[key].active.dirty || this.fields[key].form.dirty,
     );
   }
 
@@ -89,7 +89,7 @@ export class BehavioursComponent implements OnInit {
           formGroup,
           plugin.fields,
           plugin.data ? plugin.data : {},
-          {}
+          {},
         );
         formGroup.disable();
       }

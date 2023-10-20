@@ -50,7 +50,7 @@ export class PublishPlugin extends SaveBase {
     private docEvents: DocEventsService,
     private transloco: TranslocoService,
     messageService: FormMessageService,
-    sessionStore: SessionStore
+    sessionStore: SessionStore,
   ) {
     super(sessionStore, messageService);
     inject(PluginService).registerPlugin(this);
@@ -72,7 +72,7 @@ export class PublishPlugin extends SaveBase {
       this.docEvents
         .onEvent(this.eventPlanPublishId)
         .subscribe(
-          () => this.validateBeforePublish() && this.showPlanPublishingDialog()
+          () => this.validateBeforePublish() && this.showPlanPublishingDialog(),
         ),
       this.docEvents
         .onEvent(this.eventUnpublishId)
@@ -87,7 +87,7 @@ export class PublishPlugin extends SaveBase {
 
     this.formSubscriptions.push(
       ...toolbarEventSubscription,
-      behaviourSubscription
+      behaviourSubscription,
     );
   }
 
@@ -160,7 +160,7 @@ export class PublishPlugin extends SaveBase {
 
     if (!allParentsPublished) {
       this.modalService.showJavascriptError(
-        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann."
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
       );
       return false;
     } else {
@@ -170,8 +170,8 @@ export class PublishPlugin extends SaveBase {
           new IgeError(
             "Es müssen alle Felder korrekt ausgefüllt werden. " +
               "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
-              "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler."
-          )
+              "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler.",
+          ),
         );
         return false;
       }
@@ -255,7 +255,7 @@ export class PublishPlugin extends SaveBase {
       .publish(data, this.forAddress, delay)
       .pipe(
         catchError((error) =>
-          this.handleError(error, data, this.forAddress, "PUBLISH")
+          this.handleError(error, data, this.forAddress, "PUBLISH"),
         ),
         tap((response) => {
           if (delay != null) {
@@ -264,7 +264,7 @@ export class PublishPlugin extends SaveBase {
               forAddress: this.forAddress,
             });
           }
-        })
+        }),
       )
       .subscribe();
   }
@@ -300,7 +300,7 @@ export class PublishPlugin extends SaveBase {
             (err) => {
               console.log("Error when reverting data", err);
               throw err;
-            }
+            },
           );
         }
       });
@@ -325,18 +325,18 @@ export class PublishPlugin extends SaveBase {
         loadedDocument !== null &&
           loadedDocument._pendingDate == null &&
           loadedDocument._type !== "FOLDER" &&
-          loadedDocument.hasWritePermission
+          loadedDocument.hasWritePermission,
       );
       this.formToolbarService.setMenuItemStateOfButton(
         "toolBtnPublish",
         this.eventRevertId,
-        loadedDocument !== null && loadedDocument._state === "PW"
+        loadedDocument !== null && loadedDocument._state === "PW",
       );
       this.formToolbarService.setMenuItemStateOfButton(
         "toolBtnPublish",
         this.eventUnpublishId,
         loadedDocument !== null &&
-          (loadedDocument._state === "PW" || loadedDocument._state === "P")
+          (loadedDocument._state === "PW" || loadedDocument._state === "P"),
       );
     });
   }
@@ -362,7 +362,7 @@ export class PublishPlugin extends SaveBase {
           error.unhandledException = false;
           this.modalService.showIgeError(error);
           return of(error);
-        })
+        }),
       )
       .subscribe((result) => {
         console.log("backendValidation: ", result);

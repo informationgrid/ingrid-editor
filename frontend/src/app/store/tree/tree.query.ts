@@ -15,23 +15,23 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
     filterBy: (entity) => entity._parent === null,
   });
   openedDocument$: Observable<DocumentAbstract> = this.select(
-    (state) => state.openedDocument
+    (state) => state.openedDocument,
   );
   expandedNodes$: Observable<string[]> = this.select(
-    (state) => state.expandedNodes
+    (state) => state.expandedNodes,
   );
   breadcrumb$: Observable<ShortTreeNode[]> = this.select(
-    (state) => state.breadcrumb
+    (state) => state.breadcrumb,
   );
   selectedNodes$: Observable<string[]> = this.select((state) => state.selected);
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(
-    (state) => state.explicitActiveNode
+    (state) => state.explicitActiveNode,
   );
   multiSelectMode$: Observable<boolean> = this.select(
-    (state) => state.multiSelectMode
+    (state) => state.multiSelectMode,
   );
   datasetsChanged$: Observable<UpdateDatasetInfo> = this.select(
-    (state) => state.datasetsChanged
+    (state) => state.datasetsChanged,
   );
 
   constructor(protected store: TreeStore) {
@@ -48,7 +48,7 @@ export class TreeQuery extends QueryEntity<TreeState, DocumentAbstract> {
 
   getChildren(parent: number): DocumentAbstract[] {
     return this.getAll().filter((doc) =>
-      parent === null ? doc.isRoot : doc._parent === parent
+      parent === null ? doc.isRoot : doc._parent === parent,
     );
   }
 

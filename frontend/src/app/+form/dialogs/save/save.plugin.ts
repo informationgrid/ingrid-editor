@@ -34,7 +34,7 @@ export class SavePlugin extends SaveBase {
     sessionStore: SessionStore,
     messageService: FormMessageService,
 
-    @Inject(DOCUMENT) private _document: Document
+    @Inject(DOCUMENT) private _document: Document,
   ) {
     super(sessionStore, messageService);
     inject(PluginService).registerPlugin(this);
@@ -74,12 +74,12 @@ export class SavePlugin extends SaveBase {
           "toolBtnSave",
           openedDoc !== null &&
             openedDoc._pendingDate == null &&
-            openedDoc.hasWritePermission
+            openedDoc.hasWritePermission,
         );
 
         // do not allow to modify form if multiple nodes have been selected in tree
         // openedDoc !== null ? this.form.enable() : this.form.disable();
-      }
+      },
     );
 
     this.formSubscriptions.push(toolbarEventSubscription, treeSubscription);
@@ -104,11 +104,11 @@ export class SavePlugin extends SaveBase {
         .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
         .pipe(
           catchError((error) =>
-            this.handleError(error, formData, this.forAddress, "SAVE")
+            this.handleError(error, formData, this.forAddress, "SAVE"),
           ),
           finalize(() =>
-            this.formToolbarService.setButtonState("toolBtnSave", true)
-          )
+            this.formToolbarService.setButtonState("toolBtnSave", true),
+          ),
         )
         .subscribe();
     });
@@ -128,7 +128,7 @@ export class SavePlugin extends SaveBase {
     if (numErrors.length > 0) {
       this.formToolbarService.setButtonState("toolBtnSave", true);
       throw new IgeError(
-        "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben."
+        "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben.",
       );
     }
   }

@@ -44,7 +44,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
   ) {}
 
   ngOnInit() {
@@ -64,7 +64,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private updateHeaderMenuOptions() {
     this.moreActions = this.formMenuService.getMenuItems(
-      this.address ? "address" : "dataset"
+      this.address ? "address" : "dataset",
     );
     this.showMoreActions = this.moreActions.length > 0;
   }

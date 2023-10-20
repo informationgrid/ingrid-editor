@@ -19,7 +19,7 @@ export const generateUUID = function () {
     (
       c ^
       (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
+    ).toString(16),
   );
 };
 
@@ -90,12 +90,12 @@ export const copyToClipboardFn = () => {
     opts?: {
       successText?: string;
       errorText?: string;
-    }
+    },
   ) => {
     const isCopied = clipboard.copy(copyText);
     if (isCopied) {
       snackbar.open(
-        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert."
+        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert.",
       );
     } else {
       snackbar.open(opts?.errorText ?? "Der Text konnte nicht kopiert werden.");

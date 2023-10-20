@@ -19,12 +19,12 @@ export class DocumentTemplateComponent implements OnInit {
   @Output() create = new EventEmitter<void>();
   documentTypes: DocumentAbstract[];
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
+    null,
   );
 
   constructor(
     private profileQuery: ProfileQuery,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {
@@ -43,12 +43,12 @@ export class DocumentTemplateComponent implements OnInit {
         tap((types) => {
           const initialType =
             types.find(
-              (t) => t.id == this.profileService.getDefaultDataDoctype()?.id
+              (t) => t.id == this.profileService.getDefaultDataDoctype()?.id,
             ) || types[0];
           this.setDocType(initialType);
           this.initialActiveDocumentType.next(initialType);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((result) => {
         this.documentTypes = result;

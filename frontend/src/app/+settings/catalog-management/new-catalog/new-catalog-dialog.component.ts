@@ -19,7 +19,7 @@ export class NewCatalogDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<NewCatalogDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public types: Profile[],
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
   ) {
     this.model.type = types[0].id;
   }

@@ -20,7 +20,7 @@ export class SessionService {
   constructor(
     private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   updateCurrentTab(page: TabPage, tabIndex: string) {

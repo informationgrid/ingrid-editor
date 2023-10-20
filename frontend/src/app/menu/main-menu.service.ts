@@ -16,7 +16,7 @@ export class MainMenuService {
   constructor(
     private router: Router,
     private sessionStore: SessionStore,
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
 
   get mainRoutes(): Route[] {
@@ -25,7 +25,7 @@ export class MainMenuService {
         item.path !== "" &&
         !item.data?.hideFromMenu &&
         (!item.data?.featureFlag ||
-          this.config.hasFlags(item.data?.featureFlag))
+          this.config.hasFlags(item.data?.featureFlag)),
     );
   }
 
@@ -38,12 +38,12 @@ export class MainMenuService {
 
   removeMenuItem(path: string) {
     let indexToRemove = this.router.config.findIndex(
-      (item: any) => item.path === path
+      (item: any) => item.path === path,
     );
     this.router.config.splice(indexToRemove, 1);
 
     indexToRemove = this._mainRoutes.findIndex(
-      (item: any) => item.path === path
+      (item: any) => item.path === path,
     );
     this._mainRoutes.splice(indexToRemove, 1);
 

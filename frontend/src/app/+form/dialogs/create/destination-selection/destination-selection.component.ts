@@ -25,7 +25,7 @@ export class DestinationSelectionComponent implements OnInit {
 
   constructor(
     private docBehaviours: DocBehavioursService,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {}
 
   @Input() set initialSelectedId(value: number) {
@@ -36,7 +36,7 @@ export class DestinationSelectionComponent implements OnInit {
     this.rootNode = {
       id: null,
       title: this.translocoService.translate(
-        this.forAddress ? "menu.address" : "menu.form"
+        this.forAddress ? "menu.address" : "menu.form",
       ),
       icon: "Ordner",
       _type: "FOLDER",
@@ -45,7 +45,7 @@ export class DestinationSelectionComponent implements OnInit {
 
     this.showOnlyFolders =
       this.docBehaviours.showOnlyFoldersInTreeForDestinationSelection(
-        this.forAddress
+        this.forAddress,
       );
 
     this.activeListItem.next(this.rootNode);
@@ -56,7 +56,7 @@ export class DestinationSelectionComponent implements OnInit {
       return this.docBehaviours.cannotAddDocumentBelow()(
         this.forAddress,
         node,
-        this.typeToInsert
+        this.typeToInsert,
       );
     };
   }

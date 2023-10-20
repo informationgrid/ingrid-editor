@@ -19,7 +19,7 @@ export class SelectGeoDatasetDialog {
   constructor(
     private dlgRef: MatDialogRef<any>,
     private tree: TreeQuery,
-    @Inject(MAT_DIALOG_DATA) private currentRefs: string[]
+    @Inject(MAT_DIALOG_DATA) private currentRefs: string[],
   ) {}
 
   enableOnlyGeoService() {

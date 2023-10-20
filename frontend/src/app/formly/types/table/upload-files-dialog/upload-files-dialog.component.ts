@@ -56,7 +56,7 @@ export class UploadFilesDialogComponent implements OnInit {
       allowedUploadTypes?: string[];
       hasExtractZipOption?: boolean;
       infoText?: String;
-    }
+    },
   ) {
     this.docUuid = formStateService.getForm().get("_uuid").value;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
@@ -98,15 +98,15 @@ export class UploadFilesDialogComponent implements OnInit {
         return this.uploadService.extractUploadedFilesOnServer(
           this.docUuid,
           file.transfer.name,
-          option
+          option,
         );
-      })
+      }),
     )
       .pipe(
         untilDestroyed(this),
         catchError((error) => this.handleExtractError(error)),
         filter((result) => result),
-        map(UploadFilesDialogComponent.convertExtractResponse)
+        map(UploadFilesDialogComponent.convertExtractResponse),
       )
       .subscribe((allFiles) => {
         this.dlgRef.close(allFiles);
@@ -115,21 +115,21 @@ export class UploadFilesDialogComponent implements OnInit {
 
   cancel() {
     this.chosenFiles.forEach((file) =>
-      this.removeUploadedFile(file.transfer.name)
+      this.removeUploadedFile(file.transfer.name),
     );
     this.dlgRef.close();
   }
 
   private static convertExtractResponse(
-    response: { files: any[] }[]
+    response: { files: any[] }[],
   ): LinkInfo[] {
     return UploadFilesDialogComponent.flatten(
       response.map((zipFile) =>
         zipFile.files.map((file) => ({
           file: file.file,
           uri: decodeURIComponent(file.uri),
-        }))
-      )
+        })),
+      ),
     );
   }
 
@@ -140,7 +140,7 @@ export class UploadFilesDialogComponent implements OnInit {
   private fileExistsInTable(fileId: string): boolean {
     return (
       this.data.currentItems.find(
-        (item) => item[this.data.uploadFieldKey].value === fileId
+        (item) => item[this.data.uploadFieldKey].value === fileId,
       ) !== undefined
     );
   }
@@ -168,7 +168,7 @@ export class UploadFilesDialogComponent implements OnInit {
               this.extractAndCloseDialog(result);
             }
           }),
-          mapTo(null)
+          mapTo(null),
         );
     }
     throw error;

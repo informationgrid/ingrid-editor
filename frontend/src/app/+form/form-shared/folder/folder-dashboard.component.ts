@@ -48,7 +48,7 @@ export class FolderDashboardComponent {
     private router: Router,
     private docService: DocumentService,
     private formStateService: FormStateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
@@ -75,7 +75,7 @@ export class FolderDashboardComponent {
           .sort(
             (c1, c2) =>
               new Date(c2._contentModified).getTime() -
-              new Date(c1._contentModified).getTime()
+              new Date(c1._contentModified).getTime(),
           )
           .slice(0, 5);
         this.childDocs$.next(latestChildren);
@@ -95,7 +95,7 @@ export class FolderDashboardComponent {
       this.formStateService.getForm(),
       this.docService,
       this.dialog,
-      this.isAddress
+      this.isAddress,
     );
 
     if (handled) {

@@ -27,7 +27,7 @@ export class InlineHelpWrapperComponent
 
   constructor(
     public configService: ConfigService,
-    public contextHelpService: ContextHelpService
+    public contextHelpService: ContextHelpService,
   ) {
     super();
   }
@@ -65,7 +65,7 @@ export class InlineHelpWrapperComponent
       this.formState.mainModel?._type,
       this.field.props.contextHelpId || this.fieldId,
       title,
-      infoElement
+      infoElement,
     );
   }
 }

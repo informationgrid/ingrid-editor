@@ -50,7 +50,7 @@ export class PermissionsDialogComponent implements OnInit {
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<PermissionsDialogComponent>,
     private dialog: MatDialog,
-    private toast: MatSnackBar
+    private toast: MatSnackBar,
   ) {
     this.id = data.id;
     this.forResponsibility = data.forResponsibility;
@@ -74,7 +74,7 @@ export class PermissionsDialogComponent implements OnInit {
     this.users = [
       ...this.createUsersWithPermission(
         response.canWrite,
-        PermissionLevel.WRITE
+        PermissionLevel.WRITE,
       ),
     ];
     // Only add readonly users if the dialog is not for responsibility
@@ -82,15 +82,15 @@ export class PermissionsDialogComponent implements OnInit {
       this.users.push(
         ...this.createUsersWithPermission(
           response.canOnlyRead,
-          PermissionLevel.READ
-        )
+          PermissionLevel.READ,
+        ),
       );
     }
   }
 
   private createUsersWithPermission(
     users: User[],
-    permission: PermissionLevel
+    permission: PermissionLevel,
   ): UserWithDocPermission[] {
     return users.map((user) => new UserWithDocPermission(user, permission));
   }

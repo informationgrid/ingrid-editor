@@ -80,13 +80,13 @@ export class UploadComponent implements OnInit {
 
   constructor(
     private uploadService: UploadService,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit() {
     if (!this.target) {
       throw new IgeError(
-        "Es wurde kein Ziel für die Upload Komponente angegeben. Bitte 'target' definieren."
+        "Es wurde kein Ziel für die Upload Komponente angegeben. Bitte 'target' definieren.",
       );
     }
 
@@ -106,9 +106,9 @@ export class UploadComponent implements OnInit {
         map((result) =>
           result[1].transfers.map(
             (transfer) =>
-              new TransfersWithErrorInfo(result[0][transfer.id], transfer)
-          )
-        )
+              new TransfersWithErrorInfo(result[0][transfer.id], transfer),
+          ),
+        ),
       )
       .subscribe((result) => {
         this.filesForUpload.next(result);
@@ -132,7 +132,7 @@ export class UploadComponent implements OnInit {
           this.handleUploadError(event.event);
         } else if (event.type === "fileSuccess") {
           const messageSuccess = this.getMessageFromResponse(
-            event.event[2].xhr
+            event.event[2].xhr,
           );
           const fileIdentifier = this.getFileIdentifier(event.event);
           this._errors[fileIdentifier] = null;
@@ -150,7 +150,7 @@ export class UploadComponent implements OnInit {
       if (invalidFile != undefined) {
         throw new IgeError(
           `Der Dateiname von [${invalidFile.name}] enthält ein ungültiges Zeichen [${invalidFile.char}].
-          Bitte korrigieren Sie den Dateinamen und laden Sie die Datei erneut hoch.`
+          Bitte korrigieren Sie den Dateinamen und laden Sie die Datei erneut hoch.`,
         );
       }
       const invalidFormat = this.validateUploadTypes(files);
@@ -158,7 +158,7 @@ export class UploadComponent implements OnInit {
         const allowedTypes = this.allowedUploadTypes.join(", ");
         throw new IgeError(
           `Das Hochladen von Dateien im [${invalidFormat}] Format ist nicht erlaubt.
-           Zugelassene Dateiformate sind: ${allowedTypes}.`
+           Zugelassene Dateiformate sind: ${allowedTypes}.`,
         );
       }
       return true;
@@ -187,7 +187,7 @@ export class UploadComponent implements OnInit {
 
   private resetParametersForSubmittedFiles(flowFiles: flowjs.FlowFile[]) {
     flowFiles.forEach(
-      (file) => (file.flowObj.opts.query = { ...this.additionalParameters })
+      (file) => (file.flowObj.opts.query = { ...this.additionalParameters }),
     );
   }
 
@@ -232,7 +232,7 @@ export class UploadComponent implements OnInit {
     this._errors[fileIdentifier] = new UploadError(
       errorResponse.status,
       detail.message ?? detail.errorText,
-      detail.errorData ?? detail.errorId
+      detail.errorData ?? detail.errorId,
     );
     this.errors.next(this._errors);
   }

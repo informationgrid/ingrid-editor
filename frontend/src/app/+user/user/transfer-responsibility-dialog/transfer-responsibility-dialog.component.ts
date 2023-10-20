@@ -43,7 +43,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     private dialogRef: MatDialogRef<TransferResponsibilityDialogComponent>,
-    private userService: UserDataService
+    private userService: UserDataService,
   ) {
     this.oldUser = data.oldUser;
     this.users = data.users;
@@ -53,7 +53,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
 
   transferResponsibility() {
     console.log(
-      `von ${this.oldUser.login} zu ${this.selectedUser.login} wechseln`
+      `von ${this.oldUser.login} zu ${this.selectedUser.login} wechseln`,
     );
     this.userService
       .transferResponsibility(this.oldUser.id, this.selectedUser.id)
@@ -62,14 +62,14 @@ export class TransferResponsibilityDialogComponent implements OnInit {
           const httpError = err.error;
           if (httpError.errorCode === "TRANSFER_RESPONSIBILITY_EXCEPTION") {
             const igeError = new IgeError(
-              `Der Nutzer ${this.selectedUser.login} kann Verantwortung nicht übernehmen, da er keine ausreichenden Berechtigungen auf folgende Datensätze hat:`
+              `Der Nutzer ${this.selectedUser.login} kann Verantwortung nicht übernehmen, da er keine ausreichenden Berechtigungen auf folgende Datensätze hat:`,
             );
             igeError.items = httpError.data.docIds;
             throw igeError;
           } else {
             throw err;
           }
-        })
+        }),
       )
       .subscribe(() => {
         this.dialogRef.close(this.selectedUser.id);

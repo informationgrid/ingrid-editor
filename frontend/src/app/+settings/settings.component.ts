@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router, RouterLinkActive } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { SessionService, Tab } from "../services/session.service";
 
 @Component({
@@ -15,7 +15,7 @@ export class SettingsComponent implements OnInit {
   constructor(
     router: Router,
     private sessionService: SessionService,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
   ) {
     this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
   }

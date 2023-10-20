@@ -60,7 +60,7 @@ export class TreeSelection {
   /** Toggle a leaf node selection */
   nodeSelectionToggle(
     node: TreeNode,
-    $event: MouseEvent | MatCheckboxChange
+    $event: MouseEvent | MatCheckboxChange,
   ): void {
     // mark all nodes in between the last selected node
     if ($event instanceof MouseEvent && $event.shiftKey) {
@@ -86,11 +86,11 @@ export class TreeSelection {
 
     if (startIndex < nodeIndex) {
       this.model.select(
-        ...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1)
+        ...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1),
       );
     } else {
       this.model.select(
-        ...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1)
+        ...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1),
       );
     }
   }
@@ -140,7 +140,7 @@ export class TreeSelection {
 
   allNodesSelected() {
     return this.treeControl.dataNodes.every((node) =>
-      this.model.isSelected(node)
+      this.model.isSelected(node),
     );
   }
 

@@ -52,7 +52,7 @@ export class TableTypeComponent
   constructor(
     private dialog: MatDialog,
     public contextHelpService: ContextHelpService,
-    public configService: ConfigService
+    public configService: ConfigService,
   ) {
     super();
   }
@@ -63,7 +63,7 @@ export class TableTypeComponent
       .map((column) => column.key);
     this.displayedColumns.push("_actions_");
     this.displayedColumns.forEach(
-      (column) => (this.preservedValues[column] = new WeakMap<any, any>())
+      (column) => (this.preservedValues[column] = new WeakMap<any, any>()),
     );
     this.displayedColumnsReadOnly = this.displayedColumns.slice(0, -1);
 
@@ -71,10 +71,10 @@ export class TableTypeComponent
       .pipe(
         untilDestroyed(this),
         // distinctUntilChanged(),
-        tap((value) => this.prepareFormattedValues(value))
+        tap((value) => this.prepareFormattedValues(value)),
       )
       .subscribe(
-        (value) => (this.dataSource = new MatTableDataSource<any>(value || []))
+        (value) => (this.dataSource = new MatTableDataSource<any>(value || [])),
       );
 
     const requiredColumnKeys = this.props.columns
@@ -113,7 +113,7 @@ export class TableTypeComponent
       this.docType,
       this.fieldId,
       this.props.externalLabel,
-      infoElement
+      infoElement,
     );
   }
 
@@ -121,7 +121,7 @@ export class TableTypeComponent
     this.selection.deselect(this.dataSource.data[index]);
 
     this.dataSource = new MatTableDataSource<any>(
-      this.dataSource.data.filter((item, indexItem) => indexItem !== index)
+      this.dataSource.data.filter((item, indexItem) => indexItem !== index),
     );
     this.updateFormControl(this.dataSource.data);
 
@@ -183,14 +183,14 @@ export class TableTypeComponent
       this.displayedColumns.unshift("_select_");
     } else {
       this.displayedColumns = this.displayedColumns.filter(
-        (item) => item !== "_select_"
+        (item) => item !== "_select_",
       );
     }
   }
 
   removeSelectedRows() {
     const updated = this.dataSource.data.filter(
-      (row) => !this.selection.selected.includes(row)
+      (row) => !this.selection.selected.includes(row),
     );
     this.updateTableDataToForm(updated);
 
@@ -230,7 +230,7 @@ export class TableTypeComponent
     moveItemInArray(
       this.dataSource.data,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
     this.updateTableDataToForm(this.dataSource.data);
   }
@@ -244,15 +244,16 @@ export class TableTypeComponent
 
     this.props.columns
       .filter((column) => column.props.formatter)
-      .forEach((column) =>
-        value?.forEach((row, index) => {
-          this.formattedCell.push({});
-          this.formattedCell[index][column.key] = column.props.formatter(
-            value[index][column.key],
-            this.form,
-            value[index]
-          );
-        })
+      .forEach(
+        (column) =>
+          value?.forEach((row, index) => {
+            this.formattedCell.push({});
+            this.formattedCell[index][column.key] = column.props.formatter(
+              value[index][column.key],
+              this.form,
+              value[index],
+            );
+          }),
       );
   }
 
@@ -269,7 +270,7 @@ export class TableTypeComponent
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((files: LinkInfo[]) =>
-        this.updateTableInformationWithUploadInfo(files)
+        this.updateTableInformationWithUploadInfo(files),
       );
   }
 
@@ -306,7 +307,7 @@ export class TableTypeComponent
     return (
       this.dataSource.data.findIndex(
         (tableItem) =>
-          !tableItem[uploadKey].asLink && tableItem[uploadKey].uri === file.uri
+          !tableItem[uploadKey].asLink && tableItem[uploadKey].uri === file.uri,
       ) === -1
     );
   }
@@ -354,7 +355,7 @@ export class TableTypeComponent
         options.onClick(
           this.form.root.get("_uuid").value,
           element[uploadKey].uri,
-          $event
+          $event,
         );
       }
     }
@@ -376,14 +377,14 @@ export class TableTypeComponent
     const lastDotPos = file.lastIndexOf(".");
     const name = file.substring(
       0,
-      lastDotPos === -1 ? file.length : lastDotPos
+      lastDotPos === -1 ? file.length : lastDotPos,
     );
     return decodeURI(name);
   }
 
   private hasRequiredFields(requiredColumnKeys: string[]): boolean {
     return this.formControl.value?.every((item) =>
-      requiredColumnKeys.every((key) => item[key])
+      requiredColumnKeys.every((key) => item[key]),
     );
   }
 }

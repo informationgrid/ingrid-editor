@@ -56,13 +56,13 @@ export class AddressCardComponent implements OnInit {
 
     this.content = {
       iconClass: this.profileService.getDocumentIcon(
-        <IgeDocument>this.address.ref
+        <IgeDocument>this.address.ref,
       ),
       iconState:
         DocumentUtils.getStateClass(
           this.address.ref._state,
           this.address.ref._type,
-          this.address.ref._tags
+          this.address.ref._tags,
         ) ?? "",
       role: this.address.type,
       title: this.getTitle(this.address.ref),

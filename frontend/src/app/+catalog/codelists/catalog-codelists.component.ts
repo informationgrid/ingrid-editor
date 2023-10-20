@@ -25,7 +25,7 @@ export class CatalogCodelistsComponent implements OnInit {
   catalogCodelists = this.codelistQuery.catalogCodelists$.pipe(
     map((codelists) => this.codelistService.mapToOptions(codelists)),
     delay(0), // set initial value in next rendering cycle!
-    tap((options) => this.setInitialValue(options))
+    tap((options) => this.setInitialValue(options)),
   );
 
   selectedCodelist: Codelist;
@@ -36,7 +36,7 @@ export class CatalogCodelistsComponent implements OnInit {
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
     private _snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {}
@@ -68,7 +68,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .pipe(
         filter((result) => result),
         tap((result) => this.modifyCodelistEntry(oldId, result)),
-        tap(() => this.save())
+        tap(() => this.save()),
       )
       .subscribe();
   }
@@ -94,7 +94,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .pipe(
         filter((result) => result),
         tap(() => this.removeEntryFromCodelist(entry)),
-        tap(() => this.save())
+        tap(() => this.save()),
       )
       .subscribe();
   }
@@ -153,7 +153,7 @@ export class CatalogCodelistsComponent implements OnInit {
       this.selectedCodelist.entries.push(result);
     } else {
       const index = this.selectedCodelist.entries.findIndex(
-        (e) => e.id === oldId
+        (e) => e.id === oldId,
       );
       this.selectedCodelist.entries.splice(index, 1, result);
     }
@@ -164,7 +164,7 @@ export class CatalogCodelistsComponent implements OnInit {
   private removeEntryFromCodelist(entry: CodelistEntry) {
     const oldId = entry.id;
     const index = this.selectedCodelist.entries.findIndex(
-      (e) => e.id === oldId
+      (e) => e.id === oldId,
     );
     this.selectedCodelist.entries.splice(index, 1);
   }
@@ -177,7 +177,7 @@ export class CatalogCodelistsComponent implements OnInit {
     if (options?.length > 0) {
       if (this.selectedCodelist) {
         this.initialValue = options.find(
-          (option) => option.value === this.selectedCodelist.id
+          (option) => option.value === this.selectedCodelist.id,
         );
       } else {
         this.initialValue = options[0];

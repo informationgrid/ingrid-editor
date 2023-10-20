@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     @Inject(PluginToken) private autoPlugins: Plugin[],
     private router: Router,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
   ) {
     this.loadProfile();
 
@@ -81,33 +81,33 @@ export class AppComponent implements OnInit {
     // useful tool for merging SVG files: merge-svg-files via npm
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-navigation.svg"
-      )
+        "assets/icons/icon-navigation.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-doc-types.svg"
-      )
+        "assets/icons/icon-doc-types.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-toolbar.svg"
-      )
+        "assets/icons/icon-toolbar.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-general.svg"
-      )
+        "assets/icons/icon-general.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-button.svg"
-      )
+        "assets/icons/icon-button.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/images/banner.svg"
-      )
+        "assets/images/banner.svg",
+      ),
     );
   }
 
@@ -126,7 +126,7 @@ export class AppComponent implements OnInit {
     this.sessionRefresher$
       .pipe(
         untilDestroyed(this),
-        throttleTime(10000) // allow token refresh only every 10s once
+        throttleTime(10000), // allow token refresh only every 10s once
       )
       .subscribe(() => this.authFactory.get().refreshToken());
 

@@ -12,7 +12,10 @@ export class DashboardAddressHeaderComponent implements OnInit {
   @Input() canCreateAddress: boolean;
   @Input() canImport: boolean;
 
-  constructor(private docEvents: DocEventsService, private router: Router) {}
+  constructor(
+    private docEvents: DocEventsService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {}
 

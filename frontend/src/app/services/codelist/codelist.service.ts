@@ -55,7 +55,7 @@ export class CodelistService {
   static mapToSelect = (
     codelist: Codelist,
     language = "de",
-    sort = true
+    sort = true,
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
@@ -66,7 +66,7 @@ export class CodelistService {
         ({
           label: entry.fields[language] ?? entry.fields["name"],
           value: entry.id,
-        } as SelectOptionUi)
+        }) as SelectOptionUi,
     );
 
     return sort ? items.sort((a, b) => a.label?.localeCompare(b.label)) : items;
@@ -77,7 +77,7 @@ export class CodelistService {
   constructor(
     private store: CodelistStore,
     protected codelistQuery: CodelistQuery,
-    private dataService: CodelistDataService
+    private dataService: CodelistDataService,
   ) {
     this.requestedCodelists
       .pipe(
@@ -88,7 +88,7 @@ export class CodelistService {
         switchMap((ids) => this.requestCodelists(ids)),
         map((codelists) => this.prepareCodelists(codelists)),
         tap((codelists) => this.store.add(codelists)),
-        tap(() => (this.batchProcessed = true))
+        tap(() => (this.batchProcessed = true)),
       )
       .subscribe();
   }
@@ -115,7 +115,7 @@ export class CodelistService {
   update(): Observable<Codelist[]> {
     return this.dataService.update().pipe(
       map((codelists) => this.prepareCodelists(codelists)),
-      tap((codelists) => this.store.set(codelists))
+      tap((codelists) => this.store.set(codelists)),
     );
   }
 
@@ -147,7 +147,7 @@ export class CodelistService {
       .getAll()
       .pipe(
         map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.set(codelists))
+        tap((codelists) => this.store.set(codelists)),
       )
       .subscribe();
   }
@@ -166,8 +166,8 @@ export class CodelistService {
         tap((codelists) =>
           this.store.update({
             catalogCodelists: codelists,
-          })
-        )
+          }),
+        ),
       )
       .subscribe();
   }
@@ -180,10 +180,10 @@ export class CodelistService {
           catalogCodelists: arrayUpdate(
             catalogCodelists,
             codelist.id,
-            codelist
+            codelist,
           ),
-        }))
-      )
+        })),
+      ),
     );
   }
 
@@ -198,7 +198,7 @@ export class CodelistService {
   }
 
   private prepareEntriesForBackend(
-    entries: CodelistEntry[]
+    entries: CodelistEntry[],
   ): CodelistEntryBackend[] {
     return entries.map((entry) => ({
       id: entry.id,
@@ -211,7 +211,7 @@ export class CodelistService {
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id).pipe(
       map((codelists) => this.prepareCodelists(codelists)),
-      tap((codelists) => this.updateStore(codelists))
+      tap((codelists) => this.updateStore(codelists)),
     );
   }
 
@@ -222,7 +222,7 @@ export class CodelistService {
           catalogCodelists: arrayUpsert(
             catalogCodelists,
             codelist.id,
-            codelist
+            codelist,
           ),
         }));
       });
@@ -231,7 +231,7 @@ export class CodelistService {
 
   observe(codelistId: string): Observable<SelectOptionUi[]> {
     return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist))
+      map((codelist) => CodelistService.mapToSelect(codelist)),
     );
   }
 
@@ -247,9 +247,9 @@ export class CodelistService {
 
     return merge(
       this.codelistQuery.selectEntity(codelistId),
-      this.codelistQuery.selectCatalogCodelist(codelistId)
+      this.codelistQuery.selectCatalogCodelist(codelistId),
     ).pipe(
-      filter((codelist) => !!codelist)
+      filter((codelist) => !!codelist),
       // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
     );
   }

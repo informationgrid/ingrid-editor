@@ -63,14 +63,14 @@ export class GroupsTableComponent
   constructor(
     public groupService: GroupService,
     public dialog: MatDialog,
-    private exportService: ExportService
+    private exportService: ExportService,
   ) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<Group>(
       allowMultiSelect,
-      initialSelection
+      initialSelection,
     );
     this.dataSource.filterPredicate = (group: Group, filterValue: string) => {
       let searchIn = [group.name ?? "", group.description ?? ""]
@@ -134,7 +134,7 @@ export class GroupsTableComponent
 
   private async buildRowByGroup(group): Promise<string[]> {
     const users = await firstValueFrom(
-      this.groupService.getUsersOfGroup(group.id)
+      this.groupService.getUsersOfGroup(group.id),
     );
     return [
       group.data.creationDate,

@@ -12,7 +12,10 @@ import { Injectable } from "@angular/core";
 export class CatalogDataService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -34,7 +37,7 @@ export class CatalogDataService {
       {
         catalogName: catalogName,
         userIds: userIds,
-      }
+      },
     );
   }
 

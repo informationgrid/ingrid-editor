@@ -19,7 +19,7 @@ export class DelayedPublishDialogComponent implements OnInit {
 
   constructor(
     private modalService: ModalService,
-    public dialogRef: MatDialogRef<DelayedPublishDialogComponent>
+    public dialogRef: MatDialogRef<DelayedPublishDialogComponent>,
   ) {}
 
   ngOnInit(): void {
@@ -31,7 +31,7 @@ export class DelayedPublishDialogComponent implements OnInit {
     const delayDate = this.form.get("date").value;
     if (delayDate < new Date()) {
       this.modalService.showJavascriptError(
-        "Das Datum liegt in der Vergangenheit. Bitte wählen Sie ein anderes Datum."
+        "Das Datum liegt in der Vergangenheit. Bitte wählen Sie ein anderes Datum.",
       );
       return;
     }

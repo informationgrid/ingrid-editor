@@ -18,7 +18,7 @@ export class BehavioursChangedGuard
   constructor(private dialog: MatDialog) {}
 
   canDeactivate(
-    component: CatalogSettingsComponent
+    component: CatalogSettingsComponent,
   ): Observable<boolean> | boolean {
     const behavioursHaveChanged = component.behaviourComponent?.hasDirtyForm();
 

@@ -56,7 +56,7 @@ export class DataCollectionDoctype extends IngridShared {
                 className: "flex-1",
               }),
             ],
-          }
+          },
         ),
         this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
           className: "optional flex-1",

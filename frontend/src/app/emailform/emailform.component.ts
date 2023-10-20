@@ -34,7 +34,7 @@ export class EmailformComponent implements OnInit {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private userService: UserService
+    private userService: UserService,
   ) {
     this.createForm();
   }

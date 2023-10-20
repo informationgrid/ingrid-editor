@@ -25,14 +25,14 @@ export class CatalogSettingsComponent implements OnInit {
   constructor(
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private sessionService: SessionService
+    private sessionService: SessionService,
   ) {
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used
     const currentPath = this.router.parseUrl(this.router.url).root.children
       .primary.segments[2].path;
     const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath
+      (tab) => tab.path === currentPath,
     );
     if (activeTabIndex !== 0) {
       this.updateTab(activeTabIndex);

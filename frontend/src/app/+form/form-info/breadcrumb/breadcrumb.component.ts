@@ -37,7 +37,7 @@ export class BreadcrumbComponent implements OnInit {
     -1,
     "...",
     undefined,
-    true
+    true,
   );
 
   constructor() {}
@@ -54,7 +54,7 @@ export class BreadcrumbComponent implements OnInit {
     if (!breadpath) return [];
 
     const shortPath = breadpath.filter(
-      (node) => node.permission.canRead || node.permission.canWrite
+      (node) => node.permission.canRead || node.permission.canWrite,
     );
     const collapsedItemsExist = shortPath.length < breadpath.length;
 

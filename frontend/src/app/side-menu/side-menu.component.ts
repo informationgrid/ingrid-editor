@@ -31,7 +31,7 @@ export class SideMenuComponent implements OnInit {
   showDrawer: Observable<boolean>;
 
   menuItems: Observable<Route[]> = this.menuService.menu$.pipe(
-    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route)))
+    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route))),
   );
 
   menuIsExpanded = true;
@@ -45,20 +45,20 @@ export class SideMenuComponent implements OnInit {
     private router: Router,
     private configService: ConfigService,
     private menuService: MainMenuService,
-    private session: SessionQuery
+    private session: SessionQuery,
   ) {}
 
   ngOnInit() {
     this.configuration = this.configService.getConfiguration();
     this.session.isSidebarExpanded$.subscribe(
-      (expanded) => (this.menuIsExpanded = expanded)
+      (expanded) => (this.menuIsExpanded = expanded),
     );
 
     this.router.events.subscribe((event) => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
-      map((info) => info?.assignedCatalogs?.length > 0)
+      map((info) => info?.assignedCatalogs?.length > 0),
     );
   }
 

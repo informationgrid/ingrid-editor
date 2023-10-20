@@ -95,7 +95,7 @@ export class ExchangeService {
 
   public static prepareExportInfo(
     docId: number,
-    options: ExportFormOptions
+    options: ExportFormOptions,
   ): ExportOptions {
     return {
       id: docId,
@@ -108,7 +108,7 @@ export class ExchangeService {
     private http: HttpClient,
     configService: ConfigService,
     private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore
+    private addressTreeStore: AddressTreeStore,
   ) {
     this.configuration = configService.getConfiguration();
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
@@ -127,13 +127,13 @@ export class ExchangeService {
 
   getExportTypes(): Observable<ExportTypeInfo[]> {
     return this.http.get<ExportTypeInfo[]>(
-      this.configuration.backendUrl + "export?profile=" + this.catalogType
+      this.configuration.backendUrl + "export?profile=" + this.catalogType,
     );
   }
 
   getImportTypes(): Observable<ImportTypeInfo[]> {
     return this.http.get<ImportTypeInfo[]>(
-      this.configuration.backendUrl + "import?profile=" + this.catalogType
+      this.configuration.backendUrl + "import?profile=" + this.catalogType,
     );
   }
 
@@ -141,13 +141,13 @@ export class ExchangeService {
     return this.http
       .post(
         this.configuration.backendUrl + "jobs/import?command=start",
-        options
+        options,
       )
       .pipe(
         tap(() => {
           this.treeStore.update({ needsReload: true });
           this.addressTreeStore.update({ needsReload: true });
-        })
+        }),
       );
   }
 

@@ -10,16 +10,16 @@ export class SessionQuery extends Query<SessionState> {
   userTableWidth$ = this.select((state) => state.ui.userTableWidth);
   latestDocuments$ = this.select((state) => state.latestDocuments);
   latestPublishedDocuments$ = this.select(
-    (state) => state.latestPublishedDocuments
+    (state) => state.latestPublishedDocuments,
   );
   oldestExpiredDocuments$ = this.select(
-    (state) => state.oldestExpiredDocuments
+    (state) => state.oldestExpiredDocuments,
   );
   latestAddresses$ = this.select((state) => state.latestAddresses);
   recentAddresses$ = this.select((state) => state.recentAddresses);
   showJSONView$ = this.select((state) => state.ui.showJSONView);
   selectServerValidationErrors$ = this.select(
-    (state) => state.serverValidationErrors
+    (state) => state.serverValidationErrors,
   );
 
   constructor(protected store: SessionStore) {

@@ -53,7 +53,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
+    null,
   );
   typeSelectionEnabled = false;
   activeStep = 1;
@@ -72,7 +72,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -85,12 +85,12 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),
         tap(
-          (items) => (this.referenceTypes = this.prepareReferenceTypes(items))
+          (items) => (this.referenceTypes = this.prepareReferenceTypes(items)),
         ),
         tap((items) => {
           this.typeSelectionEnabled = items.length > 1;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe();
 
@@ -100,7 +100,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         const catalogId =
           this.configService.$userInfo.getValue().currentCatalog.id;
         return allRecent[catalogId] ?? [];
-      })
+      }),
     );
 
     this.updateModel(this.data.address);
@@ -163,11 +163,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (error.error.errorText === "No value present") {
       // TODO: remove address from recentAddresses
       this.documentService.removeFromRecentAddresses(
-        this.recentAddressSelect.value.id
+        this.recentAddressSelect.value.id,
       );
       this.recentAddressSelect.value = null;
       throw new IgeError(
-        "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt."
+        "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt.",
       );
     }
     throw error;
@@ -177,7 +177,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (!this.data.allowedTypes) return items;
 
     return items.filter(
-      (item) => this.data.allowedTypes.indexOf(item.value) !== -1
+      (item) => this.data.allowedTypes.indexOf(item.value) !== -1,
     );
   }
 

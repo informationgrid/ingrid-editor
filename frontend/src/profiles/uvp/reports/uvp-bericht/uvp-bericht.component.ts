@@ -50,7 +50,7 @@ export class UvpBerichtComponent implements AfterViewInit {
     this.uvpResearchService.initialized$
       .pipe(
         untilDestroyed(this),
-        filter((x) => x)
+        filter((x) => x),
       )
       .subscribe(() => {
         this.initData();
@@ -111,10 +111,10 @@ export class UvpBerichtComponent implements AfterViewInit {
   updateReport(report: UvpReport) {
     this.report = report;
     this.averageDuration = this.uvpResearchService.convertAverageDuration(
-      report.averageProcedureDuration
+      report.averageProcedureDuration,
     );
     this.dataSource.data = this.uvpResearchService.createNumberStatistic(
-      report.eiaStatistic
+      report.eiaStatistic,
     );
     this.dataSourceMiscellaneous.data = [
       {
@@ -149,7 +149,7 @@ export class UvpBerichtComponent implements AfterViewInit {
     const filename =
       this.startDate || this.endDate
         ? `report-${this.convertISOtoSimpleLocaleDate(
-            this.startDate
+            this.startDate,
           )}__${this.convertISOtoSimpleLocaleDate(this.endDate)}.csv`
         : "report.csv";
     saveAs(blob, filename);

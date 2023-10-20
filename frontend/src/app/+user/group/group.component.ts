@@ -65,7 +65,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     private router: Router,
     private session: SessionQuery,
     public groupQuery: GroupQuery,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {
     this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
@@ -113,7 +113,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           .afterClosed()
           .pipe(
             filter((group) => group?.id),
-            map((group) => JSON.parse(JSON.stringify(group))) // group needs to be extensible
+            map((group) => JSON.parse(JSON.stringify(group))), // group needs to be extensible
           )
           .subscribe((group) => this.updateGroupOnPage(group));
     });
@@ -162,7 +162,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
       .updateGroup(group)
       .pipe(
         filter((group) => group),
-        map((group) => JSON.parse(JSON.stringify(group)))
+        map((group) => JSON.parse(JSON.stringify(group))),
       )
       .subscribe((group) => {
         if (group && setActive) {
@@ -212,7 +212,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
               : "Es sind aktuell keine Benutzer der Gruppe zugeordnet",
           list: users.map(
             // (user) => `${user.firstName} ${user.lastName} (${user.login})`
-            (user) => user.login
+            (user) => user.login,
           ),
         },
       });
@@ -224,7 +224,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
       const forbidden =
         this._groups?.filter(
           (group) =>
-            group.name === control.value && group.id !== this.selectedGroup?.id
+            group.name === control.value && group.id !== this.selectedGroup?.id,
         )?.length > 0;
 
       return forbidden ? { forbiddenName: { value: control.value } } : null;
@@ -233,7 +233,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   private static createDeleteDialogData(
     users: User[],
-    group: Group
+    group: Group,
   ): ConfirmDialogData {
     return {
       title: "Gruppe löschen",
@@ -290,7 +290,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
         .afterClosed()
         .pipe(
           tap((response) => (response ? this.handleAction(response) : null)),
-          map((response) => response === "discard" || response === "save")
+          map((response) => response === "discard" || response === "save"),
         );
     }
 
@@ -314,8 +314,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
       .subscribe(
         (users) =>
           (this.groupUsers = users.sort((a, b) =>
-            a.login.localeCompare(b.login)
-          ))
+            a.login.localeCompare(b.login),
+          )),
       );
   }
 

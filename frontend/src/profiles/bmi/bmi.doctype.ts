@@ -125,7 +125,7 @@ export class BmiDoctype extends BaseDoctype {
                 options: this.getCodelistForSelect(20003, "type").pipe(
                   map((data) => {
                     return data;
-                  })
+                  }),
                 ),
                 codelistId: 20003,
                 wrappers: ["inline-help", "form-field"],
@@ -160,7 +160,7 @@ export class BmiDoctype extends BaseDoctype {
                 {
                   wrappers: ["inline-help", "form-field"],
                   hasInlineContextHelp: true,
-                }
+                },
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
                 options: this.getCodelistForSelect(20005, "null"),
@@ -187,7 +187,7 @@ export class BmiDoctype extends BaseDoctype {
           "Rechtsgrundlage für die Zugangseröffnung",
           {
             wrappers: ["panel", "form-field"],
-          }
+          },
         ),
         this.addInput("qualityProcessURI", "Qualitätssicherungsprozess URI", {
           wrappers: ["panel", "form-field"],
@@ -203,7 +203,7 @@ export class BmiDoctype extends BaseDoctype {
           {
             options: this.getCodelistForSelect(20006, "null"),
             codelistId: 20006,
-          }
+          },
         ),
       ]),
       this.addSection("Zeitbezüge", [
@@ -248,7 +248,7 @@ export class BmiDoctype extends BaseDoctype {
   addRepeatDistributionDetailList(
     id,
     label,
-    options?: RepeatDetailListOptions
+    options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this._initExpressions(options?.expressions);
     return {

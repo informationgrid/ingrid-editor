@@ -64,7 +64,7 @@ export class DocumentReferenceTypeComponent
     private router: Router,
     private docService: DocumentService,
     private tree: TreeQuery,
-    private formStateService: FormStateService
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -80,7 +80,7 @@ export class DocumentReferenceTypeComponent
             JSON.stringify(a.map((item) => item.uuid)) ===
             JSON.stringify(b.map((item) => item.uuid))
           );
-        })
+        }),
       )
       .subscribe((_) => this.buildModel());
   }
@@ -132,7 +132,7 @@ export class DocumentReferenceTypeComponent
         this.formStateService.getForm(),
         this.docService,
         this.dialog,
-        false
+        false,
       );
 
       if (!handled) {
@@ -158,7 +158,7 @@ export class DocumentReferenceTypeComponent
         return item.isExternalRef
           ? this.mapExternalRef(item)
           : this.mapInternalRef(item);
-      })
+      }),
     );
     this.refreshing = false;
     this.cdr.detectChanges();
@@ -182,8 +182,8 @@ export class DocumentReferenceTypeComponent
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
           return this.mapToDocumentReference(doc);
-        })
-      )
+        }),
+      ),
     );
   }
 

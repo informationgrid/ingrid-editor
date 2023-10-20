@@ -11,7 +11,7 @@ export class ExportService {
     rows: string[][],
     opts?: {
       exportName?: string;
-    }
+    },
   ) {
     // with BOM at the beginning to handle german characters.
     let fileText = "\uFEFF";
@@ -26,7 +26,7 @@ export class ExportService {
     xmlText: string,
     opts?: {
       exportName?: string;
-    }
+    },
   ) {
     const blob = new Blob([xmlText], {
       type: "text/xml",

@@ -28,7 +28,7 @@ export class QuickSearchComponent implements OnInit {
 
   constructor(
     private documentService: DocumentService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -69,12 +69,12 @@ export class QuickSearchComponent implements OnInit {
 
   private highlightResult(
     hits: DocumentAbstract[],
-    textHighlight: string
+    textHighlight: string,
   ): DocumentAbstract[] {
     return hits.map((hit) => {
       hit.title = hit.title.replace(
         new RegExp(textHighlight, "ig"),
-        (match) => `<span class="highlight">${match}</span>`
+        (match) => `<span class="highlight">${match}</span>`,
       );
 
       return hit;

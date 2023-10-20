@@ -17,7 +17,7 @@ export class ContextHelpQuery extends QueryEntity<
   getContextHelp(
     profile: string,
     docType: string,
-    fieldId: string
+    fieldId: string,
   ): ContextHelpAbstract {
     return this.getEntity([profile, docType, fieldId].join("_"));
   }

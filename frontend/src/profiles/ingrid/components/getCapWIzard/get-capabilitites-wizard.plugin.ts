@@ -97,7 +97,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     const snackRef = this.snack.open(
       "Der Geodatendienst wird angelegt und gleich geöffnet ...",
       null,
-      { duration: 30000 }
+      { duration: 30000 },
     );
     const doc = this.treeQuery.getOpenedDocument();
     const parentFolder =

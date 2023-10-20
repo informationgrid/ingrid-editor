@@ -75,7 +75,7 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
       this.formGroup.patchValue(obj);
 
       this.rootPermissionRead.setValue(
-        obj.rootPermission == "READ" || obj.rootPermission == "WRITE"
+        obj.rootPermission == "READ" || obj.rootPermission == "WRITE",
       );
       this.rootPermissionWrite.setValue(obj.rootPermission == "WRITE");
     }

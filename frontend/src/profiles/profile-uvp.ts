@@ -28,7 +28,7 @@ class UVPComponent {
     foreignProjectsDoctype: ForeignProjectsDoctype,
     address: UvpPersonDoctype,
     organisation: UvpOrganisationDoctype,
-    private pluginService: PluginService
+    private pluginService: PluginService,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
 
@@ -61,7 +61,7 @@ class UVPComponent {
   }
 
   private addBehaviour(
-    negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype
+    negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
   ) {
     const publishNegativeAssessmentBehaviour =
       new PublishNegativeAssessmentBehaviour();
@@ -79,7 +79,7 @@ class UVPComponent {
       path: "uvp-bericht",
       loadChildren: () =>
         import("./uvp/reports/uvp-reports.module").then(
-          (m) => m.UvpReportsModule
+          (m) => m.UvpReportsModule,
         ),
       data: {
         title: "UVP Bericht",
@@ -93,7 +93,7 @@ class UVPComponent {
       path: "uvp-upload-check",
       loadChildren: () =>
         import("./uvp/reports/upload-check.module").then(
-          (m) => m.UploadCheckModule
+          (m) => m.UploadCheckModule,
         ),
       data: {
         title: "UVP Upload Check",

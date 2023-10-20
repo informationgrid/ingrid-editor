@@ -32,7 +32,7 @@ export class DefaultUserBehaviour extends Plugin {
     private eventService: EventService,
     private userService: UserService,
     private toast: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -45,7 +45,7 @@ export class DefaultUserBehaviour extends Plugin {
     this.subscriptions.push(
       this.userService.selectedUser$.subscribe((user) => {
         selectedUser = user;
-      })
+      }),
     );
 
     this.formMenuService.addMenuItem("user", {
@@ -88,12 +88,12 @@ export class DefaultUserBehaviour extends Plugin {
                 err.error.errorText.includes("Mail server connection failed")
               ) {
                 throw new IgeError(
-                  "Es gab ein Problem beim Versenden der Email"
+                  "Es gab ein Problem beim Versenden der Email",
                 );
               } else {
                 throw err;
               }
-            })
+            }),
           )
           .subscribe(() => {
             this.toast.open("Passwort wurde zurückgesetzt");
@@ -118,7 +118,7 @@ export class DefaultUserBehaviour extends Plugin {
       .afterClosed()
       .pipe(
         filter((result) => result),
-        switchMap(() => this.userService.deleteUser(user.id))
+        switchMap(() => this.userService.deleteUser(user.id)),
       )
       .subscribe(() => {
         this.userService.selectedUser$.next(null);
