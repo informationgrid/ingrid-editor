@@ -78,6 +78,7 @@ export class ConfigService {
 
   private dataService: ConfigDataService;
   private isAdministrator = false;
+  private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
 
   constructor(private http: HttpClient, private snackbar: MatSnackBar) {
@@ -102,8 +103,9 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
-      userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
+      this.isSuperAdministrator || userInfo.role === "cat-admin";
     this._hasRootWritePermission =
       userInfo.permissions.indexOf("can_write_root") !== -1;
     this.$userInfo.next(userInfo);
@@ -116,6 +118,10 @@ export class ConfigService {
 
   isAdmin(): boolean {
     return this.isAdministrator;
+  }
+
+  isSuperAdmin(): boolean {
+    return this.isSuperAdministrator;
   }
 
   hasWriteRootPermission(): boolean {

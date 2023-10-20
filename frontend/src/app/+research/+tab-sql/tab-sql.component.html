@@ -19,7 +19,7 @@
     </div>
 
     <div main-header>
-        <div class="flex-row gap-12 padding-vertical">
+        <div *ngIf="aiSearchEnabled" class="flex-row gap-12 padding-vertical">
             <input
                 class="flex-1"
                 matInput

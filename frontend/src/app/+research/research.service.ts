@@ -5,7 +5,7 @@ import {
   Configuration,
 } from "../services/config/config.service";
 import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { QueryState, QueryStore } from "../store/query/query.store";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
@@ -13,6 +13,7 @@ import { BackendStoreQuery } from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
 import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
 import { IgeDocument } from "../models/ige-document";
+import { IgeError } from "../models/ige-error";
 
 export interface QuickFilter {
   id: string;
@@ -338,10 +339,14 @@ export class ResearchService {
   }
 
   askAI(question: string) {
-    return this.http.post(
-      `${this.configuration.backendUrl}search/ai`,
-      question,
-      { responseType: "text" }
-    );
+    return this.http
+      .post(`${this.configuration.backendUrl}search/ai`, question, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error) => {
+          throw new IgeError(JSON.parse(error.error)?.errorText);
+        })
+      );
   }
 }

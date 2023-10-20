@@ -8,6 +8,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { SqlQuery } from "../../store/query/query.model";
 import { FormControl, UntypedFormControl } from "@angular/forms";
+import { ConfigService } from "../../services/config/config.service";
 
 @UntilDestroy()
 @Component({
@@ -24,12 +25,16 @@ export class TabSqlComponent implements OnInit {
   isSearching = false;
 
   result: any;
+  aiSearchEnabled =
+    this.config.isSuperAdmin() &&
+    (this.config.getConfiguration().featureFlags.openAISearch ?? false);
 
   constructor(
     private queryQuery: QueryQuery,
     private researchService: ResearchService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private config: ConfigService
   ) {}
 
   ngOnInit(): void {
@@ -111,7 +116,7 @@ export class TabSqlComponent implements OnInit {
 
   private adaptAnswer(answer: string) {
     const start = answer.indexOf("WHERE");
-    const end = answer.indexOf("```");
+    const end = answer.indexOf("```", start);
     let adaptedAnswer =
       start === -1
         ? ""
