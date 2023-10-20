@@ -4267,20 +4267,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stomp/rx-stomp@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@stomp/rx-stomp@npm:1.2.0"
-  dependencies:
-    "@stomp/stompjs": ^6.0.0 >=6.1.1
-    angular2-uuid: ^1.1.1
-  checksum: 6588125f2fb8a6dd4cb64688dc6cd78327d862e8f04066c9d2fb9325641eda05c0fecec3b6ed1c1e4ccdfffa79fb7f23bfce5f57116fcbb31e151e2cd293f969
+"@stomp/rx-stomp@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@stomp/rx-stomp@npm:2.0.0"
+  peerDependencies:
+    "@stomp/stompjs": ^7.0.0
+    rxjs: ^7.2.0
+    uuid: ^9.0.0
+  checksum: 76d8b1711c4fae5c5c1ba2447c848ebc77c2c452188ce78a99b16e864102565d6bb788ec4b7db9efda4e9d8bb28958799a0e03e9cc48ae4b14338adf1b963ff0
   languageName: node
   linkType: hard
 
-"@stomp/stompjs@npm:^6.0.0 >=6.1.1":
-  version: 6.1.2
-  resolution: "@stomp/stompjs@npm:6.1.2"
-  checksum: f6ef589c0a39f7ab19dad8eda2a9a31f24cd585d56ed6018f9c8578883aff11e87f9d8388c11ca6187ddafb257f42822209c0ef403ee574591fc9f9059df4bc0
+"@stomp/stompjs@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@stomp/stompjs@npm:7.0.0"
+  checksum: 94618b5a394339ed3098dae213eef27c462f504ba050208598c9ef396abb527b57e6333b2e78af4715693d6ba04fffb23df4b1bf7041bc0f1b3bc6e92138f1dc
   languageName: node
   linkType: hard
 
@@ -5218,13 +5219,6 @@ __metadata:
     "@angular/core": ">=16.0.0"
     rxjs: ">=7.0.0"
   checksum: 167358d8ef884e2f6fd3bf7e2a92671a60b8d899c9383849231738c6c19d6e4dbe2bb15ee70758f3eed36210d7338ac5f04c0b120cca6271541261787c7651ab
-  languageName: node
-  linkType: hard
-
-"angular2-uuid@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "angular2-uuid@npm:1.1.1"
-  checksum: ba1325c45b4b83250e1cd887a1940c82ae4aaff41af5c6a0e5bdebad1a1ad22d612e403353eb20cc78aaf5bf45f4a484a24751e272b01d9a0909744a5b551979
   languageName: node
   linkType: hard
 
@@ -8406,7 +8400,8 @@ __metadata:
     "@ngneat/until-destroy": ^10.0.0
     "@ngx-formly/core": 6.2.1
     "@ngx-formly/material": 6.2.1
-    "@stomp/rx-stomp": ^1.2.0
+    "@stomp/rx-stomp": ^2.0.0
+    "@stomp/stompjs": ^7.0.0
     "@types/flowjs": ~2.13.11
     "@types/jasmine": ~5.1.1
     "@types/leaflet": ^1.9.7
