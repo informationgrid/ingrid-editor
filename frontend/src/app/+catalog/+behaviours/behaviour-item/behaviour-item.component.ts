@@ -24,7 +24,7 @@ export class BehaviourItemComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         delay(0), // add tiny delay to get updated form state
-        filter(() => form.dirty && form.valid)
+        filter(() => form.dirty && form.valid),
       )
       .subscribe(() => this.update.next());
   }

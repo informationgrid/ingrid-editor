@@ -81,10 +81,10 @@ export class EventService {
    */
   sendEventAndContinueOnSuccess(
     type: IgeEvent,
-    data: any = null
+    data: any = null,
   ): Observable<EventData[]> {
     return this.sendEvent(type, data).pipe(
-      filter((responses) => this.allResponsesSuccessful(type, responses))
+      filter((responses) => this.allResponsesSuccessful(type, responses)),
     );
   }
 
@@ -102,18 +102,18 @@ export class EventService {
           eventResponseHandler: (eventData) =>
             this.updateEventData(type, eventData),
         };
-      })
+      }),
     );
   }
 
   private allResponsesSuccessful(type: IgeEvent, responses: EventData[]) {
     const isSuccessful = responses.every(
-      (item) => item.result === IgeEventResultType.SUCCESS
+      (item) => item.result === IgeEventResultType.SUCCESS,
     );
     if (!isSuccessful) {
       console.log(
         "One subscriber prevented to run original method for: " + type,
-        responses
+        responses,
       );
     }
     return isSuccessful;
@@ -129,7 +129,7 @@ export class EventService {
       filter((count) => this.allSubscribersHaveFinished(type, count)),
       take(1),
       switchMap(() => of(this.result[type])),
-      tap(() => this.resetEvent(type))
+      tap(() => this.resetEvent(type)),
     );
   }
 

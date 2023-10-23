@@ -44,7 +44,7 @@ export class GetCapabilitiesDialogComponent {
     private dlg: MatDialogRef<GetCapabilitiesDialogComponent>,
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private config: ConfigService
+    private config: ConfigService,
   ) {
     if (initialUrl) this.analyze(initialUrl);
   }
@@ -66,7 +66,7 @@ export class GetCapabilitiesDialogComponent {
       .pipe(
         catchError((error) => this.handleError(error)),
         filter((report) => report !== null),
-        finalize(() => (this.isAnalyzing = false))
+        finalize(() => (this.isAnalyzing = false)),
       )
       .subscribe((report) => {
         this.report = this.addOriginalGetCapabilitiesUrl(report, url);
@@ -82,13 +82,13 @@ export class GetCapabilitiesDialogComponent {
 
   submit() {
     const selectedValues = this.selection.selectedOptions.selected.map(
-      (item) => item.value
+      (item) => item.value,
     );
     selectedValues.push("dataServiceType", "serviceType");
     let result = Object.fromEntries(
       Object.entries(this.report).filter(
-        ([key]) => selectedValues.indexOf(key) !== -1
-      )
+        ([key]) => selectedValues.indexOf(key) !== -1,
+      ),
     );
     result.addressParent = this.parentAddress;
     this.dlg.close(result);
@@ -105,7 +105,7 @@ export class GetCapabilitiesDialogComponent {
 
   private handleAddressConstraint() {
     this.addressSelected = this.selection.selectedOptions.selected.some(
-      (item) => item.value === "address"
+      (item) => item.value === "address",
     );
     this.validAddressConstraint =
       !this.addressSelected ||
@@ -116,10 +116,10 @@ export class GetCapabilitiesDialogComponent {
 
   private addOriginalGetCapabilitiesUrl(
     report: GetCapabilitiesAnalysis,
-    originalUrl: string
+    originalUrl: string,
   ) {
     const getCapOp = report.operations.find(
-      (item) => item.name.key === "1" || item.name.value === "GetCapabilities"
+      (item) => item.name.key === "1" || item.name.value === "GetCapabilities",
     );
 
     getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
@@ -132,7 +132,7 @@ export class GetCapabilitiesDialogComponent {
         data: <PasteDialogOptions>{
           forAddress: true,
           titleText: "Ordner auswählen",
-          typeToInsert: "FOLDER",
+          typeToInsert: "InGridOrganisationDoc",
           buttonText: "Auswählen",
         },
       })

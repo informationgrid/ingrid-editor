@@ -23,7 +23,7 @@ export abstract class OrganisationDoctype extends AddressShared {
             className: "width-100 organization",
             wrappers: ["panel", "form-field"],
           }),
-        ].filter(Boolean)
+        ].filter(Boolean),
       ),
       this.addSection(
         "Kommunikation",
@@ -33,7 +33,7 @@ export abstract class OrganisationDoctype extends AddressShared {
           ...(this.options.positionNameAndHoursOfService
             ? this.addPositionNameAndHoursOfService()
             : []),
-        ].filter(Boolean)
+        ].filter(Boolean),
       ),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
@@ -41,7 +41,7 @@ export abstract class OrganisationDoctype extends AddressShared {
 
   protected constructor(
     storageService: DocumentService,
-    fieldWithAddressReferences: string
+    fieldWithAddressReferences: string,
   ) {
     super();
     this.fieldWithAddressReferences = fieldWithAddressReferences;

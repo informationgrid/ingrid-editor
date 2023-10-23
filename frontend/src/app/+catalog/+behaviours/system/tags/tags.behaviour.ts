@@ -28,7 +28,7 @@ export class TagsBehaviour extends Plugin {
     private addressTreeStore: AddressTreeStore,
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private formStateService: FormStateService
+    private formStateService: FormStateService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -70,7 +70,7 @@ export class TagsBehaviour extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
     if (!handled) {
       return;
@@ -84,8 +84,8 @@ export class TagsBehaviour extends Plugin {
       .pipe(
         filter((item) => item),
         switchMap((item) =>
-          this.updatePublicationType(currentDocument.id as number, item)
-        )
+          this.updatePublicationType(currentDocument.id as number, item),
+        ),
       )
       .subscribe(() => {
         this.documentService.reload$.next({
@@ -111,7 +111,7 @@ export class TagsBehaviour extends Plugin {
         add: tagToAdd,
         remove: values.filter((item) => item !== result),
       },
-      this.forAddress
+      this.forAddress,
     );
   }
 }

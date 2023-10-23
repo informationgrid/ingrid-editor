@@ -50,7 +50,7 @@ export class CoordinatesSpatialComponent
         debounceTime(300),
         tap((value) => this.removeBoundingBoxes()),
         filter((value) => this.coordinatesValid(value)),
-        tap((value) => this.drawCoordinates(value))
+        tap((value) => this.drawCoordinates(value)),
       )
       .subscribe();
   }
@@ -82,7 +82,7 @@ export class CoordinatesSpatialComponent
     ]);
     this.boundingBoxes = this.leafletService.drawSpatialRefs(
       this.map,
-      coloredBoundingBox
+      coloredBoundingBox,
     );
   }
 

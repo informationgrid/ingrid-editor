@@ -32,7 +32,14 @@
           ]
         },
         "subType": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "identifier": {
           "type": "string"
@@ -447,7 +454,6 @@
         "_uuid",
         "_type",
         "title",
-        "subType",
         "topicCategories",
         "lineage",
         "identifier",
@@ -499,7 +505,7 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           },
           "edition": {
-            "type": "string"
+            "type": ["null", "string"]
           }
         }
       }

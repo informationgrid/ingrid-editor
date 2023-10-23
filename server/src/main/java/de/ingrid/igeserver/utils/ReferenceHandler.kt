@@ -12,7 +12,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
 
     val log = logger()
 
-    abstract fun getURLsFromCatalog(catalogId: String): List<DocumentLinks>
+    abstract fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>): List<DocumentLinks>
 
     abstract fun getProfile(): String
     
@@ -66,11 +66,17 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         jsonbField: String,
         filterByDocId: Int?,
         catalogId: String? = null,
-        extraJsonbFields: Array<String>? = null
-
+        extraJsonbFields: Array<String>? = null,
+        groupDocIds: List<Int> = emptyList()
     ): List<Array<Any?>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
+
+        if (groupDocIds.isNotEmpty()) {
+            val groupDocIdsString = groupDocIds.joinToString(",")
+            query += """ AND (dw.id = ANY(('{$groupDocIdsString}')) 
+                            OR ('{$groupDocIdsString}') && dw.path)"""
+        }
 
         @Suppress("UNCHECKED_CAST")
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)

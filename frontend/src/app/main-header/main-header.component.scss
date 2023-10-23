@@ -2,7 +2,7 @@
 
 // accessibility css
 :host {
-  overflow: auto;
+  overflow-y: hidden;
   position: relative;
 
   mat-toolbar {

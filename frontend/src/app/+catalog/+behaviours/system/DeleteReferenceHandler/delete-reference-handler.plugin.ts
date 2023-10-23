@@ -29,7 +29,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     private tree: AddressTreeQuery,
     private docEventsService: DocEventsService,
     private formMenuService: FormMenuService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {
     super();
 
@@ -39,7 +39,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       inject(PluginService).registerPlugin(this);
     } else {
       console.debug(
-        "DeleteReferenceHandlerPlugin not registered because it's only available for catalog administrators and above."
+        "DeleteReferenceHandlerPlugin not registered because it's only available for catalog administrators and above.",
       );
     }
   }

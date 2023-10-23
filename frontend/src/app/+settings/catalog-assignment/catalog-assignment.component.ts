@@ -1,10 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { ConfigService } from "../../services/config/config.service";
 import { CatalogQuery } from "../../store/catalog/catalog.query";
-import { MatDialog } from "@angular/material/dialog";
-import { Catalog } from "../../+catalog/services/catalog.model";
 import { CatalogService } from "../../+catalog/services/catalog.service";
-import { SessionService } from "../../services/session.service";
 import { UserService } from "../../services/user/user.service";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
@@ -26,16 +22,16 @@ export class CatalogAssignmentComponent implements OnInit {
           ({
             label: id,
             value: id,
-          } as SelectOptionUi)
-      )
-    )
+          }) as SelectOptionUi,
+      ),
+    ),
   );
 
   constructor(
     private catalogService: CatalogService,
     private catalogQuery: CatalogQuery,
     private userService: UserService,
-    private toast: MatSnackBar
+    private toast: MatSnackBar,
   ) {}
 
   ngOnInit() {}
@@ -46,9 +42,9 @@ export class CatalogAssignmentComponent implements OnInit {
       .pipe(
         tap(() =>
           this.toast.open(
-            `Katalog ${this.selectedCatalogId} wurde Nutzer ${this.selectedUserId} zugewiesen`
-          )
-        )
+            `Katalog ${this.selectedCatalogId} wurde Nutzer ${this.selectedUserId} zugewiesen`,
+          ),
+        ),
       )
       .subscribe();
   }

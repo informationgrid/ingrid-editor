@@ -22,7 +22,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
   ) {
     super(storageService, "addresses");
     this.addressType = "organization";
@@ -53,8 +53,8 @@ export class BmiAddressDoctype extends OrganisationDoctype {
           showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
-              items.filter((item) => item.value !== "5" && item.value !== "6")
-            )
+              items.filter((item) => item.value !== "5" && item.value !== "6"),
+            ),
           ),
           codelistId: 4430,
         }),
@@ -127,7 +127,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: "" }
+      { fieldGroupClassName: "" },
     );
   }
 }

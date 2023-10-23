@@ -13,7 +13,7 @@ export class GeothesaurusWfsGndeService {
   search(query: string) {
     return this.http.post(
       ConfigService.backendApiUrl + "search/geothesaurus/wfsgnde",
-      query
+      query,
     );
   }
 }

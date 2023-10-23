@@ -21,10 +21,10 @@
                 mat-cell
                 *matCellDef="let element"
                 [matTooltip]="
-                    element._contentModified | date : 'dd.LL.yyyy HH:mm'
+                    element._contentModified | date: 'dd.LL.yyyy HH:mm'
                 "
             >
-                {{ element._contentModified | dateAgo : "DE" }}
+                {{ element._contentModified | dateAgo: "DE" }}
             </td>
         </ng-container>
 
@@ -50,7 +50,7 @@
                 'Titel: ' +
                 row.title +
                 ', zuletzt bearbeitet: ' +
-                (row._contentModified | dateAgo : 'DE') +
+                (row._contentModified | dateAgo: 'DE') +
                 ', Verantwortlicher: ' +
                 (row._responsibleUser | fullName | async)
             "

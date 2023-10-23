@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { SessionService, Tab } from "../services/session.service";
 import { MatTabNav } from "@angular/material/tabs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { ActivatedRoute, Router } from "@angular/router";
-import { filter } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -18,12 +17,12 @@ export class OverviewComponent implements OnInit {
   constructor(
     private router: Router,
     private sessionService: SessionService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.tabs = this.sessionService.getTabsFromRoute(
-      this.activatedRoute.snapshot
+      this.activatedRoute.snapshot,
     );
 
     // only update tab from route if it was set explicitly in URL
@@ -31,7 +30,7 @@ export class OverviewComponent implements OnInit {
     const currentPath = this.router.parseUrl(this.router.url).root.children
       .primary.segments[2].path;
     const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath
+      (tab) => tab.path === currentPath,
     );
     if (activeTabIndex !== 0) {
       this.updateTab(activeTabIndex);
@@ -40,7 +39,7 @@ export class OverviewComponent implements OnInit {
 
   updateTab(index: number) {
     const tabPath = this.sessionService.getTabPaths(
-      this.activatedRoute.snapshot
+      this.activatedRoute.snapshot,
     );
     this.sessionService.updateCurrentTab("importExport", tabPath[index]);
   }

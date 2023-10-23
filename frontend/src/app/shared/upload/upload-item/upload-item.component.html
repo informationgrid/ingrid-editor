@@ -11,7 +11,7 @@
         <div class="comment">
             {{ file.transfer.size | size }}
             <span *ngIf="file.transfer.progress < 1"
-                >({{ file.transfer.progress * 100 | number : ".1-1" }}%)</span
+                >({{ file.transfer.progress * 100 | number: ".1-1" }}%)</span
             >
         </div>
         <div *ngIf="file.error" class="error-color">

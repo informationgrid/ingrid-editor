@@ -42,7 +42,7 @@ export class SidebarComponent implements OnInit {
     private addressTreeStore: AddressTreeStore,
     private docTreeStore: TreeStore,
     private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {}
 
   ngOnInit() {
@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit {
       this.treeQuery.openedDocument$
         .pipe(
           filter((doc) => doc !== null),
-          take(1)
+          take(1),
         )
         .subscribe((doc) => this.activeTreeNode.next(<number>doc.id));
     }
@@ -110,7 +110,7 @@ export class SidebarComponent implements OnInit {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.address
+      this.address,
     );
 
     if (handled) {

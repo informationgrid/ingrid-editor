@@ -20,13 +20,16 @@ export class PluginService {
 
   initWithAddress: boolean = null;
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+  ) {
     this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
     this.pluginState$.subscribe((value) =>
       value.register
         ? this.initFormPlugins(value.address)
-        : this.unregisterFormPlugins()
+        : this.unregisterFormPlugins(),
     );
   }
 
@@ -68,7 +71,7 @@ export class PluginService {
     behaviours.forEach((behaviour) => {
       const stored = this.backendBehaviourStates
         ? this.backendBehaviourStates.filter(
-            (sb: any) => sb._id === behaviour.id
+            (sb: any) => sb._id === behaviour.id,
           )
         : [];
       behaviour.isActive =

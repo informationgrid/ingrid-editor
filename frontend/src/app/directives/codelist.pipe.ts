@@ -11,13 +11,13 @@ import { Observable, of } from "rxjs";
 export class CodelistPipe implements PipeTransform {
   constructor(
     private codelistQuery: CodelistQuery,
-    private codelistService: CodelistService
+    private codelistService: CodelistService,
   ) {}
 
   transform(
     value: string | BackendOption,
     id: string,
-    lang = "de"
+    lang = "de",
   ): Observable<string> {
     if (!id) return of(value as string);
     const codelist = this.codelistQuery.getEntity(id);
@@ -29,8 +29,8 @@ export class CodelistPipe implements PipeTransform {
         take(1),
         map(
           (lazyCodelist: Codelist) =>
-            this.getEntryFromCodelist(lazyCodelist, value, id)[lang]
-        )
+            this.getEntryFromCodelist(lazyCodelist, value, id)[lang],
+        ),
       );
     }
 
@@ -41,7 +41,7 @@ export class CodelistPipe implements PipeTransform {
   private getEntryFromCodelist(
     codelist: Codelist,
     value: string | BackendOption,
-    id: any
+    id: any,
   ) {
     let codelistValue = value;
     if (value instanceof Object) {
@@ -49,7 +49,7 @@ export class CodelistPipe implements PipeTransform {
     }
 
     const entries = codelist.entries.filter(
-      (item) => item.id === codelistValue
+      (item) => item.id === codelistValue,
     );
     if (entries.length === 1) {
       let fields = entries[0].fields;
@@ -58,7 +58,7 @@ export class CodelistPipe implements PipeTransform {
       return fields;
     } else {
       console.log(
-        `Codelist entry ${codelistValue} not found for codelist ${id}`
+        `Codelist entry ${codelistValue} not found for codelist ${id}`,
       );
       return `${codelistValue} (Freier Eintrag)`;
     }

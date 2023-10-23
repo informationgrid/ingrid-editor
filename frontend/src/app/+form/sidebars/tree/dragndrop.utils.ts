@@ -16,7 +16,7 @@ export class DragNDropUtils {
   constructor(
     private treeControl: TreeControl<any>,
     private docBehaviour: DocBehavioursService,
-    private forAddress: boolean
+    private forAddress: boolean,
   ) {}
 
   /**
@@ -30,7 +30,7 @@ export class DragNDropUtils {
         : !this.docBehaviour.cannotAddDocumentBelow()(
             this.forAddress,
             droppedNode,
-            this.dragNode.type
+            this.dragNode.type,
           );
 
     if (isAllowed && droppedNode !== this.dragNode) {
@@ -77,7 +77,7 @@ export class DragNDropUtils {
       const isAllowed = !this.docBehaviour.cannotAddDocumentBelow()(
         this.forAddress,
         node,
-        this.dragNode.type
+        this.dragNode.type,
       );
       if (isAllowed) {
         this.dragNodeExpandOverNode = node;

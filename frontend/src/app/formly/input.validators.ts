@@ -19,7 +19,7 @@ export function EmailValidator(control: UntypedFormControl): ValidationErrors {
 }
 
 export function NotEmptyArrayValidator(
-  control: UntypedFormControl
+  control: UntypedFormControl,
 ): ValidationErrors {
   const value: any[] = control.value;
   const result = value.every((item) => isNotEmptyObject(item));
@@ -43,7 +43,7 @@ export function UrlValidator(control: UntypedFormControl): ValidationErrors {
 }
 
 export function LowercaseValidator(
-  control: UntypedFormControl
+  control: UntypedFormControl,
 ): ValidationErrors {
   return control.value === control.value?.toLowerCase()
     ? null
@@ -53,7 +53,7 @@ export function LowercaseValidator(
 export function patternWithMessage(
   pattern: string | RegExp,
   errorField: string,
-  message?: string
+  message?: string,
 ): ValidatorFn {
   const delegateFn = Validators.pattern(pattern);
   return (control) => {

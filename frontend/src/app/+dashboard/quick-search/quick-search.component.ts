@@ -28,7 +28,7 @@ export class QuickSearchComponent implements OnInit {
 
   constructor(
     private documentService: DocumentService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -46,8 +46,8 @@ export class QuickSearchComponent implements OnInit {
 
     this.searchSub?.unsubscribe();
     this.searchSub = combineLatest([
-      this.documentService.find(value, 5),
-      this.documentService.find(value, 5, true),
+      this.documentService.findInTitleOrUuid(value, 5),
+      this.documentService.findInTitleOrUuid(value, 5, true),
     ]).subscribe((result) => {
       this.docs = this.highlightResult(result[0].hits, value);
       this.numDocs = result[0].totalHits;
@@ -69,12 +69,12 @@ export class QuickSearchComponent implements OnInit {
 
   private highlightResult(
     hits: DocumentAbstract[],
-    textHighlight: string
+    textHighlight: string,
   ): DocumentAbstract[] {
     return hits.map((hit) => {
       hit.title = hit.title.replace(
         new RegExp(textHighlight, "ig"),
-        (match) => `<span class="highlight">${match}</span>`
+        (match) => `<span class="highlight">${match}</span>`,
       );
 
       return hit;

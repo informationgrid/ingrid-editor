@@ -17,7 +17,7 @@ export interface IgeValidationError {
 export class GlobalErrorHandler implements ErrorHandler {
   constructor(
     private modalService: ModalService,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {}
 
   handleError(error) {
@@ -33,14 +33,16 @@ export class GlobalErrorHandler implements ErrorHandler {
           this.translateMessage(error.error) ?? error.error.errorText,
           null,
           error.error?.stacktrace,
-          unHandledException
+          unHandledException,
         );
         this.modalService.showIgeError(e);
       } else {
         const e = new IgeError();
         e.setMessage(
           error.message,
-          error.error && error.error.message ? error.error.message : error.error
+          error.error && error.error.message
+            ? error.error.message
+            : error.error,
         );
         this.modalService.showIgeError(e);
       }
@@ -68,7 +70,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
         return this.translocoService.translate(
-          "replace-address.reference-error-multiple-files"
+          "replace-address.reference-error-multiple-files",
         );
       case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
         return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
@@ -86,6 +88,8 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Der Datensatz liegt veröffentlicht vor und darf nicht unter einen unveröffentlichten Datensatz verschoben werden.";
       case "UNPUBLISH-CHILD_IS_PUBLISHED":
         return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
+      case "MAIL_ERROR":
+        return `Es gab ein Problem beim Versenden der Email: ${error.errorText}`;
       default:
         return null;
     }

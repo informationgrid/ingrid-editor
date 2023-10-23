@@ -48,6 +48,11 @@
         {{ generalErrorMessage }}
     </div>
     {{ error.message?.error ?? error.message }}
+    <ul *ngIf="error.items">
+        <li *ngFor="let item of error.items">
+            {{ item }}
+        </li>
+    </ul>
 
     <ng-container *ngIf="error.detail || error.stacktrace">
         <button

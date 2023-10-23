@@ -82,7 +82,7 @@ export class PersonDoctype extends AddressShared {
               hide: "!model?._parent || formState.parentIsFolder",
             },
           }),
-        ].filter(Boolean)
+        ].filter(Boolean),
       ),
       this.addSection(
         "Kommunikation",
@@ -92,7 +92,7 @@ export class PersonDoctype extends AddressShared {
           ...(this.options.positionNameAndHoursOfService
             ? this.addPositionNameAndHoursOfService()
             : []),
-        ].filter(Boolean)
+        ].filter(Boolean),
       ),
       this.addReferencesForAddress(this.fieldWithAddressReferences),
     ];
@@ -100,7 +100,7 @@ export class PersonDoctype extends AddressShared {
 
   constructor(
     storageService: DocumentService,
-    fieldWithAddressReferences: string
+    fieldWithAddressReferences: string,
   ) {
     super();
     this.fieldWithAddressReferences = fieldWithAddressReferences;

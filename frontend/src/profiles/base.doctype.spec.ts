@@ -52,10 +52,10 @@ describe("Document Type", () => {
 
   it("should add context help info to fields correctly", () => {
     expect(
-      doctype.fields[initialFieldLength].props.hasContextHelp
+      doctype.fields[initialFieldLength].props.hasContextHelp,
     ).toBeTruthy();
     expect(
-      doctype.fields[initialFieldLength + 1].fieldGroup[0].props.hasContextHelp
+      doctype.fields[initialFieldLength + 1].fieldGroup[0].props.hasContextHelp,
     ).toBeTruthy();
   });
 });

@@ -10,7 +10,7 @@ export class DocBehavioursService {
   private disabledCondition = (
     forAddress: boolean,
     node: TreeNode,
-    typeToInsert: string = null
+    typeToInsert: string = null,
   ) => {
     if (forAddress) {
       const profile = this.profileService.getProfile(node.type);
@@ -32,7 +32,7 @@ export class DocBehavioursService {
     const altName = type + "Alternative";
     if (fn !== null && this[altName] !== null) {
       console.error(
-        "There are multiple sort functions registered for the tree. Will ignore others!"
+        "There are multiple sort functions registered for the tree. Will ignore others!",
       );
     } else {
       this[altName] = fn;

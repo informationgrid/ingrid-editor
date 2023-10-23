@@ -124,10 +124,10 @@ describe("ConformityDialogComponent", () => {
     inspireSpecification = await loader.getHarness(
       MatSelectHarness.with({
         selector: "[data-cy='conformity-specification-id']",
-      })
+      }),
     );
     passField = await loader.getHarness(
-      MatSelectHarness.with({ selector: "[data-cy='conformity-level-id']" })
+      MatSelectHarness.with({ selector: "[data-cy='conformity-level-id']" }),
     );
   });
 
@@ -148,7 +148,7 @@ describe("ConformityDialogComponent", () => {
     await isInspireCheckbox.uncheck();
     // with uncheck the select changes to autocomplete
     inspireSpecificationAutocomplete = await loader.getHarness(
-      MatAutocompleteHarness
+      MatAutocompleteHarness,
     );
     await inspireSpecificationAutocomplete.enterText("text to enter");
     const options = await inspireSpecificationAutocomplete.getOptions();
@@ -164,7 +164,7 @@ describe("ConformityDialogComponent", () => {
       specification: { key: null, value: "text to enter" },
       pass: { key: "1" },
       publicationDate: new Date(
-        "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)"
+        "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
       ),
       explanation: null,
       isInspire: false,

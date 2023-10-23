@@ -193,7 +193,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options?: TextAreaOptions
+    options?: TextAreaOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
@@ -228,7 +228,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options: Options = {}
+    options: Options = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
@@ -330,7 +330,7 @@ export class FormFieldHelper {
   addRepeatDetailList(
     id,
     label,
-    options?: RepeatDetailListOptions
+    options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -702,7 +702,7 @@ export class FormFieldHelper {
     showToggleButton?: boolean,
     messageNoReferences?: string,
     referencesHint?: string,
-    options?
+    options?,
   ): FormlyFieldConfig {
     return {
       type: "referencedDocuments",

@@ -31,17 +31,17 @@ export class GetCapabilitiesService {
     private http: HttpClient,
     configService: ConfigService,
     private documentService: DocumentService,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {
     configService.$userInfo.subscribe(
-      () => (this.backendUrl = configService.getConfiguration().backendUrl)
+      () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
   }
 
   analyze(url: string) {
     return this.http.post<GetCapabilitiesAnalysis>(
       this.backendUrl + "getCapabilities/analyzeGetCapabilities",
-      url
+      url,
     );
   }
 
@@ -60,22 +60,31 @@ export class GetCapabilitiesService {
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
           value,
-          values.addressParent
+          values.addressParent,
         );
       if (key === "boundingBoxes")
         model.spatial.references = this.mapBoundingBox(value);
       if (key === "conformities")
         model.conformanceResult = this.mapConformities(value);
-      if (key === "coupledResources")
+      if (key === "coupledResources") {
         model.service.coupledResources = await this.handleCoupledResources(
           value,
-          model._parent
+          model._parent,
         );
+        if (value?.length > 0) {
+          model.service.couplingType = {
+            key: "tight",
+          };
+        }
+      }
       if (key === "operations")
         model.service.operations = this.mapOperations(value);
       if (key === "resourceLocators") urlReferences.push(...value);
-      if (key === "serviceType")
+      if (key === "serviceType") {
         model.service.classification = this.mapClassification(value);
+        if (value === "WCS") model.service.explanation = "WCS Service";
+      }
+
       if (key === "timeReference")
         model.temporal.events = this.mapEvents(value);
       if (key === "timeSpan")
@@ -108,15 +117,22 @@ export class GetCapabilitiesService {
 
   private mapBoundingBox(bboxes: Location[]): any {
     return bboxes.map((box) => {
-      return {
-        type: "free",
-        value: {
-          lat1: box.latitude1,
-          lon1: box.longitude1,
-          lat2: box.latitude2,
-          lon2: box.longitude2,
-        },
-      };
+      return box.latitude1 === null
+        ? {
+            type: "free",
+            title: box.name,
+            value: null,
+          }
+        : {
+            type: "free",
+            title: box.name,
+            value: {
+              lat1: box.latitude1,
+              lon1: box.longitude1,
+              lat2: box.latitude2,
+              lon2: box.longitude2,
+            },
+          };
     });
   }
 
@@ -156,7 +172,7 @@ export class GetCapabilitiesService {
     return value.map((item) => {
       return {
         referenceDate: item.date,
-        referenceDateType: { key: item.type },
+        referenceDateType: { key: item.type + "" },
       };
     });
   }
@@ -166,7 +182,7 @@ export class GetCapabilitiesService {
       const entry = this.codelistQuery.getCodelistEntryByValue(
         "6005",
         item.specification,
-        "iso"
+        "iso",
       );
       const spec = entry
         ? { key: entry.id }
@@ -182,7 +198,7 @@ export class GetCapabilitiesService {
 
   private async handleCoupledResources(
     resources: CoupledResource[],
-    parent: number
+    parent: number,
   ): Promise<DocumentReference[]> {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
@@ -213,7 +229,7 @@ export class GetCapabilitiesService {
 
   private mapCoupledResource(
     resource: CoupledResource,
-    parent: number
+    parent: number,
   ): IgeDocument {
     return {
       _uuid: resource.uuid,
@@ -268,7 +284,7 @@ export class GetCapabilitiesService {
       });
 
     const state =
-      !value.state.key && !value.state.value
+      !value.state?.key && !value.state?.value
         ? null
         : {
             key: value.state.key,

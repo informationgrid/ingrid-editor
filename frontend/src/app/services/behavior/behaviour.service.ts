@@ -25,7 +25,7 @@ export class BehaviourService {
     private configService: ConfigService,
     private pluginService: PluginService,
     private dataService: BehaviorDataService,
-    private toast: MatSnackBar
+    private toast: MatSnackBar,
   ) {}
 
   saveBehaviours(behaviours: BehaviourFormatBackend[]) {
@@ -47,7 +47,7 @@ export class BehaviourService {
 
     behaviours.forEach((behaviour) => {
       const found = this.pluginService.plugins.find(
-        (plugin) => plugin.id === behaviour._id
+        (plugin) => plugin.id === behaviour._id,
       );
 
       if (behaviour.active !== found.isActive) {

@@ -21,7 +21,7 @@ export class ForeignProjectsDoctype extends UvpShared {
           this.id,
           {
             required: true,
-          }
+          },
         ),
         this.addPointOfContact(),
       ]),
@@ -46,7 +46,7 @@ export class ForeignProjectsDoctype extends UvpShared {
             const missingType = field.model?.some((item) => !item.type);
             if (missingType) {
               throw new Error(
-                "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut."
+                "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut.",
               );
             }
             return true;

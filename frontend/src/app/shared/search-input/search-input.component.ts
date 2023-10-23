@@ -24,7 +24,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 
   isErrorState(
     control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     if (control?.invalid) return control.invalid && !this.component.hasFocus;
     else return false;

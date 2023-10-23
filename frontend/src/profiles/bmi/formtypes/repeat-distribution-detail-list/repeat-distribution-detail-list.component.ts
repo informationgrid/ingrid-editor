@@ -87,7 +87,7 @@ export class RepeatDistributionDetailListComponent
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((files: LinkInfo[]) =>
-        this.updateTableInformationWithUploadInfo(files)
+        this.updateTableInformationWithUploadInfo(files),
       );
   }
 
@@ -102,7 +102,7 @@ export class RepeatDistributionDetailListComponent
 
   private getUploadFieldKey(): string {
     return this.getFields(this.field.fieldArray).find(
-      (field) => field.type === "upload"
+      (field) => field.type === "upload",
     )?.key;
   }
 
@@ -159,7 +159,7 @@ export class RepeatDistributionDetailListComponent
     return (
       !this.model ||
       this.model?.findIndex(
-        (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri
+        (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri,
       ) === -1
     );
   }

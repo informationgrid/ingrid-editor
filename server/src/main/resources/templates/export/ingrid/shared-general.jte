@@ -15,6 +15,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Boolean isService = false
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -633,7 +634,7 @@
         </srv:SV_CoupledResource>
     </srv:coupledResource>
 @endfor
-@if(TransformationTools.hasValue(page.getCouplingType()))
+@if(isService)
     <srv:couplingType>
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
                              codeListValue="${page.getCouplingType()}" />
@@ -645,6 +646,11 @@
             <srv:operationName>
                 <gco:CharacterString>Download</gco:CharacterString>
             </srv:operationName>
+            <srv:DCP>
+                <srv:DCPList
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                        codeListValue="WebServices" />
+            </srv:DCP>
             <srv:connectPoint>
                 <gmd:CI_OnlineResource>
                     <gmd:linkage>
@@ -670,6 +676,7 @@
                 </srv:operationDescription>
             @endif
             @if(TransformationTools.hasValue(operation.getMethodCall()))
+                <srv:DCP gco:nilReason="missing"></srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
@@ -709,6 +716,8 @@ ${contentInfo}
                             <gmd:version>
                                 <gco:CharacterString>${distributionFormat.getVersion()}</gco:CharacterString>
                             </gmd:version>
+                        @else
+                            <gmd:version gco:nilReason="unknown" />
                         @endif
                         @if(TransformationTools.hasValue(distributionFormat.getSpecification()))
                             <gmd:specification>

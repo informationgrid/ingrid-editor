@@ -5,7 +5,7 @@ import { AuthenticationFactory } from "./security/auth.factory";
 
 export function initializeKeycloakAndGetUserInfo(
   authFactory: AuthenticationFactory,
-  configService: ConfigService
+  configService: ConfigService,
 ) {
   const config = configService.getConfiguration();
   config.keycloakEnabled
@@ -27,7 +27,7 @@ export function getUserInfo(configService: ConfigService) {
       // check if user has any assigned catalog
       if (userInfo.assignedCatalogs.length === 0) {
         throw new IgeError(
-          "Ihnen wurde bisher kein Katalog zugewiesen. Lassen Sie sich durch einen Administrator einen Katalog zuweisen."
+          "Ihnen wurde bisher kein Katalog zugewiesen. Lassen Sie sich durch einen Administrator einen Katalog zuweisen.",
         );
       }
     }

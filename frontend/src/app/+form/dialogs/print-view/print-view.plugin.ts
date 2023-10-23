@@ -36,7 +36,7 @@ export class PrintViewPlugin extends Plugin {
     private docTreeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -72,9 +72,9 @@ export class PrintViewPlugin extends Plugin {
         .subscribe((openedDoc) => {
           this.toolbarService.setButtonState(
             "toolBtnPrint",
-            openedDoc !== null && openedDoc._type != "FOLDER"
+            openedDoc !== null && openedDoc._type != "FOLDER",
           );
-        })
+        }),
     );
   }
 

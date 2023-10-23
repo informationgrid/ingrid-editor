@@ -10,7 +10,10 @@ import { BehaviourFormatBackend } from "./behaviour.service";
 export class BehaviorDataService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -21,7 +24,7 @@ export class BehaviorDataService {
   saveBehaviors(behavior: BehaviourFormatBackend[]): Observable<any> {
     return this.http.post(
       this.configuration.backendUrl + "behaviours",
-      behavior
+      behavior,
     );
   }
 }

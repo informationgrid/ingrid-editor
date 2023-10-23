@@ -28,7 +28,7 @@ describe("Behaviour", () => {
     (behaviourService: BehaviourService) => {
       console.log("in test");
       // fixture.detectChanges();
-    }
+    },
   ));
 
   xit("should include external behaviours", () => {});

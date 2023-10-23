@@ -32,12 +32,12 @@ export class IndexingComponent implements OnInit {
     this.indexService.lastLog$,
     this.rxStompService
       .watch(
-        `/topic/indexStatus/${this.configService.$userInfo.value.currentCatalog.id}`
+        `/topic/indexStatus/${this.configService.$userInfo.value.currentCatalog.id}`,
       )
       .pipe(
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => (this.indexingIsRunning = !data.endTime))
-      )
+        tap((data) => (this.indexingIsRunning = !data.endTime)),
+      ),
   );
 
   private copyToClipboardFn = copyToClipboardFn();
@@ -46,7 +46,7 @@ export class IndexingComponent implements OnInit {
     private indexService: IndexService,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
-    private rxStompService: RxStompService
+    private rxStompService: RxStompService,
   ) {
     this.isActivated = configService.$userInfo.value.useElasticsearch;
   }

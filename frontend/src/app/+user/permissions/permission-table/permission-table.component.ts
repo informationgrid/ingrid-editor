@@ -61,7 +61,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   constructor(
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   callAddPermissionDialog() {
@@ -139,11 +139,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   getDocument(id: number): Promise<IgeDocument> {
     return firstValueFrom(
-      this.documentService.load(id, this.forAddress, false)
+      this.documentService.load(id, this.forAddress, false),
     );
   }
 
-  updatePermission(element, level: PermissionLevel) {
+  updatePermission(element: any, level: PermissionLevel) {
     if (this.disabled) return;
     element.permission = level;
     this.onChange(this.val);

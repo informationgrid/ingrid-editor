@@ -10,11 +10,21 @@
     <div class="flex-col">
         <mat-form-field appearance="outline">
             <mat-label>Vorname</mat-label>
-            <input matInput formControlName="firstName" data-cy="firstName" />
+            <input
+                matInput
+                formControlName="firstName"
+                autocomplete="given-name"
+                data-cy="firstName"
+            />
         </mat-form-field>
         <mat-form-field appearance="outline">
             <mat-label>Nachname</mat-label>
-            <input matInput formControlName="lastName" data-cy="lastName" />
+            <input
+                matInput
+                formControlName="lastName"
+                autocomplete="family-name"
+                data-cy="lastName"
+            />
         </mat-form-field>
     </div>
 </mat-dialog-content>

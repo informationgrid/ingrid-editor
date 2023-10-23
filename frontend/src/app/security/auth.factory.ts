@@ -18,7 +18,7 @@ export class AuthenticationFactory {
   constructor(
     private keycloak: KeycloakService,
     private http: HttpClient,
-    private modalService: ModalService
+    private modalService: ModalService,
   ) {}
 
   initWithKeycloak() {
@@ -41,7 +41,7 @@ export class AuthenticationFactory {
 
     return this.http.get(url).pipe(
       map((existingProfile) => ({ ...existingProfile, ...profile })),
-      switchMap((updatedProfile) => this.http.post(url, updatedProfile))
+      switchMap((updatedProfile) => this.http.post(url, updatedProfile)),
     );
   }
 

@@ -132,7 +132,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   private drawAndZoom(value: SpatialBoundingBox) {
     const bounds = new LatLngBounds(
       new LatLng(value.lat1, value.lon1),
-      new LatLng(value.lat2, value.lon2)
+      new LatLng(value.lat2, value.lon2),
     );
     this.drawBoundingBox(bounds);
 
@@ -145,7 +145,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
 
     this.drawnBBox.on("pm:edit", (e) =>
       // @ts-ignore
-      this.updateSelectedArea(e.layer.getBounds())
+      this.updateSelectedArea(e.layer.getBounds()),
     );
   }
 
@@ -161,8 +161,8 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
     response.forEach(
       (item) =>
         (item.displayTitle = `${item.name}, ${this.transloco.translate(
-          `spatial.geothesaurus.wfsgnde.${item.type}`
-        )}`)
+          `spatial.geothesaurus.wfsgnde.${item.type}`,
+        )}`),
     );
   }
 

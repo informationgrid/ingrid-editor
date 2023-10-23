@@ -35,7 +35,7 @@ export class CreateDocumentPlugin extends Plugin {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -56,7 +56,7 @@ export class CreateDocumentPlugin extends Plugin {
   private initializeButton() {
     this.translocoService
       .selectTranslate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
+        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       )
       .subscribe((tooltipText) => {
         const buttons = [
@@ -83,7 +83,7 @@ export class CreateDocumentPlugin extends Plugin {
         this.formStateService.getForm(),
         this.documentService,
         this.dialog,
-        this.forAddress
+        this.forAddress,
       );
 
       if (!handled) {
@@ -118,7 +118,7 @@ export class CreateDocumentPlugin extends Plugin {
   private addNonAdminBehaviour() {
     if (!this.isAdmin) {
       const canGenerallyCreate = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset"
+        this.forAddress ? "can_create_address" : "can_create_dataset",
       );
       this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
 
@@ -128,7 +128,7 @@ export class CreateDocumentPlugin extends Plugin {
           .subscribe((data) => {
             this.toolbarService.setButtonState(
               "toolBtnNew",
-              this.isOrganisation(data)
+              this.isOrganisation(data),
             );
           });
         this.formSubscriptions.push(organisationCheckSubscription);

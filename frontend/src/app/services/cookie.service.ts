@@ -45,7 +45,7 @@ export class CookieService {
     let d: Date = new Date();
     d.setTime(
       d.getTime() +
-        (params.expireDays ? params.expireDays : 1) * 24 * 60 * 60 * 1000
+        (params.expireDays ? params.expireDays : 1) * 24 * 60 * 60 * 1000,
     );
     document.cookie =
       (params.name ? params.name : "") +

@@ -30,7 +30,7 @@ export class NewMessageDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<NewMessageDialogComponent>,
     public messageService: MessageService,
     private fb: UntypedFormBuilder,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   ngOnInit(): void {

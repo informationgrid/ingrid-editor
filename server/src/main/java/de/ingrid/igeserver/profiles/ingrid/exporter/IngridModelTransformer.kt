@@ -419,7 +419,7 @@ open class IngridModelTransformer(
     val serviceType =
         codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
-    val couplingType = data.service?.couplingType?.key
+    val couplingType = data.service?.couplingType?.key ?: "loose"
 
     val operations: List<DisplayOperation>
 
@@ -451,12 +451,19 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    val operatesOn = data.service?.coupledResources?.map {
+    fun getOperatesOn() = data.service?.coupledResources?.map {
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
-            val identifier = this.getCitationFromGeodataset(it.uuid)
-            OperatesOn(it.uuid, identifier)
+            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
+            val containsNamespace = identifier.contains("://")
+            val completeIdentifier = if (containsNamespace) {
+                identifier
+            } else {
+                val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
+                namespaceWithSlash + identifier
+            }
+            OperatesOn(it.uuid, completeIdentifier)
         }
 
     } ?: emptyList()
@@ -579,7 +586,7 @@ open class IngridModelTransformer(
 
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
-        ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
+        ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
@@ -627,6 +634,7 @@ open class IngridModelTransformer(
             ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
             ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
 
+        val getCapOperation = refTrans.operations.firstOrNull { it.name == "GetCapabilities" }
         return CrossReference(
             direction = direction,
             uuid = uuid,
@@ -636,8 +644,8 @@ open class IngridModelTransformer(
             description = refTrans.description,
             graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
             serviceType = refTrans.serviceType,
-            serviceOperation = refTrans.operations.firstOrNull()?.name,
-            serviceUrl = refTrans.operations.firstOrNull()?.identifierLink,
+            serviceOperation = getCapOperation?.name,
+            serviceUrl = getCapOperation?.methodCall,
             serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
             hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
         )

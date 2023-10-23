@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
 import { tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
 import { MatTableDataSource } from "@angular/material/table";
@@ -29,7 +29,7 @@ export class MessagesManagementComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private dialog: MatDialog,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   private userInfo: UserInfo;
@@ -90,7 +90,7 @@ export class MessagesManagementComponent implements OnInit {
         this.dataSourceCurrentCatalog.data = null;
         let [allCatalog$, currentCatalog$] = partition(
           messages,
-          (value, index) => value.catalog == null
+          (value, index) => value.catalog == null,
         );
 
         allCatalog$.subscribe((value) => {

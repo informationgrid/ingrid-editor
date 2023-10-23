@@ -9,7 +9,7 @@
 
         <span *ngIf="!isRunning; else running"
             >Letzte Ausführung erfolgte am
-            {{ log.startTime | date : "dd.LL.yyyy HH:mm" }}</span
+            {{ log.startTime | date: "dd.LL.yyyy HH:mm" }}</span
         >
         <ng-template #running>
             <span>
@@ -21,7 +21,7 @@
             </span>
             <span>
                 Laufende Ausführung seit:
-                {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</span
+                {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</span
             >
         </ng-template>
         <button

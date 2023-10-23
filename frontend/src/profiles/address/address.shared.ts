@@ -30,8 +30,8 @@ export abstract class AddressShared extends BaseDoctype {
           showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
-              items.filter((item) => item.value !== "5" && item.value !== "6")
-            )
+              items.filter((item) => item.value !== "5" && item.value !== "6"),
+            ),
           ),
           codelistId: 4430,
         }),
@@ -66,7 +66,7 @@ export abstract class AddressShared extends BaseDoctype {
       this.addTextArea(
         "positionName",
         "Position/nachgeordnete Abteilung",
-        this.id
+        this.id,
       ),
       this.addInput("hoursOfService", "Servicezeiten", {
         wrappers: ["panel", "form-field"],
@@ -145,7 +145,7 @@ export abstract class AddressShared extends BaseDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: "" }
+      { fieldGroupClassName: "" },
     );
   }
 
@@ -169,7 +169,7 @@ export abstract class AddressShared extends BaseDoctype {
         codelistId: 6250,
         required:
           options.requiredField && options.requiredField["administrativeArea"],
-      }
+      },
     );
 
     return options.hideAdministrativeArea

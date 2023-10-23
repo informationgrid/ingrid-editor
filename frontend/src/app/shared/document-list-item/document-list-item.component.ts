@@ -21,7 +21,7 @@ import { MatSelectionList } from "@angular/material/list";
 export class DocumentListItemComponent implements OnInit {
   _docs: Observable<DocumentAbstract[] | TreeNode[]>;
   @Input() set docs(
-    value: Observable<DocumentAbstract[] | TreeNode[]> | DocumentAbstract[]
+    value: Observable<DocumentAbstract[] | TreeNode[]> | DocumentAbstract[],
   ) {
     this._docs = value instanceof Observable ? value : of(value);
   }

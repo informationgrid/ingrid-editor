@@ -40,7 +40,7 @@ export class LeafletService {
     "#FFBC00",
     "#FF7500",
     "#DE2525",
-    "#DE2525",
+    "#b711c2",
     "#2C4EB7",
   ];
   private wktTools: WktTools;
@@ -60,7 +60,10 @@ export class LeafletService {
         '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
-  constructor(private config: ConfigService, private http: HttpClient) {
+  constructor(
+    private config: ConfigService,
+    private http: HttpClient,
+  ) {
     this.configuration = this.config.getConfiguration();
     this.wktTools = new WktTools();
 
@@ -104,17 +107,17 @@ export class LeafletService {
 
   drawSpatialRefs(
     map: Map,
-    locations: SpatialLocationWithColor[]
+    locations: SpatialLocationWithColor[],
   ): Rectangle[] {
     let bounds: LatLngBoundsExpression;
 
     const wktLocations = locations.filter(
-      (location) => location.type === "wkt" && location.wkt
+      (location) => location.type === "wkt" && location.wkt,
     );
     const boxLocations = locations.filter(
       (location) =>
         (location.type === "free" && location.value) ||
-        location.type === "wfsgnde"
+        location.type === "wfsgnde",
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -124,11 +127,11 @@ export class LeafletService {
     const drawnBoxes = [];
     wktLocations.forEach(
       (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnWktLocations[index])
+        (drawnBoxes[location.indexNumber] = drawnWktLocations[index]),
     );
     boxLocations.forEach(
       (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnBoxLocations[index])
+        (drawnBoxes[location.indexNumber] = drawnBoxLocations[index]),
     );
 
     bounds = this.getBoundingBoxFromLayers(drawnBoxes);
@@ -147,7 +150,7 @@ export class LeafletService {
   private drawBoundingBox(
     map: Map,
     latLonBounds: LatLngBounds,
-    color: string
+    color: string,
   ): Rectangle {
     if (!latLonBounds) {
       return null;
@@ -166,7 +169,7 @@ export class LeafletService {
 
   private extendBounds(
     bounds: LatLngBounds,
-    box: LatLngExpression | LatLngBoundsExpression
+    box: LatLngExpression | LatLngBoundsExpression,
   ): LatLngBounds {
     const boxBounds = bounds
       ? new LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast())
@@ -203,8 +206,8 @@ export class LeafletService {
           fillOpacity: 1,
         },
         false,
-        false
-      )
+        false,
+      ),
     );
   }
 
@@ -222,7 +225,7 @@ export class LeafletService {
   }
 
   extendLocationsWithColor(
-    locations: SpatialLocation[]
+    locations: SpatialLocation[],
   ): SpatialLocationWithColor[] {
     return locations.map((location, index) => ({
       ...location,
@@ -234,7 +237,7 @@ export class LeafletService {
   validateWkt(value: string) {
     return this.http.post<WktValidateResponse>(
       `${this.configuration.backendUrl}tools/validate/wkt`,
-      value
+      value,
     );
   }
 }

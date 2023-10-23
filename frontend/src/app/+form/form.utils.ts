@@ -15,7 +15,7 @@ export class FormUtils {
   static addHotkeys(
     event: KeyboardEvent,
     service: FormToolbarService,
-    readonly: boolean
+    readonly: boolean,
   ) {
     // CTRL + ALT + S (save current document)
     if (event.ctrlKey && event.altKey && event.key === "s") {
@@ -42,7 +42,7 @@ export class FormUtils {
     form: FormGroup,
     documentService: DocumentService,
     dialog: MatDialog,
-    isAddress: boolean
+    isAddress: boolean,
   ): Promise<boolean> {
     const formHasChanged = form?.dirty;
     if (formHasChanged) {
@@ -56,7 +56,7 @@ export class FormUtils {
             data: value,
             isNewDoc: false,
             isAddress: isAddress,
-          })
+          }),
         );
       } else if (decision === "discard") {
         form.reset(undefined, { emitEvent: false });
@@ -69,7 +69,7 @@ export class FormUtils {
   }
 
   private static showDecisionDialog(
-    dialog: MatDialog
+    dialog: MatDialog,
   ): Promise<undefined | string> {
     return firstValueFrom(
       dialog
@@ -93,7 +93,7 @@ export class FormUtils {
           }) as ConfirmDialogData,
         })
         .afterClosed()
-        .pipe(first())
+        .pipe(first()),
     );
   }
 
@@ -118,7 +118,7 @@ export class FormUtils {
           [controlKey]: control.value,
         };
       },
-      {}
+      {},
     );
   }
 }

@@ -15,7 +15,7 @@ export interface ListDatasetsDialogData {
 export class ListDatasetsDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ListDatasetsDialogData,
-    private dlgRef: MatDialogRef<ListDatasetsDialogComponent, string>
+    private dlgRef: MatDialogRef<ListDatasetsDialogComponent, string>,
   ) {}
 
   ngOnInit(): void {}

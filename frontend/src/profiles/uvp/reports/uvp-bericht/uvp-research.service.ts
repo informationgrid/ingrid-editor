@@ -33,7 +33,7 @@ export class UvpResearchService {
     configService: ConfigService,
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
-    private behaviourService: BehaviourService
+    private behaviourService: BehaviourService,
   ) {
     this.configuration = configService.getConfiguration();
 
@@ -47,7 +47,7 @@ export class UvpResearchService {
 
     return this.http.get<UvpReport>(
       `${this.configuration.backendUrl}uvp/report`,
-      { params: httpParams }
+      { params: httpParams },
     );
   }
 
@@ -94,7 +94,7 @@ export class UvpResearchService {
       const eiaId = eiaStatistic[i][0]; //string
       const count = eiaStatistic[i][1]; //int
       const codelistItem = this.eiaNumbersCodelist.entries.find(
-        (e) => e.id === eiaId
+        (e) => e.id === eiaId,
       );
       const dataField = JSON.parse(codelistItem.data);
       result.push({

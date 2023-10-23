@@ -9,9 +9,9 @@
         <div>Zuletzt eingeloggt am</div>
         <div *ngIf="user.latestLogin; else neverLoggedIn">
             <span
-                [title]="user.latestLogin | date : 'long'"
+                [title]="user.latestLogin | date: 'long'"
                 data-cy="latest-login"
-                >{{ user.latestLogin | date : "dd.MM.yyyy" }}</span
+                >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
             >
         </div>
         <ng-template #neverLoggedIn>
@@ -22,9 +22,9 @@
         <div>Erstellt am</div>
         <div *ngIf="user.creationDate">
             <span
-                [title]="user.creationDate | date : 'long'"
+                [title]="user.creationDate | date: 'long'"
                 data-cy="date-created"
-                >{{ user.creationDate | date : "dd.MM.yyyy" }}</span
+                >{{ user.creationDate | date: "dd.MM.yyyy" }}</span
             >
         </div>
     </div>
@@ -32,9 +32,9 @@
         <div>Geändert am</div>
         <div *ngIf="user.modificationDate">
             <span
-                [title]="user.modificationDate | date : 'long'"
+                [title]="user.modificationDate | date: 'long'"
                 data-cy="date-modified"
-                >{{ user.modificationDate | date : "dd.MM.yyyy" }}</span
+                >{{ user.modificationDate | date: "dd.MM.yyyy" }}</span
             >
         </div>
     </div>

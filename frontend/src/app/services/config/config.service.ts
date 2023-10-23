@@ -22,7 +22,7 @@ export class Configuration {
     public supportEmail: string,
     public mapTileUrl: string,
     public nominatimUrl: string,
-    public showAccessibilityLink: boolean
+    public showAccessibilityLink: boolean,
   ) {}
 }
 
@@ -78,9 +78,13 @@ export class ConfigService {
 
   private dataService: ConfigDataService;
   private isAdministrator = false;
+  private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
 
-  constructor(private http: HttpClient, private snackbar: MatSnackBar) {
+  constructor(
+    private http: HttpClient,
+    private snackbar: MatSnackBar,
+  ) {
     this.dataService = new ConfigDataService(http);
   }
 
@@ -102,8 +106,9 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
-      userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
+      this.isSuperAdministrator || userInfo.role === "cat-admin";
     this._hasRootWritePermission =
       userInfo.permissions.indexOf("can_write_root") !== -1;
     this.$userInfo.next(userInfo);
@@ -116,6 +121,10 @@ export class ConfigService {
 
   isAdmin(): boolean {
     return this.isAdministrator;
+  }
+
+  isSuperAdmin(): boolean {
+    return this.isSuperAdministrator;
   }
 
   hasWriteRootPermission(): boolean {
@@ -134,12 +143,12 @@ export class ConfigService {
 
   hasExplicitPermission(
     neededPermission: string | string[],
-    user: UserInfo
+    user: UserInfo,
   ): boolean {
     if (neededPermission instanceof Array) {
       return (
         user?.permissions?.filter(
-          (value) => neededPermission.indexOf(value) !== -1
+          (value) => neededPermission.indexOf(value) !== -1,
         ).length > 0
       );
     } else {
@@ -162,7 +171,7 @@ export class ConfigService {
 
   isIBusConnected(index: number) {
     return this.http.get<boolean>(
-      `${this.config.backendUrl}config/ibus/connected/${index}`
+      `${this.config.backendUrl}config/ibus/connected/${index}`,
     );
   }
 

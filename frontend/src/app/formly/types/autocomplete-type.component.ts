@@ -63,7 +63,7 @@ export class AutocompleteTypeComponent
 
           return this.filterParameterByName(name);
         }),
-        filter((value) => value !== null)
+        filter((value) => value !== null),
       )
       .subscribe((values) => (this.filteredOptions = values));
 
@@ -76,14 +76,14 @@ export class AutocompleteTypeComponent
         untilDestroyed(this),
         filter((data) => data !== undefined),
         // take(1),
-        tap((data) => this.initInputListener(data))
+        tap((data) => this.initInputListener(data)),
       )
       .subscribe();
   }
 
   private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options.map(
-      (option) => <BackendOption>{ key: option.value, value: option.label }
+      (option) => <BackendOption>{ key: option.value, value: option.label },
     );
     const value = this.getFormValueLabel();
     this.filteredOptions = this.filterParameterByName(value);
@@ -97,7 +97,7 @@ export class AutocompleteTypeComponent
 
     return this.parameterOptions
       ? this.parameterOptions.filter((option) =>
-          option.value.toLowerCase().includes(filterValue)
+          option.value.toLowerCase().includes(filterValue),
         )
       : [];
   }

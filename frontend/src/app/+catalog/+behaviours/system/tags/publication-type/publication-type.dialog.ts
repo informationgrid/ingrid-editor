@@ -16,7 +16,7 @@ export class PublicationTypeDialog {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) value: string,
-    private dlgRef: MatDialogRef<string>
+    private dlgRef: MatDialogRef<string>,
   ) {
     this.currentValue =
       value

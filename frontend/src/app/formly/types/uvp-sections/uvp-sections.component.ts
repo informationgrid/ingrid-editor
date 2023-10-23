@@ -19,7 +19,10 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};
   sectionTypes = [];
 
-  constructor(private dialog: MatDialog, private formService: FormularService) {
+  constructor(
+    private dialog: MatDialog,
+    private formService: FormularService,
+  ) {
     super();
   }
 
@@ -29,7 +32,7 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
         untilDestroyed(this),
         debounceTime(100),
         startWith(this.formControl.value),
-        map((values) => this.getLabelFromSections(values))
+        map((values) => this.getLabelFromSections(values)),
       )
       .subscribe((value) => this.formService.setAdditionalSections(value));
 
@@ -40,8 +43,8 @@ export class UvpSectionsComponent extends FieldArrayType implements OnInit {
     return values
       .map((value) =>
         (<FormlyFieldConfig>this.field.fieldArray).fieldGroup.find(
-          (item) => item.name === value.type
-        )
+          (item) => item.name === value.type,
+        ),
       )
       .map((value) => value?.props?.label);
   }

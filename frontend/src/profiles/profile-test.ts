@@ -16,7 +16,7 @@ class TestComponent {
     mcloud: McloudDoctype,
     folder: FolderDoctype,
     test: TestDoctype,
-    address: TestAddressDoctype
+    address: TestAddressDoctype,
   ) {
     const types = [mcloud, folder, test, address];
 

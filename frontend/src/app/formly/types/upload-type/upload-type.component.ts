@@ -49,7 +49,7 @@ export class UploadTypeComponent
       .pipe(
         untilDestroyed(this),
         distinctUntilChanged(),
-        map((value) => this.mapStringValue(value))
+        map((value) => this.mapStringValue(value)),
       )
       .subscribe((value) => (this.upload = value || this.defaultValue));
   }
@@ -62,7 +62,7 @@ export class UploadTypeComponent
 
     this.control = new UntypedFormControl(
       { value: this.upload.uri, disabled: !this.upload.asLink },
-      validators
+      validators,
     );
   }
 
@@ -82,7 +82,7 @@ export class UploadTypeComponent
     this.upload.uri = this.control.value;
     this.formControl.setValue(this.upload);
     this.formControl.setErrors(
-      this.control.invalid ? this.control.errors : null
+      this.control.invalid ? this.control.errors : null,
     );
   }
 }

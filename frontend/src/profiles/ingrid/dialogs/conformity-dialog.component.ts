@@ -48,23 +48,23 @@ export class ConformityDialogComponent implements OnInit {
     fb: FormBuilder,
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     const model = this.data.model;
     const isInspire = model?.isInspire ?? true;
     const specification = this.prepareSpecification(
       isInspire,
-      model?.specification
+      model?.specification,
     );
     this.form = fb.group({
       specification: fb.control(specification, Validators.required),
       pass: fb.control(
         SelectOption.fromBackend(model?.pass),
-        Validators.required
+        Validators.required,
       ),
       date: fb.control(
         { value: model?.publicationDate, disabled: isInspire },
-        Validators.required
+        Validators.required,
       ),
       verifiedBy: fb.control(model?.explanation),
       isInspire: fb.control(isInspire),
@@ -93,14 +93,14 @@ export class ConformityDialogComponent implements OnInit {
       .get("specification")
       .valueChanges.pipe(
         untilDestroyed(this),
-        filter((option) => option !== null)
+        filter((option) => option !== null),
       )
       .subscribe((option) => {
         const codelistId =
           this.form.get("isInspire").value === true ? "6005" : "6006";
         const codelistEntry = this.codelistQuery.getCodelistEntryByKey(
           codelistId,
-          option.value
+          option.value,
         );
         if (codelistEntry) {
           this.form.get("date").setValue(codelistEntry.data);
@@ -116,7 +116,7 @@ export class ConformityDialogComponent implements OnInit {
       specification: new SelectOption(
         value.specification.value,
         // @ts-ignore
-        isObject ? value.specification.label : value.specification
+        isObject ? value.specification.label : value.specification,
       ).forBackend(),
       pass: new SelectOption(value.pass.value, value.pass.value).forBackend(),
       publicationDate: value.date,
@@ -127,13 +127,13 @@ export class ConformityDialogComponent implements OnInit {
 
   private prepareSpecification(
     isInspire: boolean,
-    specification: BackendOption
+    specification: BackendOption,
   ): SelectOption {
     const option = SelectOption.fromBackend(specification);
     if (!isInspire && option.value)
       option.label = this.codelistQuery.getCodelistEntryValueByKey(
         "6006",
-        option.value
+        option.value,
       );
     return option;
   }

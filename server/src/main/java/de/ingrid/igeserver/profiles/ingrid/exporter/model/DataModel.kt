@@ -6,6 +6,7 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -146,7 +147,7 @@ data class CoupledResource(
     val title: String?,
     val url: String?,
     val identifier: String?,
-    val uuid: String,
+    val uuid: String?,
     val isExternalRef: Boolean
 )
 
@@ -199,11 +200,18 @@ data class ConformanceResult(
     val pass: KeyValueModel,
     val isInspire: Boolean?,
     val specification: KeyValueModel?,
-    val publicationDate: String,
 ) {
     val explanation: String? = null
         get() {
             return if (field.isNullOrEmpty()) "see the referenced specification" else field
+        }
+    
+    val publicationDate: String? = null
+        get() {
+            return if (field?.contains("Z") == true) {
+                val isoDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(field)
+                SimpleDateFormat("yyyy-MM-dd").format(isoDate)
+            } else field
         }
 }
 
