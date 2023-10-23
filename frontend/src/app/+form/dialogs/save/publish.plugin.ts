@@ -373,6 +373,7 @@ export class PublishPlugin extends SaveBase {
           message: "Der Datensatz wurde erfolgreich geprüft.",
           hideCancelButton: true,
         });
+        this.documentService.publishState$.next(false);
       });
     console.log("isValid: ", isValid);
   }
