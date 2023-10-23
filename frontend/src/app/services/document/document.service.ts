@@ -87,22 +87,27 @@ export class DocumentService {
     this.configuration = configService.getConfiguration();
   }
 
-  find(
+  findInTitleOrUuid(
     query: string,
     size = 10,
     address = false,
     excludeFolders = false,
   ): Observable<SearchResult> {
+    const categorySQL = ` AND document_wrapper.category = ${
+      address ? "'address'" : "'data'"
+    }`;
+    const excludeFoldersSQL = excludeFolders
+      ? " AND document1.type != 'FOLDER'"
+      : "";
     return this.researchService
-      .search(
-        query,
-        {
-          type: address ? "selectAddresses" : "selectDocuments",
-          ignoreFolders: excludeFolders ? "exceptFolders" : "",
-        },
-        null,
-        "DESC",
-        { page: 1, pageSize: size },
+      .searchBySQL(
+        `SELECT DISTINCT document1.*, document_wrapper.category
+         FROM document_wrapper
+                JOIN document document1 ON document_wrapper.uuid = document1.uuid
+         WHERE (title ILIKE '%${query}%' OR document1.uuid = '${query}')
+           ${categorySQL} ${excludeFoldersSQL}`,
+        1,
+        size,
       )
       .pipe(map((result) => this.mapSearchResults(result)));
   }

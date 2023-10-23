@@ -104,7 +104,9 @@ export class AddressTypeComponent
 
   private async callEditDialog(address?: AddressRef) {
     const foundAddresses = (
-      await firstValueFrom(this.documentService.find("", 1, true, true))
+      await firstValueFrom(
+        this.documentService.findInTitleOrUuid("", 1, true, true),
+      )
     ).totalHits;
 
     if (foundAddresses) {

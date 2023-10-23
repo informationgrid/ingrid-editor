@@ -46,8 +46,8 @@ export class QuickSearchComponent implements OnInit {
 
     this.searchSub?.unsubscribe();
     this.searchSub = combineLatest([
-      this.documentService.find(value, 5),
-      this.documentService.find(value, 5, true),
+      this.documentService.findInTitleOrUuid(value, 5),
+      this.documentService.findInTitleOrUuid(value, 5, true),
     ]).subscribe((result) => {
       this.docs = this.highlightResult(result[0].hits, value);
       this.numDocs = result[0].totalHits;
