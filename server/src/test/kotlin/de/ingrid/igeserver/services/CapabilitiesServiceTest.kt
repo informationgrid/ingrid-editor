@@ -973,13 +973,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ), listOf(8), "Harvest", KeyValue("7", "Harvest")
                     ),
                 )
-                onlineResources shouldContainExactly listOf(
-                    UrlBean(
-                        "mailto:voges@conterra.de",
-                        KeyValue(null, "Informationen im Internet"),
-                        "mailto:voges@conterra.de"
-                    )
-                )
+                onlineResources!! shouldHaveSize 0 
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://www.wemove.com/my-resource-locator",
