@@ -35,9 +35,9 @@ export class MainHeaderComponent implements OnInit {
   config: Configuration;
   otherAssignedCatalogs: any[];
   catalogId: string;
-  menuItems: Routes = settingsRoutes[0].children.filter(
-    (item) => item.path !== "",
-  );
+  menuItems: Routes = settingsRoutes[0].children
+    .filter((item) => item.path !== "")
+    .filter((item) => this.configService.hasPermission(item.data?.permission));
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
   constructor(
