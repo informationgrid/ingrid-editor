@@ -294,21 +294,20 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
         val urls = mutableListOf<UrlBean>()
-        val orNodes = xPathUtils.getNodeList(doc, xPath)
-        if (orNodes != null) {
-            for (i in 0 until orNodes.length) {
-                val url = UrlBean()
-                val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
+        val orNodes = xPathUtils.getNodeList(doc, xPath) ?: return urls
+        
+        for (i in 0 until orNodes.length) {
+            val url = UrlBean()
+            val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
 
-                // do not add link if there's none (#781)
-                if (link == null || link.trim() == "") continue
+            // do not add link if there's none (#781) or starts with mailto (#5583)
+            if (link.isNullOrEmpty() || link.startsWith("mailto:")) continue
 
-                url.url = link
-                url.type = KeyValue(null, "Informationen im Internet")
-                url.title = link
+            url.url = link
+            url.type = KeyValue(null, "Informationen im Internet")
+            url.title = link
 
-                urls.add(url)
-            }
+            urls.add(url)
         }
         return urls
     }
