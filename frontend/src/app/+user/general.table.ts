@@ -9,7 +9,7 @@ export class GeneralTable {
 
   isLoading = true;
 
-  updatePaginator(id, field: string) {
+  updatePaginator(id: any, field: string) {
     if (this.paginator) {
       let indexInDatasource = this.dataSource
         .sortData(this.dataSource.data, this.dataSource.sort)

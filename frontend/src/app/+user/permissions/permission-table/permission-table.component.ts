@@ -143,7 +143,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     );
   }
 
-  updatePermission(element, level: PermissionLevel) {
+  updatePermission(element: any, level: PermissionLevel) {
     if (this.disabled) return;
     element.permission = level;
     this.onChange(this.val);

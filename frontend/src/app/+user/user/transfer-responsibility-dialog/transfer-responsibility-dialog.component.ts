@@ -41,7 +41,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
   query = new FormControl<string>("");
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<TransferResponsibilityDialogComponent>,
     private userService: UserDataService,
   ) {

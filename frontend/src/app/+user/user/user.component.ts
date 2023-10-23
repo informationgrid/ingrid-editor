@@ -12,11 +12,7 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import {
-  FormControl,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-} from "@angular/forms";
+import { FormControl, UntypedFormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -30,7 +26,6 @@ import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { EventService } from "../../services/event/event.service";
 import {
   FormMenuService,
   FormularMenuItem,
@@ -59,13 +54,10 @@ export class UserComponent
   query = new FormControl<string>("");
 
   constructor(
-    private fb: UntypedFormBuilder,
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,
     private groupQuery: GroupQuery,
-    private configService: ConfigService,
-    private eventService: EventService,
     private router: Router,
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
@@ -87,7 +79,7 @@ export class UserComponent
   groupSelectCallback = (groupIdString: string) => {
     const groupId = +groupIdString;
     const doReload = this.groupQuery.getActiveId() === groupId;
-    this.groupService.getGroup(groupId).subscribe((group) => {
+    this.groupService.getGroup(groupId).subscribe(() => {
       this.groupService.setActive(groupId);
       this.router.navigate([`${ConfigService.catalogId}/manage/group`]);
 
@@ -95,7 +87,7 @@ export class UserComponent
     });
   };
 
-  roleChangeCallback = (field, $event) => {
+  roleChangeCallback = () => {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: "Rolle ändern",
@@ -213,15 +205,6 @@ export class UserComponent
 
     this.form.markAsPristine();
     this.updateUsersAndLoad(user.id);
-  }
-
-  getEmailErrorMessage() {
-    const email = this.form.get("email");
-    if (email.hasError("required")) {
-      return "Es wird eine Email-Adresse benötigt";
-    }
-
-    return email.hasError("email") ? "Keine gültige Email-Adresse" : "";
   }
 
   enableForm() {

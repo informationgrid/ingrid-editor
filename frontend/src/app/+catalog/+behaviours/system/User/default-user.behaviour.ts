@@ -66,7 +66,7 @@ export class DefaultUserBehaviour extends Plugin {
     this.formMenuService.removeMenuItem("user", "delete-user");
   }
 
-  resetPassword(login: string) {
+  private resetPassword(login: string) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
@@ -101,7 +101,7 @@ export class DefaultUserBehaviour extends Plugin {
       });
   }
 
-  deleteUser(user: User) {
+  private deleteUser(user: User) {
     this.eventService
       .sendEventAndContinueOnSuccess(IgeEvent.DELETE_USER, user)
       .subscribe(() => this.openDeleteUserDialog(user));

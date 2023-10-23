@@ -1,6 +1,5 @@
 import { Component, Inject, Input, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { MatListOption } from "@angular/material/list";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
@@ -120,10 +119,5 @@ export class PermissionAddDialogComponent implements OnInit {
       this.selection.length === 0 ||
       this.val.some((item) => item.id === this.selection[0])
     );
-  }
-
-  removePermission(item: MatListOption) {
-    this.value = this.val.filter((entry) => item.value !== entry.id);
-    this.activeNodeSetter.next(null);
   }
 }

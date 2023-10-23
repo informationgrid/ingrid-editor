@@ -95,7 +95,7 @@ export class GroupsTableComponent
     this.dataSource.paginator = this.paginator;
   }
 
-  select(element) {
+  select(element: any) {
     this.selection.select(element);
     this.onGroupSelect.emit(element);
   }
@@ -132,7 +132,7 @@ export class GroupsTableComponent
     this.exportService.exportCsv(rows, { exportName: "groups" });
   }
 
-  private async buildRowByGroup(group): Promise<string[]> {
+  private async buildRowByGroup(group: any): Promise<string[]> {
     const users = await firstValueFrom(
       this.groupService.getUsersOfGroup(group.id),
     );

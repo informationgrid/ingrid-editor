@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
-import { ModalService } from "../../services/modal/modal.service";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
@@ -55,7 +54,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
   private previousGroupId: number;
 
   constructor(
-    private modalService: ModalService,
     private fb: UntypedFormBuilder,
     private dialog: MatDialog,
     public groupService: GroupService,
