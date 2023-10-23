@@ -86,7 +86,7 @@ export class DynamicDatabase {
   }
 
   search(value: string, isAddress: boolean) {
-    return this.docService.findInTitleOrUuid(value, 10, isAddress);
+    return this.docService.findInTitleOrUuid(value, 20, isAddress);
   }
 
   getPath(id: number): Promise<number[]> {
