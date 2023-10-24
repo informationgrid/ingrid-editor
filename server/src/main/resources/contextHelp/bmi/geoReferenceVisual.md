@@ -10,6 +10,9 @@ Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssyst
 ## Freier Raumbezug
 Der "Freie Raumbezug" wird auf einer Karte festgelegt. Eine Ortssuche kann verwendet werden, um den Raumbezug ortsbezogen auszuwählen.
 
+### DCAT-AP.de:
+`dcterms:spatial / dcterms:Location / skos:prefLabel + locn:geometry`
+
 ## Raumbezug (WKT)
 Die Erfassung eines Raumbezuges als Well Known Text (WKT, https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) ermöglicht die freie Angabe von geometrischen Gebilden.<br />
 **Unterstützt werden momentan nur Polygone mit einer Außengrenze und Innengrenzen (Löcher), Points und Linestrings.**
@@ -19,5 +22,11 @@ Beispiel:
 >  POINT(10 10)  
 >  LINESTRING (10 10, 20 20, 30 40)  
 
+### DCAT-AP.de:
+`dcterms:spatial / dcterms:Location / skos:prefLabel + locn:geometry`
+
 ## Nur Titel
 Geben Sie die geographische Bezeichnung oder auch den Eigennamen des Raumbezugs an.
+
+### DCAT-AP.de:
+`dcterms:spatial / dcterms:Location / skos:prefLabel`
