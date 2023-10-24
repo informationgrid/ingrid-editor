@@ -197,7 +197,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.imageLinks = [];
+          // this.imageLinks = [];
           this.remove(index);
           this.add(index, result);
         }
@@ -284,9 +284,9 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     const img: HTMLImageElement = document.querySelector(
       "img.preview-image-" + index,
     );
-    canvas.height = img.naturalHeight;
-    canvas.width = img.naturalWidth;
-    context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+    canvas.height = img.height;
+    canvas.width = img.width;
+    context.drawImage(img, 0, 0, img.width, img.height);
     return canvas.toDataURL();
   }
 }
