@@ -76,7 +76,7 @@ class IngridLuceneExporter @Autowired constructor(
                     catalog.identifier,
                     codelistTransformer,
                     config,
-                    catalogService
+                    catalogService, TransformerCache()
                 )
             }
             IngridDocType.FOLDER -> {

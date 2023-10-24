@@ -14,8 +14,9 @@ open class GeodatasetModelTransformer(
     codelistTransformer: CodelistTransformer,
     config: Config,
     catalogService: CatalogService,
+    cache: TransformerCache
 ) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService
+    model, catalogIdentifier, codelistTransformer, config, catalogService, cache
 ) {
 
     override val hierarchyLevel = "dataset"

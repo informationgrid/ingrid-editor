@@ -41,9 +41,6 @@
                 </button>
             </div>
             <mat-card-footer>
-                <div *ngIf="!model[i]?.fileName.asLink">
-                    {{ model[i]?.fileName.value }}
-                </div>
                 <div class="line-clamp-2" *ngIf="model[i]?.fileDescription">
                     {{ model[i]?.fileDescription }}
                 </div>

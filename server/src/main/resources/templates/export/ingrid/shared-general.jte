@@ -821,6 +821,28 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
+            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrls() )
+                <gmd:transferOptions>
+                    <gmd:MD_DigitalTransferOptions>
+                        <gmd:onLine>
+                            <idf:idfOnlineResource>
+                                <gmd:linkage>
+                                    <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
+                                </gmd:linkage>
+                                <gmd:name>
+                                    <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
+                                </gmd:name>
+                                <gmd:function>
+                                    <gmd:CI_OnLineFunctionCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
+                                            codeListValue="information">information
+                                    </gmd:CI_OnLineFunctionCode>
+                                </gmd:function>
+                            </idf:idfOnlineResource>
+                        </gmd:onLine>
+                    </gmd:MD_DigitalTransferOptions>
+                </gmd:transferOptions>
+            @endfor
             @if(page.isAtomDownload())
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
