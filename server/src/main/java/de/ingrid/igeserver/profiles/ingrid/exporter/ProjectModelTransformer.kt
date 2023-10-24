@@ -5,14 +5,15 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 
-class ProjectModelTransformer constructor(
+class ProjectModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
     config: Config,
     catalogService: CatalogService,
+    cache: TransformerCache
 ) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService
+    model, catalogIdentifier, codelistTransformer, config, catalogService, cache
 ) {
 
     override val hierarchyLevelName = "project"
