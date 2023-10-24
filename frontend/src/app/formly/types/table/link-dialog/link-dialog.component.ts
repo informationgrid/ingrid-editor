@@ -57,7 +57,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
     return {
       key: field.key,
       type: "input",
-      props: field.props,
+      props: { ...field.props, label: "URL" },
       validators: {
         validation: ["url"],
       },
