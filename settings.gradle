@@ -1,6 +1,6 @@
 include 'frontend', 'server'
 
-rootProject.name='IGE-NG'
+rootProject.name='ige-ng'
 
 buildCache {
     local {
