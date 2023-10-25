@@ -29,6 +29,7 @@ class UVPComponent {
     address: UvpPersonDoctype,
     organisation: UvpOrganisationDoctype,
     private pluginService: PluginService,
+    private publishNegativeAssessmentBehaviour: PublishNegativeAssessmentBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
 
@@ -63,13 +64,11 @@ class UVPComponent {
   private addBehaviour(
     negativeAssessmentDoctype: NegativePreliminaryAssessmentDoctype,
   ) {
-    const publishNegativeAssessmentBehaviour =
-      new PublishNegativeAssessmentBehaviour();
     const uvpNumberPlugin = new UvpNumberBehaviour();
-    this.pluginService.registerPlugin(publishNegativeAssessmentBehaviour);
+    this.pluginService.registerPlugin(this.publishNegativeAssessmentBehaviour);
     this.pluginService.registerPlugin(uvpNumberPlugin);
 
-    if (publishNegativeAssessmentBehaviour.isActive) {
+    if (this.publishNegativeAssessmentBehaviour.isActive) {
       negativeAssessmentDoctype.forPublish = true;
     }
   }
