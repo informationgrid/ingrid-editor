@@ -249,11 +249,14 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         // check new user has rights on all docs
         if (!isAdminRole(newResponsibleUser.role?.name)) {
-            val userGroups = newResponsibleUser.groups.toList()
+            val userGroups = newResponsibleUser.getGroupsForCatalog(catalogId).toList()
             val docsWithoutAccess = docs.filter { !groupService.hasAnyGroupAccess(catalogId, userGroups, it.id!!) }
             if (docsWithoutAccess.isNotEmpty()) {
                 val docIds = docsWithoutAccess.map { it.uuid }
-                throw TransferResponsibilityException.withReason("User ${newResponsibleUser.userId} has no access to documents with ids: $docIds", data = mapOf("docIds" to docIds))
+                throw TransferResponsibilityException.withReason(
+                    "User ${newResponsibleUser.userId} has no access to documents with ids: $docIds",
+                    data = mapOf("docIds" to docIds)
+                )
             }
         }
 
@@ -312,11 +315,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
             val lastLogin = this.updateAndGetLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
-            val permissions = try { catalogService.getPermissions(principal) } catch (ex: Exception) {
+            val permissions = try {
+                catalogService.getPermissions(principal)
+            } catch (ex: Exception) {
                 emptyList()
             }
 
             val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
+            val groups = currentCatalog?.let { cat ->
+                dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
+            } ?: emptySet()
             val userInfo = UserInfo(
                 id = dbUser?.id,
                 login = user.login,
@@ -326,14 +334,14 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 email = user.email,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
-                groups = dbUser?.groups?.map { it.name!! }?.toSet(),
+                groups = groups,
                 currentCatalog = currentCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
                 permissions = permissions,
-                plugins = behaviourService.get(currentCatalog?.identifier ?: "???" )
+                plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
             )
             userInfo.currentCatalog?.type?.let {
                 userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile

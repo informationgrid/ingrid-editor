@@ -37,7 +37,7 @@ class AuthUtilsMock : AuthUtils {
         return containsRole(principal, "ige-super-admin")
     }
 
-    override fun getCurrentUserRoles(): Set<Group> {
+    override fun getCurrentUserRoles(catalogId: String): Set<Group> {
         return emptySet()
     }
 

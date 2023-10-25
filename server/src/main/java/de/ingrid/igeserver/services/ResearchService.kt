@@ -59,7 +59,7 @@ class ResearchService {
     
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
-        val groups = authUtils.getCurrentUserRoles()
+        val groups = authUtils.getCurrentUserRoles(catalogId)
         val hasAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootAccess(groups)
         val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
