@@ -172,6 +172,7 @@ describe("ConformityDialogComponent", () => {
   });
 
   it("should set date for INSPIRE specification", async () => {
+    const expectedDateInISO = new Date("2009/10/20").toISOString();
     spectator.detectChanges();
 
     await inspireSpecification.open();
@@ -190,7 +191,7 @@ describe("ConformityDialogComponent", () => {
     expect(closeDialog).toHaveBeenCalledWith({
       specification: { key: "1" },
       pass: { key: "1" },
-      publicationDate: "2009-10-20",
+      publicationDate: expectedDateInISO,
       explanation: null,
       isInspire: true,
     });
