@@ -103,7 +103,12 @@ export class ConformityDialogComponent implements OnInit {
           option.value,
         );
         if (codelistEntry) {
-          this.form.get("date").setValue(codelistEntry.data);
+          try {
+            const date = new Date(codelistEntry.data.replaceAll("-", "/"));
+            this.form.get("date").setValue(date.toISOString());
+          } catch (error) {
+            console.warn(error);
+          }
         }
       });
   }
