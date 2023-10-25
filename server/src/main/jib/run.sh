@@ -28,7 +28,7 @@ if [[ -n "${SHOW_ACCESSIBILITY_LINK}" ]]; then
 fi
 
 if [[ -n "${ENABLE_AI}" ]]; then
-  sed -i -r "s@openAISearch\":.*@openAISearch\": \"$ENABLE_AI\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@openAISearch\":.*@openAISearch\": $ENABLE_AI@" /app/resources/static/assets/config.json
 fi
 
 echo "Run original entrypoint command"
