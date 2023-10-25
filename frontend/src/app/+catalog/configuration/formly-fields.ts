@@ -29,7 +29,7 @@ export const fields = (codelistService: CodelistService) =>
       wrappers: ["panel", "form-field"],
       className: "width-100",
       props: {
-        externalLabel: "Ansprechpartner",
+        externalLabel: "Partner",
         appearance: "outline",
         options: codelistService.observe("110"),
         showSearch: true,
