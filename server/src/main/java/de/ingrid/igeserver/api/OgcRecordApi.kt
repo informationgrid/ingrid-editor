@@ -270,7 +270,7 @@ interface OgcRecordApi {
             @Parameter(description = "The data to be stored.", required = true) @RequestBody data: String,
     ): ResponseEntity<JsonNode>
 
-    @PostMapping(value = ["collection/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
+    @PostMapping(value = ["collections/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
     @Operation(summary = "Insert, Update, Delete Records via CSW-t")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
