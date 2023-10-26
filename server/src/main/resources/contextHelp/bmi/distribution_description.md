@@ -7,5 +7,5 @@ profile: bmi
 
 Geben Sie hier eine Freitextbeschreibung der verknüpften Ressource an, also der hinzugefügten Daten.
 
-## DCAT-AP.de:
+### DCAT-AP.de
 `dcat:Distribution / dcterms:description`

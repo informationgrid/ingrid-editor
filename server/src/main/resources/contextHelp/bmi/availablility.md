@@ -9,5 +9,5 @@ Verfügbarkeit der Daten, als Auswahl aus einer festen Liste von Werten via DCAT
 
 Die Verfügbarkeit gibt an, wie lange die Informationen voraussichtlich zur Verfügung stehen werden.
 
-## DCAT-AP.de:
+### DCAT-AP.de
 `dcat:Distribution / dcatap:availability`
