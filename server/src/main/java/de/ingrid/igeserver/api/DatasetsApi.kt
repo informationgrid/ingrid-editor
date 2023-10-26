@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
+@Hidden
 @Tag(name = "Datasets", description = "the datasets API")
 interface DatasetsApi {
 

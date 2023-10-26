@@ -3,6 +3,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexConfigOptions
 import de.ingrid.igeserver.model.IndexRequestOptions
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Index", description = "the Indexing API")
 interface IndexApi {
     @Operation

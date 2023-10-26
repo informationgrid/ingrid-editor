@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Catalogs", description = "Handle catalog requests")
 interface CatalogApi {
     @GetMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE])

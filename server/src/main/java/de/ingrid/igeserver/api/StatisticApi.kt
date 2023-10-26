@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.StatisticResponse
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Statistic", description = "the statistic API")
 interface StatisticApi {
     @Operation
