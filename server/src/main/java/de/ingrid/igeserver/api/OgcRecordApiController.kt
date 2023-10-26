@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication
 import java.time.Instant
 
 @RestController
-//@RequestMapping(path = ["/api"])
+@RequestMapping(path = ["/api/ogc"])
 class OgcRecordApiController @Autowired constructor(
         private val catalogService: CatalogService,
         private val ogcRecordService: OgcRecordService,
