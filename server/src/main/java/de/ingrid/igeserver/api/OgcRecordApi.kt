@@ -20,57 +20,50 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
-@Tag(name = "OgcRecord", description = "Test API in OGC context")
-interface OgcRecordApi {
+@Tag(name = "Ogc Api Records", description = "OGC API - Records")
+interface OgcApiRecords {
 
 
 
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get all Catalogs")
+    @Operation(responses = [], summary = "Get all Catalogs", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun getCatalogs(
             principal: Principal,
-            // PARAMETER : f
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
-            "\n\n### ! Not yet implemented !" +
-            "\n\nWhile OGC API - Records does not specify any mandatory encoding, support for the following encodings is recommended." +
-            "\n\nTo support browsing the catalogue and its records with a web browser and to enable search engines to crawl and index the catalogue, implementations SHOULD consider supporting an HTML encoding." +
-            "\n\nIf the records can be represented for the intended use in GeoJSON, implementations SHOULD consider supporting GeoJSON as an encoding for records and catalogues (i.e. record collections)." +
-            "\n\nIf a catalogue (i.e. record collection) can be represented for the intended use in JSON, implementations SHOULD consider supporting JSON as an encoding for a catalogue (i.e. record collection)." +
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
-            "\n\n### Supported formats: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'"
+            "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+            "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
+            "\n\n\n### To Do:\n\n• format of Time (created, updated)"
             ) @RequestParam(value = "f", required = false) format: String?,
     ): ResponseEntity<ByteArray>
 
 
 
     @GetMapping(value = ["/collections/{collectionId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get Catalog by ID")
+    @Operation(responses = [], summary = "Get Catalog by ID", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun getCatalog(
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-            // PARAMETER : f
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                     "\n\n### ! Not yet implemented !" +
-                    "\n\nWhile OGC API - Records does not specify any mandatory encoding, support for the following encodings is recommended." +
-                    "\n\nTo support browsing the catalogue and its records with a web browser and to enable search engines to crawl and index the catalogue, implementations SHOULD consider supporting an HTML encoding." +
-                    "\n\nIf the records can be represented for the intended use in GeoJSON, implementations SHOULD consider supporting GeoJSON as an encoding for records and catalogues (i.e. record collections)." +
-                    "\n\nIf a catalogue (i.e. record collection) can be represented for the intended use in JSON, implementations SHOULD consider supporting JSON as an encoding for a catalogue (i.e. record collection)." +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
-                    "\n\n### Supported formats: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'"
+                    "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+                    "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
+                    "\n\n\n### To Do:\n\n• format of Time (created, updated)"
             ) @RequestParam(value = "f", required = false) format: String?,
     ): ResponseEntity<ByteArray>
 
 
 
     @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "fetch records",
+    @Operation(responses = [], summary = "fetch records", hidden = true,
             description = "# Fetch Records\n\nFetch records of the catalog with id `collectionId`." +
                     "As specified in the [Records Access](https://docs.ogc.org/DRAFTS/20-004.html#records-access) clause, records are accessed using the HTTP GET method via the /collections/{collectionId}/items path." +
                     "\n\n\n\n## Currently working on profile: **Ingrid**"
@@ -189,7 +182,7 @@ interface OgcRecordApi {
 
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get one Record by ID of Catalog by ID",
+    @Operation(responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = true,
         description = "# Fetch a Record" +
                 "" +
                 "\n\n### A 200-response SHALL include the following links in the response:\n" +
@@ -222,7 +215,7 @@ interface OgcRecordApi {
 
 
     @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Remove a resource from a collection. (Delete Record)")
+    @Operation(responses = [], summary = "Remove a resource from a collection. (Delete Record)", hidden = true)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "204", description = "Successful operation"),
@@ -239,7 +232,7 @@ interface OgcRecordApi {
 
 
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Add a new resource instance to a collection. (Import Record)")
+    @Operation(summary = "Add a new resource instance to a collection. (Import Record)", hidden = true)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
         ApiResponse(responseCode = "404", description = "Not found"),
@@ -257,7 +250,7 @@ interface OgcRecordApi {
 
 
     @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)")
+    @Operation(summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)", hidden = true)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
         ApiResponse(responseCode = "404", description = "Not found"),
@@ -272,7 +265,7 @@ interface OgcRecordApi {
     ): ResponseEntity<JsonNode>
 
     @PostMapping(value = ["collections/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Insert, Update, Delete Records via CSW-t")
+    @Operation(summary = "Insert, Update, Delete Records via CSW-t", hidden = true)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
         ApiResponse(responseCode = "404", description = "Not found"),

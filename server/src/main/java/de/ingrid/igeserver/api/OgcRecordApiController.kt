@@ -18,7 +18,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping(path = ["/api/ogc"])
-class OgcRecordApiController @Autowired constructor(
+class OgcApiRecordsController @Autowired constructor(
         private val catalogService: CatalogService,
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
@@ -27,7 +27,7 @@ class OgcRecordApiController @Autowired constructor(
         private val cswtService: CswtService,
         private val documentService: DocumentService,
         val scheduler: SchedulerService,
-        ) : OgcRecordApi {
+        ) : OgcApiRecords {
 
     val log = logger()
     val defaultFormat = "internal"
