@@ -17,6 +17,7 @@
 
   ige-document-icon {
     opacity: 0;
+    visibility: hidden;
     transition: opacity 0.2s linear;
     display: flex;
     justify-content: center;
@@ -39,6 +40,7 @@
   z-index: 2000;
 
   ige-document-icon {
+    visibility: visible;
     opacity: 1;
   }
 

@@ -10,6 +10,7 @@ import {
 } from "../../../app/+catalog/+behaviours/system/tags/publication-type/publication-type.dialog";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 
 @Injectable({ providedIn: "root" })
 export class PublishNegativeAssessmentBehaviour extends Plugin {
@@ -28,6 +29,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private dialog: MatDialog,
     private tagsService: TagsService,
+    private behaviourService: BehaviourService,
   ) {
     super();
 
@@ -52,25 +54,39 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   registerForm() {
     super.registerForm();
 
+    const isActive =
+      this.behaviourService.getBehaviour("plugin.publish.negative.assessment")
+        ?.data?.controlledByDataset ?? false;
+    if (!isActive) return;
+
     const onDocLoad = this.documentTreeQuery.openedDocument$
       .pipe(filter((doc) => doc !== null))
       .subscribe((doc) => {
         const button = {
-          title:
-            "Veröffentlichung der negativen Vorprüfung im UVP-Portal steuern",
+          title: "Veröffentlichung steuern",
           name: "control-assessment-by-dataset",
           action: () => this.showPublicationControlDialog(doc),
         };
         // refresh menu item
-        this.formMenuService.removeMenuItem(
-          this.formMenuId,
-          "control-assessment-by-dataset",
-        );
+        this.removeMenuItem();
+
         if (doc._type === "UvpNegativePreliminaryAssessmentDoc") {
           this.formMenuService.addMenuItem(this.formMenuId, button);
         }
       });
     this.formSubscriptions.push(onDocLoad);
+  }
+
+  unregisterForm() {
+    super.unregisterForm();
+    this.removeMenuItem();
+  }
+
+  private removeMenuItem() {
+    this.formMenuService.removeMenuItem(
+      this.formMenuId,
+      "control-assessment-by-dataset",
+    );
   }
 
   private showPublicationControlDialog(doc: DocumentAbstract) {
@@ -80,20 +96,25 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
           options: [
             {
               key: "internet",
-              value:
-                "Bekanntgabe durch Veröffentlichung im UVP-Portal und interne Erfassung für die Berichtspflicht",
+              value: "Veröffentlichen",
             },
             {
-              key: "intranet",
-              value:
-                "Andere Form der Bekanntgabe und nur intern für die Berichtspflicht erfassen",
+              key: "negative-assessment-not-publish",
+              value: "Nicht veröffentlichen",
             },
           ],
           current: doc._tags ?? "",
+          title:
+            "Veröffentlichung der negativen Vorprüfung im UVP-Portal steuern.",
+          helpText: `
+            <div><strong>Veröffentlichen:</strong> Bekanntgabe durch Veröffentlichung im UVP-Portal und interne Erfassung für die Berichtspflicht.</div>
+            <div><strong>Nicht veröffentlichen:</strong> Andere Form der Bekanntgabe und nur intern für die Berichtspflicht erfassen.</div>
+          `,
         },
       })
       .afterClosed()
       .subscribe((newTag: string) => {
+        if (!newTag) return;
         this.tagsService.updateTagForDocument(doc, newTag);
       });
   }

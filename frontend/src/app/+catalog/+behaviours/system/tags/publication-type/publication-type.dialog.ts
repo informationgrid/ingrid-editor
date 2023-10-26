@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 export interface PublicationTypeDialogOptions {
   options: { key: string; value: string }[];
   current: string;
+  title: string;
+  helpText: string;
 }
 
 @Component({
@@ -14,6 +16,8 @@ export interface PublicationTypeDialogOptions {
 export class PublicationTypeDialog {
   options = this.value.options;
   currentValue: any;
+  title = "Veröffentlichungsrecht";
+  helpText = "";
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private value: PublicationTypeDialogOptions,
@@ -24,6 +28,8 @@ export class PublicationTypeDialog {
         .split(",")
         .find((item) => this.options.find((option) => option.key === item)) ??
       "internet";
+    if (value.title) this.title = value.title;
+    if (value.helpText) this.helpText = value.helpText;
   }
 
   submit() {

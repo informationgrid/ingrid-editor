@@ -1,6 +1,6 @@
 <ige-dialog-template label="Veröffentlichungsrecht" (submit)="submit()">
     <ng-container content>
-        <label id="example-radio-group-label">Veröffentlichungsrecht</label>
+        <label class="padding">{{title}}</label>
         <mat-radio-group [(ngModel)]="currentValue">
             <mat-radio-button
                 *ngFor="let option of options"
@@ -8,6 +8,11 @@
             >
                 {{option.value}}
             </mat-radio-button>
-        </mat-radio-group></ng-container
-    >
+        </mat-radio-group>
+
+        <div class="help flex-row align-items-center">
+            <mat-icon svgIcon="info-24px"></mat-icon>
+            <div class="legend" [innerHTML]="helpText"></div>
+        </div>
+    </ng-container>
 </ige-dialog-template>

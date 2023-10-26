@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { BehaviorDataService } from "./behavior-data.service";
-import { ConfigService } from "../config/config.service";
 import { tap } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { PluginService } from "../plugin/plugin.service";
@@ -22,7 +21,6 @@ export interface BehaviourRegistration {
 })
 export class BehaviourService {
   constructor(
-    private configService: ConfigService,
     private pluginService: PluginService,
     private dataService: BehaviorDataService,
     private toast: MatSnackBar,
