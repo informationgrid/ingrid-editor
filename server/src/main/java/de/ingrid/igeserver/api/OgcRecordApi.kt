@@ -250,8 +250,9 @@ interface OgcRecordApi {
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
-            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Dataset to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: String?,
-    ): ResponseEntity<JsonNode>
+            @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
+            @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
+            ): ResponseEntity<JsonNode>
 
 
 
@@ -282,7 +283,8 @@ interface OgcRecordApi {
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
-            @Parameter(description = "## Parent ID \n **Custom Parameter** \n\n Add Datasets to Folder with ID [number]") @RequestParam(value = "parentId", required = false) parentId: String?,
+            @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
+            @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
             ): ResponseEntity<ByteArray>
 
 
