@@ -150,7 +150,7 @@
     "refering_service_uuid": "${page.getReferingServiceUuid()}",
     "t04_search.searchterm": [
     @for(var entry : ForSupport.of(page.getKeywordsAsList()))
-        "${entry.get()}"@if (!entry.isLast()),@endif
+        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "refering.object_reference.obj_uuid": [],
