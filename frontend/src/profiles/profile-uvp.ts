@@ -13,6 +13,7 @@ import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 
 @Component({
   template: "",
@@ -21,6 +22,7 @@ class UVPComponent {
   constructor(
     private profileService: ProfileService,
     private translocoService: TranslocoService,
+    private tagsService: TagsService,
     private renderer: Renderer2,
     reportsService: ReportsService,
     folder: FolderDoctype,
@@ -35,6 +37,7 @@ class UVPComponent {
     private publishNegativeAssessmentBehaviour: PublishNegativeAssessmentBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
+    this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
     this.addStylesheet();
 
     profileService.registerProfiles([

@@ -6,6 +6,8 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 export class TagsService {
   private documentService = inject(DocumentService);
 
+  private additionalTags: string[] = [];
+
   updateTagForDocument(
     doc: DocumentAbstract,
     newTag: string,
@@ -21,6 +23,10 @@ export class TagsService {
     );
   }
 
+  addAdditionalTags(tags: string[]) {
+    this.additionalTags.push(...tags);
+  }
+
   /*
    * We handle the "internet"-type as null-value, which is the default value and to be consistent
    */
@@ -29,7 +35,7 @@ export class TagsService {
     newTag: string,
     forAddress: boolean,
   ) {
-    const values = ["intranet", "amtsintern"];
+    const values = ["intranet", "amtsintern", ...this.additionalTags];
     let tagToAdd = [newTag];
     if (newTag === "internet") {
       tagToAdd = [];
