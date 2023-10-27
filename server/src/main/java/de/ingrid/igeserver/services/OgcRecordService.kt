@@ -342,7 +342,7 @@ class OgcRecordService @Autowired constructor(
             response
         } else if (mimeType == "application/json") {
             val response: MutableList<JsonNode> = mutableListOf()
-            val list: List<JsonNode> = catalogList as List<JsonNode>
+            val list: List<RecordCollection> = catalogList as List<RecordCollection>
             for (catalog in list) {
                 val wrapperlessCatalog =  convertObject2Json(catalog)
 //                val wc = jacksonObjectMapper().readValue(catalog , JsonNode::class.java)

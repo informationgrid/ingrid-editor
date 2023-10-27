@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import java.time.Instant
 import java.time.OffsetDateTime
 data class RecordCollection(
@@ -11,8 +14,10 @@ data class RecordCollection(
         val itemType: String,
         val type: String,
         val modelType: String,
-        val created: OffsetDateTime?,
-        val updated: OffsetDateTime?,
+        @JsonDeserialize(using = DateDeserializer::class)
+        @JsonProperty("_created") val created: OffsetDateTime?,
+        @JsonDeserialize(using = DateDeserializer::class)
+        @JsonProperty("_modified")val updated: OffsetDateTime?,
 )
 
 data class Record(

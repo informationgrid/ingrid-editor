@@ -1,9 +1,5 @@
 package de.ingrid.igeserver.ogc.exportCatalog.internal
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ogc.exportCatalog.CatalogExportTypeInfo
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.model.RecordCollection
@@ -34,9 +30,8 @@ class InternalCatalogExporter @Autowired constructor(
                 listOf()
         )
 
-    override fun run(catalog: Catalog): JsonNode {
-        val newCatalogObject = mapCatalogToRecordCollection(catalog)
-        return convertToJsonNode(newCatalogObject)
+    override fun run(catalog: Catalog): RecordCollection {
+        return mapCatalogToRecordCollection(catalog)
     }
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
@@ -53,21 +48,6 @@ class InternalCatalogExporter @Autowired constructor(
                 created = catalog.created,
                 updated = catalog.modified,
         )
-    }
-
-
-    fun convertToJsonNode(catalog: RecordCollection): JsonNode {
-
-        val mapper = jacksonObjectMapper()
-        mapper.registerModule(JavaTimeModule())
-
-        val node = mapper.convertValue(catalog, ObjectNode::class.java)
-        val data = node
-        data.fields().forEach { entry ->
-            node.replace(entry.key, entry.value)
-        }
-        return node
-
     }
 
 
