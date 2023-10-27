@@ -241,15 +241,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     HttpClientModule,
     HttpClientXsrfModule,
     FormlyModule.forRoot({
-      types: [
-        {
-          name: "just-a-name",
-          extends: "formly-group",
-          defaultOptions: {
-            defaultValue: {},
-          },
-        },
-      ],
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
         { name: "addons", component: AddonsWrapperComponent },

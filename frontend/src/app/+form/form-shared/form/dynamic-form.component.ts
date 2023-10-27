@@ -504,7 +504,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(() => {
         const invalidFields = this.getInvalidControlNames(this.form);
-        console.warn("INVALID FIELDS: ", invalidFields);
+        if (invalidFields.length > 0)
+          console.warn("INVALID FIELDS: ", invalidFields);
         this.numberOfErrors = invalidFields.length;
       });
 

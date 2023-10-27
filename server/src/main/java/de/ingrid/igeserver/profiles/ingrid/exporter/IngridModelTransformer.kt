@@ -693,6 +693,7 @@ open class IngridModelTransformer(
             documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
+            log.warn("Could not get last published document: $uuid")
             null
         }
 
