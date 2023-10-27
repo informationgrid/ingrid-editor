@@ -50,8 +50,6 @@
                         [sections]="sections | async"
                         [numberOfErrors]="numberOfErrors"
                         [hasOptionalFields]="hasOptionalFields"
-                        [optionalButtonState]="!hideOptionalFields"
-                        (toggleOptionalFields)="hideOptionalFields = !$event"
                     ></ige-quick-navbar>
 
                     <div
@@ -61,7 +59,7 @@
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
-                            [class.hide-optionals]="hideOptionalFields"
+                            [class.hide-optionals]="!(showAllFields | async)"
                             [class.hide]="model._type === 'FOLDER'"
                         >
                             <div class="requiredDescription">

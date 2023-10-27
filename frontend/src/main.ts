@@ -13,7 +13,7 @@ if (environment.production) {
 persistState({
   include: ["session"],
   preStorageUpdate: (storeName: string, state: any) => {
-    const { currentTab, ...otherUiState } = state.ui;
+    const { currentTab, toggleFieldsButtonShowAll, ...otherUiState } = state.ui;
     return {
       ui: otherUiState,
       recentAddresses: state.recentAddresses,

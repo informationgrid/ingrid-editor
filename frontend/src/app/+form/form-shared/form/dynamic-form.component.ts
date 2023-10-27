@@ -95,7 +95,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showValidationErrors = false;
 
-  hideOptionalFields = false;
+  showAllFields = this.session.select(
+    (state) => state.ui.toggleFieldsButtonShowAll,
+  );
 
   hasOptionalFields = false;
 

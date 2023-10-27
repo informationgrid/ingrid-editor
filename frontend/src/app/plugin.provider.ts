@@ -19,6 +19,7 @@ import { InheritContactDataHandler } from "./+catalog/+behaviours/system/Inherit
 import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.plugin";
 import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default-user.behaviour";
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
+import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -32,6 +33,7 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
   { provide: PluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: PluginToken, useClass: TagsBehaviour, multi: true },
+  { provide: PluginToken, useClass: FieldsToggleButtonBehaviour, multi: true },
   { provide: PluginToken, useClass: AssignedUserBehaviour, multi: true },
   {
     provide: PluginToken,

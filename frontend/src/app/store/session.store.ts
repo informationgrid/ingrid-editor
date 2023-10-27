@@ -12,6 +12,7 @@ export interface SessionState {
     sidebarWidth?: number;
     showJSONView?: boolean;
     userTableWidth?: number;
+    toggleFieldsButtonShowAll?: boolean;
     currentTab: {
       research: string;
       manage: string;
@@ -43,6 +44,7 @@ export function createInitialState(): SessionState {
       sidebarWidth: 30,
       showJSONView: false,
       userTableWidth: 35,
+      toggleFieldsButtonShowAll: false,
       currentTab: {
         research: null,
         manage: null,
