@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { catchError, filter, switchMap } from "rxjs/operators";
 import { FormMenuService } from "../../../../+form/form-menu.service";
@@ -28,7 +27,6 @@ export class DefaultUserBehaviour extends Plugin {
 
   constructor(
     private formMenuService: FormMenuService,
-    private docEvents: DocEventsService,
     private eventService: EventService,
     private userService: UserService,
     private toast: MatSnackBar,

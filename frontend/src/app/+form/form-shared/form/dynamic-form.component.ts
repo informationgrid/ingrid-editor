@@ -46,7 +46,6 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -66,6 +65,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: FormlyFieldConfig[] = [];
 
+  // noinspection JSUnusedGlobalSymbols
   formOptions: FormlyFormOptions = {
     showError: (field) => {
       return this.showValidationErrors && field.formControl?.invalid;
@@ -99,7 +99,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   hasOptionalFields = false;
 
-  private formStateName: "document" | "address";
   private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
   showJson = false;
@@ -122,7 +121,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
-    private profileService: ProfileService,
     private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
@@ -142,10 +140,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     if (this.address) {
-      this.formStateName = "address";
       this.query = this.addressTreeQuery;
     } else {
-      this.formStateName = "document";
       this.query = this.treeQuery;
     }
 
@@ -288,7 +284,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe();
   }
 
-  private determineToggleState(top) {
+  private determineToggleState(top: number) {
     // when we scroll more than the non-sticky area then it should become sticky
     return top > this.formInfoRef.nativeElement.clientHeight;
   }
@@ -351,7 +347,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocUuid) {
+  private handleLoadError(error: HttpErrorResponse, previousDocUuid: string) {
     if (error.status === 403) {
       // select previous document
       const target =
@@ -458,7 +454,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.formularService.getFields(profile);
   }
 
-  rememberSizebarWidth(info) {
+  rememberSizebarWidth(info: any) {
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
 
