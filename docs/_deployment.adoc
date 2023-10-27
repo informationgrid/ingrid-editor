@@ -1,0 +1,27 @@
+== Deployment
+
+This section describes the necessary steps to deploy the IGE-NG application with all features working correctly.
+
+The following additional components are needed:
+
+* PostgreSQL database 13+
+* Keycloak 22.0.4
+
+optional:
+
+* Elasticsearch 7+
+* Apache/nginx
+* InGrid iBus
+* InGrid Codelist-Repository
+* InGrid Portal
+
+=== PostgreSQL
+
+=== Keycloak
+
+=== Elasticsearch
+
+=== Apache / nginx
+
+
+
