@@ -27,6 +27,7 @@ export class DocumentIconComponent implements OnInit {
     this._doc = value;
     this.updateDocumentState(value);
   }
+
   @Input() showDelay: number = 0;
   @Input() explicitTooltip: string;
 
@@ -68,9 +69,17 @@ export class DocumentIconComponent implements OnInit {
   }
 
   private getTooltip(type: string, publicationType: string): string {
-    const docType = this.translocoService.translate("docType." + type);
-    const returnTooltip =
-      docType + (publicationType ? ` (${publicationType})` : "");
+    let returnTooltip = this.translocoService.translate(`docType.${type}`);
+    if (publicationType) {
+      const pubTypeLocalized = this.translocoService.translate(
+        `tags.${publicationType}`,
+      );
+      // in case publication type has been disabled then it should be set to an empty string to avoid the display
+      // the tag, which is still set in backend
+      if (pubTypeLocalized.trim().length !== 0) {
+        returnTooltip += ` (${pubTypeLocalized})`;
+      }
+    }
     this.tooltipEmitter.emit(returnTooltip);
     return returnTooltip;
   }
