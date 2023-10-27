@@ -575,10 +575,12 @@ export abstract class IngridShared extends BaseDoctype {
           this.addRepeatList("free", "Freie Schlagworte", {
             view: "chip",
             required: this.options.required.freeKeywords,
-            className: "optional",
             hint: this.keywordFieldHint,
             convert: (val) => (val ? { label: val } : null),
             labelField: "label",
+            expressions: {
+              className: "field.props.required ? '' : 'optional'",
+            },
           }),
         ]),
         this.addInput(null, "Schlagwortanalyse", {
