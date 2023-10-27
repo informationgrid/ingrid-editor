@@ -10,7 +10,7 @@
             </mat-radio-button>
         </mat-radio-group>
 
-        <div class="help flex-row align-items-center">
+        <div *ngIf="helpText" class="help flex-row align-items-center">
             <mat-icon svgIcon="info-24px"></mat-icon>
             <div class="legend" [innerHTML]="helpText"></div>
         </div>
