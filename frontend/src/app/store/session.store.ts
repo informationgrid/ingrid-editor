@@ -29,8 +29,8 @@ export interface SessionState {
 }
 
 export interface ValidationError {
-  key: string;
-  messages: { [x: string]: { message: string } }[];
+  name: string;
+  errorCode: string;
 }
 
 export function createInitialState(): SessionState {

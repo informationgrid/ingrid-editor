@@ -225,10 +225,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.session.selectServerValidationErrors$
       .pipe(untilDestroyed(this))
       .subscribe((errors: ValidationError[]) => {
+        this.showValidationErrors = true;
         errors.forEach((error) => {
           console.log("Received server side validation error", error);
-          this.form.controls[error.key]?.setErrors(error.messages[0]);
+          this.form.get(error.name)?.setErrors([{ message: error.errorCode }]);
         });
+        this.numberOfErrors = errors.length;
       });
   }
 
