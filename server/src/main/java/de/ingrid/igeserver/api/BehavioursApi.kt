@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Behaviours", description = "the behaviours API")
 interface BehavioursApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours are returned.")])

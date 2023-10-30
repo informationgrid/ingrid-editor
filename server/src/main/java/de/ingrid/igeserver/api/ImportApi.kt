@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Import", description = "the import API")
 interface ImportApi {
     @Operation

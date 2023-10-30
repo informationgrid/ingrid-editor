@@ -9,6 +9,7 @@ import de.ingrid.igeserver.api.messaging.UrlReport
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -20,6 +21,7 @@ import java.security.Principal
 
 data class UrlReplaceData(val source: UrlReport, val replaceUrl: String)
 
+@Hidden
 @Tag(name = "Jobs", description = "the jobs API")
 interface JobsApi {
 

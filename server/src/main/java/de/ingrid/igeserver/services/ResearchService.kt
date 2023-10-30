@@ -238,7 +238,7 @@ class ResearchService {
                 .addScalar("state")
                 .addScalar("tags")
                 .addScalar("responsibleUser")
-                .setFirstResult((paging.page - 1) * paging.pageSize)
+                .setFirstResult((paging.page - 1) * paging.pageSize + paging.offset)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
     }

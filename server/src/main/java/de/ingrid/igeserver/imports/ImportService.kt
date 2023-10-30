@@ -66,21 +66,27 @@ class ImportService(
         }
 
         val fileContent = file.readText(Charsets.UTF_8)
+        return prepareImportAnalysis(catalogId, type, fileContent)
+
+    }
+
+    fun prepareImportAnalysis(catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
         val importer = factory.getImporter(type, fileContent)
 
         val result = importer[0].run(catalogId, fileContent)
         return if (result is ArrayNode) {
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
-                importer.map { it.typeInfo.id }, listOf(
+                    importer.map { it.typeInfo.id }, listOf(
                     analyzeDoc(catalogId, result[0], forcePublish = true, isLatest = false),
                     analyzeDoc(catalogId, result[1], forcePublish = false, isLatest = true, isDraftAndPublished = true)
-                )
+            )
             )
         } else {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
         }
     }
+
 
     private fun prepareForImport(importers: List<String>, analysis: List<DocumentAnalysis>): OptimizedImportAnalysis {
 
@@ -257,7 +263,7 @@ class ImportService(
 
         handleAddressTitle(ref)
         val exists = try {
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid);
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
         } catch (ex: Exception) {
             false

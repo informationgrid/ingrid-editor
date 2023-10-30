@@ -5,6 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestPart
 
+@Hidden
 @Tag(name = "Login", description = "the login API")
 interface LoginApi {
     @Operation
