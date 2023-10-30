@@ -130,7 +130,7 @@ data class DistributionFormat(
 
 data class MDFormat(
     val name : CharacterString,
-    val version : CharacterString,
+    val version : CharacterString?,
     val amendmentNumber : CharacterString?,
     val specification : CharacterString?,
     val fileDecompressionTechnique : CharacterString?,
