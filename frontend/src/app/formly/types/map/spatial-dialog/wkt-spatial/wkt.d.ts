@@ -54,23 +54,23 @@ declare namespace WktModule {
   interface Construct {
     point(
       config: google.maps.MarkerOptions,
-      component?: google.maps.Marker
+      component?: google.maps.Marker,
     ): google.maps.Marker;
     multipoint(config: google.maps.MarkerOptions): google.maps.Marker[];
     linestring(
       config: google.maps.PolylineOptions,
-      component?: google.maps.Polyline
+      component?: google.maps.Polyline,
     ): google.maps.Polyline;
     multilinestring(
-      config: google.maps.PolylineOptions
+      config: google.maps.PolylineOptions,
     ): google.maps.Polyline[];
     box(
       config: google.maps.RectangleOptions,
-      component?: google.maps.Rectangle
+      component?: google.maps.Rectangle,
     ): google.maps.Rectangle;
     polygon(
       config: google.maps.PolygonOptions,
-      component?: google.maps.Polygon
+      component?: google.maps.Polygon,
     ): google.maps.Polygon;
     multipolygon(config: google.maps.PolygonOptions): google.maps.Polygon[];
     deconstruct(
@@ -80,7 +80,7 @@ declare namespace WktModule {
         | google.maps.Polyline
         | google.maps.Rectangle
         | google.maps.Circle,
-      multiFlag: boolean
+      multiFlag: boolean,
     ): any;
   }
 }

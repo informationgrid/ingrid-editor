@@ -30,8 +30,8 @@
 
                 <div class="flex-1"></div>
 
-                <span [matTooltip]="query.modified | date : 'long'">{{
-                    query.modified | dateAgo : "DE"
+                <span [matTooltip]="query.modified | date: 'long'">{{
+                    query.modified | dateAgo: "DE"
                 }}</span>
                 <ng-container *ngIf="query.canDelete; else placeholder">
                     <button

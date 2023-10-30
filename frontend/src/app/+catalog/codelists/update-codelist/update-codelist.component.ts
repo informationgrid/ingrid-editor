@@ -33,7 +33,7 @@ export class UpdateCodelistComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     public data: { entry: CodelistEntry; ids: string[] },
     private dialogRef: MatDialogRef<UpdateCodelistComponent>,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
   ) {
     this.isNew = data.entry.id === undefined;
     this.fields = Object.keys(data.entry.fields).map((key) => ({
@@ -50,7 +50,7 @@ export class UpdateCodelistComponent implements OnInit {
           value: this.data.entry.id,
           disabled: this.data.entry.id !== undefined,
         },
-        this.checkForExistingId()
+        this.checkForExistingId(),
       ),
       description: this.fb.control(this.data.entry.description),
       data: this.fb.control(this.data.entry.data),
@@ -59,8 +59,8 @@ export class UpdateCodelistComponent implements OnInit {
           this.fb.group({
             key: [key],
             value: [this.data.entry.fields[key]],
-          })
-        )
+          }),
+        ),
       ),
     });
   }
@@ -68,7 +68,7 @@ export class UpdateCodelistComponent implements OnInit {
   addEntry() {
     this.fields.push({});
     (<UntypedFormArray>this.formGroup.controls.fields).push(
-      this.fb.group({ key: [""], value: [""] })
+      this.fb.group({ key: [""], value: [""] }),
     );
   }
 

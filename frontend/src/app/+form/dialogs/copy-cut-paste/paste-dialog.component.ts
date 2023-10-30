@@ -28,7 +28,7 @@ export class PasteDialogComponent implements OnInit {
     treeQuery: TreeQuery,
     addressTreeQuery: AddressTreeQuery,
     private config: ConfigService,
-    private dlgRef: MatDialogRef<PasteDialogComponent>
+    private dlgRef: MatDialogRef<PasteDialogComponent>,
   ) {
     this.query = data.forAddress ? addressTreeQuery : treeQuery;
   }

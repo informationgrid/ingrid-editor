@@ -10,5 +10,5 @@ interface AuthUtils {
     fun containsRole(principal: Principal, role: String): Boolean
     fun isAdmin(principal: Principal): Boolean
     fun isSuperAdmin(principal: Principal): Boolean
-    fun getCurrentUserRoles(): Set<Group>
+    fun getCurrentUserRoles(catalogId: String): Set<Group>
 }

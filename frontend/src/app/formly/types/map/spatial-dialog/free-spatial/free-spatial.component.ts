@@ -43,7 +43,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
   constructor(
     private nominatimService: NominatimService,
-    private leafletService: LeafletService
+    private leafletService: LeafletService,
   ) {}
 
   ngOnInit(): void {
@@ -106,8 +106,8 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
       .detail(item.osm_id, item.osm_type)
       .subscribe((result) =>
         this.arsControl.setValue(
-          result?.extratags?.["de:regionalschluessel"] ?? ""
-        )
+          result?.extratags?.["de:regionalschluessel"] ?? "",
+        ),
       );
 
     const box = item.boundingbox;
@@ -127,7 +127,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
   private drawAndZoom(value: SpatialBoundingBox) {
     const bounds = new LatLngBounds(
       new LatLng(value.lat1, value.lon1),
-      new LatLng(value.lat2, value.lon2)
+      new LatLng(value.lat2, value.lon2),
     );
     this.drawBoundingBox(bounds);
 
@@ -140,7 +140,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
 
     this.drawnBBox.on("pm:edit", (e) =>
       // @ts-ignore
-      this.updateSelectedArea(e.layer.getBounds())
+      this.updateSelectedArea(e.layer.getBounds()),
     );
   }
 

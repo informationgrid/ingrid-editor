@@ -33,7 +33,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
       .pipe(
         untilDestroyed(this),
         startWith(this.formControl.value as any[]),
-        tap((value) => this.createGroupedFields(value))
+        tap((value) => this.createGroupedFields(value)),
       )
       .subscribe((value) => this.updateDragState(value));
   }
@@ -42,7 +42,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     moveItemInArray(
       this.field.fieldGroup,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
     moveItemInArray(this.model, event.previousIndex, event.currentIndex);
 
@@ -72,7 +72,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
 
   private getFieldsFromModelType(
     field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
-    type: string
+    type: string,
   ) {
     return field.props.menuOptions.find((opt) => opt.key === type)?.fields;
   }

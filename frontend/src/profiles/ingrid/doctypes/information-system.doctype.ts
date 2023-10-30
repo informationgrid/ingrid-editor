@@ -45,7 +45,7 @@ export class InformationSystemDoctype extends IngridShared {
               {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
-              }
+              },
             ),
             this.addTextAreaInline(
               "implementationHistory",
@@ -54,10 +54,10 @@ export class InformationSystemDoctype extends IngridShared {
               {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
-              }
+              },
             ),
           ],
-          { className: "optional" }
+          { className: "optional" },
         ),
         this.addGroup(
           null,
@@ -72,7 +72,7 @@ export class InformationSystemDoctype extends IngridShared {
               wrappers: ["inline-help", "form-field"],
             }),
           ],
-          { className: "optional" }
+          { className: "optional" },
         ),
         this.addRepeat("serviceUrls", "Service-Urls", {
           className: "optional",

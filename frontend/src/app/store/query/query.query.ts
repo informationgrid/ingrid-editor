@@ -11,12 +11,12 @@ export class QueryQuery extends QueryEntity<QueryState, Query> {
 
   catalogQueries$ = this.selectAll().pipe(
     map((queries) => queries.filter((query) => query.isCatalogQuery)),
-    map(QueryQuery.sortByName)
+    map(QueryQuery.sortByName),
   );
 
   userQueries$ = this.selectAll().pipe(
     map((queries) => queries.filter((query) => !query.isCatalogQuery)),
-    map(QueryQuery.sortByName)
+    map(QueryQuery.sortByName),
   );
 
   constructor(protected store: QueryStore) {

@@ -35,9 +35,9 @@ export class MainHeaderComponent implements OnInit {
   config: Configuration;
   otherAssignedCatalogs: any[];
   catalogId: string;
-  menuItems: Routes = settingsRoutes[0].children.filter(
-    (item) => item.path !== ""
-  );
+  menuItems: Routes = settingsRoutes[0].children
+    .filter((item) => item.path !== "")
+    .filter((item) => this.configService.hasPermission(item.data?.permission));
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
   constructor(
@@ -47,7 +47,7 @@ export class MainHeaderComponent implements OnInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
   ) {}
 
   ngOnInit() {
@@ -60,9 +60,10 @@ export class MainHeaderComponent implements OnInit {
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       tap(
         (userInfo) =>
-          (this.otherAssignedCatalogs = this.getOtherAssignedCatalogs(userInfo))
+          (this.otherAssignedCatalogs =
+            this.getOtherAssignedCatalogs(userInfo)),
       ),
-      map((userInfo) => userInfo?.currentCatalog?.label)
+      map((userInfo) => userInfo?.currentCatalog?.label),
     );
 
     this.router.events.subscribe((event: any) => {

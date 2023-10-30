@@ -56,7 +56,7 @@ export class FormInfoComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit() {
@@ -72,7 +72,7 @@ export class FormInfoComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         tap((path) => (this.path = path.slice(0, -1))),
-        tap(() => this.cdr.markForCheck())
+        tap(() => this.cdr.markForCheck()),
       )
       .subscribe();
   }
@@ -81,7 +81,7 @@ export class FormInfoComponent implements OnInit {
       this.form,
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
     if (handled) {
       this.treeService.selectTreeNode(this.forAddress, nodeId);

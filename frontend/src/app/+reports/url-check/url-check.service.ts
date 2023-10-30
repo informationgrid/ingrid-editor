@@ -35,7 +35,10 @@ export class UrlCheckService {
   private backendURL = this.config.getConfiguration().backendUrl;
   private jobId = `url-check_${this.config.$userInfo.value.login}`;
 
-  constructor(private http: HttpClient, private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ConfigService,
+  ) {}
 
   start(): Observable<void> {
     return this.sendCommand("start");
@@ -48,7 +51,7 @@ export class UrlCheckService {
   private sendCommand(command: "start" | "stop") {
     return this.http.post<void>(
       `${this.backendURL}jobs/url-check?command=${command}`,
-      null
+      null,
     );
   }
 

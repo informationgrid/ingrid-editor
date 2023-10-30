@@ -41,7 +41,7 @@ export class ImportComponent implements OnInit {
   optionsFormGroup = new FormGroup({
     importer: new FormControl<string>(
       { value: "", disabled: true },
-      Validators.required
+      Validators.required,
     ),
     overwriteAddresses: new FormControl<boolean>(false),
     publish: new FormControl<boolean>(false),
@@ -70,20 +70,22 @@ export class ImportComponent implements OnInit {
       tap((info: ImportLogInfo) =>
         this.optionsFormGroup
           .get("importer")
-          .setValue(info?.report?.importers ? info?.report?.importers[0] : null)
+          .setValue(
+            info?.report?.importers ? info?.report?.importers[0] : null,
+          ),
       ),
       tap(
         (info: ImportLogInfo) =>
-          (this.errorInAnalysis = info?.errors?.length > 0)
+          (this.errorInAnalysis = info?.errors?.length > 0),
       ),
-      tap(() => (this.lastLogReceived = true))
+      tap(() => (this.lastLogReceived = true)),
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
       .pipe(
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => this.handleRunningInfo(data))
-      )
+        tap((data) => this.handleRunningInfo(data)),
+      ),
   );
 
   message: ImportLogInfo;
@@ -103,7 +105,7 @@ export class ImportComponent implements OnInit {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private rxStompService: RxStompService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -123,7 +125,7 @@ export class ImportComponent implements OnInit {
         tap((info) => {
           // activate change detection, since sometimes view is not updated
           setTimeout(() => (this.message = info));
-        })
+        }),
       )
       .subscribe();
 
@@ -193,9 +195,8 @@ export class ImportComponent implements OnInit {
       .subscribe((target: any) => {
         formControlForParent.setValue(target.selection);
         if (isAddress) {
-          const title = this.addressTreeQuery.getEntity(
-            target.selection
-          )?.title;
+          const title = this.addressTreeQuery.getEntity(target.selection)
+            ?.title;
           this.documentService
             .getPath(target.selection)
             .subscribe((path) => (this.parent.addressPath = path));

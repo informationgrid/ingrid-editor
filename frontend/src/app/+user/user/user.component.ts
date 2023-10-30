@@ -12,25 +12,20 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import {
-  FormControl,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-} from "@angular/forms";
+import { FormControl, UntypedFormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, finalize, map, switchMap, tap } from "rxjs/operators";
+import { filter, finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { EventService, IgeEvent } from "../../services/event/event.service";
 import {
   FormMenuService,
   FormularMenuItem,
@@ -59,26 +54,23 @@ export class UserComponent
   query = new FormControl<string>("");
 
   constructor(
-    private fb: UntypedFormBuilder,
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,
     private groupQuery: GroupQuery,
-    private configService: ConfigService,
-    private eventService: EventService,
     private router: Router,
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
     private session: SessionQuery,
     private toast: MatSnackBar,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {
     this.model = new FrontendUser();
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,
         this.groupSelectCallback,
-        this.roleChangeCallback
+        this.roleChangeCallback,
       );
     });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
@@ -87,7 +79,7 @@ export class UserComponent
   groupSelectCallback = (groupIdString: string) => {
     const groupId = +groupIdString;
     const doReload = this.groupQuery.getActiveId() === groupId;
-    this.groupService.getGroup(groupId).subscribe((group) => {
+    this.groupService.getGroup(groupId).subscribe(() => {
       this.groupService.setActive(groupId);
       this.router.navigate([`${ConfigService.catalogId}/manage/group`]);
 
@@ -95,7 +87,7 @@ export class UserComponent
     });
   };
 
-  roleChangeCallback = (field, $event) => {
+  roleChangeCallback = () => {
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: "Rolle ändern",
@@ -141,7 +133,7 @@ export class UserComponent
             }
             this.selectedUserRole = user.role;
           }),
-          untilDestroyed(this)
+          untilDestroyed(this),
         )
         .subscribe();
     });
@@ -215,15 +207,6 @@ export class UserComponent
     this.updateUsersAndLoad(user.id);
   }
 
-  getEmailErrorMessage() {
-    const email = this.form.get("email");
-    if (email.hasError("required")) {
-      return "Es wird eine Email-Adresse benötigt";
-    }
-
-    return email.hasError("email") ? "Keine gültige Email-Adresse" : "";
-  }
-
   enableForm() {
     this.form.enable();
     this.form.get("login")?.disable();
@@ -267,7 +250,7 @@ export class UserComponent
         .afterClosed()
         .pipe(
           tap((response) => (response ? this.handleAction(response) : null)),
-          map((response) => response === "discard" || response === "save")
+          map((response) => response === "discard" || response === "save"),
         );
     }
 

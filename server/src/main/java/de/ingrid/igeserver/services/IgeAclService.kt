@@ -180,8 +180,8 @@ class IgeAclService @Autowired constructor(
             ).contains(it.permissions?.rootPermission)
         }
 
-    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String): List<Int> {
-        val groups = authUtils.getCurrentUserRoles()
+    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String, catalogId: String): List<Int> {
+        val groups = authUtils.getCurrentUserRoles(catalogId)
         val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
         return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)
     }

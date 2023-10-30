@@ -41,7 +41,10 @@ export class TreeHeaderComponent implements OnInit {
   query = new UntypedFormControl("");
   searchSub: Subscription;
 
-  constructor(private db: DynamicDatabase, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private db: DynamicDatabase,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     // TODO: refactor search function into service to be also used by quick-search-component

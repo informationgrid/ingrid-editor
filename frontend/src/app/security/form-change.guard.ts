@@ -25,7 +25,7 @@ export class FormChangeDeactivateGuard {
     private dialog: MatDialog,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private pluginService: PluginService
+    private pluginService: PluginService,
   ) {
     // additionally to the catalog info in the url we also use additional 6 characters
     // to include slashes and `form` path
@@ -38,13 +38,13 @@ export class FormChangeDeactivateGuard {
     target: FormComponent | AddressComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
-    nextState?: RouterStateSnapshot
+    nextState?: RouterStateSnapshot,
   ): Observable<boolean> {
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
     const stayOnPage = FormChangeDeactivateGuard.pageIsNotLeft(
       currentState.url,
-      nextState.url
+      nextState.url,
     );
     if (stayOnPage) {
       return of(true);
@@ -63,13 +63,13 @@ export class FormChangeDeactivateGuard {
           this.handleBehaviourRegistration(currentState, nextState);
           this.formStateService.getForm().reset();
         }
-      })
+      }),
     );
   }
 
   private handleBehaviourRegistration(
     currentState: RouterStateSnapshot,
-    nextState: RouterStateSnapshot
+    nextState: RouterStateSnapshot,
   ) {
     const documentPath = `/${ConfigService.catalogId}/form`;
     if (
@@ -123,16 +123,16 @@ export class FormChangeDeactivateGuard {
       .afterClosed()
       .pipe(
         tap((response) =>
-          response ? this.handleAction(response, type, currentUuid) : null
+          response ? this.handleAction(response, type, currentUuid) : null,
         ),
-        map((response) => response === "leave" || response === "save")
+        map((response) => response === "leave" || response === "save"),
       );
   }
 
   private async handleAction(
     action: undefined | "save" | "stay",
     type: "document" | "address",
-    currentUuid: string
+    currentUuid: string,
   ) {
     const isAddress = type === "address";
 
@@ -144,7 +144,7 @@ export class FormChangeDeactivateGuard {
           isNewDoc: false,
           isAddress: isAddress,
           noVisualUpdates: true,
-        })
+        }),
       );
       this.documentService.reload$.next({
         uuid: currentUuid,

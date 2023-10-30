@@ -49,7 +49,7 @@ export class GeneralReportComponent implements OnInit {
   constructor(
     private docService: DocumentService,
     private profileService: ProfileService,
-    private researchService: ResearchService
+    private researchService: ResearchService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -118,7 +118,7 @@ export class GeneralReportComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters)))
+        .pipe(tap((filters) => (this.facets = filters))),
     );
   }
 

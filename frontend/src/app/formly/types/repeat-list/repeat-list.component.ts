@@ -38,7 +38,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 
   isErrorState(
     control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     if (control?.invalid) return control.invalid && !this.component.hasFocus;
     else return false;
@@ -87,7 +87,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   constructor(
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {
     super();
   }
@@ -121,7 +121,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           filter((data) => data !== undefined),
           // take(1),
           tap((data) => this.initInputListener(data)),
-          tap(() => this.cdr.detectChanges())
+          tap(() => this.cdr.detectChanges()),
         )
         .subscribe();
     } else {
@@ -147,10 +147,10 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     if (this.type !== "select") {
       this.formControl.addValidators(
-        this.mustBeEmptyValidator(this.inputControl)
+        this.mustBeEmptyValidator(this.inputControl),
       );
       this.inputControl.addValidators(
-        this.mustBeEmptyValidator(this.inputControl)
+        this.mustBeEmptyValidator(this.inputControl),
       );
     }
 
@@ -169,20 +169,20 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
           untilDestroyed(this),
           startWith(""),
           debounceTime(300),
-          filter((query) => query?.length > 1)
+          filter((query) => query?.length > 1),
         )
         .subscribe((query) => this.search(query));
     } else {
       this.filteredOptions = merge(
         this.formControl.valueChanges,
         this.inputControl.valueChanges,
-        this.manualUpdate.asObservable()
+        this.manualUpdate.asObservable(),
       ).pipe(
         untilDestroyed(this),
         startWith(""),
         filter((value) => value !== undefined && value !== null),
         map((value) => this._filter(value)),
-        map((value) => this._markSelected(value))
+        map((value) => this._markSelected(value)),
       );
     }
   }
@@ -237,7 +237,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     const label = value[this.props.labelField];
     const alreadyExists = this.model.some(
-      (item) => item[this.props.labelField] == label
+      (item) => item[this.props.labelField] == label,
     );
     if (alreadyExists) {
       this.snack.open(`Der Begriff '${label}' existiert bereits`);
@@ -272,12 +272,12 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
     if (typeof option === "string") {
       return this.parameterOptions?.filter(
         (originOption) =>
-          originOption.label.toLowerCase().indexOf(option.toLowerCase()) !== -1
+          originOption.label.toLowerCase().indexOf(option.toLowerCase()) !== -1,
       );
     } else {
       return this.parameterOptions?.filter(
         (originOption) =>
-          originOption.value.toLowerCase() !== option.value?.toLowerCase()
+          originOption.value.toLowerCase() !== option.value?.toLowerCase(),
       );
     }
   }
@@ -297,11 +297,11 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
     return value?.map((option) => {
       const disabledByDefault = this.initialParameterOptions.find(
-        (item) => item.value === option.value
+        (item) => item.value === option.value,
       ).disabled;
       const optionAlreadySelected = (<{ key; value? }[]>this.model)?.some(
         (modelOption) =>
-          modelOption && (modelOption.key ?? modelOption) === option.value
+          modelOption && (modelOption.key ?? modelOption) === option.value,
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
       return option;
@@ -385,7 +385,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
 
     // check if really free entry
     const option = this.parameterOptions?.find(
-      (param) => param.label === value
+      (param) => param.label === value,
     );
     this.addToList(option ?? new SelectOption(null, value));
   }
@@ -432,7 +432,7 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
   private handleDuplicates(duplicates: any[]) {
     let formattedDuplicates = this.prepareDuplicatesForView(duplicates);
     this.snack.open(
-      `Die Eingabe von ${formattedDuplicates} erfolgte mehrfach, wurde aber nur einmal übernommen.`
+      `Die Eingabe von ${formattedDuplicates} erfolgte mehrfach, wurde aber nur einmal übernommen.`,
     );
   }
 
@@ -458,8 +458,8 @@ export class RepeatListComponent extends FieldArrayType implements OnInit {
       duplicates = duplicates.map((dup) =>
         this.codelistQuery.getCodelistEntryValueByKey(
           this.props.codelistId,
-          dup
-        )
+          dup,
+        ),
       );
     }
     duplicates = duplicates.map((dup) => `'${dup}'`);

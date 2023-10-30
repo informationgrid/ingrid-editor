@@ -6,11 +6,14 @@ import { ConfigService } from "../../../../app/services/config/config.service";
   providedIn: "root",
 })
 export class UploadCheckService {
-  constructor(private http: HttpClient, private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ConfigService,
+  ) {}
 
   analyse() {
     return this.http.get(
-      `${this.config.getConfiguration().backendUrl}uvp/upload-check`
+      `${this.config.getConfiguration().backendUrl}uvp/upload-check`,
     );
   }
 }

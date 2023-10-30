@@ -30,7 +30,10 @@ export class NominatimService {
   url: string;
   searchInCountries = "de";
 
-  constructor(private http: HttpClient, config: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    config: ConfigService,
+  ) {
     this.url = config.getConfiguration().nominatimUrl;
   }
 
@@ -38,7 +41,7 @@ export class NominatimService {
     return this.http.get<NominatimResult[]>(
       this.url
         .replace("{query}", query)
-        .replace("{countries}", this.searchInCountries)
+        .replace("{countries}", this.searchInCountries),
     );
   }
 
@@ -47,14 +50,14 @@ export class NominatimService {
     return (
       this.http
         .get<NominatimDetailResult>(
-          `${this.url}/details?osmtype=${mappedType}&osmid=${id}&format=json`
+          `${this.url}/details?osmtype=${mappedType}&osmid=${id}&format=json`,
         )
         // just ignore any errors
         .pipe(
           catchError((error) => {
             console.error("Error getting detail of Nominatim Result", error);
             return of(<NominatimDetailResult>{});
-          })
+          }),
         )
     );
   }

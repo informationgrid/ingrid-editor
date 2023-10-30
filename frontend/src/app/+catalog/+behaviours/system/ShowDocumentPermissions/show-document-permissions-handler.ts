@@ -31,7 +31,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     private formMenuService: FormMenuService,
     private addressTreeQuery: AddressTreeQuery,
     private documentTreeQuery: TreeQuery,
-    private router: Router
+    private router: Router,
   ) {
     super();
 
@@ -61,10 +61,10 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
       this.subscriptions.push(onEvent);
 
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, false)
+        (doc) => this.updateShowRightsButton(doc, false),
       );
       const onDocLoadAdress = this.addressTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, true)
+        (doc) => this.updateShowRightsButton(doc, true),
       );
       this.subscriptions.push(onDocLoad, onDocLoadAdress);
     }

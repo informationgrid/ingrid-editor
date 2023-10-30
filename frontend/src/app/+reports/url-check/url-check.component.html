@@ -41,9 +41,9 @@
 
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="liveLog | async as log">
-            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>
-                &nbsp;Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}
+                &nbsp;Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
             </div>
             <br />
             <div *ngIf="log.endTime">Analysierte URLs: {{ analyzedUrls }}</div>

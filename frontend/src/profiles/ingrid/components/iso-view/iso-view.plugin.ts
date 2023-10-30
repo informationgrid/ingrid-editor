@@ -31,7 +31,7 @@ export class IsoViewPlugin extends Plugin {
     private toolbarService: FormToolbarService,
     private docTreeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private exportService: ExchangeService
+    private exportService: ExchangeService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -63,13 +63,13 @@ export class IsoViewPlugin extends Plugin {
       .subscribe((openedDoc) => {
         this.toolbarService.setButtonState(
           "toolBtnIso",
-          openedDoc !== null && openedDoc._type != "FOLDER"
+          openedDoc !== null && openedDoc._type != "FOLDER",
         );
       });
 
     this.formSubscriptions.push(
       toolbarEventSubscription,
-      openedDocSubscription
+      openedDocSubscription,
     );
   }
 
@@ -94,9 +94,9 @@ export class IsoViewPlugin extends Plugin {
       .pipe(
         catchError((error) => {
           throw new Error(
-            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind."
+            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind.",
           );
-        })
+        }),
       )
       .subscribe(async ([current, published]) => {
         this.dialog.open(IsoViewComponent, {

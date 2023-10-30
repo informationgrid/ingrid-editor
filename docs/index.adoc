@@ -62,6 +62,62 @@ This could be general domain specific types like
 Services will use these interfaces to execute additional tasks that only the document type itself knows how to handle.
 If a document has references to another document or address, then it's his responsibility to handle the resolution of the references, since this data cannot be stored in a relational manner, due to the fact that each document has it's own schema.
 
+=== Database
+
+The database-system is https://www.postgresql.org/[PostgreSQL], which is a relational database with support for JSON fields.
+Moreover it supports transaction, so that every (batch of) operation can be rolled back to the previous state.
+
+==== Data model
+
+All data is held in a single database.
+That means that all documents of all catalogs are united in that single database.
+
+The data model is shown here:
+
+image:images/DocumentWrapper.svg["Data model"]
+
+[plantuml]
+----
+@startuml
+
+DocumentWrapper "uuid" --> Document
+class DocumentWrapper {}
+class Document {}
+
+class Info {
+--
+name
+description
+cron
+type
+version
+}
+class Behaviours {
+--
+    id
+active
+data
+}
+
+@enduml
+----
+
+A `DocumentWrapper` manages different versions of a document.
+A document is normally stored in the draft-field.
+When it's being published it's removed from the draft-field and put into the published-field.
+In case another document version has been in the published-field, it's moved to the archive-field, which can contain a number of documents.
+
+A `Document` can be any kind of data, which has at least a title, the document type and the creation and modification date.
+Since Postgres supports NoSQL, the document can be extended without any schema changes and migrations.
+By just defining a new field, it's automatically stored in the document table.
+
+The `Catalog` contains information about the catalog itself.
+It can also store settings, like a time pattern for indexing.
+
+The `Behaviour` stores the state of a behaviour, which can be changed in the catalog settings of the IGE-NG.
+A behaviour can be active or inactive.
+It can also contain optional parameters for more flexibility.
+
 === Extensions
 
 Extensions are used to extend or alter the functionality of IGE Server without changing the core code.
@@ -442,62 +498,6 @@ This can be defined in the profile definition file.
 
 The documentation of the export format is here: link:export-format.adoc#_export_format[Definition Export format]
 
-== Database
-
-The database-system is https://www.postgresql.org/[PostgreSQL], which is a relational database with support for JSON fields.
-Moreover it supports transaction, so that every (batch of) operation can be rolled back to the previous state.
-
-=== Data model
-
-All data is held in a single database.
-That means that all documents of all catalogs are united in that single database.
-
-The data model is shown here:
-
-image:images/DocumentWrapper.svg["Data model"]
-
-[plantuml]
-----
-@startuml
-
-DocumentWrapper "uuid" --> Document
-class DocumentWrapper {}
-class Document {}
-
-class Info {
---
-name
-description
-cron
-type
-version
-}
-class Behaviours {
---
-    id
-active
-data
-}
-
-@enduml
-----
-
-A `DocumentWrapper` manages different versions of a document.
-A document is normally stored in the draft-field.
-When it's being published it's removed from the draft-field and put into the published-field.
-In case another document version has been in the published-field, it's moved to the archive-field, which can contain a number of documents.
-
-A `Document` can be any kind of data, which has at least a title, the document type and the creation and modification date.
-Since Postgres supports NoSQL, the document can be extended without any schema changes and migrations.
-By just defining a new field, it's automatically stored in the document table.
-
-The `Catalog` contains information about the catalog itself.
-It can also store settings, like a time pattern for indexing.
-
-The `Behaviour` stores the state of a behaviour, which can be changed in the catalog settings of the IGE-NG.
-A behaviour can be active or inactive.
-It can also contain optional parameters for more flexibility.
-
 === Migrations
 
 Whenever it's necessary to update the schema of the database or do some data modifications, you are in need of a migration.
@@ -524,6 +524,8 @@ The topic about handling permissions can be found here: link:permissions.adoc#_p
 
 == Configuration
 
-== Testing
+include::_environment.adoc[]
 
-== Deployment
+include::_testing.adoc[]
+
+include::_deployment.adoc[]

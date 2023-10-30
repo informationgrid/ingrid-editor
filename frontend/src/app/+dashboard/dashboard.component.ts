@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
     private dialog: MatDialog,
     private docService: DocumentService,
     private sessionQuery: SessionQuery,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {
     this.messages$ = this.messageService.messages$;
     this.canCreateAddress = configService.hasPermission("can_create_address");
@@ -45,14 +45,14 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
-      map((docs) => docs.slice(0, 5))
+      map((docs) => docs.slice(0, 5)),
     );
     this.recentPublishedDocs$ =
       this.sessionQuery.latestPublishedDocuments$.pipe(
-        map((docs) => docs.slice(0, 5))
+        map((docs) => docs.slice(0, 5)),
       );
     this.oldestExpiredDocs$ = this.sessionQuery.oldestExpiredDocuments$.pipe(
-      map((docs) => docs.slice(0, 5))
+      map((docs) => docs.slice(0, 5)),
     );
     this.fetchStatistic();
     this.fetchData();

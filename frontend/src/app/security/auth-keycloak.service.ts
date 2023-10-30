@@ -6,7 +6,7 @@ import { ModalService } from "../services/modal/modal.service";
 export class AuthKeycloakService extends AuthenticationService {
   constructor(
     private keycloak: KeycloakService,
-    private modalService: ModalService
+    private modalService: ModalService,
   ) {
     super();
   }
@@ -15,7 +15,7 @@ export class AuthKeycloakService extends AuthenticationService {
     this.keycloak.updateToken().catch(() => {
       console.error("Token could not be updated");
       const error = new IgeError(
-        "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
+        "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.",
       );
       this.modalService.showIgeError(error);
       setTimeout(() => this.logout(), 5000);

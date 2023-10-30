@@ -8,7 +8,7 @@ export const getUserFormFields = (
   roles: SelectOptionUi[],
   groups: Group[],
   groupClickCallback: (id: string) => void = undefined,
-  roleChangeCallback: FormlyAttributeEvent = undefined
+  roleChangeCallback: FormlyAttributeEvent = undefined,
 ): FormlyFieldConfig[] => {
   return [
     {

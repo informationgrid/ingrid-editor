@@ -38,7 +38,7 @@ export class CreateFolderPlugin extends Plugin {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -64,7 +64,7 @@ export class CreateFolderPlugin extends Plugin {
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset"
+        this.forAddress ? "can_create_address" : "can_create_dataset",
       );
       this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
     }
@@ -87,7 +87,7 @@ export class CreateFolderPlugin extends Plugin {
         this.formStateService.getForm(),
         this.documentService,
         this.dialog,
-        this.forAddress
+        this.forAddress,
       );
 
       if (!handled) {
@@ -99,7 +99,7 @@ export class CreateFolderPlugin extends Plugin {
         .pipe(
           untilDestroyed(this),
           filter((entity) => entity !== undefined),
-          take(1)
+          take(1),
         )
         .subscribe((entity) => {
           let parentDocId = null;

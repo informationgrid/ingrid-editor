@@ -28,7 +28,7 @@ export class ContextHelpComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialogRef: MatDialogRef<ContextHelpComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
   ngOnInit() {

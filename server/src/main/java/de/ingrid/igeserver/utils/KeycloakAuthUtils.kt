@@ -65,10 +65,10 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
         return containsRole(principal, "ige-super-admin")
     }
 
-    override fun getCurrentUserRoles(): Set<Group> {
+    override fun getCurrentUserRoles(catalogId: String): Set<Group> {
         val authentication: Authentication = SecurityContextHolder.getContext().authentication
         val userName: String = getUsernameFromPrincipal(authentication)
-        return catalogService.getUser(userName)?.groups ?: emptySet()
+        return catalogService.getUser(userName)?.getGroupsForCatalog(catalogId) ?: emptySet()
     }
 
     // TODO: this function is supposed to be used globally

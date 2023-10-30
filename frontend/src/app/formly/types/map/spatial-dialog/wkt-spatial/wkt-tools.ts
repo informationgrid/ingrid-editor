@@ -26,7 +26,7 @@ export class WktTools {
       const allClosed = (<any[]>json.coordinates).every(
         (group) =>
           group[0][0] === group[group.length - 1][0] &&
-          group[0][1] === group[group.length - 1][1]
+          group[0][1] === group[group.length - 1][1],
       );
       if (!allClosed) return "Polygon ist nicht geschlossen";
     }
@@ -47,7 +47,7 @@ export class WktTools {
     wktString: string,
     overrideConfig = {},
     editable = false,
-    focus = true
+    focus = true,
   ) {
     try {
       // Catch any malformed WKT strings
@@ -55,13 +55,13 @@ export class WktTools {
     } catch (e1) {
       try {
         this.wkt.read(
-          wktString.replace("\n", "").replace("\r", "").replace("\t", "")
+          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
       } catch (e2) {
         if (e2.name === "WKTError") {
           alert(
             "Wicket could not understand the WKT string you entered. Check that you have parentheses " +
-              "balanced, and try removing tabs and newline characters."
+              "balanced, and try removing tabs and newline characters.",
           );
           return;
         }

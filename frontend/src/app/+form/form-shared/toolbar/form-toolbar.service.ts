@@ -55,7 +55,7 @@ export class FormToolbarService {
 
     // sort buttons
     this._buttons.sort((a, b) =>
-      a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1
+      a.pos < b.pos ? -1 : a.pos === b.pos ? 0 : 1,
     );
 
     this.toolbar$.next(this.buttons);

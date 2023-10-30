@@ -32,7 +32,7 @@ export class FormDashboardComponent implements OnInit {
     private sessionQuery: SessionQuery,
     private docService: DocumentService,
     private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {
     // TODO switch to user specific query
     this.canCreateDatasets = configService.hasPermission("can_create_dataset");
@@ -49,7 +49,7 @@ export class FormDashboardComponent implements OnInit {
     query.openedDocument$
       .pipe(
         untilDestroyed(this),
-        filter((doc) => doc === null)
+        filter((doc) => doc === null),
       )
       .subscribe(() => {
         this.address

@@ -26,7 +26,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
   constructor(
     private treeQuery: TreeQuery,
     private toolbarService: FormToolbarService,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -38,7 +38,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
     this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     const subscription = this.query.multiSelectMode$.subscribe(
-      (multiSelectMode) => this.handleMode(multiSelectMode)
+      (multiSelectMode) => this.handleMode(multiSelectMode),
     );
 
     this.formSubscriptions.push(subscription);
@@ -60,8 +60,8 @@ export class TreeModeToolbarBehaviour extends Plugin {
     this.toolbarService.buttons.forEach((button) =>
       this.toolbarService.setButtonState(
         button.id,
-        this.previousState.find((prev) => prev.id === button.id)?.active
-      )
+        this.previousState.find((prev) => prev.id === button.id)?.active,
+      ),
     );
   }
 
@@ -74,10 +74,10 @@ export class TreeModeToolbarBehaviour extends Plugin {
     this.toolbarService.buttons
       .filter(
         (button) =>
-          !this.activeToolbarItemsInMultiSelect.find((id) => button.id === id)
+          !this.activeToolbarItemsInMultiSelect.find((id) => button.id === id),
       )
       .forEach((button) =>
-        this.toolbarService.setButtonState(button.id, false)
+        this.toolbarService.setButtonState(button.id, false),
       );
   }
 }

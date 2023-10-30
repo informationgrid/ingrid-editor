@@ -30,7 +30,7 @@ export class ReplaceAddressDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ReplaceAddressDialogData,
     private documentService: DocumentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.source = data.source;
     this.showInfo = data.showInfo;
@@ -78,7 +78,7 @@ export class ReplaceAddressDialogComponent implements OnInit {
       .pipe(
         map((response) => {
           return response === "confirm";
-        })
+        }),
       );
   }
 

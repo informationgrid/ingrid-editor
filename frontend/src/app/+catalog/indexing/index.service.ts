@@ -31,7 +31,10 @@ export class IndexService {
   lastLog$ = new BehaviorSubject<LogResult>(null);
   private exportFormat: string;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
     this.catalog = configService.$userInfo.getValue().currentCatalog;
   }
@@ -54,7 +57,7 @@ export class IndexService {
   getIndexConfig(): Observable<IndexConfig> {
     return this.http
       .get<IndexConfig>(
-        this.configuration.backendUrl + "index/config/" + this.catalog.id
+        this.configuration.backendUrl + "index/config/" + this.catalog.id,
       )
       .pipe(tap((config) => (this.exportFormat = config.exportFormat)));
   }

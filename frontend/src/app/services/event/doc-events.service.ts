@@ -37,13 +37,13 @@ export class DocEventsService {
 
   beforePublish$(address: boolean): Observable<BeforePublishData> {
     return this._beforePublish$.pipe(
-      filter(() => this.belongsToThisPage(address))
+      filter(() => this.belongsToThisPage(address)),
     );
   }
 
   beforeSave$(address: boolean): Observable<void> {
     return this._beforeSave$.pipe(
-      filter(() => this.belongsToThisPage(address))
+      filter(() => this.belongsToThisPage(address)),
     );
   }
 
@@ -53,7 +53,7 @@ export class DocEventsService {
 
   afterLoadAndSet$(address: boolean): Observable<IgeDocument> {
     return this._afterLoadAndSet$.pipe(
-      filter(() => this.belongsToThisPage(address))
+      filter(() => this.belongsToThisPage(address)),
     );
   }
 

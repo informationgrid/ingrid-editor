@@ -41,14 +41,14 @@ export class ConfirmDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     private cookieService: CookieService,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData,
   ) {
     if (data.buttons) {
       this.leftAlignedButtons = data.buttons.filter(
-        (button) => !button.alignRight
+        (button) => !button.alignRight,
       );
       this.rightAlignedButtons = data.buttons.filter(
-        (button) => button.alignRight
+        (button) => button.alignRight,
       );
     } else {
       // default buttons

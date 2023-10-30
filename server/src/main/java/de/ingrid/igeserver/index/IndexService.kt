@@ -217,7 +217,7 @@ class IndexService @Autowired constructor(
                 (${iBusConditions.joinToString(" OR ")})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
-        if (profileConditions.isNotEmpty()) sql += " AND ${profileConditions.joinToString(" AND ")}"
+        if (profileConditions.isNotEmpty()) sql += " AND (${profileConditions.joinToString(" AND ")})"
         return sql
     }
 

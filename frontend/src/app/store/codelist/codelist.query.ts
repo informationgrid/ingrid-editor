@@ -11,7 +11,7 @@ import { Observable } from "rxjs";
 export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
   catalogCodelists$ = this.select((state) => state.catalogCodelists);
   hasCatalogCodelists$ = this.select((state) => state.catalogCodelists).pipe(
-    map((codelists) => codelists.length > 0)
+    map((codelists) => codelists.length > 0),
   );
 
   constructor(protected store: CodelistStore) {
@@ -20,7 +20,7 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
 
   selectCatalogCodelist(id: string): Observable<Codelist> {
     return this.select((state) => state.catalogCodelists).pipe(
-      map((codelists) => codelists.filter((cl) => cl.id === id)[0])
+      map((codelists) => codelists.filter((cl) => cl.id === id)[0]),
     );
   }
 
@@ -31,14 +31,13 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
   getCodelistEntryValueByKey(
     codelistId: string,
     entryKey: string,
-    defaultValue?: string
+    defaultValue?: string,
   ) {
     const entities =
       this.getCatalogCodelist(codelistId) ??
       this.getValue().entities[codelistId];
-    const entryFields = entities.entries.find(
-      (entry) => entry.id === entryKey
-    )?.fields;
+    const entryFields = entities.entries.find((entry) => entry.id === entryKey)
+      ?.fields;
 
     return entryFields ? entryFields["de"] : defaultValue ?? "";
   }
@@ -53,7 +52,7 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
   getCodelistEntryIdByValue(
     codelistId: string,
     value: string,
-    field: string
+    field: string,
   ): string {
     const entities =
       this.getCatalogCodelist(codelistId) ??
@@ -65,7 +64,7 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
   getCodelistEntryByValue(
     codelistId: string,
     value: string,
-    field: string
+    field: string,
   ): CodelistEntry {
     const entities =
       this.getCatalogCodelist(codelistId) ??

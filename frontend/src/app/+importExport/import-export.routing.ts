@@ -8,8 +8,6 @@ export const routing = RouterModule.forChild([
   {
     path: "",
     component: OverviewComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["admin"] },
     children: [
       {
         path: "",

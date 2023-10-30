@@ -58,17 +58,19 @@ export class ContextHelpService {
     private http: HttpClient,
     configService: ConfigService,
     private contextHelpQuery: ContextHelpQuery,
-    private contextHelpStore: ContextHelpStore
+    private contextHelpStore: ContextHelpStore,
   ) {
     this.configuration = configService.getConfiguration();
   }
 
   getAvailableHelpFieldIds(
     profile: string,
-    docType: string
+    docType: string,
   ): Observable<string[]> {
     return this.getIdsFromBackend(profile, docType).pipe(
-      tap((helpfieldIds) => this.addHelpToStore(profile, docType, helpfieldIds))
+      tap((helpfieldIds) =>
+        this.addHelpToStore(profile, docType, helpfieldIds),
+      ),
     );
   }
 
@@ -77,7 +79,7 @@ export class ContextHelpService {
     docType: string,
     fieldId: string,
     label: string,
-    infoElement: HTMLElement
+    infoElement: HTMLElement,
   ) {
     const helpText$ = this.getContextHelpText(profile, docType, fieldId); // allows passing in a custom help text
     this.showContextHelpPopup(label, helpText$, infoElement);
@@ -86,7 +88,7 @@ export class ContextHelpService {
   public showContextHelpPopup(
     label: string,
     helpText$: Observable<String>,
-    infoElement?: HTMLElement
+    infoElement?: HTMLElement,
   ) {
     const dialogPosition: DialogPosition = infoElement
       ? {
@@ -112,27 +114,27 @@ export class ContextHelpService {
   private addHelpToStore(
     profile: string,
     docType: string,
-    helpfieldIds: string[]
+    helpfieldIds: string[],
   ) {
     helpfieldIds.forEach((fieldId) =>
-      this.contextHelpStore.add({ docType, profile, fieldId })
+      this.contextHelpStore.add({ docType, profile, fieldId }),
     );
   }
 
   private getContextHelpText(
     profile: string,
     docType: string,
-    fieldId: string
+    fieldId: string,
   ): Observable<string> {
     const contextHelp = this.contextHelpQuery.getContextHelp(
       profile,
       docType,
-      fieldId
+      fieldId,
     );
     if (contextHelp === undefined || !contextHelp.helpText) {
       return this.getHelptextFromBackend(profile, docType, fieldId).pipe(
         tap((help) => this.contextHelpStore.update(help)),
-        map((help) => help.helpText)
+        map((help) => help.helpText),
       );
     }
 
@@ -141,21 +143,21 @@ export class ContextHelpService {
 
   private getIdsFromBackend(
     profile: string,
-    docType: string
+    docType: string,
   ): Observable<string[]> {
     const httpParams = new HttpParams()
       .set("profile", profile)
       .set("docType", docType);
     return this.http.get<string[]>(
       this.configuration.backendUrl + "contexthelpIds",
-      { params: httpParams }
+      { params: httpParams },
     );
   }
 
   private getHelptextFromBackend(
     profile: string,
     docType: string,
-    fieldId: string
+    fieldId: string,
   ): Observable<ContextHelpAbstract> {
     const httpParams = new HttpParams()
       .set("fieldId", fieldId)
@@ -163,7 +165,7 @@ export class ContextHelpService {
       .set("docType", docType);
     return this.http.get<ContextHelpAbstract>(
       this.configuration.backendUrl + "contexthelp",
-      { params: httpParams }
+      { params: httpParams },
     );
   }
 }

@@ -88,5 +88,8 @@ class UserInfo {
     @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
+    
+    fun getGroupsForCatalog(catalogIdentifer: String): Set<Group> =
+        groups.filter { it.catalog?.identifier == catalogIdentifer }.toSet()
 
 }

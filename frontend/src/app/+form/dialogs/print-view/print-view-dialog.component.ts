@@ -47,7 +47,7 @@ export class PrintViewDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<PrintViewDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.options.formState = {
       disabled: true,

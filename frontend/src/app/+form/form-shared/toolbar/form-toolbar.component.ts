@@ -23,7 +23,7 @@ export class FormToolbarComponent implements OnInit {
 
   constructor(
     private formToolbarService: FormToolbarService,
-    private documentService: DocumentService
+    private documentService: DocumentService,
   ) {
     formToolbarService.toolbar$.subscribe((buttons) => {
       this.buttons_left = buttons.filter((b) => b.align !== "right");

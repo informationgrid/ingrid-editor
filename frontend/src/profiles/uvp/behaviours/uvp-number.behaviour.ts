@@ -91,7 +91,7 @@ export class UvpNumberBehaviour extends Plugin {
               label: "Bayern (9016)",
               value: "9016",
             },
-          ].sort((a, b) => a.label?.localeCompare(b.label))
+          ].sort((a, b) => a.label?.localeCompare(b.label)),
         ),
       },
     });

@@ -219,11 +219,7 @@ class Wms130CapabilitiesParser(
         val east = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude")
         val south = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude")
         val north = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude")
-        box = LocationBean()
-        box.latitude1 = south
-        box.longitude1 = west
-        box.latitude2 = north
-        box.longitude2 = east
+        box = LocationBean(south, west, north, east)
 
         // add a fallback for the name, since it's mandatory
         var name = xPathUtils.getString(layerNode, "wms:Name")
@@ -232,7 +228,7 @@ class Wms130CapabilitiesParser(
         box.name = name
         // shall be a free spatial reference, but needs an ID to check for duplications!
 //        box.topicId = (box.name)
-        box.type = "frei"
+        box.type = "free"
         return box
     }
 

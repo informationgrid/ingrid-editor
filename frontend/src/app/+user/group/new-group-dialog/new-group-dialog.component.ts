@@ -25,7 +25,7 @@ export class NewGroupDialogComponent implements OnInit {
     private groupService: GroupService,
     private groupQuery: GroupQuery,
     private modalService: ModalService,
-    public dialogRef: MatDialogRef<NewGroupDialogComponent>
+    public dialogRef: MatDialogRef<NewGroupDialogComponent>,
   ) {}
 
   ngOnInit(): void {}
@@ -37,7 +37,7 @@ export class NewGroupDialogComponent implements OnInit {
     });
     if (this.groups?.filter((group) => group.name === newGroup.name).length) {
       this.modalService.showJavascriptError(
-        "Es existiert bereits eine Gruppe mit diesem Namen"
+        "Es existiert bereits eine Gruppe mit diesem Namen",
       );
     } else {
       this.groupService.createGroup(newGroup).subscribe((group) => {

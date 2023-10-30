@@ -19,12 +19,12 @@ export class RedirectFormGuard {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
-    private pluginService: PluginService
+    private pluginService: PluginService,
   ) {}
 
   async canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): Promise<boolean> {
     if (state.url.indexOf(`/${ConfigService.catalogId}/form`) === 0) {
       // in case we come from a different page
@@ -79,7 +79,7 @@ export class RedirectFormGuard {
   private async handleNavigation(
     route: ActivatedRouteSnapshot,
     uuid: string,
-    forAddress: boolean
+    forAddress: boolean,
   ): Promise<boolean> {
     if (uuid && route.params.id !== uuid) {
       await this.router.navigate([

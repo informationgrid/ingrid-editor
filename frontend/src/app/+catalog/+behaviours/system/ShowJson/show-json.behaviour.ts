@@ -18,7 +18,7 @@ export class ShowJsonBehaviour extends Plugin {
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private sessionStore: SessionStore
+    private sessionStore: SessionStore,
   ) {
     super();
     inject(PluginService).registerPlugin(this);

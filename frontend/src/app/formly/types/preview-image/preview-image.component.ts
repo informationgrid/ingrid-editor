@@ -36,6 +36,8 @@ import { UploadService } from "../../../shared/upload/upload.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FormMessageService } from "../../../services/form-message.service";
 import { of } from "rxjs";
+import { REGEX_URL } from "../../input.validators";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -63,6 +65,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private uploadService = inject(UploadService);
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(FormMessageService);
+  private translocoService = inject(TranslocoService);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -72,6 +75,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       props: {
         label: "URL",
         appearance: "outline",
+        required: true,
         onClick: (docUuid, uri, $event) => {
           // this.uploadService.downloadFile(docUuid, uri, $event);
         },
@@ -82,6 +86,18 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           } else {
             return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
+        },
+      },
+      validators: {
+        url: {
+          expression: (field) => {
+            const regExp = new RegExp(REGEX_URL);
+            return field.value?.asLink
+              ? regExp.test(field.value?.uri?.trim())
+              : true;
+          },
+          message: () =>
+            this.translocoService.translate("form.validationMessages.url"),
         },
       },
       expressions: {
@@ -116,7 +132,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
           // we need to reset the imageLinks so when we open another document
           // we do not start to access the previous images
           this.imageLinks = [];
-        })
+        }),
       )
       .subscribe((value) => this.createImageLinkUris(value));
   }
@@ -181,7 +197,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.imageLinks = [];
+          // this.imageLinks = [];
           this.remove(index);
           this.add(index, result);
         }
@@ -192,7 +208,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     files.forEach((file) =>
       this.add(null, {
         fileName: { uri: file.uri, asLink: false, value: file.file },
-      })
+      }),
     );
   }
 
@@ -224,10 +240,10 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
         catchError((error) => {
           console.log(error);
           this.messageService.sendError(
-            "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden"
+            "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden",
           );
           return of(error);
-        })
+        }),
       )
       .subscribe(() => this.cdr.detectChanges());
   }
@@ -242,7 +258,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     moveItemInArray(
       this.field.fieldGroup,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
 
     moveItemInArray(this.model, event.previousIndex, event.currentIndex);
@@ -266,11 +282,11 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     const img: HTMLImageElement = document.querySelector(
-      "img.preview-image-" + index
+      "img.preview-image-" + index,
     );
-    canvas.height = img.naturalHeight;
-    canvas.width = img.naturalWidth;
-    context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+    canvas.height = img.height;
+    canvas.width = img.width;
+    context.drawImage(img, 0, 0, img.width, img.height);
     return canvas.toDataURL();
   }
 }

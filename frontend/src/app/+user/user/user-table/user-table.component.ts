@@ -101,14 +101,14 @@ export class UserTableComponent
     public userService: UserService,
     public groupDataService: GroupDataService,
     public dialog: MatDialog,
-    private exportService: ExportService
+    private exportService: ExportService,
   ) {
     super();
     const initialSelection = [];
     const allowMultiSelect = false;
     this.selection = new SelectionModel<User>(
       allowMultiSelect,
-      initialSelection
+      initialSelection,
     );
     this.dataSource.filterPredicate = (user: User, filterValue: string) => {
       // collect values from attributes
@@ -234,7 +234,7 @@ export class UserTableComponent
       let groupNames = [];
       for (const userGroup of user.groups) {
         const group = groups.find(
-          (group) => group.id.toString() == userGroup.key
+          (group) => group.id.toString() == userGroup.key,
         );
         if (group != undefined) groupNames.push(group.name);
       }

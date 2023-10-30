@@ -36,7 +36,7 @@ export class SelectCswRecordDialog implements OnInit {
   constructor(
     private dlg: MatDialogRef<SelectCswRecordResponse>,
     private docRefService: DocumentReferenceService,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.asAtomDownloadService = data.asAtomDownloadService === true;
   }
@@ -47,7 +47,7 @@ export class SelectCswRecordDialog implements OnInit {
         untilDestroyed(this),
         debounceTime(500),
         filter((_) => this.urlControl.valid),
-        tap((_) => (this.phase = "analyzing"))
+        tap((_) => (this.phase = "analyzing")),
       )
       .subscribe((url) => this.analyzeUrl(url));
   }

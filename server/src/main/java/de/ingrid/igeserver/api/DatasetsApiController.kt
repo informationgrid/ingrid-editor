@@ -370,9 +370,7 @@ class DatasetsApiController @Autowired constructor(
         ) {
             // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)
-            val userGroups = catalogService.getUser(userName)?.groups
-                ?.filter { it.catalog?.identifier == catalogId }
-                ?.toMutableSet()
+            val userGroups = catalogService.getUser(userName)?.getGroupsForCatalog(catalogId)
             getRootDocsFromGroup(userGroups, isAddress)
         } else {
             documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
@@ -387,7 +385,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun getRootDocsFromGroup(
-        userGroups: MutableSet<Group>?,
+        userGroups: Set<Group>?,
         isAddress: Boolean,
     ): FindAllResults<DocumentData> {
 

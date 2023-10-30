@@ -37,7 +37,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               this.id,
               {
                 required: true,
-              }
+              },
             ),
             this.addPointOfContact(),
           ]),
@@ -52,7 +52,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               showSearch: true,
               options: this.getCodelistForSelect(
                 this.uvpNumberCodelistId,
-                "eiaNumbers"
+                "eiaNumbers",
               ).pipe(map((list) => this.sortUVPNumber(list))),
               codelistId: this.uvpNumberCodelistId,
               asSelect: true,
@@ -71,7 +71,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
                 required: true,
                 columns: this.columnsForDocumentTable,
                 batchValidUntil: "validUntil",
-              }
+              },
             ),
           ]),
         ];

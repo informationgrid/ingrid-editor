@@ -28,20 +28,20 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     private apiService: ApiService,
     private keycloak: KeycloakService,
     private authFactory: AuthenticationFactory,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initListener();
     this.keycloak.keycloakEvents$
       .pipe(
         filter((item) => item.type === KeycloakEventType.OnAuthSuccess),
-        take(1)
+        take(1),
       )
       .subscribe(() => this.resetSessionTimeout());
   }
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request);
   }
@@ -60,7 +60,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.timer$ = timer(0, this.oneSecondInMilliseconds)
       .pipe(
         scan((acc) => --acc, duration),
-        takeWhile((x) => x >= -10)
+        takeWhile((x) => x >= -10),
       )
       .subscribe((time) => {
         if (time % 60 == 0 || time < 300) {
@@ -90,7 +90,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
     if (time <= 0) {
       const error = new IgeError(
-        "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt."
+        "Die Session ist abgelaufen! Sie werden in 5 Sekunden zur Login-Seite geschickt.",
       );
       this.modalService.showIgeError(error);
       setTimeout(() => this.authFactory.get().logout(), 5000);
@@ -102,7 +102,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.storageService.changes
       .pipe(
         filter((item) => item.key === "ige-refresh-token"),
-        takeWhile((item) => item.value !== null)
+        takeWhile((item) => item.value !== null),
       )
       .subscribe((data) => {
         console.debug("Token in LocalStorage has changed", data);
@@ -120,12 +120,12 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
     this.keycloak.keycloakEvents$
       .pipe(
-        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess)
+        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess),
       )
       .subscribe(() => {
         this.storageService.store(
           "ige-refresh-token",
-          this.keycloak.getKeycloakInstance().refreshToken
+          this.keycloak.getKeycloakInstance().refreshToken,
         );
       });
   }

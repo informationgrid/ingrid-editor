@@ -34,7 +34,7 @@ export class FormMessageComponent implements OnInit {
 
   constructor(
     private messageService: FormMessageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class FormMessageComponent implements OnInit {
     if (type.severity === "info") {
       setTimeout(
         () => this.resetMessage(type),
-        type.duration || this.defaultDuration
+        type.duration || this.defaultDuration,
       );
     }
     this.cdr.markForCheck();

@@ -38,7 +38,7 @@ export class FormularService {
     private addressTreeQuery: AddressTreeQuery,
     private treeStore: TreeStore,
     private sessionStore: SessionStore,
-    private profileQuery: ProfileQuery
+    private profileQuery: ProfileQuery,
   ) {
     // create profiles after we have logged in
     console.log("init profiles");
@@ -111,7 +111,7 @@ export class FormularService {
         mergeMap((item) => getSectionItem(item)),
         filter((item) => item?.wrappers?.indexOf("section") >= 0),
         map((item) => item.props.label),
-        toArray()
+        toArray(),
       )
       .subscribe((sections) => {
         this.profileSections = sections;
@@ -122,7 +122,7 @@ export class FormularService {
   setAdditionalSections(sections: string[]) {
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() =>
-      this.sections$.next([...this.profileSections, ...sections])
+      this.sections$.next([...this.profileSections, ...sections]),
     );
   }
 }

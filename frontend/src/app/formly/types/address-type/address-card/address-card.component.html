@@ -11,7 +11,7 @@
         <div class="header flex-row">
             <ige-document-icon [doc]="address.ref"></ige-document-icon>
             <div class="title">
-                {{ address.type | codelist : "505" | async }}
+                {{ address.type | codelist: "505" | async }}
             </div>
             <div class="flex-1"></div>
             <button
@@ -63,9 +63,7 @@
             <div class="title address-title">
                 <span
                     >{{
-                        address.ref["academic-title"]
-                            | codelist : "4305"
-                            | async
+                        address.ref["academic-title"] | codelist: "4305" | async
                     }} </span
                 >{{ content.title }}
             </div>

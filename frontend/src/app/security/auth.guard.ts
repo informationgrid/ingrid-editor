@@ -14,12 +14,12 @@ export class AuthGuard {
   constructor(
     private router: Router,
     private modalService: ModalService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): boolean {
     const user = this.configService.$userInfo.getValue();
     const path = state.url;

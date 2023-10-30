@@ -22,7 +22,7 @@ export class ChangeNameDialogComponent implements OnInit {
     private modalService: ModalService,
     public dialogRef: MatDialogRef<ChangeNameDialogComponent>,
     private userService: UserService,
-    @Inject(MAT_DIALOG_DATA) public data
+    @Inject(MAT_DIALOG_DATA) public data,
   ) {}
 
   ngOnInit(): void {

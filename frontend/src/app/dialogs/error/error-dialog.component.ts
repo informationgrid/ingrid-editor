@@ -15,7 +15,7 @@ export class ErrorDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) data: IgeError | IgeError[],
     private dlgRef: MatDialogRef<ErrorDialogComponent>,
-    configService: ConfigService
+    configService: ConfigService,
   ) {
     this.supportEmail = configService.getConfiguration()?.supportEmail;
     if (data instanceof Array) {

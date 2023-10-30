@@ -31,17 +31,17 @@ export class GetCapabilitiesService {
     private http: HttpClient,
     configService: ConfigService,
     private documentService: DocumentService,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {
     configService.$userInfo.subscribe(
-      () => (this.backendUrl = configService.getConfiguration().backendUrl)
+      () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
   }
 
   analyze(url: string) {
     return this.http.post<GetCapabilitiesAnalysis>(
       this.backendUrl + "getCapabilities/analyzeGetCapabilities",
-      url
+      url,
     );
   }
 
@@ -60,7 +60,7 @@ export class GetCapabilitiesService {
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
           value,
-          values.addressParent
+          values.addressParent,
         );
       if (key === "boundingBoxes")
         model.spatial.references = this.mapBoundingBox(value);
@@ -69,7 +69,7 @@ export class GetCapabilitiesService {
       if (key === "coupledResources") {
         model.service.coupledResources = await this.handleCoupledResources(
           value,
-          model._parent
+          model._parent,
         );
         if (value?.length > 0) {
           model.service.couplingType = {
@@ -182,7 +182,7 @@ export class GetCapabilitiesService {
       const entry = this.codelistQuery.getCodelistEntryByValue(
         "6005",
         item.specification,
-        "iso"
+        "iso",
       );
       const spec = entry
         ? { key: entry.id }
@@ -198,7 +198,7 @@ export class GetCapabilitiesService {
 
   private async handleCoupledResources(
     resources: CoupledResource[],
-    parent: number
+    parent: number,
   ): Promise<DocumentReference[]> {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
@@ -229,7 +229,7 @@ export class GetCapabilitiesService {
 
   private mapCoupledResource(
     resource: CoupledResource,
-    parent: number
+    parent: number,
   ): IgeDocument {
     return {
       _uuid: resource.uuid,

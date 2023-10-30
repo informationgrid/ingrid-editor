@@ -59,7 +59,7 @@ class ResearchService {
     
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
-        val groups = authUtils.getCurrentUserRoles()
+        val groups = authUtils.getCurrentUserRoles(catalogId)
         val hasAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootAccess(groups)
         val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
@@ -348,18 +348,19 @@ class ResearchService {
 
         val catalogFilter = createCatalogFilter(catalogId)
         val notDeletedFilter = "document_wrapper.deleted = 0"
+        val isLatestFilter = "document1.is_latest = true"
 
         val fromIndex = sqlQuery.indexOf("FROM")
 
         return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter AND $notDeletedFilter
+                WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
                 """.trimIndent()
 
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND $notDeletedFilter AND
+                $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
                 ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
         }
 

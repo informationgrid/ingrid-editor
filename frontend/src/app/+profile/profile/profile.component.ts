@@ -20,7 +20,7 @@ export class ProfileComponent implements OnInit {
     private configService: ConfigService,
     public userService: UserService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   userInfo$ = this.configService.$userInfo;
@@ -104,7 +104,7 @@ export class ProfileComponent implements OnInit {
         this.configService.getCurrentUserInfo().then(() =>
           this.snackBar.open("Name wurde geändert.", "", {
             panelClass: "green",
-          })
+          }),
         );
       });
   }

@@ -23,8 +23,8 @@
 <div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
     <div class="diagonal"></div>
     <mat-slide-toggle
-        [checked]="optionalButtonState"
-        (change)="toggleOptionalFields.next($event.checked)"
+        [checked]="optionalButtonState | async"
+        (change)="updateToggleButtonState($event.checked)"
         >Alle
     </mat-slide-toggle>
     <div class="cover"></div>

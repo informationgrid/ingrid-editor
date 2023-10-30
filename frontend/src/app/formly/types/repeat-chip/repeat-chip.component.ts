@@ -43,7 +43,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     private http: HttpClient,
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {
     super();
 
@@ -103,7 +103,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     response.forEach((item) =>
       !this.model || this.model.indexOf(item) === -1
         ? this.add(null, item)
-        : null
+        : null,
     );
   }
 
@@ -136,7 +136,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
 
     const label = value[this.props.labelField];
     const alreadyExists = this.model.some(
-      (item) => item[this.props.labelField] == label
+      (item) => item[this.props.labelField] == label,
     );
     if (alreadyExists) {
       this.snack.open(`Der Begriff '${label}' existiert bereits`);

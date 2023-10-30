@@ -16,11 +16,14 @@ export class ModalService {
   errors: IgeError[] = [];
   isExclusive = false;
 
-  constructor(private dialog: MatDialog, private ngZone: NgZone) {}
+  constructor(
+    private dialog: MatDialog,
+    private ngZone: NgZone,
+  ) {}
 
   confirmWith(
     options: ConfirmDialogData,
-    hasBackdrop = true
+    hasBackdrop = true,
   ): Observable<boolean> {
     return this.dialog
       .open(ConfirmDialogComponent, {

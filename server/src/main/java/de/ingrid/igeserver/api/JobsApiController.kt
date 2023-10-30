@@ -77,12 +77,15 @@ class JobsApiController @Autowired constructor(
         val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
 
         // get only documents with write permission
-        val groups = authUtils.getCurrentUserRoles()
+        val groups = authUtils.getCurrentUserRoles(catalogId)
         var docIds = emptyList<Int>()
+        
+        if (groups.isEmpty() && !authUtils.isAdmin(principal)) throw ServerException.withReason("User has not been assigned any groups")
+        
         val hasWriteRoot = groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
         if (!hasWriteRoot) {
             docIds = listOf("writeTree", "writeTreeExceptParent").flatMap {
-                aclService.getDocumentIdsForGroups(principal, it)
+                aclService.getDocumentIdsForGroups(principal, it, catalogId)
             }
         }
         

@@ -71,7 +71,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     private profileQuery: ProfileQuery,
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private exportService: ExportService
+    private exportService: ExportService,
   ) {}
 
   ngOnInit(): void {

@@ -15,7 +15,7 @@ class MCloudComponent {
     contextHelpService: ContextHelpService,
     mcloud: McloudDoctype,
     folder: FolderDoctype,
-    mcloudAddress: McloudAddressDoctype
+    mcloudAddress: McloudAddressDoctype,
   ) {
     const types = [mcloud, folder, mcloudAddress];
 

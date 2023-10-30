@@ -1,5 +1,4 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { forkJoin } from "rxjs";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -34,7 +33,7 @@ export class CatalogDetailComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public catalog: Catalog,
     private dialog: MatDialog,
     private userService: UserService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
   ) {}
 
   ngOnInit() {

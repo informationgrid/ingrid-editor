@@ -24,7 +24,7 @@ export class UndoPlugin extends Plugin {
 
   constructor(
     private formToolbarService: FormToolbarService,
-    private docEvents: DocEventsService
+    private docEvents: DocEventsService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);

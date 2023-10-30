@@ -15,7 +15,7 @@ import { GetCapabilitiesAnalysis } from "./get-capabilities-dialog/get-capabilit
 export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   constructor(
     private dialog: MatDialog,
-    private getCapService: GetCapabilitiesService
+    private getCapService: GetCapabilitiesService,
   ) {
     super();
   }
@@ -42,7 +42,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   private getInitialGetCapabilitiesUrl(): string {
     return (
       this.options.formState.mainModel.service.operations?.find(
-        (item) => item.name?.key === "1"
+        (item) => item.name?.key === "1",
       )?.methodCall ?? ""
     );
   }

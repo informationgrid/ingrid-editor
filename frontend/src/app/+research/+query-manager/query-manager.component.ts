@@ -9,7 +9,6 @@ import { MatDialog } from "@angular/material/dialog";
 import { Query, QueryUI } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
 import { Observable } from "rxjs";
-import { MatSelectionList } from "@angular/material/list";
 import { filter, map } from "rxjs/operators";
 import { logAction } from "@datorama/akita";
 import { Router } from "@angular/router";
@@ -22,11 +21,11 @@ import { Router } from "@angular/router";
 export class QueryManagerComponent implements OnInit {
   userQueries: Observable<QueryUI[]> = this.queryQuery.userQueries$.pipe(
     map((queries: QueryUI[]) =>
-      QueryManagerComponent.addAllowDeleteInfo(queries)
-    )
+      QueryManagerComponent.addAllowDeleteInfo(queries),
+    ),
   );
   catalogQueries = this.queryQuery.catalogQueries$.pipe(
-    map((queries: QueryUI[]) => this.addDeleteInfo(queries))
+    map((queries: QueryUI[]) => this.addDeleteInfo(queries)),
   );
 
   queryTypes: {
@@ -39,7 +38,7 @@ export class QueryManagerComponent implements OnInit {
     private queryQuery: QueryQuery,
     private dialog: MatDialog,
     private researchService: ResearchService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {
     this.queryTypes = [
       {

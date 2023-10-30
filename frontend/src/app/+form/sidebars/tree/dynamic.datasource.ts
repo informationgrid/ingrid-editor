@@ -40,7 +40,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
   constructor(
     private _treeControl: FlatTreeControl<TreeNode>,
     private _database: DynamicDatabase,
-    private treeService: TreeService
+    private treeService: TreeService,
   ) {
     super();
   }
@@ -58,7 +58,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       });
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(
-      map(() => this.data)
+      map(() => this.data),
     );
   }
 
@@ -100,9 +100,9 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       .getChildren(node._id, false, this.forAddress)
       .pipe(
         map((docs) =>
-          this._database.mapDocumentsToTreeNodes(docs, node.level + 1)
+          this._database.mapDocumentsToTreeNodes(docs, node.level + 1),
         ),
-        map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction()))
+        map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
         /*tap(docs => {
           if (this.selectionModel.isSelected(node)) {
             this.selectionModel.select(...docs);
@@ -182,7 +182,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       this.data.splice(index, 1);
       const updatedNode = this._database.mapDocumentsToTreeNodes(
         [doc],
-        level
+        level,
       )[0];
       this.insertNodeInTree(updatedNode, updatedNode.parent);
       if (wasExpanded) this.expandNode(updatedNode);
@@ -222,7 +222,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
         }
       } else {
         console.warn(
-          `Could not find parent node "${dest}". Maybe no read access?`
+          `Could not find parent node "${dest}". Maybe no read access?`,
         );
       }
     }
@@ -244,12 +244,12 @@ export class DynamicDataSource extends DataSource<TreeNode> {
 
     // sort children nodes
     childrenNodes = childrenNodes.sort(
-      this.treeService.getSortTreeNodesFunction()
+      this.treeService.getSortTreeNodesFunction(),
     );
 
     // get index of sorted moved node
     const sortedMovedNodeIndex = childrenNodes.findIndex(
-      (item) => item._id === node._id
+      (item) => item._id === node._id,
     );
 
     const atEnd = sortedMovedNodeIndex === childrenNodes.length - 1;
@@ -259,7 +259,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       this.data.splice(
         destNodeIndex + 1 + childrenNodesWithExpanded.length,
         0,
-        node
+        node,
       );
     } else {
       const successor = childrenNodes[sortedMovedNodeIndex + 1]._id;

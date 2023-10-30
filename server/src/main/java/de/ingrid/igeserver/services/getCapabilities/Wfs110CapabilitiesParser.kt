@@ -7,9 +7,11 @@ import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 import javax.xml.xpath.XPathExpressionException
 
-class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
-                               private val researchService: ResearchService,
-                               val catalogId: String) :
+class Wfs110CapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    val catalogId: String
+) :
     GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2")
@@ -32,7 +34,10 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
             onlineResources =
                 getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
             addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-            keywords += (getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(doc, XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE)).distinctBy { it.lowercase() }
+            keywords += (getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(
+                doc,
+                XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE
+            )).distinctBy { it.lowercase() }
             boundingBoxes = getBoundingBoxesFromLayers(doc)
             spatialReferenceSystems = getSpatialReferenceSystems(
                 doc,
@@ -57,7 +62,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities"
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -78,7 +83,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (describeFeatureTypeOp.addressList!!.isNotEmpty()) {
             describeFeatureTypeOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
                 "DescribeFeatureType"
             )
             describeFeatureTypeOp.methodCall = "DescribeFeatureType"
@@ -99,7 +104,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getFeatureOp.addressList!!.isNotEmpty()) {
             getFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
                 "GetFeature"
             )
             getFeatureOp.methodCall = "GetFeature"
@@ -120,7 +125,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getGmlObjectOp.addressList!!.isNotEmpty()) {
             getGmlObjectOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
                 "GetGmlObject"
             )
             getGmlObjectOp.methodCall = "GetGmlObject"
@@ -141,7 +146,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (lockFeatureOp.addressList!!.isNotEmpty()) {
             lockFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
                 "LockFeature"
             )
             lockFeatureOp.methodCall = "LockFeature"
@@ -162,7 +167,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (transactionOp.addressList!!.isNotEmpty()) {
             transactionOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "Transaction", "de"), 
+                codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
                 "Transaction"
             )
             transactionOp.methodCall = "Transaction"
@@ -177,24 +182,26 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
         val layers = xPathUtils.getNodeList(doc, "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType")
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
-            val lower = xPathUtils.getString(layer, "ows:WGS84BoundingBox/ows:LowerCorner").split(" ".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()
-            val upper = xPathUtils.getString(layer, "ows:WGS84BoundingBox/ows:UpperCorner").split(" ".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()
-            val box = LocationBean()
-            box.latitude1 = java.lang.Double.valueOf(lower[0])
-            box.longitude1 = java.lang.Double.valueOf(lower[1])
-            box.latitude2 = java.lang.Double.valueOf(upper[0])
-            box.longitude2 = java.lang.Double.valueOf(upper[1])
-
-            // add a fallback for the name, since it's mandatory
+            val boundingBoxNode = xPathUtils.getNode(layer, "ows:WGS84BoundingBox")
             val title = xPathUtils.getString(layer, "wfs:Title")
-            box.name = title
-            // shall be a free spatial reference, but needs an ID to check for duplications!
-//            box.setTopicId(box.name)
-            box.type = "Frei"
+            val box = if (boundingBoxNode != null) {
+                val lower = xPathUtils.getString(boundingBoxNode, "ows:LowerCorner").split(" ".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+                val upper = xPathUtils.getString(boundingBoxNode, "ows:UpperCorner").split(" ".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+                LocationBean(
+                    java.lang.Double.valueOf(lower[0]),
+                    java.lang.Double.valueOf(lower[1]),
+                    java.lang.Double.valueOf(upper[0]),
+                    java.lang.Double.valueOf(upper[1]),
+                    title, "free"
+                )
+            } else {
+                LocationBean(name = title, type = "free")
+            }
+
             bboxes.add(box)
         }
         return bboxes
@@ -220,7 +227,7 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"
@@ -233,14 +240,18 @@ class Wfs110CapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode"
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
-        ))
-        address.state = getKeyValue("110", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200", xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
+            )
+        )
+        address.state = getKeyValue(
+            "110", xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
+            ), "name"
+        )
         address.phone = xPathUtils.getString(
             doc,
             "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice"

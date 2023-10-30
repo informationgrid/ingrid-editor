@@ -89,7 +89,7 @@ export class DropDownComponent implements ControlValueAccessor, OnInit {
     this.filteredOptions = this.simpleOptions.filter(
       (option) =>
         option.fields[this.lang].toLowerCase().indexOf(value.toLowerCase()) ===
-        0
+        0,
     );
   }
 }

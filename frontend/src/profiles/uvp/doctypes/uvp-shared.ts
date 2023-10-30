@@ -128,7 +128,7 @@ export class UvpShared extends BaseDoctype {
               required: false,
               columns: this.columnsForDocumentTable,
               batchValidUntil: "validUntil",
-            }
+            },
           ),
           this.addPublishConditionCheckbox("reportsRecommendationDocs"),
           this.addTable("furtherDocs", "Weitere Unterlagen", {
@@ -173,7 +173,7 @@ export class UvpShared extends BaseDoctype {
               required: true,
               columns: this.columnsForDocumentTable,
               batchValidUntil: "validUntil",
-            }
+            },
           ),
         ]),
       ],
@@ -244,7 +244,7 @@ export class UvpShared extends BaseDoctype {
             message: "Es darf maximal nur ein Kontakt angegeben sein",
           },
         },
-      }
+      },
     );
   }
 

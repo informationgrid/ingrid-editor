@@ -19,6 +19,23 @@
     </div>
 
     <div main-header>
+        <div *ngIf="aiSearchEnabled" class="flex-row gap-12 padding-vertical">
+            <input
+                class="flex-1"
+                matInput
+                [formControl]="request"
+                placeholder="Gib mir alle Datensätze die ..."
+            />
+            <button
+                mat-flat-button
+                color="primary"
+                [disabled]="isSearching || request.value === ''"
+                (click)="askForSQL(request.value)"
+            >
+                Fragen
+            </button>
+        </div>
+
         <mat-form-field appearance="outline" class="width-100">
             <textarea
                 matInput
@@ -42,7 +59,7 @@
             <button
                 mat-flat-button
                 color="primary"
-                [disabled]="sql.value === ''"
+                [disabled]="isSearching || sql.value === ''"
                 (click)="updateSqlControl(sql.value)"
             >
                 Suchen
