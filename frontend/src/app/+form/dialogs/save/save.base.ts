@@ -55,7 +55,8 @@ export abstract class SaveBase extends Plugin {
         );
     } else if (
       error?.status === 400 &&
-      error?.error.errorCode === "VALIDATION_ERROR"
+      (error?.error.errorCode === "VALIDATION_ERROR" ||
+        error?.error.errorCode === "VALIDATION_ERROR_FIELD")
     ) {
       throw this.prepareValidationError(error);
     } else {
@@ -70,6 +71,17 @@ export abstract class SaveBase extends Plugin {
   }
 
   protected prepareValidationError(error) {
+    if (error.error.errorCode === "VALIDATION_ERROR_FIELD") {
+      this.sessionStore.update((state) => {
+        return {
+          serverValidationErrors: error.error.data.fields,
+        };
+      });
+      throw new IgeError(
+        "Bei der Validierung trat ein Fehler auf. Bitte prüfen Sie das Formular.",
+      );
+    }
+
     console.error("JSON schema error:", error.error.data);
     const isJsonSchemaError = error?.error?.data?.error instanceof Array;
 
