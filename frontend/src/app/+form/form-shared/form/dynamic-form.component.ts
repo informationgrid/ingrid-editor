@@ -46,6 +46,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -129,6 +130,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private dialog: MatDialog,
     private docEvents: DocEventsService,
     private cdr: ChangeDetectorRef,
+    private translocoService: TranslocoService,
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -228,7 +230,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.showValidationErrors = true;
         errors.forEach((error) => {
           console.log("Received server side validation error", error);
-          this.form.get(error.name)?.setErrors([{ message: error.errorCode }]);
+          const message = this.translocoService.translate(
+            `form.validationMessages.${error.errorCode}`,
+          );
+          this.form.get(error.name)?.setErrors([{ message: message }]);
         });
         this.numberOfErrors = errors.length;
       });
