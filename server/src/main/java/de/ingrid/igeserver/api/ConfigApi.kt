@@ -8,6 +8,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
+@Hidden
 @Tag(name = "Config", description = "the configs API")
 interface ConfigApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Frontend configuration")])

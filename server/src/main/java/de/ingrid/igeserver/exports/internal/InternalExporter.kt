@@ -56,7 +56,7 @@ class InternalExporter @Autowired constructor(
         }
     }
 
-    private fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
+    fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
 
         val profile = catalogService.getCatalogById(catalogId).type
 

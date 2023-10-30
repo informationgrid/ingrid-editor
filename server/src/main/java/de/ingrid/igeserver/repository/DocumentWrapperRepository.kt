@@ -35,10 +35,12 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @Query("SELECT d FROM DocumentWrapper d")
     fun getAll(): List<DocumentWrapper?>
     
+    @Deprecated("Is not secured")
     @Query("SELECT d.parent FROM DocumentWrapper d WHERE d.id = ?1")
     fun getParentWrapper(id: Int): DocumentWrapper?
 
     // TODO: add permission check
+    @Deprecated("Is not secured")
     @Query("SELECT d FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
     fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DOCUMENT_STATE): Document
 
@@ -50,9 +52,11 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findByParent_id(parent_id: Int): List<DocumentWrapper>
 
+    @Deprecated("Is not secured")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.type != 'FOLDER' AND d.deleted != 1")
     fun findAllDocumentsByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
+    @Deprecated("Is not secured")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.deleted != 1")
     fun findAllDocumentsAndFoldersByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 

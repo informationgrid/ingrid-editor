@@ -9,6 +9,7 @@ import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Users", description = "the users API")
 interface UsersApi {
     @PostMapping(

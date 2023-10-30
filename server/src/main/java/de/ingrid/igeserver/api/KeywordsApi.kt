@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.services.thesaurus.Keyword
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+@Hidden
 @Tag(name = "Keywords")
 interface KeywordsApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200")])

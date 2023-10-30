@@ -862,6 +862,7 @@ class DocumentService @Autowired constructor(
         return DocumentData(updatedWrapper, updatedDoc)
     }
 
+    @Deprecated("Is not secured")
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
         return if (includeFolders)
             docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)

@@ -7,6 +7,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Codelist", description = "the codelist API")
 interface CodelistApi {
 

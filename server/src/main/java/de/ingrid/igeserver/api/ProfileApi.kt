@@ -6,6 +6,7 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.profiles.CatalogProfile
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Profiles", description = "the profiles API")
 interface ProfileApi {
     @Operation
