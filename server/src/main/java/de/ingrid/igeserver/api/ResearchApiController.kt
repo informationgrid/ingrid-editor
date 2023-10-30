@@ -25,7 +25,6 @@ import de.ingrid.igeserver.utils.AuthUtils
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -128,7 +127,7 @@ class ResearchApiController @Autowired constructor(
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.System,
-                    content = "Given the following SQL tables in a Postgres database, your job is to write queries given a user’s request. create table document( id integer   default nextval('document_id_seq'::regclass) not null primary key, catalog_id integer not null references catalog on delete cascade, uuid varchar(255) not null, type varchar(255)             not null, title             varchar(4096)            not null, data jsonb); Das JSONB Feld ist so aufgebaut: { isOpenData: boolean, isInspireIdentified: boolean, isAdVCompatible: boolean, description: string, keywords: { free: {value: string}[], gemet: {value: string}[], umthes: {value: string}[] }}. Querying 'Schlüsselwort' should be searched in each JSON-field under 'keywords'. Search should be case-insensitive."
+                    content = "Given the following SQL tables in a Postgres database, your job is to write queries given a user’s request. create table document( id integer   default nextval('document_id_seq'::regclass) not null primary key, catalog_id integer not null references catalog on delete cascade, uuid varchar(255) not null, type varchar(255)             not null, title             varchar(4096)            not null, data jsonb); Das JSONB Feld ist so aufgebaut: { isOpenData: boolean, isInspireIdentified: boolean, isAdVCompatible: boolean, description: string, keywords: { free: {label: string}[], gemet: {label: string}[], umthes: {label: string}[] }}. Querying 'Schlüsselwort' should be searched in each JSON-field under 'keywords'. Search should be case-insensitive."
                 ),
                 ChatMessage(
                     role = ChatRole.User,
