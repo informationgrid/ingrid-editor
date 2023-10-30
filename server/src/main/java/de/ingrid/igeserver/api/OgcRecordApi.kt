@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
-@Tag(name = "Ogc Api Records", description = "OGC API - Records")
+@Tag(name = "OgcApiRecords", description = "OGC API - Records")
 interface OgcApiRecords {
 
 
@@ -36,8 +36,7 @@ interface OgcApiRecords {
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
             "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-            "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
-            "\n\n\n### To Do:\n\n• format of Time (created, updated)"
+            "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
             ) @RequestParam(value = "f", required = false) format: String?,
     ): ResponseEntity<ByteArray>
 
@@ -55,15 +54,14 @@ interface OgcApiRecords {
                     "\n\n### ! Not yet implemented !" +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                    "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
-                    "\n\n\n### To Do:\n\n• format of Time (created, updated)"
+                    "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
             ) @RequestParam(value = "f", required = false) format: String?,
     ): ResponseEntity<ByteArray>
 
 
 
     @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "fetch records", hidden = true,
+    @Operation(responses = [], summary = "fetch records", hidden = false,
             description = "# Fetch Records\n\nFetch records of the catalog with id `collectionId`." +
                     "As specified in the [Records Access](https://docs.ogc.org/DRAFTS/20-004.html#records-access) clause, records are accessed using the HTTP GET method via the /collections/{collectionId}/items path." +
                     "\n\n\n\n## Currently working on profile: **Ingrid**"
@@ -100,7 +98,8 @@ interface OgcApiRecords {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#core-query-parameters-type)" +
                     "\n\n### To do:" +
                     "\n\n• The definition of the `type` parameter SHOULD be extended to enumerate the list of known record types." +
-                    "\n\n• Die Definition des Parameters `type`SOLLTE erweitert werden, um die Liste bekannter Datensatztypen aufzulisten.",
+                    "\n\n### List of record types" +
+                    "\n\nInGridSpecialisedTask, InGridGeoDataset, InGridLiterature, InGridGeoService, InGridProject, InGridDataCollection, InGridInformationSystem, InGridOrganisationDoc, InGridPersonDoc",
                     explode = Explode.FALSE,
                     style = ParameterStyle.MATRIX,
             ) @RequestParam(value = "type", required = false) type: List<String>?,
@@ -161,13 +160,10 @@ interface OgcApiRecords {
             ) @RequestParam(value = "externalid", required = false) @Valid externalid: List<String>?,
             // PARAMETER : f
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
-                    "\n\n### ! Not yet implemented !" +
-                    "\n\nWhile OGC API - Records does not specify any mandatory encoding, support for the following encodings is recommended." +
-                    "\n\nTo support browsing the catalogue and its records with a web browser and to enable search engines to crawl and index the catalogue, implementations SHOULD consider supporting an HTML encoding." +
-                    "\n\nIf the records can be represented for the intended use in GeoJSON, implementations SHOULD consider supporting GeoJSON as an encoding for records and catalogues (i.e. record collections)." +
-                    "\n\nIf a catalogue (i.e. record collection) can be represented for the intended use in JSON, implementations SHOULD consider supporting JSON as an encoding for a catalogue (i.e. record collection)." +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
-                    "\n\n### Supported formats: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'"
+                    "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+                    "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
+                    "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
             ) @RequestParam(value = "f", required = false) format: String?,
             // PARAMETER : filter
             @Parameter(description = "## Filter\n **OGC Parameter SHOULD**" +
@@ -182,7 +178,7 @@ interface OgcApiRecords {
 
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = true,
+    @Operation(responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = false,
         description = "# Fetch a Record" +
                 "" +
                 "\n\n### A 200-response SHALL include the following links in the response:\n" +
@@ -203,12 +199,10 @@ interface OgcApiRecords {
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @Valid @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
-                    "\n\nWhile OGC API - Records does not specify any mandatory encoding, support for the following encodings is recommended." +
-                    "\n\nTo support browsing the catalogue and its records with a web browser and to enable search engines to crawl and index the catalogue, implementations SHOULD consider supporting an HTML encoding." +
-                    "\n\nIf the records can be represented for the intended use in GeoJSON, implementations SHOULD consider supporting GeoJSON as an encoding for records and catalogues (i.e. record collections)." +
-                    "\n\nIf a catalogue (i.e. record collection) can be represented for the intended use in JSON, implementations SHOULD consider supporting JSON as an encoding for a catalogue (i.e. record collection)." +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
-                    "\n\n### Example: \n\n• get response in JSON with value 'internal' \n\n• get response in HTML with value 'html'\n\n• get response in ISO with value 'ingridISO' \n\n get response in IDF JSON with value 'indexInGridIDF'"
+                    "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+                    "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
+                    "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
             ) @RequestParam(value = "f", required = false) format: String?,
     ): ResponseEntity<ByteArray>
 
