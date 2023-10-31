@@ -55,15 +55,14 @@ class ExceptionTests : IntegrationTest() {
 
     @Test
     fun getCollection() {
-        mockMvc.perform(get("/collections/$collectionId"))
+        mockMvc.perform(get("/api/ogc/collections/$collectionId"))
             .andDo(print())
             .andExpect(status().isOk)
     }
 
-    @Ignore
     @Test
     fun getCollectionByWrongCollectionId() {
-        mockMvc.perform(get("/collections/$wrongCollectionId"))
+        mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId"))
             .andDo(print())
             .andExpect(status().isNotFound)
             .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'collection' with id '$wrongCollectionId' is missing."))
@@ -73,25 +72,23 @@ class ExceptionTests : IntegrationTest() {
     @Test
     fun getRecord() {
         for(format in formats) {
-            mockMvc.perform(get("/collections/$collectionId/items/$recordId").param("f", format))
+            mockMvc.perform(get("/api/ogc/collections/$collectionId/items/$recordId").param("f", format))
                 .andDo(print())
                 .andExpect(status().isOk)
         }
     }
 
-    @Ignore
     @Test
     fun getRecordByWrongRecordId() {
-        mockMvc.perform(get("/collections/$collectionId/items/$wrongRecordId"))
+        mockMvc.perform(get("/api/ogc/collections/$collectionId/items/$wrongRecordId"))
             .andDo(print())
             .andExpect(status().isNotFound)
             .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
     }
 
-    @Ignore
     @Test
     fun getRecordByWrongCollectionIdAndRightRecordId() {
-        mockMvc.perform(get("/collections/$wrongCollectionId/items/$recordId"))
+        mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId/items/$recordId"))
             .andDo(print())
             .andExpect(status().isNotFound)
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
