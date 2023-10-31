@@ -41,7 +41,7 @@ export class UrlCheckComponent implements OnInit {
     this.urlCheckService.getJobInfo().pipe(map((value) => value.info)),
     this.rxStompService
       .watch(`/topic/jobs/url-check/${ConfigService.catalogId}`)
-      .pipe(map((msg) => JSON.parse(msg.body)))
+      .pipe(map((msg) => JSON.parse(msg.body))),
   ).pipe(tap((data: UrlLogResult) => this.handleReport(data)));
 
   dataSource = new MatTableDataSource<UrlInfo>([]);
@@ -67,7 +67,7 @@ export class UrlCheckComponent implements OnInit {
     private urlCheckService: UrlCheckService,
     private rxStompService: RxStompService,
     private dialog: MatDialog,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
   ) {}
 
   ngOnInit(): void {}
@@ -119,11 +119,11 @@ export class UrlCheckComponent implements OnInit {
   private updateSelectionInTable(url: string, replaceResponse: any) {
     if (replaceResponse.urlValid) {
       this.dataSource.data = this.dataSource.data.filter(
-        (item) => item.url !== this.selection.selected[0].url
+        (item) => item.url !== this.selection.selected[0].url,
       );
     } else {
       const entry = this.dataSource.data.find(
-        (item) => item.url === this.selection.selected[0].url
+        (item) => item.url === this.selection.selected[0].url,
       );
       entry.url = url;
       entry.status = replaceResponse.status;
@@ -147,7 +147,7 @@ export class UrlCheckComponent implements OnInit {
   private notifyUser(response: any) {
     if (response.docsUpdated === 0) {
       throw new IgeError(
-        "Die zu ersetzende URL konnte nicht gefunden werden. Bitte starten Sie die Prüfung erneut."
+        "Die zu ersetzende URL konnte nicht gefunden werden. Bitte starten Sie die Prüfung erneut.",
       );
     } else if (response.urlValid) {
       this.snack.open("Die URL wurde erfolgreich ersetzt");

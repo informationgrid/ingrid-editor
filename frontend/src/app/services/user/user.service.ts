@@ -40,11 +40,11 @@ export class UserService {
     private groupService: GroupService,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
-    private keycloakService: AuthenticationFactory
+    private keycloakService: AuthenticationFactory,
   ) {
     if (!this.configService.isAdmin()) {
       this.availableRoles = this.availableRoles.filter(
-        (o) => o.value != "cat-admin"
+        (o) => o.value != "cat-admin",
       );
     }
   }
@@ -60,11 +60,11 @@ export class UserService {
         users
           .filter(
             // remove current user from list
-            (u) => u.login !== this.configService.$userInfo.getValue().login
+            (u) => u.login !== this.configService.$userInfo.getValue().login,
           )
-          .sort((a, b) => a.login.localeCompare(b.login))
+          .sort((a, b) => a.login.localeCompare(b.login)),
       ),
-      tap((users) => this.users$.next(users ? users : []))
+      tap((users) => this.users$.next(users ? users : [])),
     );
   }
 
@@ -99,12 +99,12 @@ export class UserService {
       catchError((error) => {
         if (error.status === 404) {
           throw new IgeError(
-            "Es existiert kein Benutzer mit dem Login: " + user.login
+            "Es existiert kein Benutzer mit dem Login: " + user.login,
           );
         } else {
           throw error;
         }
-      })
+      }),
     );
   }
 
@@ -115,14 +115,14 @@ export class UserService {
   }
 
   private static handleChangeEmailError(
-    response: HttpErrorResponse
+    response: HttpErrorResponse,
   ): Observable<any> {
     if (
       response.status === 409 &&
       response.error.errorMessage === "emailExistsMessage"
     ) {
       throw new IgeError(
-        "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet."
+        "Diese E-Mail-Adresse wird bereits für einen anderen Benutzernamen verwendet.",
       );
     }
 
@@ -136,7 +136,7 @@ export class UserService {
         this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
           panelClass: "green",
         });
-      })
+      }),
     );
   }
 
@@ -157,7 +157,7 @@ export class UserService {
   }
 
   private getExternalUsersAsSelectOptions(
-    users: BackendUser[]
+    users: BackendUser[],
   ): SelectOptionUi[] {
     return users.map((user) => {
       return new SelectOption(user.login, user.login);
@@ -167,21 +167,21 @@ export class UserService {
   getUserFormFields(
     groups,
     groupClickCallback: (id: string) => void = undefined,
-    roleChangeCallback: FormlyAttributeEvent = undefined
+    roleChangeCallback: FormlyAttributeEvent = undefined,
   ): FormlyFieldConfig[] {
     console.log("get user form fields");
     return getUserFormFields(
       this.availableRoles,
       groups,
       groupClickCallback,
-      roleChangeCallback
+      roleChangeCallback,
     );
   }
 
   getNewUserFormFields(users: BackendUser[]): FormlyFieldConfig[] {
     return getNewUserFormFields(
       this.availableRoles,
-      this.getExternalUsersAsSelectOptions(users)
+      this.getExternalUsersAsSelectOptions(users),
     );
   }
 

@@ -294,23 +294,20 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
         val urls = mutableListOf<UrlBean>()
-        val orNodes = xPathUtils.getNodeList(doc, xPath)
-        if (orNodes != null) {
-            for (i in 0 until orNodes.length) {
-                val url = UrlBean()
-                val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
+        val orNodes = xPathUtils.getNodeList(doc, xPath) ?: return urls
+        
+        for (i in 0 until orNodes.length) {
+            val url = UrlBean()
+            val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
 
-                // do not add link if there's none (#781)
-                if (link == null || link.trim() == "") continue
+            // do not add link if there's none (#781) or starts with mailto (#5583)
+            if (link.isNullOrEmpty() || link.startsWith("mailto:")) continue
 
-                url.url = link
-//                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
-//                if (type != null) url.type = type
-                url.type = KeyValue("9999", "Unspezifischer Verweis")
-                url.title = "Verweis"
+            url.url = link
+            url.type = KeyValue(null, "Informationen im Internet")
+            url.title = link
 
-                urls.add(url)
-            }
+            urls.add(url)
         }
         return urls
     }
@@ -541,7 +538,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return null;
     }
 
-    protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
+    protected fun getKeyValue(codelistId: String, value: String?, valueField: String = "de"): KeyValue? {
+        if (value == null) return null
+        
         if (codelistId == "6200" && value.lowercase() == "de") {
             val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
             return KeyValue(id, null)

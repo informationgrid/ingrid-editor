@@ -35,7 +35,7 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
     private leafletService: LeafletService,
     private contextHelpService: ContextHelpService,
     private translocoService: TranslocoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -83,14 +83,14 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
 
   public showHelpDialog() {
     let desc: Observable<string> = of(
-      this.translocoService.translate("spatial.spatialWktHelptext")
+      this.translocoService.translate("spatial.spatialWktHelptext"),
     );
 
     this.currentDialog?.close();
 
     this.contextHelpService.showContextHelpPopup(
       "Begrenzungspolygon als WKT",
-      desc
+      desc,
     );
   }
 }

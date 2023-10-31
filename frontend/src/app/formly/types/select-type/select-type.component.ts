@@ -66,7 +66,7 @@ export class SelectTypeComponent
       .pipe(
         untilDestroyed(this),
         filter(([, ready]) => ready),
-        tap(([value]) => this.updateSelectField(value))
+        tap(([value]) => this.updateSelectField(value)),
       )
       .subscribe();
 
@@ -82,13 +82,13 @@ export class SelectTypeComponent
         map((options) =>
           options.map(
             (option) =>
-              <BackendOption>{ key: option.value, value: option.label }
-          )
+              <BackendOption>{ key: option.value, value: option.label },
+          ),
         ),
         tap((data) => (this.selectOptions = data)),
         tap((data) => (this.filteredOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
-        tap(() => this.updateSelectField(this.formControl.value))
+        tap(() => this.updateSelectField(this.formControl.value)),
       )
       .subscribe();
   }
@@ -124,7 +124,7 @@ export class SelectTypeComponent
     this.formControl.setValue(
       !this.value || this.value.length !== selectAllValue.length
         ? selectAllValue
-        : []
+        : [],
     );
 
     this.formControl.markAsDirty();
@@ -152,7 +152,7 @@ export class SelectTypeComponent
     if (!this.selectAllValue || options !== this.selectAllValue.options) {
       const flatOptions: any[] = [];
       options.forEach((o) =>
-        o.group ? flatOptions.push(...o.group) : flatOptions.push(o)
+        o.group ? flatOptions.push(...o.group) : flatOptions.push(o),
       );
 
       this.selectAllValue = {
@@ -167,7 +167,7 @@ export class SelectTypeComponent
   search(value: string) {
     let filter = value.toLowerCase();
     return this.selectOptions.filter(
-      (option) => option.value.toLowerCase().indexOf(filter) !== -1
+      (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
   }
 }

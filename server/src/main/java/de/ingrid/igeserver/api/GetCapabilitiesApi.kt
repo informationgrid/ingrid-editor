@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import java.security.Principal
 
+@Hidden
 @Tag(name = "GetCapabilities", description = "the groups API")
 interface GetCapabilitiesApi {
     @Operation(description = "")

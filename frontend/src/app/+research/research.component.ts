@@ -15,7 +15,7 @@ export class ResearchComponent {
   constructor(
     private router: Router,
     private sessionService: SessionService,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
   ) {
     this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
 
@@ -24,7 +24,7 @@ export class ResearchComponent {
     const currentPath = this.router.parseUrl(this.router.url).root.children
       .primary.segments[2].path;
     const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath
+      (tab) => tab.path === currentPath,
     );
     if (activeTabIndex !== 0) {
       this.updateTab(activeTabIndex);

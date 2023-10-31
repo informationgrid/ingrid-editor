@@ -56,7 +56,7 @@ export class LeafletTypeComponent
     private configService: ConfigService,
     private leafletService: LeafletService,
     private _changeDetectionRef: ChangeDetectorRef,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {
     super();
   }
@@ -69,7 +69,7 @@ export class LeafletTypeComponent
       .pipe(
         untilDestroyed(this),
         distinctUntilChanged(),
-        tap((value: SpatialLocation[]) => (this.locations = value || []))
+        tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )
       .subscribe(() => this.updateBoundingBox());
 
@@ -77,7 +77,7 @@ export class LeafletTypeComponent
       const options: MapOptions = this.props.mapOptions;
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,
-        { ...options, scrollWheelZoom: false }
+        { ...options, scrollWheelZoom: false },
       );
 
       // when switching from a folder to a document with leaflet map then we need
@@ -94,7 +94,7 @@ export class LeafletTypeComponent
         } catch (e) {
           console.warn(
             "Failed to update bounding box. map already unloaded?",
-            e
+            e,
           );
         }
       });
@@ -122,11 +122,11 @@ export class LeafletTypeComponent
     this.updateLocations([]);
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
-      this.drawnSpatialRefs
+      this.drawnSpatialRefs,
     );
 
     const hasCoordinates = this.locations.some(
-      (location) => location.value || location.wkt
+      (location) => location.value || location.wkt,
     );
 
     if (this.locations.length === 0 || !hasCoordinates) {
@@ -136,14 +136,14 @@ export class LeafletTypeComponent
     }
 
     const locationsWithColor = this.leafletService.extendLocationsWithColor(
-      this.locations
+      this.locations,
     );
     this.updateLocations(locationsWithColor);
 
     if (hasCoordinates) {
       this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(
         this.leafletReference,
-        locationsWithColor
+        locationsWithColor,
       );
       this.leafletReference.dragging.enable();
       this.leafletReference.doubleClickZoom.enable();
@@ -169,7 +169,7 @@ export class LeafletTypeComponent
   openSpatialDialog(locationIndex?: number) {
     console.log(
       "The Location index array size before adding / updating: ",
-      this.locations.length
+      this.locations.length,
     );
     this.dialog
       .open(SpatialDialogComponent, {
@@ -194,7 +194,7 @@ export class LeafletTypeComponent
           }
           console.log(
             "The Location index array size after adding / updating: ",
-            this.locations.length
+            this.locations.length,
           );
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
@@ -228,7 +228,7 @@ export class LeafletTypeComponent
 
   showContextHelp() {
     let desc: Observable<string> = of(
-      this.translocoService.translate("spatial.generalHelp")
+      this.translocoService.translate("spatial.generalHelp"),
     );
 
     this.contextHelpService.showContextHelpPopup("Raumbezug", desc);

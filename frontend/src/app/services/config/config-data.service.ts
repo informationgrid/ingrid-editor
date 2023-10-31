@@ -27,14 +27,14 @@ export class ConfigDataService {
     return firstValueFrom(
       this.httpClient
         .get<any>(config.contextPath + "api/config")
-        .pipe(map((data) => ({ ...config, ...data })))
+        .pipe(map((data) => ({ ...config, ...data }))),
     );
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {
     return (
       firstValueFrom(
-        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser")
+        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser"),
       )
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
@@ -49,18 +49,18 @@ export class ConfigDataService {
             }
           } else if ((<XMLHttpRequest>e).status === 401) {
             throw new Error(
-              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein"
+              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein",
             );
           } else if ((<XMLHttpRequest>e).status === 403) {
             throw new Error(
-              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator."
+              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator.",
             );
           } else {
             if (e instanceof HttpErrorResponse) {
               const error = <IgeException>e.error;
               if (error.errorCode === "PROFILE_NOT_FOUND") {
                 throw new Error(
-                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`
+                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`,
                 );
               } else {
                 throw new Error(error.errorText);

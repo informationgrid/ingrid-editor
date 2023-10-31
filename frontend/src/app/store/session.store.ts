@@ -12,6 +12,7 @@ export interface SessionState {
     sidebarWidth?: number;
     showJSONView?: boolean;
     userTableWidth?: number;
+    toggleFieldsButtonShowAll?: boolean;
     currentTab: {
       research: string;
       manage: string;
@@ -28,8 +29,8 @@ export interface SessionState {
 }
 
 export interface ValidationError {
-  key: string;
-  messages: { [x: string]: { message: string } }[];
+  name: string;
+  errorCode: string;
 }
 
 export function createInitialState(): SessionState {
@@ -43,6 +44,7 @@ export function createInitialState(): SessionState {
       sidebarWidth: 30,
       showJSONView: false,
       userTableWidth: 35,
+      toggleFieldsButtonShowAll: false,
       currentTab: {
         research: null,
         manage: null,

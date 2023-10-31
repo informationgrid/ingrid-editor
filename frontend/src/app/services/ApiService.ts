@@ -9,14 +9,17 @@ import { Observable } from "rxjs";
 export class ApiService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
   getIsoDocument(id: number): Observable<any> {
     return this.http.get(
       this.configuration.backendUrl + "datasets/" + id + "/export/ISO",
-      { responseType: "text" }
+      { responseType: "text" },
     );
     // .pipe( catchError( error => this.errorService.handle( error ) ) );
   }

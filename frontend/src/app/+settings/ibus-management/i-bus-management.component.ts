@@ -45,7 +45,7 @@ export class IBusManagementComponent implements OnInit {
       this.configService
         .isIBusConnected(index)
         .subscribe(
-          (connected) => (this.connectionStates[index].connected = connected)
+          (connected) => (this.connectionStates[index].connected = connected),
         );
     });
   }

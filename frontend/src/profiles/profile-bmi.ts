@@ -17,7 +17,7 @@ class BmiComponent {
     reportsService: ReportsService,
     bmi: BmiDoctype,
     folder: FolderDoctype,
-    bmiAddress: BmiAddressDoctype
+    bmiAddress: BmiAddressDoctype,
   ) {
     const types = [bmi, folder, bmiAddress];
 

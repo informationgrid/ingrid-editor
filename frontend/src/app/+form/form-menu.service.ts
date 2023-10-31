@@ -44,7 +44,7 @@ export class FormMenuService {
 
   removeMenuItem(menuId: MenuId, menuItemName: string): void {
     this.menuItems[menuId] = this.menuItems[menuId].filter(
-      (item) => item.name !== menuItemName
+      (item) => item.name !== menuItemName,
     );
   }
 }

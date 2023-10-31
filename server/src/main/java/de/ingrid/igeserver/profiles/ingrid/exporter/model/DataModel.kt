@@ -147,7 +147,7 @@ data class CoupledResource(
     val title: String?,
     val url: String?,
     val identifier: String?,
-    val uuid: String,
+    val uuid: String?,
     val isExternalRef: Boolean
 )
 

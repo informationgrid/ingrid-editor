@@ -196,7 +196,7 @@ export class McloudDoctype extends BaseDoctype {
                 wrappers: ["form-field"],
                 externalLabel: null,
                 options: this.getCodelistForSelect(502, "text").pipe(
-                  map((items) => items.filter((it) => it.value !== "2"))
+                  map((items) => items.filter((it) => it.value !== "2")),
                 ),
                 codelistId: 502,
               }),

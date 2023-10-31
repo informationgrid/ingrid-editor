@@ -17,7 +17,7 @@ export class MockKeycloakInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<any>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     // array in local storage for registered users
     // const users: any[] = JSON.parse( localStorage.getItem( 'users' ) ) || [];
@@ -48,7 +48,7 @@ export class MockKeycloakInterceptor implements HttpInterceptor {
             },
           ];
           return Observable.create(
-            new HttpResponse({ status: 200, body: body })
+            new HttpResponse({ status: 200, body: body }),
           );
         } else if (
           request.url.endsWith("/api/users/ige") &&
@@ -63,7 +63,7 @@ export class MockKeycloakInterceptor implements HttpInterceptor {
             attributes: [],
           };
           return Observable.create(
-            new HttpResponse({ status: 200, body: body })
+            new HttpResponse({ status: 200, body: body }),
           );
         } else if (
           request.url.endsWith("/api/groups") &&
@@ -84,13 +84,13 @@ export class MockKeycloakInterceptor implements HttpInterceptor {
             },
           ];
           return Observable.create(
-            new HttpResponse({ status: 200, body: body })
+            new HttpResponse({ status: 200, body: body }),
           );
         }
 
         // pass through any requests not handled above
         return next.handle(request);
-      })
+      }),
     );
   }
 }

@@ -24,7 +24,7 @@ export class DeactivateGuard {
     component: UserComponent | GroupComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
-    nextState?: RouterStateSnapshot
+    nextState?: RouterStateSnapshot,
   ):
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>
@@ -78,9 +78,9 @@ export class DeactivateGuard {
         tap((response) =>
           response
             ? this.handleAction(response, type, currentObject, component)
-            : null
+            : null,
         ),
-        map((response) => response === "discard" || response === "save")
+        map((response) => response === "discard" || response === "save"),
       );
   }
 
@@ -88,7 +88,7 @@ export class DeactivateGuard {
     action: undefined | "save" | "discard",
     type: "group" | "user",
     currentObject = null,
-    component: UserComponent | GroupComponent
+    component: UserComponent | GroupComponent,
   ) {
     console.log(currentObject);
     if (action === "save") {

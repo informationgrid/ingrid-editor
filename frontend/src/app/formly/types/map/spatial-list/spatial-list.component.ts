@@ -55,12 +55,12 @@ export class SpatialListComponent implements OnInit {
         prev[curr.type].push(curr);
         return prev;
       },
-      { free: [], wkt: [], coordinates: [], wfsgnde: [] }
+      { free: [], wkt: [], coordinates: [], wfsgnde: [] },
     );
 
     // @ts-ignore
     this.types = Object.keys(this.typedLocations).filter(
-      (type) => this.typedLocations[type].length > 0
+      (type) => this.typedLocations[type].length > 0,
     );
   }
 

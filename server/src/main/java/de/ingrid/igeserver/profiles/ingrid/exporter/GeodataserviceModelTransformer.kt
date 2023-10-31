@@ -1,20 +1,20 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
-class GeodataserviceModelTransformer constructor(
+class GeodataserviceModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
     config: Config,
     catalogService: CatalogService,
+    cache: TransformerCache
 ) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService
+    model, catalogIdentifier, codelistTransformer, config, catalogService, cache
 ) {
 
     override val hierarchyLevel = "service"
@@ -43,11 +43,10 @@ class GeodataserviceModelTransformer constructor(
             return description.removeSuffix(";")
         }
 
-    val abstractText = model.data.description ?: "";
+    val abstractText = model.data.description ?: ""
     val history = data.service?.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
     val hasAccessConstraint = model.data.service?.hasAccessConstraints ?: false
-
 
 
     init {

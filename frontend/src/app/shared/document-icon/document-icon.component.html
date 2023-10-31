@@ -1,8 +1,10 @@
-<div class="icon-wrapper">
+<div
+    class="icon-wrapper"
+    [matTooltip]="explicitTooltip ?? tooltip"
+    [matTooltipShowDelay]="showDelay"
+>
     <mat-icon
         *ngIf="_doc"
-        [matTooltip]="explicitTooltip ?? tooltip"
-        [matTooltipShowDelay]="showDelay"
         [ngClass]="['document-icon', documentState]"
         [svgIcon]="iconClass"
     ></mat-icon>

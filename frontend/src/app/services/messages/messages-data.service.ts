@@ -10,7 +10,10 @@ import { Message, MessageFormatBackend } from "./message";
 export class MessagesDataService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
@@ -20,14 +23,14 @@ export class MessagesDataService {
 
   loadAllMessages(): Observable<MessageFormatBackend[]> {
     return this.http.get<MessageFormatBackend[]>(
-      this.configuration.backendUrl + "dbMessages"
+      this.configuration.backendUrl + "dbMessages",
     );
   }
 
   createMessage(
     message: Message,
     validUntil: Date,
-    forCurrentCatalog: boolean
+    forCurrentCatalog: boolean,
   ) {
     return this.http.post(this.configuration.backendUrl + "messages", {
       message,

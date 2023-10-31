@@ -1,8 +1,8 @@
-# Swagger generated server
+# IGE-NG
 
-Spring Boot Server
+[Full documentation](docs/index.adoc)
 
-## Development
+## Getting started
 
 ### Configure the server
 
@@ -133,21 +133,13 @@ For end-to-end tests with Cypress check out the README.md inside `frontend/e2e` 
 
 ## Update changelog
 
-We use the standard of [Keep a Changelog](https://keepachangelog.com/).
-
-The gradle-changelog-plugin can be used to update the unreleased section to the current version
-and to create a new unreleased section.
-
-```shell
-gradlew patchChangelog
-```
+TBD
 
 ## Release a new version
 
 - Set an annotated tag to the latest commit which represents the release
   - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
-- push tag (with commit) to remote
-  - if only tag was pushed, build needs to be triggered manually in Jenkins
+- push tag (with commit) to remote, which will trigger a new build in Jenkins
 
 # Jenkins Setup
 

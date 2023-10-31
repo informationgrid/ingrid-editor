@@ -62,11 +62,11 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   constructor(
     private dialogRef: MatDialogRef<SpatialDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
-    private leafletService: LeafletService
+    private leafletService: LeafletService,
   ) {
     if (this.data?.limitTypes) {
       this.types = this.types.filter(
-        (type) => this.data.limitTypes.indexOf(type.id) !== -1
+        (type) => this.data.limitTypes.indexOf(type.id) !== -1,
       );
     }
   }
@@ -93,7 +93,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.leafletReference = this.leafletService.initMap(
       this.leaflet.nativeElement,
-      {}
+      {},
     );
     setTimeout(() => this.updateView(this.data?.type ?? "free"));
   }

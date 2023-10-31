@@ -63,7 +63,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       input = await loader.getHarness(MatInputHarness);
@@ -148,7 +148,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
@@ -225,7 +225,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       select = await loader.getHarness(MatSelectHarness);
@@ -250,7 +250,7 @@ describe("RepeatListComponent", () => {
       spectator.detectChanges();
 
       const placeholderElement = document.querySelector(
-        ".mat-mdc-select-placeholder"
+        ".mat-mdc-select-placeholder",
       );
       expect(placeholderElement).toContainText(placeholder);
     });
@@ -286,7 +286,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
@@ -365,7 +365,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);

@@ -110,16 +110,16 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   getCodelistForSelectWithEmtpyOption(
     codelistId: number,
-    field: string
+    field: string,
   ): Observable<SelectOptionUi[]> {
     return this.getCodelistForSelect(codelistId, field).pipe(
-      map((cl) => [new SelectOption(undefined, "")].concat(cl))
+      map((cl) => [new SelectOption(undefined, "")].concat(cl)),
     );
   }
 
   getCodelistForSelect(
     codelistId: number,
-    field: string
+    field: string,
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
 
@@ -192,8 +192,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         this.fieldsMap.push(
           new SelectOption(
             fieldKey,
-            field.props?.externalLabel || field.props?.label
-          )
+            field.props?.externalLabel || field.props?.label,
+          ),
         );
       }
     });
@@ -214,7 +214,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
             filter((codelist) => codelist.default && codelist.default != "-1"),
             tap((codelist) => {
               console.log(
-                `Setting default codelist value for: ${field.key} with: ${codelist.default}`
+                `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
               );
               if (field.type === "select") {
                 field.defaultValue = codelist.default;
@@ -222,10 +222,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
                 field.defaultValue = [{ key: codelist.default }];
               } else {
                 field.defaultValue = codelist.entries.find(
-                  (entry) => entry.id === codelist.default
+                  (entry) => entry.id === codelist.default,
                 ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
               }
-            })
+            }),
           )
           .subscribe();
       }
@@ -237,7 +237,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       ? this.codelistQuery.getCodelistEntryValueByKey(
           codelist,
           item.key,
-          item.value
+          item.value,
         )
       : item?.value;
   }
@@ -252,7 +252,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   private createFieldsForPrint(
-    fields: FormlyFieldConfig[]
+    fields: FormlyFieldConfig[],
   ): FormlyFieldConfig[] {
     const supportedTypes = [
       "input",
@@ -272,17 +272,17 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldArray) {
         (<FormlyFieldConfig>field.fieldArray).fieldGroup =
           this.createFieldsForPrint(
-            (<FormlyFieldConfig>field.fieldArray).fieldGroup
+            (<FormlyFieldConfig>field.fieldArray).fieldGroup,
           );
       }
       if (field.props?.columns?.length > 0) {
         const formatter = this.getFormatterForColumn(
           this.fields,
-          field.key as string
+          field.key as string,
         );
         if (formatter) {
           field.props.columns.forEach(
-            (column, index) => (column.props.formatter = formatter[index])
+            (column, index) => (column.props.formatter = formatter[index]),
           );
         }
       }
@@ -291,7 +291,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       delete field.validation;
 
       field.wrappers = field.wrappers?.filter(
-        (wrapper) => wrapper !== "form-field"
+        (wrapper) => wrapper !== "form-field",
       );
 
       if (
@@ -330,7 +330,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldArray) {
         this.addDifferenceFlags(
           (<FormlyFieldConfig>field.fieldArray).fieldGroup,
-          diffObj
+          diffObj,
         );
       }
       if (this.calcIsDifferent(field, diffObj)) {
@@ -355,7 +355,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   private getFormatterForColumn(
     fields: FormlyFieldConfig[],
-    tableId: string
+    tableId: string,
   ): any[] {
     if (!fields) return null;
     for (const field of fields) {
@@ -366,7 +366,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldArray) {
         const result = this.getFormatterForColumn(
           (<FormlyFieldConfig>field.fieldArray).fieldGroup,
-          tableId
+          tableId,
         );
         if (result) return result;
       }

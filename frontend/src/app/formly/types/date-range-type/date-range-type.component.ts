@@ -21,7 +21,7 @@ export class DateRangeTypeComponent
 
   ngOnInit(): void {
     this.rangeFormGroup.setValue(
-      this.formControl.value ?? { start: null, end: null }
+      this.formControl.value ?? { start: null, end: null },
     );
 
     this.formControl.addValidators([
@@ -36,7 +36,7 @@ export class DateRangeTypeComponent
           value ?? {
             start: null,
             end: null,
-          }
+          },
         );
       });
   }

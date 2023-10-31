@@ -17,7 +17,7 @@ export class LineAndSpatialShared extends UvpShared {
               this.id,
               {
                 required: true,
-              }
+              },
             ),
             this.addPointOfContact(),
           ]),
@@ -39,7 +39,7 @@ export class LineAndSpatialShared extends UvpShared {
               showSearch: true,
               options: this.getCodelistForSelect(
                 this.uvpNumberCodelistId,
-                "eiaNumbers"
+                "eiaNumbers",
               ).pipe(map((list) => this.sortUVPNumber(list))),
               codelistId: this.uvpNumberCodelistId,
               asSelect: true,
@@ -60,7 +60,7 @@ export class LineAndSpatialShared extends UvpShared {
                 const missingType = field.model?.some((item) => !item.type);
                 if (missingType) {
                   throw new Error(
-                    "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut."
+                    "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut.",
                   );
                 }
                 return true;

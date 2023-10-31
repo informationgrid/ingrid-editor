@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.DataHistoryRecord
 import de.ingrid.igeserver.model.SearchResult
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.time.LocalDate
 
+@Hidden
 @Tag(name = "DataHistory", description = "the data history API")
 interface DataHistoryApi {
     @GetMapping(value = ["/data-history"], produces = [MediaType.APPLICATION_JSON_VALUE])

@@ -57,7 +57,7 @@ export class TabExpirationComponent implements OnInit {
   isFiltered$ = new BehaviorSubject<boolean>(false);
   expiredData$ = new BehaviorSubject<ExpiredData>(undefined);
   shownData = combineLatest([this.expiredData$, this.isFiltered$]).pipe(
-    map(() => this.getShownData())
+    map(() => this.getShownData()),
   );
 
   constructor(
@@ -65,7 +65,7 @@ export class TabExpirationComponent implements OnInit {
     private configService: ConfigService,
     private catalogService: CatalogService,
     private userDataService: UserDataService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +81,7 @@ export class TabExpirationComponent implements OnInit {
         tap(() => (this.isSearching = true)),
         debounce(() => timer(500)),
         concatMap(() => this.updateResult()),
-        tap(() => (this.isSearching = false))
+        tap(() => (this.isSearching = false)),
       )
       .subscribe();
   }
@@ -90,7 +90,7 @@ export class TabExpirationComponent implements OnInit {
     this.configService.$userInfo
       .pipe(
         untilDestroyed(this),
-        tap((info) => (this.currentUserId = info.id))
+        tap((info) => (this.currentUserId = info.id)),
       )
       .subscribe();
     this.catalogService
@@ -98,7 +98,7 @@ export class TabExpirationComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         tap((expiryDuration) => (this.expiryDurationInDays = expiryDuration)),
-        tap(() => this.onSearch.emit())
+        tap(() => this.onSearch.emit()),
       )
       .subscribe();
   }
@@ -110,9 +110,9 @@ export class TabExpirationComponent implements OnInit {
         filter(
           (event) =>
             event instanceof NavigationEnd &&
-            event.url.includes("reports/expiration")
+            event.url.includes("reports/expiration"),
         ),
-        tap(() => this.onSearch.emit())
+        tap(() => this.onSearch.emit()),
       )
       .subscribe();
   }
@@ -123,8 +123,8 @@ export class TabExpirationComponent implements OnInit {
     return this.search("selectDocuments").pipe(
       combineLatestWith(this.search("selectAddresses")),
       map(([objects, addresses]) =>
-        this.expiredData$.next(new ExpiredData(objects.hits, addresses.hits))
-      )
+        this.expiredData$.next(new ExpiredData(objects.hits, addresses.hits)),
+      ),
     );
   }
 
@@ -140,17 +140,17 @@ export class TabExpirationComponent implements OnInit {
         "contentmodified",
         "ASC",
         undefined,
-        ["selectOnlyPublished"]
+        ["selectOnlyPublished"],
       )
       .pipe(
         catchError((error) => this.updateOnError(error)),
-        map((res) => this.filterByExpiry(res))
+        map((res) => this.filterByExpiry(res)),
       );
   }
 
   private filterByExpiry(res: ResearchResponse): ResearchResponse {
     const filtered = res.hits.filter((doc) =>
-      isExpired(doc._contentModified, this.expiryDurationInDays)
+      isExpired(doc._contentModified, this.expiryDurationInDays),
     );
     return { totalHits: filtered.length, hits: filtered };
   }

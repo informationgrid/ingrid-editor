@@ -27,13 +27,13 @@ export class TreeService {
 
   constructor(
     private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore
+    private addressTreeStore: AddressTreeStore,
   ) {}
 
   registerTreeSortFunction(treeSortFn: TreeSortFn) {
     if (treeSortFn !== null && this.alternativeSortFunction !== null) {
       console.error(
-        "There are multiple sort functions registered for the tree. Will ignore others!"
+        "There are multiple sort functions registered for the tree. Will ignore others!",
       );
     } else {
       this.alternativeSortFunction = treeSortFn;

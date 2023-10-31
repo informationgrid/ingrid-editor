@@ -23,7 +23,7 @@ export class ProfileService {
     private configService: ConfigService,
     private profileStore: ProfileStore,
     private contextHelpService: ContextHelpService,
-    private errorService: ModalService
+    private errorService: ModalService,
   ) {}
 
   initProfile(): Observable<Type<any>> {
@@ -34,7 +34,7 @@ export class ProfileService {
       catchError((error) => {
         this.errorService.showJavascriptError(error.message, error.stack);
         throw error;
-      })
+      }),
     );
   }
 
@@ -69,7 +69,7 @@ export class ProfileService {
       .map(
         (doctype) =>
           (doctype.getIconClass && doctype.getIconClass(doc)) ||
-          doctype.iconClass
+          doctype.iconClass,
       );
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
@@ -100,12 +100,12 @@ export class ProfileService {
     // TODO: get ContextHelpIDs of all document types at once to improve speed
     const profile = this.configService.$userInfo.value.currentCatalog.type;
     const helpIdsObservables = this.doctypes.map((type) =>
-      this.contextHelpService.getAvailableHelpFieldIds(profile, type.id)
+      this.contextHelpService.getAvailableHelpFieldIds(profile, type.id),
     );
     forkJoin(helpIdsObservables)
       .pipe(
         tap((results) => this.initDocumentTypes(results)),
-        tap(() => this.finishProfileInitialization())
+        tap(() => this.finishProfileInitialization()),
       )
       .subscribe();
   }

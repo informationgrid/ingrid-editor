@@ -2,17 +2,13 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.HelpMessage
 import de.ingrid.igeserver.services.ContextHelpService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(path = ["/api"])
-class ContexthelpApiController : ContexthelpApi {
-
-    @Autowired
-    private lateinit var helpService: ContextHelpService
+class ContexthelpApiController(val helpService: ContextHelpService) : ContexthelpApi {
 
     override fun getContextHelpText(id: String, profile: String, docType: String): ResponseEntity<HelpMessage> {
 
@@ -22,8 +18,6 @@ class ContexthelpApiController : ContexthelpApi {
     }
 
     override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> {
-
         return ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
-
     }
 }

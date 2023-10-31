@@ -16,7 +16,7 @@ export class ConfigurationComponent implements OnInit {
 
   constructor(
     private codelistService: CodelistService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
   ) {}
 
   ngOnInit(): void {

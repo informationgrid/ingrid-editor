@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,7 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import java.security.Principal
 
 data class PermissionInfo(
     val canRead: Boolean = false,
@@ -55,6 +57,7 @@ class IgeAclService @Autowired constructor(
                         BasePermission.WRITE,
                         sids
                     )
+
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
@@ -70,7 +73,7 @@ class IgeAclService @Autowired constructor(
         val hasRootWrite =
             checkForRootPermissions(sids, listOf(BasePermission.WRITE))
         val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
-        
+
         if (authUtils.isAdmin(authentication)) {
             return PermissionInfo(true, true, false)
         } else if (id == null) {
@@ -167,6 +170,20 @@ class IgeAclService @Autowired constructor(
     fun removeAclForDocument(id: Int) {
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
+    }
+
+    fun hasRootAccess(groups: Set<Group>) =
+        groups.any {
+            listOf(
+                RootPermissionType.READ,
+                RootPermissionType.WRITE
+            ).contains(it.permissions?.rootPermission)
+        }
+
+    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String, catalogId: String): List<Int> {
+        val groups = authUtils.getCurrentUserRoles(catalogId)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)
     }
 
 }

@@ -1,7 +1,7 @@
 <div *ngIf="doc._pendingDate" class="publish-pending-info">
     <div *transloco="let t; read: 'publish'">
         {{ t("formWithPronoun") }} wird am
-        {{ doc._pendingDate | date : "dd.MM.yyyy" }} veröffentlicht.
+        {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
     </div>
     <div *transloco="let t; read: 'dashboard'">
         <button

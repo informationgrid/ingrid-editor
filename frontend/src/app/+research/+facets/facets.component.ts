@@ -105,7 +105,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     private leafletService: LeafletService,
     private fb: UntypedFormBuilder,
     public codelistService: CodelistService,
-    private behaviourService: BehaviourService
+    private behaviourService: BehaviourService,
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +119,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       this.facetsInitialized
         .pipe(
           filter((isReady) => isReady),
-          take(1)
+          take(1),
         )
         .subscribe(() => {
           // reset form and remove spatial before updating form
@@ -153,7 +153,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       this.leaflet.nativeElement.style.minWidth = "200px";
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,
-        {}
+        {},
       );
       this.leafletService.zoomToInitialBox(this.leafletReference);
       // @ts-ignore
@@ -172,7 +172,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           this.fb.group({
             start: [],
             end: [],
-          })
+          }),
         );
       } else {
         const groupControls = group.filter.reduce((prev, current) => {
@@ -264,7 +264,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
-      this.boxes
+      this.boxes,
     );
   }
 
@@ -280,7 +280,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     let filter = this.allFacets[this._forAddresses ? "addresses" : "documents"];
     if (this.forReports)
       filter = filter.filter(
-        (fg) => !this.researchOnlyFilterIds.includes(fg.id)
+        (fg) => !this.researchOnlyFilterIds.includes(fg.id),
       );
     this.setDefaultModel(filter);
     this.filterGroup = filter;
@@ -305,7 +305,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   private getSpatialKey() {
     return Object.keys(
-      (<UntypedFormGroup>this.form.get("spatial")).controls
+      (<UntypedFormGroup>this.form.get("spatial")).controls,
     )[0];
   }
 

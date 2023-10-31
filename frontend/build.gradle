@@ -27,7 +27,7 @@ if (hasProperty('baseHref')) {
 }
 
 task yarnUpgrade(type: YarnTask, dependsOn: 'yarnSetup') {
-  args = ['set', 'version', 'stable']     // maybe with `yarn set version 3.x` also
+  args = ['set', 'version', '3.x']     // maybe with `yarn set version 3.x` also
 }
 
 task yarnInstall(type: YarnTask, dependsOn: 'yarnUpgrade') {

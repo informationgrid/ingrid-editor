@@ -43,7 +43,7 @@ export class UploadService {
   constructor(
     private http: HttpClient,
     configService: ConfigService,
-    private keycloak: KeycloakService
+    private keycloak: KeycloakService,
   ) {
     this.backendUrl = configService.getConfiguration().backendUrl;
   }
@@ -55,11 +55,11 @@ export class UploadService {
   extractUploadedFilesOnServer(
     docId: string,
     fileId: string,
-    option?: ExtractOption
+    option?: ExtractOption,
   ) {
     const requestOptions = option ? `?conflict=${option}` : "";
     return this.http.get(
-      `${this.backendUrl}upload/extract/${docId}/${fileId}${requestOptions}`
+      `${this.backendUrl}upload/extract/${docId}/${fileId}${requestOptions}`,
     );
   }
 

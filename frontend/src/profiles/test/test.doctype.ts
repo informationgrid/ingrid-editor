@@ -101,7 +101,7 @@ export class TestDoctype extends BaseDoctype {
               appearance: "outline",
               options: this.getCodelistForSelectWithEmtpyOption(
                 8000,
-                "selectWithEmpty"
+                "selectWithEmpty",
               ),
               required: true,
             },

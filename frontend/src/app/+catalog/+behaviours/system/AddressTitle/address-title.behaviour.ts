@@ -20,7 +20,7 @@ export class AddressTitleBehaviour extends Plugin {
   defaultActive = false;
 
   private addressTitleFunction: AddressTitleFn = (
-    address: IgeDocument /* IMPORTANT FOR EVALUATION! */
+    address: IgeDocument /* IMPORTANT FOR EVALUATION! */,
   ) => {
     const value = this.replaceVariables(this.data.template);
     // tslint:disable-next-line:no-eval
@@ -96,7 +96,7 @@ export class AddressTitleBehaviour extends Plugin {
     super.register();
 
     this.documentService.registerAddressTitleFunction(
-      this.addressTitleFunction
+      this.addressTitleFunction,
     );
   }
 

@@ -26,7 +26,7 @@ export class FullWidthWrapperComponent
 
   constructor(
     public configService: ConfigService,
-    public contextHelpService: ContextHelpService
+    public contextHelpService: ContextHelpService,
   ) {
     super();
   }
@@ -43,7 +43,7 @@ export class FullWidthWrapperComponent
       this.docType,
       this.field.props.contextHelpId || this.fieldId,
       this.props.externalLabel,
-      infoElement
+      infoElement,
     );
   }
 }

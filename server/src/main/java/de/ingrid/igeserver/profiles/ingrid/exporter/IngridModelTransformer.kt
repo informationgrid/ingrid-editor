@@ -12,10 +12,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -28,16 +25,25 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 
+class TransformerCache {
+    val documents = mutableMapOf<String, Document>()
+    val models = mutableMapOf<String, IngridModel>()
+}
+
 open class IngridModelTransformer(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
     val config: Config,
     val catalogService: CatalogService,
+    val cache: TransformerCache
 ) {
     companion object {
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
+    
+    var incomingReferencesCache: List<CrossReference>? = null
+    var superiorReferenceCache: SuperiorReference? = null
 
     var citationURL: String? = null
     val data = model.data
@@ -420,7 +426,7 @@ open class IngridModelTransformer(
     fun getServiceType(type: KeyValueModel? = null) =
         codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", type ?: data.service?.type, "iso")
     val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
-    val couplingType = data.service?.couplingType?.key
+    val couplingType = data.service?.couplingType?.key ?: "loose"
 
     val operations: List<DisplayOperation>
 
@@ -456,7 +462,7 @@ open class IngridModelTransformer(
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
-            val identifier = getLastPublishedDocument(it.uuid)?.data?.get("identifier")?.asText() ?: it.uuid
+            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
             val completeIdentifier = if (containsNamespace) {
                 identifier
@@ -566,13 +572,34 @@ open class IngridModelTransformer(
     }
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
-        ?.mapNotNull { getCrossReference(it.uuid, KeyValueModel("3600", null)) } ?: emptyList()
+        ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
             ?: emptyList()
-    fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferences()
+    fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
+    fun getCoupledServiceUrls(): List<ServiceUrl> {
+        return getIncomingReferencesProxy()
+            .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
+            .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
+    }
+    
+    private fun getIncomingReferencesProxy(): List<CrossReference> {
+        if (incomingReferencesCache == null) {
+            incomingReferencesCache = getIncomingReferences()
+        }
+        
+        return incomingReferencesCache ?: emptyList()
+    }
+    
+    private fun getSuperiorReferenceProxy(): SuperiorReference? {
+        if (superiorReferenceCache == null) {
+            superiorReferenceCache = getSuperiorReference()
+        }
+
+        return superiorReferenceCache
+    }
 
     private fun getSuperiorReference(): SuperiorReference? {
         val uuid = data.parentIdentifier ?: return null
@@ -594,7 +621,7 @@ open class IngridModelTransformer(
         }
     }
 
-    val parentIdentifierReference: SuperiorReference? = getSuperiorReference()
+    fun getParentIdentifierReference() : SuperiorReference? = getSuperiorReferenceProxy()
 
     private fun getCrossReference(
         uuid: String,
@@ -666,9 +693,12 @@ open class IngridModelTransformer(
     }
 
     fun getLastPublishedDocument(uuid: String): Document? {
+        if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
             documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+                .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
+            log.warn("Could not get last published document: $uuid")
             null
         }
 
@@ -677,7 +707,22 @@ open class IngridModelTransformer(
     private fun getLastPublishedModel(uuid: String?): Document? {
         if (uuid == null) return null
 
-        return getLastPublishedDocument(uuid)
+        val model = if (cache.models[uuid] != null) cache.models[uuid] else {
+            val docAsModel = jacksonObjectMapper().convertValue(
+                getLastPublishedDocument(uuid),
+                IngridModel::class.java
+            )
+            cache.models[uuid] = docAsModel
+            docAsModel
+        }
+        return if (model == null) null else IngridModelTransformer(
+            model,
+            catalogIdentifier,
+            codelists,
+            config,
+            catalogService,
+            cache
+        )
     }
 
 

@@ -28,7 +28,7 @@ export class IgeError {
     message: string,
     detail?: string,
     stacktrace: string = null,
-    unhandledException: boolean = false
+    unhandledException: boolean = false,
   ) {
     this.unhandledException = unhandledException;
     this.message = message;

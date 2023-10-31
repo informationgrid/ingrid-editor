@@ -49,7 +49,7 @@ export class AssignedUserBehaviour extends Plugin {
     private documentService: DocumentService,
     configService: ConfigService,
     private toast: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -68,7 +68,7 @@ export class AssignedUserBehaviour extends Plugin {
     this.formSubscriptions.push(
       this.docEvents.onEvent("OPEN_ASSIGN_USER_DIALOG").subscribe((event) => {
         this.openAssignUserDialog(event.data.id);
-      })
+      }),
     );
 
     this.formMenuId = this.forAddress ? "address" : "dataset";
@@ -108,7 +108,7 @@ export class AssignedUserBehaviour extends Plugin {
       }),
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
-        .subscribe((eventResponder) => this.handleEvent(eventResponder))
+        .subscribe((eventResponder) => this.handleEvent(eventResponder)),
     );
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",
@@ -178,7 +178,7 @@ export class AssignedUserBehaviour extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
     if (!handled) {
       return;

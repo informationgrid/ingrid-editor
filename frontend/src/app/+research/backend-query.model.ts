@@ -19,7 +19,7 @@ export class BackendQuery {
       page: number;
       pageSize: number;
     },
-    isNotFacetKeys = []
+    isNotFacetKeys = [],
   ) {
     this.term = term;
     this.orderByField = orderByField;
@@ -33,7 +33,7 @@ export class BackendQuery {
   private convert(
     model: any,
     allFacetGroups: FacetGroup[],
-    isNotFacetKeys: string[]
+    isNotFacetKeys: string[],
   ) {
     let activeFilterIds = { op: "AND", clauses: [] };
 
@@ -43,7 +43,7 @@ export class BackendQuery {
       let groupOperator = facetGroup?.combine ?? "OR";
       if (groupValue instanceof Object) {
         let activeItemsFromGroup = Object.keys(groupValue).filter(
-          (groupId) => groupValue[groupId]
+          (groupId) => groupValue[groupId],
         );
         if (activeItemsFromGroup.length > 0) {
           if (facetGroup?.filter[0].parameters) {
@@ -55,7 +55,7 @@ export class BackendQuery {
               parameter: BackendQuery.prepareParameters(
                 facetGroup,
                 groupValue,
-                activeItemsFromGroup
+                activeItemsFromGroup,
               ),
             });
           } else {
@@ -80,7 +80,7 @@ export class BackendQuery {
   private static prepareParameters(
     facetGroup: FacetGroup,
     groupValue,
-    activeItemsFromGroup: string[]
+    activeItemsFromGroup: string[],
   ) {
     switch (facetGroup.viewComponent) {
       case "TIMESPAN":
@@ -110,7 +110,7 @@ export class BackendQuery {
 
   private static prepareValues(
     facetGroup: FacetGroup,
-    activeItemsFromGroup: string[]
+    activeItemsFromGroup: string[],
   ): string[] {
     if (facetGroup.viewComponent === "TIMESPAN") {
       return [facetGroup.filter[0].id];

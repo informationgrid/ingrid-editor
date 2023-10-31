@@ -41,6 +41,9 @@
     "UvpOrganisationDoc": "Organisation",
     "UvpAddressDoc": "Person"
   },
+  "tags": {
+    "negative-assessment-not-publish": "wird nicht veröffentlicht"
+  },
   "processStep": {
     "publicDisclosure": "Öffentliche Auslegung",
     "decisionOfAdmission": "Entscheidung über die Zulassung",

@@ -43,18 +43,18 @@
             <div class="flex-1 flex-col align-items-start">
                 <div
                     *ngIf="
-                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]?.props
-                            ?.codelistId;
+                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
+                            ?.props?.codelistId;
                         else simpleType
                     "
                     class="type"
                 >
                     {{
-                    (model[i].type.key
-                        | codelist
-                        : field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
-                            ?.props?.codelistId
-                        | async) ?? model[i].type.value
+                        (model[i].type.key
+                            | codelist
+                                : field.fieldArray?.fieldGroup?.[0]
+                                      ?.fieldGroup?.[1]?.props?.codelistId
+                            | async) ?? model[i].type.value
                     }}
                 </div>
                 <ng-template #simpleType>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Router, NavigationEnd } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import {
   animate,
   state,
@@ -17,11 +17,11 @@ import {
       state("collapsed, void", style({ transform: "translate3d(100%, 0, 0)" })),
       state(
         "expanded",
-        style({ transform: "translate3d(0, 0, 0)", width: "300px" })
+        style({ transform: "translate3d(0, 0, 0)", width: "300px" }),
       ),
       state(
         "maximized",
-        style({ transform: "translate3d(0, 0, 0)", width: "95%" })
+        style({ transform: "translate3d(0, 0, 0)", width: "95%" }),
       ),
       transition("collapsed => expanded", animate("200ms ease-in")),
       transition("* => collapsed", animate("200ms ease-out")),

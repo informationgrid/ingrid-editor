@@ -26,7 +26,7 @@ export class AddressTemplateComponent implements OnInit {
   @Output() create = new EventEmitter();
 
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
+    null,
   );
 
   documentTypes: DocumentAbstract[];
@@ -34,14 +34,14 @@ export class AddressTemplateComponent implements OnInit {
   constructor(
     private profileQuery: ProfileQuery,
     private docBehaviours: DocBehavioursService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {}
 
   private initializeDocumentTypes(
     profiles: Observable<ProfileAbstract[]>,
-    parent: number
+    parent: number,
   ) {
     profiles
       .pipe(
@@ -50,7 +50,7 @@ export class AddressTemplateComponent implements OnInit {
         map((types) => this.filterDocTypesByParent(types, parent)),
         map((types) => this.prepareDocumentTypes(types)),
         tap((types) => this.setInitialTypeFirstTime(types)),
-        filter((types) => this.skipIfSame(types))
+        filter((types) => this.skipIfSame(types)),
       )
       .subscribe((result) => (this.documentTypes = result));
   }
@@ -60,7 +60,7 @@ export class AddressTemplateComponent implements OnInit {
     if (!this.form.get("choice").value) {
       const initialType =
         types.find(
-          (t) => t.id == this.profileService.getDefaultAddressType()?.id
+          (t) => t.id == this.profileService.getDefaultAddressType()?.id,
         ) || types[0];
       this.setDocType(initialType);
       this.initialActiveDocumentType.next(initialType);
@@ -111,7 +111,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private filterDocTypesByParent(
     types: ProfileAbstract[],
-    parent: number
+    parent: number,
   ): ProfileAbstract[] {
     return this.docBehaviours.filterDocTypesByParent(types, parent);
   }

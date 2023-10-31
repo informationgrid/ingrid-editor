@@ -138,7 +138,7 @@
                         <div class="type">
                             Sprachen:
                             <span *ngFor="let language of model[i].languages">
-                                {{ language.key | codelist : "20007" | async }}
+                                {{ language.key | codelist: "20007" | async }}
                             </span>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
                         >
                             {{
                                 model[i].license?.key
-                                    | codelist : "20004"
+                                    | codelist: "20004"
                                     | async
                             }}
                         </a>
@@ -171,7 +171,7 @@
                     <div *ngIf="model[i].availability?.key">
                         {{
                             model[i].availability?.key
-                                | codelist : "20005"
+                                | codelist: "20005"
                                 | async
                         }}
                     </div>

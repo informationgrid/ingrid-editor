@@ -778,7 +778,7 @@ class DocumentService @Autowired constructor(
     }
 
     fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false, resolveLinks: Boolean = true): Document {
-        val doc = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         entityManager.detach(doc)
         return expandInternalReferences(
             doc,
@@ -862,6 +862,7 @@ class DocumentService @Autowired constructor(
         return DocumentData(updatedWrapper, updatedDoc)
     }
 
+    @Deprecated("Is not secured")
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
         return if (includeFolders)
             docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)

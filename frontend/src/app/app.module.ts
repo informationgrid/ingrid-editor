@@ -108,7 +108,7 @@ export function ConfigLoader(
   authFactory: AuthenticationFactory,
   router: Router,
   http: HttpClient,
-  dialog: MatDialog
+  dialog: MatDialog,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -124,7 +124,7 @@ export function ConfigLoader(
 
   async function redirectToCatalogSpecificRoute(
     router: Router,
-    dialog: MatDialog
+    dialog: MatDialog,
   ) {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
@@ -149,7 +149,7 @@ export function ConfigLoader(
       }
 
       const isAssignedToCatalog = userInfo.assignedCatalogs.some(
-        (assigned) => assigned.id === rootPath
+        (assigned) => assigned.id === rootPath,
       );
       if (isAssignedToCatalog) {
         await firstValueFrom(
@@ -157,8 +157,8 @@ export function ConfigLoader(
             configService.getConfiguration().backendUrl +
               "user/catalog/" +
               rootPath,
-            null
-          )
+            null,
+          ),
         ).then(() => configService.getCurrentUserInfo());
         return;
       }
@@ -241,15 +241,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     HttpClientModule,
     HttpClientXsrfModule,
     FormlyModule.forRoot({
-      types: [
-        {
-          name: "just-a-name",
-          extends: "formly-group",
-          defaultOptions: {
-            defaultValue: {},
-          },
-        },
-      ],
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
         { name: "addons", component: AddonsWrapperComponent },

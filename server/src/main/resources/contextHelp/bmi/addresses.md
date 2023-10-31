@@ -5,12 +5,21 @@ docType: BmiDoc
 profile: bmi
 ---
 
-Hier muss die *"Veröffentlichende Stelle"*, also der Datenbereitsteller (Institution, Firma, Behörde etc.) angegeben werden, der die Metadaten einträgt und über die Veröffentlichung entschieden hat.<br />
-Über den Link *„+ HINZUFÜGEN“* wird aus den Adressen für die Metadaten ausgewählt. Die entsprechende Adresse muss zuvor im Verzeichnisbaum unter *„Adressen“* angelegt worden sein und Sie müssen Leserechte auf diesen Adressen besitzen.
+Hier muss die *"Veröffentlichende Stelle"*, also der Datenbereitsteller (Institution, Firma, Behörde etc.) angegeben werden, der die Metadaten einträgt und über die Veröffentlichung entschieden hat.
 
+Über den Link *„+ HINZUFÜGEN“* wird aus den Adressen für die Metadaten ausgewählt. Die entsprechende Adresse muss zuvor im Verzeichnisbaum unter *„Adressen“* angelegt worden sein und Sie müssen Leserechte auf diesen Adressen besitzen.<br />
 Die Neueingabe von Adressen hier in diesem Feld ist nicht möglich.
 
-Das Feld *„Adressen“* muss ausgefüllt sein, damit der Datensatz veröffentlicht werden kann. Es muss genau eine *"Veröffentlichende Stelle"* vorliegen.<br />
+Das Feld *„Adressen“* muss ausgefüllt sein, damit der Datensatz veröffentlicht werden kann. Es muss genau eine *"Veröffentlichende Stelle"* vorliegen.
+
 Ansonsten können weitere Adressen verknüpft werden, z.B. als *"Urheber"* oder *"Ansprechpartner"*.
 
 **HINWEIS**: Wird eine Adresse als *"Ansprechpartner"* hinzugefügt, so wird auch die Anschrift der Adresse veröffentlicht, ansonsten nur die Kontaktdaten wie E-Mail und URL.
+
+## DCAT-AP.de:
+Die Abbildung nach *DCAT-AP.de* ist abhängig davon, in welcher Rolle die Adresse dem Metadatensatz hinzugefügt wird. Nachfolgend die verschiedenen Rollen und Ihre Abbildung.<br />
+* *Ansprechpartner*: `dcat:Dataset / dcat:contactPoint`<br />
+* *Veröffentlichende Stelle*: `dcat:Dataset / dcterms:publisher`<br />
+* *Autor*: `dcat:Dataset / dcterms:creator`<br />
+* *Urheber*: `dcat:Dataset / dcterms:originator`<br />
+* *Verwalter*: `dcat:Dataset / dcterms:maintainer`<br />

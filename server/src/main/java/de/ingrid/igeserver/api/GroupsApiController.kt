@@ -67,7 +67,7 @@ class GroupsApiController @Autowired constructor(
             return ResponseEntity.ok(groups.map { FrontendGroup(it, false) })
         }
 
-        val userGroupIds = catalogService.getUser(principalId)?.groups?.map { it.id!! } ?: emptyList()
+        val userGroupIds = catalogService.getUser(principalId)?.getGroupsForCatalog(catalogId)?.map { it.id!! } ?: emptyList()
 
         // user is only allowed to see and edit groups he has rights for
         groups = groups

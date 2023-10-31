@@ -31,8 +31,8 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     tap((users) => (this.externalUsers = users)),
     tap(
       (users) =>
-        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users))
-    )
+        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users)),
+    ),
   );
   externalUsers: BackendUser[];
   form: UntypedFormGroup;
@@ -48,7 +48,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     private userService: UserService,
     private configService: ConfigService,
     private modalService: ModalService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {}
 
   ngAfterContentChecked(): void {
@@ -107,7 +107,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       .createUser(user, !this.importExternal)
       .pipe(
         catchError((error) => this.handleCreateUserError(error)),
-        filter((user) => user)
+        filter((user) => user),
       )
       .subscribe((u) => this.dialogRef.close(u));
   }
@@ -119,7 +119,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
         this.modalService.showJavascriptError(
-          "Es existiert bereits ein Benutzer mit dem Login: " + login
+          "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
         return null;
       } else {
@@ -127,7 +127,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
           "New user cannot be created, because another user might have the same email address";
         if (errorText.includes(EMAIL_NOT_UNIQUE)) {
           this.modalService.showJavascriptError(
-            "Es existiert bereits ein Benutzer mit dieser Mailadresse"
+            "Es existiert bereits ein Benutzer mit dieser Mailadresse",
           );
         } else {
           throw error;

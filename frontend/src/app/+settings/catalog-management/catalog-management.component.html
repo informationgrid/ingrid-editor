@@ -80,11 +80,11 @@
                 <div class="title">{{ cat.label }}</div>
                 <div *ngIf="cat.lastDocModification" class="subtitle">
                     Letzte Änderung am
-                    {{ cat.lastDocModification | date : "dd.LL.yyyy HH:mm" }}
+                    {{ cat.lastDocModification | date: "dd.LL.yyyy HH:mm" }}
                 </div>
                 <div *ngIf="!cat.lastDocModification" class="subtitle">
                     Erstellt am
-                    {{ cat.created | date : "dd.LL.yyyy HH:mm" }}
+                    {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
                 </div>
 
                 <div

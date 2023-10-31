@@ -8,6 +8,9 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,6 +31,7 @@ class InGridPublishExport @Autowired constructor(
 
     override val profiles = arrayOf("ingrid")
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
         val docId = payload.document.uuid
@@ -38,7 +42,9 @@ class InGridPublishExport @Autowired constructor(
             if (isDocument) indexDoc(context, docId, DocumentCategory.DATA)
             else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
-                indexReferencedDocs(context, docId)
+                GlobalScope.launch {
+                    indexReferencedDocs(context, docId)
+                }
             }
         } catch (ex: NoNodeAvailableException) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")

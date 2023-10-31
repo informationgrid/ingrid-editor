@@ -9,6 +9,7 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.UserResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Groups", description = "the groups API")
 interface GroupsApi {
     @Operation(description = "Creates a new group. If group with a given login already exists an error will be returned.")

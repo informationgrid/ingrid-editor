@@ -43,7 +43,7 @@ export class TabSearchComponent implements OnInit {
     private dialog: MatDialog,
     private researchService: ResearchService,
     private snackBar: MatSnackBar,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
   ) {}
 
   async ngOnInit() {
@@ -61,7 +61,7 @@ export class TabSearchComponent implements OnInit {
       .selectActive()
       .pipe(
         untilDestroyed(this),
-        filter((a) => a && a.type === "facet")
+        filter((a) => a && a.type === "facet"),
       )
       .subscribe((entity: FacetQuery) => {
         this.researchService.setActiveQuery(null);
@@ -81,7 +81,7 @@ export class TabSearchComponent implements OnInit {
         .pipe(
           catchError((err) => this.handleSearchError(err)),
           // signal end of search but make sure spinner is shown for a tiny bit at least (good for tests and prevents flicker)
-          finalize(() => setTimeout(() => (this.isSearching = false), 300))
+          finalize(() => setTimeout(() => (this.isSearching = false), 300)),
         )
         .subscribe((result) => this.updateHits(result));
     });
@@ -104,8 +104,8 @@ export class TabSearchComponent implements OnInit {
                 "",
                 {
                   panelClass: "green",
-                }
-              )
+                },
+              ),
             );
         }
       });
@@ -140,7 +140,7 @@ export class TabSearchComponent implements OnInit {
     return firstValueFrom(
       this.researchService
         .getQuickFilter()
-        .pipe(tap((filters) => (this.facets = filters)))
+        .pipe(tap((filters) => (this.facets = filters))),
     );
   }
 

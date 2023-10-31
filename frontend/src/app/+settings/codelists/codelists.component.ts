@@ -35,7 +35,7 @@ export class CodelistsComponent implements OnInit {
 
   constructor(
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {}
 
   ngOnInit(): void {
@@ -60,8 +60,8 @@ export class CodelistsComponent implements OnInit {
     if (e.error.errorText === "Failed to synchronize code lists") {
       return throwError(
         new IgeError(
-          "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository."
-        )
+          "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository.",
+        ),
       );
     }
     return throwError(e);

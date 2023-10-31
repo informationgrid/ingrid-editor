@@ -5,6 +5,7 @@ import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Research", description = "extensive Search API")
 interface ResearchApi {
 
@@ -73,4 +75,9 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<SpatialResponse>>
 
+    @Operation
+    @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun aiSearch(principal: Principal, @RequestBody query: String): ResponseEntity<String>
+    
 }

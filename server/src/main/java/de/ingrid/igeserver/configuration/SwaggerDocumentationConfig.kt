@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.servers.Server
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.security.*
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
@@ -12,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
+import java.util.*
 
 
 @OpenAPIDefinition(
@@ -60,5 +65,26 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                         return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
                     }
                 })
+    }
+
+    @Bean
+    fun openAPI(): OpenAPI {
+        val oauthSchemeName = "Keycloak Token"
+        return OpenAPI()
+            .components(
+                Components()
+                    .addSecuritySchemes(
+                        oauthSchemeName,
+                        SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                    )
+            )
+            .addSecurityItem(
+                SecurityRequirement()
+                    .addList("bearer-jwt", listOf("read", "write"))
+                    .addList(oauthSchemeName, Collections.emptyList())
+            )
     }
 }

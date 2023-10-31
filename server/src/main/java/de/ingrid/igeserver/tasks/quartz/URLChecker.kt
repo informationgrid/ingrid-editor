@@ -5,6 +5,7 @@ import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
+import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
@@ -30,6 +31,7 @@ class URLChecker @Autowired constructor(
     override val log = logger()
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: URLChecker")
         val message = Message()
@@ -37,7 +39,7 @@ class URLChecker @Autowired constructor(
         val notificationType = MessageTarget(NotificationType.URL_CHECK, info.catalogId)
 
         try {
-            if (info.referenceHandler == null) { 
+            if (info.referenceHandler == null) {
                 val msg = "No class defined to get URLs from catalog with profile ${info.profile}"
                 log.warn(msg)
                 message.apply {
@@ -55,14 +57,18 @@ class URLChecker @Autowired constructor(
 
             notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
 
-            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId)
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds)
 
-            val urls = with(convertToUrlList(docs)) {
-                forEachIndexed { index, urlReport ->
-                    notifier.sendMessage(notificationType, message.apply { this.progress = calcProgress(index, size) })
-                    checkAndReportUrl(urlReport)
+            val urls = convertToUrlList(docs)
+            runBlocking {
+                urls.forEachIndexed { index, urlReport ->
+                    launch(Dispatchers.Default.limitedParallelism(10)) {
+                        notifier.sendMessage(
+                            notificationType,
+                            message.apply { this.progress = calcProgress(index, urls.size) })
+                        checkAndReportUrl(urlReport)
+                    }
                 }
-                this
             }
 
             val invalidUrlReport = URLCheckerReport(urls.size, urls.filter { it.success.not() })
@@ -89,9 +95,11 @@ class URLChecker @Autowired constructor(
 
         val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
+        val docIdsAsString = dataMap.getString("groupDocIds")
+        val groupDocIds: List<Int> = if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
         val referenceHandler = referenceHandlerFactory.get(profile)
 
-        return JobInfo(profile, catalogId, referenceHandler)
+        return JobInfo(profile, catalogId, referenceHandler, groupDocIds)
     }
 
     private fun convertToUrlList(
@@ -117,9 +125,11 @@ class URLChecker @Autowired constructor(
 
     private fun calcProgress(current: Int, total: Int) = ((current / total.toDouble()) * 100).toInt()
 
-    private fun checkAndReportUrl(info: UrlReport) {
+    private suspend fun checkAndReportUrl(info: UrlReport) {
         return try {
-            (URL(info.url).openConnection() as HttpURLConnection).let {
+            (withContext(Dispatchers.IO) {
+                URL(info.url).openConnection()
+            } as HttpURLConnection).let {
                 it.connectTimeout = 10000
                 it.readTimeout = 5000
                 it.instanceFollowRedirects = true
@@ -134,5 +144,10 @@ class URLChecker @Autowired constructor(
         }
     }
 
-    private data class JobInfo(val profile: String, val catalogId: String, val referenceHandler: ReferenceHandler?)
+    private data class JobInfo(
+        val profile: String,
+        val catalogId: String,
+        val referenceHandler: ReferenceHandler?,
+        val groupDocIds: List<Int>
+    )
 }

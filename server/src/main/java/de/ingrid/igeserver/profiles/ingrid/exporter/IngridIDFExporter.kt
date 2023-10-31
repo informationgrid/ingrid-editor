@@ -111,7 +111,7 @@ class IngridIDFExporter @Autowired constructor(
         return if(isAddress)
             transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {

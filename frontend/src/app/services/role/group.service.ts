@@ -17,7 +17,7 @@ export class GroupService {
   constructor(
     private configService: ConfigService,
     private dataService: GroupDataService,
-    private groupStore: GroupStore
+    private groupStore: GroupStore,
   ) {
     // this.selectedGroup$ = new BehaviorSubject<Group>(null);
   }
@@ -27,7 +27,7 @@ export class GroupService {
       .getGroups()
       .pipe(
         map((groups) => groups.map(GroupService.convertFrontendGroup)),
-        tap((groups) => this.groupStore.set(groups))
+        tap((groups) => this.groupStore.set(groups)),
       )
       .subscribe();
   }
@@ -83,8 +83,8 @@ export class GroupService {
             user.readOnly = true;
           }
           return user;
-        })
-      )
+        }),
+      ),
     );
   }
 

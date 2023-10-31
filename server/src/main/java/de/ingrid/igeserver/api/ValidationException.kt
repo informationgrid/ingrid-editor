@@ -13,6 +13,7 @@ open class ValidationException protected constructor(
 
     companion object {
         private const val ERROR_CODE = "VALIDATION_ERROR"
+        private const val ERROR_CODE_FIELD = "VALIDATION_ERROR_FIELD"
         private const val ERROR_TEXT_INVALID = "One or more fields are invalid: \${fieldNames}."
         private const val ERROR_TEXT = "The validation failed for this document"
 
@@ -21,7 +22,7 @@ open class ValidationException protected constructor(
          */
         fun withInvalidFields(vararg fields: InvalidField, cause: Throwable? = null) : ValidationException {
             val errorText = getErrorText(ERROR_TEXT_INVALID, mapOf("fieldNames" to fields.joinToString(", ") { it.name }))
-            return ValidationException(STATUS_CODE, ERROR_CODE, errorText, mapOf("fields" to fields), cause)
+            return ValidationException(STATUS_CODE, ERROR_CODE_FIELD, errorText, mapOf("fields" to fields), cause)
         }
 
         fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null) : ValidationException {

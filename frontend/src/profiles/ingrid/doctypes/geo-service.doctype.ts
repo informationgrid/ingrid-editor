@@ -113,10 +113,10 @@ export class GeoServiceDoctype extends IngridShared {
                     expressions: {
                       hide: "formState.mainModel?.service?.type?.key !== '3'",
                     },
-                  }
+                  },
                 ),
               ],
-              { className: "flex-1" }
+              { className: "flex-1" },
             ),
           ]),
           this.addRepeat("operations", "Operationen", {
@@ -192,7 +192,7 @@ export class GeoServiceDoctype extends IngridShared {
                   "formState.mainModel?.service?.couplingType?.key === 'tight'",
                 className: "field.props.required ? '' : 'optional'",
               },
-            }
+            },
           ),
           this.addResolutionFields(),
           this.addGroup(
@@ -206,7 +206,7 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
-                }
+                },
               ),
               this.addTextAreaInline(
                 "implementationHistory",
@@ -215,10 +215,10 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
-                }
+                },
               ),
             ],
-            { className: "optional" }
+            { className: "optional" },
           ),
           this.addTextArea("explanation", "Erläuterungen", this.id, {
             className: "optional flex-1",
@@ -252,7 +252,7 @@ export class GeoServiceDoctype extends IngridShared {
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
       tap((value) => this.updateServiceVersionField(value)),
-      tap((value) => this.updateOperationNameField(value))
+      tap((value) => this.updateOperationNameField(value)),
     );
   }
 
@@ -282,7 +282,7 @@ export class GeoServiceDoctype extends IngridShared {
     const operationsField = this.cleanFields
       .find((item) => item?.fieldGroup?.[0]?.key === "service")
       ?.fieldGroup[0].fieldGroup?.find(
-        (item) => item.key === "operations"
+        (item) => item.key === "operations",
         // @ts-ignore
       ).fieldArray?.fieldGroup[0]?.props;
     operationsField.options = value;
@@ -290,7 +290,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   private updateServiceVersionInPrintField(value: SelectOptionUi[]) {
     const versionProps = this.cleanFields.find(
-      (item) => item?.fieldGroup?.[0]?.key === "service"
+      (item) => item?.fieldGroup?.[0]?.key === "service",
     )?.fieldGroup[0].fieldGroup[1].fieldGroup[0].fieldGroup[1].props;
 
     versionProps.options = value;

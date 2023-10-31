@@ -20,14 +20,14 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private auth: KeycloakService,
     private authFactory: AuthenticationFactory,
-    private modalService: ModalService
+    private modalService: ModalService,
   ) {}
 
   // TODO: https://stackoverflow.com/questions/54925361/how-to-give-session-idle-timeout-in-angular-6
 
   intercept(
     req: HttpRequest<any>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     // send the newly created request
     return next.handle(req).pipe(
@@ -55,7 +55,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         // return the error to the method that called it
         return throwError(error);
-      })
+      }),
     );
   }
 

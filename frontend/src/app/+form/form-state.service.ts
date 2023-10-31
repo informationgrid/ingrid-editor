@@ -13,7 +13,7 @@ export class FormStateService {
   private readonly lineHeight = 24;
 
   private resizeObserver = new ResizeObserver((entries) =>
-    this.storeTextareaElementsHeight(entries)
+    this.storeTextareaElementsHeight(entries),
   );
 
   constructor(private sessionStore: SessionStore) {
@@ -39,7 +39,7 @@ export class FormStateService {
 
   unobserveTextareaHeights() {
     FormStateService.getTextareaElements().forEach((element) =>
-      this.resizeObserver.unobserve(element)
+      this.resizeObserver.unobserve(element),
     );
   }
 
@@ -68,7 +68,7 @@ export class FormStateService {
   private observeTextareaHeights() {
     setTimeout(() => {
       FormStateService.getTextareaElements().forEach((element) =>
-        this.resizeObserver.observe(element)
+        this.resizeObserver.observe(element),
       );
     }, 500);
   }

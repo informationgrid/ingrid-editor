@@ -25,7 +25,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   constructor(
     private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<LinkDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) private formData: FormDialogData
+    @Inject(MAT_DIALOG_DATA) private formData: FormDialogData,
   ) {}
 
   ngAfterViewInit(): void {
@@ -57,7 +57,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
     return {
       key: field.key,
       type: "input",
-      props: field.props,
+      props: { ...field.props, label: "URL" },
       validators: {
         validation: ["url"],
       },
@@ -66,7 +66,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
 
   private prepareResult(value: any) {
     const uploadKey = this.formData.fields.find(
-      (field) => field.type === "upload"
+      (field) => field.type === "upload",
     )?.key as string;
     const result = {
       ...value,

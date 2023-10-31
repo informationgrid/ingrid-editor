@@ -103,7 +103,7 @@ private const val COORDS_SYSTEM_WGS84 = "WGS 84"
 
 fun getUnionOfBoundingBoxes(boundingBoxesFromLayers: List<LocationBean>): LocationBean {
     val unionLocation = LocationBean()
-    unionLocation.type = "frei"
+    unionLocation.type = "free"
     for (location in boundingBoxesFromLayers) {
         if (unionLocation.latitude1 == null) {
             if (location.latitude1 == null) continue

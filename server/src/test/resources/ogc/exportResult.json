@@ -1,0 +1,214 @@
+{
+  "_export_date": "2023-10-16T17:47:25.009698100+02:00",
+  "_version": "1.0.0",
+  "_profile": "ingrid",
+  "resources": {
+    "published": {
+      "title": "test geodatensatz 2",
+      "_uuid": "b08533dc-f3cd-46ea-a12e-d7f799d59330",
+      "_type": "InGridGeoDataset",
+      "_created": "2023-10-16T10:19:06.227038Z",
+      "_modified": "2023-10-16T10:19:06.242431Z",
+      "_contentModified": "2023-10-16T10:19:06.227038Z",
+      "_createdBy": "Mike Cat-Miller",
+      "_modifiedBy": "Mike Cat-Miller",
+      "_contentModifiedBy": "Mike Cat-Miller",
+      "_id": null,
+      "dataset": {
+        "languages": [
+          "150"
+        ]
+      },
+      "lineage": {
+        "statement": "Grundlage test"
+      },
+      "spatial": {
+        "references": [
+          {
+            "type": "free",
+            "value": {
+              "lat1": 49.923497541799584,
+              "lat2": 50.986648528592625,
+              "lon1": 7.874486734396174,
+              "lon2": 9.939849552642
+            }
+          }
+        ],
+        "spatialSystems": [
+          {
+            "key": "84"
+          }
+        ],
+        "verticalExtent": {
+          "unitOfMeasure": null
+        }
+      },
+      "subType": {
+        "key": "5"
+      },
+      "keywords": {
+        "free": [],
+        "gemet": [],
+        "umthes": []
+      },
+      "metadata": {
+        "language": {
+          "key": "150"
+        },
+        "characterSet": null
+      },
+      "resource": {
+        "useConstraints": [
+          {
+            "title": {
+              "key": "2"
+            }
+          }
+        ],
+        "accessConstraints": []
+      },
+      "temporal": {
+        "events": [
+          {
+            "referenceDate": "2023-10-15T22:00:00.000Z",
+            "referenceDateType": {
+              "key": "1"
+            }
+          }
+        ],
+        "status": null,
+        "resourceDateType": null
+      },
+      "extraInfo": {
+        "legalBasicsDescriptions": []
+      },
+      "qualities": [],
+      "identifier": "44f911ee-afcb-44c1-b6db-2783e93863f2",
+      "isOpenData": false,
+      "references": [],
+      "resolution": [],
+      "dataQuality": {
+        "completenessOmission": {}
+      },
+      "description": "Zum Testen von Post Methoden in einen Ordner",
+      "distribution": {
+        "format": []
+      },
+      "pointOfContact": [
+        {
+          "ref": {
+            "title": "Wemove Test",
+            "_uuid": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
+            "_type": "InGridOrganisationDoc",
+            "_created": "2023-10-06T16:56:03.300727Z",
+            "_modified": "2023-10-16T10:16:29.752929Z",
+            "_contentModified": "2023-10-16T10:16:29.755099Z",
+            "_createdBy": "Mike Cat-Miller",
+            "_modifiedBy": "Mike Cat-Miller",
+            "_contentModifiedBy": "Mike Cat-Miller",
+            "_id": 20,
+            "address": {
+              "city": "Frankfurt",
+              "po-box": "123",
+              "street": "Hanauer Landstr. 52",
+              "country": {
+                "key": "276"
+              },
+              "zip-code": "60314",
+              "zip-po-box": "P123",
+              "administrativeArea": {
+                "key": "7"
+              }
+            },
+            "contact": [
+              {
+                "type": {
+                  "key": "3"
+                },
+                "connection": "test@wemove.com"
+              }
+            ],
+            "organization": "Wemove Test",
+            "positionName": "Notizen MMMM",
+            "hoursOfService": "",
+            "_tags": ""
+          },
+          "type": {
+            "key": "12"
+          }
+        },
+        {
+          "ref": {
+            "title": "Contact Short",
+            "_uuid": "110C6012-1713-44C0-9A33-4E2C24D06966",
+            "_type": "InGridOrganisationDoc",
+            "_created": "2023-10-06T16:56:03.176184Z",
+            "_modified": "2023-10-16T10:16:25.265611Z",
+            "_contentModified": "2023-10-16T10:16:25.267554Z",
+            "_createdBy": "Mike Cat-Miller",
+            "_modifiedBy": "Mike Cat-Miller",
+            "_contentModifiedBy": "Mike Cat-Miller",
+            "_id": 19,
+            "address": {
+              "country": null,
+              "administrativeArea": {
+                "key": "0"
+              }
+            },
+            "contact": [
+              {
+                "type": {
+                  "key": "3"
+                },
+                "connection": "you@wemove.com"
+              }
+            ],
+            "organization": "Contact Short",
+            "positionName": "",
+            "hoursOfService": "",
+            "_tags": ""
+          },
+          "type": {
+            "key": "1"
+          }
+        }
+      ],
+      "dataQualityInfo": {
+        "lineage": {
+          "source": {
+            "processStep": {
+              "description": []
+            },
+            "descriptions": []
+          }
+        }
+      },
+      "isAdVCompatible": false,
+      "topicCategories": [
+        {
+          "key": "4"
+        }
+      ],
+      "advProductGroups": [],
+      "graphicOverviews": [],
+      "isInspireIdentified": false,
+      "digitalTransferOptions": [],
+      "maintenanceInformation": {
+        "maintenanceAndUpdateFrequency": null,
+        "userDefinedMaintenanceFrequency": {
+          "unit": null
+        }
+      },
+      "portrayalCatalogueInfo": {
+        "citation": []
+      },
+      "spatialRepresentationType": [],
+      "featureCatalogueDescription": {
+        "citation": [],
+        "featureTypes": []
+      },
+      "absoluteExternalPositionalAccuracy": {},
+      "_parent": null
+    }
+  }
+}

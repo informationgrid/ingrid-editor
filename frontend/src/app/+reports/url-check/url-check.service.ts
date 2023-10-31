@@ -33,8 +33,12 @@ export interface UrlLogResult extends BaseLogResult {
 })
 export class UrlCheckService {
   private backendURL = this.config.getConfiguration().backendUrl;
+  private jobId = `url-check_${this.config.$userInfo.value.login}`;
 
-  constructor(private http: HttpClient, private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ConfigService,
+  ) {}
 
   start(): Observable<void> {
     return this.sendCommand("start");
@@ -47,7 +51,7 @@ export class UrlCheckService {
   private sendCommand(command: "start" | "stop") {
     return this.http.post<void>(
       `${this.backendURL}jobs/url-check?command=${command}`,
-      null
+      null,
     );
   }
 
@@ -59,12 +63,12 @@ export class UrlCheckService {
 
   getJobInfo() {
     return this.http
-      .get<any>(this.backendURL + "jobs/url-check/info")
+      .get<any>(this.backendURL + `jobs/${this.jobId}/info`)
       .pipe(shareReplay(1));
   }
 
   replaceUrl(source: UrlInfo, replaceUrl: string) {
-    return this.http.post<any>(this.backendURL + "jobs/url-check/replace", {
+    return this.http.post<any>(`${this.backendURL}jobs/url-check/replace`, {
       source,
       replaceUrl,
     });

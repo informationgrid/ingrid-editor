@@ -15,6 +15,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Boolean isService = false
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
@@ -633,7 +634,7 @@
         </srv:SV_CoupledResource>
     </srv:coupledResource>
 @endfor
-@if(TransformationTools.hasValue(page.getCouplingType()))
+@if(isService)
     <srv:couplingType>
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
                              codeListValue="${page.getCouplingType()}" />
@@ -715,6 +716,8 @@ ${contentInfo}
                             <gmd:version>
                                 <gco:CharacterString>${distributionFormat.getVersion()}</gco:CharacterString>
                             </gmd:version>
+                        @else
+                            <gmd:version gco:nilReason="unknown" />
                         @endif
                         @if(TransformationTools.hasValue(distributionFormat.getSpecification()))
                             <gmd:specification>
@@ -813,6 +816,28 @@ ${contentInfo}
                                 </gmd:function>
                                 <idf:attachedToField entry-id="5066" list-id="2000">Link to Service
                                 </idf:attachedToField>
+                            </idf:idfOnlineResource>
+                        </gmd:onLine>
+                    </gmd:MD_DigitalTransferOptions>
+                </gmd:transferOptions>
+            @endfor
+            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrls() )
+                <gmd:transferOptions>
+                    <gmd:MD_DigitalTransferOptions>
+                        <gmd:onLine>
+                            <idf:idfOnlineResource>
+                                <gmd:linkage>
+                                    <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
+                                </gmd:linkage>
+                                <gmd:name>
+                                    <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
+                                </gmd:name>
+                                <gmd:function>
+                                    <gmd:CI_OnLineFunctionCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
+                                            codeListValue="information">information
+                                    </gmd:CI_OnLineFunctionCode>
+                                </gmd:function>
                             </idf:idfOnlineResource>
                         </gmd:onLine>
                     </gmd:MD_DigitalTransferOptions>

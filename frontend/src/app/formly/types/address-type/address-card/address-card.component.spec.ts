@@ -37,7 +37,7 @@ describe("AddressCardComponent", () => {
     spectator.detectChanges();
 
     expect(spectator.component.stateInfo).toBe(
-      "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich."
+      "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.",
     );
   });
 
@@ -49,7 +49,7 @@ describe("AddressCardComponent", () => {
     spectator.detectChanges();
 
     expect(spectator.component.stateInfo).toBe(
-      "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten."
+      "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.",
     );
   });
 

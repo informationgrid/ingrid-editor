@@ -26,7 +26,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
     private modal: ModalService,
     private eventService: EventService,
     private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -39,8 +39,8 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
       this.eventService
         .respondToEvent(IgeEvent.DELETE)
         .subscribe((resultObserver) =>
-          this.handleEvent(resultObserver.eventResponseHandler)
-        )
+          this.handleEvent(resultObserver.eventResponseHandler),
+        ),
     );
   }
 
@@ -53,7 +53,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
         const error = new IgeError();
         error.setMessage(
           "Um Ordner zu löschen, müssen diese leer sein",
-          docsWithChildren.join(" , ")
+          docsWithChildren.join(" , "),
         );
         this.modal.showIgeError(error);
         success = false;
@@ -71,12 +71,12 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
       .selectActive()
       .pipe(
         filter((entity) => entity !== undefined),
-        take(1)
+        take(1),
       )
       .pipe(
         map((docs) => {
           return docs.filter((doc) => doc._hasChildren).map((doc) => doc.title);
-        })
+        }),
       );
   }
 

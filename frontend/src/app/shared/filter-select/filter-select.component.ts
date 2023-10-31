@@ -43,18 +43,18 @@ export class FilterSelectComponent implements OnInit {
     ]).pipe(
       // only filter input strings and selections
       filter((value) => !(value[0] instanceof Object)),
-      map((value) => this._filter(value[0], value[1]))
+      map((value) => this._filter(value[0], value[1])),
     );
   }
 
   private _filter(
     value: string,
-    allCodelists: SelectOptionUi[]
+    allCodelists: SelectOptionUi[],
   ): SelectOptionUi[] {
     const filterValue = value.toLowerCase();
 
     return allCodelists.filter((option) =>
-      this.labelFormat(option).toLowerCase().includes(filterValue)
+      this.labelFormat(option).toLowerCase().includes(filterValue),
     );
   }
 

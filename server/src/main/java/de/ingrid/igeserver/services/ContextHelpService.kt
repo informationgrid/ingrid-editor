@@ -9,7 +9,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
+class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val catalogService: CatalogService) {
 
     val log = logger()
     val defaultLanguage = "de"
@@ -18,7 +18,13 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
 
-        val help = getContextHelp(profile, docType, id) ?: throw NotFoundException.withMissingResource(id, "ContextHelp")
+        val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id) 
+            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) } 
+            ?: run {
+                log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: de}.")
+                throw NotFoundException.withMissingResource(id, "ContextHelp")
+            }
+
         return HelpMessage(
                 fieldId = id,
                 docType = docType,
@@ -30,8 +36,9 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
     }
 
     fun getHelpIDs(profile: String, docType: String): List<String> {
+        val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
         return this.markdownContextHelp.keys
-                .filter { it.profile == profile && it.docType == docType }
+                .filter { (it.profile == profile || it.profile == parentProfile) && it.docType == docType }
                 .map { it.fieldId }
                 .distinct()
     }
@@ -45,10 +52,9 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils) {
         )
 
         if (markdownContextHelp.containsKey(itemKey)) {
-            return markdownContextHelp.get(itemKey)
+            return markdownContextHelp[itemKey]
         }
 
-        log.debug("No markdown help file found for { guid: $id; oid: $docType; language: de}.")
         return null
     }
 

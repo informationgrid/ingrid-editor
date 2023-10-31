@@ -2,6 +2,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.mdek.upload.UploadResponse
 import de.ingrid.mdek.upload.storage.ConflictHandling
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.security.Principal
 
+@Hidden
 @Tag(name = "Upload", description = "the upload API")
 interface UploadApi {
 

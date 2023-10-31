@@ -35,14 +35,14 @@ export class CatalogManagementComponent implements OnInit {
     map((catalog) => {
       const active = catalog[0].find((cat) => cat.id === this.currentCatalog);
       return active ? this.mapProfileTitleToCatalog(active, catalog[1]) : null;
-    })
+    }),
   );
 
   nonActiveCatalogs = this.catalogs.pipe(
     map((catalog) => {
       const other = catalog[0].filter((cat) => cat.id !== this.currentCatalog);
       return other.map((cat) => this.mapProfileTitleToCatalog(cat, catalog[1]));
-    })
+    }),
   );
 
   noAssignedCatalogs = false;
@@ -59,7 +59,7 @@ export class CatalogManagementComponent implements OnInit {
     private configService: ConfigService,
     private sessionService: SessionService,
     private catalogQuery: CatalogQuery,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -95,7 +95,7 @@ export class CatalogManagementComponent implements OnInit {
           this.switchCatalogIfNoCurrentCatalog(response);
         }),
         finalize(() => (this.showSpinner = false)),
-        catchError((err) => this.handleCreateError(err))
+        catchError((err) => this.handleCreateError(err)),
       )
       .subscribe();
   }

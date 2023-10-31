@@ -241,12 +241,12 @@ class Wms111CapabilitiesParser(
                 } else { // TRANSFORM
                     getBoundingBoxCoordinates(bboxNode)
                 }
-                box = LocationBean().apply {
-                    latitude1 = coordinates[1]
-                    longitude1 = coordinates[0]
-                    latitude2 = coordinates[3]
-                    longitude2 = coordinates[2]
-                }
+                box = LocationBean(
+                    coordinates[1],
+                    coordinates[0],
+                    coordinates[3],
+                    coordinates[2]
+                )
 
                 // add a fallback for the name, since it's mandatory
                 var name = xPathUtils.getString(layer, "wms:Name")
@@ -255,7 +255,7 @@ class Wms111CapabilitiesParser(
                 box.name = name
                 // shall be a free spatial reference, but needs an ID to check for duplications!
 //                    box.setTopicId(box.name)
-                box.type = "frei"
+                box.type = "free"
                 bboxes.add(box)
                 // go to next layer!
                 break

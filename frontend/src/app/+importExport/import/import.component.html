@@ -20,8 +20,8 @@
 
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="message as log">
-            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Status: {{ log.stage }}</div>
             <br />
             <ng-container

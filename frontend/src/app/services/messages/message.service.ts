@@ -15,7 +15,7 @@ export class MessageService {
 
   constructor(
     private configService: ConfigService,
-    private dataService: MessagesDataService
+    private dataService: MessagesDataService,
   ) {
     this.loadStoredMessages().subscribe((messages) => {
       this.messages = messages;
@@ -35,7 +35,7 @@ export class MessageService {
         } else {
           throw e;
         }
-      })
+      }),
     );
   }
 
@@ -46,12 +46,12 @@ export class MessageService {
   createMessage(
     message: Message,
     validUntil: Date,
-    forCurrentCatalog: boolean
+    forCurrentCatalog: boolean,
   ): Observable<any> {
     return this.dataService.createMessage(
       message,
       validUntil,
-      forCurrentCatalog
+      forCurrentCatalog,
     );
   }
 

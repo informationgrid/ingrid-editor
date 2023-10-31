@@ -33,7 +33,7 @@ export class InheritContactDataHandler extends Plugin {
     private formStateService: FormStateService,
     private documentService: DocumentService,
     private addressTreeQuery: AddressTreeQuery,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -51,7 +51,7 @@ export class InheritContactDataHandler extends Plugin {
               this.formStateService.getForm(),
               this.documentService,
               this.dialog,
-              this.forAddress
+              this.forAddress,
             ).then((handled) => {
               if (handled)
                 this.inheritContactData(event.data.docId, event.data.parentId);
@@ -122,7 +122,7 @@ export class InheritContactDataHandler extends Plugin {
       .pipe(
         map((response) => {
           return response === "confirm";
-        })
+        }),
       );
   }
 }

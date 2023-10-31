@@ -57,7 +57,7 @@ export class HistoryPlugin extends Plugin {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private addressTreeQuery: AddressTreeQuery,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -130,7 +130,7 @@ export class HistoryPlugin extends Plugin {
       this.docEvents.onEvent("HISTORY_NEXT").subscribe(() => this.handleNext()),
       this.docEvents
         .onEvent("HISTORY_PREVIOUS")
-        .subscribe(() => this.handlePrevious())
+        .subscribe(() => this.handlePrevious()),
     );
   }
 
@@ -232,7 +232,7 @@ export class HistoryPlugin extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
 
     if (!handled) {
@@ -250,11 +250,11 @@ export class HistoryPlugin extends Plugin {
   private handleButtonState() {
     this.formToolbarService.setButtonState(
       "toolBtnPreviousInHistory",
-      this.hasPrevious()
+      this.hasPrevious(),
     );
     this.formToolbarService.setButtonState(
       "toolBtnNextInHistory",
-      this.hasNext()
+      this.hasNext(),
     );
   }
 

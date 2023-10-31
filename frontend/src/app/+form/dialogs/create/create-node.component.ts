@@ -64,17 +64,17 @@ export class CreateNodeComponent implements OnInit {
     private docBehaviours: DocBehavioursService,
     private translocoService: TranslocoService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CreateOptions
+    @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
     this.isFolder = data.isFolder;
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.translocoService.translate(
-      this.forAddress ? "menu.address" : "menu.form"
+      this.forAddress ? "menu.address" : "menu.form",
     );
 
     if (!this.isFolder) {
       this.title = this.translocoService.translate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
+        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
   }
@@ -108,7 +108,7 @@ export class CreateNodeComponent implements OnInit {
       setTimeout(() => {
         this.docTypeChoice = value.choice;
         this.docTypeChanged$.next();
-      }, 0)
+      }, 0),
     );
 
     // set initial path to current position
@@ -189,7 +189,7 @@ export class CreateNodeComponent implements OnInit {
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
       this.forAddress,
       { type: entity._type },
-      this.docTypeChoice
+      this.docTypeChoice,
     );
     if (cannotAddBelow) {
       return this.getPathAllowedToAdd(path);
@@ -216,7 +216,7 @@ export class CreateNodeComponent implements OnInit {
   private async handleAddressCreate() {
     const newAddress = new IgeDocument(
       this.formGroup.get("choice").value,
-      this.parent
+      this.parent,
     );
 
     const organization = this.formGroup.get("organization").value;
@@ -235,7 +235,7 @@ export class CreateNodeComponent implements OnInit {
   private async handleDocumentCreate() {
     const newDocument = new IgeDocument(
       this.formGroup.get("choice").value,
-      this.parent
+      this.parent,
     );
     newDocument.title = this.formGroup.get("title").value;
     const savedDoc = await this.saveForm(newDocument);
@@ -251,7 +251,7 @@ export class CreateNodeComponent implements OnInit {
         isNewDoc: true,
         isAddress: this.forAddress,
         path: pathIds,
-      })
+      }),
     );
   }
 

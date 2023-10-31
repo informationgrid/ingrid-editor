@@ -13,20 +13,20 @@ export class AddressTreeQuery extends QueryEntity<TreeState> {
     filterBy: (entity) => entity._parent === null,
   });
   openedDocument$: Observable<DocumentAbstract> = this.select(
-    (state) => state.openedDocument
+    (state) => state.openedDocument,
   );
   breadcrumb$: Observable<ShortTreeNode[]> = this.select(
-    (state) => state.breadcrumb
+    (state) => state.breadcrumb,
   );
   explicitActiveNode$: Observable<ShortTreeNode> = this.select(
-    (state) => state.explicitActiveNode
+    (state) => state.explicitActiveNode,
   );
   multiSelectMode$: Observable<boolean> = this.select(
-    (state) => state.multiSelectMode
+    (state) => state.multiSelectMode,
   );
 
   datasetsChanged$: Observable<UpdateDatasetInfo> = this.select(
-    (state) => state.datasetsChanged
+    (state) => state.datasetsChanged,
   );
 
   constructor(protected store: AddressTreeStore) {

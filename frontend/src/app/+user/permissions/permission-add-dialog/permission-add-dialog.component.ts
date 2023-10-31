@@ -1,6 +1,5 @@
 import { Component, Inject, Input, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { MatListOption } from "@angular/material/list";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
@@ -46,7 +45,7 @@ export class PermissionAddDialogComponent implements OnInit {
     private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PermissionAddDialogComponent>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -68,7 +67,7 @@ export class PermissionAddDialogComponent implements OnInit {
 
     if (descendants.length) {
       this.openConfirmPermissionUpdateDialog(descendants).subscribe(
-        (confirmed) => (confirmed ? this.addPermission(option) : undefined)
+        (confirmed) => (confirmed ? this.addPermission(option) : undefined),
       );
     } else {
       this.dialogRef.close({
@@ -80,7 +79,7 @@ export class PermissionAddDialogComponent implements OnInit {
   }
 
   openConfirmPermissionUpdateDialog(
-    descendants: TreePermission[]
+    descendants: TreePermission[],
   ): Observable<boolean> {
     return this.dialog
       .open(ConfirmDialogComponent, {
@@ -105,13 +104,13 @@ export class PermissionAddDialogComponent implements OnInit {
         map((response) => {
           if (response === "confirm") {
             this.value = this.val.filter(
-              (p) => !descendants.map((d) => d.id).includes(p.id)
+              (p) => !descendants.map((d) => d.id).includes(p.id),
             );
             return true;
           } else {
             return false;
           }
-        })
+        }),
       );
   }
 
@@ -120,10 +119,5 @@ export class PermissionAddDialogComponent implements OnInit {
       this.selection.length === 0 ||
       this.val.some((item) => item.id === this.selection[0])
     );
-  }
-
-  removePermission(item: MatListOption) {
-    this.value = this.val.filter((entry) => item.value !== entry.id);
-    this.activeNodeSetter.next(null);
   }
 }

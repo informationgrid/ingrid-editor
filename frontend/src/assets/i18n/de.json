@@ -93,6 +93,11 @@
   "docType": {
     "FOLDER": "Ordner"
   },
+  "tags": {
+    "internet": "Internet",
+    "intranet": "intranet",
+    "amtsintern": "amtsintern"
+  },
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",
     "reference-error-multiple-files": "Die Adresse wird von anderen Datensätzen referenziert und darf nicht entfernt werden."

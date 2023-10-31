@@ -13,7 +13,10 @@ import { deepMerge } from "./services/utils";
 
 @Injectable({ providedIn: "root" })
 export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private http: HttpClient, private configService: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+  ) {}
 
   getTranslation(lang: string) {
     return this.configService.$userInfo.pipe(
@@ -33,15 +36,15 @@ export class TranslocoHttpLoader implements TranslocoLoader {
           sources.push(
             this.http
               .get<Translation>(
-                `${assetsDir}/${parentProfile}/i18n/${lang}.json`
+                `${assetsDir}/${parentProfile}/i18n/${lang}.json`,
               )
-              .pipe(catchError(() => of({})))
+              .pipe(catchError(() => of({}))),
           );
         }
         return combineLatest(sources).pipe(
-          map((files) => deepMerge(files[0], files[1], files[2]))
+          map((files) => deepMerge(files[0], files[1], files[2])),
         );
-      })
+      }),
     );
   }
 }
