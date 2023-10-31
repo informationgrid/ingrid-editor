@@ -1,0 +1,81 @@
+== Interfaces
+This section describes the supported API endpoints and their authentications.
+
+=== Swagger-UI
+Swagger-UI can help to visualize and interact with the API’s resources.
+
+* http://localhost:8550/swagger-ui/index.html
+* https://ige-ng.informationgrid.eu/swagger-ui/index.html
+
+To test an API endpoint via the Swagger UI, remember to select the responsible server (Servers drop-down) and enter a valid Bearer Token (Authorise button).
+
+=== Authentication
+All APIs are secured using OAuth 2.0 via Keycloak. In order to interact with endpoints, a bearer token must first be obtained.
+
+NOTE: Access tokens are valid for 1 minute. After its expiration the token must be refreshed with a refresh token.
+
+==== Obtain Token via Browser
+An access token can be obtained via browser developer tool. This approach is recommended for simple test only.
+
+. Log in to InGrid-Editor
+. Open developer tools and select 'Network'
+. Refresh page
+. Select the object with the name 'currentUser' and open the request headers
+. Copy the long string of 'Authorization' (NOTE: without 'Bearer' )
+
+
+==== Obtain Token via Postman
+For more advanced testing, Postman can help to maintain a fresh access token. Set up an OAuth 2.0 authentication with the following variables.
+[cols="1,2"]
+|===
+| Variable | Description
+
+| realm
+| Set the Keycloak realm that manages a set of users, credentials, roles, and groups (e.g. "InGrid").
+
+| clientId
+| Keycloak client ID  (e.g. "ige-ng-frontend")
+
+| clientSecret
+| Keycloak client secret (e.g. "admin")
+
+| Username
+| Username of InGird Editor Login
+
+| Password
+| Password of InGrid Editor Login
+
+| Grant type
+| Password Credentials
+
+| Access Token URL
+| {{keyCloakServer}}/realms/{{realm}}/protocol/openid-connect/token
+
+| Refresh Token URL
+| {{keyCloakServer}}/realms/{{realm}}/protocol/openid-connect/token
+|===
+
+NOTE: 'keyCloakServer' refers to either `http://localhost:8080` or `https://ige-ng.informationgrid.eu`
+
+
+=== APIs
+==== OGC API Records
+This table provides a simple overview of OGC API Records Endpoints. For more details of each Endpoint and its parameter check out Swagger-UI.
+
+NOTE: Collection refers to a catalog. Record refers to a document (dataset, address).
+
+[cols="1,2,3"]
+|===
+| Method | Resource | Description
+
+| GET | Collections | Get multiple collections
+| GET | Collection | Get one collection by ID
+| GET | Records | Get multiple records of a collection
+| GET | Record | Get one record by ID
+
+| POST | Records | Insert multiple records into a collection
+| PUT | Record | Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)
+
+|DELETE | Record | Delete a record by ID
+
+|===
