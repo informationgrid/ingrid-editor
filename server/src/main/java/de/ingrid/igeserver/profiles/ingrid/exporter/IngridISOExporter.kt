@@ -6,7 +6,10 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.mdek.upload.Config
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,8 +21,11 @@ import org.springframework.stereotype.Service
 class IngridISOExporter @Autowired constructor(
     idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+    documentWrapperRepository: DocumentWrapperRepository,
+    codelistHandler: CodelistHandler,
+    config: Config,
+    catalogService: CatalogService,
+) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository, codelistHandler, config, catalogService) {
 
     override val typeInfo = ExportTypeInfo(
             DocumentCategory.DATA,

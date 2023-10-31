@@ -1,14 +1,26 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.FolderModelTransformer
+import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.mdek.upload.Config
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.ConfigurableNamespaceContext
 import de.ingrid.utils.xml.IDFNamespaceContext
@@ -28,7 +40,10 @@ import java.time.OffsetDateTime
 class IngridIndexExporter @Autowired constructor(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     val luceneExporter: IngridLuceneExporter,
-    val documentWrapperRepository: DocumentWrapperRepository
+    val documentWrapperRepository: DocumentWrapperRepository,
+    val codelistHandler: CodelistHandler,
+    val config: Config,
+    val catalogService: CatalogService,
 ) : IgeExporter {
     
     private val typeId = "indexInGridIDF"
@@ -46,6 +61,8 @@ class IngridIndexExporter @Autowired constructor(
 
     private lateinit var xpathUtils: XPathUtils
 
+    private val mapper = ObjectMapper().registerKotlinModule()
+
     val elementsRemovedFromIsoBeforeFingerprint = arrayOf("/gmd:MD_Metadata/gmd:dateStamp", "//@gml:id")
 
     init {
@@ -57,8 +74,9 @@ class IngridIndexExporter @Autowired constructor(
     }
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        val idf = idfExporter.run(doc, catalogId)
-        val luceneDoc = luceneExporter.run(doc, catalogId) as String
+        val documentModel = getModelTransformer(doc, catalogId)
+        val idf = idfExporter.run(doc, catalogId, ExportOptions(false), documentModel)
+        val luceneDoc = luceneExporter.run(doc, catalogId, documentModel) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
@@ -70,6 +88,46 @@ class IngridIndexExporter @Autowired constructor(
 
         return luceneJson.toPrettyString()
     }
+
+    private fun getModelTransformer(json: Document, catalogId: String): Any {
+        var ingridModel: IngridModel? = null
+        var addressModel: AddressModel? = null
+        var folderModel: FolderModel? = null
+        val type = json.type
+        if (type == "FOLDER") {
+            folderModel = mapper.convertValue(json, FolderModel::class.java)
+        } else {
+            try {
+                ingridModel = mapper.convertValue(json, IngridModel::class.java)
+            } catch (e: Exception) {
+                addressModel = mapper.convertValue(json, AddressModel::class.java)
+            }
+        }
+        val isAddress = addressModel != null
+
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+
+        val transformers = mapOf(
+            "InGridSpecialisedTask" to IngridModelTransformer::class,
+            "InGridGeoDataset" to GeodatasetModelTransformer::class,
+            "InGridLiterature" to LiteratureModelTransformer::class,
+            "InGridGeoService" to GeodataserviceModelTransformer::class,
+            "InGridProject" to ProjectModelTransformer::class,
+            "InGridDataCollection" to DataCollectionModelTransformer::class,
+            "InGridInformationSystem" to InformationSystemModelTransformer::class,
+            "InGridOrganisationDoc" to AddressModelTransformer::class,
+            "InGridPersonDoc" to AddressModelTransformer::class,
+            "FOLDER" to FolderModelTransformer::class
+        )
+        val transformerClass = transformers[ingridModel?.type ?: addressModel?.docType ?: "FOLDER"] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        return if (type == "FOLDER") {
+            transformerClass.constructors.first().call(folderModel, catalogId, codelistTransformer, null)
+        } else if (isAddress)
+            transformerClass.constructors.first().call(addressModel, catalogId, codelistTransformer, null)
+        else
+            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
+    }
+
 
     private fun handleFingerprint(catalogId: String, uuid: String, idf: String): String {
         val fingerprint = calculateFingerprint(ElasticDocument().apply { put("idf", idf) })

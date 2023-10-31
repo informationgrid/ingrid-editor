@@ -31,6 +31,21 @@ class IngridLuceneExporter @Autowired constructor(
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
 
+    fun run(doc: Document, catalogId: String, transformer: Any): Any {
+        val output: TemplateOutput = JsonStringOutput()
+        val catalog = catalogService.getCatalogById(catalogId)
+        val templateData = getTemplateForDoctype(doc, catalog)
+        templateEngine.render(templateData.first, mapOf(
+            "map" to mapOf(
+                "model" to transformer,
+                "catalog" to catalog,
+                "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
+                "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
+            )
+        ), output)
+        return output.toString()
+        
+    }
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogService.getCatalogById(catalogId)
@@ -41,16 +56,16 @@ class IngridLuceneExporter @Autowired constructor(
 
     private fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
         return when (doc.type) {
-            "InGridSpecialisedTask" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridGeoDataset" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridLiterature" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridGeoService" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridProject" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridDataCollection" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridInformationSystem" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridOrganisationDoc" -> Pair("ingrid/template-lucene-address.jte", getMapper(IngridDocType.ADDRESS, doc, catalog))
-            "InGridPersonDoc" -> Pair("ingrid/template-lucene-address.jte", getMapper(IngridDocType.ADDRESS, doc, catalog))
-            "FOLDER" -> Pair("ingrid/template-lucene-folder.jte", getMapper(IngridDocType.FOLDER, doc, catalog))
+            "InGridSpecialisedTask" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridGeoDataset" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridLiterature" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridGeoService" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridProject" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridDataCollection" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridInformationSystem" -> Pair("ingrid/template-lucene.jte", emptyMap())
+            "InGridOrganisationDoc" -> Pair("ingrid/template-lucene-address.jte", emptyMap())
+            "InGridPersonDoc" -> Pair("ingrid/template-lucene-address.jte", emptyMap())
+            "FOLDER" -> Pair("ingrid/template-lucene-folder.jte", emptyMap())
             else -> {
                 throw ServerException.withReason("Cannot get template for type: ${doc.type}")
             }

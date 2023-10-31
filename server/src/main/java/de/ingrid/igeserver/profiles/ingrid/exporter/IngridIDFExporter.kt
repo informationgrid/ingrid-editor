@@ -51,6 +51,18 @@ class IngridIDFExporter @Autowired constructor(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
+    fun run(doc: Document, catalogId: String, options: ExportOptions, transformer: Any): String {
+        val output: TemplateOutput = XMLStringOutput()
+        if (doc.type == "FOLDER") return ""
+
+        templateEngine.render(getTemplateForDoctype(doc.type), mapOf(
+            "map" to mapOf("model" to transformer),
+        ), output)
+        val prettyXml = output.toString()
+        log.debug(prettyXml)
+        return prettyXml
+    }
+    
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
