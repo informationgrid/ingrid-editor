@@ -65,6 +65,13 @@ class OgcRecordService @Autowired constructor(
     val apiHost = "http://localhost:8550"
 
     val supportedExportFormats = listOf("internal", "geojson", "html", "ingridISO")
+
+    fun validateRequestParams(allRequestParams: Map<String, String>, validParams: List<String>){
+        for(param in allRequestParams.keys){
+            if(param !in validParams) throw ClientException.withReason("Request parameter '$param' not supported")
+        }
+    }
+
     fun checkFormatSupport(format: String){
         val supported: Boolean = supportedExportFormats.any { it == format}
         if(supported){ return} else {

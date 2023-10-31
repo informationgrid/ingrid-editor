@@ -32,7 +32,10 @@ class OgcApiRecordsController @Autowired constructor(
     val log = logger()
     val defaultFormat = "internal"
 
-    override fun getCatalogs(principal: Principal, format: String?): ResponseEntity<ByteArray> {
+
+    override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray> {
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+
         val definedFormat = format ?: defaultFormat
         ogcRecordService.checkFormatSupport(definedFormat)
         val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
@@ -44,7 +47,9 @@ class OgcApiRecordsController @Autowired constructor(
         return ResponseEntity.ok().headers(responseHeaders).body(catalogs)
     }
 
-    override fun getCatalog(collectionId: String, format: String?): ResponseEntity<ByteArray> {
+    override fun getCatalog(allRequestParams: Map<String, String>, collectionId: String, format: String?): ResponseEntity<ByteArray> {
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+
         val definedFormat = format ?: defaultFormat
         ogcRecordService.checkFormatSupport(definedFormat)
 
@@ -59,13 +64,15 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun deleteDataset(principal: Principal, collectionId: String, recordId: String): ResponseEntity<Void> {
+    override fun deleteDataset(allRequestParams: Map<String, String>, principal: Principal, collectionId: String, recordId: String): ResponseEntity<Void> {
+        ogcRecordService.validateRequestParams(allRequestParams, listOf())
         ogcRecordService.deleteRecord(principal, collectionId, recordId)
         return ResponseEntity.ok().build()
     }
 
-    override fun postDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<JsonNode> {
+    override fun postDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<JsonNode> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
 
         val contentType = allHeaders["content-type"]!!
 
@@ -79,8 +86,9 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun putDataset(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
+    override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+        ogcRecordService.validateRequestParams(allRequestParams, listOf())
 
         val contentType = allHeaders["content-type"]!!
 //        // check if document exists
@@ -91,7 +99,9 @@ class OgcApiRecordsController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun getRecord(collectionId: String, recordId: String, format: String?): ResponseEntity<ByteArray> {
+    override fun getRecord(allRequestParams: Map<String, String>, collectionId: String, recordId: String, format: String?): ResponseEntity<ByteArray> {
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+
         val definedFormat = format ?: defaultFormat
 
         val record = ogcRecordService.prepareRecord(collectionId, recordId, definedFormat)
@@ -103,8 +113,9 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun getRecords(principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
+    override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         ogcRecordService.verifyBbox(bbox)
         val definedFormat = format ?: defaultFormat
 
@@ -134,7 +145,9 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun handleCSWT(allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
+    override fun handleCSWT(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
+
         val options = ImportOptions(
             publish = true,
             parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id } else null,

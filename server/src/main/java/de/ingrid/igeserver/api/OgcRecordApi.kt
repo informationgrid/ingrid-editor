@@ -20,19 +20,19 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
-@Tag(name = "OgcApiRecords", description = "OGC API - Records")
 interface OgcApiRecords {
 
 
-
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get all Catalogs", hidden = false)
+    @Operation(tags=["OgcApiRecords: 1. Collections"], responses = [], summary = "Get all Catalogs", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
+        ApiResponse(responseCode = "400", description = "Invalid input"),
+        ApiResponse(responseCode = "404", description = "Not found"),
     ])
     fun getCatalogs(
-            principal: Principal,
+        @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        principal: Principal,
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
             "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
@@ -41,17 +41,17 @@ interface OgcApiRecords {
     ): ResponseEntity<ByteArray>
 
 
-
     @GetMapping(value = ["/collections/{collectionId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get Catalog by ID", hidden = false)
+    @Operation(tags=["OgcApiRecords: 1. Collections"], responses = [], summary = "Get Catalog by ID", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
+        ApiResponse(responseCode = "400", description = "Invalid input"),
+        ApiResponse(responseCode = "404", description = "Not found"),
     ])
     fun getCatalog(
-            @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
-                    "\n\n### ! Not yet implemented !" +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
@@ -59,9 +59,8 @@ interface OgcApiRecords {
     ): ResponseEntity<ByteArray>
 
 
-
     @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "fetch records", hidden = false,
+    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "fetch records", hidden = false,
             description = "# Fetch Records\n\nFetch records of the catalog with id `collectionId`." +
                     "As specified in the [Records Access](https://docs.ogc.org/DRAFTS/20-004.html#records-access) clause, records are accessed using the HTTP GET method via the /collections/{collectionId}/items path." +
                     "\n\n\n\n## Currently working on profile: **Ingrid**"
@@ -70,9 +69,9 @@ interface OgcApiRecords {
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun getRecords(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             principal: Authentication,
             // PARAMETER : collectionId
             @Parameter(description = "## Collection ID \n **OGC Parameter**" +
@@ -125,8 +124,8 @@ interface OgcApiRecords {
                     "\n\n• Open intervals (all records until): \"../2023-08-05T23:59:59Z\" " +
                     "\n\n[Source: OGC API - Features - Part 1: Core corrigendum](https://docs.ogc.org/is/17-069r4/17-069r4.html#_parameter_datetime)" +
                     "\n\n### To Do:" +
-                    "\n\n• check time intersections" +
-                    "\n\n• Unterschied: time instance or time period",
+                    "\n\n• currently time span refers to timeDate of last published version (key = '_modified')" +
+                    "\n\n• check time intersections",
                     explode = Explode.FALSE,
                     style = ParameterStyle.MATRIX,
                     schema = Schema(pattern = "^(([.][.]|\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)[Z])/([.][.]|\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])T([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)[Z]))$" )
@@ -178,7 +177,7 @@ interface OgcApiRecords {
 
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = false,
+    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = false,
         description = "# Fetch a Record" +
                 "" +
                 "\n\n### A 200-response SHALL include the following links in the response:\n" +
@@ -193,9 +192,9 @@ interface OgcApiRecords {
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun getRecord(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @Valid @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
             @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
@@ -207,32 +206,30 @@ interface OgcApiRecords {
     ): ResponseEntity<ByteArray>
 
 
-
     @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(responses = [], summary = "Remove a resource from a collection. (Delete Record)", hidden = true)
+    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "Remove a resource from a collection. (Delete Record)", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
-        ApiResponse(responseCode = "204", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun deleteDataset(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             principal: Principal,
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
             @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
     ): ResponseEntity<Void>
 
 
-
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Add a new resource instance to a collection. (Import Record)", hidden = true)
+    @Operation(tags=["OgcApiRecords: 2. Records"], summary = "Add a new resource instance to a collection. (Import Record)", hidden = false)
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+        ApiResponse(responseCode = "200", description = "Successful operation."),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")]
-    )
+    ])
     fun postDataset(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             @RequestHeader allHeaders: Map<String, String>,
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
@@ -242,15 +239,15 @@ interface OgcApiRecords {
             ): ResponseEntity<JsonNode>
 
 
-
     @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)", hidden = true)
+    @Operation(tags=["OgcApiRecords: 2. Records"], summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)", hidden = false)
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "The stored dataset, which might contain additional storage information."),
+        ApiResponse(responseCode = "200", description = "Successful operation"),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")]
-    )
+    ])
     fun putDataset(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             @RequestHeader allHeaders: Map<String, String>,
             principal: Authentication,
             @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
@@ -259,13 +256,14 @@ interface OgcApiRecords {
     ): ResponseEntity<JsonNode>
 
     @PostMapping(value = ["collections/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
-    @Operation(summary = "Insert, Update, Delete Records via CSW-t", hidden = true)
+    @Operation(tags=["OgcApiRecords: 3. CSWT"], summary = "Insert, Update, Delete Records via CSW-t", hidden = true)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
         ApiResponse(responseCode = "404", description = "Not found"),
-        ApiResponse(responseCode = "500", description = "Unexpected error")
     ])
     fun handleCSWT(
+            @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
             @RequestHeader allHeaders: Map<String, String>,
             principal: Authentication,
             @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
