@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
@@ -42,8 +41,8 @@ open class IngridModelTransformer(
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
     
-    var incomingReferencesCache: List<CrossReference>? = null
-    var superiorReferenceCache: SuperiorReference? = null
+    private var incomingReferencesCache: List<CrossReference>? = null
+    private var superiorReferenceCache: SuperiorReference? = null
 
     var citationURL: String? = null
     val data = model.data
@@ -101,11 +100,11 @@ open class IngridModelTransformer(
 
     val browseGraphics = generateBrowseGraphics(graphicOverviews)
 
-    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?): List<BrowseGraphic> =
+    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, uuid: String = model.uuid): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
                 if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-                else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+                else "${config.uploadExternalUrl}$catalogIdentifier/${uuid}/${it.fileName.uri}",
                 it.fileDescription
             )
         } ?: emptyList()
@@ -582,7 +581,7 @@ open class IngridModelTransformer(
     fun getCoupledServiceUrls(): List<ServiceUrl> {
         return getIncomingReferencesProxy()
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
-            .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
+            .map { ServiceUrl(it.objectName, it.serviceUrl ?: "???", null) }
     }
     
     private fun getIncomingReferencesProxy(): List<CrossReference> {
@@ -603,21 +602,18 @@ open class IngridModelTransformer(
 
     private fun getSuperiorReference(): SuperiorReference? {
         val uuid = data.parentIdentifier ?: return null
-        try {
-            val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
-                IngridModel::class.java
-            )
+        return try {
+            val parentDoc = documentService!!.getLastPublishedDocument(catalogIdentifier, uuid)
 
-            return SuperiorReference(
+            SuperiorReference(
                 uuid = uuid,
-                objectName = model.title,
-                objectType = mapDocumentType(model.type),
-                description = model.data.description,
+                objectName = parentDoc.title ?: "",
+                objectType = mapDocumentType(parentDoc.type),
+                description = parentDoc.data.get("description").asText()
             )
         } catch (e: EmptyResultDataAccessException) {
             // No published reference found for parent identifier
-            return null
+            null
         }
     }
 
@@ -681,7 +677,15 @@ open class IngridModelTransformer(
     }
     
     private fun convertToGraphicOverview(json: JsonNode?): GraphicOverview? {
-        return null
+        val filename = json?.get("fileName") ?: return null
+        return GraphicOverview(
+            FileName(
+                filename.get("asLink").asBoolean(),
+                filename.get("value").asText(),
+                filename.get("uri").asText()
+            ),
+            json.get("description")?.asText()
+        )
     }
 
 
@@ -707,22 +711,7 @@ open class IngridModelTransformer(
     private fun getLastPublishedModel(uuid: String?): Document? {
         if (uuid == null) return null
 
-        val model = if (cache.models[uuid] != null) cache.models[uuid] else {
-            val docAsModel = jacksonObjectMapper().convertValue(
-                getLastPublishedDocument(uuid),
-                IngridModel::class.java
-            )
-            cache.models[uuid] = docAsModel
-            docAsModel
-        }
-        return if (model == null) null else IngridModelTransformer(
-            model,
-            catalogIdentifier,
-            codelists,
-            config,
-            catalogService,
-            cache
-        )
+        return getLastPublishedDocument(uuid)
     }
 
 
