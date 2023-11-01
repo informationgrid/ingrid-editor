@@ -70,7 +70,7 @@ run `npm run start-ie11`.
   - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
     - Name: IgeServerKt
     - VM options: `-Dspring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch`
-    - Use classpath of module: `IGE-NG.server.main`
+    - Use classpath of module: `ige-ng.server.main`
     - Main class: `de.ingrid.igeserver.IgeServerKt`  
       (The file should automatically appear in the search dialog. When not, choose manually _
       server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
