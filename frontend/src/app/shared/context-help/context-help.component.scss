@@ -1,12 +1,10 @@
 @import "src/variables";
 
 .infoIcon {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: $ige-background;
-  display: inline-block;
-  height: 24px;
-  width: 24px;
-  margin-right: 8px;
 }
 
 .mat-mdc-dialog-content {
@@ -21,17 +19,19 @@
   width: 500px;
 }
 
-.mat-mdc-dialog-title {
-  display: flex;
-  align-items: flex-start;
+.context-help-title-wrapper {
+  padding: 8px 8px 20px;
   cursor: move;
-  font-size: 16px;
-  padding: 8px;
 
-  span {
-    flex: 1 1 auto;
-    line-height: 24px;
+  h1 {
     color: $ige-primary;
+    margin: unset;
+    padding: unset;
+    font-size: 16px;
     font-weight: normal;
+
+    &:before {
+      display: none;
+    }
   }
 }
