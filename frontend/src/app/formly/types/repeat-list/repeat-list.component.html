@@ -1,9 +1,8 @@
 <ige-form-error *ngIf="showError && !formControl.hasError('required')">
     <formly-validation-message [field]="field"></formly-validation-message>
 </ige-form-error>
-
 <mat-chip-listbox
-    *ngIf="props.view === 'chip' && field.fieldGroup?.length > 0"
+    *ngIf="props.view === 'chip' && model[field.key + '']?.length > 0"
     [disabled]="formControl.disabled"
     cdkDropListGroup
     mixedCdkDragDrop
@@ -11,7 +10,7 @@
     [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
 >
     <span
-        *ngFor="let field of field.fieldGroup; let i = index"
+        *ngFor="let item of model[field.key]; let i = index"
         cdkDropList
         mixedCdkDropList
     >
@@ -32,12 +31,14 @@
 
             <ng-container *ngIf="!props.labelField">
                 <div class="label">
-                    {{ getParameter(model[i]) }}
+                    {{ getParameter(item) }}
                 </div>
             </ng-container>
 
             <ng-container *ngIf="props.labelField">
-                <div class="label">{{ model[i][props.labelField] }}</div>
+                <div class="label">
+                    {{ item[props.labelField] }}
+                </div>
             </ng-container>
 
             <button
@@ -45,8 +46,8 @@
                 matChipRemove
                 [attr.aria-description]="
                     props.labelField
-                        ? model[i][props.labelField]
-                        : getParameter(model[i]) + 'entfernen'
+                        ? item[props.labelField]
+                        : getParameter(item) + 'entfernen'
                 "
             >
                 <mat-icon>cancel</mat-icon>
@@ -57,7 +58,7 @@
 
 <div
     *ngIf="
-        props.view !== 'chip' && field.fieldGroup?.length > 0;
+        props.view !== 'chip' && model[field.key + '']?.length > 0;
         else noFieldsSelected
     "
     class="component-list"
@@ -67,15 +68,15 @@
     role="list"
 >
     <div
-        *ngFor="let field of field.fieldGroup; let i = index"
+        *ngFor="let item of model[field.key]; let i = index"
         cdkDrag
         [cdkDragDisabled]="
-            props.noDrag || formControl.disabled || model?.length < 2
+            props.noDrag || formControl.disabled || model[field.key]?.length < 2
         "
         class="clickable list-item"
         data-cy="list-item"
         tabindex="0"
-        (click)="this.onItemClick(model[i]?.key)"
+        (click)="this.onItemClick(item?.key)"
         (keyup.enter)="removeItem(i, $event)"
         role="listitem"
         [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
@@ -88,10 +89,12 @@
                     [svgIcon]="this.props.elementIcon"
                 ></mat-icon>
                 <ng-container *ngIf="type !== 'search'">
-                    {{ getParameter(model[i]) }}
+                    {{ getParameter(item) }}
                 </ng-container>
                 <ng-container *ngIf="type === 'search'">
-                    <div class="label">{{ model[i][props.labelField] }}</div>
+                    <div class="label">
+                        {{ item[props.labelField] }}
+                    </div>
                 </ng-container>
             </span>
         </div>
