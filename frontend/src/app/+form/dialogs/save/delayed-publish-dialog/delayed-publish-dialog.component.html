@@ -1,13 +1,10 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text" style="padding-right: 20px"
-            >Veröffentlichung planen</span
-        >
-    </h2>
+<div class="dialog-title-wrapper flex-row align-items-center gap-12">
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h1 mat-dialog-title>Veröffentlichung planen</h1>
 </div>
+
 <mat-dialog-content [formGroup]="form">
     <mat-form-field
         appearance="outline"

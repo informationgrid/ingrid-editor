@@ -1,16 +1,20 @@
-<div class="dialog-title-wrapper" data-cy="form-dialog-title">
-    <h2 mat-dialog-title [attr.aria-label]="titleText">
-        <button
-            mat-icon-button
-            mat-dialog-close
-            aria-hidden="true"
-            aria-label="Dialog schließen"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{ titleText }}</span>
-    </h2>
+<div
+    class="dialog-title-wrapper flex-row align-items-center gap-12"
+    data-cy="form-dialog-title"
+>
+    <button
+        mat-icon-button
+        mat-dialog-close
+        aria-hidden="true"
+        aria-label="Dialog schließen"
+    >
+        <mat-icon>close</mat-icon>
+    </button>
+    <h1 mat-dialog-title>
+        {{ titleText }}
+    </h1>
 </div>
+
 <mat-dialog-content data-cy="form-dialog-content">
     <formly-form
         [form]="form"
