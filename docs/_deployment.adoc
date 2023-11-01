@@ -19,6 +19,75 @@ optional:
 
 === Keycloak
 
+Keycloak is used for user management. A pre-configured docker image can be used, which already contains the realm-configuration necessary for the connection to the IGE-NG.
+
+The docker-config should look like this:
+[source, dockerfile]
+====
+  keycloak:
+    image: docker-registry.wemove.com/keycloak:22.0.4-1
+    restart: unless-stopped
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_RELATIVE_PATH=/keycloak
+      - KC_HOSTNAME=
+      - KC_HOSTNAME_URL=http://localhost/keycloak
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=db
+      - KC_DB_USERNAME=admin
+      - KC_DB_PASSWORD=admin
+      - MAIL_SMTP=mailrelay
+      - MAIL_FROM=keycloak@wemove.com
+      - IGE_FRONTEND_URL=http://localhost
+      - IGE_SUPER_USER_LOGIN=ige
+      - IGE_SUPER_USER_PASSWORD=ige
+      - IGE_SUPER_USER_FIRSTNAME=Test
+      - IGE_SUPER_USER_LASTNAME=User
+      - IGE_SUPER_USER_EMAIL=test.user@test.com
+====
+
+If you use your own Keycloak, then you need to do the following steps to setup the configuration with an IGE-NG installation.
+
+==== Manual configuration
+
+To help with the configuration of Keycloak for IGE-NG there's a config file, which contains most of the information needed to successfully support authentication for IGE-NG. When creating a new Realm, just paste the JSON-file into the given field and the realm, roles and client will be created. Then you need to do the following steps:
+
+* create super-admin user "ige" (Users -> Add user)
+** under "Role mapping" assign role: `ige-super-admin`
+** under Credentials add a new (non-temporary) password
+* update allowed URLs in Clients -> ige-ng-frontend
+
+To configure Keycloak completely manually, the following steps are necessary:
+
+* create a new realm "InGrid"
+* create the following roles (Realm roles -> Create role)
+** ige-user
+*** add associated roles from "realm-management": "view-users"
+** ige-user-manager
+*** add associated roles from "realm-management": "manage-realm", "manage-users"
+** ige-super-admin
+*** add associated roles from "realm-management": "manage-realm", "manage-users"
+* create super-admin user "ige" (Users -> Add user)
+** under "Role mapping" assign role: `ige-super-admin`
+** under Credentials add a new (non-temporary) password
+* create clients (Clients -> Create client)
+** ige-ng-frontend
+*** client-id: ige-ng-frontend
+*** Root URL: https://<url-to-ige-ng>
+*** Valid redirect URIs: https://<url-to-ige-ng>/*
+*** Valid post logout redirect URIs: `+`
+*** Web origins: https://<url-to-ige-ng>
+*** Standard flow: checked
+*** Direct access grants: checked
+** ige-ng-backend
+*** client-id: ige-ng-backend
+
+
+
+
 === Elasticsearch
 
 === Apache / nginx
