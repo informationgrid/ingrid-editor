@@ -35,6 +35,7 @@ import { SearchInputComponent } from "./search-input/search-input.component";
 import { DocumentIconModule } from "./document-icon/document-icon.module";
 import { FullNamePipe } from "../directives/full-name.pipe";
 import { A11yModule } from "@angular/cdk/a11y";
+import { LongPressDirective } from "../directives/longPress.directive";
 
 @NgModule({
   imports: [
@@ -74,6 +75,7 @@ import { A11yModule } from "@angular/cdk/a11y";
     FeatureFlagDirective,
     DndDirective,
     FullNamePipe,
+    LongPressDirective,
   ],
   exports: [
     TreeComponent,
@@ -90,6 +92,7 @@ import { A11yModule } from "@angular/cdk/a11y";
     DndDirective,
     SearchInputComponent,
     FullNamePipe,
+    LongPressDirective,
   ],
 })
 export class SharedModule {}

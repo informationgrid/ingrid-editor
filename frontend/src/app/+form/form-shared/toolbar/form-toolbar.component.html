@@ -4,9 +4,15 @@
             <button
                 *ngIf="!button.isSeparator && !button.menu"
                 mat-button
+                long-press
                 class="standard-toolbar-button"
+                [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
+                #hiddenMenuTrigger="matMenuTrigger"
                 [attr.data-cy]="'toolbar_' + button.eventId"
-                (click)="sendEvent(button.eventId)"
+                (longPress)="
+                    sendEvent(button.eventId + '_LONGPRESS', hiddenMenuTrigger)
+                "
+                (shortClick)="sendEvent(button.eventId)"
                 [disabled]="!button.active || isNotReady"
                 [matTooltip]="button.tooltip"
                 [attr.aria-label]="button.tooltip"
@@ -17,6 +23,22 @@
                     >{{ button.matIconVariable }}</mat-icon
                 >
             </button>
+            <mat-menu #hiddenMenu="matMenu">
+                <button
+                    *ngFor="let menuItem of button.hiddenMenu; index as idx"
+                    mat-menu-item
+                    [disabled]="false"
+                    [attr.data-cy]="menuItem.eventId + '_' + idx"
+                    (click)="
+                        sendEvent(menuItem.eventId, {
+                            index: idx,
+                            data: menuItem.data
+                        })
+                    "
+                >
+                    <span>{{ menuItem.label }}</span>
+                </button>
+            </mat-menu>
 
             <ng-container *ngIf="!button.isSeparator && button.menu">
                 <button

@@ -21,6 +21,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { MatMenuTrigger } from "@angular/material/menu";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -124,13 +125,34 @@ export class HistoryPlugin extends Plugin {
     this.handleButtonState();
   }
 
+  private eventIdNext = "HISTORY_NEXT";
+  private eventIdPrevious = "HISTORY_PREVIOUS";
+
   private handleEvents() {
     this.formSubscriptions.push(
       // react on event when button is clicked
-      this.docEvents.onEvent("HISTORY_NEXT").subscribe(() => this.handleNext()),
       this.docEvents
-        .onEvent("HISTORY_PREVIOUS")
+        .onEvent(this.eventIdNext)
+        .subscribe(() => this.handleNext()),
+      this.docEvents
+        .onEvent(this.eventIdPrevious)
         .subscribe(() => this.handlePrevious()),
+      this.docEvents
+        .onEvent(`${this.eventIdPrevious}_LONGPRESS`)
+        .subscribe((event) => {
+          this.handleListPrevious(event.data);
+        }),
+      this.docEvents
+        .onEvent(`${this.eventIdNext}_LONGPRESS`)
+        .subscribe((event) => {
+          this.handleListNext(event.data);
+        }),
+      this.docEvents.onEvent("HISTORY_PREVIOUS_SELECT").subscribe((item) => {
+        this.handleHistoryPreviousSelect(item);
+      }),
+      this.docEvents.onEvent("HISTORY_NEXT_SELECT").subscribe((item) => {
+        this.handleHistoryNextSelect(item);
+      }),
     );
   }
 
@@ -141,17 +163,19 @@ export class HistoryPlugin extends Plugin {
         id: "toolBtnPreviousInHistory",
         tooltip: "Springe zum letzten Dokument",
         matSvgVariable: "Vorheriger-Datensatz",
-        eventId: "HISTORY_PREVIOUS",
+        eventId: this.eventIdPrevious,
         pos: 200,
         active: false,
+        hiddenMenu: [],
       },
       {
         id: "toolBtnNextInHistory",
         tooltip: "Springe zum nächsten Dokument",
         matSvgVariable: "Naechster-Datensatz",
-        eventId: "HISTORY_NEXT",
+        eventId: this.eventIdNext,
         pos: 210,
         active: false,
+        hiddenMenu: [],
       },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
@@ -267,5 +291,70 @@ export class HistoryPlugin extends Plugin {
       }
     });
     this.handleButtonState();
+  }
+
+  private handleListNext(trigger?: MatMenuTrigger) {
+    const history = this.stack.slice(this.pointer + 1).map((item) => {
+      return {
+        eventId: "HISTORY_NEXT_SELECT",
+        label: item.title,
+        data: item,
+      };
+    });
+
+    this.formToolbarService.updateHiddenMenu("toolBtnNextInHistory", history);
+    trigger.openMenu();
+  }
+
+  /**
+   * Initiates and opens a mat-menu with clickable list of previously visited nodes
+   * @param trigger
+   * @private
+   */
+  private handleListPrevious(trigger?: MatMenuTrigger) {
+    const history = this.stack
+      .slice(0, this.pointer)
+      .reverse()
+      .map((item) => {
+        return {
+          eventId: "HISTORY_PREVIOUS_SELECT",
+          label: item.title,
+          data: item,
+        };
+      });
+
+    this.formToolbarService.updateHiddenMenu(
+      "toolBtnPreviousInHistory",
+      history,
+    );
+    trigger.openMenu();
+  }
+
+  /**
+   * Handles the selection of a node from previous history list
+   * @param item
+   * @private
+   */
+  private handleHistoryPreviousSelect(item: any) {
+    console.log("Index:" + item.data.index);
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== item.data.data.id) {
+      this.pointer = this.pointer - item.data.index - 1;
+      this.ignoreNextPush = true;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
+      return;
+    }
+  }
+
+  private handleHistoryNextSelect(item: any) {
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== item.data.data.id) {
+      this.ignoreNextPush = true;
+      this.pointer = this.pointer + item.data.index + 1;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
+      return;
+    }
   }
 }
