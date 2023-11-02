@@ -256,6 +256,8 @@ export class RepeatListComponent
     }
 
     // update validation message
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
     this.formControl.updateValueAndValidity();
   }
 
@@ -272,7 +274,8 @@ export class RepeatListComponent
     }
 
     this.formControl.patchValue([...(this.formControl.value || []), value]);
-    // this.add(null, value);
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 
   private handleRequiredState() {
@@ -356,6 +359,8 @@ export class RepeatListComponent
         ?.nextElementSibling as HTMLElement;
       nextElement?.focus();
     }
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 
   drop(event: { previousIndex: number; currentIndex: number }) {
@@ -365,10 +370,10 @@ export class RepeatListComponent
         (_, idx) => idx !== event.previousIndex,
       ),
     );
-    // this.remove(event.previousIndex);
     this.formControl.value.splice(event.currentIndex, 0, item);
     this.formControl.patchValue([...this.formControl.value]);
-    // this.add(event.currentIndex, item);
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 
   // TODO: do not use template function!
@@ -460,7 +465,8 @@ export class RepeatListComponent
           ...(this.formControl.value || []),
           trimmed,
         ]);
-        // this.add(null, trimmed);
+        this.formControl.markAsDirty();
+        this.formControl.markAsTouched();
       } else {
         if (trimmed instanceof Object) {
           if (duplicates.indexOf(item.trim()) == -1)
