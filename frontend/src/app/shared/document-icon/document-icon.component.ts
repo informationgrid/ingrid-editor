@@ -57,7 +57,7 @@ export class DocumentIconComponent implements OnInit {
       publicationType,
     );
     this.hasTags = publicationType?.length > 0;
-    this.tooltip = this.getTooltip(type, publicationType);
+    this.tooltip = this.getTooltip(type, state!, publicationType);
     this.iconClass =
       (<DocumentAbstract>doc).icon ||
       (<TreeNode>doc).iconClass ||
@@ -68,8 +68,18 @@ export class DocumentIconComponent implements OnInit {
     return this.profileService.getDocumentIcon(doc);
   }
 
-  private getTooltip(type: string, publicationType: string): string {
+  private getTooltip(
+    type: string,
+    state: string,
+    publicationType: string,
+  ): string {
     let returnTooltip = this.translocoService.translate(`docType.${type}`);
+
+    const stateLocalized = this.translocoService.translate(
+      `docState.${DocumentUtils.mapState(state, type)}`,
+    );
+    returnTooltip += ` (${stateLocalized}`;
+
     if (publicationType) {
       const pubTypeLocalized = this.translocoService.translate(
         `tags.${publicationType}`,
@@ -77,9 +87,10 @@ export class DocumentIconComponent implements OnInit {
       // in case publication type has been disabled then it should be set to an empty string to avoid the display
       // the tag, which is still set in backend
       if (pubTypeLocalized.trim().length !== 0) {
-        returnTooltip += ` (${pubTypeLocalized})`;
+        returnTooltip += `, ${pubTypeLocalized}`;
       }
     }
+    returnTooltip += ")";
     this.tooltipEmitter.emit(returnTooltip);
     return returnTooltip;
   }
