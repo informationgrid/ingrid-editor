@@ -379,8 +379,9 @@ export abstract class IngridShared extends BaseDoctype {
               ],
               validators: {
                 invekos: {
-                  expression: (ctrl) => {
-                    const invekosValue = ctrl.root.value.invekos?.key;
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                    const invekosValue =
+                      field.options.formState.mainModel?.invekos?.key;
                     if (invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
@@ -434,8 +435,12 @@ export abstract class IngridShared extends BaseDoctype {
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "gsaa") return true;
 
                       return ctrl.value?.some((item) => item.key === "304");
@@ -443,8 +448,12 @@ export abstract class IngridShared extends BaseDoctype {
                     message: "Das Schlagwort 'Bodennutzung' ist verpflichtend",
                   },
                   invekos_lpis: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "lpis") return true;
 
                       return ctrl.value?.some((item) => item.key === "202");
@@ -512,8 +521,12 @@ export abstract class IngridShared extends BaseDoctype {
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                         return true;
 
@@ -544,8 +557,9 @@ export abstract class IngridShared extends BaseDoctype {
             validators: {
               ...(this.showInVeKoSField && {
                 invekos: {
-                  expression: (ctrl) => {
-                    const invekosValue = ctrl.root.value.invekos?.key;
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                    const invekosValue =
+                      field.options.formState.mainModel?.invekos?.key;
                     if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                       return true;
 
@@ -900,8 +914,9 @@ export abstract class IngridShared extends BaseDoctype {
           validators: {
             ...(this.showInVeKoSField && {
               invekos: {
-                expression: (ctrl) => {
-                  const invekosValue = ctrl.root.value.invekos?.key;
+                expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                  const invekosValue =
+                    field.options.formState.mainModel?.invekos?.key;
                   if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                     return true;
 
