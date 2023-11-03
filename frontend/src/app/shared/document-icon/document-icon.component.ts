@@ -1,11 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  HostBinding,
-  Input,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, HostBinding, Input, OnChanges } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { DocumentUtils } from "../../services/document.utils";
@@ -18,20 +11,14 @@ import { ProfileService } from "../../services/profile.service";
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
 })
-export class DocumentIconComponent implements OnInit {
-  _doc: any;
+export class DocumentIconComponent implements OnChanges {
   tooltip: string;
   iconClass: string;
 
-  @Input() set doc(value: any) {
-    this._doc = value;
-    this.updateDocumentState(value);
-  }
+  @Input() doc: Partial<IgeDocument> | DocumentAbstract | TreeNode;
 
   @Input() showDelay: number = 0;
-  @Input() explicitTooltip: string;
-
-  @Output() tooltipEmitter = new EventEmitter<string>();
+  @Input() toolTipModifier: (tooltip: string) => string = (tooltip) => tooltip;
 
   documentState: string;
   hasTags = false;
@@ -43,9 +30,7 @@ export class DocumentIconComponent implements OnInit {
     private profileService: ProfileService,
   ) {}
 
-  ngOnInit(): void {}
-
-  updateDocumentState(doc: DocumentAbstract | TreeNode) {
+  updateDocumentState(doc: Partial<IgeDocument> | DocumentAbstract | TreeNode) {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
     const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
     const publicationType =
@@ -57,7 +42,8 @@ export class DocumentIconComponent implements OnInit {
       publicationType,
     );
     this.hasTags = publicationType?.length > 0;
-    this.tooltip = this.getTooltip(type, state, publicationType);
+    const tooltip = this.getTooltip(type, state, publicationType);
+    this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
     this.iconClass =
       (<DocumentAbstract>doc).icon ||
       (<TreeNode>doc).iconClass ||
@@ -91,8 +77,10 @@ export class DocumentIconComponent implements OnInit {
       }
     }
 
-    const finalTooltip = `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
-    this.tooltipEmitter.emit(finalTooltip);
-    return finalTooltip;
+    return `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
+  }
+
+  ngOnChanges() {
+    this.updateDocumentState(this.doc);
   }
 }
