@@ -114,6 +114,10 @@
 |MAIL_FROM
 |
 |noreply@wemove.com
+
+|VIRUSSCAN_MAIL_RECEIVER
+|
+|system.mail.receiver
 |===
 
 === System configuration
