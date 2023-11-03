@@ -8,7 +8,7 @@ export class DocumentUtils {
     return `${mappedState} ${mappedTags}`;
   }
 
-  static mapState(state: DocumentState | string, type: string) {
+  static mapState(state: DocumentState, type: string) {
     switch (state) {
       case "W":
         return type === "FOLDER" ? "published" : "working";
