@@ -117,7 +117,7 @@
 
 |VIRUSSCAN_MAIL_RECEIVER
 |
-|system.mail.receiver
+|
 |===
 
 === System configuration
