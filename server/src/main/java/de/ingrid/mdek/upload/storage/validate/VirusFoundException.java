@@ -2,7 +2,7 @@
  * **************************************************-
  * InGrid Portal MDEK Application
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,23 +22,19 @@
  */
 package de.ingrid.mdek.upload.storage.validate;
 
-import de.ingrid.mdek.upload.ValidationException;
-
 import java.nio.file.Path;
 import java.util.Map;
 
 /**
  * Exception signaling a virus infection. The HTTP status code is 419.
  */
-public class VirusFoundException extends ValidationException {
-
-    private static final int STATUS_CODE = 419;
+public class VirusFoundException extends VirusScanException {
 
     private static final long serialVersionUID = 1L;
     private static final String INFECTIONS_KEY = "infections";
 
-    public VirusFoundException(final String message, final String file, final Map<Path, String> infections) {
-        super(message, file, STATUS_CODE);
+    public VirusFoundException(final String message, final String file, final String scanReport, final Map<Path, String> infections) {
+        super(message, file, scanReport);
         this.data.put(INFECTIONS_KEY, infections);
     }
 
