@@ -698,7 +698,7 @@ export abstract class IngridShared extends BaseDoctype {
       (item) => possibleKeys.indexOf(item.key) !== -1,
     );
     if (connectedInspireTheme) {
-      field.model.push(event);
+      field.model[field.key as string].push(event);
       field.options.formState.updateModel();
       const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
         "6100",
