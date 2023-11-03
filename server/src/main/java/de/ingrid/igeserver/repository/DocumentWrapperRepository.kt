@@ -52,7 +52,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findByParent_id(parent_id: Int): List<DocumentWrapper>
 
-    @Query("SELECT dw.id FROM document_wrapper dw, document doc WHERE dw.uuid = doc.uuid AND doc.state = 'PUBLISHED' AND dw.parent_id = ?1", nativeQuery = true)
+    @Query("SELECT dw.id FROM document_wrapper dw, document doc WHERE dw.uuid = doc.uuid AND dw.parent_id = ?1 AND (doc.state = 'PUBLISHED' OR doc.type = 'FOLDER')", nativeQuery = true)
     fun findByParentIdAndPublished(parentId: Int): List<Int>
 
     @Deprecated("Is not secured")
