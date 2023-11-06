@@ -9,8 +9,6 @@ import de.ingrid.mdek.upload.storage.validate.VirusScanException
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.mail.MailSendException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -31,12 +29,6 @@ class UploadVirusScanTask @Autowired constructor(
     private var report: Report? = null
     private var sendReportEmails = true
     private var emailServiceReport: EmailService = EmailServiceReport()
-
-
-    @EventListener(ApplicationReadyEvent::class)
-    fun onStartup() {
-        executeVirusscan()
-    }
 
 
     class Report {
