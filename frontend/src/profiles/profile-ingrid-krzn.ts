@@ -7,6 +7,23 @@ import { InGridComponent } from "./profile-ingrid";
 class InGridKrznComponent extends InGridComponent {
   constructor() {
     super();
+
+    this.modifyFormFieldConfiguration();
+  }
+
+  private modifyFormFieldConfiguration() {
+    [
+      this.specialisedTask,
+      this.geoDataset,
+      this.literature,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+    ].forEach((docType) => {
+      docType.options.dynamicRequired.accessConstraints = undefined;
+      docType.options.required.accessConstraints = true;
+    });
   }
 }
 
