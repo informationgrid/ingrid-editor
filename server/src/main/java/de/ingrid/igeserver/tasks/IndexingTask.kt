@@ -229,10 +229,15 @@ class IndexingTask @Autowired constructor(
                 try {
                     Pair(doc, exporter.run(doc.document, catalogId))
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-                    log.error(errorMessage, ex)
-                    message.errors.add(errorMessage)
-                    sendNotification(category, message, index + (page * generalProperties.indexPageSize))
+                    if (ex is IndexException && ex.errorCode == "FOLDER_WITH_NO_CHILDREN") {
+                        log.debug("Ignore folder with to published datasets: ${ex.message}")
+                    } else {
+                        val errorMessage =
+                            "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+                        log.error(errorMessage, ex)
+                        message.errors.add(errorMessage)
+                        sendNotification(category, message, index + (page * generalProperties.indexPageSize))
+                    }
                     null
                 }
             }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../../models/ige-document";
 import { SessionQuery } from "../../../../store/session.query";
@@ -21,16 +21,14 @@ export class QuickNavbarComponent {
   optionalButtonState = this.session.select(
     (state) => state.ui.toggleFieldsButtonShowAll,
   );
-  originalTooltip: string = "";
+
+  addTitleToTooltip = (tooltip: string): string =>
+    tooltip + ": " + this.model.title;
 
   constructor(
     private session: SessionQuery,
     private sessionStore: SessionStore,
   ) {}
-
-  onDataReceived(data: string) {
-    this.originalTooltip = data;
-  }
 
   updateToggleButtonState(checked: boolean) {
     this.sessionStore.update((state) => {

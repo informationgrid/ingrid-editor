@@ -23,6 +23,7 @@
 
     <mat-dialog-actions>
         <button
+            data-cy="cancel"
             mat-button
             color="primary"
             mat-dialog-close
@@ -33,6 +34,7 @@
         <div class="flex-1"></div>
         <ng-content select="[actions]"></ng-content>
         <button
+            data-cy="form-dialog-confirm"
             mat-flat-button
             color="primary"
             [disabled]="disabled"
