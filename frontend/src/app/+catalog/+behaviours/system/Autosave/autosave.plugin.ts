@@ -6,6 +6,7 @@ import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable()
 export class AutosavePlugin extends Plugin {
@@ -24,6 +25,7 @@ export class AutosavePlugin extends Plugin {
     private formStateService: FormStateService,
     private docEvents: DocEventsService,
     private session: SessionQuery,
+    private snackBar: MatSnackBar,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -38,7 +40,10 @@ export class AutosavePlugin extends Plugin {
         filter(() => this.formStateService.getForm()?.dirty),
         filter((time) => sessionDuration - time > this.tenMinutes),
       )
-      .subscribe((time) => this.docEvents.sendEvent({ type: "SAVE" }));
+      .subscribe((time) => {
+        this.snackBar.open("Der Datensatz wurde automatisch gespeichert.", "Schließen",{ duration: undefined });
+        this.docEvents.sendEvent({type: "SAVE"})
+      });
   }
 
   unregister() {
