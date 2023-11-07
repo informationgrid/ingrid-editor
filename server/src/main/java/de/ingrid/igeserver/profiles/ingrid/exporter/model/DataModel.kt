@@ -17,7 +17,7 @@ data class DataModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
-    val spatial: IngridSpatial,
+    val spatial: IngridSpatial?,
     val vectorSpatialRepresentation: List<VectorSpatialRepresentation>?,
     val explanation: String?,
     val publication: Publication?,
@@ -27,7 +27,7 @@ data class DataModel(
     val participants: String?,
     val implementationHistory: String?,
     val systemEnvironment: String?,
-    val metadata: IngridMetadata,
+    val metadata: IngridMetadata?,
     val advProductGroups: List<KeyValueModel>?,
     val alternateTitle: String?,
     val themes: List<KeyValueModel>?,
@@ -39,7 +39,7 @@ data class DataModel(
     val openDataCategories: List<KeyValueModel>?,
     val priorityDatasets: List<KeyValueModel>?,
     val invekosKeywords: List<KeyValueModel>?,
-    val temporal: Temporal,
+    val temporal: Temporal?,
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
     val maintenanceInformation: MaintenanceInformation?,
@@ -205,7 +205,7 @@ data class ConformanceResult(
         get() {
             return if (field.isNullOrEmpty()) "see the referenced specification" else field
         }
-    
+
     val publicationDate: String? = null
         get() {
             return if (field?.contains("Z") == true) {
@@ -396,8 +396,8 @@ data class UserDefinedMaintenanceFrequency(
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
-    val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValueModel
+    val referenceDate: OffsetDateTime?,
+    val referenceDateType: KeyValueModel?
 )
 
 
