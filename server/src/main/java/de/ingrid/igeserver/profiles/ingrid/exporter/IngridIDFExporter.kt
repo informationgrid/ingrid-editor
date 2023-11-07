@@ -54,7 +54,7 @@ class IngridIDFExporter @Autowired constructor(
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
-        
+
         templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -87,12 +87,9 @@ class IngridIDFExporter @Autowired constructor(
     private fun getModelTransformer(json: Document, catalogId: String): Any {
         var ingridModel: IngridModel? = null
         var addressModel: AddressModel? = null
-        try {
-            ingridModel = mapper.convertValue(json, IngridModel::class.java)
-        } catch (e: Exception) {
-            addressModel = mapper.convertValue(json, AddressModel::class.java)
-        }
-        val isAddress = addressModel != null
+        val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
+        if (isAddress) addressModel = mapper.convertValue(json, AddressModel::class.java)
+        else ingridModel = mapper.convertValue(json, IngridModel::class.java)
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
@@ -109,9 +106,9 @@ class IngridIDFExporter @Autowired constructor(
         )
         val transformerClass = transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null)
+            transformerClass.constructors.first().call( addressModel, catalogId, codelistTransformer, null)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
+            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {

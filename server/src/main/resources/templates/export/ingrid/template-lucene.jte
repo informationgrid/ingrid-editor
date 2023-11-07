@@ -104,9 +104,17 @@
 
     "t01_object.org_obj_id": null,
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
+    @if(page.hasService())
+        "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
+    @else
+        "t011_obj_serv.has_access_constraint": "false",
+    @endif
     "t011_obj_serv.type": "${page.getServiceType()}",
+    @if(page.hasService() && page.getData().getService().getType() != null))
     "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    @else
+        "t011_obj_serv.type_key": "null",
+    @endif
     "t011_obj_serv_version.version_value": [
         @for(var entry : ForSupport.of(page.getServiceTypeVersions()))
             "${entry.get()}"@if (!entry.isLast()),@endif
@@ -138,7 +146,7 @@
         "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
+    @if("3".equals(page.getDocumentType()) && page.hasService() && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
     "capabilities_url": "${page.getCapabilitiesUrl()}",
     @elseif("1".equals(page.getDocumentType()))
     "capabilities_url": [
