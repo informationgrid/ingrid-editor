@@ -62,7 +62,7 @@ export class UserComponent
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
     private session: SessionQuery,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
     private cdRef: ChangeDetectorRef,
   ) {
     this.model = new FrontendUser();
@@ -191,7 +191,7 @@ export class UserComponent
         if (loadUser) {
           this.form.markAsPristine();
           this.updateUsersAndLoad(user.id);
-          this.toast.open("Benutzer wurde gespeichert", "", {
+          this.snackBar.open("Benutzer wurde gespeichert", "", {
             panelClass: "green",
           });
         }
