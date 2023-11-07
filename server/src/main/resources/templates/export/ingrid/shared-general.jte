@@ -764,7 +764,7 @@ ${contentInfo}
                     </gmd:MD_Distributor>
                 </gmd:distributor>
             @endif
-            @for( Reference reference : page.getReferences() )
+            @for( Reference reference : page.getExternalReferences() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
