@@ -670,13 +670,13 @@
             <srv:operationName>
                 <gco:CharacterString>${operation.getName()}</gco:CharacterString>
             </srv:operationName>
+            <srv:DCP gco:nilReason="missing"></srv:DCP>
             @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
                 </srv:operationDescription>
             @endif
             @if(TransformationTools.hasValue(operation.getMethodCall()))
-                <srv:DCP gco:nilReason="missing"></srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
