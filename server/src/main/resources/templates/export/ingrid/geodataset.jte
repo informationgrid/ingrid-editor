@@ -112,7 +112,7 @@
         "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
         "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
         "cellGeometry": @template.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
-        @if (gridSpatial.getType().getKey().equals("rectified"))
+        @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("rectified"))
         , "georectified": {
             "checkPointAvailability": ${gridSpatial.getCheckPointAvailability()},
             "checkPointDescription": "${gridSpatial.getCheckPointDescription()}",
@@ -120,7 +120,7 @@
             "pointInPixel": @template.ingrid.partial.key-value(item = gridSpatial.getPointInPixel())
         }
         @endif
-        @if (gridSpatial.getType().getKey().equals("referenced"))
+        @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("referenced"))
         , "georeferenceable": {
             "orientationParameterAvailability": ${gridSpatial.getOrientationParameterAvailability()},
             "controlPointAvaliability": ${gridSpatial.getControlPointAvailability()},
