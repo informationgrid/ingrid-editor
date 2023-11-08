@@ -8,7 +8,7 @@ export class DocumentUtils {
     return `${mappedState} ${mappedTags}`;
   }
 
-  private static mapState(state: DocumentState, type: string) {
+  static mapState(state: DocumentState, type: string) {
     switch (state) {
       case "W":
         return type === "FOLDER" ? "published" : "working";
@@ -23,6 +23,7 @@ export class DocumentUtils {
     }
   }
 
+  // TODO: use localization -> docState
   static getStateName(state: DocumentState) {
     switch (state) {
       case "P":

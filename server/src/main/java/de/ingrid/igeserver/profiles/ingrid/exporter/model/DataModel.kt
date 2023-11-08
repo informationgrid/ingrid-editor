@@ -296,7 +296,7 @@ data class Resolution(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GridSpatialRepresentation(
-    val type: KeyValueModel,
+    val type: KeyValueModel?,
     val axesDimensionProperties: List<AxisDimensionProperties>,
     val transformationParameterAvailability: Boolean,
     val numberOfDimensions: Int?,

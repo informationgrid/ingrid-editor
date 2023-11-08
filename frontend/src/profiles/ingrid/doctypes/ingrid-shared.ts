@@ -126,7 +126,7 @@ export abstract class IngridShared extends BaseDoctype {
                       "INSPIRE-relevant",
                       {
                         className: "flex-1",
-                        click: (field) =>
+                        click: (field: FormlyFieldConfig) =>
                           this.handleInspireIdentifiedClick(field),
                       },
                     )
@@ -137,14 +137,16 @@ export abstract class IngridShared extends BaseDoctype {
                       "AdV kompatibel",
                       {
                         className: "flex-1",
-                        click: (field) => this.handleAdvClick(field),
+                        click: (field: FormlyFieldConfig) =>
+                          this.handleAdvClick(field),
                       },
                     )
                   : null,
                 options.openData
                   ? this.addCheckboxInline("isOpenData", "Open Data", {
                       className: "flex-1",
-                      click: (field) => this.handleOpenDataClick(field),
+                      click: (field: FormlyFieldConfig) =>
+                        this.handleOpenDataClick(field),
                     })
                   : null,
               ].filter(Boolean),
@@ -164,7 +166,7 @@ export abstract class IngridShared extends BaseDoctype {
               id: false,
             },
           ],
-          click: (field) =>
+          click: (field: FormlyFieldConfig) =>
             setTimeout(() => this.handleIsInspireConformClick(field)),
         }),
         this.showInVeKoSField
@@ -188,7 +190,7 @@ export abstract class IngridShared extends BaseDoctype {
                   value: "lpis",
                 },
               ],
-              change: (field, value: MatSelectChange) => {
+              change: (field: FormlyFieldConfig, value: MatSelectChange) => {
                 this.handleInVeKosChange(field, value, options.thesaurusTopics);
               },
             })
@@ -218,7 +220,7 @@ export abstract class IngridShared extends BaseDoctype {
             required: true,
             validators: {
               atLeastOneMD: {
-                expression: (ctrl) =>
+                expression: (ctrl: FormControl) =>
                   // equals "Ansprechpartner MD"
                   ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "12")
@@ -226,7 +228,7 @@ export abstract class IngridShared extends BaseDoctype {
                 message: "Es muss mindestens einen 'Ansprechpartner MD' geben.",
               },
               atLeastOnePointOfContactWhenAdV: {
-                expression: (ctrl, field) =>
+                expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
                   // equals "Ansprechpartner"
                   !field.model.isAdVCompatible ||
                   (ctrl.value
@@ -235,7 +237,7 @@ export abstract class IngridShared extends BaseDoctype {
                 message: "Es muss mindestens einen 'Ansprechpartner' geben.",
               },
               atLeastOneOtherAddress: {
-                expression: (ctrl, field) =>
+                expression: (ctrl: FormControl) =>
                   // not equals "Ansprechpartner MD"
                   ctrl.value
                     ? ctrl.value.some((address) => address.type?.key !== "12")
@@ -250,7 +252,7 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private handleActivateOpenData(field) {
+  private handleActivateOpenData(field: FormlyFieldConfig) {
     const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
 
@@ -286,7 +288,7 @@ export abstract class IngridShared extends BaseDoctype {
       });
   }
 
-  private handleDeactivateOpenData(field) {
+  private handleDeactivateOpenData(field: FormlyFieldConfig) {
     const cookieId = "HIDE_OPEN_DATA_INFO";
     if (this.cookieService.getCookie(cookieId) === "true") {
       field.options.formState.updateModel();
@@ -308,7 +310,7 @@ export abstract class IngridShared extends BaseDoctype {
       });
   }
 
-  private handleOpenDataClick(field) {
+  private handleOpenDataClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
     if (!isChecked) {
       this.handleDeactivateOpenData(field);
@@ -377,8 +379,9 @@ export abstract class IngridShared extends BaseDoctype {
               ],
               validators: {
                 invekos: {
-                  expression: (ctrl) => {
-                    const invekosValue = ctrl.root.value.invekos?.key;
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                    const invekosValue =
+                      field.options.formState.mainModel?.invekos?.key;
                     if (invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
@@ -432,8 +435,12 @@ export abstract class IngridShared extends BaseDoctype {
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "gsaa") return true;
 
                       return ctrl.value?.some((item) => item.key === "304");
@@ -441,8 +448,12 @@ export abstract class IngridShared extends BaseDoctype {
                     message: "Das Schlagwort 'Bodennutzung' ist verpflichtend",
                   },
                   invekos_lpis: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "lpis") return true;
 
                       return ctrl.value?.some((item) => item.key === "202");
@@ -510,8 +521,12 @@ export abstract class IngridShared extends BaseDoctype {
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos: {
-                    expression: (ctrl) => {
-                      const invekosValue = ctrl.root.value.invekos?.key;
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.invekos?.key;
                       if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                         return true;
 
@@ -542,8 +557,9 @@ export abstract class IngridShared extends BaseDoctype {
             validators: {
               ...(this.showInVeKoSField && {
                 invekos: {
-                  expression: (ctrl) => {
-                    const invekosValue = ctrl.root.value.invekos?.key;
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                    const invekosValue =
+                      field.options.formState.mainModel?.invekos?.key;
                     if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                       return true;
 
@@ -592,13 +608,13 @@ export abstract class IngridShared extends BaseDoctype {
           hideInPreview: true,
           buttonConfig: {
             text: "Analysieren",
-            onClick: async (buttonConfig, field) => {
+            onClick: async (_, field) => {
               await this.analyzeKeywords(field, options);
             },
           },
           validators: {
             mustBeEmptyBeforeSave: {
-              expression: (ctrl) => {
+              expression: (ctrl: FormControl) => {
                 return (
                   ctrl.value === null ||
                   ctrl.value === undefined ||
@@ -670,7 +686,7 @@ export abstract class IngridShared extends BaseDoctype {
     });
   }
 
-  private checkConnectedIsoCategory(event, field) {
+  private checkConnectedIsoCategory(event, field: FormlyFieldConfig) {
     const themes = field.options.formState.mainModel.themes;
     // if themes are removed because not INSPIRE-relevant, then ignore
     if (!themes) return;
@@ -682,7 +698,7 @@ export abstract class IngridShared extends BaseDoctype {
       (item) => possibleKeys.indexOf(item.key) !== -1,
     );
     if (connectedInspireTheme) {
-      field.model.push(event);
+      field.model[field.key as string].push(event);
       field.options.formState.updateModel();
       const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
         "6100",
@@ -789,7 +805,7 @@ export abstract class IngridShared extends BaseDoctype {
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
-                      "props.required": (field) =>
+                      "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value),
                     },
                   }),
@@ -798,7 +814,7 @@ export abstract class IngridShared extends BaseDoctype {
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
-                      "props.required": (field) =>
+                      "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value),
                     },
                   }),
@@ -813,7 +829,7 @@ export abstract class IngridShared extends BaseDoctype {
                     wrappers: ["inline-help", "form-field"],
                     hasInlineContextHelp: true,
                     expressions: {
-                      "props.required": (field) =>
+                      "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value),
                     },
                   }),
@@ -822,7 +838,7 @@ export abstract class IngridShared extends BaseDoctype {
                   wrappers: [],
                   validators: {
                     bigger: {
-                      expression: (a, b) => {
+                      expression: (_, b: any) => {
                         return (
                           !b.model?.minimumValue ||
                           b.model?.minimumValue <= b.model?.maximumValue
@@ -845,7 +861,7 @@ export abstract class IngridShared extends BaseDoctype {
                     ),
                     codelistId: 101,
                     expressions: {
-                      "props.required": (field) =>
+                      "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value),
                     },
                     hasInlineContextHelp: true,
@@ -858,7 +874,7 @@ export abstract class IngridShared extends BaseDoctype {
             {
               fieldGroupClassName: "",
               expressions: {
-                className: (field) =>
+                className: (field: FormlyFieldConfig) =>
                   isNotEmptyObject(field.form.value?.verticalExtent)
                     ? ""
                     : "optional",
@@ -898,8 +914,9 @@ export abstract class IngridShared extends BaseDoctype {
           validators: {
             ...(this.showInVeKoSField && {
               invekos: {
-                expression: (ctrl) => {
-                  const invekosValue = ctrl.root.value.invekos?.key;
+                expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
+                  const invekosValue =
+                    field.options.formState.mainModel?.invekos?.key;
                   if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                     return true;
 
@@ -982,7 +999,8 @@ export abstract class IngridShared extends BaseDoctype {
             this.addInputInline("number", "Anzahl", {
               type: "number",
               expressions: {
-                "props.required": (field) => isNotEmptyObject(field.form.value),
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
               },
               validators: {
                 validation: ["positiveNum"],
@@ -995,13 +1013,14 @@ export abstract class IngridShared extends BaseDoctype {
               className: "flex-3",
               allowNoValue: true,
               expressions: {
-                "props.required": (field) => isNotEmptyObject(field.form.value),
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
               },
             }),
           ],
           {
             expressions: {
-              className: (field) =>
+              className: (field: FormlyFieldConfig) =>
                 isNotEmptyObject(field.form.value) ? "" : "optional",
             },
           },
@@ -1141,7 +1160,7 @@ export abstract class IngridShared extends BaseDoctype {
               ],
               validators: {
                 inspireConformGeoservice: {
-                  expression: (ctrl, field) => {
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
@@ -1154,7 +1173,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "Die Konformität 'VERORDNUNG (EG) Nr. 976/2009...' muss vorhanden sein und den Wert 'konform' haben",
                 },
                 inspireConformGeodataset: {
-                  expression: (ctrl, field) => {
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
@@ -1167,7 +1186,7 @@ export abstract class IngridShared extends BaseDoctype {
                     "Die Konformität 'VERORDNUNG (EG) Nr. 1089/2010...' muss vorhanden sein und den Wert 'konform' haben",
                 },
                 inspireNotConformGeodataset: {
-                  expression: (ctrl, field) => {
+                  expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
@@ -1333,9 +1352,9 @@ export abstract class IngridShared extends BaseDoctype {
         fields: [this.urlRefFields()],
         validators: {
           downloadLinkWhenOpenData: {
-            expression: (ctrl, field) =>
+            expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.isOpenData ||
-              ctrl.value.some((row) => row.type?.key === "9990"), // Datendownload
+              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
           },
@@ -1409,7 +1428,7 @@ export abstract class IngridShared extends BaseDoctype {
           validation: ["url"],
         },
         expressions: {
-          "props.required": (field) => {
+          "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.uuidRef;
           },
         },
@@ -1424,7 +1443,7 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         updateOn: "change",
         expressions: {
-          "props.required": (field) => {
+          "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.url;
           },
         },
@@ -1463,7 +1482,7 @@ export abstract class IngridShared extends BaseDoctype {
     ];
   }
 
-  private handleInspireIdentifiedClick(field) {
+  private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
     const checked = field.formControl.value;
     if (checked) {
       this.handleActivateInspireIdentified(field);
@@ -1472,7 +1491,7 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private handleActivateInspireIdentified(field) {
+  private handleActivateInspireIdentified(field: FormlyFieldConfig) {
     const cookieId = "HIDE_INSPIRE_INFO";
     const isOpenData = field.model.isOpenData === true;
 
@@ -1519,7 +1538,7 @@ export abstract class IngridShared extends BaseDoctype {
       });
   }
 
-  private handleDeactivateInspireIdentified(field) {
+  private handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
     const isOpenData = field.model.isOpenData === true;
     const isGeoService = field.model._type === "InGridGeoService";
@@ -1567,7 +1586,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private addConformanceEntry(
-    model,
+    model: any,
     specificationKey: string,
     passKey: string,
   ) {
@@ -1592,7 +1611,7 @@ export abstract class IngridShared extends BaseDoctype {
     model.conformanceResult = conformanceValues;
   }
 
-  private handleIsInspireConformClick(field) {
+  private handleIsInspireConformClick(field: FormlyFieldConfig) {
     const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
     const isConform = field.formControl.value;
 
@@ -1628,7 +1647,7 @@ export abstract class IngridShared extends BaseDoctype {
   /**
    * Empty adv-product list when adv checkbox was deselected
    */
-  private handleAdvClick(field) {
+  private handleAdvClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
     const advProductGroups = field.model.advProductGroups;
     if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
@@ -1694,7 +1713,7 @@ export abstract class IngridShared extends BaseDoctype {
     return { thesaurus: "INSPIRE-Themen", found: false, value: item };
   }
 
-  private addFreeKeyword(model, item: string): ThesaurusResult {
+  private addFreeKeyword(model: any, item: string): ThesaurusResult {
     const exists = model.keywords.free.some((entry) => entry === item);
     if (!exists) model.keywords.free.push({ label: item });
     return {
@@ -1732,7 +1751,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleInVeKosChange(
-    field,
+    field: FormlyFieldConfig,
     value: MatSelectChange,
     hasThesaurusTopics: boolean,
   ) {

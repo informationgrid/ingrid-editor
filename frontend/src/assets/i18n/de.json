@@ -93,9 +93,15 @@
   "docType": {
     "FOLDER": "Ordner"
   },
+  "docState": {
+    "working": "In Bearbeitung",
+    "published": "Veröffentlicht",
+    "workingWithPublished": "In Bearbeitung mit Veröffentlichung",
+    "pending": "Veröffentlichung geplant"
+  },
   "tags": {
     "internet": "Internet",
-    "intranet": "intranet",
+    "intranet": "Intranet",
     "amtsintern": "amtsintern"
   },
   "replace-address": {

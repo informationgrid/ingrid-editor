@@ -3,14 +3,16 @@
     cdkDragRootElement=".cdk-overlay-pane"
     *transloco="let t; read: 'replace-address'"
 >
-    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">Adresse ersetzen</span>
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Adresse ersetzen</h1>
     </div>
+
     <mat-dialog-content class="hide-tab-header">
         <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
             <mat-tab *ngIf="showInfo">

@@ -1,0 +1,76 @@
+{
+  "id": "InGrid",
+  "realm": "InGrid",
+  "displayName": "InGrid",
+  "roles": {
+    "realm": [
+      {
+        "id": "d689ff40-2500-404a-8ce1-d18ab0e44ee7",
+        "name": "ige-super-admin",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "manage-realm",
+              "manage-users"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "InGrid",
+        "attributes": {}
+      },
+      {
+        "id": "096f73ff-54ab-495e-b4de-40c4a0ccf36a",
+        "name": "ige-user",
+        "description": "User with general access to IGE-NG Backends",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "InGrid",
+        "attributes": {}
+      },
+      {
+        "id": "919f1e09-c14f-4e6d-aa58-2f0513377c87",
+        "name": "ige-user-manager",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "manage-realm",
+              "manage-users"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "InGrid",
+        "attributes": {}
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "ige-ng-frontend",
+      "rootUrl": "http://localhost:4300",
+      "enabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:4300/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4300"
+      ],
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "post.logout.redirect.uris": "+"
+      }
+    }
+  ]
+}

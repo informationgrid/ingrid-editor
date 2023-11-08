@@ -12,6 +12,7 @@ export interface ToolbarMenuItem {
   eventId: string;
   label: string;
   active?: boolean;
+  data?: any;
 }
 
 export interface ToolbarItem extends DefaultToolbarItem {
@@ -24,6 +25,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   label?: string;
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
+  hiddenMenu?: ToolbarMenuItem[];
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -77,8 +79,8 @@ export class FormToolbarService {
     this.toolbar$.next(this.buttons);
   }
 
-  sendEvent(id: string) {
-    this.docEvents.sendEvent({ type: id });
+  sendEvent(id: string, data?: any) {
+    this.docEvents.sendEvent({ type: id, data: data });
   }
 
   // trigger click event to open item menu
@@ -86,7 +88,14 @@ export class FormToolbarService {
     const button: any = document.getElementsByClassName(className)?.item(0);
     if (button) button.click();
   }
-
+  longPressItemMenu(className: string) {
+    const button: any = document.getElementsByClassName(className)?.item(0);
+    if (button) {
+      button.dispatchEvent(new Event("mousedown"));
+      button.dispatchEvent(new Event("mouseup"));
+      setTimeout(() => {}, 600);
+    }
+  }
   /**
    * Set the state of a toolbar button to enabled or disabled.
    * @param id
@@ -110,7 +119,13 @@ export class FormToolbarService {
     }
   }
 
-  private getButtonById(id: string): DefaultToolbarItem {
+  getButtonById(id: string): DefaultToolbarItem {
     return this._buttons.find((b) => b.id === id);
+  }
+  updateHiddenMenu(id: string, hiddenMenu: Array<ToolbarMenuItem>) {
+    const button = <ToolbarItem>this.getButtonById(id);
+    if (button) {
+      button.hiddenMenu = hiddenMenu;
+    }
   }
 }

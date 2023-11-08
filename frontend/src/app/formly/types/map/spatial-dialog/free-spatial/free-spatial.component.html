@@ -12,7 +12,16 @@
     <div *ngIf="showWelcome" class="comment">
         Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
         Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
-        zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
+        zugehörigen Breiten-/Längenkoordinaten automatisch unterhalb der Karte
+        angezeigt.
+        <p>
+            Alternativ können Sie einen Raumbezug direkt über die Eingabe der
+            Koordinaten erfassen.
+        </p>
+        <p>
+            Die Anzeige sowie die Erfassung der Koordinaten erfolgt in WGS 84
+            (EPSG:4326).
+        </p>
     </div>
 
     <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>

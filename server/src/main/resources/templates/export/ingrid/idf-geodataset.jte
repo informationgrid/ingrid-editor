@@ -11,7 +11,7 @@
     @template.ingrid.shared-general(
     page = page,
     contentInfo = @`
-        @if (page.getHasContentInfo())
+        @if (!page.getFeatureTypes().isEmpty())
         <gmd:contentInfo>
             <gmd:MD_FeatureCatalogueDescription>
                 @if (page.isAdVCompatible())

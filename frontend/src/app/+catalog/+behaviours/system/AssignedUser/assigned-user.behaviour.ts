@@ -48,7 +48,7 @@ export class AssignedUserBehaviour extends Plugin {
     private formStateService: FormStateService,
     private documentService: DocumentService,
     configService: ConfigService,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
     super();
@@ -216,7 +216,7 @@ export class AssignedUserBehaviour extends Plugin {
         .afterClosed()
         .subscribe((result) => {
           if (result) {
-            this.toast.open("Verantwortung übertragen.");
+            this.snackBar.open("Verantwortung übertragen.");
             resolve(true);
           } else {
             resolve(false);

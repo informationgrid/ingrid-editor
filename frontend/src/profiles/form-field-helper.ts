@@ -342,9 +342,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         titleField: options?.titleField,
-      },
-      fieldArray: {
-        fieldGroup: options?.fields,
+        fields: options?.fields,
       },
       expressions: expressions,
       validators: options?.validators,
