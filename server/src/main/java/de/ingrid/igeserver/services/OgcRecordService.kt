@@ -67,14 +67,12 @@ class OgcRecordService @Autowired constructor(
     val supportedExportFormats = listOf("internal", "geojson", "html", "ingridISO")
 
 
-    fun checkFormatSupport(format: String){
-        val supported: Boolean = supportedExportFormats.any { it == format}
-        if(supported){ return} else {
-            throw ClientException.withReason("Format '$format' not supported")
-        }
-    }
 
     @Transactional
+    fun transactionalImportDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
+        importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId)
+    }
+
     fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
         val docArray = prepareDataForImport(collectionId, contentType, data)
         for( doc in docArray ) {
@@ -82,14 +80,14 @@ class OgcRecordService @Autowired constructor(
             if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
                     val id = optimizedImportAnalysis.existingDatasets[0].uuid
                 if(!recordMustExist) {
-                    throw ServerException.withReason("Import Failed: Record with ID '$id' already exists.")
+                    throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
                 } else {
-                    if(recordId != id) throw ServerException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
+                    if(recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
                 }
             } else {
                 if(recordMustExist) {
 //                    val id = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId!!).id
-                    throw ServerException.withReason("Update failed: Record with ID '$recordId' does not exist.")
+                    throw NotFoundException.withMissingResource(recordId!!, "Record")
                 }
             }
             importService.importAnalyzedDatasets(
