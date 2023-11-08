@@ -50,7 +50,7 @@ export class PermissionsDialogComponent implements OnInit {
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<PermissionsDialogComponent>,
     private dialog: MatDialog,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
   ) {
     this.id = data.id;
     this.forResponsibility = data.forResponsibility;
@@ -99,7 +99,7 @@ export class PermissionsDialogComponent implements OnInit {
     this.documentService
       .setResponsibleUser(this.id, this.selectedUser.id)
       .subscribe(() => {
-        this.toast.open("Verantwortlicher aktualisert.");
+        this.snackBar.open("Verantwortlicher aktualisert.");
         this.dialogRef.close();
       });
   }

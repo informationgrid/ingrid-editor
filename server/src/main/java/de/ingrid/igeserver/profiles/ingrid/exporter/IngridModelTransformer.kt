@@ -511,6 +511,7 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
+    val externalReferences = references.filter { it.uuidRef == null }
     val referencesWithUuidRefs = references.filter { it.uuidRef != null }
 
     // information system
@@ -734,7 +735,7 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
     }
 
     fun hasCompleteVerticalExtent(): Boolean {

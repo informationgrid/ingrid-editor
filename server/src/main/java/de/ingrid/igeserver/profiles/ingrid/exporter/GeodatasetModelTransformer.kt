@@ -254,7 +254,6 @@ open class GeodatasetModelTransformer(
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty() || isAdVCompatible
 
 }
 

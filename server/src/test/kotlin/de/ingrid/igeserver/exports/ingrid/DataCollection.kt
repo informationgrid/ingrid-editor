@@ -42,7 +42,7 @@ class DataCollection : AnnotationSpec() {
     @BeforeAll
     fun beforeAll() {
         this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
+        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
         mockkObject(SpringContext.Companion)

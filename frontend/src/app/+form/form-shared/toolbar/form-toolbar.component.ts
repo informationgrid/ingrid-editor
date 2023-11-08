@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -6,6 +6,7 @@ import {
 } from "./form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MatMenuTrigger } from "@angular/material/menu";
 
 @Component({
   selector: "form-toolbar",
@@ -13,6 +14,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   styleUrls: ["./form-toolbar.component.scss"],
 })
 export class FormToolbarComponent implements OnInit {
+  @ViewChild("hiddenMenuTrigger") hiddenMenuTrigger: MatMenuTrigger;
   buttons_left: Array<ToolbarItem | Separator> = [];
   buttons_right: Array<ToolbarItem | Separator> = [];
 
@@ -38,8 +40,8 @@ export class FormToolbarComponent implements OnInit {
 
   ngOnInit() {}
 
-  sendEvent(id: string) {
-    this.formToolbarService.sendEvent(id);
+  sendEvent(id: string, data?: any) {
+    this.formToolbarService.sendEvent(id, data);
   }
 
   // restoring focus must be handled manually, because custom shortcut can also trigger button click event.

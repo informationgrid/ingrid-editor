@@ -31,7 +31,7 @@ export class CatalogAssignmentComponent implements OnInit {
     private catalogService: CatalogService,
     private catalogQuery: CatalogQuery,
     private userService: UserService,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {}
@@ -41,7 +41,7 @@ export class CatalogAssignmentComponent implements OnInit {
       .assignUserToCatalog(this.selectedUserId, this.selectedCatalogId)
       .pipe(
         tap(() =>
-          this.toast.open(
+          this.snackBar.open(
             `Katalog ${this.selectedCatalogId} wurde Nutzer ${this.selectedUserId} zugewiesen`,
           ),
         ),

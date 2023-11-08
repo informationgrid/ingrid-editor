@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.*
@@ -33,6 +32,7 @@ class PostMigrationTask(
     val aclService: IgeAclService,
     val codelistHandler: CodelistHandler,
     val fixPathsTask: FixPathsTask,
+    val enhanceGroupsTask: EnhanceGroupsTask,
 ) {
     val log = logger()
 
@@ -76,10 +76,10 @@ class PostMigrationTask(
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         uvpAdaptFolderStructure(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
-        enhanceGroupsWithReferencedAddresses(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
+        enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
     }
 
     private fun fixSpatialSystems(catalogIdentifier: String) {
@@ -435,82 +435,6 @@ class PostMigrationTask(
         }
         return createdPathIds
     }
-
-    private fun enhanceGroupsWithReferencedAddresses(catalogIdentifier: String) {
-        groupService
-            .getAll(catalogIdentifier)
-            .forEach { group ->
-
-                val docIds = getAllAccessibleDocuments(group, catalogIdentifier)
-                val addressIds = getAllAccessibleAddresses(group, catalogIdentifier)
-                val referencedAddressIds = getReferencedAddressIds(docIds, catalogIdentifier)
-
-                // all addresses that are referenced by the documents and not already in the group
-                val newAddressPermissions = referencedAddressIds.filter { !addressIds.contains(it) }
-                    .map {
-                        JsonNodeFactory.instance.objectNode()
-                            .put("id", it)
-                            .put("permission", "readTree")
-                            .put("isFolder", false)
-                    }
-
-
-                val addressPermissions = group.permissions?.addresses ?: emptyList()
-                group.permissions?.addresses = addressPermissions + newAddressPermissions
-
-                groupService.update(catalogIdentifier, group.id!!, group, true)
-            }
-    }
-
-
-    private fun getAllAccessibleAddresses(
-        group: Group,
-        catalogIdentifier: String
-    ): Set<Int> = this.getAllAccessibleDatasets(group, catalogIdentifier, true)
-
-    private fun getAllAccessibleDocuments(
-        group: Group,
-        catalogIdentifier: String
-    ): Set<Int> = this.getAllAccessibleDatasets(group, catalogIdentifier, false)
-
-    private fun getAllAccessibleDatasets(
-        group: Group,
-        catalogIdentifier: String,
-        forAddress: Boolean = false
-    ): Set<Int> {
-        val rootIds = aclService.getDatasetIdsFromGroups(listOf(group), forAddress)
-        val rootDescendentIds = rootIds.flatMap {
-            documentService.getAllDescendantIds(catalogIdentifier, it)
-        }
-        return (rootIds + rootDescendentIds).toSet()
-    }
-
-    private fun getReferencedAddressIds(
-        docIds: Set<Int>,
-        catalogIdentifier: String
-    ): Set<Int> {
-        return docIds
-            .map { documentService.getWrapperByDocumentId(it) }
-            .flatMap { wrapper -> getAllReferencedDocumentIds(wrapper, catalogIdentifier) }
-            .toSet()
-    }
-
-    private fun getAllReferencedDocumentIds(
-        wrapper: DocumentWrapper,
-        catalogIdentifier: String
-    ) = listOf(DOCUMENT_STATE.PUBLISHED, DOCUMENT_STATE.DRAFT, DOCUMENT_STATE.DRAFT_AND_PUBLISHED, DOCUMENT_STATE.PENDING)
-        .map {
-            try {
-              documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
-            } catch (e: Exception) {
-                //no document with specific state found
-                null
-            }
-        }
-        .filterNotNull()
-        .flatMap {
-            documentService.getReferencedWrapperIds(catalogIdentifier, it)
-        }
 
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type

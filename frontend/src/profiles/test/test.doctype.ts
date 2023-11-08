@@ -338,36 +338,38 @@ export class TestDoctype extends BaseDoctype {
               externalLabel: "Image List",
               asImage: true,
               required: true,
-            },
-            fieldArray: {
-              fieldGroup: [
+              fields: [
                 {
-                  key: "type",
-                  type: "input",
-                  props: {
-                    label: "Typ",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "title",
-                  type: "input",
-                  props: {
-                    label: "Titel",
-                    appearance: "outline",
-                    required: true,
-                  },
-                },
-                {
-                  key: "description",
-                  type: "textarea",
-                  props: {
-                    label: "Beschreibung/Link",
-                    appearance: "outline",
-                    autosize: true,
-                    autosizeMinRows: 3,
-                    autosizeMaxRows: 5,
-                  },
+                  fieldGroup: [
+                    {
+                      key: "type",
+                      type: "input",
+                      props: {
+                        label: "Typ",
+                        appearance: "outline",
+                      },
+                    },
+                    {
+                      key: "title",
+                      type: "input",
+                      props: {
+                        label: "Titel",
+                        appearance: "outline",
+                        required: true,
+                      },
+                    },
+                    {
+                      key: "description",
+                      type: "textarea",
+                      props: {
+                        label: "Beschreibung/Link",
+                        appearance: "outline",
+                        autosize: true,
+                        autosizeMinRows: 3,
+                        autosizeMaxRows: 5,
+                      },
+                    },
+                  ],
                 },
               ],
             },
@@ -379,36 +381,38 @@ export class TestDoctype extends BaseDoctype {
             props: {
               externalLabel: "Link List",
               required: true,
-            },
-            fieldArray: {
-              fieldGroup: [
+              fields: [
                 {
-                  key: "type",
-                  type: "input",
-                  props: {
-                    label: "Typ",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "title",
-                  type: "input",
-                  props: {
-                    label: "Titel",
-                    appearance: "outline",
-                    required: true,
-                  },
-                },
-                {
-                  key: "description",
-                  type: "textarea",
-                  props: {
-                    label: "Beschreibung/Link",
-                    appearance: "outline",
-                    autosize: true,
-                    autosizeMinRows: 3,
-                    autosizeMaxRows: 5,
-                  },
+                  fieldGroup: [
+                    {
+                      key: "type",
+                      type: "input",
+                      props: {
+                        label: "Typ",
+                        appearance: "outline",
+                      },
+                    },
+                    {
+                      key: "title",
+                      type: "input",
+                      props: {
+                        label: "Titel",
+                        appearance: "outline",
+                        required: true,
+                      },
+                    },
+                    {
+                      key: "description",
+                      type: "textarea",
+                      props: {
+                        label: "Beschreibung/Link",
+                        appearance: "outline",
+                        autosize: true,
+                        autosizeMinRows: 3,
+                        autosizeMaxRows: 5,
+                      },
+                    },
+                  ],
                 },
               ],
             },

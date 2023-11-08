@@ -29,7 +29,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         uuid: String,
         state: DOCUMENT_STATE
     ): Document
-
+    
     @Modifying
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun deleteAllByUuid(uuid: String)

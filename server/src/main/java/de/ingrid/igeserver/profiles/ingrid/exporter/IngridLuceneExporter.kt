@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
@@ -13,12 +14,14 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
@@ -27,16 +30,25 @@ class IngridLuceneExporter @Autowired constructor(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
+    @Lazy val documentService: DocumentService
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
+        handleFoldersWithoutPublishedChildrens(doc)
         val catalog = catalogService.getCatalogById(catalogId)
         val templateData = getTemplateForDoctype(doc, catalog)
         templateEngine.render(templateData.first, templateData.second, output)
         return output.toString()
+    }
+
+    private fun handleFoldersWithoutPublishedChildrens(doc: Document) {
+        if (doc.type == "FOLDER") {
+            val children = documentService.docWrapperRepo.findByParentIdAndPublished(doc.wrapperId!!)
+            if (children.isEmpty()) throw IndexException.folderWithNoPublishedDocs(doc.uuid)
+        }
     }
 
     private fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {

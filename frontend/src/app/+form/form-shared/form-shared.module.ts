@@ -50,6 +50,7 @@ import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
 import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
 import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.component";
+import { LongPressDirective } from "../../directives/longPress.directive";
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     DocumentIconModule,
     FormLabelComponent,
     ErrorPanelComponent,
+    LongPressDirective,
   ],
   providers: [
     CreateDocumentPlugin,

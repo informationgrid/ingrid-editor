@@ -1,12 +1,14 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-    <div cdkDragHandle class="dialog-title-wrapper">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">Benutzer hinzufügen</span>
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Benutzer hinzufügen</h1>
     </div>
+
     <mat-dialog-content [formGroup]="form">
         <div class="no-selection-text">
             Wählen Sie einen bestehenden Benutzernamen aus oder legen Sie ein

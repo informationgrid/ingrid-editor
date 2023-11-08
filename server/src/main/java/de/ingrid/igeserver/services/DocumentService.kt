@@ -193,6 +193,7 @@ class DocumentService @Autowired constructor(
         }
     }
 
+    // TODO: consolidate function findChildrenDocs and findChildren
     fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> {
         return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
     }

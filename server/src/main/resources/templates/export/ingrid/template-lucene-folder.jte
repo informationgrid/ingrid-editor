@@ -32,6 +32,9 @@
     "boost": 0.1,
 
     "title": "${page.getModel().getTitle()}",
+@if(page.getNextParent() != null)
+    "parent.address_node.addr_uuid": "${page.getNextParent()}",
+@endif
 @if("data".equals(page.getCategory()))
     "t01_object.id": "${page.getUuid()}",
     "t01_object.obj_id": "${page.getUuid()}",

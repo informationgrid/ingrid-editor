@@ -29,16 +29,19 @@ describe("RepeatDetailListComponent", () => {
           {
             key: "repeatField",
             type: "repeatDetailList",
-            props: {},
-            fieldArray: {
-              fieldGroup: [
+            props: {
+              fields: [
                 {
-                  key: "type",
-                  type: "input",
-                  props: {
-                    label: "Typ",
-                    appearance: "outline",
-                  },
+                  fieldGroup: [
+                    {
+                      key: "type",
+                      type: "input",
+                      props: {
+                        label: "Typ",
+                        appearance: "outline",
+                      },
+                    },
+                  ],
                 },
               ],
             },
