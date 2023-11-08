@@ -30,7 +30,9 @@ export class BehaviourService {
     this.updateState(behaviours);
     this.dataService
       .saveBehaviors(behaviours)
-      .pipe(tap(() => this.snackBar.open("Die Konfiguration wurde gespeichert")))
+      .pipe(
+        tap(() => this.snackBar.open("Die Konfiguration wurde gespeichert")),
+      )
       .subscribe();
   }
 
