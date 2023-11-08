@@ -1,7 +1,6 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.model.RecordCollection
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.Explode
@@ -10,21 +9,17 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
-import java.util.*
 
 interface OgcApiRecords {
 
-
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 1. Collections"], responses = [], summary = "Get all Catalogs", hidden = false)
+    @Operation(tags=["OGC/RecordCollections"], responses = [], summary = "Get all catalogs", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -42,7 +37,7 @@ interface OgcApiRecords {
 
 
     @GetMapping(value = ["/collections/{collectionId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 1. Collections"], responses = [], summary = "Get Catalog by ID", hidden = false)
+    @Operation(tags=["OGC/RecordCollections"], responses = [], summary = "Get catalog by catalog-ID", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -60,7 +55,7 @@ interface OgcApiRecords {
 
 
     @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "fetch records", hidden = false,
+    @Operation(tags=["OGC/Records"], responses = [], summary = "Query records of a catalog", hidden = false,
             description = "# Fetch Records\n\nFetch records of the catalog with id `collectionId`." +
                     "As specified in the [Records Access](https://docs.ogc.org/DRAFTS/20-004.html#records-access) clause, records are accessed using the HTTP GET method via the /collections/{collectionId}/items path." +
                     "\n\n\n\n## Currently working on profile: **Ingrid**"
@@ -147,9 +142,7 @@ interface OgcApiRecords {
                     explode = Explode.FALSE,
                     style = ParameterStyle.MATRIX,
             ) @RequestParam(value = "q", required = false) @Valid q: List<String>?,
-
-            // ------- NOT YET IMPlEMENTED -------
-            // PARAMETER : externalid
+         // PARAMETER : externalid
             @Parameter(description = "## Search by External Identifier (externalId)\n **OGC Parameter SHOULD**" +
                     "\n\n### ! Not yet implemented !" +
                     "\n\nAn equality predicate consistent of a comma-separated list of external resource identifiers. Only records with the specified external identifiers shall appear in the response set." +
@@ -177,7 +170,7 @@ interface OgcApiRecords {
 
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "Get one Record by ID of Catalog by ID", hidden = false,
+    @Operation(tags=["OGC/Records"], responses = [], summary = "Get record by record-ID and catalog-ID", hidden = false,
         description = "# Fetch a Record" +
                 "" +
                 "\n\n### A 200-response SHALL include the following links in the response:\n" +
@@ -207,7 +200,7 @@ interface OgcApiRecords {
 
 
     @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 2. Records"], responses = [], summary = "Remove a resource from a collection. (Delete Record)", hidden = false)
+    @Operation(tags=["OGC/Records"], responses = [], summary = "Remove a record from a catalog", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -222,7 +215,7 @@ interface OgcApiRecords {
 
 
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 2. Records"], summary = "Add a new resource instance to a collection. (Import Record)", hidden = false)
+    @Operation(tags=["OGC/Records"], summary = "Add/import record(s) to a collection.", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -240,7 +233,7 @@ interface OgcApiRecords {
 
 
     @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 2. Records"], summary = "Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)", hidden = false)
+    @Operation(tags=["OGC/Records"], summary = "Replace/update an existing resource in a collection with a replacement resource with the same resource identifier.", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -256,7 +249,7 @@ interface OgcApiRecords {
     ): ResponseEntity<JsonNode>
 
     @PostMapping(value = ["collections/{collectionId}/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["OgcApiRecords: 3. CSWT"], summary = "Insert, Update, Delete Records via CSW-t", hidden = true)
+    @Operation(tags=["OGC/CSW-T"], summary = "Insert, Update, Delete Records via CSW-t", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation."),
         ApiResponse(responseCode = "400", description = "Invalid input"),
