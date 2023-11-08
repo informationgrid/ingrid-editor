@@ -66,11 +66,6 @@ class OgcRecordService @Autowired constructor(
 
     val supportedExportFormats = listOf("internal", "geojson", "html", "ingridISO")
 
-    fun validateRequestParams(allRequestParams: Map<String, String>, validParams: List<String>){
-        for(param in allRequestParams.keys){
-            if(param !in validParams) throw ClientException.withReason("Request parameter '$param' not supported")
-        }
-    }
 
     fun checkFormatSupport(format: String){
         val supported: Boolean = supportedExportFormats.any { it == format}
@@ -410,7 +405,6 @@ class OgcRecordService @Autowired constructor(
     }
 
     private fun exportRecord(recordId: String, collectionId: String, format: String): ExportResult {
-        checkFormatSupport(format)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
         val options = ExportRequestParameter(
@@ -630,8 +624,22 @@ class OgcRecordService @Autowired constructor(
         """.trimIndent()
     }
 
+    fun validateCollection(collectionId: String){
+        if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
+    }
 
-    fun verifyBbox(bbox: List<Float>?){
+    fun validateRequestParams(allRequestParams: Map<String, String>, validParams: List<String>){
+        for(param in allRequestParams.keys){
+            if(param !in validParams) throw ClientException.withReason("Request parameter '$param' not supported")
+        }
+    }
+
+    fun validateParamFormat(format: String){
+        val supported: Boolean = supportedExportFormats.any { it == format}
+        if(!supported) throw ClientException.withReason("Format '$format' not supported")
+    }
+
+    fun validateBbox(bbox: List<Float>?){
         if(bbox == null) return
         // http://localhost:8550/collections/ogctestkatalog/items?bbox=49.738177,8.176039,50.288841,9.340528
 
