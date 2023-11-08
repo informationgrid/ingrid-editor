@@ -112,17 +112,23 @@ export class RepeatDetailListComponent
   }
 
   replaceItem(index: number, item: any, previousIndex: number = null) {
-    if (index !== null) {
+    if (previousIndex !== null) {
+      this.removeItem(previousIndex);
+    } else if (index !== null) {
       this.removeItem(index);
     }
     const value: any[] = this.formControl.value || [];
     value.splice(index, 0, item);
     this.formControl.patchValue([...value]);
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 
   removeItem(index: number) {
     this.formControl.patchValue(
       [...(this.formControl.value || [])].filter((_, idx) => idx !== index),
     );
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 }
