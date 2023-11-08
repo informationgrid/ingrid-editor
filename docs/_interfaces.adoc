@@ -64,18 +64,61 @@ This table provides a simple overview of OGC API Records Endpoints. For more det
 
 NOTE: Collection refers to a catalog. Record refers to a document (dataset, address).
 
+===== Record Collections
 [cols="1,2,3"]
 |===
-| Method | Resource | Description
+| Method | Type | Description
 
-| GET | Collections | Get multiple collections
-| GET | Collection | Get one collection by ID
-| GET | Records | Get multiple records of a collection
-| GET | Record | Get one record by ID
+| GET | Collections
+| Get multiple collections
 
-| POST | Records | Insert multiple records into a collection
-| PUT | Record | Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)
+Endpoint: ```/api/ogc/collections```
 
-|DELETE | Record | Delete a record by ID
+| GET | Collection
+| Get collection by collection-ID
 
+Endpoint: ```/api/ogc/collections/{collectionId}```
+|===
+
+===== Records
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| GET | Records
+| Get multiple records of a collection
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items```
+
+| GET | Record
+| Get record by record-ID
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+| POST | Records
+| Insert multiple records into a collection
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items```
+
+| PUT | Record
+| Replace/update an existing resource in a collection with a replacement resource with the same resource identifier.
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+| DELETE | Record
+| Delete a record by record-ID
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+|===
+
+===== Custom OGC Endpoints
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| POST | CSW-t
+| INSERT, UPDATE & DELETE transaction
+
+Endpoint: ```/api/ogc/collections/{collectionId}/cswt```
 |===
