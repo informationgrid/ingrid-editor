@@ -100,20 +100,32 @@
 @if(page.getGridSpatialRepresentation() != null)
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>
+            @if(page.getGridSpatialRepresentation().getNumberOfDimensions() != null)
             <gmd:numberOfDimensions>
                 <gco:Integer>${page.getGridSpatialRepresentation().getNumberOfDimensions()}</gco:Integer>
             </gmd:numberOfDimensions>
+            @else
+            <gmd:numberOfDimensions gco:nilReason="unknown" />
+            @endif
             @for(AxisDimensionProperties axisDimensionProperties : page.getGridSpatialRepresentation().getAxesDimensionProperties())
                 <gmd:axisDimensionProperties>
                     <gmd:MD_Dimension>
+                        @if(axisDimensionProperties.getName() != null)
                         <gmd:dimensionName>
                             <gmd:MD_DimensionNameTypeCode
                                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
                                     codeListValue="${page.getCodelists().getValue("514", axisDimensionProperties.getName(), "iso")}" />
                         </gmd:dimensionName>
+                        @else
+                        <gmd:dimensionName gco:nilReason="unknown" />
+                        @endif
+                        @if(axisDimensionProperties.getSize() != null)
                         <gmd:dimensionSize>
                             <gco:Integer>${axisDimensionProperties.getSize()}</gco:Integer>
                         </gmd:dimensionSize>
+                        @else
+                        <gmd:dimensionSize gco:nilReason="unknown" />
+                        @endif
                         @if(axisDimensionProperties.getResolution() != null)
                             <gmd:resolution>
                                 <gco:Scale uom="meter">${axisDimensionProperties.getResolution()}</gco:Scale>
@@ -122,11 +134,15 @@
                     </gmd:MD_Dimension>
                 </gmd:axisDimensionProperties>
             @endfor
+            @if(page.getCellGeometry() != null)
             <gmd:cellGeometry>
                 <gmd:MD_CellGeometryCode
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
                         codeListValue="${page.getCellGeometry()}" />
             </gmd:cellGeometry>
+            @else
+            <gmd:cellGeometry gco:nilReason="unknown" />
+            @endif
             <gmd:transformationParameterAvailability>
                 <gco:Boolean>true</gco:Boolean>
             </gmd:transformationParameterAvailability>
@@ -167,11 +183,15 @@
                         <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
                     </gmd:orientationParameterAvailability>
                 @endif
+                @if(page.getGeorefenceable().getParameters() != null)
                 <gmd:georeferencedParameters>
                     <gco:Record>
-                        <gco:CharacterString>Feld von Georeferenzierungsparameter</gco:CharacterString>
+                        <gco:CharacterString>${page.getGeorefenceable().getParameters()}</gco:CharacterString>
                     </gco:Record>
                 </gmd:georeferencedParameters>
+                @else
+                <gmd:georeferencedParameters gco:nilReason="unknown" />
+                @endif
             @endif
         </gmd:MD_${page.getGridType()}>
     </gmd:spatialRepresentationInfo>
