@@ -23,6 +23,7 @@ export class DocumentUtils {
     }
   }
 
+  // TODO: use localization -> docState
   static getStateName(state: DocumentState) {
     switch (state) {
       case "P":
