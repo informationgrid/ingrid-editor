@@ -707,7 +707,7 @@ open class IngridModelTransformer(
             val docAsModel = jacksonObjectMapper().convertValue(
                 getLastPublishedDocument(uuid),
                 IngridModel::class.java
-            )
+            ) ?: throw ServerException.withReason("No published version found for: $uuid")
             cache.models[uuid] = docAsModel
             docAsModel
         }
