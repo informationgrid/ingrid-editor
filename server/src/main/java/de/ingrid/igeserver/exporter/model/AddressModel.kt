@@ -14,27 +14,27 @@ import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
-    @JsonProperty("_uuid") val uuid: String,
-    @JsonProperty("_id") val id: Int,
-    @JsonProperty("_type") val docType: String,
+    @JsonProperty("_uuid") var uuid: String,
+    @JsonProperty("_id") var id: Int,
+    @JsonProperty("_type") var docType: String,
     val salutation: KeyValueModel?,
     @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
     val firstName: String?,
     val lastName: String?,
     val organization: String?,
-    val title: String?,
+    var title: String?,
     val contact: List<ContactModel> = emptyList(),
     val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
     var positionName: String?,
     var hoursOfService: String?,
     @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_created") val created: OffsetDateTime,
+    @JsonProperty("_created") var created: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_modified") val modified: OffsetDateTime,
+    @JsonProperty("_modified") var modified: OffsetDateTime,
     @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_contentModified") val contentmodified: OffsetDateTime,
-    @JsonProperty("_parent") val parent: Int?,
+    @JsonProperty("_contentModified") var contentmodified: OffsetDateTime,
+    @JsonProperty("_parent") var parent: Int?,
 ) {
 
     companion object {
