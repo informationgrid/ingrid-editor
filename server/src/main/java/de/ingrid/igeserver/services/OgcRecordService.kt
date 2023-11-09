@@ -194,6 +194,8 @@ class OgcRecordService @Autowired constructor(
         val clausesList: MutableList<BoolFilter> = mutableListOf()
         // filter: exclude FOLDERS
         clausesList.add(BoolFilter("OR", listOf("document_wrapper.type != 'FOLDER'"), null, null, false))
+
+        clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
         // bbox // check if 4 values is true
         if (bbox != null) {
             val boundingBox = bbox.map { coordinate -> coordinate.toString() }
