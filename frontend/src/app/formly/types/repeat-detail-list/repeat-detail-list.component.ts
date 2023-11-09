@@ -118,7 +118,11 @@ export class RepeatDetailListComponent
       this.removeItem(index);
     }
     const value: any[] = this.formControl.value || [];
-    value.splice(index, 0, item);
+    if (index === null) {
+      value.push(item);
+    } else {
+      value.splice(index, 0, item);
+    }
     this.formControl.patchValue([...value]);
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
