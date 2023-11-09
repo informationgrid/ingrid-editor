@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.6.0 (09.11.2023)
+
+### Features
+
+- Auto-Save Popup manuell weg klicken (#5670)
+- Icons - Bearbeitungsversion im Tooltip anzeigen (#5651)
+- Parallelisieren der URL-Prüfung (#5606)
+- Funktionsweise der Suche im Baum? (#5534)
+
+### Bugfixes
+
+- Feldzuordnung bei Adressen falsch? (#5672)
+- Fehler GDI-Testsuite (#5671)
+- Fehler ISO-Ansicht und Indexierung (#5666)
+- IGE-NG - XML - gmd:MD_DigitalTransferOptions (#5663)
+- METAVER - kommunaler Metadatenkatalog ST - Ordnerstruktur in den Adressen ist fehlerhaft (#5661)
+- Fehlende Rechte auf Adressen (#5654)
+- Fehler GDI-Testsuite gmd:MD_FeatureCatalogueDescription (#5653)
+- Kommunaler Metadatenkatalog Sachsen-Anhalt - Fehlermeldung bei Datensatzverweis mit ID (#5643)
+- Kommunaler Metadatenkatalog Sachsen-Anhalt - Hilfetexte fehlen (#5642)
+- METAVER Portalsuche findet OpenData oder Open Data in der Verschlagwortung nicht (#5638)
+- Gruppen eines Benutzers bei der Suche nicht katalogspezifisch (#5636)
+- Darstellender Dienst, Kopplung fehlt in ISO (#5617)
+- Partner Bezeichnung im METAVER Profil falsch (#5614)
+- Raumbezug > Freie Eingabe: Geodätisches Datum unklar (#5602)
+- DB-Transaktionsfehler bei Veröffentlichung von Datensatz mit vielen Referenzen (#5593)
+- 'Verweise' section accept an email in the URL field for documents imported using getCapabilities assistant (#5583)
+- Fehler GDI-Testsuite (#5574)
+- Rechte in Menü rechts oben stimmen nicht mit Horizontal Menü überein und hat Zugriff auf Seite (#5541)
+- Text bei Import reflektiert die Importmöglichkeit von ISO Dateien nicht (#5533)
+
 ## 1.4.1 (19.07.2023)
 
 ### Bugfixes
