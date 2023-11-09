@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatusCode
 @RestController
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController @Autowired constructor(
-        private val catalogService: CatalogService,
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
@@ -36,6 +35,29 @@ class OgcApiRecordsController @Autowired constructor(
     val log = logger()
     val defaultFormat = "internal"
 
+    override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        val definedFormat = format ?: defaultFormat
+        ogcRecordService.validateParamFormat(definedFormat)
+
+        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat)
+
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add("Content-Type", response.mimeType)
+        return ResponseEntity.ok().headers(responseHeaders).body(response.data)
+    }
+
+    override fun getConformance(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
+        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        val definedFormat = format ?: defaultFormat
+        ogcRecordService.validateParamFormat(definedFormat)
+
+        val response = ogcRecordService.handleConformanceRequest(definedFormat)
+
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add("Content-Type", response.mimeType)
+        return ResponseEntity.ok().headers(responseHeaders).body(response.data)
+    }
 
     override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray> {
         ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))

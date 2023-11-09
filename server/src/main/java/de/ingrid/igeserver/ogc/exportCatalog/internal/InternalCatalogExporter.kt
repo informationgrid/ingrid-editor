@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.ogc.exportCatalog.internal
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.ogc.exportCatalog.CatalogExportTypeInfo
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.model.RecordCollection
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service
 @Service
 class InternalCatalogExporter @Autowired constructor(
         @Lazy val documentService: DocumentService,
-        val catalogService: CatalogService
+        val catalogService: CatalogService,
+        private val generalProperties: GeneralProperties
 ) : OgcCatalogExporter {
 
     override val typeInfo: CatalogExportTypeInfo
@@ -35,8 +37,8 @@ class InternalCatalogExporter @Autowired constructor(
     }
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
-        val apiHost = "http://localhost:8550"
-        val links = "${apiHost}/collections/${catalog.identifier}/items"
+        val apiHost = generalProperties.host
+        val links = "${apiHost}/api/ogc/collections/${catalog.identifier}/items"
         return RecordCollection(
                 id = catalog.identifier,
                 title = catalog.name,

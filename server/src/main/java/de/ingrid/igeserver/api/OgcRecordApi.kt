@@ -18,6 +18,40 @@ import java.security.Principal
 
 interface OgcApiRecords {
 
+    @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
+    @Operation(tags=["OGC"], responses = [], summary = "Get all catalogs", hidden = false)
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful operation"),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
+        ApiResponse(responseCode = "404", description = "Not found"),
+    ])
+    fun getLandingPage(
+        @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        principal: Principal,
+        @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
+                "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
+                "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
+        ) @RequestParam(value = "f", required = false) format: String?,
+    ): ResponseEntity<ByteArray>
+
+    @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
+    @Operation(tags=["OGC"], responses = [], summary = "Get all catalogs", hidden = false)
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful operation"),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
+        ApiResponse(responseCode = "404", description = "Not found"),
+    ])
+    fun getConformance(
+        @Parameter (hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        principal: Principal,
+        @Parameter(description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
+                "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
+                "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
+                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
+        ) @RequestParam(value = "f", required = false) format: String?,
+    ): ResponseEntity<ByteArray>
+
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
     @Operation(tags=["OGC/RecordCollections"], responses = [], summary = "Get all catalogs", hidden = false)
     @ApiResponses(value = [

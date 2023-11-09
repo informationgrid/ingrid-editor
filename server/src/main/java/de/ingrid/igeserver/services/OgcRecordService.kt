@@ -10,14 +10,16 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImportService
-import de.ingrid.igeserver.imports.ImporterFactory
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import org.keycloak.util.JsonSerialization
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
@@ -38,35 +40,114 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import kotlin.math.abs
 
+data class LandingPageInfo(
+    val title: String,
+    val description: String,
+    val links: List<Link>,
+)
+
+data class Conformance(
+    val conformsTo: List<String>
+)
+
+data class ResponsePackage(
+    val data: ByteArray,
+    val mimeType: String
+)
 
 data class XmlMetadata(
-        var dataset: List<Metadata>,
+    var dataset: List<Metadata>,
 )
 data class SupportFormat(
-        var format: String,
-        var mimeType: String
+    var format: String,
+    var mimeType: String,
 )
 data class QueryMetadata(
-        var numberReturned: Int,
-        var numberMatched: Int,
-        var timeStamp: Instant?,
+    var numberReturned: Int,
+    var numberMatched: Int,
+    var timeStamp: Instant?,
 )
 
 @Service
 class OgcRecordService @Autowired constructor(
-        private val catalogService: CatalogService,
-        private val exportService: ExportService,
-        private val importerFactory: ImporterFactory,
-        private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-        private val internalExporter: InternalExporter,
-        private val documentService: DocumentService,
-        private val importService: ImportService
+    private val catalogService: CatalogService,
+    private val exportService: ExportService,
+    private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
+    private val internalExporter: InternalExporter,
+    private val documentService: DocumentService,
+    private val importService: ImportService,
+    val ogcHtmlConverterService: OgcHtmlConverterService,
+    private val generalProperties: GeneralProperties
 ) {
-    val apiHost = "http://localhost:8550"
+    val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
     val supportedExportFormats = listOf("internal", "geojson", "html", "ingridISO")
 
 
+    fun handleLandingPageRequest(requestedFormat: String): ResponsePackage {
+        val supportedFormats: List<SupportFormat> = listOf(
+            SupportFormat( "internal", "application/json"),
+            SupportFormat( "html", "text/html")
+        )
+        val linkList: MutableList<Link> = mutableListOf()
+        val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
+
+        linkList.add(Link(href = hostnameOgcApi, rel = "self", type = mimeType, title = "This document"))
+        for(supported in supportedFormats) {
+            val supportedFormat = if (supported.format != requestedFormat) supported.format else continue
+            linkList.add(Link(href = "${hostnameOgcApi}?f=${supportedFormat}", rel = "alternate", type = supported.mimeType, title = "Link to the landing page in format '$supportedFormat'"))
+        }
+        linkList.add(Link(href = "${hostnameOgcApi}/conformance", rel = "conformance", type = "application/json", title = "OGC API conformance classes implemented by this server"))
+        linkList.add(Link(href = "${hostnameOgcApi}/collections", rel = "collections", type = "application/json", title = "Information about the record collections"))
+
+        val info = LandingPageInfo(
+            title = "InGrid Editor - OGC API Records",
+            description = "Access to data of InGrid Editor via a Web API that conforms to the OGC API Records specification.",
+            links = linkList
+        )
+
+        val responseByteArray = if( requestedFormat== "html") {
+            val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
+            val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
+            wrapperForHtml(html, null, null).toByteArray()
+        } else {
+            convertObject2Json(info).toString().toByteArray()
+        }
+
+        return ResponsePackage(
+            data = responseByteArray,
+            mimeType = mimeType
+        )
+    }
+
+
+    fun handleConformanceRequest(requestedFormat: String): ResponsePackage {
+        val supportedFormats: List<SupportFormat> = listOf(
+            SupportFormat( "internal", "application/json"),
+            SupportFormat( "html", "text/html")
+        )
+        val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
+
+        val conformance = Conformance(
+            conformsTo = listOf(
+                "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
+                "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
+            )
+        )
+
+        val responseByteArray = if( requestedFormat== "html") {
+            val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
+            val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
+            wrapperForHtml(html, null, null).toByteArray()
+        } else {
+            convertObject2Json(conformance).toString().toByteArray()
+        }
+
+        return ResponsePackage(
+            data = responseByteArray,
+            mimeType = mimeType
+        )
+    }
 
     @Transactional
     fun transactionalImportDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
@@ -256,7 +337,7 @@ class OgcRecordService @Autowired constructor(
         val prevOffset: Int = if (queryOffset < queryLimit) 0 else queryOffset - queryLimit
 
         // prepare string fragments
-        val baseUrl = "${apiHost}/collections/${collectionId}"
+        val baseUrl = "${hostnameOgcApi}/collections/${collectionId}"
         val recordBaseUrl = "$baseUrl/items?f="
         val limitString = if (limit !== null) "&limit=${queryLimit}" else ""
         val selfOffsetString = if (offset !== null) "&offset=${queryOffset}" else ""
@@ -369,7 +450,7 @@ class OgcRecordService @Autowired constructor(
     }
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
-        val links = "${apiHost}/collections/${catalog.identifier}/items"
+        val links = "${hostnameOgcApi}/collections/${catalog.identifier}/items"
         return RecordCollection(
                 id = catalog.identifier,
                 title = catalog.name,
@@ -527,11 +608,17 @@ class OgcRecordService @Autowired constructor(
             val numberReturned = queryMetadata.numberReturned
             val timeStamp = queryMetadata.timeStamp
             metadata += """
-                <p>numberMatched: $numberMatched</p>
-                <p>numberReturned: $numberReturned</p>
-                <p>timeStamp: $timeStamp</p>
+                <div>
+                    <p>numberMatched: $numberMatched</p>
+                    <p>numberReturned: $numberReturned</p>
+                    <p>timeStamp: $timeStamp</p>
+                </div>
             """.trimIndent()
         }
+
+        val htmlLandingPageLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>"
+        val htmlConformanceLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>"
+        val htmlCollectionsLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>"
 
         if(links != null) {
             val selfLinks = links.filter { it.rel == "self"}
@@ -542,23 +629,25 @@ class OgcRecordService @Autowired constructor(
 
             for(link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
 
-            var htmlCollection = "<div class='grid-item dropdown'><div class='dropdownTitle'>Links to Collection</div><nav class=\"dropdown-content\">"
+
+
+            var htmlCollection = "<div class='grid-item dropdown'><button class='dropdownTitle'>Links to Collection</button><nav class=\"dropdown-content\">"
             for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlCollection += "</nav></div>"
 
-            var htmlAlternate = "<div class='grid-item dropdown'><div class='dropdownTitle'>Alternate Formats</div><nav class=\"dropdown-content\">"
+            var htmlAlternate = "<div class='grid-item dropdown'><button class='dropdownTitle'>Alternate Formats</button><nav class=\"dropdown-content\">"
             for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlAlternate += "</nav></div>"
 
-            var htmlNext = "<div class='grid-item dropdown'><div class='dropdownTitle'>Next Page</div><nav class=\"dropdown-content\">"
+            var htmlNext = "<div class='grid-item dropdown'><button class='dropdownTitle'>Next Page</button><nav class=\"dropdown-content\">"
             for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlNext += "</nav></div>"
 
-            var htmlPrev = "<div class='grid-item dropdown'><div class='dropdownTitle'>Previous Page</div><nav class=\"dropdown-content\">"
+            var htmlPrev = "<div class='grid-item dropdown'><button class='dropdownTitle'>Previous Page</button><nav class=\"dropdown-content\">"
             for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlPrev += "</nav></div>"
 
-            linksElements += htmlAlternate + htmlCollection + htmlPrev + htmlNext
+            linksElements += htmlAlternate + htmlCollection + ( if(prevLinks.isNotEmpty() ) htmlPrev else "" ) + ( if(nextLinks.isNotEmpty() ) htmlNext else "" )
         }
 
         return """
@@ -567,8 +656,13 @@ class OgcRecordService @Autowired constructor(
             <body>
             <header>
                 <h1>OGC Record API</h1>
-                $selfLink
+                <div class="grid-container">
+                    $htmlLandingPageLink
+                    $htmlConformanceLink
+                    $htmlCollectionsLink
+                </div>
                 $metadata
+                $selfLink
                 <div class="grid-container">
                     $linksElements
                 </div>
@@ -580,14 +674,16 @@ class OgcRecordService @Autowired constructor(
                     color: #ffffff;
                     padding: 10px;
                 }
-                header a{
-                    color: #ffffff
+                button {
+                    cursor: pointer;
+                    font-size: large;
+                    font-style: inherit;
+                    font-weight: 600;
                 }
                 .grid-container {
                     display: grid;
                     gap: 10px;
                     grid-template-columns: auto auto auto auto;
-                    padding: 10px;
                 }
                 .grid-item {
                 }
@@ -610,10 +706,10 @@ class OgcRecordService @Autowired constructor(
                 }
                 .dropdown-content a {
                     display: block;
-                  color: #000000;
-                  background-color: #ffffff;
-                  padding: 5px;
-                  text-decoration: none;
+                    color: #000000;
+                    background-color: #ffffff;
+                    padding: 5px;
+                    text-decoration: none;
               }
               .dropdown-content a:hover {
                   color: #FFFFFF;

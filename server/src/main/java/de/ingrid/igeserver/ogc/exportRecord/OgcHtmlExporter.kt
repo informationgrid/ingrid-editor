@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service
 class OgcHtmlExporter @Autowired constructor(
         @Lazy val documentService: DocumentService,
         val catalogService: CatalogService,
+        val ogcHtmlConverterService: OgcHtmlConverterService
 ) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
@@ -45,7 +47,7 @@ class OgcHtmlExporter @Autowired constructor(
         }
 
         val exportData = selectDraftOrPublished(versions.first, versions.second)
-        return htmlTransformation(exportData)
+        return ogcHtmlConverterService.convertObjectNode2Html(exportData, null)
     }
 
     fun runCollection(catalogId: String) {
@@ -71,48 +73,5 @@ class OgcHtmlExporter @Autowired constructor(
     override fun toString(exportedObject: Any): String {
         return exportedObject as String
     }
-
-    private fun convertFieldToTable(node: JsonNode): String {
-        var table = "<table>"
-        if (node.isTextual)
-            table += "<td>${node.toString()}</td>" // addRow("", node.toString());
-        else
-            node.fields().forEach { element ->
-                val key = element.key ?: ""
-                val value = element.value
-                when (value.nodeType) {
-                    JsonNodeType.NULL -> table += addRow(key, "null")
-                    JsonNodeType.STRING -> table += addRow(key, value.toString())
-                    JsonNodeType.OBJECT -> table += addRow(key, convertFieldToTable(value))
-                    JsonNodeType.ARRAY -> {
-                        value.forEach { it -> table += addRow(key, convertFieldToTable(it)) }
-                    }
-
-                    else -> table += addRow(key, value.toString())
-                }
-            }
-        return "$table</table>"
-    }
-
-    private fun addRow(key: String, value: String): String {
-        return "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
-    }
-
-    private fun htmlTransformation(doc: ObjectNode): String {
-        val table = convertFieldToTable(doc)
-        val title = doc.get("title")
-        return """
-                 <style>
-                    body { font-family: Sans-Serif; padding-bottom: 50px }
-                    table { text-align:left; width: 100%; border-spacing: 0; border-collapse: collapse;}
-                    td { vertical-align: top; outline: 2px solid lightGray; background-color: white;}}
-                </style>
-                <div class="record" style="margin: 40px 10px; padding: 10px; outline: solid; background: lightgray;">
-                    <h1>Record: $title</h1>
-                    $table
-                </div>
-        """
-    }
-
 
 }
