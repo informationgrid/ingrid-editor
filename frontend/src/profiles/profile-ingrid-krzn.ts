@@ -1,10 +1,13 @@
-import { Component, NgModule } from "@angular/core";
+import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
+import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
 })
 class InGridKrznComponent extends InGridComponent {
+  geoDatasetKrzn = inject(GeoDatasetDoctypeKrzn);
+
   constructor() {
     super();
 
@@ -14,7 +17,7 @@ class InGridKrznComponent extends InGridComponent {
   private modifyFormFieldConfiguration() {
     [
       this.specialisedTask,
-      this.geoDataset,
+      this.geoDatasetKrzn,
       this.literature,
       this.geoService,
       this.project,

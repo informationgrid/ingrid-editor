@@ -1,7 +1,6 @@
 import { Component, inject, NgModule, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
 import { IngridOrganisationDoctype } from "./ingrid/doctypes/ingrid-organisation.doctype";
 import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
@@ -35,6 +34,7 @@ import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
 import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
+import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
@@ -43,7 +43,7 @@ export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
   folder = inject(FolderDoctype);
   specialisedTask = inject(SpecialisedTaskDoctype);
-  geoDataset = inject(GeoDatasetDoctype);
+  geoDataset = inject(GeoDatasetDoctypeKrzn);
   literature = inject(LiteratureDoctype);
   geoService = inject(GeoServiceDoctype);
   project = inject(ProjectDoctype);
