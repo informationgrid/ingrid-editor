@@ -43,7 +43,7 @@ export class BmiDoctype extends BaseDoctype {
                   ? ctrl.value.some((row) => row.type.key === "publisher")
                   : false,
               message:
-                "Fehler: Es muss die veröffentlichende Stelle als Adresse angegeben sein",
+                'Fehler: Es muss eine Adresse als "veröffentlichende Stelle" eingetragen sein.',
             },
             onePublisher: {
               expression: (ctrl) =>
@@ -178,7 +178,7 @@ export class BmiDoctype extends BaseDoctype {
             requiredLicense: {
               expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
               message:
-                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden.",
+                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden (Ressource bearbeiten).",
             },
           },
         }),
