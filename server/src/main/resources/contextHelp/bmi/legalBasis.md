@@ -9,5 +9,5 @@ Dieses Feld dokumentiert als Freitext optional die Rechtsgrundlage für den Zuga
 
 Der Eintrag in dieses Feld ist optional.
 
-### DCAT-AP.de
+## DCAT-AP.de
 `dcat:Dataset / dcatde:legalBasis`

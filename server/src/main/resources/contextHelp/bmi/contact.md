@@ -8,7 +8,7 @@ profile: bmi
 Geben Sie hier die Kontaktdaten der Organisation an.<br />
 **Es muss mindestens eine E-Mail-Adresse angegeben werden.**
 
-### DCAT-AP.de
+## DCAT-AP.de
 Wird die Adresse als *Ansprechpartner* einem Metadatensatz hinzugefügt, so wird diese abgebildet als:<br />
 `dcat:Dataset / dcat:contactPoint / vcard:Organization / vcard:hasEmail + vcard:hasURL`
 
