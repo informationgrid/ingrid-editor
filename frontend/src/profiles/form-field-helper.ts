@@ -29,6 +29,7 @@ export interface Options {
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
   validators?: any;
+  asyncValidators?: any;
 }
 
 export interface DatePickerOptions extends Options {
@@ -470,6 +471,7 @@ export class FormFieldHelper {
       },
       validation: options?.validation,
       validators: options?.validators,
+      asyncValidators: options?.asyncValidators,
       hooks: options?.hooks,
     };
   }

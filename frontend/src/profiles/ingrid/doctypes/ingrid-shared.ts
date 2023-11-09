@@ -12,9 +12,9 @@ import {
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -24,6 +24,7 @@ import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { MatSelectChange } from "@angular/material/select";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -57,6 +58,7 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
+  private documentService = inject(DocumentService);
 
   options = {
     dynamicRequired: {
@@ -1441,7 +1443,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addInputInline("uuidRef", "Datensatzverweis", {
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
-        updateOn: "change",
+        // updateOn: "change",
         expressions: {
           "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.url;
@@ -1450,6 +1452,18 @@ export abstract class IngridShared extends BaseDoctype {
         validation: {
           messages: {
             required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
+        },
+        asyncValidators: {
+          uuidExists: {
+            expression: (control: AbstractControl) => {
+              if (!control.value) return of(true);
+              return firstValueFrom(
+                this.documentService.uuidExists(control.value),
+              );
+            },
+            message:
+              "Bitte geben Sie eine gültige UUID eines existierenden Datensatzes in diesem Katalog an",
           },
         },
       }),

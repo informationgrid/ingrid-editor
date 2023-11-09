@@ -263,6 +263,13 @@ export class DocumentService {
     );
   }
 
+  uuidExists(uuid: string): Observable<boolean> {
+    return this.dataService.load(uuid, true).pipe(
+      catchError(() => of(null)),
+      map((result) => result !== null),
+    );
+  }
+
   updateOpenedDocumentInTreestore(
     doc: DocumentAbstract,
     address: boolean,
