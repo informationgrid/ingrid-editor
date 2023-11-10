@@ -17,7 +17,7 @@ group = 'de.ingrid'
 description = 'IGE-NG Frontend'
 
 node {
-  version = '18.12.1'
+  version = '20.9.0'
   download = true
 }
 
