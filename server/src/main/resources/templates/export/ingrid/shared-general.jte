@@ -485,7 +485,7 @@
     @endfor
     @if(TransformationTools.hasValue(page.getSystemEnvironment()))
         <gmd:environmentDescription>
-            <gco:CharacterString>page.getSystemEnvironment()</gco:CharacterString>
+            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
         </gmd:environmentDescription>
     @endif
     @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
