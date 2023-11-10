@@ -10,6 +10,19 @@ class InGridKrznComponent extends InGridComponent {
   geoDatasetKrzn = inject(GeoDatasetDoctypeKrzn);
   informationSystemKrzn = inject(InformationSystemDoctypeKrzn);
 
+  protected docTypes = [
+    this.folder,
+    this.specialisedTask,
+    this.geoDatasetKrzn,
+    this.literature,
+    this.geoService,
+    this.project,
+    this.dataCollection,
+    this.informationSystemKrzn,
+    this.person,
+    this.organisation,
+  ];
+
   constructor() {
     super();
 
