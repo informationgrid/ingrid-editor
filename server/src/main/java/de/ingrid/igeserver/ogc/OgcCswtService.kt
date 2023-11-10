@@ -2,7 +2,6 @@ package de.ingrid.igeserver.ogc
 
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.ogc.cswt.CSWTransactionResult
 import de.ingrid.igeserver.services.OgcRecordService
 import de.ingrid.utils.IngridDocument
 import de.ingrid.utils.xml.Csw202NamespaceContext
@@ -24,6 +23,15 @@ import javax.xml.transform.*
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
+data class CSWTransactionResult(
+    var requestId: String? = null,
+    var inserts: Int = 0,
+    var updates: Int = 0,
+    var deletes: Int = 0,
+//    private var insertResults: List<ActionResult>? = null
+    var successful: Boolean = false,
+    var errorMessage: String? = null,
+)
 
 @Service
 class OgcCswtService @Autowired constructor(
@@ -146,24 +154,24 @@ class OgcCswtService @Autowired constructor(
 
     fun processCswTransaction(response: IngridDocument): CSWTransactionResult {
         if (!response.getBoolean("success")){
-            return CSWTransactionResult().apply {
-                setSuccessful(response.getBoolean("success"))
-                setErrorMessage(response.getString("error"))
-            }
+            return CSWTransactionResult(
+                successful = response.getBoolean("success"),
+                errorMessage = response.getString("error"),
+            )
         }
 
         val responseResult = response["result"] as IngridDocument
 
-        return CSWTransactionResult().apply {
-            setSuccessful(response.getBoolean("success"))
-            setNumberOfInserts(responseResult.getInt("inserts"))
-            setNumberOfUpdates(responseResult.getInt("updates"))
-            setNumberOfDeletes(responseResult.getInt("deletes"))
-        }
+        return CSWTransactionResult(
+            successful = response.getBoolean("success"),
+            inserts = responseResult.getInt("inserts"),
+            updates = responseResult.getInt("updates"),
+            deletes = responseResult.getInt("deletes"),
+        )
     }
 
     fun prepareXmlResponse(transactionResult: CSWTransactionResult): ByteArray {
-        val response = if (transactionResult.isSuccessful()) {
+        val response = if (transactionResult.successful) {
             createSummaryResponse(transactionResult)
         } else {
             createErrorResponse(transactionResult)
@@ -203,7 +211,7 @@ class OgcCswtService @Autowired constructor(
                 "ows:ExceptionText"
             )
         )
-            .appendChild(doc.createTextNode("Cannot process transaction: " + result.getErrorMessage()))
+            .appendChild(doc.createTextNode("Cannot process transaction: " + result.errorMessage))
         return doc
     }
 
@@ -224,10 +232,10 @@ class OgcCswtService @Autowired constructor(
             RESPONSE_NAMESPACE,
             "csw:TransactionSummary"
         )
-        summary.setAttribute("requestId", result.getRequestId())
+        summary.setAttribute("requestId", result.requestId)
         doc.documentElement.appendChild(summary)
 
-        val inserts = result.getNumberOfInserts()
+        val inserts = result.inserts
         summary.appendChild(
             doc.createElementNS(
                 RESPONSE_NAMESPACE,
@@ -235,7 +243,7 @@ class OgcCswtService @Autowired constructor(
             )
         ).appendChild(doc.createTextNode(inserts.toString()))
 
-        val updates = result.getNumberOfUpdates()
+        val updates = result.updates
         summary.appendChild(
             doc.createElementNS(
                 RESPONSE_NAMESPACE,
@@ -243,7 +251,7 @@ class OgcCswtService @Autowired constructor(
             )
         ).appendChild(doc.createTextNode(updates.toString()))
 
-        val deletes = result.getNumberOfDeletes()
+        val deletes = result.deletes
         summary.appendChild(
             doc.createElementNS(
                 RESPONSE_NAMESPACE,

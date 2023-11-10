@@ -5,7 +5,6 @@ import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.ogc.OgcCswtService
-import de.ingrid.igeserver.ogc.cswt.CSWTransactionResult
 import de.ingrid.igeserver.services.*
 import de.ingrid.utils.IngridDocument
 import org.apache.logging.log4j.kotlin.logger
@@ -17,6 +16,7 @@ import java.security.Principal
 import org.springframework.security.core.Authentication
 import java.time.Instant
 import de.ingrid.igeserver.IgeException
+import de.ingrid.igeserver.ogc.CSWTransactionResult
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 
