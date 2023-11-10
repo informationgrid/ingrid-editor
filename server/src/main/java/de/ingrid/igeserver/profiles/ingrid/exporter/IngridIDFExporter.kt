@@ -32,11 +32,11 @@ class IngridIDFExporter @Autowired constructor(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
-    val profileTransformer: List<IngridProfileTransformer>
 ) : IgeExporter {
 
     val log = logger()
 
+    var profileTransformer: IngridProfileTransformer? = null
 
 
     override val typeInfo = ExportTypeInfo(
@@ -109,11 +109,7 @@ class IngridIDFExporter @Autowired constructor(
             "InGridPersonDoc" to AddressModelTransformer::class
         )
         
-        // TODO: need current profile info to get correct profile transformer
-        //       otherwise when there are more than one profile is activated
-        //       it would get the wrong transformer
-        val profileTransformer = this.profileTransformer.first().get()
-        val transformerClass = profileTransformer ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        val transformerClass = profileTransformer?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
             transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json)
         else

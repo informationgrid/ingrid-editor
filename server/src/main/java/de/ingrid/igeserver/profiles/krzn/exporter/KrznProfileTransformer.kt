@@ -9,8 +9,12 @@ import kotlin.reflect.KClass
 @Profile("krzn")
 class KrznProfileTransformer : IngridProfileTransformer {
 
-    override fun get(): KClass<*>? {
-        return IngridModelTransformerKrzn::class
+    override fun get(docType: String): KClass<*>? {
+        return when(docType) {
+            "InGridGeoDataset" -> IngridModelTransformerKrzn::class
+            "InGridInformationSystem" -> InformationSystemModelTransformerKrzn::class
+            else -> null
+        } 
     }
 
 }

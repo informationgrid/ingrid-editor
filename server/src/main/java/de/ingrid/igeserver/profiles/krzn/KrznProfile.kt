@@ -30,5 +30,5 @@ class KrznProfile(
     override val title = "InGrid Katalog (KRZN)"
     override val parentProfile: String? = "ingrid"
 
-//    override val indexExportFormatID = "indexInGridIDF"
+    override val indexExportFormatID = "indexInGridIDFKrzn"
 }
