@@ -135,6 +135,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": ["."]
+            },
             "styles": ["src/material.css", "src/styles.scss", "src/theme.scss"],
             "assets": [
               {
