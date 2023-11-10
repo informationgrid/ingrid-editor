@@ -108,11 +108,16 @@ class IngridIDFExporter @Autowired constructor(
             "InGridOrganisationDoc" to AddressModelTransformer::class,
             "InGridPersonDoc" to AddressModelTransformer::class
         )
-        val transformerClass = transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        
+        // TODO: need current profile info to get correct profile transformer
+        //       otherwise when there are more than one profile is activated
+        //       it would get the wrong transformer
+        val profileTransformer = this.profileTransformer.first().get()
+        val transformerClass = profileTransformer ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json)
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {

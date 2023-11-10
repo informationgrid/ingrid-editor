@@ -516,7 +516,7 @@ open class IngridModelTransformer(
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
-    val systemEnvironment = data.systemEnvironment
+    open val systemEnvironment = data.systemEnvironment
 
 
     val parentIdentifier: String? = data.parentIdentifier
