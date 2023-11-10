@@ -112,12 +112,13 @@ class OgcCswtService @Autowired constructor(
             }
 
 
-            val result = IngridDocument()
-            result.putInt("inserts", insertedObjects)
-            result.putInt("updates", updatedObjects)
-            result.putInt("deletes", deletedObjects)
-            result["resultInserts"] = resultInsert
-            result["resultUpdates"] = resultUpdate
+            val result = IngridDocument().apply {
+                putInt("inserts", insertedObjects)
+                putInt("updates", updatedObjects)
+                putInt("deletes", deletedObjects)
+                put("resultUpdates", resultInsert)
+                put("resultUpdates", resultUpdate)
+            }
             doc.putBoolean("success", true)
             doc["result"] = result
 
