@@ -35,7 +35,8 @@ open class IngridModelTransformer(
     val codelists: CodelistTransformer,
     val config: Config,
     val catalogService: CatalogService,
-    val cache: TransformerCache
+    val cache: TransformerCache,
+    val doc: Document? = null
 ) {
     companion object {
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }

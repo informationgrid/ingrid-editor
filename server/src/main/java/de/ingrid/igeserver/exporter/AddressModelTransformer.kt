@@ -14,6 +14,7 @@ class AddressModelTransformer(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
     val type: KeyValueModel? = null,
+    doc: Document? = null
 ) {
     companion object {
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }

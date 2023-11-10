@@ -32,6 +32,7 @@ class IngridIDFExporter @Autowired constructor(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
+    val profileTransformer: List<IngridProfileTransformer>
 ) : IgeExporter {
 
     val log = logger()
