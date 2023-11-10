@@ -3,10 +3,18 @@ package de.ingrid.igeserver.ogc
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.model.Link
+import de.ingrid.igeserver.services.QueryMetadata
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class OgcHtmlConverterService {
+class OgcHtmlConverterService @Autowired constructor(
+    private val generalProperties: GeneralProperties
+){
+
+    private val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
     fun convertObjectNode2Html(doc: ObjectNode, type: String?): String {
         val table = convertFieldToTable(doc)
@@ -60,6 +68,122 @@ class OgcHtmlConverterService {
 
     private fun addRow(key: String, value: String): String {
         return "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
+    }
+
+    fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String{
+        var metadata =""
+        var linksElements = ""
+        var selfLink = ""
+
+        if(queryMetadata != null) {
+            val numberMatched = queryMetadata.numberMatched
+            val numberReturned = queryMetadata.numberReturned
+            val timeStamp = queryMetadata.timeStamp
+            metadata += """
+                <div>
+                    <p>numberMatched: $numberMatched</p>
+                    <p>numberReturned: $numberReturned</p>
+                    <p>timeStamp: $timeStamp</p>
+                </div>
+            """.trimIndent()
+        }
+
+        if(links != null) {
+            val selfLinks = links.filter { it.rel == "self"}
+            val alternateLinks = links.filter { it.rel == "alternate"}
+            val nextLinks = links.filter { it.rel == "next"}
+            val prevLinks = links.filter { it.rel == "prev"}
+            val collectionLinks = links.filter { it.rel == "collection"}
+
+            for(link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
+
+            var htmlCollection = "<div class='grid-item dropdown'><button class='dropdownTitle'>Links to Collection</button><nav class=\"dropdown-content\">"
+            for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlCollection += "</nav></div>"
+
+            var htmlAlternate = "<div class='grid-item dropdown'><button class='dropdownTitle'>Alternate Formats</button><nav class=\"dropdown-content\">"
+            for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlAlternate += "</nav></div>"
+
+            var htmlNext = "<div class='grid-item dropdown'><button class='dropdownTitle'>Next Page</button><nav class=\"dropdown-content\">"
+            for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlNext += "</nav></div>"
+
+            var htmlPrev = "<div class='grid-item dropdown'><button class='dropdownTitle'>Previous Page</button><nav class=\"dropdown-content\">"
+            for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
+            htmlPrev += "</nav></div>"
+
+            linksElements += htmlAlternate + htmlCollection + ( if(prevLinks.isNotEmpty() ) htmlPrev else "" ) + ( if(nextLinks.isNotEmpty() ) htmlNext else "" )
+        }
+
+        return """
+            <html>
+                <head><title>Ingrid - OGC Record API</title></head>
+            <body>
+            <header>
+                <h1>OGC Record API</h1>
+                <div class="grid-container">
+                    val htmlLandingPageLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>"
+                    val htmlConformanceLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>"
+                    val htmlCollectionsLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>"
+                </div>
+                $metadata
+                $selfLink
+                <div class="grid-container">
+                    $linksElements
+                </div>
+            </header>
+            $responseRecords
+             <style>
+                header {
+                    background: #28225b;
+                    color: #ffffff;
+                    padding: 10px;
+                }
+                button {
+                    cursor: pointer;
+                    font-size: large;
+                    font-style: inherit;
+                    font-weight: 600;
+                }
+                .grid-container {
+                    display: grid;
+                    gap: 10px;
+                    grid-template-columns: auto auto auto auto;
+                }
+                .grid-item {
+                }
+                .dropdownTitle{
+                    width: 100%;
+                }
+                .dropdown { 
+                    display: inline-block; 
+                    position: relative; 
+                } 
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    width: 100%;
+                    overflow: auto;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                }
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                }
+                .dropdown-content a {
+                    display: block;
+                    color: #000000;
+                    background-color: #ffffff;
+                    padding: 5px;
+                    text-decoration: none;
+              }
+              .dropdown-content a:hover {
+                  color: #FFFFFF;
+                  background-color: #196ea2;
+              }
+          </style>
+          </body></html>
+        """.trimIndent()
     }
 
 }

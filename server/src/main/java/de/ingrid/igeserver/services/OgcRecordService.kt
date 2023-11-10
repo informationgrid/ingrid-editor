@@ -76,8 +76,8 @@ class OgcRecordService @Autowired constructor(
     private val internalExporter: InternalExporter,
     private val documentService: DocumentService,
     private val importService: ImportService,
-    val ogcHtmlConverterService: OgcHtmlConverterService,
-    private val generalProperties: GeneralProperties
+    private val ogcHtmlConverterService: OgcHtmlConverterService,
+    private val generalProperties: GeneralProperties,
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
@@ -109,7 +109,7 @@ class OgcRecordService @Autowired constructor(
         val responseByteArray = if( requestedFormat== "html") {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
-            wrapperForHtml(html, null, null).toByteArray()
+            ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
         } else {
             convertObject2Json(info).toString().toByteArray()
         }
@@ -138,7 +138,7 @@ class OgcRecordService @Autowired constructor(
         val responseByteArray = if( requestedFormat== "html") {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
-            wrapperForHtml(html, null, null).toByteArray()
+            ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
         } else {
             convertObject2Json(conformance).toString().toByteArray()
         }
@@ -443,7 +443,7 @@ class OgcRecordService @Autowired constructor(
     }
     private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: String, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
-        if(mimeType == "text/html") wrappedResponse = wrapperForHtml(catalog as String, links, queryMetadata)
+        if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(catalog as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(catalog as String, links, queryMetadata)
         if(mimeType == "application/json")  wrappedResponse = wrapperForJson(catalog as List<JsonNode>, links, queryMetadata, singleRecord, format)
         return wrappedResponse.toByteArray()
@@ -521,7 +521,7 @@ class OgcRecordService @Autowired constructor(
     }
     private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: String, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
-        if(mimeType == "text/html") wrappedResponse = wrapperForHtml(responseRecords as String, links, queryMetadata)
+        if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(responseRecords as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
         if(mimeType == "application/json")  wrappedResponse = wrapperForJson(responseRecords as List<JsonNode>, links, queryMetadata, singleRecord, format)
         return wrappedResponse.toByteArray()
@@ -596,128 +596,6 @@ class OgcRecordService @Autowired constructor(
         }
 
         return xmlNodeToString(doc)
-    }
-
-    private fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String{
-        var metadata =""
-        var linksElements = ""
-        var selfLink = ""
-
-        if(queryMetadata != null) {
-            val numberMatched = queryMetadata.numberMatched
-            val numberReturned = queryMetadata.numberReturned
-            val timeStamp = queryMetadata.timeStamp
-            metadata += """
-                <div>
-                    <p>numberMatched: $numberMatched</p>
-                    <p>numberReturned: $numberReturned</p>
-                    <p>timeStamp: $timeStamp</p>
-                </div>
-            """.trimIndent()
-        }
-
-        val htmlLandingPageLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>"
-        val htmlConformanceLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>"
-        val htmlCollectionsLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>"
-
-        if(links != null) {
-            val selfLinks = links.filter { it.rel == "self"}
-            val alternateLinks = links.filter { it.rel == "alternate"}
-            val nextLinks = links.filter { it.rel == "next"}
-            val prevLinks = links.filter { it.rel == "prev"}
-            val collectionLinks = links.filter { it.rel == "collection"}
-
-            for(link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
-
-
-
-            var htmlCollection = "<div class='grid-item dropdown'><button class='dropdownTitle'>Links to Collection</button><nav class=\"dropdown-content\">"
-            for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
-            htmlCollection += "</nav></div>"
-
-            var htmlAlternate = "<div class='grid-item dropdown'><button class='dropdownTitle'>Alternate Formats</button><nav class=\"dropdown-content\">"
-            for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
-            htmlAlternate += "</nav></div>"
-
-            var htmlNext = "<div class='grid-item dropdown'><button class='dropdownTitle'>Next Page</button><nav class=\"dropdown-content\">"
-            for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
-            htmlNext += "</nav></div>"
-
-            var htmlPrev = "<div class='grid-item dropdown'><button class='dropdownTitle'>Previous Page</button><nav class=\"dropdown-content\">"
-            for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
-            htmlPrev += "</nav></div>"
-
-            linksElements += htmlAlternate + htmlCollection + ( if(prevLinks.isNotEmpty() ) htmlPrev else "" ) + ( if(nextLinks.isNotEmpty() ) htmlNext else "" )
-        }
-
-        return """
-            <html>
-                <head><title>Ingrid - OGC Record API</title></head>
-            <body>
-            <header>
-                <h1>OGC Record API</h1>
-                <div class="grid-container">
-                    $htmlLandingPageLink
-                    $htmlConformanceLink
-                    $htmlCollectionsLink
-                </div>
-                $metadata
-                $selfLink
-                <div class="grid-container">
-                    $linksElements
-                </div>
-            </header>
-            $responseRecords
-             <style>
-                header {
-                    background: #28225b;
-                    color: #ffffff;
-                    padding: 10px;
-                }
-                button {
-                    cursor: pointer;
-                    font-size: large;
-                    font-style: inherit;
-                    font-weight: 600;
-                }
-                .grid-container {
-                    display: grid;
-                    gap: 10px;
-                    grid-template-columns: auto auto auto auto;
-                }
-                .grid-item {
-                }
-                .dropdownTitle{
-                    width: 100%;
-                }
-                .dropdown { 
-                    display: inline-block; 
-                    position: relative; 
-                } 
-                .dropdown-content {
-                    display: none;
-                    position: absolute;
-                    width: 100%;
-                    overflow: auto;
-                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                }
-                .dropdown:hover .dropdown-content {
-                    display: block;
-                }
-                .dropdown-content a {
-                    display: block;
-                    color: #000000;
-                    background-color: #ffffff;
-                    padding: 5px;
-                    text-decoration: none;
-              }
-              .dropdown-content a:hover {
-                  color: #FFFFFF;
-                  background-color: #196ea2;
-              }
-          </style>
-          </body></html>
-        """.trimIndent()
     }
 
     fun validateCollection(collectionId: String){
