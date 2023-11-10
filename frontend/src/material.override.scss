@@ -180,3 +180,13 @@ mat-icon.dark-blue {
     background-color: $ige-primary;
   }
 }
+
+.mat-mdc-snack-bar-container.green {
+  .mdc-snackbar__label {
+    color: black;
+  }
+
+  .mdc-snackbar__surface {
+    background-color: $ige-info-background;
+  }
+}
