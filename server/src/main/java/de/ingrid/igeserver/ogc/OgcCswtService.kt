@@ -145,23 +145,21 @@ class OgcCswtService @Autowired constructor(
 
 
     fun processCswTransaction(response: IngridDocument): CSWTransactionResult {
-        val result = CSWTransactionResult()
-
-        if (response.getBoolean("success")) {
-            val responseResult = response["result"] as IngridDocument
-
-            // construct result
-            if (responseResult != null) {
-                result.setNumberOfInserts(responseResult.getInt("inserts"))
-                result.setNumberOfUpdates(responseResult.getInt("updates"))
-                result.setNumberOfDeletes(responseResult.getInt("deletes"))
+        if (!response.getBoolean("success")){
+            return CSWTransactionResult().apply {
+                setSuccessful(response.getBoolean("success"))
+                setErrorMessage(response.getString("error"))
             }
         }
 
-        result.setSuccessful(response.getBoolean("success"))
-        result.setErrorMessage(response.getString("error"))
+        val responseResult = response["result"] as IngridDocument
 
-        return result
+        return CSWTransactionResult().apply {
+            setSuccessful(response.getBoolean("success"))
+            setNumberOfInserts(responseResult.getInt("inserts"))
+            setNumberOfUpdates(responseResult.getInt("updates"))
+            setNumberOfDeletes(responseResult.getInt("deletes"))
+        }
     }
 
     fun prepareXmlResponse(transactionResult: CSWTransactionResult): ByteArray {
