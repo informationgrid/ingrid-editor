@@ -3,7 +3,6 @@ package de.ingrid.igeserver.ogc
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.services.OgcRecordService
-import de.ingrid.utils.IngridDocument
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -28,9 +27,10 @@ data class CSWTransactionResult(
     var inserts: Int = 0,
     var updates: Int = 0,
     var deletes: Int = 0,
-//    private var insertResults: List<ActionResult>? = null
+    var insertResults: List<String>? = null,
     var successful: Boolean = false,
     var errorMessage: String? = null,
+    var statusCode: HttpStatusCode? = null,
 )
 
 @Service
@@ -44,15 +44,14 @@ class OgcCswtService @Autowired constructor(
 
     private val utils = XPathUtils(Csw202NamespaceContext())
 
-    private val RESPONSE_NAMESPACE: String = "http://www.opengis.net/cat/csw/2.0.2"
+    private val namespaceCSW: String = "http://www.opengis.net/cat/csw/2.0.2"
 
     @Transactional
-    fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions ): IngridDocument {
-        val doc = IngridDocument()
+    fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions ): CSWTransactionResult {
+        val transactionResult = CSWTransactionResult()
+
         val factory: DocumentBuilderFactory
-        var resultInsert: IngridDocument? = null
-        var resultUpdate: IngridDocument? = null
-        var resultDelete: IngridDocument? = null
+        val resultInsert: MutableList<String> = mutableListOf()
         var insertedObjects = 0
         var updatedObjects = 0
         var deletedObjects = 0
@@ -72,14 +71,12 @@ class OgcCswtService @Autowired constructor(
             for (i in 0 until insertDocs.length) {
                 insertedObjects++
                 val item: Element = insertDocs.item(i) as Element
-                val parentUuid = utils.getString(item, ".//gmd:parentIdentifier/gco:CharacterString")
                 // separate importAnalyse and import
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
+                resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
                 val docData = ogcRecordService.xmlNodeToString(metadataDoc) // convert Node to String
                 ogcRecordService.importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null )
 
-                val importDoc = IngridDocument()
-                importDoc.put( "requestinfo_importObjParentUuid" , parentUuid)
             }
             /**
              * UPDATE DOCS
@@ -88,7 +85,6 @@ class OgcCswtService @Autowired constructor(
             for (i in 0 until updateDocs.length) {
                 updatedObjects++
                 val item = updateDocs.item(i) as Element
-                val parentUuid = utils.getString(item, ".//gmd:parentIdentifier/gco:CharacterString")
                 val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
                 val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
                 if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
@@ -119,24 +115,23 @@ class OgcCswtService @Autowired constructor(
                 }
             }
 
-
-            val result = IngridDocument().apply {
-                putInt("inserts", insertedObjects)
-                putInt("updates", updatedObjects)
-                putInt("deletes", deletedObjects)
-                put("resultUpdates", resultInsert)
-                put("resultUpdates", resultUpdate)
+            transactionResult.apply {
+                successful = true
+                inserts = insertedObjects
+                updates = updatedObjects
+                deletes = deletedObjects
+                insertResults = resultInsert
             }
-            doc.putBoolean("success", true)
-            doc["result"] = result
 
         } catch (e: IgeException) {
-            doc["statusCode"] = e.statusCode as HttpStatusCode
-            doc["error"] = prepareException(e)
+            transactionResult.apply {
+                successful = false
+                statusCode = e.statusCode as HttpStatusCode
+                errorMessage = prepareException(e)
+            }
             log.error("Error in CSW transaction", e)
-            doc.putBoolean("success", false)
         }
-        return doc
+        return transactionResult
     }
 
 
@@ -149,25 +144,6 @@ class OgcCswtService @Autowired constructor(
             errorMsg = cause.toString()
         }
         return errorMsg
-    }
-
-
-    fun processCswTransaction(response: IngridDocument): CSWTransactionResult {
-        if (!response.getBoolean("success")){
-            return CSWTransactionResult(
-                successful = response.getBoolean("success"),
-                errorMessage = response.getString("error"),
-            )
-        }
-
-        val responseResult = response["result"] as IngridDocument
-
-        return CSWTransactionResult(
-            successful = response.getBoolean("success"),
-            inserts = responseResult.getInt("inserts"),
-            updates = responseResult.getInt("updates"),
-            deletes = responseResult.getInt("deletes"),
-        )
     }
 
     fun prepareXmlResponse(transactionResult: CSWTransactionResult): ByteArray {
@@ -193,21 +169,21 @@ class OgcCswtService @Autowired constructor(
         val docBuilder = docFactory.newDocumentBuilder()
         val domImpl = docBuilder.domImplementation
         val doc = domImpl.createDocument(
-            RESPONSE_NAMESPACE,
+            namespaceCSW,
             "ows:ExceptionReport",
             null
         )
 
         // create summary
         val exception = doc.createElementNS(
-            RESPONSE_NAMESPACE,
+            namespaceCSW,
             "ows:Exception"
         )
         exception.setAttribute("exceptionCode", "NoApplicableCode")
         doc.documentElement.appendChild(exception)
         exception.appendChild(
             doc.createElementNS(
-                RESPONSE_NAMESPACE,
+                namespaceCSW,
                 "ows:ExceptionText"
             )
         )
@@ -222,14 +198,17 @@ class OgcCswtService @Autowired constructor(
         val docBuilder = docFactory.newDocumentBuilder()
         val domImpl = docBuilder.domImplementation
         val doc = domImpl.createDocument(
-            RESPONSE_NAMESPACE,
+            namespaceCSW,
             "csw:TransactionResponse",
             null
         )
 
+        doc.documentElement.setAttribute("xmlns:gmd", "http://www.isotc211.org/2005/gmd")
+        doc.documentElement.setAttribute("xmlns:gco", "http://www.isotc211.org/2005/gco")
+
         // create summary
         val summary = doc.createElementNS(
-            RESPONSE_NAMESPACE,
+            namespaceCSW,
             "csw:TransactionSummary"
         )
         summary.setAttribute("requestId", result.requestId)
@@ -237,27 +216,43 @@ class OgcCswtService @Autowired constructor(
 
         val inserts = result.inserts
         summary.appendChild(
-            doc.createElementNS(
-                RESPONSE_NAMESPACE,
-                "totalInserted"
+            doc.createElement(
+                "csw:totalInserted"
             )
         ).appendChild(doc.createTextNode(inserts.toString()))
 
         val updates = result.updates
         summary.appendChild(
-            doc.createElementNS(
-                RESPONSE_NAMESPACE,
-                "totalUpdated"
+            doc.createElement(
+                "csw:totalUpdated"
             )
         ).appendChild(doc.createTextNode(updates.toString()))
 
         val deletes = result.deletes
         summary.appendChild(
-            doc.createElementNS(
-                RESPONSE_NAMESPACE,
-                "totalDeleted"
+            doc.createElement(
+                "csw:totalDeleted"
             )
         ).appendChild(doc.createTextNode(deletes.toString()))
+
+
+        // add insert results
+        result.insertResults?.forEach {
+            val uuid: String = it
+
+            val insertResultSummary = doc.createElement(
+                "csw:InsertResult"
+            )
+
+            insertResultSummary.appendChild(doc.createElement(
+                "gmd:fileIdentifier"
+            )).appendChild(doc.createElement(
+                "gco:CharacterString"
+            )).appendChild(doc.createTextNode(uuid))
+
+            doc.documentElement.appendChild(insertResultSummary)
+        }
+
 
         return doc
     }

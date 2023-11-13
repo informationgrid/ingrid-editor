@@ -6,7 +6,6 @@ import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.ogc.OgcCswtService
 import de.ingrid.igeserver.services.*
-import de.ingrid.utils.IngridDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -182,11 +181,13 @@ class OgcApiRecordsController @Autowired constructor(
             ogcRecordService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
             ogcRecordService.validateCollection(collectionId)
         } catch (e: IgeException) {
-            val paramErrorDoc = IngridDocument()
-            paramErrorDoc["error"] = ogcCswtService.prepareException(e)
-            paramErrorDoc.putBoolean("success", false)
             log.error("Error in CSW transaction", e)
-            val paramErrorResult: CSWTransactionResult = ogcCswtService.processCswTransaction(paramErrorDoc)
+            val paramErrorResult = CSWTransactionResult(
+                successful = false,
+                statusCode = e.statusCode as HttpStatusCode,
+                errorMessage = ogcCswtService.prepareException(e)
+            )
+
             xmlResponse = ogcCswtService.prepareXmlResponse(paramErrorResult)
             statusCode = e.statusCode
         }
@@ -199,10 +200,9 @@ class OgcApiRecordsController @Autowired constructor(
                 overwriteAddresses = true,
                 overwriteDatasets = true
             )
-            val doc: IngridDocument = ogcCswtService.cswTransaction(data, collectionId, principal, options)
-            val transactionResult: CSWTransactionResult = ogcCswtService.processCswTransaction(doc)
+            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, collectionId, principal, options)
             xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
-            statusCode = if(doc["statusCode"] == null) HttpStatus.OK else doc["statusCode"] as HttpStatusCode
+            statusCode = if(transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
         }
 
         return ResponseEntity.status(statusCode!!).body(xmlResponse)
