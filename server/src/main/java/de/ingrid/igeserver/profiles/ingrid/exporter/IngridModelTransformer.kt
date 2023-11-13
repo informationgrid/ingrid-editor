@@ -599,7 +599,7 @@ open class IngridModelTransformer(
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
             ?: emptyList()
-    fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
+    open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
     fun getCoupledServiceUrls(): List<ServiceUrl> {
         return getIncomingReferencesProxy()
@@ -777,7 +777,8 @@ data class CrossReference(
     val serviceOperation: String? = null,
     val serviceUrl: String? = null,
     val serviceVersion: String? = null,
-    val hasAccessConstraints: Boolean = false
+    val hasAccessConstraints: Boolean = false,
+    var mapUrl: String? = null
 )
 
 data class SuperiorReference(

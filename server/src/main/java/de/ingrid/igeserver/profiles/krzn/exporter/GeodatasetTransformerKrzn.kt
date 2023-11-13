@@ -29,4 +29,17 @@ class GeodatasetTransformerKrzn(
         get() = docData?.getString("mapLink.key")?.let { 
             codelists.getCatalogCodelistValue("10500", KeyValueModel(it, null)) 
         }
+
+/*
+    override fun getCrossReferences(): List<CrossReference> {
+        return super.getCrossReferences()
+            .map { ref ->
+                if (ref.refType.key != "3600") ref 
+                else {
+                    ref.mapUrl = ref.serviceUrl
+                    ref
+                }
+            }
+    }
+*/
 }

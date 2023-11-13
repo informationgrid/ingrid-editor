@@ -917,6 +917,9 @@ ${contentInfo}
         @if(cref.getHasAccessConstraints())
             <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
         @endif
+        @if(cref.getMapUrl())
+            <idf:mapUrl>${cref.getMapUrl()}</idf:mapUrl>
+        @endif
     </idf:crossReference>
 @endfor
 @if(page.getMapLinkUrl() != null)
