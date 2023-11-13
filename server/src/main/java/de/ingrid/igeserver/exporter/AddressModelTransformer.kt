@@ -59,7 +59,10 @@ class AddressModelTransformer(
         val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
-            nonHiddenAddress.last()
+            // in case of exporting a draft version we need to use the model if it's non-hidden
+            if (nonHiddenAddress.last().uuid == model.uuid) {
+                model
+            } else nonHiddenAddress.last()
         } else model
     }
 

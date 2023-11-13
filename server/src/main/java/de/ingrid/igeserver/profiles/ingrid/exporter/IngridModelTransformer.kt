@@ -40,7 +40,7 @@ open class IngridModelTransformer(
     companion object {
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
-    
+
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -48,22 +48,22 @@ open class IngridModelTransformer(
     val data = model.data
     val isFolder = model.type == "FOLDER"
     val purpose = data.resource?.purpose
-    val status = codelists.getValue("523", data.temporal.status, "iso")
+    val status = codelists.getValue("523", data.temporal?.status, "iso")
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service?.isAtomDownload == true
     val atomDownloadURL: String?
     val digitalTransferOptions = data.digitalTransferOptions ?: emptyList()
 
-    val isResourceRangeDefined = data.temporal.resourceRange?.start != null && data.temporal.resourceRange.end != null
-    val resourceDateType = data.temporal.resourceDateType?.key
-    val resourceDateTypeSince = data.temporal.resourceDateTypeSince?.key
+    val isResourceRangeDefined = data.temporal?.resourceRange?.start != null && data.temporal.resourceRange.end != null
+    val resourceDateType = data.temporal?.resourceDateType?.key
+    val resourceDateTypeSince = data.temporal?.resourceDateTypeSince?.key
     val resourceBeginDate =
-        (if (resourceDateType.equals("since")) data.temporal.resourceDate ?: data.temporal.resourceRange?.start
-        else data.temporal.resourceRange?.start)
+        (if (resourceDateType.equals("since")) data.temporal?.resourceDate ?: data.temporal?.resourceRange?.start
+        else data.temporal?.resourceRange?.start)
     val resourceEndDate =
-        (if (resourceDateType.equals("till")) data.temporal.resourceDate
-        else data.temporal.resourceRange?.end)
-    val hasAnyResourceDate = listOf(data.temporal.resourceDate, resourceBeginDate, resourceEndDate).any { it != null }
+        (if (resourceDateType.equals("till")) data.temporal?.resourceDate
+        else data.temporal?.resourceRange?.end)
+    val hasAnyResourceDate = listOf(data.temporal?.resourceDate, resourceBeginDate, resourceEndDate).any { it != null }
     val resourceBeginIndeterminatePosition =
         if (resourceDateType.equals("till")) "indeterminatePosition=\"unknown\"" else ""
     val resourceEndIndeterminatePosition =
@@ -117,9 +117,7 @@ open class IngridModelTransformer(
         val titleKey: String?
     )
 
-    val useConstraints = data.resource?.useConstraints?.map { constraint ->
-        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null ${constraint}")
-
+    val useConstraints = data.resource?.useConstraints?.filter{constraint -> constraint.title != null}?.map { constraint ->
         // special case for "Es gelten keine Bedingungen"
         val link =
             if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
@@ -159,7 +157,7 @@ open class IngridModelTransformer(
     }
 
 
-    val spatialReferences = data.spatial.references ?: emptyList()
+    val spatialReferences = data.spatial?.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { it.ars != null }
     val regionKey = if (arsSpatial == null) null else KeyValueModel(
         arsSpatial.ars,
@@ -205,12 +203,12 @@ open class IngridModelTransformer(
     open val mdStandardVersion = "2003/Cor.1:2006"
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
-    val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
+    val metadataLanguage = data.metadata?.language?.let { TransformationTools.getLanguageISO639_2Value(it) }
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValueModel(it, null)) }
             ?: emptyList()
 
-    val datasetCharacterSet = codelists.getValue("510", data.metadata.characterSet, "iso")
+    val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso")
     val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
 
 
@@ -222,7 +220,7 @@ open class IngridModelTransformer(
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
-    val spatialSystems = data.spatial.spatialSystems?.map {
+    val spatialSystems = data.spatial?.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
         val epsgLink = when {
@@ -246,7 +244,7 @@ open class IngridModelTransformer(
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
-    val dateEvents = data.temporal.events ?: emptyList()
+    val dateEvents = data.temporal?.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
         keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = mapToInspireLink(it.key)) } ?: emptyList(),
@@ -521,14 +519,14 @@ open class IngridModelTransformer(
 
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
+    val modifiedMetadataDate: String? = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact: List<AddressModelTransformer>
 
     var contact: AddressModelTransformer?
 
 
-    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
-        formatter.format(Date.from(date.toInstant()))
+    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String? =
+        formatter.format(Date.from(date.toInstant())) ?: null
 
 
     private fun getPersonStringFromJson(address: AddressModel): String {
@@ -606,15 +604,15 @@ open class IngridModelTransformer(
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
     }
-    
+
     private fun getIncomingReferencesProxy(): List<CrossReference> {
         if (incomingReferencesCache == null) {
             incomingReferencesCache = getIncomingReferences()
         }
-        
+
         return incomingReferencesCache ?: emptyList()
     }
-    
+
     private fun getSuperiorReferenceProxy(): SuperiorReference? {
         if (superiorReferenceCache == null) {
             superiorReferenceCache = getSuperiorReference()
@@ -740,10 +738,12 @@ open class IngridModelTransformer(
     }
 
     fun hasCompleteVerticalExtent(): Boolean {
-        return data.spatial.verticalExtent?.let {
+        return data.spatial?.verticalExtent?.let {
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
     }
+
+    fun hasService(): Boolean = data.service != null
 }
 
 enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }

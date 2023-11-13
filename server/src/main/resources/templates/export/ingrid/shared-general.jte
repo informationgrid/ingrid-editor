@@ -18,7 +18,6 @@
 @param Boolean isService = false
 
 !{var spatial = page.getData().getSpatial();}
-!{var verticalExtent = spatial.getVerticalExtent();}
 
 <gmd:fileIdentifier>
     <gco:CharacterString>${page.getModel().getUuid()}</gco:CharacterString>
@@ -222,7 +221,7 @@
         </gmd:MD_VectorSpatialRepresentation>
     </gmd:spatialRepresentationInfo>
 @endfor
-
+@if(TransformationTools.hasValue(page.getSpatialSystems()))
 @for(CharacterStringModel spatialSystem : page.getSpatialSystems())
     <gmd:referenceSystemInfo>
         <gmd:MD_ReferenceSystem>
@@ -236,7 +235,7 @@
         </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
 @endfor
-
+@endif
 <gmd:identificationInfo>
     <${page.getIdentificationType()} uuid="${page.getCitationURL()}">
     <gmd:citation>
@@ -258,6 +257,7 @@
                 <gmd:date gco:nilReason="missing"></gmd:date>
             @else
                 @for(DateEvent event : page.getDateEvents())
+                    @if (event.getReferenceDate() != null && event.getReferenceDateType() != null)
                     <gmd:date>
                         <gmd:CI_Date>
                             <gmd:date>
@@ -270,6 +270,7 @@
                             </gmd:dateType>
                         </gmd:CI_Date>
                     </gmd:date>
+                    @endif
                 @endfor
             @endif
             @if( page.getModel().getType().equals("InGridGeoDataset") )
@@ -512,7 +513,7 @@
     @endfor
     <${page.getExtentType()}>
     <gmd:EX_Extent>
-        @if(TransformationTools.hasValue(spatial.getDescription()))
+        @if(spatial != null && TransformationTools.hasValue(spatial.getDescription()))
             <gmd:description>
                 <gco:CharacterString>${spatial.getDescription()}</gco:CharacterString>
             </gmd:description>
@@ -605,10 +606,10 @@
             <gmd:verticalElement>
                 <gmd:EX_VerticalExtent>
                     <gmd:minimumValue>
-                        <gco:Real>${verticalExtent.getMinimumValue()}</gco:Real>
+                        <gco:Real>${spatial.getVerticalExtent().getMinimumValue()}</gco:Real>
                     </gmd:minimumValue>
                     <gmd:maximumValue>
-                        <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
+                        <gco:Real>${spatial.getVerticalExtent().getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
@@ -620,7 +621,7 @@
                                     <gml:axis>
                                         <gml:CoordinateSystemAxis
                                                 gml:id="coordinateSystemAxis_ID_${TransformationTools.getRandomUUID()}"
-                                                uom="${ page.getCodelists().getValue("102", verticalExtent.getUnitOfMeasure(), "iso")}">
+                                                uom="${ page.getCodelists().getValue("102", spatial.getVerticalExtent().getUnitOfMeasure(), "iso")}">
                                             <gml:identifier codeSpace="" />
                                             <gml:axisAbbrev />
                                             <gml:axisDirection codeSpace="" />
@@ -631,7 +632,7 @@
                             <gml:verticalDatum>
                                 <gml:VerticalDatum gml:id="verticalDatum_ID_${TransformationTools.getRandomUUID()}">
                                     <gml:identifier codeSpace="" />
-                                    <gml:name>${page.getCodelists().getValue("101", verticalExtent.getDatum(), "en")}</gml:name>
+                                    <gml:name>${page.getCodelists().getValue("101", spatial.getVerticalExtent().getDatum(), "en")}</gml:name>
                                     <gml:scope />
                                 </gml:VerticalDatum>
                             </gml:verticalDatum>

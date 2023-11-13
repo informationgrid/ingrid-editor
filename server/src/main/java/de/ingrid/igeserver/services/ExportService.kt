@@ -85,7 +85,9 @@ class ExportService @Autowired constructor(val exporterFactory: ExporterFactory)
         catalogId: String
     ): String {
         val docVersion =
-            if (!options.useDraft) getPublishedVersion(catalogId, doc) else documentService.getDocumentByWrapperId(
+            if (!options.useDraft) {
+                getPublishedVersion(catalogId, doc).apply { wrapperId = doc.id }
+            } else documentService.getDocumentByWrapperId(
                 catalogId,
                 doc.id!!,
                 true
