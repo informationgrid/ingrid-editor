@@ -6,9 +6,10 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
-class IngridModelTransformerKrzn(
+class GeodatasetTransformerKrzn(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -18,8 +19,8 @@ class IngridModelTransformerKrzn(
     doc: Document? = null
 ) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache) {
 
-    
     private val docData = doc?.data
-    override val systemEnvironment = super.systemEnvironment ?: docData?.get("environmentDescription")?.asText()
-    
+    override val systemEnvironment =
+        if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
+        else docData?.getString("environmentDescription")
 }

@@ -6,6 +6,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransf
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
 class InformationSystemModelTransformerKrzn(
@@ -18,8 +19,10 @@ class InformationSystemModelTransformerKrzn(
     doc: Document? = null
 ) : InformationSystemModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, doc) {
 
-    
     private val docData = doc?.data
-    override val systemEnvironment = super.systemEnvironment ?: docData?.get("environmentDescription")?.asText()
-    
+
+    override val systemEnvironment =
+        if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
+        else docData?.getString("environmentDescription")
+
 }
