@@ -52,9 +52,7 @@ class OgcCswtService @Autowired constructor(
 
         val factory: DocumentBuilderFactory
         val resultInsert: MutableList<String> = mutableListOf()
-        var insertedObjects = 0
-        var updatedObjects = 0
-        var deletedObjects = 0
+
         try {
             factory = DocumentBuilderFactory.newInstance()
             factory.isNamespaceAware = true
@@ -67,9 +65,7 @@ class OgcCswtService @Autowired constructor(
             /**
              * INSERT DOCS
              */
-            val insertedEntities: MutableList<HashMap<*, *>> = ArrayList()
             for (i in 0 until insertDocs.length) {
-                insertedObjects++
                 val item: Element = insertDocs.item(i) as Element
                 // separate importAnalyse and import
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
@@ -81,9 +77,7 @@ class OgcCswtService @Autowired constructor(
             /**
              * UPDATE DOCS
              */
-            val updatedEntities: MutableList<HashMap<*, *>> = ArrayList()
             for (i in 0 until updateDocs.length) {
-                updatedObjects++
                 val item = updateDocs.item(i) as Element
                 val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
                 val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
@@ -99,9 +93,7 @@ class OgcCswtService @Autowired constructor(
             /**
              * DELETE DOCS
              */
-            val deletedEntities: MutableList<HashMap<*, *>> = ArrayList()
             for (i in 0 until deleteDocs.length) {
-                deletedObjects++
                 val item = deleteDocs.item(i)
                 val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
                         ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:PropertyName\".")
@@ -117,9 +109,9 @@ class OgcCswtService @Autowired constructor(
 
             transactionResult.apply {
                 successful = true
-                inserts = insertedObjects
-                updates = updatedObjects
-                deletes = deletedObjects
+                inserts = insertDocs.length
+                updates = updateDocs.length
+                deletes = deleteDocs.length
                 insertResults = resultInsert
             }
 
@@ -135,7 +127,7 @@ class OgcCswtService @Autowired constructor(
     }
 
 
-    fun prepareException(exception: java.lang.Exception): String {
+    fun prepareException(exception: Exception): String {
         var errorMsg = exception.toString()
         var cause = exception.cause
         if (cause == null) {
@@ -186,8 +178,7 @@ class OgcCswtService @Autowired constructor(
                 namespaceCSW,
                 "ows:ExceptionText"
             )
-        )
-            .appendChild(doc.createTextNode("Cannot process transaction: " + result.errorMessage))
+        ).appendChild(doc.createTextNode("Cannot process transaction: " + result.errorMessage))
         return doc
     }
 
