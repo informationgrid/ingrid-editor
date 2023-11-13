@@ -743,6 +743,8 @@ open class IngridModelTransformer(
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
     }
+    
+    open val mapLinkUrl: String? = null
 }
 
 enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }

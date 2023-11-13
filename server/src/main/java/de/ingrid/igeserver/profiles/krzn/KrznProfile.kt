@@ -1,5 +1,8 @@
 package de.ingrid.igeserver.profiles.krzn
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -31,4 +34,31 @@ class KrznProfile(
     override val parentProfile: String? = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        val catalogRef = catalogRepo.findByIdentifier(catalogId)
+
+        val codelist10500 = createCodelist10500(catalogRef)
+        when (codelistId) {
+            "10500" -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
+            null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
+        }
+        
+        super.initCatalogCodelists(catalogId, codelistId)
+
+    }
+
+    private fun createCodelist10500(catalogRef: Catalog): Codelist {
+        return Codelist().apply {
+            identifier = "10500"
+            catalog = catalogRef
+            name = "Alternative Karten-Clients"
+            description = ""
+            defaultEntry = "1"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de/geo-online/?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-hamburg.de/geo-online/?mdid={ID}"))
+            }
+        }
+    }
 }

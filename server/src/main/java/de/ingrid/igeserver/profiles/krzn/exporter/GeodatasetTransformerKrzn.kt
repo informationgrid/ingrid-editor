@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.krzn.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
@@ -23,4 +24,9 @@ class GeodatasetTransformerKrzn(
     override val systemEnvironment =
         if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
         else docData?.getString("environmentDescription")
+
+    override val mapLinkUrl: String?
+        get() = docData?.getString("mapLink.key")?.let { 
+            codelists.getCatalogCodelistValue("10500", KeyValueModel(it, null)) 
+        }
 }
