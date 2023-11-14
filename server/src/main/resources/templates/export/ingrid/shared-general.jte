@@ -683,7 +683,11 @@
             <srv:operationName>
                 <gco:CharacterString>${operation.getName()}</gco:CharacterString>
             </srv:operationName>
-            <srv:DCP gco:nilReason="missing"></srv:DCP>
+            <srv:DCP>
+                <srv:DCPList
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                        codeListValue="WebServices" />
+            </srv:DCP>
             @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
