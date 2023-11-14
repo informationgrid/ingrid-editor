@@ -601,10 +601,26 @@ open class IngridModelTransformer(
             ?: emptyList()
     fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
-    fun getCoupledServiceUrls(): List<ServiceUrl> {
+    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    
+    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+        if (model.type != "InGridGeoDataset") return emptyList()
+        
         return getIncomingReferencesProxy()
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
+    }
+    
+    private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
+        return model.data.service?.operations
+            ?.filter { it.name?.key == "1" }
+            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description)} ?: emptyList()
+    }
+    
+    private fun getExternalCoupledResources() : List<ServiceUrl> {
+        return model.data.service?.coupledResources
+            ?.filter { it.isExternalRef == true }
+            ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
     
     private fun getIncomingReferencesProxy(): List<CrossReference> {
