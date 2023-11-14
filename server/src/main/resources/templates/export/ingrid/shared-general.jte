@@ -820,6 +820,7 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                <%-- applicationProfile not used since "Dateiformat" for URL does not exist anymore--%>
                                 <gmd:name>
                                     <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
                                 </gmd:name>
@@ -841,7 +842,7 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
-            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrls() )
+            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrlsOrGetCapabilitiesUrl() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
