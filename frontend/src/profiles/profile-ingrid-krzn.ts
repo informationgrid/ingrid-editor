@@ -2,22 +2,34 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 import { InformationSystemDoctypeKrzn } from "./krzn/doctypes/information-system.doctype";
+import {
+  DataCollectionDoctypeKrzn,
+  GeoServiceDoctypeKrzn,
+  LiteratureDoctypeKrzn,
+  ProjectDoctypeKrzn,
+  SpecialisedTaskDoctypeKrzn,
+} from "./krzn/doctypes/default.doctypes";
 
 @Component({
   template: "",
 })
 class InGridKrznComponent extends InGridComponent {
+  specialisedTaskKrzn = inject(SpecialisedTaskDoctypeKrzn);
   geoDatasetKrzn = inject(GeoDatasetDoctypeKrzn);
+  literatureKrzn = inject(LiteratureDoctypeKrzn);
+  geoServiceKrzn = inject(GeoServiceDoctypeKrzn);
+  projectKrzn = inject(ProjectDoctypeKrzn);
+  dataCollectionKrzn = inject(DataCollectionDoctypeKrzn);
   informationSystemKrzn = inject(InformationSystemDoctypeKrzn);
 
   protected docTypes = [
     this.folder,
-    this.specialisedTask,
+    this.specialisedTaskKrzn,
     this.geoDatasetKrzn,
-    this.literature,
-    this.geoService,
-    this.project,
-    this.dataCollection,
+    this.literatureKrzn,
+    this.geoServiceKrzn,
+    this.projectKrzn,
+    this.dataCollectionKrzn,
     this.informationSystemKrzn,
     this.person,
     this.organisation,
@@ -31,12 +43,12 @@ class InGridKrznComponent extends InGridComponent {
 
   private modifyFormFieldConfiguration() {
     [
-      this.specialisedTask,
+      this.specialisedTaskKrzn,
       this.geoDatasetKrzn,
-      this.literature,
-      this.geoService,
-      this.project,
-      this.dataCollection,
+      this.literatureKrzn,
+      this.geoServiceKrzn,
+      this.projectKrzn,
+      this.dataCollectionKrzn,
       this.informationSystemKrzn,
     ].forEach((docType) => {
       docType.options.dynamicRequired.accessConstraints = undefined;

@@ -6,6 +6,8 @@ import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
   providedIn: "root",
 })
 export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
+  id = "InGridGeoDatasetKrzn";
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     // add "Produktionsumgebung"
     fieldConfig

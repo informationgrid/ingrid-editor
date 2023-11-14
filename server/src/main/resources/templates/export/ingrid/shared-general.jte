@@ -917,7 +917,7 @@ ${contentInfo}
         @if(cref.getHasAccessConstraints())
             <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
         @endif
-        @if(cref.getMapUrl())
+        @if(TransformationTools.hasValue(cref.getMapUrl()))
             <idf:mapUrl>${cref.getMapUrl()}</idf:mapUrl>
         @endif
     </idf:crossReference>
