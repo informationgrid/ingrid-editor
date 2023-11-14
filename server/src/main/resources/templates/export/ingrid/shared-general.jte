@@ -889,9 +889,11 @@ ${contentInfo}
             @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
+                        @if(digitalTransferOption.getTransferSize() != null)
                         <gmd:transferSize>
                             <gco:Real>${digitalTransferOption.getTransferSize()}</gco:Real>
                         </gmd:transferSize>
+                        @endif
                         <gmd:offLine>
                             <gmd:MD_Medium>
                                 <gmd:name>
