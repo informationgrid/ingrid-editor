@@ -144,14 +144,12 @@
             <gmd:cellGeometry gco:nilReason="unknown" />
             @endif
             <gmd:transformationParameterAvailability>
-                <gco:Boolean>true</gco:Boolean>
+                <gco:Boolean>${page.getGridSpatialRepresentation().getTransformationParameterAvailability()}</gco:Boolean>
             </gmd:transformationParameterAvailability>
             @if(page.getGeorectified() != null)
-                @if(page.getGeorectified().getCheckPointAvailability() != null)
-                    <gmd:controlPointAvailability>
-                        <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
-                    </gmd:controlPointAvailability>
-                @endif
+                <gmd:controlPointAvailability>
+                    <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
                 @if(TransformationTools.hasValue(page.getGeorectified().getCheckPointDescription()))
                     <gmd:checkPointDescription>
                         <gco:CharacterString>${page.getGeorectified().getCheckPointDescription()}</gco:CharacterString>
@@ -166,23 +164,19 @@
                 @endif
                 @if(page.getGeorectified().getPointInPixel() != null)
                     <gmd:pointInPixel>
-                        <gco:Boolean>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gco:Boolean>
+                        <gmd:MD_PixelOrientationCode>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gmd:MD_PixelOrientationCode>
                     </gmd:pointInPixel>
                 @else
                     <gmd:pointInPixel gco:nilReason="unknown" />
                 @endif
             @endif
             @if(page.getGeorefenceable() != null)
-                @if(page.getGeorefenceable().getControlPointAvaliability() != null)
-                    <gmd:controlPointAvailability>
-                        <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
-                    </gmd:controlPointAvailability>
-                @endif
-                @if(page.getGeorefenceable().getOrientationParameterAvailability() != null)
-                    <gmd:orientationParameterAvailability>
-                        <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
-                    </gmd:orientationParameterAvailability>
-                @endif
+                <gmd:controlPointAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
+                <gmd:orientationParameterAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
+                </gmd:orientationParameterAvailability>
                 @if(page.getGeorefenceable().getParameters() != null)
                 <gmd:georeferencedParameters>
                     <gco:Record>
@@ -425,8 +419,7 @@
                 <gmd:accessConstraints>
                     <gmd:MD_RestrictionCode
                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
-                            codeListValue="otherRestrictions">otherRestrictions
-                    </gmd:MD_RestrictionCode>
+                            codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
                 </gmd:accessConstraints>
                 @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
                     <gmd:otherConstraints>
