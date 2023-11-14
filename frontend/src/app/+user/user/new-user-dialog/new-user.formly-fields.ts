@@ -12,7 +12,7 @@ export const getNewUserFormFields = (
       type: "autocomplete",
       wrappers: ["panel", "form-field"],
       props: {
-        externalLabel: "Benutzername",
+        externalLabel: "Login",
         // placeholder: "Bitte wählen...",
         appearance: "outline",
         required: true,
