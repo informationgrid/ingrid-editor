@@ -568,7 +568,7 @@
                             <gmd:MD_Identifier>
                                 <gmd:code>
                                     <gmx:Anchor
-                                            xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${ref.getArs()}</gmx:Anchor>
+                                            xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${page.padARS(ref.getArs())}</gmx:Anchor>
                                 </gmd:code>
                             </gmd:MD_Identifier>
                         </gmd:geographicIdentifier>
@@ -662,7 +662,7 @@
             <srv:DCP>
                 <srv:DCPList
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices" />
+                        codeListValue="WebServices">WebServices</srv:DCPList>
             </srv:DCP>
             <srv:connectPoint>
                 <gmd:CI_OnlineResource>
@@ -686,7 +686,7 @@
             <srv:DCP>
                 <srv:DCPList
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices" />
+                        codeListValue="WebServices"/>
             </srv:DCP>
             @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
@@ -829,8 +829,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                                 <idf:attachedToField entry-id="5066" list-id="2000">Link to Service
                                 </idf:attachedToField>
@@ -853,8 +852,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                             </idf:idfOnlineResource>
                         </gmd:onLine>
@@ -875,8 +873,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                             </gmd:CI_OnlineResource>
                         </gmd:onLine>
