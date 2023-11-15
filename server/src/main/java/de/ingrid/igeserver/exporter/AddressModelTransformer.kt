@@ -63,14 +63,14 @@ class AddressModelTransformer(
         } else model
     }
 
-    fun getHierarchy(reverseOrder: Boolean): List<AddressModelTransformer> =
+    fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
             AddressModelTransformer(
                 it,
                 catalogIdentifier,
                 codelist
             )
-        }.let{ if (reverseOrder) it.reversed() else it }
+        }.reversed()
 
     private fun determineEldestAncestor(): AddressModel? =
         ancestorAddressesIncludingSelf.firstOrNull()

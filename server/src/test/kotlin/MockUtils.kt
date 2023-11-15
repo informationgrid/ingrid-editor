@@ -1,4 +1,5 @@
 import de.ingrid.igeserver.exports.convertToDocument
+import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -58,6 +59,8 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             }
         }
     }
+    every { documentService.getIncomingReferences(any()) } answers { emptySet() }
+    every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
 
 
