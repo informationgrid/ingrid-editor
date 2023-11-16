@@ -19,7 +19,7 @@ import java.security.Principal
 interface OgcApiRecords {
 
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
-    @Operation(tags=["OGC"], responses = [], summary = "Get all catalogs", hidden = false)
+    @Operation(tags=["OGC"], responses = [], summary = "Get Landing Page", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
@@ -36,7 +36,7 @@ interface OgcApiRecords {
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
-    @Operation(tags=["OGC"], responses = [], summary = "Get all catalogs", hidden = false)
+    @Operation(tags=["OGC"], responses = [], summary = "Get Conformance", hidden = false)
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Successful operation"),
         ApiResponse(responseCode = "400", description = "Invalid input"),
