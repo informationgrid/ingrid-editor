@@ -55,7 +55,7 @@ For more advanced testing, Postman can help to maintain a fresh access token. Se
 | {{keyCloakServer}}/realms/{{realm}}/protocol/openid-connect/token
 |===
 
-NOTE: 'keyCloakServer' refers to either `http://localhost:8080` or `https://ige-ng.informationgrid.eu`
+NOTE: 'keyCloakServer' refers to either `http://localhost:8080` or `https://keycloak.informationgrid.eu`
 
 
 === APIs
