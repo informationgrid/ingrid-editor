@@ -2,7 +2,7 @@
 # ID des GUI Elements
 id: environmentDescription
 docType:
-  - InGridGeoDataset
+  - InGridGeoDatasetKrzn
 
 # title, used as window title
 title: Produktionsumgebung

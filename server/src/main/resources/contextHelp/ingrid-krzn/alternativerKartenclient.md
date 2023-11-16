@@ -2,7 +2,7 @@
 # ID des GUI Elements
 id: mapLink
 docType:
-  - InGridGeoDataset
+  - InGridGeoDatasetKrzn
 
 # title, used as window title
 title: Alternativer Karten Client
