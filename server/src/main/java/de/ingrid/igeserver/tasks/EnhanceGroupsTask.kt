@@ -61,6 +61,7 @@ class EnhanceGroupsTask(
                 // all addresses that are referenced by the documents and not already in the group
                 val newAddressPermissions = referencedAddressIds.filter { !addressIds.contains(it) }
                     .map {
+                        log.info("Enhance permission in catalog '$catalogIdentifier' for group '${group.name}' for addressId: $it")
                         JsonNodeFactory.instance.objectNode()
                             .put("id", it)
                             .put("permission", "readTree")
@@ -116,19 +117,21 @@ class EnhanceGroupsTask(
         DOCUMENT_STATE.DRAFT,
         DOCUMENT_STATE.DRAFT_AND_PUBLISHED,
         DOCUMENT_STATE.PENDING
-    )
-        .map {
-            try {
-                documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
-            } catch (e: Exception) {
-                //no document with specific state found
-                null
-            }
+    ).mapNotNull {
+        try {
+            documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
+        } catch (e: Exception) {
+            //no document with specific state found
+            null
         }
-        .filterNotNull()
-        .flatMap {
+    }.flatMap {
+        try {
             documentService.getReferencedWrapperIds(catalogIdentifier, it)
+        } catch (e: Exception) {
+            // ignore invalid references
+            emptySet()
         }
+    }
 
 
     private fun getCatalogsForTask(): List<String> {
