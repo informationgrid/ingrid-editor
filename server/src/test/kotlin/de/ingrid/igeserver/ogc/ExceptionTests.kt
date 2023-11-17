@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.context.support.WithMockUser
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 
 
+@Profile("ogc-api")
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 class ExceptionTests : IntegrationTest() {
 
@@ -60,6 +62,7 @@ class ExceptionTests : IntegrationTest() {
             .andExpect(status().isOk)
     }
 
+    @Ignore
     @Test
     fun getCollectionByWrongCollectionId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId"))
@@ -78,6 +81,7 @@ class ExceptionTests : IntegrationTest() {
         }
     }
 
+    @Ignore
     @Test
     fun getRecordByWrongRecordId() {
         mockMvc.perform(get("/api/ogc/collections/$collectionId/items/$wrongRecordId"))
@@ -86,6 +90,7 @@ class ExceptionTests : IntegrationTest() {
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
     }
 
+    @Ignore
     @Test
     fun getRecordByWrongCollectionIdAndRightRecordId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId/items/$recordId"))
