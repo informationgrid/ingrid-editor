@@ -1,18 +1,23 @@
-package de.ingrid.igeserver.ogc
+package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.services.OgcRecordService
+import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+import org.w3c.dom.Node
 import org.xml.sax.InputSource
 import java.io.StringReader
 import java.io.StringWriter
@@ -34,8 +39,10 @@ data class CSWTransactionResult(
 )
 
 @Service
-class OgcCswtService @Autowired constructor(
-    private val ogcRecordService: OgcRecordService,
+@Profile("csw-t")
+class CswtService @Autowired constructor(
+    private val documentService: DocumentService,
+    private val importService: ImportService
 ) {
 
     val log = logger()
@@ -70,8 +77,8 @@ class OgcCswtService @Autowired constructor(
                 // separate importAnalyse and import
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
                 resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
-                val docData = ogcRecordService.xmlNodeToString(metadataDoc) // convert Node to String
-                ogcRecordService.importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null )
+                val docData = xmlNodeToString(metadataDoc) // convert Node to String
+                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null )
 
             }
             /**
@@ -83,8 +90,8 @@ class OgcCswtService @Autowired constructor(
                 val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
                 if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
                     val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
-                    val docData = ogcRecordService.xmlNodeToString(metadataDoc) // convert Node to String
-                    ogcRecordService.importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue )
+                    val docData = xmlNodeToString(metadataDoc) // convert Node to String
+                    importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue )
                 } else {
                     log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
                     throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
@@ -103,7 +110,8 @@ class OgcCswtService @Autowired constructor(
 
                 // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
                 if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
-                    ogcRecordService.deleteRecord(principal, collectionId, propValue)
+                    val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
+                    wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
                 }
             }
 
@@ -126,6 +134,38 @@ class OgcCswtService @Autowired constructor(
         return transactionResult
     }
 
+    private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
+            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, data)
+            if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
+                val id = optimizedImportAnalysis.existingDatasets[0].uuid
+                if(!recordMustExist) {
+                    throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
+                } else {
+                    if(recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
+                }
+            } else {
+                if(recordMustExist) {
+                    throw NotFoundException.withMissingResource(recordId!!, "Record")
+                }
+            }
+            importService.importAnalyzedDatasets(
+                principal = principal,
+                catalogId = collectionId,
+                analysis = optimizedImportAnalysis,
+                options = options,
+                message = Message()
+            )
+        }
+
+    @Throws(java.lang.Exception::class)
+    fun xmlNodeToString(newDoc: Node): String {
+        val domSource = DOMSource(newDoc)
+        val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
+        val sw = StringWriter()
+        val sr = StreamResult(sw)
+        transformer.transform(domSource, sr)
+        return sw.toString()
+    }
 
     fun prepareException(exception: Exception): String {
         var errorMsg = exception.toString()

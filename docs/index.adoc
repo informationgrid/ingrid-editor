@@ -34,6 +34,10 @@ It also disables Keycloak.
 
 | ingrid | Support for management of Geo-Datasets and Services with export to ISO-19139 format
 
+| ogc-api | Support for OGC API for Records
+
+| csw-t | Support for CSW Transactions
+
 |===
 
 ==== Dependency Injection

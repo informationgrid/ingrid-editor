@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-@Profile("ingrid")
+@Profile("ogc-api")
 class IngridIsoCatalogExporter @Autowired constructor(
 
 ) : OgcCatalogExporter {

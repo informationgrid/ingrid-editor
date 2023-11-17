@@ -7,9 +7,11 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.model.Link
 import de.ingrid.igeserver.services.QueryMetadata
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
+@Profile("ogc-api")
 class OgcHtmlConverterService @Autowired constructor(
     private val generalProperties: GeneralProperties
 ){
@@ -123,9 +125,9 @@ class OgcHtmlConverterService @Autowired constructor(
             <header>
                 <h1>OGC Record API</h1>
                 <div class="grid-container">
-                    val htmlLandingPageLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>"
-                    val htmlConformanceLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>"
-                    val htmlCollectionsLink = "<div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>"
+                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>
+                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>
+                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>
                 </div>
                 $metadata
                 $selfLink

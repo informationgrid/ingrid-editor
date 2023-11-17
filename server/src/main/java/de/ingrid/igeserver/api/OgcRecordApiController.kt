@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.ogc.OgcCswtService
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,19 +13,17 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import org.springframework.security.core.Authentication
 import java.time.Instant
-import de.ingrid.igeserver.IgeException
-import de.ingrid.igeserver.ogc.CSWTransactionResult
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
+import org.springframework.context.annotation.Profile
 
 @RestController
+@Profile("ogc-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController @Autowired constructor(
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
         private val exporterFactory: ExporterFactory,
-        private val ogcCswtService: OgcCswtService,
+        private val apiValidationService: ApiValidationService,
         private val documentService: DocumentService,
         val scheduler: SchedulerService,
         ) : OgcApiRecords {
@@ -35,9 +32,9 @@ class OgcApiRecordsController @Autowired constructor(
     val defaultFormat = "internal"
 
     override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat)
 
@@ -47,9 +44,9 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
     override fun getConformance(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val response = ogcRecordService.handleConformanceRequest(definedFormat)
 
@@ -59,9 +56,9 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
     override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray> {
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
         val catalogs = ogcRecordService.prepareCatalogs(principal, definedFormat)
@@ -73,10 +70,10 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
     override fun getCatalog(allRequestParams: Map<String, String>, collectionId: String, format: String?): ResponseEntity<ByteArray> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
 
@@ -90,15 +87,15 @@ class OgcApiRecordsController @Autowired constructor(
 
 
     override fun deleteDataset(allRequestParams: Map<String, String>, principal: Principal, collectionId: String, recordId: String): ResponseEntity<Void> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf())
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf())
         ogcRecordService.deleteRecord(principal, collectionId, recordId)
         return ResponseEntity.ok().build()
     }
 
     override fun postDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<JsonNode> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
 
         val contentType = allHeaders["content-type"]!!
 
@@ -113,8 +110,8 @@ class OgcApiRecordsController @Autowired constructor(
 
 
     override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf())
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf())
 
         val contentType = allHeaders["content-type"]!!
 //        // check if document exists
@@ -126,10 +123,10 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
     override fun getRecord(allRequestParams: Map<String, String>, collectionId: String, recordId: String, format: String?): ResponseEntity<ByteArray> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val record = ogcRecordService.prepareRecord(collectionId, recordId, definedFormat)
 
@@ -141,11 +138,11 @@ class OgcApiRecordsController @Autowired constructor(
 
 
     override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: String?, filter: String? ): ResponseEntity<ByteArray> {
-        ogcRecordService.validateCollection(collectionId)
-        ogcRecordService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
-        ogcRecordService.validateBbox(bbox)
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
+        apiValidationService.validateBbox(bbox)
         val definedFormat = format ?: defaultFormat
-        ogcRecordService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat)
 
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = definedFormat)
         val mimeType: String = exporter.typeInfo.dataType
@@ -173,38 +170,5 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun handleCSWT(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
-        var statusCode: HttpStatusCode? = null
-        var xmlResponse: ByteArray? = null
 
-        try {
-            ogcRecordService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
-            ogcRecordService.validateCollection(collectionId)
-        } catch (e: IgeException) {
-            log.error("Error in CSW transaction", e)
-            val paramErrorResult = CSWTransactionResult(
-                successful = false,
-                statusCode = e.statusCode as HttpStatusCode,
-                errorMessage = ogcCswtService.prepareException(e)
-            )
-
-            xmlResponse = ogcCswtService.prepareXmlResponse(paramErrorResult)
-            statusCode = e.statusCode
-        }
-
-        if(xmlResponse == null){
-            val options = ImportOptions(
-                publish = true,
-                parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id } else null,
-                parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, addressFolderId)).id } else null,
-                overwriteAddresses = true,
-                overwriteDatasets = true
-            )
-            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, collectionId, principal, options)
-            xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
-            statusCode = if(transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
-        }
-
-        return ResponseEntity.status(statusCode!!).body(xmlResponse)
-    }
 }
