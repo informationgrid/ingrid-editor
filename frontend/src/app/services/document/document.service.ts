@@ -734,11 +734,10 @@ export class DocumentService {
   }
 
   public addToRecentAddresses(address: DocumentAbstract) {
-    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
     const recentAddresses = this.sessionQuery.recentAddresses;
 
-    let addresses = recentAddresses[catalogId]?.slice() ?? [];
-    addresses = addresses.filter((address) => address.id !== address.id);
+    let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
+    addresses = addresses.filter((addr) => addr.id !== address.id);
     addresses.unshift(address);
 
     // only store 5 most recent addresses
@@ -747,19 +746,24 @@ export class DocumentService {
     }
 
     this.sessionStore.update({
-      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+      recentAddresses: {
+        ...recentAddresses,
+        [ConfigService.catalogId]: addresses,
+      },
     });
   }
 
   public removeFromRecentAddresses(id: string) {
-    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
     const recentAddresses = this.sessionQuery.recentAddresses;
 
-    let addresses = recentAddresses[catalogId]?.slice() ?? [];
+    let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((address) => address.id !== id);
 
     this.sessionStore.update({
-      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+      recentAddresses: {
+        ...recentAddresses,
+        [ConfigService.catalogId]: addresses,
+      },
     });
   }
 

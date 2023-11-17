@@ -59,7 +59,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
 
-  disabledCondition: (TreeNode) => boolean = (node: TreeNode) => {
+  disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
 
@@ -68,7 +68,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
     private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
-    private configService: ConfigService,
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
@@ -96,11 +95,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
-      map((allRecent) => {
-        const catalogId =
-          this.configService.$userInfo.getValue().currentCatalog.id;
-        return allRecent[catalogId] ?? [];
-      }),
+      map((allRecent) => allRecent[ConfigService.catalogId] ?? []),
     );
 
     this.updateModel(this.data.address);
@@ -120,11 +115,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   updateAddressTree(addressId: string) {
     this.selection = this.addressTreeQuery.getEntity(addressId);
-  }
-
-  updateAddressList(address: DocumentAbstract) {
-    this.selection = address;
-    this.selectedNode.next(address.id as number);
   }
 
   getResult(): void {
