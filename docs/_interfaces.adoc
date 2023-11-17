@@ -213,7 +213,7 @@ Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
 
 |===
 
-===== Custom OGC Endpoints
+==== CSW Transaction
 [cols="1,2,3"]
 |===
 | Method | Type | Description
@@ -221,5 +221,5 @@ Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
 | POST | CSW-t
 | INSERT, UPDATE & DELETE transaction
 
-Endpoint: ```/api/ogc/collections/{collectionId}/cswt```
+Endpoint: ```/api/cswt/{collectionId}```
 |===
