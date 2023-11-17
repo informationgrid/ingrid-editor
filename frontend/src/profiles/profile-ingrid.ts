@@ -34,7 +34,7 @@ import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
 import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
-import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
+import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
@@ -43,7 +43,7 @@ export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
   folder = inject(FolderDoctype);
   specialisedTask = inject(SpecialisedTaskDoctype);
-  geoDataset = inject(GeoDatasetDoctypeKrzn);
+  geoDataset = inject(GeoDatasetDoctype);
   literature = inject(LiteratureDoctype);
   geoService = inject(GeoServiceDoctype);
   project = inject(ProjectDoctype);
@@ -55,25 +55,29 @@ export class InGridComponent implements OnInit {
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
 
-  protected docTypes = [
-    this.folder,
-    this.specialisedTask,
-    this.geoDataset,
-    this.literature,
-    this.geoService,
-    this.project,
-    this.dataCollection,
-    this.informationSystem,
-    this.person,
-    this.organisation,
-  ];
+  protected profileId = "ingrid";
+
+  protected getDocTypes = () => {
+    return [
+      this.folder,
+      this.specialisedTask,
+      this.geoDataset,
+      this.literature,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+      this.person,
+      this.organisation,
+    ];
+  };
 
   constructor() {}
 
   ngOnInit() {
-    console.log("PROFILE ON INIT");
-    this.profileService.setProfileId("ingrid");
-    this.profileService.registerProfiles(this.docTypes);
+    console.log(`PROFILE ON INIT: ${this.profileId}`);
+    this.profileService.setProfileId(this.profileId);
+    this.profileService.registerProfiles(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
   }

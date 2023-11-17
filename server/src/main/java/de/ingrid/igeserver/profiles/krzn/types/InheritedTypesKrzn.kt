@@ -6,45 +6,45 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class InGridGeoDatasetTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val className = "InGridGeoDatasetKrzn"
+class InGridGeoDatasetTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/krzn/geo-dataset_krzn.schema.json"
 
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridDataCollectionTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val className = "InGridDataCollectionKrzn"
+class InGridDataCollectionTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridGeoServiceTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val className = "InGridGeoServiceKrzn"
+class InGridGeoServiceTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridInformationSystemTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val className = "InGridInformationSystemKrzn"
+class InGridInformationSystemTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridLiteratureTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
-    override val className = "InGridLiteratureKrzn"
+class InGridLiteratureTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridProjectTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val className = "InGridProjectKrzn"
+class InGridProjectTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }
 
 @Component
-class InGridSpecialisedTaskTypeKrzn @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val className = "InGridSpecialisedTaskKrzn"
+class InGridSpecialisedTaskTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
     override fun parentClassName() = super.className
+    override val profiles = arrayOf("ingrid-krzn")
 }

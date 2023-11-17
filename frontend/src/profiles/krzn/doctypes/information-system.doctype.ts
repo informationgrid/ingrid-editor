@@ -6,7 +6,6 @@ import { InformationSystemDoctype } from "../../ingrid/doctypes/information-syst
   providedIn: "root",
 })
 export class InformationSystemDoctypeKrzn extends InformationSystemDoctype {
-  id = "InGridInformationSystemKrzn";
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     fieldConfig
       .find((field) => field.props.label === "Fachbezug")

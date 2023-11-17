@@ -40,7 +40,10 @@ class KrznProfile(
 
         val codelist10500 = createCodelist10500(catalogRef)
         when (codelistId) {
-            "10500" -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
+            "10500" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
+                return
+            }
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
         
@@ -56,8 +59,8 @@ class KrznProfile(
             description = ""
             defaultEntry = "1"
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de/geo-online/?mdid={ID}"))
-                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-hamburg.de/geo-online/?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de/krefeld/bauenundplanen/?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-niederrhein.de/krefeld/natur/?mdid={ID}"))
             }
         }
     }

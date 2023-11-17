@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class InGridGeoDatasetType @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
     override val className = "InGridGeoDataset"
     override val jsonSchema = "/ingrid/schemes/geo-dataset.schema.json"
 

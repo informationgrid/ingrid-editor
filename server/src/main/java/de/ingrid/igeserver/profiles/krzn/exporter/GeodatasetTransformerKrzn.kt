@@ -25,21 +25,21 @@ class GeodatasetTransformerKrzn(
         if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
         else docData?.getString("environmentDescription")
 
-    override val mapLinkUrl: String?
-        get() = docData?.getString("mapLink.key")?.let { 
-            codelists.getCatalogCodelistValue("10500", KeyValueModel(it, null)) 
-        }
-
-/*
-    override fun getCrossReferences(): List<CrossReference> {
-        return super.getCrossReferences()
-            .map { ref ->
-                if (ref.refType.key != "3600") ref 
-                else {
-                    ref.mapUrl = ref.serviceUrl
-                    ref
-                }
-            }
+    override val mapLinkUrl = docData?.getString("mapLink.key")?.let {
+        codelists.getCatalogCodelistValue("10500", KeyValueModel(it, null))
+            ?.replace("{ID}", model.uuid)
     }
-*/
+
+    /*
+        override fun getCrossReferences(): List<CrossReference> {
+            return super.getCrossReferences()
+                .map { ref ->
+                    if (ref.refType.key != "3600") ref 
+                    else {
+                        ref.mapUrl = ref.serviceUrl
+                        ref
+                    }
+                }
+        }
+    */
 }

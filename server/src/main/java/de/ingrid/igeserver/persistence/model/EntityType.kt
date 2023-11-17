@@ -42,6 +42,7 @@ abstract class EntityType {
      * When a document type is inherited then we must name the inherited className.
      * This is used when getting inherited context help for example
      */
+    @Deprecated("inherited document types should have the same className!!!")
     open fun parentClassName(): String? = null
     
     /**

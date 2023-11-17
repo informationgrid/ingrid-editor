@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-abstract class InGridBaseType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : EntityType() {
+abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val profiles = arrayOf("ingrid")
 
     override fun pullReferences(doc: Document): List<Document> {
