@@ -10,10 +10,10 @@ import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
+import de.ingrid.igeserver.profiles.uvp.tasks.UploadCleanupTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
-import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService

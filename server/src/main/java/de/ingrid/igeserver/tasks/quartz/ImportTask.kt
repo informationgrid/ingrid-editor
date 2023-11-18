@@ -10,7 +10,7 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
-import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger

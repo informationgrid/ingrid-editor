@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import jakarta.annotation.Generated
 import org.apache.logging.log4j.kotlin.logger

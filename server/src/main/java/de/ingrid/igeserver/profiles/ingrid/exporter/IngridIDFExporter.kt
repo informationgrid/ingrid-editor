@@ -22,12 +22,10 @@ import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 
 @Service
-@Profile("ingrid")
 class IngridIDFExporter @Autowired constructor(
     val codelistHandler: CodelistHandler,
     val config: Config,

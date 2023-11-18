@@ -11,11 +11,9 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("krzn")
 class KrznProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,

@@ -13,8 +13,6 @@ import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.DocumentTypes
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.SpatialInGrid
@@ -24,16 +22,12 @@ import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ingrid")
 class InGridProfile @Autowired constructor(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val codelistHandler: CodelistHandler,

@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("uvp & elasticsearch")
+@Profile("elasticsearch")
 class UVPPublishExport @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,

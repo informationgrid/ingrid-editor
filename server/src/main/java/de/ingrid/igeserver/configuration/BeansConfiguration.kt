@@ -1,6 +1,6 @@
 package de.ingrid.igeserver.configuration
 
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.comm.HttpCLCommunication
 import de.ingrid.codelists.comm.ICodeListCommunication
@@ -10,11 +10,12 @@ import org.hibernate.cfg.AvailableSettings
 import org.hibernate.type.format.jackson.JacksonJsonFormatMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
-import org.springframework.context.annotation.*
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver"])
+//@ComponentScan(basePackages = ["de.ingrid.igeserver"])
 class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null
@@ -45,8 +46,10 @@ class BeansConfiguration {
     }
 
     @Bean
-    fun codeListService(communication: ICodeListCommunication?,
-                        persistencies: List<ICodeListPersistency?>?): CodeListService {
+    fun codeListService(
+        communication: ICodeListCommunication?,
+        persistencies: List<ICodeListPersistency?>?
+    ): CodeListService {
         val service = CodeListService()
         service.setPersistencies(persistencies)
         service.setComm(communication)

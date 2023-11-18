@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("ingrid & elasticsearch")
+@Profile("elasticsearch")
 class InGridPublishExport @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,

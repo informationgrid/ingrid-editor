@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("mcloud & elasticsearch")
+@Profile("elasticsearch")
 class MCloudPublishExport @Autowired constructor(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,

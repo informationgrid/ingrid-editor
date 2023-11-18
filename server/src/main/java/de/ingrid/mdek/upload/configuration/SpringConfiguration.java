@@ -7,13 +7,17 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = {"de.ingrid.igeserver", "de.ingrid.mdek"})
+@ComponentScan(basePackages = {"de.ingrid.igeserver", "de.ingrid.mdek"}, excludeFilters = @ComponentScan.Filter(
+        type = FilterType.CUSTOM,
+        classes = ProfileFilter.class
+))
 public class SpringConfiguration {
 
     @Bean

@@ -18,13 +18,11 @@ import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.w3c.dom.Node
 import java.time.OffsetDateTime
 
 @Service
-@Profile("ingrid")
 class IngridIndexExporter @Autowired constructor(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     val luceneExporter: IngridLuceneExporter,

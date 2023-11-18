@@ -7,11 +7,9 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("krzn")
 class IngridIndexExporterKrzn(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,

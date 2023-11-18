@@ -14,12 +14,10 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Profile("uvp")
 class IndexExporterAddress @Autowired constructor(
     val catalogRepo: CatalogRepository,
     val codelistService: CodeListService,

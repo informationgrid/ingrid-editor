@@ -10,11 +10,9 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ingrid")
 class IngridISOExporter @Autowired constructor(
     idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,

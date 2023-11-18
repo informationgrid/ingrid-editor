@@ -3,7 +3,6 @@ package de.ingrid.igeserver.profiles.uvp.api
 import de.ingrid.igeserver.services.CatalogService
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,7 +14,6 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping(path = ["/api/uvp/report"])
-@Profile("uvp")
 class UvpReportApiController @Autowired constructor(
     val entityManager: EntityManager,
     val catalogService: CatalogService,

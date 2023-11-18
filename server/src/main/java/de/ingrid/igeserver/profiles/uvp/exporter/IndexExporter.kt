@@ -8,11 +8,9 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("uvp")
 class IndexExporter @Autowired constructor(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter): IgeExporter {
 
     override val typeInfo = ExportTypeInfo(

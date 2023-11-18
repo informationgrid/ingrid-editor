@@ -10,8 +10,6 @@ import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
@@ -21,13 +19,13 @@ import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.research.quickfilter.address.Organisations
 import de.ingrid.igeserver.research.quickfilter.address.Persons
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("test")
 class TestProfile : CatalogProfile {
 
     @Autowired

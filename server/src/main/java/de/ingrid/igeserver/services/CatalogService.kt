@@ -6,8 +6,10 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.repository.*
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.RoleRepository
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
