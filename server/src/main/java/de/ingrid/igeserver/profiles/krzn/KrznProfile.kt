@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ingrid")
+@Profile("krzn")
 class KrznProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,

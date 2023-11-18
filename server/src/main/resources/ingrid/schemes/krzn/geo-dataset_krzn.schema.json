@@ -41,9 +41,7 @@
         "absoluteExternalPositionalAccuracy": true,
         "title": true,
         "_uuid": true,
-        "_type": {
-          "const": "InGridGeoDatasetKrzn"
-        },
+        "_type": true,
         "environmentDescription": {
           "type": ["null", "string"]
         },

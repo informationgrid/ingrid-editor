@@ -17,12 +17,9 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
     private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
-        val parentDocType = documentService.getDocumentType(docType).parentClassName()
         val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id)
-            ?: parentDocType?.let { getContextHelp(profile, parentDocType, id) }
             ?: catalogService.getCatalogProfile(profile).parentProfile?.let {
                 getContextHelp(it, docType, id)
-                    ?: parentDocType?.let { parent -> getContextHelp(it, parent, id) }
             }
             ?: run {
                 log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: de}.")
@@ -30,20 +27,19 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
             }
 
         return HelpMessage(
-                fieldId = id,
-                docType = docType,
-                language = defaultLanguage,
-                name = help.title,
-                helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
-                profile = profile
+            fieldId = id,
+            docType = docType,
+            language = defaultLanguage,
+            name = help.title,
+            helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
+            profile = profile
         )
     }
 
     fun getHelpIDs(profile: String, docType: String): List<String> {
         val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
-        val parentDocType = documentService.getDocumentType(docType).parentClassName()
         return this.markdownContextHelp.keys
-                .filter { (it.profile == profile || it.profile == parentProfile) && (it.docType == docType || it.docType == parentDocType) }
+                .filter { (it.profile == profile || it.profile == parentProfile) && it.docType == docType }
                 .map { it.fieldId }
                 .distinct()
     }
