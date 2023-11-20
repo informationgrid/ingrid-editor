@@ -33,34 +33,29 @@ class OgcApiRecordsController @Autowired constructor(
     val log = logger()
 
 
-    override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat?): ResponseEntity<ByteArray>{
+    override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat): ResponseEntity<ByteArray>{
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val definedFormat = format ?: CollectionFormat.json
-        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat)
-
+        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(format)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", response.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(response.data)
     }
 
-    override fun getConformance(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat?): ResponseEntity<ByteArray>{
+    override fun getConformance(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat): ResponseEntity<ByteArray>{
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val definedFormat = format ?: CollectionFormat.json
-        val response = ogcRecordService.handleConformanceRequest(definedFormat)
-
+        val response = ogcRecordService.handleConformanceRequest(format)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", response.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(response.data)
     }
 
-    override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat?): ResponseEntity<ByteArray> {
+    override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val definedFormat = format ?: CollectionFormat.json
-        val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
-        val catalogs = ogcRecordService.prepareCatalogs(principal, definedFormat)
+        val exporter = ogcCatalogExporterFactory.getExporter(format)
+        val catalogs = ogcRecordService.prepareCatalogs(principal, format)
 
         val mimeType = exporter.typeInfo.dataType
         val responseHeaders = HttpHeaders()
@@ -68,13 +63,12 @@ class OgcApiRecordsController @Autowired constructor(
         return ResponseEntity.ok().headers(responseHeaders).body(catalogs)
     }
 
-    override fun getCatalog(allRequestParams: Map<String, String>, collectionId: String, format: CollectionFormat?): ResponseEntity<ByteArray> {
+    override fun getCatalog(allRequestParams: Map<String, String>, collectionId: String, format: CollectionFormat): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val definedFormat = format ?: CollectionFormat.json
-        val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
-        val catalog = ogcRecordService.prepareCatalog(collectionId, exporter, definedFormat)
+        val exporter = ogcCatalogExporterFactory.getExporter(format)
+        val catalog = ogcRecordService.prepareCatalog(collectionId, exporter, format)
 
         val mimeType = exporter.typeInfo.dataType
         val responseHeaders = HttpHeaders()
@@ -117,13 +111,11 @@ class OgcApiRecordsController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun getRecord(allRequestParams: Map<String, String>, collectionId: String, recordId: String, format: RecordFormat?): ResponseEntity<ByteArray> {
+    override fun getRecord(allRequestParams: Map<String, String>, collectionId: String, recordId: String, format: RecordFormat): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val definedFormat = format ?: RecordFormat.json
-        val record = ogcRecordService.prepareRecord(collectionId, recordId, definedFormat)
-
+        val record = ogcRecordService.prepareRecord(collectionId, recordId, format)
         val mimeType = record.second
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", mimeType)
@@ -131,13 +123,12 @@ class OgcApiRecordsController @Autowired constructor(
     }
 
 
-    override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: RecordFormat?, filter: String? ): ResponseEntity<ByteArray> {
+    override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: RecordFormat, filter: String? ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
 
-        val definedFormat = format ?: RecordFormat.json
-        val exportFormat = if(definedFormat == RecordFormat.json) "internal" else definedFormat.toString()
+        val exportFormat = if(format == RecordFormat.json) "internal" else format.toString()
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
         val mimeType: String = exporter.typeInfo.dataType
 
@@ -148,14 +139,14 @@ class OgcApiRecordsController @Autowired constructor(
 
         // links: next previous self
         val totalHits = researchRecords.totalHits
-        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, definedFormat)
+        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, format)
         val queryMetadata = QueryMetadata(
                 numberReturned = if(totalHits < queryLimit) totalHits else queryLimit,
                 numberMatched = totalHits,
                 Instant.now()
         )
         // query all record details in right response format via exporter
-        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, definedFormat, mimeType, links, queryMetadata)
+        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, mimeType, links, queryMetadata)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", mimeType)

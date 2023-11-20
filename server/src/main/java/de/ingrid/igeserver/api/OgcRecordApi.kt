@@ -44,7 +44,7 @@ interface OgcApiRecords {
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
@@ -61,7 +61,7 @@ interface OgcApiRecords {
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
@@ -78,7 +78,7 @@ interface OgcApiRecords {
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
             "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
             "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-            ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
+            ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
     ): ResponseEntity<ByteArray>
 
 
@@ -96,7 +96,7 @@ interface OgcApiRecords {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-            ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
+            ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
     ): ResponseEntity<ByteArray>
 
 
@@ -202,7 +202,7 @@ interface OgcApiRecords {
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                     "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-            ) @RequestParam(value = "f", required = false) format: RecordFormat?,
+            ) @RequestParam(value = "f", required = false, defaultValue = "json") format: RecordFormat,
             // PARAMETER : filter
             @Parameter(description = "## Filter\n **OGC Parameter SHOULD**" +
                     "\n\n### ! Not yet implemented !" +
@@ -241,7 +241,7 @@ interface OgcApiRecords {
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                     "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-            ) @RequestParam(value = "f", required = false) format: RecordFormat?,
+            ) @RequestParam(value = "f", required = false, defaultValue = "json") format: RecordFormat,
     ): ResponseEntity<ByteArray>
 
 
