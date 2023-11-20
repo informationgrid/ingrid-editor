@@ -62,7 +62,6 @@ class ExceptionTests : IntegrationTest() {
             .andExpect(status().isOk)
     }
 
-    @Ignore
     @Test
     fun getCollectionByWrongCollectionId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId"))
@@ -81,7 +80,6 @@ class ExceptionTests : IntegrationTest() {
         }
     }
 
-    @Ignore
     @Test
     fun getRecordByWrongRecordId() {
         mockMvc.perform(get("/api/ogc/collections/$collectionId/items/$wrongRecordId"))
@@ -90,7 +88,6 @@ class ExceptionTests : IntegrationTest() {
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'null' with id '$wrongRecordId' is missing."))
     }
 
-    @Ignore
     @Test
     fun getRecordByWrongCollectionIdAndRightRecordId() {
         mockMvc.perform(get("/api/ogc/collections/$wrongCollectionId/items/$recordId"))
