@@ -2,18 +2,20 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExporterFactory
+import de.ingrid.igeserver.model.Link
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
-import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.security.Principal
 import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 import java.time.Instant
-import org.springframework.context.annotation.Profile
 
 @RestController
 @Profile("ogc-api")
@@ -49,12 +51,10 @@ class OgcApiRecordsController @Autowired constructor(
         SupportFormat( "html", "text/html")
     )
 
-    override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
+    override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: CollectionFormat): ResponseEntity<ByteArray>{
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
-        val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat, supportedConformanceFormats)
 
-        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat, supportedCollectionFormats)
+        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(format)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", response.mimeType)

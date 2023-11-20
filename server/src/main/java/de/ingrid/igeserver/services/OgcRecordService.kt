@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.CollectionFormat
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
@@ -39,7 +39,6 @@ import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import kotlin.math.abs
 
 data class LandingPageInfo(
     val title: String,
@@ -79,19 +78,21 @@ class OgcRecordService @Autowired constructor(
     private val documentService: DocumentService,
     private val importService: ImportService,
     private val ogcHtmlConverterService: OgcHtmlConverterService,
-    private val generalProperties: GeneralProperties,
+    generalProperties: GeneralProperties,
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
-    fun handleLandingPageRequest(requestedFormat: String, supportedFormats: List<SupportFormat>): ResponsePackage {
+    fun handleLandingPageRequest(requestedFormat: CollectionFormat): ResponsePackage {
         val linkList: MutableList<Link> = mutableListOf()
-        val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
 
-        linkList.add(Link(href = hostnameOgcApi, rel = "self", type = mimeType, title = "This document"))
-        for(supported in supportedFormats) {
-            val supportedFormat = if (supported.format != requestedFormat) supported.format else continue
-            linkList.add(Link(href = "${hostnameOgcApi}?f=${supportedFormat}", rel = "alternate", type = supported.mimeType, title = "Link to the landing page in format '$supportedFormat'"))
-        }
+        linkList.add(Link(href = hostnameOgcApi, rel = "self", type = requestedFormat.mimeType, title = "This document"))
+        CollectionFormat.entries
+            .filter { it != requestedFormat }
+            .forEach {
+                linkList.add(
+                    Link(href = "${hostnameOgcApi}?f=${it}", rel = "alternate", type = it.mimeType, title = "Link to the landing page in format '$it'")
+                )
+            }
         linkList.add(Link(href = "${hostnameOgcApi}/conformance", rel = "conformance", type = "application/json", title = "OGC API conformance classes implemented by this server"))
         linkList.add(Link(href = "${hostnameOgcApi}/collections", rel = "collections", type = "application/json", title = "Information about the record collections"))
 
@@ -101,7 +102,7 @@ class OgcRecordService @Autowired constructor(
             links = linkList
         )
 
-        val responseByteArray = if( requestedFormat== "html") {
+        val responseByteArray = if (requestedFormat == CollectionFormat.html) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -111,7 +112,7 @@ class OgcRecordService @Autowired constructor(
 
         return ResponsePackage(
             data = responseByteArray,
-            mimeType = mimeType
+            mimeType = requestedFormat.mimeType
         )
     }
 

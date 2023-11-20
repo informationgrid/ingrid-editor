@@ -16,6 +16,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
+enum class CollectionFormat(val mimeType: String) { 
+    json("application/json"),
+    html("text/html")
+}
+
 interface OgcApiRecords {
 
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
@@ -32,7 +37,7 @@ interface OgcApiRecords {
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false) format: String?,
+        ) @RequestParam(value = "f", required = false) format: CollectionFormat = CollectionFormat.json,
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])

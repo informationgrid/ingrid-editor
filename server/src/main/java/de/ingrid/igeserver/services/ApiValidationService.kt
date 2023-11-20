@@ -19,8 +19,8 @@ class ApiValidationService @Autowired constructor(
     }
 
     fun validateRequestParams(allRequestParams: Map<String, String>, validParams: List<String>){
-        for(param in allRequestParams.keys){
-            if(param !in validParams) throw ClientException.withReason("Request parameter '$param' not supported")
+        allRequestParams.keys.forEach { 
+            if(it !in validParams) throw ClientException.withReason("Request parameter '$it' not supported") 
         }
     }
 
