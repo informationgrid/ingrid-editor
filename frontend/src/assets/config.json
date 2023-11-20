@@ -3,6 +3,7 @@
   "brokerUrl": "ws://localhost:8550/ws",
   "mapTileUrl": "//{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
   "nominatimUrl": "https://nominatim.openstreetmap.org/search?q={query}&format=json&countrycodes={countries}",
+  "nominatimDetailUrl": "https://nominatim.openstreetmap.org/details?osmtype={type}&osmid={id}&format=json",
   "showAccessibilityLink": true,
   "featureFlags": {
     "showTestBadge": false,
