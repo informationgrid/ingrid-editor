@@ -12,9 +12,87 @@ To test an API endpoint via the Swagger UI, remember to select the responsible s
 === Authentication
 All APIs are secured using OAuth 2.0 via Keycloak. In order to interact with endpoints, a bearer token must first be obtained.
 
+Overview of the necessary variables and credentials:
+
+[cols="1,2"]
+|===
+| Variable | Description
+
+| *$KEYCLOAK_HOST*
+| Keycloak host refers to either `http://localhost:8080` or `https://keycloak.informationgrid.eu`
+
+| *$REALM*
+| Set the Keycloak realm that manages a set of users, credentials, roles, and groups (e.g. "InGrid").
+
+| *$CLIENTID*
+| Keycloak client ID  (e.g. "ige-ng-frontend")
+
+| *$CLIENTSECRET*
+| Keycloak client secret (e.g. "admin")
+
+| *$USERNAME*
+| Username of InGird Editor Login
+
+| *$PASSWORD*
+| Password of InGrid Editor Login
+
+| Grant type
+| Password Credentials
+
+| Access Token URL
+| `KEYCLOAK_HOST`/realms/`$REALM`/protocol/openid-connect/token
+
+| Refresh Token URL
+| `KEYCLOAK_HOST`/realms/`$REALM`/protocol/openid-connect/token
+|===
+
 NOTE: Access tokens are valid for 1 minute. After its expiration the token must be refreshed with a refresh token.
 
-==== Obtain Token via Browser
+
+==== Obtain Token
+
+This Section descripts how access token and refresh token can be obtained via *cURL*.
+
+Replace the variable and execute cURL:
+
+`$KEYCLOAK_HOST`, `$REALM`, `$USERNAME`, `$PASSWORD`, `$CLIENTID`, `$CLIENTSECRET`
+
+[source, curl]
+----
+curl -X POST
+    $KEYCLOAK_HOST/realms/$REALM/protocol/openid-connect/token
+    -H 'Content-Type: application/x-www-form-urlencoded'
+    -d username=$USERNAME
+    -d password=$PASSWORD
+    -d grant_type=password
+    -d client_id=$CLIENTID
+    -d client_secret=$CLIENTSECRET
+----
+
+
+The Response is a json object containing *access token* and refresh token among others.
+
+Example of a cURL response:
+
+[source, JSON]
+----
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInZGMZvcm1hdGlvbmdyaWQuZXUvcmVhbG1zL3JpZCIs...",
+    "expires_in": 60,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6I...",
+    "token_type": "Bearer",
+    "not-before-policy": 1632732926,
+    "session_state": "1afef5ee-272c-4c4a-a181-3da38b432bac",
+    "scope": "email profile"
+}
+----
+
+*Alternative:* Obtain Token via Browser
+
+.Details
+[%collapsible]
+====
 An access token can be obtained via browser developer tool. This approach is recommended for simple test only.
 
 . Log in to InGrid-Editor
@@ -22,60 +100,126 @@ An access token can be obtained via browser developer tool. This approach is rec
 . Refresh page
 . Select the object with the name 'currentUser' and open the request headers
 . Copy the long string of 'Authorization' (NOTE: without 'Bearer' )
+====
 
+*Alternative:* Obtain Token via Postman
 
-==== Obtain Token via Postman
-For more advanced testing, Postman can help to maintain a fresh access token. Set up an OAuth 2.0 authentication with the following variables.
-[cols="1,2"]
-|===
-| Variable | Description
+.Details
+[%collapsible]
+====
+For more advanced testing, Postman can help to maintain a fresh access token.
 
-| realm
-| Set the Keycloak realm that manages a set of users, credentials, roles, and groups (e.g. "InGrid").
+. Set up an *OAuth 2.0* authentication.
+. At section *Cofigure New Token* enter the following values:
+* Grand Type = "Password Credentials"
+* Access Token URL = `$KEYCLOAK_HOST`/realms/`$REALM`/protocol/openid-connect/token
+* Client ID = `$CLIENTID`,
+* Client Secret = `$CLIENTSECRET`
+* Username = `$USERNAME`
+* Password = `$PASSWORD`
+. Click *Get New Access Token*
+====
 
-| clientId
-| Keycloak client ID  (e.g. "ige-ng-frontend")
+==== Call OGC API with Access Token
 
-| clientSecret
-| Keycloak client secret (e.g. "admin")
+As soon as you have received a valid access_token (see Obtain Token above), you can call the OGC API. To do this, you must add the access_token as a bearer in the header.
 
-| Username
-| Username of InGird Editor Login
+Example of a cURL request for OGC Landing Page:
 
-| Password
-| Password of InGrid Editor Login
+[source, curl]
+----
+curl --location 'http://localhost:8550/api/ogc'
+     --header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXaWxFQXZEZk9LREdTal9OWmluZHMtdEl1YnJHOXo3eU1nbXBaZFp5TnVZIn0.eyJleHAiOjE3MDAyMTIzMTgsImlhdCI6MTcwMDIxMjI1OCwianRpIjoiYTRlNzQ2YjMtYjU2Ni00NjBiLTgxYWEtODZkN2M5MjZjOTkyIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5pbmZvcm1hdGlvbmdyaWQuZXUvcmVhbG1zL0luR3JpZCIsImF1ZCI6WyJyZWFsbS1tYW5hZ2VtZW50IiwiYWNjb3VudCJdLCJzdWIiOiIwNTY3ZjczYy00MTJlLTRlNjctOTIyYy0zOGI0ZjVlZjlhOTkiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpZ2UtbmctZnJvbnRlbmQiLCJzZXNzaW9uX3N0YXRlIjoiOWQ5YWViMDEtN2E2MS00MWZlLWEzZTAtNjMzNWE0ODE1OWI3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIiwiaHR0cHM6Ly9pZ2UtbmcuaW5mb3JtYXRpb25ncmlkLmV1Il0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJpZ2UtdXNlci1tYW5hZ2VyIiwiaWdlLXN1cGVyLWFkbWluIiwiaWdlLXVzZXIiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy1pbmdyaWQiXX0sInJlc291cmNlX2FjY2VzcyI6eyJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbIm1hbmFnZS1yZWFsbSIsIm1hbmFnZS11c2VycyIsInZpZXctdXNlcnMiLCJxdWVyeS1ncm91cHMiLCJxdWVyeS11c2VycyJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiOWQ5YWViMDEtN2E2MS00MWZlLWEzZTAtNjMzNWE0ODE1OWI3IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoiU3VwZXIgVXNlciIsInByZWZlcnJlZF91c2VybmFtZSI6ImlnZSIsImdpdmVuX25hbWUiOiJTdXBlciIsImZhbWlseV9uYW1lIjoiVXNlciIsImVtYWlsIjoiYW5kcmUud2FsbGF0QHdlbW92ZS5jb20ifQ.V0zfTdDDKkmX8nuvmlt2yoPLgrFyqEm6KgcioaEeS0EAtBLUmDq_XVNx-Om7Yq4gsFe_NWXNzJcr8nDwCT8U9Z8n05tX9X6YLF7Eh2F6sL05Qew5OvfqAxidpv1danCNHhUUUDgAyc8mWbSg5K08IgIO1RWrvCXr83JhhlRFsGv8TjKwEtNGb321145T5dw8xSqFOpkciic28VwhDBzPGMul7qFRbVz9-atyv5EJxdiTOuhGNMvAK5Fz6T1HB-QIs-B3p1ez3kN_fEhZa8Xg4B70fMj4p9I2DaYGIaaC4k459wKD-TTR31mERG8KcmlznMiZFjw4RjnDZC8mPYRqWQ'
+----
 
-| Grant type
-| Password Credentials
+Example of a OGC API response:
 
-| Access Token URL
-| {{keyCloakServer}}/realms/{{realm}}/protocol/openid-connect/token
+[source, JSON]
+----
+{
+    "title": "OGC API Records",
+    "description": "Access to InGrid via OGC API for Records."
+}
+----
 
-| Refresh Token URL
-| {{keyCloakServer}}/realms/{{realm}}/protocol/openid-connect/token
-|===
-
-NOTE: 'keyCloakServer' refers to either `http://localhost:8080` or `https://ige-ng.informationgrid.eu`
-
-
-=== APIs
+=== API
 ==== OGC API Records
 This table provides a simple overview of OGC API Records Endpoints. For more details of each Endpoint and its parameter check out Swagger-UI.
 
 NOTE: Collection refers to a catalog. Record refers to a document (dataset, address).
 
+===== General
 [cols="1,2,3"]
 |===
-| Method | Resource | Description
+| Method | Type | Description
 
-| GET | Collections | Get multiple collections
-| GET | Collection | Get one collection by ID
-| GET | Records | Get multiple records of a collection
-| GET | Record | Get one record by ID
+| GET | Landing Page
+| Get general information about OGC API Records
 
-| POST | Records | Insert multiple records into a collection
-| PUT | Record | Replace an existing resource in a collection with a replacement resource with the same resource identifier. (Update Record)
+Endpoint: ```/api/ogc```
 
-|DELETE | Record | Delete a record by ID
+| GET | Conformance
+| Get conformance class of OGC API Records
 
+Endpoint: ```/api/ogc/conformance```
+|===
+
+
+===== Record Collections
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| GET | Collections
+| Get multiple collections
+
+Endpoint: ```/api/ogc/collections```
+
+| GET | Collection
+| Get collection by collection-ID
+
+Endpoint: ```/api/ogc/collections/{collectionId}```
+|===
+
+===== Records
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| GET | Records
+| Get multiple records of a collection
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items```
+
+| GET | Record
+| Get record by record-ID
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+| POST | Records
+| Insert multiple records into a collection
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items```
+
+| PUT | Record
+| Replace/update an existing resource in a collection with a replacement resource with the same resource identifier.
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+| DELETE | Record
+| Delete a record by record-ID
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
+
+|===
+
+==== CSW Transaction
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| POST | CSW-t
+| INSERT, UPDATE & DELETE transaction
+
+Endpoint: ```/api/cswt/{collectionId}```
 |===
