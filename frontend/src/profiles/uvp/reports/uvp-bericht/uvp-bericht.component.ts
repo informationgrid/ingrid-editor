@@ -5,7 +5,7 @@ import { UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver-es";
 
 @UntilDestroy()
 @Component({

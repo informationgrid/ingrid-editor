@@ -114,7 +114,7 @@
             <gco:DateTime>${address.getLastModified()}</gco:DateTime>
         </idf:last-modified>
     @endif
-    @for( AddressModelTransformer adr : address.getHierarchy(isAddressExport))
+    @for( AddressModelTransformer adr : address.getHierarchy())
         <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
             @if(adr.getIndividualName(false) != null )
                 <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>

@@ -23,14 +23,16 @@ export class BehaviourService {
   constructor(
     private pluginService: PluginService,
     private dataService: BehaviorDataService,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
   ) {}
 
   saveBehaviours(behaviours: BehaviourFormatBackend[]) {
     this.updateState(behaviours);
     this.dataService
       .saveBehaviors(behaviours)
-      .pipe(tap(() => this.toast.open("Die Konfiguration wurde gespeichert")))
+      .pipe(
+        tap(() => this.snackBar.open("Die Konfiguration wurde gespeichert")),
+      )
       .subscribe();
   }
 

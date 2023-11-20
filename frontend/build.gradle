@@ -17,7 +17,7 @@ group = 'de.ingrid'
 description = 'IGE-NG Frontend'
 
 node {
-  version = '18.12.1'
+  version = '20.9.0'
   download = true
 }
 
@@ -27,7 +27,7 @@ if (hasProperty('baseHref')) {
 }
 
 task yarnUpgrade(type: YarnTask, dependsOn: 'yarnSetup') {
-  args = ['set', 'version', '3.x']     // maybe with `yarn set version 3.x` also
+  args = ['set', 'version', '4.0.2']     // maybe with `yarn set version 3.x` also
 }
 
 task yarnInstall(type: YarnTask, dependsOn: 'yarnUpgrade') {

@@ -133,6 +133,7 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
               showSearch: true,
+              allowNoValue: false,
               options: <SelectOptionUi[]>[
                 {
                   value: "basis",

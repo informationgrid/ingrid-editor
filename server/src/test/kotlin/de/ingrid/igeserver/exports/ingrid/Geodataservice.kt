@@ -144,6 +144,7 @@ class Geodataservice : AnnotationSpec() {
         result = result
             .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
             .replace("\r\n", "\n")
+            .replace("\" : ", "\": ")
 
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")

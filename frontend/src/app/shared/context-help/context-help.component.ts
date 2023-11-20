@@ -20,7 +20,7 @@ export class ContextHelpComponent implements OnInit, OnDestroy {
   title: string;
   description$: Observable<String> = this.data.description$;
   notResized = true;
-  private timer: NodeJS.Timeout;
+  private timer: any;
   private initialDimension = {
     width: "",
     height: "",

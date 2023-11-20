@@ -1,8 +1,7 @@
-@import "./variables.scss";
-@import "./material.override.scss";
-//@import "./material-fields.override.scss";
-@import "./styles-print.scss";
-@import "./styles-outline";
+@import "src/variables";
+@import "src/material.override";
+@import "src/styles-print";
+@import "src/styles-outline";
 
 html,
 body {

@@ -151,6 +151,8 @@ class UvpProfile @Autowired constructor(
         if (publishNegativeAssessmentsOnlyWithSpatialReferences) conditions.add("(document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc' OR (jsonb_path_exists(jsonb_strip_nulls(data), '\$.spatial')))")
         if (publishNegativeAssessmentsControlledByDataset) conditions.add("document_wrapper.tags IS NULL OR NOT ('{negative-assessment-not-publish}' && document_wrapper.tags)")
         
+        conditions.add("document_wrapper.type != 'FOLDER'")
+        
         return conditions
     }
 }

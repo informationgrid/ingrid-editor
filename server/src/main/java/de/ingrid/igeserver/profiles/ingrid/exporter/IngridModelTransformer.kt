@@ -164,8 +164,10 @@ open class IngridModelTransformer(
     private val arsSpatial = spatialReferences.find { it.ars != null }
     val regionKey = if (arsSpatial == null) null else KeyValueModel(
         arsSpatial.ars,
-        arsSpatial.ars!!.padEnd(12, '0')
+        padARS(arsSpatial.ars!!).padEnd(12, '0')
     )
+    
+    fun padARS(ars: String): String = ars.padEnd(12, '0')
 
     fun getSpatialReferenceComponents(type: COORD_TYPE): String {
         return spatialReferences
@@ -512,11 +514,13 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
+    val externalReferences = references.filter { it.uuidRef == null }
     val referencesWithUuidRefs = references.filter { it.uuidRef != null }
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
-    open val systemEnvironment = data.systemEnvironment
+    // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
+    val systemEnvironment = data.systemEnvironment
 
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -601,10 +605,26 @@ open class IngridModelTransformer(
             ?: emptyList()
     open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
-    fun getCoupledServiceUrls(): List<ServiceUrl> {
+    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    
+    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+        if (model.type != "InGridGeoDataset") return emptyList()
+        
         return getIncomingReferencesProxy()
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
+    }
+    
+    private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
+        return model.data.service?.operations
+            ?.filter { it.name?.key == "1" }
+            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description)} ?: emptyList()
+    }
+    
+    private fun getExternalCoupledResources() : List<ServiceUrl> {
+        return model.data.service?.coupledResources
+            ?.filter { it.isExternalRef == true }
+            ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
     
     private fun getIncomingReferencesProxy(): List<CrossReference> {
@@ -707,7 +727,8 @@ open class IngridModelTransformer(
             val docAsModel = jacksonObjectMapper().convertValue(
                 getLastPublishedDocument(uuid),
                 IngridModel::class.java
-            )
+            ) ?: return null // TODO: log a warning shown in frontend 
+
             cache.models[uuid] = docAsModel
             docAsModel
         }
@@ -735,7 +756,7 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
     }
 
     fun hasCompleteVerticalExtent(): Boolean {

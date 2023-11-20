@@ -100,20 +100,32 @@
 @if(page.getGridSpatialRepresentation() != null)
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>
+            @if(page.getGridSpatialRepresentation().getNumberOfDimensions() != null)
             <gmd:numberOfDimensions>
                 <gco:Integer>${page.getGridSpatialRepresentation().getNumberOfDimensions()}</gco:Integer>
             </gmd:numberOfDimensions>
+            @else
+            <gmd:numberOfDimensions gco:nilReason="unknown" />
+            @endif
             @for(AxisDimensionProperties axisDimensionProperties : page.getGridSpatialRepresentation().getAxesDimensionProperties())
                 <gmd:axisDimensionProperties>
                     <gmd:MD_Dimension>
+                        @if(axisDimensionProperties.getName() != null)
                         <gmd:dimensionName>
                             <gmd:MD_DimensionNameTypeCode
                                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
                                     codeListValue="${page.getCodelists().getValue("514", axisDimensionProperties.getName(), "iso")}" />
                         </gmd:dimensionName>
+                        @else
+                        <gmd:dimensionName gco:nilReason="unknown" />
+                        @endif
+                        @if(axisDimensionProperties.getSize() != null)
                         <gmd:dimensionSize>
                             <gco:Integer>${axisDimensionProperties.getSize()}</gco:Integer>
                         </gmd:dimensionSize>
+                        @else
+                        <gmd:dimensionSize gco:nilReason="unknown" />
+                        @endif
                         @if(axisDimensionProperties.getResolution() != null)
                             <gmd:resolution>
                                 <gco:Scale uom="meter">${axisDimensionProperties.getResolution()}</gco:Scale>
@@ -122,20 +134,22 @@
                     </gmd:MD_Dimension>
                 </gmd:axisDimensionProperties>
             @endfor
+            @if(page.getCellGeometry() != null)
             <gmd:cellGeometry>
                 <gmd:MD_CellGeometryCode
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
                         codeListValue="${page.getCellGeometry()}" />
             </gmd:cellGeometry>
+            @else
+            <gmd:cellGeometry gco:nilReason="unknown" />
+            @endif
             <gmd:transformationParameterAvailability>
-                <gco:Boolean>true</gco:Boolean>
+                <gco:Boolean>${page.getGridSpatialRepresentation().getTransformationParameterAvailability()}</gco:Boolean>
             </gmd:transformationParameterAvailability>
             @if(page.getGeorectified() != null)
-                @if(page.getGeorectified().getCheckPointAvailability() != null)
-                    <gmd:controlPointAvailability>
-                        <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
-                    </gmd:controlPointAvailability>
-                @endif
+                <gmd:controlPointAvailability>
+                    <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
                 @if(TransformationTools.hasValue(page.getGeorectified().getCheckPointDescription()))
                     <gmd:checkPointDescription>
                         <gco:CharacterString>${page.getGeorectified().getCheckPointDescription()}</gco:CharacterString>
@@ -150,28 +164,28 @@
                 @endif
                 @if(page.getGeorectified().getPointInPixel() != null)
                     <gmd:pointInPixel>
-                        <gco:Boolean>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gco:Boolean>
+                        <gmd:MD_PixelOrientationCode>${page.getCodelists().getValue("2100", page.getGeorectified().getPointInPixel(), "iso")}</gmd:MD_PixelOrientationCode>
                     </gmd:pointInPixel>
                 @else
                     <gmd:pointInPixel gco:nilReason="unknown" />
                 @endif
             @endif
             @if(page.getGeorefenceable() != null)
-                @if(page.getGeorefenceable().getControlPointAvaliability() != null)
-                    <gmd:controlPointAvailability>
-                        <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
-                    </gmd:controlPointAvailability>
-                @endif
-                @if(page.getGeorefenceable().getOrientationParameterAvailability() != null)
-                    <gmd:orientationParameterAvailability>
-                        <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
-                    </gmd:orientationParameterAvailability>
-                @endif
+                <gmd:controlPointAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getControlPointAvaliability()}</gco:Boolean>
+                </gmd:controlPointAvailability>
+                <gmd:orientationParameterAvailability>
+                    <gco:Boolean>${page.getGeorefenceable().getOrientationParameterAvailability()}</gco:Boolean>
+                </gmd:orientationParameterAvailability>
+                @if(page.getGeorefenceable().getParameters() != null)
                 <gmd:georeferencedParameters>
                     <gco:Record>
-                        <gco:CharacterString>Feld von Georeferenzierungsparameter</gco:CharacterString>
+                        <gco:CharacterString>${page.getGeorefenceable().getParameters()}</gco:CharacterString>
                     </gco:Record>
                 </gmd:georeferencedParameters>
+                @else
+                <gmd:georeferencedParameters gco:nilReason="unknown" />
+                @endif
             @endif
         </gmd:MD_${page.getGridType()}>
     </gmd:spatialRepresentationInfo>
@@ -401,8 +415,7 @@
                 <gmd:accessConstraints>
                     <gmd:MD_RestrictionCode
                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
-                            codeListValue="otherRestrictions">otherRestrictions
-                    </gmd:MD_RestrictionCode>
+                            codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
                 </gmd:accessConstraints>
                 @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
                     <gmd:otherConstraints>
@@ -459,7 +472,7 @@
     @endfor
     @if(TransformationTools.hasValue(page.getSystemEnvironment()))
         <gmd:environmentDescription>
-            <gco:CharacterString>page.getSystemEnvironment()</gco:CharacterString>
+            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
         </gmd:environmentDescription>
     @endif
     @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
@@ -549,7 +562,7 @@
                             <gmd:MD_Identifier>
                                 <gmd:code>
                                     <gmx:Anchor
-                                            xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${ref.getArs()}</gmx:Anchor>
+                                            xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${page.padARS(ref.getArs())}</gmx:Anchor>
                                 </gmd:code>
                             </gmd:MD_Identifier>
                         </gmd:geographicIdentifier>
@@ -643,7 +656,7 @@
             <srv:DCP>
                 <srv:DCPList
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices" />
+                        codeListValue="WebServices">WebServices</srv:DCPList>
             </srv:DCP>
             <srv:connectPoint>
                 <gmd:CI_OnlineResource>
@@ -664,13 +677,17 @@
             <srv:operationName>
                 <gco:CharacterString>${operation.getName()}</gco:CharacterString>
             </srv:operationName>
+            <srv:DCP>
+                <srv:DCPList
+                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                        codeListValue="WebServices"/>
+            </srv:DCP>
             @if(TransformationTools.hasValue(operation.getDescription()))
                 <srv:operationDescription>
                     <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
                 </srv:operationDescription>
             @endif
             @if(TransformationTools.hasValue(operation.getMethodCall()))
-                <srv:DCP gco:nilReason="missing"></srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
@@ -756,7 +773,7 @@ ${contentInfo}
                     </gmd:MD_Distributor>
                 </gmd:distributor>
             @endif
-            @for( Reference reference : page.getReferences() )
+            @for( Reference reference : page.getExternalReferences() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
@@ -792,6 +809,7 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                <%-- applicationProfile not used since "Dateiformat" for URL does not exist anymore--%>
                                 <gmd:name>
                                     <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
                                 </gmd:name>
@@ -803,8 +821,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                                 <idf:attachedToField entry-id="5066" list-id="2000">Link to Service
                                 </idf:attachedToField>
@@ -813,7 +830,7 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
-            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrls() )
+            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrlsOrGetCapabilitiesUrl() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
@@ -827,8 +844,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                             </idf:idfOnlineResource>
                         </gmd:onLine>
@@ -849,8 +865,7 @@ ${contentInfo}
                                 <gmd:function>
                                     <gmd:CI_OnLineFunctionCode
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information
-                                    </gmd:CI_OnLineFunctionCode>
+                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
                             </gmd:CI_OnlineResource>
                         </gmd:onLine>
@@ -860,9 +875,11 @@ ${contentInfo}
             @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
+                        @if(digitalTransferOption.getTransferSize() != null)
                         <gmd:transferSize>
                             <gco:Real>${digitalTransferOption.getTransferSize()}</gco:Real>
                         </gmd:transferSize>
+                        @endif
                         <gmd:offLine>
                             <gmd:MD_Medium>
                                 <gmd:name>

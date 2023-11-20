@@ -167,6 +167,7 @@ export class TreeComponent implements OnInit {
       )
       .subscribe((nodes) => {
         this.emptySearchResults = nodes;
+        this.cdr.detectChanges();
       });
   }
 

@@ -39,5 +39,8 @@
       "titleRequired": "Fehler: Bitte geben Sie einen Titel ein",
       "missingWritePermission": "Fehler: Sie haben keine Schreibrechte auf den Zielordner. Bitte ändern Sie den Zielordner über \"Zielordner ändern\""
     }
+  },
+  "spatial": {
+    "generalHelp": "<p>Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:<br></p><h2>Freier Raumbezug</h2><p>Der \"Freie Raumbezug\" wird auf einer Karte festgelegt. Eine Ortssuche kann verwendet werden, um den Raumbezug ortsbezogen auszuwählen.</p><h3>DCAT-AP.de:</h3><p><code>dcterms:spatial / dcterms:Location / skos:prefLabel + locn:geometry</code></p><h2>Raumbezug (WKT)</h2><p>Die Erfassung eines Raumbezuges als Well Known Text (WKT, https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) ermöglicht die freie Angabe von geometrischen Gebilden.<br><strong>Unterstützt werden momentan nur Polygone mit einer Außengrenze und Innengrenzen (Löcher), Points und Linestrings.</strong></p><p>Beispiel:</p><blockquote><p>POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))<br>POINT(10 10)<br>LINESTRING (10 10, 20 20, 30 40)</p></blockquote><h3>DCAT-AP.de:</h3><p><code>dcterms:spatial / dcterms:Location / skos:prefLabel + locn:geometry</code></p><h2>Nur Titel</h2><p>Geben Sie die geographische Bezeichnung oder auch den Eigennamen des Raumbezugs an.</p><h3>DCAT-AP.de:</h3><p><code>dcterms:spatial / dcterms:Location / skos:prefLabel</code></p>"
   }
 }

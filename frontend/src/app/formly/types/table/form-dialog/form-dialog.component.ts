@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -17,7 +17,7 @@ export interface FormDialogData {
   templateUrl: "./form-dialog.component.html",
   styleUrls: ["./form-dialog.component.scss"],
 })
-export class FormDialogComponent implements OnDestroy {
+export class FormDialogComponent implements OnInit, OnDestroy {
   form = new UntypedFormGroup({});
   titleText: string;
   options: FormlyFormOptions = {};
@@ -38,6 +38,16 @@ export class FormDialogComponent implements OnDestroy {
         else if (value === "INVALID") this.disabled = true;
       });
     });
+  }
+
+  ngOnInit() {
+    if (Object.keys(this.data.model).length > 0) {
+      setTimeout(() => {
+        this.form.markAllAsTouched();
+        // @ts-ignore
+        this.form._updateTreeValidity();
+      });
+    }
   }
 
   ngOnDestroy(): void {

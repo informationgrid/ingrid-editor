@@ -242,10 +242,18 @@ class IndexingTask @Autowired constructor(
                 }
             }
             .onEach { (docInfo, exportedDoc) ->
-                val elasticDocument = convertToElasticDocument(exportedDoc)
-                index(docInfo, indexInfo, elasticDocument)
-                val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
-                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
+                try {
+                    val elasticDocument = convertToElasticDocument(exportedDoc)
+                    index(docInfo, indexInfo, elasticDocument)
+                    val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
+                    postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
+                } catch (ex: Exception) {
+                    val errorMessage =
+                        "Error in PostIndexFilter or during sending to Elasticsearch: '${docInfo.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+                    log.error(errorMessage, ex)
+                    message.errors.add(errorMessage)
+                    notify.sendMessage(message)
+                }
             }
     }
 

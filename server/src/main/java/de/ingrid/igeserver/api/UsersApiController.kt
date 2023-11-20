@@ -343,8 +343,13 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 permissions = permissions,
                 plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
             )
-            userInfo.currentCatalog?.type?.let {
-                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+            try {
+                userInfo.currentCatalog?.type?.let {
+                    userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+                }
+            } catch (ex: NotFoundException) {
+                // ignore not activated catalog
+                logger.warn(ex.message ?: "Catalog profile not found: ${userInfo.currentCatalog?.type}")
             }
             return ResponseEntity.ok(userInfo)
         }

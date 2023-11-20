@@ -296,9 +296,9 @@ data class Resolution(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GridSpatialRepresentation(
-    val type: KeyValueModel,
+    val type: KeyValueModel?,
     val axesDimensionProperties: List<AxisDimensionProperties>,
-    val transformationParameterAvailability: Boolean,
+    val transformationParameterAvailability: Boolean = false,
     val numberOfDimensions: Int?,
     val cellGeometry: KeyValueModel?,
     val georectified: Georectified?,
@@ -306,15 +306,15 @@ data class GridSpatialRepresentation(
 )
 
 data class Georectified(
-    val checkPointAvailability: Boolean?,
+    val checkPointAvailability: Boolean? = false,
     val checkPointDescription: String?,
     val cornerPoints: String?,
     val pointInPixel: KeyValueModel?,//2100
 )
 
 data class Georeferenceable(
-    val orientationParameterAvailability: Boolean?,
-    val controlPointAvaliability: Boolean?,
+    val orientationParameterAvailability: Boolean? = false,
+    val controlPointAvaliability: Boolean? = false,
     val parameters: String?,
 )
 
