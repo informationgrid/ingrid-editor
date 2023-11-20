@@ -36,7 +36,7 @@ class ExceptionTests : IntegrationTest() {
     val wrongCollectionId = "no-can-do"
     val recordId = "b08533dc-f3cd-46ea-a12e-d7f799d59330"
     val wrongRecordId = "wrong3dc-f3cd-46ea-a12e-d7f79invalid"
-    val formats = listOf("internal", "geojson", "html") // , "ingridISO")
+    val formats = listOf("json", "geojson", "html") // , "ingridISO")
 
     @Before
     fun beforeTest() {
