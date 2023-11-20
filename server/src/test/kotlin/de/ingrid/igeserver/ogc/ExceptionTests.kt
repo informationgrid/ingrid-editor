@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 
 
-@Profile("ogc-api")
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 class ExceptionTests : IntegrationTest() {
 
