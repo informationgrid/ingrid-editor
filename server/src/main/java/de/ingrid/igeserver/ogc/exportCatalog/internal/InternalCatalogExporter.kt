@@ -24,7 +24,7 @@ class InternalCatalogExporter @Autowired constructor(
     override val typeInfo: CatalogExportTypeInfo
         get() = CatalogExportTypeInfo(
                 DocumentCategory.DATA,
-                "internal",
+                "json",
                 "IGE Catalog in JSON",
                 "Interne Datenstruktur des IGE Catalog",
                 MediaType.APPLICATION_JSON_VALUE,

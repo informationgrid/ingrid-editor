@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.CollectionFormat
-import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.api.InvalidParameterException
-import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.*
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.internal.InternalExporter
@@ -117,8 +114,8 @@ class OgcRecordService @Autowired constructor(
     }
 
 
-    fun handleConformanceRequest(requestedFormat: String, supportedFormats: List<SupportFormat>): ResponsePackage {
-        val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
+    fun handleConformanceRequest(requestedFormat: CollectionFormat): ResponsePackage {
+        val mimeType = requestedFormat.mimeType
 
         val conformance = Conformance(
             conformsTo = listOf(
@@ -127,7 +124,7 @@ class OgcRecordService @Autowired constructor(
             )
         )
 
-        val responseByteArray = if(requestedFormat == "html") {
+        val responseByteArray = if(requestedFormat == CollectionFormat.html) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -313,7 +310,7 @@ class OgcRecordService @Autowired constructor(
         return LimitAndOffset(queryLimit, queryOffset)
     }
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: String, supportedCollectionFormats: List<SupportFormat>, supportedRecordFormats: List<SupportFormat>): List<Link> {
+    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: RecordFormat): List<Link> {
         val list: MutableList<Link> = mutableListOf()
 
         // prepare pageing numbers
@@ -330,43 +327,48 @@ class OgcRecordService @Autowired constructor(
         val nextOffsetString = "&offset=$nextOffset"
 
         // add self Link to list
-        list.add(createLink(
-                url = recordBaseUrl + requestedFormat + limitString + selfOffsetString,
-                "self",
-                (supportedRecordFormats.find{ it.format == (requestedFormat ?: "internal") })?.mimeType!!,
-                "Link to this response"
-        ))
+        RecordFormat.entries
+            .filter { it == requestedFormat }
+            .forEach {
+                list.add(createLink(
+                        url = recordBaseUrl + requestedFormat + limitString + selfOffsetString,
+                        "self",
+                        it.mimeType,
+                        "Link to this response"
+                ))
+            }
 
         // add collection links in supported formats
-        for(supported in supportedCollectionFormats) {
-            val supportedFormat = supported.format
+        CollectionFormat.entries.forEach {
+            val supportedFormat = it
             list.add(createLink(
-                    url = baseUrl + "?f=" + supported.format,
+                    url = "$baseUrl?f=$supportedFormat",
                     "collection",
-                    supported.mimeType,
+                    it.mimeType,
                     "Link to the containing collection in format '$supportedFormat' "
             ))
         }
 
         // add alternate, next, previous links for each format
-        for(supported in supportedRecordFormats) {
-            val supportedFormat = supported.format
+        RecordFormat.entries.forEach {
+            val supportedFormat = it
+            val mimeType = it.mimeType
             if (supportedFormat != requestedFormat) list.add(createLink(
-                    url = recordBaseUrl + supported.format + limitString + selfOffsetString,
+                    url = recordBaseUrl + supportedFormat + limitString + selfOffsetString,
                     "alternate",
-                    supported.mimeType,
+                    mimeType,
                     "Link to this response in format '$supportedFormat' "
             ))
             if (totalHits > nextOffset) list.add(createLink(
                     url = recordBaseUrl + supportedFormat + limitString + nextOffsetString,
                     "next",
-                    supported.mimeType,
+                    mimeType,
                     "Link to the next set of records in format '$supportedFormat' "
             ))
             if (queryOffset != 0) list.add(createLink(
                     url = recordBaseUrl + supportedFormat + limitString + prevOffsetString,
                     "prev",
-                    supported.mimeType,
+                    mimeType,
                     "Link to the previous set of records in format '$supportedFormat' "
             ))
         }
@@ -382,14 +384,14 @@ class OgcRecordService @Autowired constructor(
                 title = title
         )
     }
-    fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: String): ByteArray {
+    fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: CollectionFormat): ByteArray {
         val catalog = exportCatalog( collectionId, exporter)
         val catalogAsList = listOf(catalog)
         val editedCatalog = editCatalogs(exporter.typeInfo.dataType, catalogAsList, format)
         return addWrapperToCatalog(editedCatalog, exporter.typeInfo.dataType, format, null, true, null)
     }
 
-    fun prepareCatalogs(principal: Principal, format: String): ByteArray {
+    fun prepareCatalogs(principal: Principal, format: CollectionFormat): ByteArray {
         val catalogs = catalogService.getCatalogsForPrincipal(principal)
         val exporter = ogcCatalogExporterFactory.getExporter(format)
         val catalogList: MutableList<Any> = mutableListOf()
@@ -408,7 +410,7 @@ class OgcRecordService @Autowired constructor(
         }
     }
 
-    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: String): Any{
+    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: CollectionFormat): Any{
         return if (mimeType == "text/xml") {
             var response = ""
             for (catalog in catalogList) response += catalog.toString().substringAfter("?>")
@@ -431,11 +433,11 @@ class OgcRecordService @Autowired constructor(
             catalogList
         }
     }
-    private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: String, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
+    private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: CollectionFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
         if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(catalog as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(catalog as String, links, queryMetadata)
-        if(mimeType == "application/json")  wrappedResponse = wrapperForJson(catalog as List<JsonNode>, links, queryMetadata, singleRecord, format)
+        if(mimeType == "application/json")  wrappedResponse = wrapperForJsonCatalog(catalog as List<JsonNode>, links, queryMetadata, singleRecord, format)
         return wrappedResponse.toByteArray()
     }
 
@@ -459,7 +461,7 @@ class OgcRecordService @Autowired constructor(
         wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
-    fun prepareRecord(collectionId: String, recordId: String, format: String): Pair<ByteArray, String> {
+    fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat): Pair<ByteArray, String> {
         val record = exportRecord(recordId, collectionId, format)
         val mimeType = record.exportFormat.toString()
 
@@ -469,26 +471,27 @@ class OgcRecordService @Autowired constructor(
         return Pair(wrappedRecord, mimeType)
     }
 
-    fun prepareRecords(records: ResearchResponse, collectionId: String, format: String, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
+    fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
         val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(mimeType, recordList, format)
         return addWrapperToRecords(unwrappedRecords, mimeType, format, links, false, queryMetadata)
     }
 
-    private fun exportRecord(recordId: String, collectionId: String, format: String): ExportResult {
+    private fun exportRecord(recordId: String, collectionId: String, format: RecordFormat): ExportResult {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
+        val exportFormat = if(format == RecordFormat.json) "internal" else format.toString()
         val options = ExportRequestParameter(
                 id = id,
-                exportFormat = format,
+                exportFormat = exportFormat,
                 // TODO context of ingridISO exporter: check why address documents need to called as drafts
-                useDraft = (format == "ingridISO" && wrapper.category == "address")
+                useDraft = (format == RecordFormat.ingridISO && wrapper.category == "address")
         )
         return exportService.export(collectionId, options)
     }
 
 
-    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: String): Any{
+    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: RecordFormat): Any{
         return if (mimeType == "text/xml") {
             var response = ""
             for (record in recordList) response += record.result.toString(Charsets.UTF_8).substringAfter("?>")
@@ -497,7 +500,7 @@ class OgcRecordService @Autowired constructor(
             val response: MutableList<JsonNode> = mutableListOf()
             for (record in recordList) {
                 var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-                if(format == "internal") wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+                if(format == RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
                 response.add(wrapperlessRecord)
             }
             response
@@ -509,7 +512,7 @@ class OgcRecordService @Autowired constructor(
             recordList
         }
     }
-    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: String, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
+    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
         if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(responseRecords as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
@@ -527,12 +530,20 @@ class OgcRecordService @Autowired constructor(
         return node
     }
 
-    private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: String): String {
+    private fun wrapperForJsonCatalog(responseCatalogs: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: CollectionFormat): String {
+        val mapper = jacksonObjectMapper()
+        val recordArray = mapper.createArrayNode()
+        responseCatalogs.forEach { recordArray.add(convertObject2Json(it)) }
+//        for( record in responseRecords) recordArray.add(convertObject2Json(record))
+        return recordArray.toString()
+    }
+
+    private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: RecordFormat): String {
         val wrappedResponse: JsonNode
         val mapper = jacksonObjectMapper()
-        if(format == "geojson" && singleRecord == true) {
+        if(format == RecordFormat.geojson && singleRecord == true) {
                 wrappedResponse = mapper.convertValue(responseRecords, JsonNode::class.java)
-        } else if(format == "geojson" && singleRecord == false) {
+        } else if(format == RecordFormat.geojson && singleRecord == false) {
                 val response = RecordsResponse(
                         type = "FeatureCollection",
                         timeStamp = queryMetadata!!.timeStamp,

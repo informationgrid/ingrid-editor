@@ -24,11 +24,6 @@ class ApiValidationService @Autowired constructor(
         }
     }
 
-    fun validateParamFormat(format: String, supportedFormats: List<SupportFormat>){
-        val supported: Boolean = supportedFormats.any { it.format == format}
-        if(!supported) throw ClientException.withReason("Format '$format' not supported")
-    }
-
     fun validateBbox(bbox: List<Float>?){
         if(bbox == null) return
         // http://localhost:8550/collections/ogctestkatalog/items?bbox=49.738177,8.176039,50.288841,9.340528

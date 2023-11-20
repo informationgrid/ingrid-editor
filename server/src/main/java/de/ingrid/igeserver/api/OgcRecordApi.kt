@@ -16,9 +16,16 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
-enum class CollectionFormat(val mimeType: String) { 
+enum class CollectionFormat(val mimeType: String) {
     json("application/json"),
     html("text/html")
+}
+
+enum class RecordFormat(val mimeType: String) {
+    json("application/json"),
+    html("text/html"),
+    ingridISO("text/xml"),
+    geojson("application/json")
 }
 
 interface OgcApiRecords {
@@ -37,7 +44,7 @@ interface OgcApiRecords {
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false) format: CollectionFormat = CollectionFormat.json,
+        ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
@@ -54,7 +61,7 @@ interface OgcApiRecords {
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false) format: String?,
+        ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
     ): ResponseEntity<ByteArray>
 
     @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
@@ -71,7 +78,7 @@ interface OgcApiRecords {
             "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
             "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
             "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-            ) @RequestParam(value = "f", required = false) format: String?,
+            ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
     ): ResponseEntity<ByteArray>
 
 
@@ -89,7 +96,7 @@ interface OgcApiRecords {
                     "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-            ) @RequestParam(value = "f", required = false) format: String?,
+            ) @RequestParam(value = "f", required = false) format: CollectionFormat?,
     ): ResponseEntity<ByteArray>
 
 
@@ -195,7 +202,7 @@ interface OgcApiRecords {
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                     "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-            ) @RequestParam(value = "f", required = false) format: String?,
+            ) @RequestParam(value = "f", required = false) format: RecordFormat?,
             // PARAMETER : filter
             @Parameter(description = "## Filter\n **OGC Parameter SHOULD**" +
                     "\n\n### ! Not yet implemented !" +
@@ -234,7 +241,7 @@ interface OgcApiRecords {
                     "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                     "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                     "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-            ) @RequestParam(value = "f", required = false) format: String?,
+            ) @RequestParam(value = "f", required = false) format: RecordFormat?,
     ): ResponseEntity<ByteArray>
 
 
