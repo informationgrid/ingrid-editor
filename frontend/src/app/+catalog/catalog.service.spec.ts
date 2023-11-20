@@ -33,6 +33,7 @@ describe("CatalogService", () => {
             null,
             "",
             "",
+            "",
             true,
           ),
       }),
