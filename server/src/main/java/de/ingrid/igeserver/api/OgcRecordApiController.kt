@@ -29,14 +29,32 @@ class OgcApiRecordsController @Autowired constructor(
         ) : OgcApiRecords {
 
     val log = logger()
+
     val defaultFormat = "internal"
+
+    val supportedConformanceFormats: List<SupportFormat> = listOf(
+        SupportFormat( "internal", "application/json"),
+        SupportFormat( "html", "text/html")
+    )
+
+    val supportedCollectionFormats: List<SupportFormat> = listOf(
+        SupportFormat( "internal", "application/json"),
+        SupportFormat( "html", "text/html")
+    )
+
+    val supportedRecordFormats: List<SupportFormat> = listOf(
+        SupportFormat( "internal", "application/json"),
+        SupportFormat( "geojson", "application/json"),
+        SupportFormat( "ingridISO", "text/xml"),
+        SupportFormat( "html", "text/html")
+    )
 
     override fun getLandingPage(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedConformanceFormats)
 
-        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat)
+        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(definedFormat, supportedCollectionFormats)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", response.mimeType)
@@ -46,9 +64,9 @@ class OgcApiRecordsController @Autowired constructor(
     override fun getConformance(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray>{
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedConformanceFormats)
 
-        val response = ogcRecordService.handleConformanceRequest(definedFormat)
+        val response = ogcRecordService.handleConformanceRequest(definedFormat, supportedCollectionFormats)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", response.mimeType)
@@ -58,7 +76,7 @@ class OgcApiRecordsController @Autowired constructor(
     override fun getCatalogs(allRequestParams: Map<String, String>, principal: Principal, format: String?): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedCollectionFormats)
 
         val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
         val catalogs = ogcRecordService.prepareCatalogs(principal, definedFormat)
@@ -73,7 +91,7 @@ class OgcApiRecordsController @Autowired constructor(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedCollectionFormats)
 
         val exporter = ogcCatalogExporterFactory.getExporter(definedFormat)
 
@@ -126,7 +144,7 @@ class OgcApiRecordsController @Autowired constructor(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedRecordFormats)
 
         val record = ogcRecordService.prepareRecord(collectionId, recordId, definedFormat)
 
@@ -142,7 +160,7 @@ class OgcApiRecordsController @Autowired constructor(
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
         val definedFormat = format ?: defaultFormat
-        apiValidationService.validateParamFormat(definedFormat)
+        apiValidationService.validateParamFormat(definedFormat, supportedRecordFormats)
 
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = definedFormat)
         val mimeType: String = exporter.typeInfo.dataType
@@ -154,7 +172,7 @@ class OgcApiRecordsController @Autowired constructor(
 
         // links: next previous self
         val totalHits = researchRecords.totalHits
-        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, definedFormat)
+        val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, definedFormat, supportedCollectionFormats, supportedRecordFormats)
         val queryMetadata = QueryMetadata(
                 numberReturned = if(totalHits < queryLimit) totalHits else queryLimit,
                 numberMatched = totalHits,

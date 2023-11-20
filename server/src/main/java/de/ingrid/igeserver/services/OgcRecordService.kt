@@ -83,11 +83,7 @@ class OgcRecordService @Autowired constructor(
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
-    fun handleLandingPageRequest(requestedFormat: String): ResponsePackage {
-        val supportedFormats: List<SupportFormat> = listOf(
-            SupportFormat( "internal", "application/json"),
-            SupportFormat( "html", "text/html")
-        )
+    fun handleLandingPageRequest(requestedFormat: String, supportedFormats: List<SupportFormat>): ResponsePackage {
         val linkList: MutableList<Link> = mutableListOf()
         val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
 
@@ -120,11 +116,7 @@ class OgcRecordService @Autowired constructor(
     }
 
 
-    fun handleConformanceRequest(requestedFormat: String): ResponsePackage {
-        val supportedFormats: List<SupportFormat> = listOf(
-            SupportFormat( "internal", "application/json"),
-            SupportFormat( "html", "text/html")
-        )
+    fun handleConformanceRequest(requestedFormat: String, supportedFormats: List<SupportFormat>): ResponsePackage {
         val mimeType = (supportedFormats.find{ it.format == (requestedFormat) })?.mimeType!!
 
         val conformance = Conformance(
@@ -134,7 +126,7 @@ class OgcRecordService @Autowired constructor(
             )
         )
 
-        val responseByteArray = if( requestedFormat== "html") {
+        val responseByteArray = if(requestedFormat == "html") {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -320,15 +312,8 @@ class OgcRecordService @Autowired constructor(
         return LimitAndOffset(queryLimit, queryOffset)
     }
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: String): List<Link> {
+    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: String, supportedCollectionFormats: List<SupportFormat>, supportedRecordFormats: List<SupportFormat>): List<Link> {
         val list: MutableList<Link> = mutableListOf()
-
-        val supportedFormats: List<SupportFormat> = listOf(
-                SupportFormat( "internal", "application/json"),
-                SupportFormat( "geojson", "application/json"),
-                SupportFormat( "ingridISO", "text/xml"),
-                SupportFormat( "html", "text/html")
-        )
 
         // prepare pageing numbers
         val (queryLimit, queryOffset) = pageLimitAndOffset(offset, limit)
@@ -347,12 +332,12 @@ class OgcRecordService @Autowired constructor(
         list.add(createLink(
                 url = recordBaseUrl + requestedFormat + limitString + selfOffsetString,
                 "self",
-                (supportedFormats.find{ it.format == (requestedFormat ?: "internal") })?.mimeType!!,
+                (supportedRecordFormats.find{ it.format == (requestedFormat ?: "internal") })?.mimeType!!,
                 "Link to this response"
         ))
 
-        // add alternate, next, previous links for each format
-        for(supported in supportedFormats) {
+        // add collection links in supported formats
+        for(supported in supportedCollectionFormats) {
             val supportedFormat = supported.format
             list.add(createLink(
                     url = baseUrl + "?f=" + supported.format,
@@ -360,6 +345,11 @@ class OgcRecordService @Autowired constructor(
                     supported.mimeType,
                     "Link to the containing collection in format '$supportedFormat' "
             ))
+        }
+
+        // add alternate, next, previous links for each format
+        for(supported in supportedRecordFormats) {
+            val supportedFormat = supported.format
             if (supportedFormat != requestedFormat) list.add(createLink(
                     url = recordBaseUrl + supported.format + limitString + selfOffsetString,
                     "alternate",

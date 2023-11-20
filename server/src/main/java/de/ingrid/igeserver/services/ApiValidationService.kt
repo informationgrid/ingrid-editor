@@ -14,7 +14,6 @@ class ApiValidationService @Autowired constructor(
     private val catalogService: CatalogService,
 ) {
 
-    val supportedExportFormats = listOf("internal", "geojson", "html", "ingridISO")
     fun validateCollection(collectionId: String){
         if(!catalogService.catalogExists(collectionId)) throw NotFoundException.withMissingResource(collectionId, "Collection")
     }
@@ -25,8 +24,8 @@ class ApiValidationService @Autowired constructor(
         }
     }
 
-    fun validateParamFormat(format: String){
-        val supported: Boolean = supportedExportFormats.any { it == format}
+    fun validateParamFormat(format: String, supportedFormats: List<SupportFormat>){
+        val supported: Boolean = supportedFormats.any { it.format == format}
         if(!supported) throw ClientException.withReason("Format '$format' not supported")
     }
 
