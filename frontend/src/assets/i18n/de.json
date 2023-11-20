@@ -160,5 +160,11 @@
       "wkt": "Raumbezug (WKT)",
       "wfsgnde": "Geo-Thesaurus (wfs_gnde, BKG Dienst)"
     }
+  },
+  "upload": {
+    "errorMessages": {
+      "FileSize": "The file size exceeds the maximum size of {maxSize} bytes.",
+      "DirectorySize": "The dataset size exceeds the maximum size of {maxSize} bytes."
+    }
   }
 }

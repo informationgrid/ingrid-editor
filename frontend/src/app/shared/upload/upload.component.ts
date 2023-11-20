@@ -229,10 +229,25 @@ export class UploadComponent implements OnInit {
 
     const detail = this.getMessageFromResponse(errorResponse);
 
+    let message = detail.message ?? detail.errorText,
+      data = detail.errorData ?? detail.errorId;
+
+    if (detail.errorText === "IllegalSizeException") {
+      if (detail.errorData.limitType === "FILE") {
+        message = this.transloco
+          .translate("upload.errorMessages.fileSize")
+          .replace("{maxSize}", detail.errorData.maxSize);
+      } else if (detail.errorData.limitType === "DIRECTORY") {
+        message = this.transloco
+          .translate("upload.errorMessages.directorySize")
+          .replace("{maxSize}", detail.errorData.maxSize);
+      }
+    }
+
     this._errors[fileIdentifier] = new UploadError(
       errorResponse.status,
-      detail.message ?? detail.errorText,
-      detail.errorData ?? detail.errorId,
+      message,
+      data,
     );
     this.errors.next(this._errors);
   }
