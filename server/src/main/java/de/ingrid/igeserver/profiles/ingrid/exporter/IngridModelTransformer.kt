@@ -520,7 +520,7 @@ open class IngridModelTransformer(
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
-    val systemEnvironment = data.systemEnvironment
+    open val systemEnvironment = data.systemEnvironment
 
 
     val parentIdentifier: String? = data.parentIdentifier
