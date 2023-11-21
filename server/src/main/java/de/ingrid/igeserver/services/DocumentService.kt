@@ -265,7 +265,7 @@ class DocumentService @Autowired constructor(
     }
 
     fun getDocumentType(docType: String, profile: String): EntityType {
-        return checkNotNull(documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) })
+        return documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
     }
 
     fun isAddress(docType: String): Boolean {
