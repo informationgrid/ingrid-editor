@@ -19,7 +19,8 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
 
         val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id) 
-            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) } 
+            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) }
+            ?: getContextHelp("all", docType, id)    
             ?: run {
                 log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: de}.")
                 throw NotFoundException.withMissingResource(id, "ContextHelp")
