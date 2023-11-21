@@ -1,4 +1,8 @@
-<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+<div
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    xmlns="http://www.w3.org/1999/html"
+>
     <div
         cdkDragHandle
         class="dialog-title-wrapper flex-row align-items-center gap-12"
@@ -30,12 +34,27 @@
         <button mat-button mat-dialog-close color="primary">Abbrechen</button>
         <div class="flex-1"></div>
         <button
+            *ngIf="currentPage === 1"
+            color="primary"
+            mat-button
+            data-cy="create-back"
+            (click)="currentPage = 0; this.showGroupsPage(false)"
+            class="back-button"
+        >
+            <mat-icon>chevron_left</mat-icon>
+            <span>Zurück</span>
+        </button>
+        <button
             mat-flat-button
             color="primary"
             [disabled]="form.invalid"
-            (click)="this.createUser()"
+            (click)="
+                this.asAdmin || this.currentPage === 1
+                    ? this.createUser()
+                    : (this.currentPage = 1) && this.showGroupsPage(true)
+            "
         >
-            Anlegen
+            {{ this.asAdmin || this.currentPage === 1 ? "Anlegen" : "Weiter" }}
         </button>
     </mat-dialog-actions>
 </div>

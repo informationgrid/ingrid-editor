@@ -14,6 +14,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthenticationFactory } from "../../security/auth.factory";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
+import { GroupQuery } from "../../store/group/group.query";
 
 @Injectable({
   providedIn: "root",
@@ -41,6 +42,7 @@ export class UserService {
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private keycloakService: AuthenticationFactory,
+    private groupQuery: GroupQuery,
   ) {
     if (!this.configService.isAdmin()) {
       this.availableRoles = this.availableRoles.filter(
@@ -129,8 +131,16 @@ export class UserService {
     throw response;
   }
 
-  createUser(user: User, isNewExternalUser: boolean): Observable<FrontendUser> {
-    return this.dataService.createUser(user, isNewExternalUser).pipe(
+  createUser(
+    user: FrontendUser,
+    isNewExternalUser: boolean,
+  ): Observable<FrontendUser> {
+    const userForBackend = <BackendUser>{
+      ...user,
+      groups: user.groups.map((group) => +group.key),
+    };
+
+    return this.dataService.createUser(userForBackend, isNewExternalUser).pipe(
       map((u) => new FrontendUser(u)),
       tap(() => {
         this.snackBar.open("Registrierungs-E-Mail wurde versandt", "", {
@@ -182,6 +192,9 @@ export class UserService {
     return getNewUserFormFields(
       this.availableRoles,
       this.getExternalUsersAsSelectOptions(users),
+      this.groupQuery.getAll().map((group) => {
+        return new SelectOption(group.id.toString(), group.name);
+      }),
     );
   }
 

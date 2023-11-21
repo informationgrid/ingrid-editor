@@ -8,11 +8,7 @@ import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import { ConfigService } from "../../../services/config/config.service";
-import {
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
@@ -35,13 +31,15 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     ),
   );
   externalUsers: BackendUser[];
-  form: UntypedFormGroup;
+  form: FormGroup;
   noAvailableUsers = true;
   importExternal: boolean;
   formlyFieldConfig: FormlyFieldConfig[];
-  options: FormlyFormOptions = {};
+  options: FormlyFormOptions;
   model: FrontendUser;
   loginValue = "";
+  asAdmin: boolean = false;
+  currentPage: number = 0;
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
@@ -67,15 +65,28 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       department: "",
       role: "",
       id: null,
+      groups: [],
     };
     this.importExternal = false;
 
-    this.form = new UntypedFormGroup({
-      login: new UntypedFormControl("", Validators.required),
+    this.options = {
+      formState: {
+        showGroups: false,
+      },
+    };
+
+    this.form = new FormGroup({
+      login: new FormControl("", Validators.required),
+      role: new FormControl("", Validators.required),
     });
     this.form
       .get("login")
       .valueChanges.subscribe((value) => this.updateForm(value));
+    this.form.get("role").valueChanges.subscribe((role) => {
+      if (typeof role === "string") {
+        this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
+      }
+    });
 
     this.userSub = this.users$.subscribe();
   }
@@ -84,19 +95,18 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     if (existingLogin !== this.loginValue) {
       this.importExternal = false;
       this.loginValue = existingLogin;
+      const role = this.form.get("role").value;
       const potentialMatch = this.externalUsers?.filter((user) => {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
         this.model = new FrontendUser(potentialMatch[0]);
-        // reset role as keycloak role (ige-user) is not applicable
-        this.model.role = "";
+        this.model.role = role;
         this.form.reset(this.model);
         this.importExternal = true;
       }
     }
   }
-
   createUser() {
     this.form.disable();
     const user = this.model;
@@ -110,6 +120,10 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
         filter((user) => user),
       )
       .subscribe((u) => this.dialogRef.close(u));
+  }
+
+  showGroupsPage(show: boolean) {
+    this.options.formState.showGroups = show;
   }
 
   private handleCreateUserError(error: any): Observable<any> {
