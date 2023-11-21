@@ -44,11 +44,11 @@ class IndexApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun getConfig(principal: Principal, id: String): ResponseEntity<IndexConfigOptions> {
+    override fun getConfig(principal: Principal, catalogId: String): ResponseEntity<IndexConfigOptions> {
 
-        val catalog = catalogService.getCatalogById(id)
-        val profile = catalogService.getProfileFromCatalog(catalog.type)
-        return ResponseEntity.ok(IndexConfigOptions(id, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
+        val catalog = catalogService.getCatalogById(catalogId)
+        val profile = catalogService.getProfileFromCatalog(catalogId)
+        return ResponseEntity.ok(IndexConfigOptions(catalogId, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
 
     }
 

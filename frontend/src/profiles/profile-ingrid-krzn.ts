@@ -8,7 +8,7 @@ import { InformationSystemDoctypeKrzn } from "./krzn/doctypes/information-system
 })
 class InGridKrznComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);
-  informationSystemKrzn = inject(InformationSystemDoctypeKrzn);
+  informationSystem = inject(InformationSystemDoctypeKrzn);
 
   profileId = "ingrid-krzn";
 
@@ -26,7 +26,7 @@ class InGridKrznComponent extends InGridComponent {
       this.geoService,
       this.project,
       this.dataCollection,
-      this.informationSystemKrzn,
+      this.informationSystem,
     ].forEach((docType) => {
       docType.options.dynamicRequired.accessConstraints = undefined;
       docType.options.required.accessConstraints = true;

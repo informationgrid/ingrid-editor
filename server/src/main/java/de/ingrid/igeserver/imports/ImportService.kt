@@ -166,7 +166,7 @@ class ImportService(
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
-        val profile = document.catalog!!.type
+        val profile = documentService.catalogService.getProfileFromCatalog(catalogId).identifier
         val refType = documentService.getDocumentType(document.type, profile)
 
         val references = refType.pullReferences(document)
