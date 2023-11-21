@@ -140,10 +140,10 @@ class JobsApiController @Autowired constructor(
     @Transactional
     override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Map<String, Any>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId)
 
         val referenceHandler = referenceHandlerFactory.get(profile)
-            ?: throw ClientException.withReason("No reference handler found for profile $profile")
+            ?: throw ClientException.withReason("No reference handler found for profile ${profile.identifier}")
         val docsNumberUpdated = referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
         val status = urlRequestService.getStatus(data.replaceUrl)
 

@@ -955,10 +955,11 @@ class DocumentService @Autowired constructor(
     }
 
     fun getIncomingReferences(
-        document: Document?
+        document: Document?,
+        catalogId: String
     ): Set<String> {
         if (document == null) return setOf()
-        val profile = document.catalog!!.type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val docType = getDocumentType(document.type, profile)
         return docType.getIncomingReferenceIds(document).toSet()
     }
