@@ -906,7 +906,7 @@ class DocumentService @Autowired constructor(
 
         // get latest references from links
         if (resolveLinks) {
-            val profile = docData.catalog!!.type
+            val profile = catalogService.getProfileFromCatalog(options.catalogId!!).identifier
             val refType = getDocumentType(docData.type, profile)
 
             try {

@@ -219,7 +219,7 @@ class IndexingTask @Autowired constructor(
         exporter: IgeExporter,
         indexInfo: IndexInfo
     ) {
-        val catalogType = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
@@ -245,7 +245,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     val elasticDocument = convertToElasticDocument(exportedDoc)
                     index(docInfo, indexInfo, elasticDocument)
-                    val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
+                    val simpleContext = SimpleContext(catalogId, profile, docInfo.document.uuid)
                     postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
                 } catch (ex: Exception) {
                     val errorMessage =

@@ -58,7 +58,7 @@ class InternalExporter @Autowired constructor(
 
     fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
 
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())

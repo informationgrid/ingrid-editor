@@ -87,7 +87,7 @@ class ResearchApiController @Autowired constructor(
 
     override fun getQuickFilter(principal: Principal): ResponseEntity<Facets> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val dbType = catalogService.getCatalogById(catalogId).type
+        val dbType = catalogService.getProfileFromCatalog(catalogId).identifier
 
         val facets = researchService.createFacetDefinitions(dbType)
         return ResponseEntity.ok(facets)

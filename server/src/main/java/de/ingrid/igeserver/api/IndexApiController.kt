@@ -47,7 +47,7 @@ class IndexApiController @Autowired constructor(
     override fun getConfig(principal: Principal, id: String): ResponseEntity<IndexConfigOptions> {
 
         val catalog = catalogService.getCatalogById(id)
-        val profile = catalogService.getCatalogProfile(catalog.type)
+        val profile = catalogService.getProfileFromCatalog(catalog.type)
         return ResponseEntity.ok(IndexConfigOptions(id, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
 
     }

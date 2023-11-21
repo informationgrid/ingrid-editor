@@ -73,7 +73,7 @@ class JobsApiController @Autowired constructor(
 
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
 
         // get only documents with write permission
@@ -104,7 +104,7 @@ class JobsApiController @Autowired constructor(
         command: JobCommand
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
@@ -124,7 +124,7 @@ class JobsApiController @Autowired constructor(
 
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val jobDataMap = JobDataMap().apply {

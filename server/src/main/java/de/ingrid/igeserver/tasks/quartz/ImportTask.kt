@@ -53,7 +53,7 @@ class ImportTask @Autowired constructor(
             val report = when (stage) {
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
-                    val profile = catalogService.getCatalogById(info.catalogId).type.let { catalogService.getCatalogProfile(it) }
+                    val profile = catalogService.getProfileFromCatalog(info.catalogId)
                     importService.analyzeFile(info.catalogId, info.importFile!!, message)
                         .also { checkForValidDocumentsInProfile(profile, it) }
                         .also {
