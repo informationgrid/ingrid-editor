@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ogc-api")
-class OgcHtmlConverterService @Autowired constructor(
+class OgcHtmlConverterService(
     private val generalProperties: GeneralProperties
 ){
 

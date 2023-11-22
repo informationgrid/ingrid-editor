@@ -10,7 +10,7 @@ import kotlin.math.abs
 
 @Service
 @Profile("ogc-api | csw-t")
-class ApiValidationService @Autowired constructor(
+class ApiValidationService(
     private val catalogService: CatalogService,
 ) {
 

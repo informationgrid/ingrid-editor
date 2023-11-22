@@ -5,8 +5,6 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.profiles.uvp.quickfilter.EIANumber
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcedureTypes
 import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
@@ -17,18 +15,14 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
-import de.ingrid.igeserver.services.BehaviourService
-import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.Permissions
+import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("uvp")
-class UvpProfile @Autowired constructor(
+class UvpProfile(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,

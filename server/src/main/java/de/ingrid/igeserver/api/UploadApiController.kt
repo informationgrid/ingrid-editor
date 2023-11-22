@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @RestController
 @RequestMapping(path = ["/api"])
-class UploadApiController @Autowired constructor(
+class UploadApiController(
     private val catalogService: CatalogService,
     private val storage: Storage,
     private val aclService: IgeAclService,

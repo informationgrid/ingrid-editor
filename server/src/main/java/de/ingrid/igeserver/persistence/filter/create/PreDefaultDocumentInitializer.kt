@@ -21,7 +21,7 @@ import java.util.*
  * Filter for processing document data send from the client before insert
  */
 @Component
-class PreDefaultDocumentInitializer @Autowired constructor(
+class PreDefaultDocumentInitializer(
     val dateService: DateService,
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,

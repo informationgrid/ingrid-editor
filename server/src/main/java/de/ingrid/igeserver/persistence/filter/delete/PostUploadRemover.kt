@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class PostUploadRemover @Autowired constructor(val storage: Storage) : Filter<PostDeletePayload> {
+class PostUploadRemover(val storage: Storage) : Filter<PostDeletePayload> {
 
     override val profiles = emptyArray<String>()
 

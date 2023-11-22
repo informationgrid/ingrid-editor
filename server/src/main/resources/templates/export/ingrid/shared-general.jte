@@ -352,9 +352,6 @@
             </gmd:MD_Format>
         </gmd:resourceFormat>
     @endif
-
-
-
     @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
     @template.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
     @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
@@ -367,7 +364,6 @@
     @template.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
     @template.ingrid.descriptiveKeywords(thesaurus = page.getGemetKeywords())
     @template.ingrid.descriptiveKeywords(thesaurus = page.getInvekosKeywords())
-
     @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>
@@ -429,7 +425,6 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
     @endif
-
     @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
         <gmd:spatialRepresentationType>
             <gmd:MD_SpatialRepresentationTypeCode
@@ -437,7 +432,6 @@
                     codeListValue="${spatialRepresentationType}" />
         </gmd:spatialRepresentationType>
     @endfor
-
     @for(Resolution resolution : page.getSpatialResolution())
         @if(resolution.getDenominator() != null)
             <gmd:spatialResolution>
@@ -715,9 +709,7 @@
 @endif
 </${page.getIdentificationType()}>
 </gmd:identificationInfo>
-
 ${contentInfo}
-
 @if(page.hasDistributionInfo())
     <gmd:distributionInfo>
         <gmd:MD_Distribution>
@@ -942,5 +934,11 @@ ${contentInfo}
         @if(cref.getHasAccessConstraints())
             <idf:hasAccessConstraint>true</idf:hasAccessConstraint>
         @endif
+        @if(TransformationTools.hasValue(cref.getMapUrl()))
+            <idf:mapUrl>${cref.getMapUrl()}</idf:mapUrl>
+        @endif
     </idf:crossReference>
 @endfor
+@if(page.getMapLinkUrl() != null)
+    <idf:mapUrl>${page.getMapLinkUrl()}</idf:mapUrl>
+@endif

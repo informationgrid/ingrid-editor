@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class PostUploadReverter @Autowired constructor(
+class PostUploadReverter(
     val storage: Storage
 ) :
     Filter<PostRevertPayload> {

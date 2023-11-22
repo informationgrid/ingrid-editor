@@ -35,7 +35,8 @@ open class IngridModelTransformer(
     val codelists: CodelistTransformer,
     val config: Config,
     val catalogService: CatalogService,
-    val cache: TransformerCache
+    val cache: TransformerCache,
+    val doc: Document? = null
 ) {
     companion object {
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
@@ -484,7 +485,7 @@ open class IngridModelTransformer(
     fun getCapabilitiesUrlsFromService(): List<String> {
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
-            documentService?.getIncomingReferences(doc)
+            documentService?.getIncomingReferences(doc, catalogIdentifier)
                 ?.map { documentService!!.getLastPublishedDocument(catalogIdentifier, it) }
                 ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
                 ?.mapNotNull {
@@ -519,7 +520,7 @@ open class IngridModelTransformer(
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
-    val systemEnvironment = data.systemEnvironment
+    open val systemEnvironment = data.systemEnvironment
 
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -602,7 +603,7 @@ open class IngridModelTransformer(
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
             ?: emptyList()
-    fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
+    open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
     fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
     
@@ -702,7 +703,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = getLastPublishedDocument(model.uuid)
-        return documentService!!.getIncomingReferences(doc).mapNotNull {
+        return documentService!!.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }
@@ -763,6 +764,8 @@ open class IngridModelTransformer(
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
     }
+    
+    open val mapLinkUrl: String? = null
 }
 
 enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }
@@ -795,7 +798,8 @@ data class CrossReference(
     val serviceOperation: String? = null,
     val serviceUrl: String? = null,
     val serviceVersion: String? = null,
-    val hasAccessConstraints: Boolean = false
+    val hasAccessConstraints: Boolean = false,
+    var mapUrl: String? = null
 )
 
 data class SuperiorReference(

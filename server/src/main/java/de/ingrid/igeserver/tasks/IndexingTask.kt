@@ -21,8 +21,8 @@ import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
-import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
@@ -58,7 +58,7 @@ import kotlin.concurrent.schedule
 
 @Component
 @Profile("elasticsearch")
-class IndexingTask @Autowired constructor(
+class IndexingTask(
     private val indexService: IndexService,
     private val settingsService: SettingsService,
     private val catalogService: CatalogService,
@@ -219,7 +219,7 @@ class IndexingTask @Autowired constructor(
         exporter: IgeExporter,
         indexInfo: IndexInfo
     ) {
-        val catalogType = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
@@ -245,7 +245,7 @@ class IndexingTask @Autowired constructor(
                 try {
                     val elasticDocument = convertToElasticDocument(exportedDoc)
                     index(docInfo, indexInfo, elasticDocument)
-                    val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
+                    val simpleContext = SimpleContext(catalogId, profile, docInfo.document.uuid)
                     postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
                 } catch (ex: Exception) {
                     val errorMessage =

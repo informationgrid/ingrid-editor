@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UvpNegativePreliminaryAssessmentType @Autowired constructor() : UvpBaseType() {
+class UvpNegativePreliminaryAssessmentType() : UvpBaseType() {
     override val className = "UvpNegativePreliminaryAssessmentDoc"
 
     override val jsonSchema = "/uvp/schemes/negative-preliminary-assessment.schema.json"

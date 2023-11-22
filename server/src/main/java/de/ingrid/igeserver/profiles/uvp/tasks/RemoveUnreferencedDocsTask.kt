@@ -10,11 +10,9 @@ import de.ingrid.mdek.upload.storage.impl.Scope
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.query.NativeQuery
-import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-@Profile("uvp")
 @Component
 class RemoveUnreferencedDocsTask(
     val storage: FileSystemStorage,

@@ -25,7 +25,7 @@ data class PermissionInfo(
 )
 
 @Service
-class IgeAclService @Autowired constructor(
+class IgeAclService(
     val aclService: AclService,
     val docWrapperRepo: DocumentWrapperRepository,
     val authUtils: AuthUtils

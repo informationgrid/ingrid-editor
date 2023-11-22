@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import de.ingrid.igeserver.model.Record
 
 @Service
-class OgcGeoJsonExporter @Autowired constructor(
+class OgcGeoJsonExporter(
         @Lazy val documentService: DocumentService,
         val catalogService: CatalogService,
 ) : IgeExporter {

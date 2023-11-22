@@ -26,7 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexing @Autowired constructor(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
+class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
 
     private val log = logger()
 

@@ -29,6 +29,9 @@ export class GeoDatasetDoctype extends IngridShared {
     },
   };
 
+  showInspireConform = true;
+  isGeoDataset = true;
+
   documentFields = () => {
     this.handleInVeKoSBehaviour();
 

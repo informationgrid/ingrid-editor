@@ -29,6 +29,8 @@ export class GeoServiceDoctype extends IngridShared {
     },
   };
 
+  isGeoService = true;
+
   tree = inject(TreeQuery);
 
   private mapServiceTypeToVersionCodelist = {

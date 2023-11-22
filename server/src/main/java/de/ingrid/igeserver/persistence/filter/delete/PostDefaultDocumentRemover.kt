@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @Profile("elasticsearch")
-class PostDefaultDocumentRemover @Autowired constructor(val indexTask: IndexingTask) : Filter<PostDeletePayload> {
+class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDeletePayload> {
 
     private val log = logger()
 

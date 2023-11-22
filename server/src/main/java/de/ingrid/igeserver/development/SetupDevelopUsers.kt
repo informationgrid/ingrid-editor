@@ -15,7 +15,7 @@ import kotlin.concurrent.schedule
 
 @Profile("dev")
 @Component
-class SetupDevelopUsers @Autowired constructor(
+class SetupDevelopUsers(
     val userRepo: UserRepository,
     val catalogRepo: CatalogRepository,
     val roleRepo: RoleRepository,

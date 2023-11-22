@@ -2,6 +2,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.*
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
@@ -10,7 +11,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.net.HttpURLConnection
 import java.net.URL
@@ -18,10 +18,11 @@ import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
-class URLChecker @Autowired constructor(
+class URLChecker(
     val notifier: JobsNotifier,
     val referenceHandlerFactory: ReferenceHandlerFactory,
-    val urlRequestService: UrlRequestService
+    val urlRequestService: UrlRequestService,
+    val catalogService: CatalogService
 ) : IgeJob() {
 
     companion object {
@@ -93,13 +94,15 @@ class URLChecker @Autowired constructor(
     private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
-        val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
         val docIdsAsString = dataMap.getString("groupDocIds")
-        val groupDocIds: List<Int> = if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
+        val groupDocIds: List<Int> =
+            if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
+
+        val profile = catalogService.getProfileFromCatalog(catalogId)
         val referenceHandler = referenceHandlerFactory.get(profile)
 
-        return JobInfo(profile, catalogId, referenceHandler, groupDocIds)
+        return JobInfo(profile.identifier, catalogId, referenceHandler, groupDocIds)
     }
 
     private fun convertToUrlList(

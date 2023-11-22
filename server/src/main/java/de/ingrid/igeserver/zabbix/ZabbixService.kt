@@ -18,7 +18,7 @@ const val JSONRPC = "2.0"
 
 @Service
 @Profile("zabbix")
-class ZabbixService @Autowired constructor(
+class ZabbixService(
     zabbixProperties: ZabbixProperties
 ) {
     private var log = logger()

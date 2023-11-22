@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = InGridProfile.id
 

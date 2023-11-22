@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class AddressType @Autowired constructor(val jdbcTemplate: JdbcTemplate) : EntityType() {
+class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     @Autowired
     lateinit var codelistHandler: CodelistHandler

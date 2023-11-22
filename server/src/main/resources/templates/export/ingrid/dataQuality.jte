@@ -2,10 +2,8 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer.DisplayableQuality
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 
 @param GeodatasetModelTransformer page
-
 <gmd:dataQualityInfo>
     <gmd:DQ_DataQuality>
         <gmd:scope>

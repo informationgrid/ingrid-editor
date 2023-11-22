@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ogc-api")
-class OgcHtmlExporter @Autowired constructor(
+class OgcHtmlExporter(
         @Lazy val documentService: DocumentService,
         val catalogService: CatalogService,
         val ogcHtmlConverterService: OgcHtmlConverterService

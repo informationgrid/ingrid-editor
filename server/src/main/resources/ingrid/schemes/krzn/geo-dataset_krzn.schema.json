@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "GeoDatasetKrzn#1.0.0",
+  "$ref": "#/definitions/GeoDatasetKrzn",
+  "definitions": {
+    "GeoDatasetKrzn": {
+      "allOf": [
+        {
+          "$ref": "../geo-dataset.schema.json#/definitions/GeoDataset"
+        }
+      ],
+      "properties": {
+        "dataset": true,
+        "lineage": true,
+        "spatial": true,
+        "subType": true,
+        "keywords": true,
+        "metadata": true,
+        "resource": true,
+        "temporal": true,
+        "extraInfo": true,
+        "qualities": true,
+        "identifier": true,
+        "isOpenData": true,
+        "resolution": true,
+        "dataQuality": true,
+        "description": true,
+        "distribution": true,
+        "pointOfContact": true,
+        "dataQualityInfo": true,
+        "isAdVCompatible": true,
+        "topicCategories": true,
+        "advProductGroups": true,
+        "graphicOverviews": true,
+        "isInspireIdentified": true,
+        "digitalTransferOptions": true,
+        "maintenanceInformation": true,
+        "portrayalCatalogueInfo": true,
+        "spatialRepresentationType": true,
+        "featureCatalogueDescription": true,
+        "absoluteExternalPositionalAccuracy": true,
+        "title": true,
+        "_uuid": true,
+        "_type": true,
+        "environmentDescription": {
+          "type": ["null", "string"]
+        },
+        "mapLink": {
+          "$ref": "../../../general.schema.json#/definitions/KeyValue"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

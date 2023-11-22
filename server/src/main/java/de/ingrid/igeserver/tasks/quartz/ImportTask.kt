@@ -10,7 +10,7 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
-import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import org.apache.logging.log4j.kotlin.logger
@@ -25,7 +25,7 @@ import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
-class ImportTask @Autowired constructor(
+class ImportTask(
     val notifier: JobsNotifier,
     val importService: ImportService,
     val documentService: DocumentService,
@@ -53,7 +53,7 @@ class ImportTask @Autowired constructor(
             val report = when (stage) {
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
-                    val profile = catalogService.getCatalogById(info.catalogId).type.let { catalogService.getCatalogProfile(it) }
+                    val profile = catalogService.getProfileFromCatalog(info.catalogId)
                     importService.analyzeFile(info.catalogId, info.importFile!!, message)
                         .also { checkForValidDocumentsInProfile(profile, it) }
                         .also {

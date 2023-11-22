@@ -9,7 +9,6 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
@@ -31,7 +30,7 @@ data class DocumentIndexInfo(
 )
 
 @Service
-class IndexService @Autowired constructor(
+class IndexService(
     private val catalogRepo: CatalogRepository,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,

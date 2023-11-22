@@ -5,7 +5,7 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.profiles.CatalogProfile
+import de.ingrid.igeserver.services.CatalogProfile
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @Profile("zabbix")
-class PostDocumentRemoverZabbix @Autowired constructor(
+class PostDocumentRemoverZabbix(
     val zabbixService: ZabbixService
 ) : Filter<PostDeletePayload> {
 

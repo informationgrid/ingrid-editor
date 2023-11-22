@@ -9,7 +9,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
 @Service
-class SchedulerService @Autowired constructor(val factory: SchedulerFactoryBean) {
+class SchedulerService(val factory: SchedulerFactoryBean) {
     val log = logger()
 
     private val scheduler = factory.scheduler

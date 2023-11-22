@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Profile("csw-t")
 @RequestMapping(path = ["/api/cswt"])
-class CswtApiController  @Autowired constructor(
+class CswtApiController (
     private val apiValidationService: ApiValidationService,
     private val ogcCswtService: CswtService,
     private val documentService: DocumentService,

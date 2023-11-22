@@ -8,14 +8,12 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel
 import de.ingrid.igeserver.services.DocumentCategory
-import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.StringWriter
 import java.io.Writer
 
 @Service
-@Profile("mcloud")
 class PortalExporter : IgeExporter {
 
     override val typeInfo: ExportTypeInfo

@@ -7,23 +7,20 @@ import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.IndexIdFieldConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
-import de.ingrid.igeserver.research.quickfilter.*
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.Permissions
+import de.ingrid.igeserver.research.quickfilter.Draft
+import de.ingrid.igeserver.research.quickfilter.ExceptFolders
+import de.ingrid.igeserver.research.quickfilter.Spatial
+import de.ingrid.igeserver.research.quickfilter.TimeSpan
+import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("mcloud")
-class MCloudProfile @Autowired constructor(
+class MCloudProfile(
     @JsonIgnore val codelistHandler: CodelistHandler,
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,

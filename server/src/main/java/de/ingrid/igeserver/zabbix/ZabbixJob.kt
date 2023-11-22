@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 @PersistJobDataAfterExecution
 @Profile("zabbix")
-class ZabbixJob @Autowired constructor(
+class ZabbixJob(
     val zabbixService: ZabbixService
 ) : IgeJob() {
 

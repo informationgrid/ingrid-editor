@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-abstract class UvpBaseType @Autowired constructor() : EntityType() {
+abstract class UvpBaseType() : EntityType() {
     override val profiles = arrayOf("uvp")
 
     override fun pullReferences(doc: Document): List<Document> {
