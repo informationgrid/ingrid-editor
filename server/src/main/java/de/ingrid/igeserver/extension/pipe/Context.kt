@@ -12,7 +12,8 @@ interface Context {
      *
      * NOTE Null means *no profile*, which means that only filters matching *all profiles* will be active
      */
-    val profile: String?
+    val profile: String
+    val parentProfile: String?
 
     /**
      * The catalog the operation is to be executed

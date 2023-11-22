@@ -304,9 +304,9 @@ class DocumentService(
         initiator: InitiatorAction = InitiatorAction.DEFAULT
     ): DocumentData {
 
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docTypeName = document.type
-        val docType = getDocumentType(docTypeName, filterContext.profile!!)
+        val docType = getDocumentType(docTypeName, filterContext.profile)
 
         // run pre-create pipe(s)
         val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address), initiator)
@@ -436,7 +436,7 @@ class DocumentService(
     }
 
     fun publishPendingDocuments(principal: Principal, catalogId: String) {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
 
         docWrapperRepo.findAllPending(catalogId)
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }
@@ -450,7 +450,7 @@ class DocumentService(
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
                     wrapper.pending_date = null
                     val updatedWrapper = docWrapperRepo.save(wrapper)
-                    val docType = getDocumentType(updatedWrapper.type, filterContext.profile!!)
+                    val docType = getDocumentType(updatedWrapper.type, filterContext.profile)
                     runPostUpdatePipes(docType, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
                     log.error("Error during publishing pending document: ${wrapper.uuid}", e)
@@ -466,11 +466,11 @@ class DocumentService(
         id: Int,
         data: Document,
     ): DocumentData {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
 
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile!!)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile)
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
@@ -572,11 +572,11 @@ class DocumentService(
         data: Document,
         publishDate: Date? = null,
     ): DocumentData {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
 
         // run pre-update pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile!!)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile)
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
@@ -690,7 +690,7 @@ class DocumentService(
     }
 
     fun deleteDocument(principal: Principal, catalogId: String, id: Int) {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         deleteRecursively(catalogId, id, filterContext)
     }
 
@@ -701,7 +701,7 @@ class DocumentService(
 
 //        val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = docData.document.type
-        val docType = getDocumentType(docTypeName, filterContext.profile!!)
+        val docType = getDocumentType(docTypeName, filterContext.profile)
 
         val preDeletePayload = PreDeletePayload(docType, docData.document, docData.wrapper)
         preDeletePipe.runFilters(preDeletePayload, filterContext)
@@ -758,8 +758,8 @@ class DocumentService(
         assert(docData.document.state == DOCUMENT_STATE.DRAFT)
 
         // run pre-revert pipe(s)
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docType = getDocumentType(docData.wrapper.type, filterContext.profile!!)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
+        val docType = getDocumentType(docData.wrapper.type, filterContext.profile)
         val preRevertPayload = PreRevertPayload(docType, docData.document, docData.wrapper)
         preRevertPipe.runFilters(preRevertPayload, filterContext)
 
@@ -805,8 +805,8 @@ class DocumentService(
         lastPublished.wrapperId = id
 
         // run pre-unpublish pipe(s)
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogRepo, principal)
-        val docType = getDocumentType(currentDoc.document.type, filterContext.profile!!)
+        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
+        val docType = getDocumentType(currentDoc.document.type, filterContext.profile)
         val preUnpublishPayload = PreUnpublishPayload(docType, lastPublished, currentDoc.wrapper)
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
@@ -966,9 +966,9 @@ class DocumentService(
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {
         val docData = getDocumentFromCatalog(catalogId, docId)
-        val profile = docData.document.catalog!!.type
-        val filterContext = DefaultContext(catalogId, profile, principal)
-        val docType = getDocumentType(docData.wrapper.type, profile)
+        val profile = catalogService.getProfileFromCatalog(catalogId)
+        val filterContext = DefaultContext(catalogId, profile.identifier, profile.parentProfile, principal)
+        val docType = getDocumentType(docData.wrapper.type, profile.identifier)
         val prePublishPayload = PrePublishPayload(docType, docData.document, docData.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
     }
