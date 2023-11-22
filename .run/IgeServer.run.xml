@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="IgeServer" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="mcloud,test,dev,uvp,elasticsearch,ingrid" />
+    <option name="ACTIVE_PROFILES" value="mcloud,test,dev,uvp,elasticsearch,ingrid,ogc-api,csw-t,ingrid-kommunal-st,ingrid-krzn" />
     <option name="ENABLE_JMX_AGENT" value="false" />
     <module name="ige-ng.server.main" />
     <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
