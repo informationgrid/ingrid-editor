@@ -443,14 +443,18 @@ class BmiProfile(
         val newPermissions: MutableList<String> = permissions.toMutableList()
 
         if(isCatAdmin) {
-            newPermissions.add(Permissions.manage_all_catalogs.name)
+            newPermissions.add(Permissions.manage_content.name)
         }
 
         return  if(isSuperAdmin) {
-            newPermissions
+            newPermissions.filter { permission ->
+                (!permission.equals(Permissions.manage_ibus.name))
+            }
         } else {
             newPermissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
-                    && !permission.equals(Permissions.can_export.name))
+                    && !permission.equals(Permissions.can_export.name)
+                    && !permission.equals(Permissions.manage_codelist_repository.name)
+                    && !permission.equals(Permissions.manage_ibus.name))
             }
         }
     }
