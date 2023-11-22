@@ -163,8 +163,8 @@
   },
   "upload": {
     "errorMessages": {
-      "FileSize": "The file size exceeds the maximum size of {maxSize} bytes.",
-      "DirectorySize": "The dataset size exceeds the maximum size of {maxSize} bytes."
+      "fileSize": "Die Dateigröße überschreitet die maximale Größe von {maxSize} Bytes.",
+      "directorySize": "Die Datensatzgröße überschreitet die maximale Größe von {maxSize} Bytes."
     }
   }
 }
