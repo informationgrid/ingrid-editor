@@ -1,16 +1,12 @@
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
-import { InformationSystemDoctypeKrzn } from "./krzn/doctypes/information-system.doctype";
 
 @Component({
   template: "",
 })
 class InGridKrznComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);
-  informationSystem = inject(InformationSystemDoctypeKrzn);
-
-  profileId = "ingrid-krzn";
 
   constructor() {
     super();
