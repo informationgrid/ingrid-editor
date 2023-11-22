@@ -34,6 +34,8 @@ class IngridLuceneExporter(
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
+    var profileTransformer: IngridProfileTransformer? = null
+
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
@@ -74,22 +76,31 @@ class IngridLuceneExporter(
         val mapper = ObjectMapper().registerKotlinModule()
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
 
+        val otherTransformer = profileTransformer?.get(doc.type)
         val transformer: Any = when (type) {
             IngridDocType.ADDRESS -> {
-                AddressModelTransformer(
-                    mapper.convertValue(doc, AddressModel::class.java),
-                    catalog.identifier,
-                    codelistTransformer
-                )
+                if (otherTransformer != null) {
+                    otherTransformer.constructors.first().call(mapper.convertValue(doc, AddressModel::class.java), catalog.identifier, codelistTransformer, doc)
+                } else {
+                    AddressModelTransformer(
+                        mapper.convertValue(doc, AddressModel::class.java),
+                        catalog.identifier,
+                        codelistTransformer
+                    )
+                }
             }
             IngridDocType.DOCUMENT -> {
-                IngridModelTransformer(
-                    mapper.convertValue(doc, IngridModel::class.java),
-                    catalog.identifier,
-                    codelistTransformer,
-                    config,
-                    catalogService, TransformerCache()
-                )
+                if (otherTransformer != null) {
+                    otherTransformer.constructors.first().call(mapper.convertValue(doc, IngridModel::class.java), catalog.identifier, codelistTransformer, config, catalogService, TransformerCache(), doc)
+                } else {
+                    IngridModelTransformer(
+                        mapper.convertValue(doc, IngridModel::class.java),
+                        catalog.identifier,
+                        codelistTransformer,
+                        config,
+                        catalogService, TransformerCache()
+                    )
+                }
             }
             IngridDocType.FOLDER -> {
                 FolderModelTransformer(

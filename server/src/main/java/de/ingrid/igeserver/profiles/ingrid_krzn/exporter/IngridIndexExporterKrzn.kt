@@ -32,6 +32,7 @@ class IngridIndexExporterKrzn(
     
     init {
         idfExporter.profileTransformer = krznProfileTransformer
+        luceneExporter.profileTransformer = krznProfileTransformer
     }
 
 }

@@ -10,7 +10,6 @@ class KrznProfileTransformer : IngridProfileTransformer {
     override fun get(docType: String): KClass<*>? {
         return when(docType) {
             "InGridGeoDataset" -> GeodatasetTransformerKrzn::class
-            "InGridInformationSystem" -> InformationSystemModelTransformerKrzn::class
             else -> null
         } 
     }

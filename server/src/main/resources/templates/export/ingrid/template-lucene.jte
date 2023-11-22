@@ -40,6 +40,7 @@
     "lang": "de",
     "boost": 1,
     "children.object_node.obj_uuid": [],
+    "capabilities_url_with_client": "${page.getMapLinkUrl()}",
     "organisation": "",
     "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
     "t011_obj_serv.coupling_type": "${page.getCouplingType()}",
