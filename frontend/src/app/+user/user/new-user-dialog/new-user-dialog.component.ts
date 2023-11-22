@@ -1,13 +1,7 @@
-import {
-  AfterContentChecked,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
-import { ConfigService } from "../../../services/config/config.service";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
@@ -20,7 +14,7 @@ import { IgeError } from "../../../models/ige-error";
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
 })
-export class NewUserDialogComponent implements OnInit, AfterContentChecked {
+export class NewUserDialogComponent implements OnInit {
   userSub: Subscription;
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
@@ -33,25 +27,22 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
   externalUsers: BackendUser[];
   form: FormGroup;
   noAvailableUsers = true;
-  importExternal: boolean;
+  importExternal = false;
   formlyFieldConfig: FormlyFieldConfig[];
-  options: FormlyFormOptions;
+  options: FormlyFormOptions = {
+    formState: {
+      showGroups: false,
+    },
+  };
   model: FrontendUser;
   loginValue = "";
   asAdmin: boolean = false;
-  currentPage: number = 0;
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
     private userService: UserService,
-    private configService: ConfigService,
     private modalService: ModalService,
-    private cdRef: ChangeDetectorRef,
   ) {}
-
-  ngAfterContentChecked(): void {
-    this.cdRef.detectChanges();
-  }
 
   ngOnInit(): void {
     this.model = {
@@ -66,13 +57,6 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       role: "",
       id: null,
       groups: [],
-    };
-    this.importExternal = false;
-
-    this.options = {
-      formState: {
-        showGroups: false,
-      },
     };
 
     this.form = new FormGroup({
@@ -91,7 +75,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     this.userSub = this.users$.subscribe();
   }
 
-  updateForm(existingLogin) {
+  updateForm(existingLogin: string) {
     if (existingLogin !== this.loginValue) {
       this.importExternal = false;
       this.loginValue = existingLogin;
@@ -107,6 +91,7 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       }
     }
   }
+
   createUser() {
     this.form.disable();
     const user = this.model;

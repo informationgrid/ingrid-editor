@@ -100,6 +100,7 @@ export const getNewUserFormFields = (
       wrappers: ["panel"],
       props: {
         externalLabel: "Gruppen",
+        placeholder: "Gruppe wählen...",
         appearance: "outline",
         required: true,
         options: of(groups),

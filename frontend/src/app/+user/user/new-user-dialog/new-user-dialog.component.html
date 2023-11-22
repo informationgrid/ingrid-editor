@@ -15,8 +15,14 @@
 
     <mat-dialog-content [formGroup]="form">
         <div class="no-selection-text">
-            Wählen Sie einen bestehenden Benutzernamen aus oder legen Sie ein
-            neues Login an.
+            <ng-container *ngIf="options.formState.showGroups; else userInfo">
+                Fügen Sie dem Benutzer zu mindestens einer Gruppe hinzu, so dass
+                dieser Rechte auf die Datensätze erhält.
+            </ng-container>
+            <ng-template #userInfo>
+                Wählen Sie einen bestehenden Benutzernamen aus oder legen Sie
+                ein neues Login an.
+            </ng-template>
         </div>
         <div *ngIf="userSub && !userSub.closed" class="spinner">
             <mat-spinner></mat-spinner>
@@ -34,27 +40,38 @@
         <button mat-button mat-dialog-close color="primary">Abbrechen</button>
         <div class="flex-1"></div>
         <button
-            *ngIf="currentPage === 1"
+            *ngIf="options.formState.showGroups"
             color="primary"
             mat-button
             data-cy="create-back"
-            (click)="currentPage = 0; this.showGroupsPage(false)"
+            (click)="this.showGroupsPage(false)"
             class="back-button"
         >
             <mat-icon>chevron_left</mat-icon>
             <span>Zurück</span>
         </button>
         <button
+            *ngIf="
+                asAdmin || options.formState.showGroups;
+                else showContinueButton
+            "
             mat-flat-button
             color="primary"
             [disabled]="form.invalid"
-            (click)="
-                this.asAdmin || this.currentPage === 1
-                    ? this.createUser()
-                    : (this.currentPage = 1) && this.showGroupsPage(true)
-            "
+            (click)="createUser()"
         >
-            {{ this.asAdmin || this.currentPage === 1 ? "Anlegen" : "Weiter" }}
+            Anlegen
         </button>
+
+        <ng-template #showContinueButton>
+            <button
+                mat-flat-button
+                color="primary"
+                [disabled]="form.invalid"
+                (click)="showGroupsPage(true)"
+            >
+                Weiter
+            </button>
+        </ng-template>
     </mat-dialog-actions>
 </div>
