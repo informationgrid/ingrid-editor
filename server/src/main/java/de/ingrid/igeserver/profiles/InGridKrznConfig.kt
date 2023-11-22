@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
 
-@Profile("ingrid_krzn")
+@Profile("ingrid-krzn")
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.krzn"])
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.ingrid_krzn"])
 class InGridKrznConfig

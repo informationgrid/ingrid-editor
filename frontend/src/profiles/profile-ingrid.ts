@@ -55,8 +55,6 @@ export class InGridComponent implements OnInit {
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
 
-  protected profileId = "ingrid";
-
   protected getDocTypes = () => {
     return [
       this.folder,
@@ -75,8 +73,6 @@ export class InGridComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    console.log(`PROFILE ON INIT: ${this.profileId}`);
-    this.profileService.setProfileId(this.profileId);
     this.profileService.registerProfiles(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);

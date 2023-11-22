@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.krzn.types
+package de.ingrid.igeserver.profiles.ingrid_krzn.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.*
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType

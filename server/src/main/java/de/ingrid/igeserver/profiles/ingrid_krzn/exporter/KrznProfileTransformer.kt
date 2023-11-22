@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.krzn.exporter
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridProfileTransformer
 import org.springframework.stereotype.Service

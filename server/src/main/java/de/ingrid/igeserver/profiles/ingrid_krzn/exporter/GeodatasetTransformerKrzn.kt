@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.krzn.exporter
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.KeyValueModel

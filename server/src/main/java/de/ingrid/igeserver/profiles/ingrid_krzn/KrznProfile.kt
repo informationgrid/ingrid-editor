@@ -1,4 +1,4 @@
-package de.ingrid.igeserver.profiles.krzn
+package de.ingrid.igeserver.profiles.ingrid_krzn
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
