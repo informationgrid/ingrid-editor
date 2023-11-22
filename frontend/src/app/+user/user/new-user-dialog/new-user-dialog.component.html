@@ -1,19 +1,12 @@
-<div
-    cdkDrag
-    cdkDragRootElement=".cdk-overlay-pane"
-    xmlns="http://www.w3.org/1999/html"
+<ige-dialog-template
+    label="Benutzer hinzufügen"
+    [disabled]="form.invalid"
+    [submitLabel]="
+        asAdmin || options.formState.showGroups ? 'Anlegen' : 'Weiter'
+    "
+    (submit)="handleSubmit()"
 >
-    <div
-        cdkDragHandle
-        class="dialog-title-wrapper flex-row align-items-center gap-12"
-    >
-        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-            <mat-icon>close</mat-icon>
-        </button>
-        <h1 mat-dialog-title>Benutzer hinzufügen</h1>
-    </div>
-
-    <mat-dialog-content [formGroup]="form">
+    <ng-container content [formGroup]="form">
         <div class="no-selection-text">
             <ng-container *ngIf="options.formState.showGroups; else userInfo">
                 Fügen Sie dem Benutzer zu mindestens einer Gruppe hinzu, so dass
@@ -35,10 +28,8 @@
             [options]="options"
         >
         </formly-form>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-        <button mat-button mat-dialog-close color="primary">Abbrechen</button>
-        <div class="flex-1"></div>
+    </ng-container>
+    <ng-container actions>
         <button
             *ngIf="options.formState.showGroups"
             color="primary"
@@ -50,28 +41,5 @@
             <mat-icon>chevron_left</mat-icon>
             <span>Zurück</span>
         </button>
-        <button
-            *ngIf="
-                asAdmin || options.formState.showGroups;
-                else showContinueButton
-            "
-            mat-flat-button
-            color="primary"
-            [disabled]="form.invalid"
-            (click)="createUser()"
-        >
-            Anlegen
-        </button>
-
-        <ng-template #showContinueButton>
-            <button
-                mat-flat-button
-                color="primary"
-                [disabled]="form.invalid"
-                (click)="showGroupsPage(true)"
-            >
-                Weiter
-            </button>
-        </ng-template>
-    </mat-dialog-actions>
-</div>
+    </ng-container>
+</ige-dialog-template>

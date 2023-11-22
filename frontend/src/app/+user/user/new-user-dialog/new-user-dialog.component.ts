@@ -8,7 +8,9 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
@@ -65,12 +67,16 @@ export class NewUserDialogComponent implements OnInit {
     });
     this.form
       .get("login")
-      .valueChanges.subscribe((value) => this.updateForm(value));
-    this.form.get("role").valueChanges.subscribe((role) => {
-      if (typeof role === "string") {
-        this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
-      }
-    });
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((value) => this.updateForm(value));
+    this.form
+      .get("role")
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((role) => {
+        if (typeof role === "string") {
+          this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
+        }
+      });
 
     this.userSub = this.users$.subscribe();
   }
@@ -138,5 +144,14 @@ export class NewUserDialogComponent implements OnInit {
     } else {
       throw error;
     }
+  }
+
+  handleSubmit() {
+    if (this.asAdmin || this.options.formState.showGroups) {
+      this.createUser();
+      return;
+    }
+
+    this.options.formState.showGroups = true;
   }
 }
