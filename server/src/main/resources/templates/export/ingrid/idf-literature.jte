@@ -137,7 +137,7 @@
                         <gmd:levelDescription>
                             <gmd:MD_ScopeDescription>
                                 <gmd:other>
-                                    <gco:CharacterString>2</gco:CharacterString>
+                                    <gco:CharacterString>literature</gco:CharacterString>
                                 </gmd:other>
                             </gmd:MD_ScopeDescription>
                         </gmd:levelDescription>

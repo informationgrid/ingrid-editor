@@ -564,7 +564,7 @@
                             <gmd:levelDescription>
                                 <gmd:MD_ScopeDescription>
                                     <gmd:other>
-                                        <gco:CharacterString>6</gco:CharacterString>
+                                        <gco:CharacterString>information system</gco:CharacterString>
                                     </gmd:other>
                                 </gmd:MD_ScopeDescription>
                             </gmd:levelDescription>

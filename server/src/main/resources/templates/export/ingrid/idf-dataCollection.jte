@@ -88,7 +88,7 @@
                         <gmd:levelDescription>
                             <gmd:MD_ScopeDescription>
                                 <gmd:other>
-                                    <gco:CharacterString>5</gco:CharacterString>
+                                    <gco:CharacterString>data collection</gco:CharacterString>
                                 </gmd:other>
                             </gmd:MD_ScopeDescription>
                         </gmd:levelDescription>
