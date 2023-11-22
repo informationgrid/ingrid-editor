@@ -46,7 +46,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadUpdate(data)
-            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
+            val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
 
             val result = updatePipe.runFilters(payload, context)
 
@@ -71,7 +71,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
+            val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -95,7 +95,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadCreate(data)
-            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
+            val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
 
             val result = createPipe.runFilters(payload, context)
 
@@ -116,7 +116,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", "profileA", BasicUserPrincipal("meier"))
+            val context = DefaultContext("", "profileA", null, BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 
@@ -143,7 +143,7 @@ class PipeTest : FunSpec() {
         {
             val data = jacksonObjectMapper().readTree("{\"name\": \"John\", \"age\": \"35\"}")
             val payload = TestPayloadPublish(data)
-            val context = DefaultContext("", null, BasicUserPrincipal("meier"))
+            val context = DefaultContext("", "", null, BasicUserPrincipal("meier"))
 
             val result = publishPipe.runFilters(payload, context)
 
