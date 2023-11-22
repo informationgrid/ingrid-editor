@@ -54,7 +54,7 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 6
             arrayOf(
-                TestUpdatePipe::class to "Running filters on pipe 'UpdatePipe' for profile 'null'",
+                TestUpdatePipe::class to "Running filters on pipe 'UpdatePipe' for profile ''",
                 TestUpdatePipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidateUpdateFilter'",
                 TestValidateUpdateFilter::class to "Validate data on persist",
                 TestValidateUpdateFilter::class to "Validate data on update",
@@ -79,7 +79,7 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 7
             arrayOf(
-                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile ''",
                 TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
                 TestAuthorizePublishFilter::class to "Authorize on publish",
                 TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
@@ -103,7 +103,7 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 2
             arrayOf(
-                TestCreatePipe::class to "Running filters on pipe 'CreatePipe' for profile 'null'",
+                TestCreatePipe::class to "Running filters on pipe 'CreatePipe' for profile ''",
                 TestCreatePipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestValidateCreateFilter' because it is disabled by configuration"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
@@ -151,13 +151,13 @@ class PipeTest : FunSpec() {
             result.data shouldBe data
             context.messages().count() shouldBe 7
             arrayOf(
-                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile 'null'",
+                TestPublishPipe::class to "Running filters on pipe 'PublishPipe' for profile ''",
                 TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestAuthorizePublishFilter'",
                 TestAuthorizePublishFilter::class to "Authorize on publish",
                 TestPublishPipe::class to "Running filter 'de.ingrid.igeserver.extension.TestValidatePublishFilter'",
                 TestValidatePublishFilter::class to "Validate data on publish",
-                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter' because it does not apply to profile 'null'",
-                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile 'null'"
+                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishProfileAFilter' because it does not apply to profile ''",
+                TestPublishPipe::class to "Skipped filter 'de.ingrid.igeserver.extension.TestAuthorizePublishNullFilter' because it does not apply to profile ''"
             ).forEachIndexed { index, expectation ->
                 val m = context.messages().elementAt(index)
                 m.creator should beInstanceOf(expectation.first)
