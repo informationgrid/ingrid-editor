@@ -1,10 +1,7 @@
 ---
 # ID des GUI Elements
 id: regionKey
-docType:
-  - InGridGeoDataset
-  - InGridGeoService
-profile: ingrid
+docType: all
 
 # title, used as window title
 title: Regionalschlüssel

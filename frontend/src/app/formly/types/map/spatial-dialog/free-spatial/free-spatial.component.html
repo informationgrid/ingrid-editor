@@ -55,5 +55,12 @@
         <mat-label>Amtlicher Regionalschlüssel (ARS)</mat-label>
         <input matInput [formControl]="arsControl" data-cy="free-spatial-ars" />
         <mat-error>Die ID ist bereits vergeben</mat-error>
+        <ige-help-context-button
+            matSuffix
+            fieldId="regionKey"
+            label="Amtlicher Regionalschlüssel (ARSZ)"
+            docType="all"
+        >
+        </ige-help-context-button>
     </mat-form-field>
 </div>

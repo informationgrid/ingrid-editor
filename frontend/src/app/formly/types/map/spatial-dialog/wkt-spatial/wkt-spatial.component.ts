@@ -8,11 +8,7 @@ import {
 } from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { ContextHelpComponent } from "../../../../../shared/context-help/context-help.component";
-import { ContextHelpService } from "../../../../../services/context-help/context-help.service";
-import { Observable, of } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { MatDialog } from "@angular/material/dialog";
 import { finalize } from "rxjs/operators";
 
 @Component({
@@ -28,13 +24,10 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   error: string = null;
 
   private drawnWkt: Layer;
-  private currentDialog: MatDialogRef<ContextHelpComponent>;
   isAnalyzing = false;
 
   constructor(
     private leafletService: LeafletService,
-    private contextHelpService: ContextHelpService,
-    private translocoService: TranslocoService,
     public dialog: MatDialog,
   ) {}
 
@@ -79,18 +72,5 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
 
   private drawWkt(value: string) {
     this.drawnWkt = this.leafletService.convertWKT(this.map, value, true);
-  }
-
-  public showHelpDialog() {
-    let desc: Observable<string> = of(
-      this.translocoService.translate("spatial.spatialWktHelptext"),
-    );
-
-    this.currentDialog?.close();
-
-    this.contextHelpService.showContextHelpPopup(
-      "Begrenzungspolygon als WKT",
-      desc,
-    );
   }
 }
