@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
 @Service
-class LuceneExporter @Autowired constructor(
+class LuceneExporter(
     val catalogRepo: CatalogRepository,
     val codelistService: CodeListService
 ) {

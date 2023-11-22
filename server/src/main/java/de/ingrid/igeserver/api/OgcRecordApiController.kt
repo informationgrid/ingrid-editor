@@ -20,7 +20,7 @@ import java.time.Instant
 @RestController
 @Profile("ogc-api")
 @RequestMapping(path = ["/api/ogc"])
-class OgcApiRecordsController @Autowired constructor(
+class OgcApiRecordsController(
         private val ogcRecordService: OgcRecordService,
         private val researchService: ResearchService,
         private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
  * NOTE This class uses AuditLogger to create and log messages
  */
 @Component
-class PostDataHistoryLogger @Autowired constructor(
+class PostDataHistoryLogger(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService
 ) : Filter<PostPersistencePayload> {

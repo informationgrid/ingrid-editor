@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class PostUploadUnpublisher @Autowired constructor(val storage: Storage) : Filter<PostUnpublishPayload> {
+class PostUploadUnpublisher(val storage: Storage) : Filter<PostUnpublishPayload> {
 
     override val profiles = emptyArray<String>()
 

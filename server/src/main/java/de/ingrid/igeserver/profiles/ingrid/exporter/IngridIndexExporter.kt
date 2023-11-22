@@ -23,7 +23,7 @@ import org.w3c.dom.Node
 import java.time.OffsetDateTime
 
 @Service
-class IngridIndexExporter @Autowired constructor(
+class IngridIndexExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     val luceneExporter: IngridLuceneExporter,
     val documentWrapperRepository: DocumentWrapperRepository

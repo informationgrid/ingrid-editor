@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = UvpProfile.id
 

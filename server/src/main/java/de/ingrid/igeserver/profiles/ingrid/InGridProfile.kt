@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class InGridProfile @Autowired constructor(
+class InGridProfile(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val codelistHandler: CodelistHandler,
     @JsonIgnore @Lazy val documentService: DocumentService,

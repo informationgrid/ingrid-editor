@@ -14,7 +14,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class StatisticApiController @Autowired constructor(
+class StatisticApiController(
     val researchService: ResearchService,
     val authUtils: AuthUtils,
     val catalogService: CatalogService

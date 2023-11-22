@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
 import java.util.*
 
 @Service
-class MessageService @Autowired constructor(
+class MessageService(
     private val messageRepo: MessageRepository,
     private val catalogService: CatalogService
 ) {

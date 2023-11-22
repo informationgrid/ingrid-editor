@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class ReferenceHandlerFactory @Autowired constructor(val referenceHandlers: List<ReferenceHandler>) {
+class ReferenceHandlerFactory(val referenceHandlers: List<ReferenceHandler>) {
     fun get(profile: CatalogProfile): ReferenceHandler? {
         return referenceHandlers.find {it.getProfile() == profile.identifier || it.getProfile() == profile.parentProfile}
     }

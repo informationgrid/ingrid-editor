@@ -23,7 +23,7 @@ import java.util.zip.ZipOutputStream
 data class ExportResult(val result: ByteArray, val fileName: String, val exportFormat: MediaType)
 
 @Service
-class ExportService @Autowired constructor(val exporterFactory: ExporterFactory) {
+class ExportService(val exporterFactory: ExporterFactory) {
 
     private val log = logger()
 

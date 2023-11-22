@@ -23,7 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 
 @Service
-class CatalogService @Autowired constructor(
+class CatalogService(
     private val catalogRepo: CatalogRepository,
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,

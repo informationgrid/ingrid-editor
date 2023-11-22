@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("elasticsearch")
-class InGridPublishExport @Autowired constructor(
+class InGridPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask

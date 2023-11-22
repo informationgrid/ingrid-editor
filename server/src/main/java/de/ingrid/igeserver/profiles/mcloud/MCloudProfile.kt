@@ -20,7 +20,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
-class MCloudProfile @Autowired constructor(
+class MCloudProfile(
     @JsonIgnore val codelistHandler: CodelistHandler,
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,

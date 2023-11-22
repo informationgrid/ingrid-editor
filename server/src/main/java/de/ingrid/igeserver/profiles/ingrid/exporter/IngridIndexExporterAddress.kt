@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterAddress  @Autowired constructor(
+class IngridIndexExporterAddress (
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
-class InternalExporter @Autowired constructor(
+class InternalExporter(
     @Lazy val documentService: DocumentService,
     val catalogService: CatalogService
 ) : IgeExporter {

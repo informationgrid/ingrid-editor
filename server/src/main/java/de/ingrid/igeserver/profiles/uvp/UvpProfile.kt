@@ -22,7 +22,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
-class UvpProfile @Autowired constructor(
+class UvpProfile(
     @JsonIgnore val catalogRepo: CatalogRepository,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,

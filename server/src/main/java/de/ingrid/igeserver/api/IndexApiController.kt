@@ -16,7 +16,7 @@ import java.security.Principal
 @Profile("elasticsearch")
 @RestController
 @RequestMapping(path = ["/api"])
-class IndexApiController @Autowired constructor(
+class IndexApiController(
     private val catalogService: CatalogService,
     private val indexService: IndexService,
     private val indexingTask: IndexingTask

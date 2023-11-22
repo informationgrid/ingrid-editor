@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
 @Service
-class IngridLuceneExporter @Autowired constructor(
+class IngridLuceneExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,

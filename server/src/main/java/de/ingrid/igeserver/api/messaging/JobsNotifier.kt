@@ -31,7 +31,7 @@ class MessageTarget(val type: NotificationType, var catalogId : String? = null) 
 }
 
 @Service
-class JobsNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
+class JobsNotifier(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
 
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/jobs"

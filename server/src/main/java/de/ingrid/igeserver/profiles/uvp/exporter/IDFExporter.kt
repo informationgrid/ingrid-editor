@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class IDFExporter @Autowired constructor(val config: Config) : IgeExporter {
+class IDFExporter(val config: Config) : IgeExporter {
 
     val log = logger()
 

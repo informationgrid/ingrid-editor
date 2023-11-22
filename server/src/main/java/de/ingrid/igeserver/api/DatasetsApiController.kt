@@ -30,7 +30,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
-class DatasetsApiController @Autowired constructor(
+class DatasetsApiController(
     private val authUtils: AuthUtils,
     private val catalogService: CatalogService,
     private val docWrapperRepo: DocumentWrapperRepository,

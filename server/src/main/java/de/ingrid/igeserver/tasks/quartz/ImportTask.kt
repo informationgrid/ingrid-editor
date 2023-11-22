@@ -25,7 +25,7 @@ import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
-class ImportTask @Autowired constructor(
+class ImportTask(
     val notifier: JobsNotifier,
     val importService: ImportService,
     val documentService: DocumentService,

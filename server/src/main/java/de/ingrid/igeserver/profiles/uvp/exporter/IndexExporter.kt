@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class IndexExporter @Autowired constructor(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter): IgeExporter {
+class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter): IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

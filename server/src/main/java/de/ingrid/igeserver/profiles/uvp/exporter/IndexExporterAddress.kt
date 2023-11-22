@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class IndexExporterAddress @Autowired constructor(
+class IndexExporterAddress(
     val catalogRepo: CatalogRepository,
     val codelistService: CodeListService,
     val docWrapperRepo: DocumentWrapperRepository,

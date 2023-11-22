@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import java.text.MessageFormat
 
 @Component
-class EmailServiceImpl @Autowired constructor(
+class EmailServiceImpl(
     val email: JavaMailSender,
     val mailProps: MailProperties,
     val appSettings: GeneralProperties

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(path = ["/api"])
-class ConfigApiController @Autowired constructor(
+class ConfigApiController(
     val settingsService: SettingsService
 ) : ConfigApi {
 

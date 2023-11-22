@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @RestController
 @RequestMapping(path = ["/api/search"])
-class ResearchApiController @Autowired constructor(
+class ResearchApiController(
     val researchService: ResearchService,
     val queryService: QueryService,
     val catalogService: CatalogService,

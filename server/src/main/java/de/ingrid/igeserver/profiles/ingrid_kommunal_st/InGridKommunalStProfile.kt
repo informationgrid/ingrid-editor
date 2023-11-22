@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class InGridKommunalStProfile @Autowired constructor(
+class InGridKommunalStProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,
     @Lazy documentService: DocumentService,

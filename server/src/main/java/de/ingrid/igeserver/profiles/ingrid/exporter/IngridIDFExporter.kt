@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class IngridIDFExporter @Autowired constructor(
+class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,

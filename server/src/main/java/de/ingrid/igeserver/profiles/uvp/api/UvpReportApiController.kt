@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping(path = ["/api/uvp/report"])
-class UvpReportApiController @Autowired constructor(
+class UvpReportApiController(
     val entityManager: EntityManager,
     val catalogService: CatalogService,
 ) : UvpReportApi {

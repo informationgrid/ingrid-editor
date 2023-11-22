@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("elasticsearch")
-class MCloudPublishExport @Autowired constructor(
+class MCloudPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask

@@ -30,7 +30,7 @@ import java.util.*
 
 
 @Service
-class GroupService @Autowired constructor(
+class GroupService(
     private val groupRepo: GroupRepository,
     private val userRepo: UserRepository,
     private val catalogRepo: CatalogRepository,

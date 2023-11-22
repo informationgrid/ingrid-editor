@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("elasticsearch")
-class UVPPublishExport @Autowired constructor(
+class UVPPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask

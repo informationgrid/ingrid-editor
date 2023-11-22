@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("elasticsearch")
-class BmiPublishExport @Autowired constructor(
+class BmiPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask

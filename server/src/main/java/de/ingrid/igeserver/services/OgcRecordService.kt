@@ -67,7 +67,7 @@ data class QueryMetadata(
 
 @Service
 @Profile("ogc-api")
-class OgcRecordService @Autowired constructor(
+class OgcRecordService(
     private val catalogService: CatalogService,
     private val exportService: ExportService,
     private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,

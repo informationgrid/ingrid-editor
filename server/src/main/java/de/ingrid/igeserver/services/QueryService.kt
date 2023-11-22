@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class QueryService @Autowired constructor(
+class QueryService(
     val query: QueryRepository,
     val catalog: CatalogRepository,
     val user: UserRepository,

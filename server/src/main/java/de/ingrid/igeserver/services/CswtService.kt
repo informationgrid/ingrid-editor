@@ -40,7 +40,7 @@ data class CSWTransactionResult(
 
 @Service
 @Profile("csw-t")
-class CswtService @Autowired constructor(
+class CswtService(
     private val documentService: DocumentService,
     private val importService: ImportService
 ) {

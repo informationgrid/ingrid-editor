@@ -13,7 +13,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api/uvp/upload-check"])
-class UploadCheckApiController @Autowired constructor(
+class UploadCheckApiController(
     val entityManager: EntityManager,
     val catalogService: CatalogService,
     val referenceHandler: UvpReferenceHandler,

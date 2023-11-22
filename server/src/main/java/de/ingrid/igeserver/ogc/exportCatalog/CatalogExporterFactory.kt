@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ogc-api")
-class OgcCatalogExporterFactory @Autowired constructor(private val catalogExporterList: List<OgcCatalogExporter>) {
+class OgcCatalogExporterFactory(private val catalogExporterList: List<OgcCatalogExporter>) {
     val typeInfos: List<CatalogExportTypeInfo> = catalogExporterList.map { exporter: OgcCatalogExporter -> exporter.typeInfo }
 
     fun getExporter(format: CollectionFormat): OgcCatalogExporter {

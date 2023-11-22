@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class InternalCatalogExporter @Autowired constructor(
+class InternalCatalogExporter(
         @Lazy val documentService: DocumentService,
         val catalogService: CatalogService,
         private val generalProperties: GeneralProperties

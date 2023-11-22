@@ -33,7 +33,7 @@ import kotlin.io.path.absolutePathString
 
 @RestController
 @RequestMapping(path = ["/api"])
-class JobsApiController @Autowired constructor(
+class JobsApiController(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
     val referenceHandlerFactory: ReferenceHandlerFactory,

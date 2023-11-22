@@ -30,7 +30,7 @@ data class DocumentIndexInfo(
 )
 
 @Service
-class IndexService @Autowired constructor(
+class IndexService(
     private val catalogRepo: CatalogRepository,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,

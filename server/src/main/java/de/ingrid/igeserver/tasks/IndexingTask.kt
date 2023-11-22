@@ -58,7 +58,7 @@ import kotlin.concurrent.schedule
 
 @Component
 @Profile("elasticsearch")
-class IndexingTask @Autowired constructor(
+class IndexingTask(
     private val indexService: IndexService,
     private val settingsService: SettingsService,
     private val catalogService: CatalogService,

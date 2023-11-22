@@ -44,7 +44,7 @@ enum class InitiatorAction {
 }
 
 @Service
-class DocumentService @Autowired constructor(
+class DocumentService(
     var docRepo: DocumentRepository,
     var docWrapperRepo: DocumentWrapperRepository,
     var catalogRepo: CatalogRepository,
