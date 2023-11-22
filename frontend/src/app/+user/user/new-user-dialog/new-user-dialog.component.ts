@@ -1,30 +1,22 @@
-import {
-  AfterContentChecked,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
-import { ConfigService } from "../../../services/config/config.service";
-import {
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
 })
-export class NewUserDialogComponent implements OnInit, AfterContentChecked {
+export class NewUserDialogComponent implements OnInit {
   userSub: Subscription;
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
@@ -35,25 +27,24 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     ),
   );
   externalUsers: BackendUser[];
-  form: UntypedFormGroup;
+  form: FormGroup;
   noAvailableUsers = true;
-  importExternal: boolean;
+  importExternal = false;
   formlyFieldConfig: FormlyFieldConfig[];
-  options: FormlyFormOptions = {};
+  options: FormlyFormOptions = {
+    formState: {
+      showGroups: false,
+    },
+  };
   model: FrontendUser;
   loginValue = "";
+  asAdmin: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
     private userService: UserService,
-    private configService: ConfigService,
     private modalService: ModalService,
-    private cdRef: ChangeDetectorRef,
   ) {}
-
-  ngAfterContentChecked(): void {
-    this.cdRef.detectChanges();
-  }
 
   ngOnInit(): void {
     this.model = {
@@ -67,30 +58,40 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       department: "",
       role: "",
       id: null,
+      groups: [],
     };
-    this.importExternal = false;
 
-    this.form = new UntypedFormGroup({
-      login: new UntypedFormControl("", Validators.required),
+    this.form = new FormGroup({
+      login: new FormControl("", Validators.required),
+      role: new FormControl("", Validators.required),
     });
     this.form
       .get("login")
-      .valueChanges.subscribe((value) => this.updateForm(value));
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((value) => this.updateForm(value));
+    this.form
+      .get("role")
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((role) => {
+        if (typeof role === "string") {
+          this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
+        }
+      });
 
     this.userSub = this.users$.subscribe();
   }
 
-  updateForm(existingLogin) {
+  updateForm(existingLogin: string) {
     if (existingLogin !== this.loginValue) {
       this.importExternal = false;
       this.loginValue = existingLogin;
+      const role = this.form.get("role").value;
       const potentialMatch = this.externalUsers?.filter((user) => {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
         this.model = new FrontendUser(potentialMatch[0]);
-        // reset role as keycloak role (ige-user) is not applicable
-        this.model.role = "";
+        this.model.role = role;
         this.form.reset(this.model);
         this.importExternal = true;
       }
@@ -110,6 +111,10 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
         filter((user) => user),
       )
       .subscribe((u) => this.dialogRef.close(u));
+  }
+
+  showGroupsPage(show: boolean) {
+    this.options.formState.showGroups = show;
   }
 
   private handleCreateUserError(error: any): Observable<any> {
@@ -139,5 +144,14 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     } else {
       throw error;
     }
+  }
+
+  handleSubmit() {
+    if (this.asAdmin || this.options.formState.showGroups) {
+      this.createUser();
+      return;
+    }
+
+    this.options.formState.showGroups = true;
   }
 }

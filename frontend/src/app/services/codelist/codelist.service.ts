@@ -23,8 +23,8 @@ export class SelectOption {
   }
 
   constructor(value: string, label: string) {
-    this.label = label;
     this.value = value;
+    this.label = label;
   }
 
   forBackend(): BackendOption {

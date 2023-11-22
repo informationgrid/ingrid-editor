@@ -167,7 +167,10 @@ export class UserComponent
     this.dirtyFormHandled().subscribe((allClear) => {
       if (allClear)
         this.dialog
-          .open(NewUserDialogComponent, { hasBackdrop: true })
+          .open(NewUserDialogComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+          })
           .afterClosed()
           .subscribe((result) => {
             if (result?.id) this.updateUsersAndLoad(result.id);
