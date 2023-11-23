@@ -458,4 +458,12 @@ class BmiProfile(
             }
         }
     }
+
+    override fun additionalPublishConditions(catalogId: String): List<String> {
+        val conditions = mutableListOf<String>()
+
+        conditions.add("document_wrapper.type != 'FOLDER'")
+
+        return conditions
+    }
 }
