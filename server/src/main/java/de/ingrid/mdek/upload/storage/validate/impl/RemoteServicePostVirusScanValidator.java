@@ -119,7 +119,7 @@ public class RemoteServicePostVirusScanValidator implements Validator {
             final Matcher virusMatcher = virusPattern.matcher(result);
             final Map<Path, String> virusList = new HashMap<>();
             while (virusMatcher.find()) {
-                virusList.put(Paths.get(virusMatcher.group(2)), virusMatcher.group(1));
+                virusList.put(Paths.get(virusMatcher.group(1)), virusMatcher.group(2));
             }
             if (!virusList.isEmpty()) {
                 log.warn("Virus found: " + result);
