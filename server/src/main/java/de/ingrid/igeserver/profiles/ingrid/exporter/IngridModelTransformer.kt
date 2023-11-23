@@ -161,7 +161,7 @@ open class IngridModelTransformer(
 
 
     val spatialReferences = data.spatial.references ?: emptyList()
-    private val arsSpatial = spatialReferences.find { it.ars != null }
+    private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }
     val regionKey = if (arsSpatial == null) null else KeyValueModel(
         arsSpatial.ars,
         padARS(arsSpatial.ars!!).padEnd(12, '0')
