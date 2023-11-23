@@ -498,6 +498,98 @@ An exporter is also used for indexing where the document will be converted to a 
 Since the index itself can have a configuration on its own, you can define a settings and mapping configuration for the index.
 This can be defined in the profile definition file.
 
+==== Profile creation
+
+*Backend*
+
+* implement a new class defining the new profile by implementing the interface `CatalogProfile`
+** add this file here: `server/src/main/java/de/ingrid/igeserver/profiles/<name>/<NAME>Profile.kt`
+* add all your document types under the `types`-folder and extend each type from `EntityType`. You can also override several functions to interact on different situations.
+
+[source, kotlin]
+----
+@Component
+class <DocType>Type : EntityType() {
+    override val className = "<DocumentTypeName>"
+    override val profiles = arrayOf("<profile>")
+    override val jsonSchema = "/<profile>/schemes/<doctype>.schema.json"
+}
+----
+
+* add another file to initialize all services of the new profile when it's activated
+** add a file: `server/src/main/java/de/ingrid/igeserver/profiles/<Name>Config.ts` with the following content:
+
+[source,kotlin]
+----
+@Profile("<name>")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.<name>"])
+class <Name>Config
+----
+
+NOTE: This will tell `Spring` to look for services inside the specified profile-package and make them ready to be used.
+
+*Frontend*
+
+* create a new profile here: `frontend/src/profiles/profile-ingrid-<name>.ts`
+** through the `ProfileService` register all your forms representing your document types
+
+[source, typescript]
+----
+@Component({template: ""})
+class <Profile>Component {
+  constructor(
+    service: ProfileService,
+    test: TestDoctype
+  ) {
+    service.registerProfiles([test]);
+  }
+}
+
+@NgModule({
+  declarations: [<Profile>Component],
+})
+export class ProfilePack {
+  static getMyComponent() {
+    return <Profile>Component;
+  }
+}
+----
+
+* update the following files to include the new profile for compilation
+** frontend/src/tsconfig.app.json -> add to "files"
+** frontend/src/tsconfig.spec.json -> add to "files"
+* implement your document types by extending from `BaseDoctype`
+** the `id` must match with the ID of the document type defined in the backend
+** the function `documentFields` contains the definition of the whole form-fields
+** several helper-functions coming from the `BaseDoctype` support writing your fields
+
+[source,typescript]
+----
+@Injectable({
+  providedIn: "root",
+})
+export class TestDoctype extends BaseDoctype {
+  id = "TestDoc";
+  label = "Test-Document";
+  iconClass = "doc-icon";
+  documentFields = () => <FormlyFieldConfig[]>[...]
+}
+----
+
+NOTE: When extending a profile there are things to keep in mind. The IDs of the supported document types should not be changed, since they are probably used in other places, like for the export. In order to ...
+
+==== Profile inheritance
+
+Sometimes you may want to use a profile as a base and extend it with some other functionality, like adding additional fields, changing required fields, the validation or how documents are being exported.
+
+To inherit from another profile you need to follow the steps:
+
+* Add a new class extending from the profile
+** override at least the fields: `id`, `identifier`, `title` and `parentProfile`
+** when modifying the export you should override the field `indexExportFormatID`
+* Optional: 
+
 === Export format
 
 The documentation of the export format is here: link:export-format.adoc#_export_format[Definition Export format]
