@@ -35,6 +35,10 @@
       "type": "keyword",
       "store": true
     },
+    "capabilities_url_with_client": {
+      "type": "keyword",
+      "store": true
+    },
     "refering_service_uuid": {
       "type": "keyword",
       "store": true
