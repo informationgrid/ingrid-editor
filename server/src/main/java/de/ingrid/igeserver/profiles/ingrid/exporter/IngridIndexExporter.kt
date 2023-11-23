@@ -16,19 +16,17 @@ import de.ingrid.utils.xml.IgcProfileNamespaceContext
 import de.ingrid.utils.xml.XMLUtils
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.codec.digest.DigestUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.w3c.dom.Node
 import java.time.OffsetDateTime
 
 @Service
 class IngridIndexExporter(
-    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+    val idfExporter: IngridIDFExporter,
     val luceneExporter: IngridLuceneExporter,
     val documentWrapperRepository: DocumentWrapperRepository
 ) : IgeExporter {
-    
+
     private val typeId = "indexInGridIDF"
 
     override val typeInfo = ExportTypeInfo(
@@ -112,7 +110,7 @@ class IngridIndexExporter(
     override fun calculateFingerprint(doc: Any): String {
         doc as ElasticDocument
         if (doc["idf"] == null) return ""
-        
+
         val idf = doc["idf"] as String
         val idfDoc = convertStringToDocument(idf)
 

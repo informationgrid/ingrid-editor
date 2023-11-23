@@ -9,27 +9,21 @@ import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterKrzn(
+class IngridIndexExporterAddressKrzn(
     idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-    krznProfileTransformer: KrznProfileTransformer
+    documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
-        DocumentCategory.DATA,
+        DocumentCategory.ADDRESS,
         "indexInGridIDFKrzn",
-        "Ingrid IDF KRZN (Elasticsearch)",
-        "Export von Ingrid Dokumenten ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
+        "Ingrid IDF Address KRZN (Elasticsearch)",
+        "Export von Ingrid Adressen ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
         listOf("krzn"),
         false
     )
-
-    init {
-        idfExporter.profileTransformer = krznProfileTransformer
-        luceneExporter.profileTransformer = krznProfileTransformer
-    }
 
 }
