@@ -30,6 +30,7 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addInput("landingPage", "Webseite", {
           wrappers: ["panel", "form-field"],
+          placeholder: "https://...",
           validators: {
             validation: ["url"],
           },
