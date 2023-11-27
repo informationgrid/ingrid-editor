@@ -162,7 +162,7 @@ open class IngridModelTransformer(
 
     fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
         ?.let { convertWktToGeoJson(it.wkt!!)}
-        ?.let { Pair(it.replace("\"", "'"), it) }
+        ?.let { Pair(it.replace("\"", "@json@"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }
