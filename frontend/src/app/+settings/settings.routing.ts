@@ -43,7 +43,7 @@ export const settingsRoutes: Routes = [
         canActivate: [AuthGuard],
         data: {
           title: "Katalogverwaltung",
-          permission: "manage_catalog",
+          permission: "manage_all_catalogs",
         },
       },
       {
