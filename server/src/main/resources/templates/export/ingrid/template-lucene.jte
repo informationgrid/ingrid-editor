@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
@@ -226,10 +227,11 @@
         "${entry.get().getTitle().getText()}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "wkt_geo_text": "?",
-
-
-
+!{var wktJson = page.wktAsGeoJson();}
+    @if(wktJson != null)
+    "wkt_geo": ${wktJson.getFirst()},
+    "wkt_geo_text": "${wktJson.getSecond()}",
+    @endif
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",

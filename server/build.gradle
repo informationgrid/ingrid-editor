@@ -174,6 +174,9 @@ dependencies {
         exclude group: 'commons-pool', module: 'commons-pool'
         exclude group: 'systems.uom', module: 'systems-common-java8'
     }
+    implementation("org.geotools:gt-geojson:$geotools_version") {
+        exclude group: 'javax.media', module: 'jai_core'
+    }
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework

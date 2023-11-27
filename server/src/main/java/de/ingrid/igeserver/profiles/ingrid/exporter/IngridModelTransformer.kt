@@ -16,6 +16,7 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.springframework.dao.EmptyResultDataAccessException
@@ -159,6 +160,9 @@ open class IngridModelTransformer(
         else -> "GridSpatialRepresentation"
     }
 
+    fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
+        ?.let { convertWktToGeoJson(it.wkt!!)}
+        ?.let { Pair(it.replace("\"", "'"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
     private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }

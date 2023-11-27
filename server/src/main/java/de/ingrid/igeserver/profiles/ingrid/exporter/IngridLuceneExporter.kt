@@ -43,7 +43,8 @@ class IngridLuceneExporter(
         val catalog = catalogService.getCatalogById(catalogId)
         val templateData = getTemplateForDoctype(doc, catalog)
         templateEngine.render(templateData.first, templateData.second, output)
-        return output.toString()
+        // fix strings that actually should represent JSON (like wkt_geo-field)
+        return output.toString().replace("'", "\"")
     }
 
     private fun handleFoldersWithoutPublishedChildrens(doc: Document) {
