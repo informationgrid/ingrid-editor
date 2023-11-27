@@ -354,7 +354,7 @@ export class GeoDatasetDoctype extends IngridShared {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: "field.props.required ? '' : 'optional'",
             },
-            contextHelpId: "citation_2",
+            contextHelpId: "keyCatalog",
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             className: "optional",

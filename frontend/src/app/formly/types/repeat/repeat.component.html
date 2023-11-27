@@ -36,6 +36,7 @@
             <formly-field
                 [field]="field.fieldGroup[fieldRef]"
                 class="flex-1"
+                [attr.data-cy]="fieldRef"
             ></formly-field>
             <button
                 *ngIf="formControl.enabled"
@@ -56,6 +57,7 @@
 
 <ige-add-button
     *ngIf="!formState.disabled && formControl.enabled"
+    data-cy="btn-add"
     (add)="addItem($event)"
     [options]="props.menuOptions"
     [buttonTitle]="props.addButtonTitle ? props.addButtonTitle : 'Hinzufügen'"

@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
-id: citation_2
+id: keyCatalog
 docType: InGridGeoDataset
 profile: ingrid
-
-
 
 # title, used as window title
 title: Schlüsselkatalog
@@ -34,7 +32,7 @@ Domain: 360 (gmd:title)
 
 Datumsangaben: Datum der Erzeugung, Veröffentlichung oder Überarbeitung der Ressource
 
-Domain: 362 (gmd:date) 
+Domain: 362 (gmd:date)
 
 Datumsangabe wird immer als Erzeugungsdatum interpretiert.
 

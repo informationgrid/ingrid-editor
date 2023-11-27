@@ -13,7 +13,7 @@ export const iBusFields: FormlyFieldConfig[] = [
         {
           key: "url",
           type: "input",
-          className: "white-bg",
+          className: "white-bg url",
           props: {
             label: "URL",
             appearance: "outline",
@@ -25,7 +25,7 @@ export const iBusFields: FormlyFieldConfig[] = [
             {
               key: "ip",
               type: "input",
-              className: "flex-1 white-bg",
+              className: "flex-1 white-bg ip",
               props: {
                 label: "IP",
                 appearance: "outline",
@@ -34,7 +34,7 @@ export const iBusFields: FormlyFieldConfig[] = [
             {
               key: "port",
               type: "input",
-              className: "flex-1 white-bg",
+              className: "flex-1 white-bg port",
               props: {
                 type: "number",
                 label: "Port",
@@ -47,7 +47,7 @@ export const iBusFields: FormlyFieldConfig[] = [
           key: "publicationTypes",
           type: "select",
           defaultValue: ["internet"],
-          className: "white-bg",
+          className: "white-bg publicationTypes",
           props: {
             label: "Veröffentlichungsrecht",
             placeholder: "",
