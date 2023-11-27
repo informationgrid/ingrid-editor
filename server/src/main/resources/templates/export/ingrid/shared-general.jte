@@ -907,6 +907,15 @@ ${contentInfo}
         @endif
     </idf:superiorReference>
 @endif
+@for( CrossReference ref : page.getSubordinateReferences() )
+    <idf:subordinatedReference uuid="${ref.getUuid()}">
+        <idf:objectName>${ref.getObjectName()}</idf:objectName>
+        <idf:objectType>${ref.getObjectType()}</idf:objectType>
+        @if( TransformationTools.hasValue(ref.getDescription()))
+            <idf:description>${ref.getDescription()}</idf:description>
+        @endif
+    </idf:subordinatedReference>
+@endfor
 @for( CrossReference cref : page.getCrossReferences() )
     <idf:crossReference direction="${cref.getDirection()}" uuid="${cref.getUuid()}">
         <idf:objectName>${cref.getObjectName()}</idf:objectName>

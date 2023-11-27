@@ -611,6 +611,8 @@ open class IngridModelTransformer(
 
     fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
     
+    fun getSubordinateReferences() = getIncomingReferences().filter { it.isSubordinate }
+    
     private fun getCoupledServiceUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
         
@@ -633,7 +635,7 @@ open class IngridModelTransformer(
     
     private fun getIncomingReferencesProxy(): List<CrossReference> {
         if (incomingReferencesCache == null) {
-            incomingReferencesCache = getIncomingReferences()
+            incomingReferencesCache = getIncomingReferences().filter { !it.isSubordinate }
         }
         
         return incomingReferencesCache ?: emptyList()
@@ -683,6 +685,7 @@ open class IngridModelTransformer(
             }
 
         val refType = type
+            ?: if (refTrans.model.data.parentIdentifier == this.model.uuid) KeyValueModel(null, null) else null
             ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
             ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
             ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
@@ -700,7 +703,8 @@ open class IngridModelTransformer(
             serviceOperation = getCapOperation?.name,
             serviceUrl = getCapOperation?.methodCall,
             serviceVersion = refTrans.serviceTypeVersions.firstOrNull(),
-            hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false
+            hasAccessConstraints = refTrans.model.data.service?.hasAccessConstraints ?: false,
+            isSubordinate = refTrans.model.data.parentIdentifier == model.uuid
         )
     }
 
@@ -803,7 +807,8 @@ data class CrossReference(
     val serviceUrl: String? = null,
     val serviceVersion: String? = null,
     val hasAccessConstraints: Boolean = false,
-    var mapUrl: String? = null
+    var mapUrl: String? = null,
+    var isSubordinate: Boolean = false
 )
 
 data class SuperiorReference(
