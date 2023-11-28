@@ -48,6 +48,7 @@ configurations {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
         exclude group: 'com.sun.mail', module: 'javax.mail'
         exclude group: 'javax.mail', module: 'mailapi'
+        exclude group: 'commons-logging', module: 'commons-logging'
     }
 }
 
