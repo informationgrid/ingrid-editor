@@ -32,6 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
+import java.net.InetSocketAddress
+import java.net.ProxySelector
 import java.net.URI
 import java.net.URL
 import java.net.http.HttpClient
@@ -502,6 +504,7 @@ class KeycloakService : UserManagementService {
             .build()
         val http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
+            .proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
             .followRedirects(HttpClient.Redirect.NORMAL)
             .executor(executor)
             .build()
