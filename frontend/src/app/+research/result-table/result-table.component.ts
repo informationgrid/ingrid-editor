@@ -139,12 +139,26 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
-    rows.push(["Typ", "Titel", "Aktualität"]);
+    rows.push([
+      "ID",
+      "Veröffentlichungsstatus",
+      "Veröffentlichungsrecht",
+      "Typ",
+      "Titel",
+      "Aktualität",
+    ]);
     for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
     this.exportService.exportCsv(rows, { exportName: "research" });
   }
 
   private buildRowByDoc(doc: IgeDocument) {
-    return [doc._type, doc.title, doc._contentModified];
+    return [
+      doc._uuid,
+      doc._state,
+      doc._tags,
+      doc._type,
+      doc.title,
+      doc._contentModified,
+    ];
   }
 }
