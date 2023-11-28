@@ -467,3 +467,24 @@ For validation of a JSON-document, before it's being saved to the database, you 
 For schema creation you can use the online generator https://app.quicktype.io/ and insert a JSON presentation of
 your document type. The backend entity of your document has to reference this file by overriding the field `jsonSchema`
 with the location of the schema file.
+
+# Restore deleted Documents
+
+When a document is deleted, it's not really deleted from the database. It's just marked as deleted and can be restored.
+The following SQL statement can be used to restore a document:
+
+```sql
+UPDATE document_wrapper SET deleted = 0 WHERE uuid = ?;
+```
+
+To permanently delete a document, you can use the following SQL statement:
+
+```sql
+DELETE FROM document_wrapper WHERE uuid = ?;
+```
+
+or to permanently delete all documents which are marked as deleted:
+
+```sql
+DELETE FROM document_wrapper WHERE deleted = 1;
+```
