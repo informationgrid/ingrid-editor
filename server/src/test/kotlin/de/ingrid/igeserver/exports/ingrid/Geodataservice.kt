@@ -1,8 +1,9 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
@@ -17,6 +18,7 @@ import initDocumentMocks
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -148,5 +150,28 @@ class Geodataservice : AnnotationSpec() {
 
         result shouldNotBe null
         result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
+    }
+    
+    @Test
+    fun checkSuperiorReferences() {
+        every { documentService.getLastPublishedDocument("test-catalog", "1000", false, true)} returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json"))
+        
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json", jacksonObjectMapper().createObjectNode().apply { 
+            put("parentIdentifier", "1000")
+        })
+        
+        result shouldContain idfSuperiorReferences
+    }
+    
+    @Test
+    fun checkSubordinateReferences() {
+        every { documentService.getIncomingReferences(any(), "test-catalog")} returns setOf("1000")
+        every { documentService.getLastPublishedDocument("test-catalog", "1000", any(), any())} returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json")).apply { 
+            data.put("parentIdentifier", "8282cf1f-c681-4402-b41e-b32cd08a4220")
+        }
+
+        val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
+        
+        result shouldContain idfSubordinatedReferences
     }
 }
