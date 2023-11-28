@@ -27,9 +27,8 @@ describe("RepeatDistributionDetailListComponent", () => {
           {
             key: "repeatField",
             type: "repeatDistributionDetailList",
-            props: {},
-            fieldArray: {
-              fieldGroup: [
+            props: {
+              fields: [
                 {
                   key: "type",
                   type: "input",
