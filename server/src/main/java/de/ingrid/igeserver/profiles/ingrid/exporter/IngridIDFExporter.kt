@@ -22,7 +22,7 @@ import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 
@@ -31,7 +31,7 @@ class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
-    val documentService: DocumentService,
+    @Lazy val documentService: DocumentService,
 ) : IgeExporter {
 
     val log = logger()
