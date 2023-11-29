@@ -147,9 +147,9 @@
                 <gco:Boolean>${page.getGridSpatialRepresentation().getTransformationParameterAvailability()}</gco:Boolean>
             </gmd:transformationParameterAvailability>
             @if(page.getGeorectified() != null)
-                <gmd:controlPointAvailability>
+                <gmd:checkPointAvailability>
                     <gco:Boolean>${page.getGeorectified().getCheckPointAvailability()}</gco:Boolean>
-                </gmd:controlPointAvailability>
+                </gmd:checkPointAvailability>
                 @if(TransformationTools.hasValue(page.getGeorectified().getCheckPointDescription()))
                     <gmd:checkPointDescription>
                         <gco:CharacterString>${page.getGeorectified().getCheckPointDescription()}</gco:CharacterString>
@@ -823,8 +823,7 @@ ${contentInfo}
                                             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
                                             codeListValue="information">information</gmd:CI_OnLineFunctionCode>
                                 </gmd:function>
-                                <idf:attachedToField entry-id="5066" list-id="2000">Link to Service
-                                </idf:attachedToField>
+                                <idf:attachedToField entry-id="5066" list-id="2000">Link to Service</idf:attachedToField>
                             </idf:idfOnlineResource>
                         </gmd:onLine>
                     </gmd:MD_DigitalTransferOptions>
