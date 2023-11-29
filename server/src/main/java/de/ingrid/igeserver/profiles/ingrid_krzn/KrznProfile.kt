@@ -57,8 +57,9 @@ class KrznProfile(
             description = ""
             defaultEntry = "1"
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de/krefeld/bauenundplanen/?mdid={ID}"))
-                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-niederrhein.de/krefeld/natur/?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-niederrhein.de/krefeld/bauenundplanen/?mdid={ID}"))
+                add(CodelistHandler.toCodelistEntry("3", "https://geoportal-niederrhein.de/krefeld/natur/?mdid={ID}"))
             }
         }
     }

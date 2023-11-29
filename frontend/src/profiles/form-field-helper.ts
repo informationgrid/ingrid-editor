@@ -12,6 +12,7 @@ export interface Options {
   className?: string;
   required?: boolean;
   defaultValue?: any;
+  placeholder?: string;
   hasInlineContextHelp?: boolean;
   contextHelpId?: string;
   change?: (field, event) => void;
@@ -92,6 +93,7 @@ export interface SelectOptions extends Options {
   externalLabel?: string;
   showSearch?: boolean;
   allowNoValue?: boolean;
+  noValueLabel?: string;
   change?: any;
   hooks?: any;
 }
@@ -496,7 +498,9 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       props: {
-        placeholder: this.transloco.translate("form.placeholder.choose"),
+        placeholder:
+          options?.placeholder ??
+          this.transloco.translate("form.placeholder.choose"),
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
@@ -504,6 +508,7 @@ export class FormFieldHelper {
         options: options?.options,
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue ?? !options?.required,
+        noValueLabel: options?.noValueLabel,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
