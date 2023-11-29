@@ -118,9 +118,6 @@
                                             <gmd:voice>
                                                 <gco:CharacterString>123456789</gco:CharacterString>
                                             </gmd:voice>
-                                            <gmd:voice>
-                                                <gco:CharacterString>23456789</gco:CharacterString>
-                                            </gmd:voice>
                                             <gmd:facsimile>
                                                 <gco:CharacterString>123456789</gco:CharacterString>
                                             </gmd:facsimile>

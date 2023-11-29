@@ -46,16 +46,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
         }
         if (document.id != null) {
             every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {
-                createDocumentWrapper().apply {
-                    id = document.id.toInt()
-                    type = document.type ?: "testDocType"
-                    parent = document.parent?.let {
-                        DocumentWrapper().apply {
-                            id = it
-                        }
-                    }
-                    uuid = document.uuid
-                }
+                mockedDocumentSimple(document.id, document)
             }
         }
     }
@@ -63,8 +54,18 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
     every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
 
-
-fun createDocumentWrapper() =
-    DocumentWrapper().apply {
-        type = "testDocType"
+fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper {
+    return createDocumentWrapper().apply {
+        this.id = id.toInt()
+        type = document.type ?: "testDocType"
+        parent = document.parent?.let {
+            DocumentWrapper().apply {
+                this.id = it
+            }
+        }
+        uuid = document.uuid
     }
+}
+
+
+fun createDocumentWrapper() = DocumentWrapper().apply { type = "testDocType" }

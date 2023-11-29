@@ -18,6 +18,7 @@ import initDocumentMocks
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -41,6 +42,7 @@ class DataCollection : AnnotationSpec() {
 
     @BeforeAll
     fun beforeAll() {
+        clearAllMocks()
         this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)

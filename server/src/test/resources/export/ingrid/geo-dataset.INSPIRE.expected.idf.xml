@@ -97,7 +97,7 @@
                                 <gco:CharacterString>Boden</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:keyword>
-                                <gco:CharacterString>Bodennutzung</gco:CharacterString>
+                                <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/theme/lu">Bodennutzung</gmx:Anchor>
                             </gmd:keyword>
                             <gmd:keyword>
                                 <gco:CharacterString>Energiequellen</gco:CharacterString>

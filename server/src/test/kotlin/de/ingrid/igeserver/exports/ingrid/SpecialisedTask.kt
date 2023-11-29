@@ -17,11 +17,13 @@ import initDocumentMocks
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
+import mockedDocumentSimple
 
 class SpecialisedTask : AnnotationSpec() {
 
@@ -40,6 +42,7 @@ class SpecialisedTask : AnnotationSpec() {
 
     @BeforeAll
     fun beforeAll() {
+        clearAllMocks()
         this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
@@ -61,6 +64,7 @@ class SpecialisedTask : AnnotationSpec() {
                 "1350_3" -> "Bürgerl. Gesetzbuch (BGB)"
                 "1350_31" -> "TA Abfall"
                 "1350_42" -> "Landesraumordnungsprogramm LROP"
+                "1350_45" -> "Gesetz über eine Holzstatistik"
                 "1350_58" -> "§ 152 NWG (Abwasserbeseitigungspläne)"
                 "1350_61" -> "23. Bundesimmissionsschutzverordnung"
                 "1350_62" -> "Abfallgesetz (AbfG)"
@@ -90,6 +94,16 @@ class SpecialisedTask : AnnotationSpec() {
                 "fc521f66-0f47-45fb-ae42-b14fc669942e",
                 "/export/ingrid/address.person2.sample.json",
                 1638
+            ),
+            MockDocument(
+                12331,
+                "107d5e76-2df1-4c0e-8af6-c57ad13bfe9a",
+                "/export/ingrid/address.organisation-12331.sample.json"
+            ),
+            MockDocument(
+                5,
+                "9931a418-a159-4d6e-9b94-f041e3957b24",
+                "/export/ingrid/address.organisation-5.sample.json"
             )
         )
 
@@ -98,8 +112,12 @@ class SpecialisedTask : AnnotationSpec() {
                 uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
                 template = "/export/ingrid/geo-dataset.maximal.sample.json"
             ),
-            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
+            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1"),
+//            MockDocument(5, "generalMockedDoc"),
+            MockDocument(1700, "Übergeordneter Identifikator")
         )
+        
+//        every { documentService.getWrapperByDocumentId(5) } returns mockedDocumentSimple(5, MockDocument(5, "generalMockedDoc"))
 
         initDocumentMocks(addresses + datasets, documentService)
     }

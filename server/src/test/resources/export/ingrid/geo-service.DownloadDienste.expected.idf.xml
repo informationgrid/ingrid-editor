@@ -192,6 +192,9 @@
                             <srv:operationName>
                                 <gco:CharacterString>Download</gco:CharacterString>
                             </srv:operationName>
+                            <srv:DCP>
+                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices">WebServices</srv:DCPList>
+                            </srv:DCP>
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
