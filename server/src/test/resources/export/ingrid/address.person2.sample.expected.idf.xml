@@ -21,15 +21,12 @@
                             <gmd:facsimile>
                                 <gco:CharacterString>123456789</gco:CharacterString>
                             </gmd:facsimile>
-                            <gmd:voice>
-                                <gco:CharacterString>23456789</gco:CharacterString>
-                            </gmd:voice>
                         </gmd:CI_Telephone>
                     </gmd:phone>
                     <gmd:address>
                         <gmd:CI_Address>
                             <gmd:deliveryPoint>
-                                <gco:CharacterString>Postbox 30151,60314 Frankfurt am Main</gco:CharacterString>
+                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
                             </gmd:deliveryPoint>
                             <gmd:deliveryPoint>
                                 <gco:CharacterString>Musterfrau Str.</gco:CharacterString>
@@ -75,12 +72,6 @@
                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                 <idf:addressType>0</idf:addressType>
             </idf:hierarchyParty>
-            <idf:objectReference uuid="1F5B4098-E97C-4A97-BD30-2F7F8D6CD5F9">
-                <idf:objectName>Test-Geodatendienst Classic</idf:objectName>
-                <idf:objectType>3</idf:objectType>
-                <idf:description>Hier ist die Beschreibung.</idf:description>
-                <idf:graphicOverview>https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg</idf:graphicOverview>
-            </idf:objectReference>
         </idf:idfResponsibleParty>
     </idf:body>
 </idf:html>

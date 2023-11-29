@@ -2,11 +2,7 @@ package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -14,7 +10,8 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import initDocumentMocks
-import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.clearAllMocks
@@ -23,9 +20,8 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
-import mockedDocumentSimple
 
-class SpecialisedTask : AnnotationSpec() {
+class SpecialisedTask : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -33,19 +29,13 @@ class SpecialisedTask : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val config = mockk<Config>()
 
     private lateinit var exporter: IngridIDFExporter
-    private lateinit var indexExporter: IngridIndexExporter
-    private lateinit var luceneExporter: IngridLuceneExporter
 
-    @BeforeAll
-    fun beforeAll() {
+    override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
+        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -116,43 +106,41 @@ class SpecialisedTask : AnnotationSpec() {
 //            MockDocument(5, "generalMockedDoc"),
             MockDocument(1700, "Übergeordneter Identifikator")
         )
-        
-//        every { documentService.getWrapperByDocumentId(5) } returns mockedDocumentSimple(5, MockDocument(5, "generalMockedDoc"))
 
         initDocumentMocks(addresses + datasets, documentService)
     }
 
-    @Test
-    fun minimalExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    init {
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
-    }
+        should("minimalExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document1.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-    @Test
-    fun maximalExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
+        }
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
-    }
+        should("maximalExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/specialized-task.sample.maximal.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-    @Test
-    fun completeExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
+        }
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
+        should("completeExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/specialisedTask-Document2.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
+        }
     }
 
 }
