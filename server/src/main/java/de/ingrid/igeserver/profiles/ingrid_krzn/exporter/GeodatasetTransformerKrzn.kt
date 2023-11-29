@@ -7,6 +7,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
@@ -17,8 +18,9 @@ class GeodatasetTransformerKrzn(
     config: Config,
     catalogService: CatalogService,
     cache: TransformerCache,
-    doc: Document? = null
-) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache) {
+    doc: Document? = null,
+    documentService: DocumentService
+) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, documentService = documentService) {
 
     private val docData = doc?.data
     override val systemEnvironment =

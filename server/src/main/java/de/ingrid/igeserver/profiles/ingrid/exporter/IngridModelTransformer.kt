@@ -15,7 +15,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -37,12 +36,9 @@ open class IngridModelTransformer(
     val config: Config,
     val catalogService: CatalogService,
     val cache: TransformerCache,
-    val doc: Document? = null
+    val doc: Document? = null,
+    val documentService: DocumentService
 ) {
-    companion object {
-        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
-    }
-    
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -561,11 +557,11 @@ open class IngridModelTransformer(
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) } ?: emptyList()
+                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
             data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type) }?.firstOrNull()
+                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) }?.firstOrNull()
 
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
@@ -592,7 +588,8 @@ open class IngridModelTransformer(
                 codelists,
                 config,
                 catalogService,
-                cache
+                cache,
+                documentService = documentService
             )
             return transformer.citationURL
         } catch (ex: EmptyResultDataAccessException) {
@@ -746,7 +743,8 @@ open class IngridModelTransformer(
             codelists,
             config,
             catalogService,
-            cache
+            cache,
+            documentService = documentService
         )
     }
 

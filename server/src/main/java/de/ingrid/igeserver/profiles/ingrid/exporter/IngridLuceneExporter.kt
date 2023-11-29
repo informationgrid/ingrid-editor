@@ -86,7 +86,8 @@ class IngridLuceneExporter(
                     AddressModelTransformer(
                         mapper.convertValue(doc, AddressModel::class.java),
                         catalog.identifier,
-                        codelistTransformer
+                        codelistTransformer,
+                        documentService = documentService
                     )
                 }
             }
@@ -99,7 +100,7 @@ class IngridLuceneExporter(
                         catalog.identifier,
                         codelistTransformer,
                         config,
-                        catalogService, TransformerCache()
+                        catalogService, TransformerCache(), documentService = documentService
                     )
                 }
             }

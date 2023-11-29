@@ -14,6 +14,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
@@ -30,6 +31,7 @@ class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
+    val documentService: DocumentService,
 ) : IgeExporter {
 
     val log = logger()
@@ -59,7 +61,7 @@ class IngridIDFExporter(
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
         val prettyXml = output.toString() // prettyFormat(output.toString(), 4)
-        log.debug(prettyXml)
+//        log.debug(prettyXml)
         return prettyXml
     }
 
@@ -109,9 +111,9 @@ class IngridIDFExporter(
         
         val transformerClass = profileTransformer?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json, documentService)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
