@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.services.CSWTransactionResult
 import de.ingrid.igeserver.services.CswtService
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Profile("csw-t")
-@RequestMapping(path = ["/api/cswt"])
+@RequestMapping(path = ["/api"])
 class CswtApiController (
     private val apiValidationService: ApiValidationService,
     private val ogcCswtService: CswtService,
@@ -27,13 +28,15 @@ class CswtApiController (
 ) : CswtApi {
 
     val log = logger()
-    override fun handleCSWT(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
+    override fun handleCSWT(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, service: String, request: String, catalog: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
         var statusCode: HttpStatusCode? = null
         var xmlResponse: ByteArray? = null
 
         try {
-            apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
-            apiValidationService.validateCollection(collectionId)
+            if(service != "CSW" ) throw ClientException.withReason("Request parameter 'SERVICE' must be 'CSW'. Value '$service' not supported.")
+            if(request != "Transaction") throw ClientException.withReason("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$request' not supported.")
+            apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST" , "datasetFolderId", "addressFolderId"))
+            apiValidationService.validateCollection(catalog)
         } catch (e: IgeException) {
             log.error("Error in CSW transaction", e)
             val paramErrorResult = CSWTransactionResult(
@@ -49,12 +52,12 @@ class CswtApiController (
         if(xmlResponse == null){
             val options = ImportOptions(
                 publish = true,
-                parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id } else null,
-                parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, addressFolderId)).id } else null,
+                parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(catalog, datasetFolderId)).id } else null,
+                parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(catalog, addressFolderId)).id } else null,
                 overwriteAddresses = true,
                 overwriteDatasets = true
             )
-            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, collectionId, principal, options)
+            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
             xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
             statusCode = if(transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
         }
