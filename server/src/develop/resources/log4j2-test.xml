@@ -25,6 +25,10 @@
     <Logger name="de.ingrid" level="debug" additivity="false">
       <AppenderRef ref="Console" />
     </Logger>
+
+    <Logger name="de.ingrid.utils.tool.XsltUtils" level="info" additivity="false">
+      <AppenderRef ref="Console" />
+    </Logger>
     <Logger name="net.weta.components" level="warn" additivity="false">
       <AppenderRef ref="LogFile" />
       <AppenderRef ref="Console" />
