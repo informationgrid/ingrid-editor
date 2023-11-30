@@ -36,7 +36,8 @@ class PostDataHistoryLogger(
             action = payload.action.name.lowercase(),
             target = docId,
             data = documentService.convertToJsonNode(payload.document),
-            logger = LOGGER_NAME
+            logger = LOGGER_NAME,
+            catalogIdentifier = payload.document.catalog?.identifier
         )
         return payload
     }
