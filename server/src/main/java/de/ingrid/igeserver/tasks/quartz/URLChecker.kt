@@ -6,6 +6,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
+import de.ingrid.utils.tool.UrlTool
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -131,7 +132,9 @@ class URLChecker(
     private suspend fun checkAndReportUrl(info: UrlReport) {
         return try {
             (withContext(Dispatchers.IO) {
-                URL(info.url).openConnection()
+                // encode URL to handle those with special characters like umlauts
+                // alternatively we might use: url.toURI().toASCIIString()
+                URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
             } as HttpURLConnection).let {
                 it.connectTimeout = 10000
                 it.readTimeout = 5000
