@@ -20,6 +20,8 @@ import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ConfigService } from "../../../../../services/config/config.service";
+import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
 
 @Component({
   selector: "ige-access-dialog",
@@ -51,6 +53,7 @@ export class PermissionsDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<PermissionsDialogComponent>,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    public configService: ConfigService,
   ) {
     this.id = data.id;
     this.forResponsibility = data.forResponsibility;
@@ -99,8 +102,26 @@ export class PermissionsDialogComponent implements OnInit {
     this.documentService
       .setResponsibleUser(this.id, this.selectedUser.id)
       .subscribe(() => {
-        this.snackBar.open("Verantwortlicher aktualisert.");
+        this.snackBar.open("Verantwortlicher aktualisiert.");
         this.dialogRef.close();
       });
+  }
+
+  onButtonClick() {
+    if (this.selectedUser?.id === this.configService.$userInfo?.getValue().id) {
+      this.showSelfSelectWarnDialog();
+    } else {
+      this.switchToUser();
+    }
+  }
+
+  public showSelfSelectWarnDialog() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Achtung",
+        message: `Sie können nur andere Benutzer verwalten.`,
+      },
+      maxWidth: "520px",
+    });
   }
 }
