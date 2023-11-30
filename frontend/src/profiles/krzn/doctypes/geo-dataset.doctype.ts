@@ -29,10 +29,8 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
   private getMapLinkFieldConfig() {
     return this.addSelect("mapLink", "Alternativer Karten Client", {
       className: "optional",
-      allowNoValue: true,
-      noValueLabel: "keine Daten im Geoportal",
-      placeholder: "keine Daten im Geoportal",
-      options: this.getCodelistForSelect(10500, "mapLink"),
+      allowNoValue: false,
+      options: this.getCodelistForSelect(10500, "mapLink", false),
     });
   }
 }

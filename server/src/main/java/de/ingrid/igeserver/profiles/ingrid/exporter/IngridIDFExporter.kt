@@ -61,7 +61,7 @@ class IngridIDFExporter(
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
         val prettyXml = output.toString() // prettyFormat(output.toString(), 4)
-//        log.debug(prettyXml)
+        log.debug(prettyXml)
         return prettyXml
     }
 
