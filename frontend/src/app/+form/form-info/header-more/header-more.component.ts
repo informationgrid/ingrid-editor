@@ -5,9 +5,8 @@ import {
   Input,
   OnInit,
 } from "@angular/core";
-import { DocumentState, IgeDocument } from "../../../models/ige-document";
+import { IgeDocument } from "../../../models/ige-document";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { DocumentUtils } from "../../../services/document.utils";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
@@ -53,10 +52,6 @@ export class HeaderMoreComponent implements OnInit {
       this.configService.$userInfo.getValue().currentCatalog.created;
     // compare the creation dates of document and catalog
     this.migrated = new Date(this.model._created) < new Date(catCreateDate);
-  }
-
-  getState(state: DocumentState) {
-    return DocumentUtils.getStateName(state);
   }
 
   mapDocumentType(type: string) {
