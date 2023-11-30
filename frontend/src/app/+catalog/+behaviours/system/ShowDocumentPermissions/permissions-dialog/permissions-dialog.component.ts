@@ -23,6 +23,11 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../../services/config/config.service";
 import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
 
+export interface PermissionDialogData {
+  id: number;
+  forResponsibility: boolean;
+}
+
 @Component({
   selector: "ige-access-dialog",
   templateUrl: "./permissions-dialog.component.html",
@@ -42,13 +47,15 @@ import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-d
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;
+  // TODO: configure dialog through data, like submit-button - label
+  // TODO: also the filtering of the user READ/WRITE to prevent specific logic in component
   forResponsibility = false;
   selectedUser: User;
   users: UserWithDocPermission[];
   query = new FormControl<string>("");
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
+    @Inject(MAT_DIALOG_DATA) public data: PermissionDialogData,
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<PermissionsDialogComponent>,
     private dialog: MatDialog,
@@ -63,7 +70,7 @@ export class PermissionsDialogComponent implements OnInit {
     this.loadPermissionById(this.id);
   }
 
-  switchToUser() {
+  closeWithSelectedUser() {
     this.dialogRef.close(this.selectedUser);
   }
 
@@ -73,6 +80,7 @@ export class PermissionsDialogComponent implements OnInit {
       .subscribe((response) => this.buildTableData(response));
   }
 
+  // TODO: this should be controlled by the dialog data!
   private buildTableData(response: any) {
     this.users = [
       ...this.createUsersWithPermission(
@@ -98,21 +106,21 @@ export class PermissionsDialogComponent implements OnInit {
     return users.map((user) => new UserWithDocPermission(user, permission));
   }
 
+  // TODO: this action should be done by the component which called the dialog!
   setAsResponsible() {
     this.documentService
       .setResponsibleUser(this.id, this.selectedUser.id)
       .subscribe(() => {
         this.snackBar.open("Verantwortlicher aktualisiert.");
-        this.dialogRef.close();
+        this.closeWithSelectedUser();
       });
   }
 
-  onButtonClick() {
+  handleShowSelectedUser() {
     if (this.selectedUser?.id === this.configService.$userInfo?.getValue().id) {
-      this.showSelfSelectWarnDialog();
-    } else {
-      this.switchToUser();
+      return this.showSelfSelectWarnDialog();
     }
+    this.closeWithSelectedUser();
   }
 
   public showSelfSelectWarnDialog() {
