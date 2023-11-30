@@ -58,7 +58,7 @@ class URLChecker(
 
             notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
 
-            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds)
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds, info.profile)
 
             val urls = convertToUrlList(docs)
             runBlocking {
