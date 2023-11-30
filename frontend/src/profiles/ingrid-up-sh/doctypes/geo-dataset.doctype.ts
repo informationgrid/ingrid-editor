@@ -16,31 +16,55 @@ export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
   };
 
   private getGeometryContextFieldConfig(): FormlyFieldConfig {
-    return this.addRepeatDetailList("geometryContext", "Geometry Context", {
-      className: "label-width-xl",
-      fields: [
-        this.addInput("geometryType", "Geometrie-Typ", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addInput("name", "Name", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addSelect("featureType", "Feature-Typ", {
-          options: [
-            { label: "nominal", value: "nominal" },
-            { label: "ordinal", value: "ordinal" },
-            { label: "skalar", value: "scalar" },
-            { label: "sonstiges", value: "other" },
-          ],
-        }),
-        this.addInput("dataType", "Daten-Typ/-Klasse", {
-          wrappers: ["panel", "form-field"],
-        }),
-        this.addInput("description", "Beschreibung", {
-          wrappers: ["panel", "form-field"],
-        }),
+    let featureTypeColumn = {
+      label: "Feature-Typ",
+      ...this.addSelect("featureType", "Feature-Typ", {
+        required: true,
+        options: [
+          { label: "nominal", value: "nominal" },
+          { label: "ordinal", value: "ordinal" },
+          { label: "skalar", value: "scalar" },
+          { label: "sonstiges", value: "other" },
+        ],
+      }),
+    };
+    featureTypeColumn.props.formatter = (item: any, x, y, columnDef: any) =>
+      columnDef.props.options.find((option) => option.value === item.key)
+        ?.label ?? item.key;
+
+    return this.addTable("geometryContext", "Geometry Context", {
+      supportUpload: false,
+      columns: [
+        {
+          label: "Geometrie-Typ",
+          ...this.addInput("geometryType", "Geometrie-Typ", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+        },
+        {
+          label: "Name",
+          ...this.addInput("name", "Name", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+        },
+        featureTypeColumn,
+        {
+          label: "Daten-Typ/-Klasse",
+          ...this.addInput("dataType", "Daten-Typ/-Klasse", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+        },
+        {
+          label: "Beschreibung",
+          ...this.addInput("description", "Beschreibung", {
+            required: true,
+            wrappers: ["panel", "form-field"],
+          }),
+        },
       ],
-      titleField: "name",
     });
   }
 }

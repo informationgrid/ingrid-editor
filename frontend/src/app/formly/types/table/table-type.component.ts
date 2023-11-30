@@ -252,6 +252,7 @@ export class TableTypeComponent
               value[index][column.key],
               this.form,
               value[index],
+              column,
             );
           }),
       );
