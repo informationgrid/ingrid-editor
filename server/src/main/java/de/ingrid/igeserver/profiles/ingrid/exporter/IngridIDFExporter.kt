@@ -21,7 +21,6 @@ import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 
