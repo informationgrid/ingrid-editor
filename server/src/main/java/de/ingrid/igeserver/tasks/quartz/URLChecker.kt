@@ -8,6 +8,8 @@ import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import de.ingrid.utils.tool.UrlTool
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
@@ -62,13 +64,17 @@ class URLChecker(
             val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds, info.profile)
 
             val urls = convertToUrlList(docs)
+            val semaphore = Semaphore(10)
+
             runBlocking {
                 urls.forEachIndexed { index, urlReport ->
-                    launch(Dispatchers.Default.limitedParallelism(10)) {
-                        notifier.sendMessage(
-                            notificationType,
-                            message.apply { this.progress = calcProgress(index, urls.size) })
-                        checkAndReportUrl(urlReport)
+                    launch {
+                        semaphore.withPermit {
+                            notifier.sendMessage(
+                                notificationType,
+                                message.apply { this.progress = calcProgress(index, urls.size) })
+                            checkAndReportUrl(urlReport)
+                        }
                     }
                 }
             }
