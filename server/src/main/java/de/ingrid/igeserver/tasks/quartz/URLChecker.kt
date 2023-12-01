@@ -142,8 +142,8 @@ class URLChecker(
                 // alternatively we might use: url.toURI().toASCIIString()
                 URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
             } as HttpURLConnection).let {
-                it.connectTimeout = 10000
-                it.readTimeout = 5000
+                it.connectTimeout = 3000
+                it.readTimeout = 1500
                 it.instanceFollowRedirects = true
                 it.connect()
                 info.status = it.responseCode
