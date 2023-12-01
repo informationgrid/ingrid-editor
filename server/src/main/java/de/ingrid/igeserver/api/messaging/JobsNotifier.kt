@@ -12,11 +12,6 @@ data class UrlReport(val url: String, var success: Boolean, var status: Int, val
 
 data class DatasetInfo(val title: String, val type: String, val uuid: String, val field: String? = null)
 
-data class UrlMessage(var numUrls: Int = 0, override var progress: Int = 0) : Message(progress = progress) {
-    // TODO: migrate to new notifier
-    var report2: URLCheckerReport? = null
-}
-
 enum class NotificationType(val uri: String) {
     URL_CHECK("/url-check"),
     IMPORT("/import")

@@ -78,7 +78,7 @@ export class TableTypeComponent
       );
 
     const requiredColumnKeys = this.props.columns
-      .filter((col) => col.props.required)
+      .filter((col) => col.props?.required)
       .map((col) => col.key);
     if (requiredColumnKeys.length > 0) {
       this.formControl.addValidators((): ValidationErrors | null => {
@@ -243,7 +243,7 @@ export class TableTypeComponent
     }
 
     this.props.columns
-      .filter((column) => column.props.formatter)
+      .filter((column) => column.props?.formatter)
       .forEach(
         (column) =>
           value?.forEach((row, index) => {

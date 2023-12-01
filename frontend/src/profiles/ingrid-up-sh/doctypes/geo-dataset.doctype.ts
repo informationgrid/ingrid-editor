@@ -1,6 +1,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
+import { GeometryContextDialogComponent } from "../dialogs/geometry-context-dialog.component";
 
 @Injectable({
   providedIn: "root",
@@ -23,61 +24,45 @@ export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
   };
 
   private getGeometryContextFieldConfig(): FormlyFieldConfig {
-    let featureTypeColumn = {
-      label: "Feature-Typ",
-      ...this.addSelectInline("featureType", "Feature-Typ", {
-        required: true,
-        options: [
-          { label: "nominal", value: "nominal" },
-          { label: "ordinal", value: "ordinal" },
-          { label: "skalar", value: "scalar" },
-          { label: "sonstiges", value: "other" },
-        ],
-      }),
-    };
-    featureTypeColumn.props.formatter = (item: any, x, y, columnDef: any) =>
-      columnDef.props.options.find((option) => option.value === item.key)
-        ?.label ?? item.key;
-
     return this.addTable("geometryContext", "Geometry Context", {
       supportUpload: false,
+      dialog: GeometryContextDialogComponent,
       columns: [
         {
+          key: "geometryType",
           label: "Geometrie-Typ",
-          ...this.addInput("geometryType", "Geometrie-Typ", {
-            fieldLabel: "Geometrie-Typ",
-            required: true,
-          }),
+          props: { required: true },
         },
         {
+          key: "name",
           label: "Name",
-          ...this.addInput("name", "Name", {
-            fieldLabel: "Name",
-            required: true,
-          }),
+          props: { required: true },
         },
-        featureTypeColumn,
         {
+          key: "featureType",
+          label: "Feature-Typ",
+          props: {
+            required: true,
+            formatter: (item: any) =>
+              GeometryContextDialogComponent.featureTypeOptions.find(
+                (option) => option.value === item.key,
+              )?.label ?? item.key,
+          },
+        },
+        {
+          key: "dataType",
           label: "Daten-Typ/-Klasse",
-          ...this.addInput("dataType", "Daten-Typ/-Klasse", {
-            fieldLabel: "Daten-Typ/-Klasse",
-            required: true,
-          }),
+          props: { required: true },
         },
         {
+          key: "description",
           label: "Beschreibung",
-          ...this.addInput("description", "Beschreibung", {
-            fieldLabel: "Beschreibung",
-            required: true,
-          }),
+          props: { required: true },
         },
-        /*TODO: special values from import!?*/
-        /*
-         * {field: 'min', hidden: true},
-         * {field: 'max', hidden: true},
-         * {field: 'unit', hidden: true},
-         * {field: 'attributes', hidden: true}
-         */
+        {
+          key: "min",
+          hidden: true,
+        },
       ],
     });
   }

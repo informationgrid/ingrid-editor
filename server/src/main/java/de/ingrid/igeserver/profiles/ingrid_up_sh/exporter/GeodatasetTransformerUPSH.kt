@@ -34,9 +34,19 @@ class GeodatasetTransformerUPSH(
         return GeometryContext(
             item.getStringOrEmpty("geometryType"),
             item.getStringOrEmpty("name"),
-            item.getStringOrEmpty("featureType.key"),
+            mapFeatureType(item.getStringOrEmpty("featureType.key")),
             item.getStringOrEmpty("dataType"),
             item.getStringOrEmpty("description"),
         )
+    }
+
+    private fun mapFeatureType(type: String): String {
+        return when (type) {
+            "nominal" -> "NominalFeature"
+            "ordinal" -> "OrdinalFeature"
+            "scalar" -> "ScalarFeature"
+            "other" -> "OtherFeature"
+            else -> ""
+        }
     }
 }
