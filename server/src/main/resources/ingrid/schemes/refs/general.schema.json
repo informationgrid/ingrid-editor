@@ -525,24 +525,46 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "url": {
-            "type": "string"
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/KeyValue"
+              },
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "explanation": {
+                "type": ["null", "string"]
+              }
+            },
+            "required": ["type", "title", "url"]
           },
-          "type": {
-            "$ref": "#/definitions/KeyValue"
-          },
-          "title": {
-            "type": ["null", "string"]
-          },
-          "uuidRef": {
-            "type": ["null", "string"]
-          },
-          "explanation": {
-            "type": ["null", "string"]
+          {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/KeyValue"
+              },
+              "title": {
+                "type": "string"
+              },
+              "uuidRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "explanation": {
+                "type": ["null", "string"]
+              }
+            },
+            "required": ["type", "title", "uuidRef"]
           }
-        }
+        ]
       }
     }
   }

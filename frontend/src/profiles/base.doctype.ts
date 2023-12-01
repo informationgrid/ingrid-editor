@@ -120,10 +120,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   getCodelistForSelect(
     codelistId: number,
     field: string,
+    sort: boolean = true,
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
 
-    return this.codelistService.observe(codelistId + "");
+    return this.codelistService.observe(codelistId + "", sort);
   }
 
   async init(help: string[]): Promise<void> {

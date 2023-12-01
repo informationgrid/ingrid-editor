@@ -68,11 +68,11 @@ class KeycloakService : UserManagementService {
 
     private val log = LogManager.getLogger(KeycloakService::class.java)
 
-    @Value("\${keycloak.super-admin-user:ige}")
-    private val superAdminUser: String? = null
+    @Value("\${keycloak.backend-user}")
+    private val backendUser: String? = null
 
-    @Value("\${keycloak.super-admin-password:ige}")
-    private val superAdminPassword: String? = null
+    @Value("\${keycloak.backend-user-password}")
+    private val backendUserPassword: String? = null
 
     @Value("\${keycloak.auth-server-url}")
     private val keycloakUrl: String? = null
@@ -145,7 +145,7 @@ class KeycloakService : UserManagementService {
 
 
     override fun initAdminClient(): KeycloakCloseableClient {
-        val jsonResponse = this.sendLoginRequest(superAdminUser!!, superAdminPassword!!)
+        val jsonResponse = this.sendLoginRequest(backendUser!!, backendUserPassword!!)
         return initClient(jsonResponse["access_token"].toString())
     }
 

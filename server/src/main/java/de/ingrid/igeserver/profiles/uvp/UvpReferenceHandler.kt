@@ -58,7 +58,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>): List<DocumentLinks> {
+    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
         val result = queryDocs(sqlStepsPublished, "step", null, catalogId, groupDocIds = groupDocIds)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", null, catalogId, groupDocIds = groupDocIds)
         return mapQueryResults(result, resultNegativeDocs, true)

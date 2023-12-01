@@ -86,20 +86,21 @@ class IngridLuceneExporter(
                     AddressModelTransformer(
                         mapper.convertValue(doc, AddressModel::class.java),
                         catalog.identifier,
-                        codelistTransformer
+                        codelistTransformer,
+                        documentService = documentService
                     )
                 }
             }
             IngridDocType.DOCUMENT -> {
                 if (otherTransformer != null) {
-                    otherTransformer.constructors.first().call(mapper.convertValue(doc, IngridModel::class.java), catalog.identifier, codelistTransformer, config, catalogService, TransformerCache(), doc)
+                    otherTransformer.constructors.first().call(mapper.convertValue(doc, IngridModel::class.java), catalog.identifier, codelistTransformer, config, catalogService, TransformerCache(), doc, documentService)
                 } else {
                     IngridModelTransformer(
                         mapper.convertValue(doc, IngridModel::class.java),
                         catalog.identifier,
                         codelistTransformer,
                         config,
-                        catalogService, TransformerCache()
+                        catalogService, TransformerCache(), documentService = documentService
                     )
                 }
             }

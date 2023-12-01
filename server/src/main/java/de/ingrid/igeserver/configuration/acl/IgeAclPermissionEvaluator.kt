@@ -65,6 +65,11 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             finalDomainObject = finalDomainObject.writeReplace()
         }
 
+        if (finalDomainObject is Iterable<*>) {
+            // check if all elements have permission
+            return finalDomainObject.all { hasPermission(authentication, it, permission) }
+        }
+
 //        try {
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
         return checkPermission(authentication, objectIdentity, permission, finalDomainObject)

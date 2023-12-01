@@ -12,7 +12,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
 
     val log = logger()
 
-    abstract fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>): List<DocumentLinks>
+    abstract fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks>
 
     abstract fun getProfile(): String
     

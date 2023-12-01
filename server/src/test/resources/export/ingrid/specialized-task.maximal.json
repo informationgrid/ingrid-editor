@@ -2,7 +2,6 @@
   "title": "ab",
   "_uuid": "9635856b-ad0c-45c2-ae28-fbde3e56411b",
   "_type": "InGridSpecialisedTask",
-  "themes": [{ "key": "201" }],
   "dataset": { "languages": ["126"] },
   "spatial": {
     "references": [

@@ -94,10 +94,10 @@
     "FOLDER": "Ordner"
   },
   "docState": {
-    "working": "In Bearbeitung",
-    "published": "Veröffentlicht",
-    "workingWithPublished": "In Bearbeitung mit Veröffentlichung",
-    "pending": "Veröffentlichung geplant"
+    "W": "In Bearbeitung",
+    "P": "Veröffentlicht",
+    "PW": "In Bearbeitung mit Veröffentlichung",
+    "PENDING": "Veröffentlichung geplant"
   },
   "tags": {
     "internet": "Internet",
@@ -130,7 +130,8 @@
       "matDatepickerMax": "Das Datum ist größer als erlaubt",
       "min": "Der Wert darf nicht kleiner sein als {{value}}",
       "max": "Der Wert darf nicht größer sein als {{value}}",
-      "commitWithEnter": "Der Inhalt muss noch mit der Eingabetaste bestätigt werden"
+      "commitWithEnter": "Der Inhalt muss noch mit der Eingabetaste bestätigt werden",
+      "JSON_SCHEMA": "Es trat ein Fehler bei der JSON-Schema Validierung auf"
     },
     "create-dialog": {
       "titleRequired": "Bitte geben Sie einen Titel ein",

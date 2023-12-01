@@ -20,6 +20,13 @@ import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NgIf } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ConfigService } from "../../../../../services/config/config.service";
+import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
+
+export interface PermissionDialogData {
+  id: number;
+  forResponsibility: boolean;
+}
 
 @Component({
   selector: "ige-access-dialog",
@@ -40,17 +47,20 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;
+  // TODO: configure dialog through data, like submit-button - label
+  // TODO: also the filtering of the user READ/WRITE to prevent specific logic in component
   forResponsibility = false;
   selectedUser: User;
   users: UserWithDocPermission[];
   query = new FormControl<string>("");
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
+    @Inject(MAT_DIALOG_DATA) public data: PermissionDialogData,
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<PermissionsDialogComponent>,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
+    public configService: ConfigService,
   ) {
     this.id = data.id;
     this.forResponsibility = data.forResponsibility;
@@ -60,7 +70,7 @@ export class PermissionsDialogComponent implements OnInit {
     this.loadPermissionById(this.id);
   }
 
-  switchToUser() {
+  closeWithSelectedUser() {
     this.dialogRef.close(this.selectedUser);
   }
 
@@ -70,6 +80,7 @@ export class PermissionsDialogComponent implements OnInit {
       .subscribe((response) => this.buildTableData(response));
   }
 
+  // TODO: this should be controlled by the dialog data!
   private buildTableData(response: any) {
     this.users = [
       ...this.createUsersWithPermission(
@@ -95,12 +106,30 @@ export class PermissionsDialogComponent implements OnInit {
     return users.map((user) => new UserWithDocPermission(user, permission));
   }
 
+  // TODO: this action should be done by the component which called the dialog!
   setAsResponsible() {
     this.documentService
       .setResponsibleUser(this.id, this.selectedUser.id)
       .subscribe(() => {
-        this.snackBar.open("Verantwortlicher aktualisert.");
-        this.dialogRef.close();
+        this.snackBar.open("Verantwortlicher aktualisiert.");
+        this.closeWithSelectedUser();
       });
+  }
+
+  handleShowSelectedUser() {
+    if (this.selectedUser?.id === this.configService.$userInfo?.getValue().id) {
+      return this.showSelfSelectWarnDialog();
+    }
+    this.closeWithSelectedUser();
+  }
+
+  public showSelfSelectWarnDialog() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: "Achtung",
+        message: `Sie können nur andere Benutzer verwalten.`,
+      },
+      maxWidth: "520px",
+    });
   }
 }

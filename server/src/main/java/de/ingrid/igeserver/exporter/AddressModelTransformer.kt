@@ -4,7 +4,6 @@ import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.SpringContext
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -14,12 +13,9 @@ class AddressModelTransformer(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
     val type: KeyValueModel? = null,
-    doc: Document? = null
+    doc: Document? = null,
+    val documentService: DocumentService
 ) {
-    companion object {
-        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
-    }
-
 
     private var displayAddress: AddressModel
     fun getModel() = displayAddress
@@ -28,7 +24,7 @@ class AddressModelTransformer(
     private val ancestorAddressesIncludingSelf: MutableList<AddressModel>
 
     init {
-        ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier)
+        ancestorAddressesIncludingSelf = model.getAncestorAddressesIncludingSelf(documentService!!, model.id, catalogIdentifier)
         displayAddress = determineDisplayAddress()
     }
 
@@ -69,7 +65,8 @@ class AddressModelTransformer(
             AddressModelTransformer(
                 it,
                 catalogIdentifier,
-                codelist
+                codelist,
+                documentService = documentService 
             )
         }.reversed()
 
@@ -112,7 +109,7 @@ class AddressModelTransformer(
     val addressDocType = getAddressDocType(displayAddress.docType)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
 
-    val parentAddresses = model.getAncestorAddressesIncludingSelf(model.id, catalogIdentifier).dropLast(1)
+    val parentAddresses = model.getAncestorAddressesIncludingSelf(documentService!!, model.id, catalogIdentifier).dropLast(1)
 
     fun getNextParent() = documentService!!.getParentWrapper(model.id)?.uuid
 
@@ -149,10 +146,10 @@ class AddressModelTransformer(
      *  @return List of children
      */
     fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return model.getPublishedChildren(model.id, catalogIdentifier)
+        return model.getPublishedChildren(documentService!!, model.id, catalogIdentifier)
             .filter { it.hideAddress == false }
             .map {
-                AddressModelTransformer(it, catalogIdentifier, codelist, type)
+                AddressModelTransformer(it, catalogIdentifier, codelist, type, documentService = documentService)
             }.map {
                 SubordinatedParty(
                     it.uuid,

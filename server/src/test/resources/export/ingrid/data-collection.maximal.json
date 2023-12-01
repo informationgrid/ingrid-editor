@@ -2,7 +2,6 @@
   "_uuid": "a0d1ad6d-4237-4b6e-b0be-cfd072510531",
   "_type": "InGridDataCollection",
   "title": "abab",
-  "themes": [{ "key": "105" }],
   "dataset": { "languages": ["123"] },
   "spatial": {
     "references": [

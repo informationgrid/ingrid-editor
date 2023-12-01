@@ -2,8 +2,6 @@ package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
@@ -15,16 +13,18 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import initDocumentMocks
-import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
 
-class DataCollection : AnnotationSpec() {
+class DataCollection : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -39,9 +39,9 @@ class DataCollection : AnnotationSpec() {
     private lateinit var indexExporter: IngridIndexExporter
     private lateinit var luceneExporter: IngridLuceneExporter
 
-    @BeforeAll
-    fun beforeAll() {
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
+    override suspend fun beforeSpec(spec: Spec) {
+        clearAllMocks()
+        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
@@ -100,19 +100,20 @@ class DataCollection : AnnotationSpec() {
         initDocumentMocks(addresses + datasets, documentService)
     }
 
-    /*
-    * export with all inputs possible.
-    * address has an organization assigned.
-    * */
-    @Test
-    fun maximalExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    init {
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.expected.maximal.idf.xml")
+        /*
+        * export with all inputs possible.
+        * address has an organization assigned.
+        **/
+        should("maximalExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/data-collection.expected.maximal.idf.xml")
+        }
     }
-
 }

@@ -1,5 +1,12 @@
 @import "src/variables";
 
+// TODO: temporary fix.
+// Issue caused by upgrading to angular/material 17, that this variable becomes undefined.
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  --mdc-fab-container-shape: 50%;
+}
+
 ::placeholder {
   color: $ige-placeholder-color !important;
 }

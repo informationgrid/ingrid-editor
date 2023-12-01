@@ -9,6 +9,7 @@ import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -71,7 +72,7 @@ data class UVPModel(
             ?.ref ?: return null
 
 //        val catalogId = AddressModel.catalogRepository?.getCatalogIdentifier(doc.catalog!!.id!!)!!
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(ref.id, catalogId)
+        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(documentService!!, ref.id, catalogId)
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last()
@@ -148,6 +149,8 @@ data class UVPModel(
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
         }
+        
+        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
 
 
@@ -186,7 +189,7 @@ data class UVPModel(
     private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
         if (pointOfContact == null) return emptyList()
 
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(parent, catalogId)
+        return pointOfContact!!.getAncestorAddressesIncludingSelf(documentService!!, parent, catalogId)
     }
 
 

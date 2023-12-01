@@ -30,7 +30,7 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
     return this.addSelect("mapLink", "Alternativer Karten Client", {
       className: "optional",
       allowNoValue: false,
-      options: this.getCodelistForSelect(10500, "mapLink"),
+      options: this.getCodelistForSelect(10500, "mapLink", false),
     });
   }
 }

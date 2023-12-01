@@ -2,7 +2,6 @@
   "_uuid": "d967e83f-5336-4207-960c-3a6a900d0210",
   "_type": "InGridDataCollection",
   "title": "aba",
-  "themes": [],
   "dataset": { "languages": ["142"] },
   "spatial": {
     "references": [

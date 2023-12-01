@@ -1,7 +1,6 @@
 import { Component, HostBinding, Input, OnChanges } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
-import { DocumentUtils } from "../../services/document.utils";
 import { TranslocoService } from "@ngneat/transloco";
 import { DocumentState, IgeDocument } from "../../models/ige-document";
 import { ProfileService } from "../../services/profile.service";
@@ -36,11 +35,7 @@ export class DocumentIconComponent implements OnChanges {
     const publicationType =
       (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags;
 
-    this.documentState = DocumentUtils.getStateClass(
-      state,
-      type,
-      publicationType,
-    );
+    this.documentState = this.getStateClass(state, type, publicationType);
     this.hasTags = publicationType?.length > 0;
     const tooltip = this.getTooltip(type, state, publicationType);
     this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
@@ -61,9 +56,7 @@ export class DocumentIconComponent implements OnChanges {
   ): string {
     const tooltipDocType = this.translocoService.translate(`docType.${type}`);
 
-    const tooltipState = this.translocoService.translate(
-      `docState.${DocumentUtils.mapState(state, type)}`,
-    );
+    const tooltipState = this.translocoService.translate(`docState.${state}`);
 
     let tooltipPubTyp = "";
     if (publicationType) {
@@ -77,7 +70,31 @@ export class DocumentIconComponent implements OnChanges {
       }
     }
 
-    return `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
+    return type == "FOLDER"
+      ? tooltipDocType
+      : `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
+  }
+
+  private getStateClass(state: DocumentState, type: string, tags: string) {
+    let mappedState = this.mapIconState(state, type);
+
+    const mappedTags = tags?.replaceAll(",", " ") ?? "";
+    return `${mappedState} ${mappedTags}`;
+  }
+
+  private mapIconState(state: DocumentState, type: string) {
+    switch (state) {
+      case "W":
+        return type === "FOLDER" ? "published" : "working";
+      case "PW":
+        return "workingWithPublished";
+      case "P":
+      case "PENDING":
+        return "published";
+      default:
+        console.error("State is not supported: " + state);
+        return "";
+    }
   }
 
   ngOnChanges() {

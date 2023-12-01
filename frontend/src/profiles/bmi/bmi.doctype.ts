@@ -262,9 +262,7 @@ export class BmiDoctype extends BaseDoctype {
         required: options?.required,
         backendUrl: this.configService.getConfiguration().backendUrl,
         infoText: options?.infoText,
-      },
-      fieldArray: {
-        fieldGroup: options?.fields,
+        fields: options?.fields[0].fieldGroup,
       },
       expressions: expressions,
       validators: options?.validators,

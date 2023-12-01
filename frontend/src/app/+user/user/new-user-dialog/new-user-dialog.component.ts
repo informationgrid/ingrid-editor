@@ -75,7 +75,7 @@ export class NewUserDialogComponent implements OnInit {
       .subscribe((role) => {
         if (typeof role === "string") {
           this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
-          this.form.get("groups").reset();
+          if (this.asAdmin) this.form.get("groups").reset();
         }
       });
 

@@ -436,7 +436,12 @@ class DocumentService(
     }
 
     fun publishPendingDocuments(principal: Principal, catalogId: String) {
-        val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
+        val filterContext = try {
+            DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
+        } catch (e: ServerException) {
+            log.warn("Profile probably not found. Skipping '$catalogId': ${e.message}")
+            return
+        }
 
         docWrapperRepo.findAllPending(catalogId)
             .filter { it.pending_date?.isBefore(dateService.now()) ?: false }

@@ -21,5 +21,5 @@ class FolderModelTransformer(
     
     val category = documentService?.getWrapperByDocumentId(model.id)?.category
 
-    val nextParent = AddressModelTransformer.documentService!!.getParentWrapper(model.id)?.uuid
+    val nextParent = documentService!!.getParentWrapper(model.id)?.uuid
 }
