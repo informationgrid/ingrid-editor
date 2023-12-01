@@ -60,6 +60,8 @@ class UVPComponent {
     this.addUVPReportTab(reportsService);
 
     this.addUVPUploadCheckReportTab(reportsService);
+
+    this.removeExpiredDocumentsTab(reportsService);
   }
 
   private modifyFormHeader() {
@@ -106,6 +108,10 @@ class UVPComponent {
         permission: "can_create_uvp_report",
       },
     });
+  }
+
+  private removeExpiredDocumentsTab(reportsService: ReportsService) {
+    reportsService.removeRoute("expiration");
   }
 
   private addStylesheet() {

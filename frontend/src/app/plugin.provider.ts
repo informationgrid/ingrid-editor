@@ -20,6 +20,7 @@ import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.
 import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default-user.behaviour";
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
+import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -59,4 +60,5 @@ export const pluginProvider = [
     useClass: ShowDocumentPermissionsHandlerPlugin,
     multi: true,
   },
+  { provide: PluginToken, useClass: ExpiredDocumentsBehaviour, multi: true },
 ];

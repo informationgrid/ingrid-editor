@@ -1,6 +1,6 @@
 // when adding a new plugin then it must be loaded from the PluginManager by import statement
 // then this plugin can be listed and activated
-// - what is the difference to a bahaviour?
+// - what is the difference to a behaviour?
 //   - plugins are pre-configured and cannot be changed
 //   - maybe it's possible to change a few settings
 //   - they're also defined for all catalogs
