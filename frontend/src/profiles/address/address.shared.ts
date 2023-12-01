@@ -6,6 +6,7 @@ import {
   EmailValidator,
   UrlValidator,
 } from "../../app/formly/input.validators";
+import { FormControl } from "@angular/forms";
 
 export interface AddressOptions {
   defaultCountry: BackendOption;
@@ -58,6 +59,13 @@ export abstract class AddressShared extends BaseDoctype {
           },
         }),
       ],
+      validators: {
+        atLeastEmail: {
+          expression: (ctrl: FormControl<any[]>) =>
+            ctrl.value.some((item) => item.type?.key === "3"),
+          message: "Mindestens ein Eintrag muss vom Typ 'E-Mail' sein",
+        },
+      },
     });
   }
 
