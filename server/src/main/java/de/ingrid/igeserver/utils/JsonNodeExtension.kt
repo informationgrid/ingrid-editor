@@ -11,3 +11,7 @@ fun JsonNode.getString(path: String): String? {
             node?.get(fieldName)
         }?.asText()
 }
+
+fun JsonNode.getStringOrEmpty(path: String): String {
+    return this.getString(path) ?: ""
+}

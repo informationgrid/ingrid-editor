@@ -7,10 +7,17 @@ import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 })
 export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    // add "Produktionsumgebung"
-    fieldConfig
-      .find((field) => field.props.label === "Fachbezug")
-      .fieldGroup.push(this.getGeometryContextFieldConfig());
+    const section = fieldConfig.find(
+      (field) => field.props.label === "Fachbezug",
+    );
+    const insertPosition = section.fieldGroup.findIndex(
+      (field) => field.key === "vectorSpatialRepresentation",
+    );
+    section.fieldGroup.splice(
+      insertPosition + 1,
+      0,
+      this.getGeometryContextFieldConfig(),
+    );
 
     return fieldConfig;
   };
@@ -18,7 +25,7 @@ export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
   private getGeometryContextFieldConfig(): FormlyFieldConfig {
     let featureTypeColumn = {
       label: "Feature-Typ",
-      ...this.addSelect("featureType", "Feature-Typ", {
+      ...this.addSelectInline("featureType", "Feature-Typ", {
         required: true,
         options: [
           { label: "nominal", value: "nominal" },
@@ -38,32 +45,39 @@ export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
         {
           label: "Geometrie-Typ",
           ...this.addInput("geometryType", "Geometrie-Typ", {
+            fieldLabel: "Geometrie-Typ",
             required: true,
-            wrappers: ["panel", "form-field"],
           }),
         },
         {
           label: "Name",
           ...this.addInput("name", "Name", {
+            fieldLabel: "Name",
             required: true,
-            wrappers: ["panel", "form-field"],
           }),
         },
         featureTypeColumn,
         {
           label: "Daten-Typ/-Klasse",
           ...this.addInput("dataType", "Daten-Typ/-Klasse", {
+            fieldLabel: "Daten-Typ/-Klasse",
             required: true,
-            wrappers: ["panel", "form-field"],
           }),
         },
         {
           label: "Beschreibung",
           ...this.addInput("description", "Beschreibung", {
+            fieldLabel: "Beschreibung",
             required: true,
-            wrappers: ["panel", "form-field"],
           }),
         },
+        /*TODO: special values from import!?*/
+        /*
+         * {field: 'min', hidden: true},
+         * {field: 'max', hidden: true},
+         * {field: 'unit', hidden: true},
+         * {field: 'attributes', hidden: true}
+         */
       ],
     });
   }

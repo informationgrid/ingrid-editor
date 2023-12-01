@@ -229,6 +229,9 @@ open class IngridModelTransformer(
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
+    
+    open fun getGeometryContexts(): List<GeometryContext> = emptyList()
+    
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
@@ -824,4 +827,12 @@ data class DocumentReference(
     val title: String,
     val serviceType: String,
     val serviceVersion: String
+)
+
+data class GeometryContext(
+    val type: String,
+    val name: String,
+    val featureType: String,
+    val dataType: String,
+    val description: String,
 )
