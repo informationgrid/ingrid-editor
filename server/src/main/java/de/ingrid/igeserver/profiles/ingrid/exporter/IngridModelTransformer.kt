@@ -831,6 +831,8 @@ data class GeometryContext(
     val type: String,
     val name: String,
     val featureType: String,
+    val featureTypeAttribute: String,
+    val featureTypeAttributeContent: String,
     val dataType: String,
     val description: String,
 )

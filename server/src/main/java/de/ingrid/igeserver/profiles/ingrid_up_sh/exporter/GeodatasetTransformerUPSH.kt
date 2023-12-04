@@ -31,10 +31,13 @@ class GeodatasetTransformerUPSH(
     }
 
     private fun convertToGeometryContext(item: JsonNode): GeometryContext {
+        val featureType = mapFeatureType(item.getStringOrEmpty("featureType.key"))
         return GeometryContext(
             item.getStringOrEmpty("geometryType"),
             item.getStringOrEmpty("name"),
-            mapFeatureType(item.getStringOrEmpty("featureType.key")),
+            featureType,
+            if (featureType == "OtherFeature") "OtherFeatureAttribute" else "RegularFeatureAttribute",
+            if (featureType == "OtherFeature") "attributeContent" else "attributeCode",
             item.getStringOrEmpty("dataType"),
             item.getStringOrEmpty("description"),
         )

@@ -8,7 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { NgForOf } from "@angular/common";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
-import { FormFieldHelper } from "../../form-field-helper";
+import { geometryContextFields } from "./geometry-context.fields";
 
 @UntilDestroy()
 @Component({
@@ -36,52 +36,7 @@ export class GeometryContextDialogComponent implements OnInit {
 
   disabled: boolean;
 
-  getFeatureTypes = GeometryContextDialogComponent.featureTypeOptions;
-
-  fieldHelper = new FormFieldHelper();
-
-  fields: FormlyFieldConfig[] = [
-    this.fieldHelper.addInputInline("geometryType", "Geometrie-Typ", {
-      required: true,
-    }),
-    this.fieldHelper.addInputInline("name", "Name", {
-      required: true,
-    }),
-    this.fieldHelper.addSelectInline("featureType", "Feature-Typ", {
-      required: true,
-      options: this.getFeatureTypes,
-    }),
-    this.fieldHelper.addInputInline("dataType", "Daten-Typ/-Klasse", {
-      required: true,
-    }),
-    this.fieldHelper.addInputInline("description", "Beschreibung", {
-      required: true,
-    }),
-    this.fieldHelper.addGroupSimple(
-      null,
-      [
-        this.fieldHelper.addInputInline("min", "Min", {
-          type: "number",
-          className: "flex-1",
-        }),
-        this.fieldHelper.addInputInline("max", "Max", {
-          type: "number",
-          className: "flex-1",
-        }),
-      ],
-      {
-        fieldGroupClassName: "flex-row gap-12",
-        hideExpression:
-          "!model.featureType || model.featureType?.key === 'nominal' || model.featureType?.key === 'other'",
-      },
-    ),
-    this.fieldHelper.addInputInline("unit", "Einheit", {
-      required: true,
-      expressions: {
-        hide: "model.featureType?.key !== 'scalar'",
-      },
-    }),
-  ];
+  fields: FormlyFieldConfig[] = geometryContextFields();
 
   constructor(
     private dlgRef: MatDialogRef<any>,
