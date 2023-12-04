@@ -44,5 +44,11 @@ export function geometryContextFields() {
         hide: "model.featureType?.key !== 'scalar'",
       },
     }),
+    fieldHelper.addRepeat("attributes", "Attribute", {
+      fields: [
+        fieldHelper.addInputInline("key", "Code"),
+        fieldHelper.addInputInline("value", "Definition"),
+      ],
+    }),
   ];
 }

@@ -489,7 +489,7 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService?.getIncomingReferences(doc, catalogIdentifier)
-                ?.map { documentService!!.getLastPublishedDocument(catalogIdentifier, it) }
+                ?.map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
                 ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
                 ?.mapNotNull {
                     it.data.get("service").get("operations")
@@ -582,7 +582,7 @@ open class IngridModelTransformer(
         if (uuid == null) return null
         try {
             val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
                 IngridModel::class.java
             )
             val transformer = IngridModelTransformer(
@@ -653,7 +653,7 @@ open class IngridModelTransformer(
         val uuid = data.parentIdentifier ?: return null
         try {
             val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
                 IngridModel::class.java
             )
 
@@ -711,7 +711,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = getLastPublishedDocument(model.uuid)
-        return documentService!!.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
+        return documentService.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }
@@ -719,7 +719,7 @@ open class IngridModelTransformer(
     fun getLastPublishedDocument(uuid: String): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")
@@ -835,4 +835,10 @@ data class GeometryContext(
     val featureTypeAttributeContent: String,
     val dataType: String,
     val description: String,
+    val attributes: List<GeometryContextAttribute>
+)
+
+data class GeometryContextAttribute(
+    val key: String,
+    val value: String,
 )

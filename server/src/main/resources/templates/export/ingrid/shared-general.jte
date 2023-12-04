@@ -230,9 +230,24 @@
                     <igctx:featureDataType>
                         <gco:CharacterString>${geometryContext.getDataType()}</gco:CharacterString>
                     </igctx:featureDataType>
+                    @if(!geometryContext.getAttributes().isEmpty())
                     <igctx:featureAttributes>
-                        <igctx:FeatureAttributes/>
+                        <igctx:FeatureAttributes>
+                            @for(GeometryContextAttribute attribute : geometryContext.getAttributes())
+                            <igctx:attribute>
+                                <igctx:${geometryContext.getFeatureTypeAttribute()}>
+                                    <igctx:attributeDescription>
+                                        <gco:CharacterString>${attribute.getValue()}</gco:CharacterString>
+                                    </igctx:attributeDescription>
+                                    <igctx:${geometryContext.getFeatureTypeAttributeContent()}>
+                                        <gco:CharacterString>${attribute.getKey()}</gco:CharacterString>
+                                    </igctx:${geometryContext.getFeatureTypeAttributeContent()}>
+                                </igctx:${geometryContext.getFeatureTypeAttribute()}>
+                            </igctx:attribute>
+                            @endfor
+                        </igctx:FeatureAttributes>
                     </igctx:featureAttributes>
+                    @endif
                 </igctx:${geometryContext.getFeatureType()}>
             </igctx:geometricFeature>
         </igctx:MD_GeometryContext>
