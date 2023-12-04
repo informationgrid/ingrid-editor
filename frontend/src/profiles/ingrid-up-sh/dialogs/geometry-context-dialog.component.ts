@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateModule } from "../../../app/shared/dialog-template/dialog-template.module";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
@@ -33,6 +33,8 @@ export class GeometryContextDialogComponent implements OnInit {
     { label: "skalar", value: "scalar" },
     { label: "sonstiges", value: "other" },
   ];
+
+  disabled: boolean;
 
   getFeatureTypes = GeometryContextDialogComponent.featureTypeOptions;
 
@@ -70,13 +72,13 @@ export class GeometryContextDialogComponent implements OnInit {
       {
         fieldGroupClassName: "flex-row gap-12",
         hideExpression:
-          "model.featureType.key === 'nominal' || model.featureType.key === 'other'",
+          "!model.featureType || model.featureType?.key === 'nominal' || model.featureType?.key === 'other'",
       },
     ),
     this.fieldHelper.addInputInline("unit", "Einheit", {
       required: true,
       expressions: {
-        hide: "model.featureType.key !== 'scalar'",
+        hide: "model.featureType?.key !== 'scalar'",
       },
     }),
   ];
@@ -86,7 +88,14 @@ export class GeometryContextDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
+      setTimeout(() => {
+        if (value === "VALID") this.disabled = false;
+        else if (value === "INVALID") this.disabled = true;
+      });
+    });
+  }
 
   submit() {
     this.dlgRef.close(this.form.value);
