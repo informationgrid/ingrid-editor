@@ -503,8 +503,10 @@ class KeycloakService : UserManagementService {
             .timeout(Duration.ofSeconds(5))
             .build()
         val http = HttpClient.newBuilder()
+            .apply { 
+                if (keycloakProxyUrl != null) proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
+            }
             .connectTimeout(Duration.ofSeconds(10))
-            .proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
             .followRedirects(HttpClient.Redirect.NORMAL)
             .executor(executor)
             .build()
