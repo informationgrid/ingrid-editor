@@ -10,7 +10,5 @@ Geben Sie das Datenformat der Ressource an.<br />
 
 DCAT-AP sieht zur Kennzeichnung des Dateiformats vor, dass das EU Vokabular "File Type" des Publications Office zu verwenden ist.
 
-
-
-## DCAT-AP.de:
+## DCAT-AP.de
 `dcat:Distribution / dcterms:format`
