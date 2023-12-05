@@ -310,7 +310,8 @@ jib {
     }
     extraDirectories {
         permissions = [
-            '/*.sh': '755'
+            '/*.sh': '755',
+            '/logs': '777'
         ]
         paths {
             path {
