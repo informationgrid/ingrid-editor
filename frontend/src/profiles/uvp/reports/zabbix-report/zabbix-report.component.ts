@@ -1,6 +1,7 @@
 import { Component, ViewChild } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatSort } from "@angular/material/sort";
+import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
 
 @UntilDestroy()
 @Component({
@@ -9,29 +10,9 @@ import { MatSort } from "@angular/material/sort";
   styleUrls: ["./zabbix-report.component.scss"],
 })
 export class ZabbixReportComponent {
-  @ViewChild(MatSort) sort: MatSort;
-  averageDuration: string;
-
-  startDate: string;
-  endDate: string;
-
-  facets = {
-    addresses: [],
-    documents: [
-      {
-        id: "timeRef",
-        label: "Entscheidungsdatum",
-        filter: [
-          {
-            parameters: [],
-            implicitFilter: [],
-            id: "selectTimespan",
-            label: "<group label will be used>",
-          },
-        ],
-        combine: null,
-        viewComponent: "TIMESPAN",
-      },
-    ],
-  };
+  constructor(private uvpResearchService: UvpResearchService) {
+    uvpResearchService.getZabbixReport().subscribe((data) => {
+      console.log(data);
+    });
+  }
 }
