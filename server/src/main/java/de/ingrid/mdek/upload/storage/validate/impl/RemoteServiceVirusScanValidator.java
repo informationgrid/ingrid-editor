@@ -94,7 +94,6 @@ public class RemoteServiceVirusScanValidator implements Validator {
         }
     };
 
-    private final CloseableHttpClient serviceClient;
     private String serviceBaseUrl;
     private String scanBaseUrl;
 
@@ -191,15 +190,6 @@ public class RemoteServiceVirusScanValidator implements Validator {
         }
     }
 
-    /**
-     * Constructor
-     */
-    public RemoteServiceVirusScanValidator() {
-        // setup HTTP client
-        final HttpClientBuilder builder = clientBuilder.get();
-        serviceClient = builder.build();
-    }
-
     @Override
     public void initialize(final Map<String, String> configuration) throws IllegalArgumentException {
         // check required configuration parameters
@@ -211,14 +201,6 @@ public class RemoteServiceVirusScanValidator implements Validator {
 
         serviceBaseUrl = configuration.get(CONFIG_KEY_URL);
         scanBaseUrl = serviceBaseUrl + (!serviceBaseUrl.endsWith(URL_PATH_SEPARATOR) ? URL_PATH_SEPARATOR: "") + SCAN_BASE_PATH;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        if (serviceClient != null) {
-            serviceClient.close();
-        }
-        super.finalize();
     }
 
     @Override
@@ -322,7 +304,9 @@ public class RemoteServiceVirusScanValidator implements Validator {
         if (log.isDebugEnabled()) {
             log.debug("Service request: " + request.toString() + " - " + (request instanceof HttpEntityEnclosingRequest ? EntityUtils.toString(((HttpEntityEnclosingRequest)request).getEntity()) : ""));
         }
-        try (final CloseableHttpResponse response = serviceClient.execute(request)) {
+        try (final CloseableHttpClient serviceClient = clientBuilder.get().build();
+             final CloseableHttpResponse response = serviceClient.execute(request)
+             ) {
             final int status = response.getStatusLine().getStatusCode();
             if (status != 200) {
                 log.error("Virus scan service invocation failed: ", response);
