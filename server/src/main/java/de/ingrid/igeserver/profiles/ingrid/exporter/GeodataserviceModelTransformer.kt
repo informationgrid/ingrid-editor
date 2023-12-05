@@ -8,7 +8,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
-class GeodataserviceModelTransformer(
+open class GeodataserviceModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
