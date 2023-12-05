@@ -72,7 +72,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                     ?: emptyList()
             }
             ?.getOrNull(0)
-            ?.toInt()
+            ?.toDouble()
     }
 
     fun getQualities(): List<Quality> {
@@ -226,7 +226,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
         val nameKeyValue = if (nameId == null) KeyValue(null, name) else KeyValue(nameId)
         val parameter = info.element.measureDescription?.value
-        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toInt()
+        val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toDouble()
         return Quality(info.type, nameKeyValue, value, parameter)
     }
 
@@ -311,7 +311,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         )
     }
 
-    private fun getVerticalAbsoluteExternalPositionalAccuracy(): Int? {
+    private fun getVerticalAbsoluteExternalPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
             ?.flatMap { it.dqDataQuality?.report
                 ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, vertical accuracy" }
@@ -319,9 +319,9 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                     ?.getOrNull(0)?.value } ?: emptyList()
             }
             ?.getOrNull(0)
-            ?.toInt()
+            ?.toDouble()
     }
-    private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Int? {
+    private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
             ?.flatMap { it.dqDataQuality?.report
                 ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, geographic accuracy" }
@@ -329,16 +329,16 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                     ?.getOrNull(0)?.value } ?: emptyList()
             }
             ?.getOrNull(0)
-            ?.toInt()
+            ?.toDouble()
     }
-    private fun getGriddedDataPositionalAccuracy(): Int? {
+    private fun getGriddedDataPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
             ?.flatMap { it.dqDataQuality?.report
                 ?.mapNotNull { it.dqGriddedDataPositionalAccuracy?.result?.dqQuantitativeResult?.value
                     ?.getOrNull(0)?.value } ?: emptyList()
             }
             ?.getOrNull(0)
-            ?.toInt()
+            ?.toDouble()
     }
 }
 
@@ -368,7 +368,7 @@ data class VectorSpatialRepresentation(
 )
 
 data class PositionalAccuracy(
-    val vertical: Int?,
-    val horizontal: Int?,
-    val griddedDataPositionalAccuracy: Int?
+    val vertical: Double?,
+    val horizontal: Double?,
+    val griddedDataPositionalAccuracy: Double?
 )
