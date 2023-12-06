@@ -25,6 +25,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: "ige-result-table",
@@ -72,6 +73,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     private documentService: DocumentService,
     private dialog: MatDialog,
     private exportService: ExportService,
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -139,12 +141,26 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
-    rows.push(["Typ", "Titel", "Aktualität"]);
+    rows.push([
+      "ID",
+      "Veröffentlichungsstatus",
+      "Veröffentlichungseinschränkungen",
+      "Typ",
+      "Titel",
+      "Aktualität",
+    ]);
     for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
     this.exportService.exportCsv(rows, { exportName: "research" });
   }
 
   private buildRowByDoc(doc: IgeDocument) {
-    return [doc._type, doc.title, doc._contentModified];
+    return [
+      doc._uuid,
+      this.translocoService.translate(`docState.${doc._state}`),
+      doc._tags ? this.translocoService.translate(`tags.${doc._tags}`) : "",
+      this.translocoService.translate(`docType.${doc._type}`),
+      doc.title,
+      doc._contentModified,
+    ];
   }
 }

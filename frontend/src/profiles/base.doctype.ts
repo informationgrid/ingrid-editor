@@ -1,6 +1,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressType, Doctype } from "../app/services/formular/doctype";
-import { Observable } from "rxjs";
+import { merge, Observable } from "rxjs";
 import {
   CodelistService,
   SelectOption,
@@ -120,10 +120,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   getCodelistForSelect(
     codelistId: number,
     field: string,
+    sort: boolean = true,
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
 
-    return this.codelistService.observe(codelistId + "");
+    return this.codelistService.observe(codelistId + "", sort);
   }
 
   async init(help: string[]): Promise<void> {
@@ -206,8 +207,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
       let codelistField = this.fieldWithCodelistMap.get(field.key as string);
       if (codelistField !== undefined) {
-        this.codelistQuery
-          .selectEntity(codelistField)
+        merge(
+          this.codelistQuery.selectEntity(codelistField),
+          this.codelistQuery.catalogCodelists$.pipe(
+            map((codelists) => codelists.find((cl) => cl.id === codelistField)),
+          ),
+        )
           .pipe(
             filter((codelist) => codelist !== undefined),
             take(1),
@@ -217,7 +222,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
                 `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
               );
               if (field.type === "select") {
-                field.defaultValue = codelist.default;
+                field.defaultValue = { key: codelist.default };
               } else if (field.type === "repeatList") {
                 field.defaultValue = [{ key: codelist.default }];
               } else {

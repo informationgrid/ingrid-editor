@@ -14,6 +14,12 @@ export class ReportsService {
     this.additionalRoutes.push(route);
   }
 
+  removeRoute(path: string) {
+    this.additionalRoutes = this.additionalRoutes.filter(
+      (route) => route.path != path,
+    );
+  }
+
   addRoutes(routes: Routes) {
     routes.push(...this.additionalRoutes);
   }

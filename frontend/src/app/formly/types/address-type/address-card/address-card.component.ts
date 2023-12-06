@@ -8,7 +8,6 @@ import {
 } from "@angular/core";
 import { IgeDocument } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
-import { DocumentUtils } from "../../../../services/document.utils";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
 
 export interface AddressRef {
@@ -32,7 +31,6 @@ export class AddressCardComponent implements OnInit {
 
   content: {
     iconClass?: string;
-    iconState?: string;
     role?: string | BackendOption;
     title?: string;
     secondTitle?: string;
@@ -48,7 +46,6 @@ export class AddressCardComponent implements OnInit {
       console.error("Address reference is null!");
       this.content = {
         title: "Ungültige Adressreferenz",
-        iconState: "",
       };
       this.invalidAddressReference = true;
       return;
@@ -58,12 +55,6 @@ export class AddressCardComponent implements OnInit {
       iconClass: this.profileService.getDocumentIcon(
         <IgeDocument>this.address.ref,
       ),
-      iconState:
-        DocumentUtils.getStateClass(
-          this.address.ref._state,
-          this.address.ref._type,
-          this.address.ref._tags,
-        ) ?? "",
       role: this.address.type,
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),
@@ -100,13 +91,13 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getAddressInfo() {
-    const states = this.content?.iconState?.split(" ");
-
-    if (states.indexOf("working") !== -1)
-      return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
-    if (states.indexOf("workingWithPublished") !== -1)
-      return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
-
-    return "";
+    switch (this.address.ref._state) {
+      case "W":
+        return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
+      case "PW":
+        return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
+      default:
+        return "";
+    }
   }
 }

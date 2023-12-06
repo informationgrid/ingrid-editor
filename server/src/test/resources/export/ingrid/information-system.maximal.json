@@ -2,7 +2,6 @@
   "_uuid": "00cbcb2e-c52f-478d-97a4-46b0f5dabb3a",
   "title": "information_system_max",
   "_type": "InGridInformationSystem",
-  "themes": [{ "key": "108" }],
   "dataset": { "languages": ["142"] },
   "implementationHistory": "history4",
   "spatial": {

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class CodelistHandler @Autowired constructor(
+class CodelistHandler(
     private val codelistRepo: CodelistRepository,
     private val catalogRepo: CatalogRepository,
     private val codeListService: CodeListService

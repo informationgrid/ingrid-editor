@@ -1,4 +1,4 @@
-<div class="flex-col">
+<div class="flex-col" *transloco="let t; read: 'spatial'">
     <div class="dlg-field-label required">Begrenzungspolygon als WKT*</div>
     <mat-form-field class="width-100 top-align-suffix" appearance="outline">
         <textarea
@@ -11,18 +11,12 @@
             placeholder="POLYGON((0 0, 0 10, 10 10, 10 0, 0 0),(5 5, 5 7, 7 7, 7 5, 5 5))"
             aria-label="Begrenzungspolygon als WKT"
         ></textarea>
-        <button
-            mat-icon-button
+        <ige-help-context-button
             matSuffix
-            class="hint"
-            (click)="showHelpDialog()"
-            matTooltip="Eingabehilfe"
-            aria-haspopup="dialog"
-            aria-label="Eingabehilfe zu WKT"
+            [description]="t('spatialWktHelptext')"
+            label="Begrenzungspolygon als WKT"
         >
-            <mat-icon class="material-icons-outlined" svgIcon="info-24px">
-            </mat-icon>
-        </button>
+        </ige-help-context-button>
     </mat-form-field>
     <div class="flex-row align-items-center gap-6 btn-analyze space-bottom">
         <mat-spinner *ngIf="isAnalyzing" diameter="16"></mat-spinner>

@@ -10,7 +10,7 @@ export class InvekosPlugin extends Plugin {
     "Ermöglicht die Eingabe von InVeKoS (Integriertes Verwaltungs- und Kontrollsystem) - Daten";
   group = "Datensätze";
 
-  defaultActive = true;
+  defaultActive = false;
 
   constructor() {
     super();

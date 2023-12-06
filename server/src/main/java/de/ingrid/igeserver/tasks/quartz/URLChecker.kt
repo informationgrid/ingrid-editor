@@ -2,15 +2,18 @@ package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.messaging.*
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
+import de.ingrid.utils.tool.UrlTool
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.net.HttpURLConnection
 import java.net.URL
@@ -18,10 +21,11 @@ import java.util.*
 
 @Component
 @PersistJobDataAfterExecution
-class URLChecker @Autowired constructor(
+class URLChecker(
     val notifier: JobsNotifier,
     val referenceHandlerFactory: ReferenceHandlerFactory,
-    val urlRequestService: UrlRequestService
+    val urlRequestService: UrlRequestService,
+    val catalogService: CatalogService
 ) : IgeJob() {
 
     companion object {
@@ -57,16 +61,20 @@ class URLChecker @Autowired constructor(
 
             notifier.sendMessage(notificationType, message.apply { this.message = "Started URLChecker" })
 
-            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds)
+            val docs = info.referenceHandler.getURLsFromCatalog(info.catalogId, info.groupDocIds, info.profile)
 
             val urls = convertToUrlList(docs)
+            val semaphore = Semaphore(10)
+
             runBlocking {
                 urls.forEachIndexed { index, urlReport ->
-                    launch(Dispatchers.Default.limitedParallelism(10)) {
-                        notifier.sendMessage(
-                            notificationType,
-                            message.apply { this.progress = calcProgress(index, urls.size) })
-                        checkAndReportUrl(urlReport)
+                    launch {
+                        semaphore.withPermit {
+                            notifier.sendMessage(
+                                notificationType,
+                                message.apply { this.progress = calcProgress(index, urls.size) })
+                            checkAndReportUrl(urlReport)
+                        }
                     }
                 }
             }
@@ -93,13 +101,15 @@ class URLChecker @Autowired constructor(
     private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
-        val profile = dataMap.getString("profile")
         val catalogId: String = dataMap.getString("catalogId")
         val docIdsAsString = dataMap.getString("groupDocIds")
-        val groupDocIds: List<Int> = if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
+        val groupDocIds: List<Int> =
+            if (docIdsAsString.isEmpty()) emptyList() else docIdsAsString.split(",").map { it.toInt() }
+
+        val profile = catalogService.getProfileFromCatalog(catalogId)
         val referenceHandler = referenceHandlerFactory.get(profile)
 
-        return JobInfo(profile, catalogId, referenceHandler, groupDocIds)
+        return JobInfo(profile.identifier, catalogId, referenceHandler, groupDocIds)
     }
 
     private fun convertToUrlList(
@@ -128,10 +138,12 @@ class URLChecker @Autowired constructor(
     private suspend fun checkAndReportUrl(info: UrlReport) {
         return try {
             (withContext(Dispatchers.IO) {
-                URL(info.url).openConnection()
+                // encode URL to handle those with special characters like umlauts
+                // alternatively we might use: url.toURI().toASCIIString()
+                URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
             } as HttpURLConnection).let {
-                it.connectTimeout = 10000
-                it.readTimeout = 5000
+                it.connectTimeout = 3000
+                it.readTimeout = 1500
                 it.instanceFollowRedirects = true
                 it.connect()
                 info.status = it.responseCode

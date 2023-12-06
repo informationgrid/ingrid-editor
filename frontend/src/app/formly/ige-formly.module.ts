@@ -25,7 +25,6 @@ import { LeafletTypeComponent } from "./types/map/leaflet-type.component";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { TableTypeComponent } from "./types/table/table-type.component";
 import { CommonModule } from "@angular/common";
-import { MatPopoverEditModule } from "@angular/material-experimental/popover-edit";
 import { FormFieldsModule } from "../form-fields/form-fields.module";
 import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
@@ -96,6 +95,7 @@ import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-err
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
+import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -115,7 +115,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatDividerModule,
     MatListModule,
     MatTableModule,
-    MatPopoverEditModule,
     MatCardModule,
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
@@ -319,6 +318,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
     UpdateGetCapabilitiesComponent,
+    HelpContextButtonComponent,
   ],
   exports: [
     ReactiveFormsModule,

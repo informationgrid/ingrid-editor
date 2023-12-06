@@ -20,7 +20,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api")
-class CatalogApiController @Autowired constructor(
+class CatalogApiController(
     val catalogService: CatalogService,
     val documentService: DocumentService,
     val researchService: ResearchService,

@@ -21,10 +21,10 @@ import java.util.*
 
 @OpenAPIDefinition(
     info = Info(
-        title = "IGE NG API",
+        title = "IGE-NG API",
         version = "v1",
-        description = "This app provides REST APIs for the IGE NG",
-        contact = Contact(name = "André Wallat", email = "andre.wallat@wemove.com", url = "https://www.wemove.com")
+        description = "The IGE-NG provides the following REST-APIs",
+        contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com")
     ),
     servers = [
         Server(url = "http://localhost:8550", description = "Local Server"),

@@ -14,6 +14,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
@@ -21,21 +22,21 @@ import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 
 @Service
-@Profile("ingrid")
-class IngridIDFExporter @Autowired constructor(
+class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
+    @Lazy val documentService: DocumentService,
 ) : IgeExporter {
 
     val log = logger()
 
+    var profileTransformer: IngridProfileTransformer? = null
 
 
     override val typeInfo = ExportTypeInfo(
@@ -107,11 +108,12 @@ class IngridIDFExporter @Autowired constructor(
             "InGridOrganisationDoc" to AddressModelTransformer::class,
             "InGridPersonDoc" to AddressModelTransformer::class
         )
-        val transformerClass = transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        
+        val transformerClass = profileTransformer?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null)
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json, documentService)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache())
+            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {

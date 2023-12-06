@@ -13,7 +13,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class ImportApiController @Autowired constructor(
+class ImportApiController(
     private val importService: ImportService,
     private val catalogService: CatalogService
 ) : ImportApi {

@@ -7,7 +7,7 @@ import {
 import { IgeError } from "../../../models/ige-error";
 import { FormMessageService } from "../../../services/form-message.service";
 import { MatDialog } from "@angular/material/dialog";
-import { SessionStore } from "../../../store/session.store";
+import { SessionStore, ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
@@ -96,11 +96,38 @@ export abstract class SaveBase extends Plugin {
         ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
         ?.map((item) => `${item.instanceLocation}: ${item.error}`)
         ?.join("\n");
+
+      this.handleJsonSchemaErrors(error);
     } else {
       igeError.detail = error?.error?.data?.error;
     }
     igeError.unhandledException = true;
     return igeError;
+  }
+
+  private handleJsonSchemaErrors(error: any) {
+    const invalidFields: string[] = error.error.data.error
+      .map((e: any) => {
+        const correctStart = e.instanceLocation.indexOf("#/") === 0;
+        const noTrailingSlash = e.instanceLocation.indexOf("/", 2) === -1;
+        if (!correctStart || !noTrailingSlash) return null;
+
+        return e.instanceLocation.substring(2);
+      })
+      .filter((e: any) => e !== null);
+
+    const invalidFieldsErrors: ValidationError[] = [
+      ...new Set(invalidFields),
+    ].map((e) => ({
+      name: e,
+      errorCode: "JSON_SCHEMA",
+    }));
+
+    this.sessionStore.update((state) => {
+      return {
+        serverValidationErrors: invalidFieldsErrors,
+      };
+    });
   }
 
   abstract saveWithData(data: IgeDocument);

@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
@@ -40,6 +41,7 @@
     "lang": "de",
     "boost": 1,
     "children.object_node.obj_uuid": [],
+    "capabilities_url_with_client": "${page.getMapLinkUrl()}",
     "organisation": "",
     "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
     "t011_obj_serv.coupling_type": "${page.getCouplingType()}",
@@ -181,22 +183,22 @@
     @endfor
     ],
     "object_reference.obj_name": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         ""@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.obj_class": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         ""@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.type": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         ""@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.version": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
         ""@if (!entry.isLast()),@endif
     @endfor
     ],
@@ -225,10 +227,11 @@
         "${entry.get().getTitle().getText()}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "wkt_geo_text": "?",
-
-
-
+!{var wktJson = page.wktAsGeoJson();}
+    @if(wktJson != null)
+    "wkt_geo": ${wktJson.getFirst()},
+    "wkt_geo_text": "${wktJson.getSecond()}",
+    @endif
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",

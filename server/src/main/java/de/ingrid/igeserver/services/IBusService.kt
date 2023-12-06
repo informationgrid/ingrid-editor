@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ibus & elasticsearch")
-class IBusService @Autowired constructor(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
 
     val log = logger()
 

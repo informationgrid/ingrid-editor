@@ -1,8 +1,8 @@
 package de.ingrid.igeserver
 
 import de.ingrid.igeserver.model.FacetGroup
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.profiles.IndexIdFieldConfig
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.stereotype.Service
 
 @Service

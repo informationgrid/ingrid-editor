@@ -1,7 +1,10 @@
 import { Component, EventEmitter, OnInit } from "@angular/core";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { ResearchResponse, ResearchService } from "../research.service";
+import {
+  ResearchResponse,
+  ResearchService,
+} from "../../+research/research.service";
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,7 +25,6 @@ import { CatalogService } from "../../+catalog/services/catalog.service";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NavigationEnd, Router } from "@angular/router";
-import { UserDataService } from "../../services/user/user-data.service";
 import { ExpiredData } from "./tab-expiration.model";
 import { FormsModule } from "@angular/forms";
 import { isExpired } from "../../services/utils";
@@ -64,11 +66,11 @@ export class TabExpirationComponent implements OnInit {
     private researchService: ResearchService,
     private configService: ConfigService,
     private catalogService: CatalogService,
-    private userDataService: UserDataService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.currentUserId = this.configService.$userInfo?.getValue().id;
     this.initSearchEmitter();
     this.initConfigs();
     this.initAutoSearch();
@@ -87,12 +89,6 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private initConfigs() {
-    this.configService.$userInfo
-      .pipe(
-        untilDestroyed(this),
-        tap((info) => (this.currentUserId = info.id)),
-      )
-      .subscribe();
     this.catalogService
       .getExpiryDuration()
       .pipe(
@@ -167,7 +163,7 @@ export class TabExpirationComponent implements OnInit {
     this.isFiltered$.next(!this.isFiltered$.value);
   }
 
-  private updateOnError(error) {
+  private updateOnError(error: any) {
     console.warn("Error during search", error);
     return of({ totalHits: 0, hits: [] });
   }

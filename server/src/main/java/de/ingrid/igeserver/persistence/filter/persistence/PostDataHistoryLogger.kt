@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
  * NOTE This class uses AuditLogger to create and log messages
  */
 @Component
-class PostDataHistoryLogger @Autowired constructor(
+class PostDataHistoryLogger(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService
 ) : Filter<PostPersistencePayload> {
@@ -36,7 +36,8 @@ class PostDataHistoryLogger @Autowired constructor(
             action = payload.action.name.lowercase(),
             target = docId,
             data = documentService.convertToJsonNode(payload.document),
-            logger = LOGGER_NAME
+            logger = LOGGER_NAME,
+            catalogIdentifier = payload.catalogIdentifier
         )
         return payload
     }

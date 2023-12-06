@@ -1,13 +1,16 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
-import de.ingrid.igeserver.profiles.CatalogProfile
-import de.ingrid.igeserver.repository.*
+import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.repository.GroupRepository
+import de.ingrid.igeserver.repository.RoleRepository
+import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 
 @Service
-class CatalogService @Autowired constructor(
+class CatalogService(
     private val catalogRepo: CatalogRepository,
     private val userRepo: UserRepository,
     private val groupRepo: GroupRepository,
@@ -32,6 +35,8 @@ class CatalogService @Autowired constructor(
 ) {
 
     private val log = logger()
+    
+    private val catalogProfileMap = mutableMapOf<String, CatalogProfile>() 
 
     fun getCurrentCatalogForPrincipal(principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -81,36 +86,31 @@ class CatalogService @Autowired constructor(
         return userData?.recentLogins?.map { Date(it) }?.toMutableList() ?: mutableListOf()
     }
 
-    fun getUserOfCatalog(catalogId: String): List<UserInfo> =
-        userRepo.findAllByCatalogId(catalogId)
+    fun getUserOfCatalog(catalogId: String) = userRepo.findAllByCatalogId(catalogId)
 
+    fun getUser(id: Int): UserInfo? = userRepo.findById(id).getOrNull()
 
-    fun getUser(id: Int): UserInfo? {
-        return userRepo.findById(id).getOrNull()
-    }
+    fun getUser(userId: String): UserInfo? = userRepo.findByUserId(userId)
 
-    fun getUser(userId: String): UserInfo? {
-        return userRepo.findByUserId(userId)
-    }
+    fun getAllIgeUserIds(): List<String> = userRepo.getAllUserIds()
 
-    fun getAllIgeUserIds(): List<String> {
-        return userRepo.getAllUserIds()
-    }
-
-    fun getCatalogById(id: String): Catalog {
-
-        return catalogRepo.findByIdentifier(id)
-
-    }
+    fun getCatalogById(id: String): Catalog = catalogRepo.findByIdentifier(id)
 
     fun setRecentLoginsForUser(user: UserInfo, recentLogins: Array<Date>) {
         user.data?.recentLogins = recentLogins.map { it.time }
         userRepo.save(user)
     }
-
-    fun getAvailableCatalogProfiles(): List<CatalogProfile> {
-        return catalogProfiles
+    
+    fun getProfileFromCatalog(catalogId: String) : CatalogProfile {
+        catalogProfileMap[catalogId]?.let { return it }
+        
+        val profile = getCatalogById(catalogId).type
+        return catalogProfiles.find { it.identifier == profile }
+            ?.also { catalogProfileMap[catalogId] = it }
+            ?: throw ServerException.withReason("Could not find profile-definition: $profile")
     }
+
+    fun getAvailableCatalogProfiles(): List<CatalogProfile> = catalogProfiles
 
     fun getCatalogProfile(id: String): CatalogProfile {
         return catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
@@ -122,23 +122,17 @@ class CatalogService @Autowired constructor(
         initializeCatalogConfig(catalogId)
     }
 
-    private fun initializeCatalogConfig(catalogId: String) {
+    private fun initializeCatalogConfig(catalogId: String) =
         updateCatalogConfig(catalogId, config = CatalogConfig(elasticsearchAlias = catalogId))
-    }
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
         this.getCatalogProfile(type)
             .initCatalogCodelists(catalogId, codelistId)
     }
 
-    fun initializeQueries(catalogId: String, type: String) {
-        this.getCatalogProfile(type)
-            .initCatalogQueries(catalogId)
-    }
+    fun initializeQueries(catalogId: String, type: String) = this.getCatalogProfile(type).initCatalogQueries(catalogId)
 
-    fun getCatalogs(): List<Catalog> {
-        return catalogRepo.findAll()
-    }
+    fun getCatalogs(): List<Catalog> = catalogRepo.findAll()
 
     fun createCatalog(catalog: Catalog): Catalog {
         catalog.identifier = transformNameToIdentifier(catalog.name)
@@ -156,13 +150,9 @@ class CatalogService @Autowired constructor(
             .replace("/".toRegex(), "_")
     }
 
-    fun catalogWithNameExists(name: String): Boolean {
-        return catalogExists(transformNameToIdentifier(name))
-    }
+    fun catalogWithNameExists(name: String) = catalogExists(transformNameToIdentifier(name))
 
-    fun catalogExists(id: String): Boolean {
-        return catalogRepo.existsByIdentifier(id)
-    }
+    fun catalogExists(id: String) = catalogRepo.existsByIdentifier(id)
 
     fun updateCatalog(updatedCatalog: Catalog) {
         if (!catalogExists(updatedCatalog.identifier)) {
@@ -257,6 +247,8 @@ class CatalogService @Autowired constructor(
     val catAdminPermisssions = listOf(
         Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
+        Permissions.manage_codelist_repository.name,
+        Permissions.manage_ibus.name,
         Permissions.manage_users.name,
         Permissions.can_write_root.name,
         Permissions.can_read_root.name,
@@ -270,6 +262,9 @@ class CatalogService @Autowired constructor(
         Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
         Permissions.manage_all_catalogs.name,
+        Permissions.manage_codelist_repository.name,
+        Permissions.manage_content.name,
+        Permissions.manage_ibus.name,
         Permissions.manage_users.name,
         Permissions.can_write_root.name,
         Permissions.can_read_root.name,
@@ -297,9 +292,8 @@ class CatalogService @Autowired constructor(
         }
 
         return if (user != null && user.catalogs.size > 0) {
-            val catalog = getCatalogById(getCurrentCatalogForPrincipal(principal))
-            val catalogProfile = getCatalogProfile(catalog.type)
-            catalogProfile.profileSpecificPermissions(permissions, principal)
+            getProfileFromCatalog(getCurrentCatalogForPrincipal(principal))
+                .profileSpecificPermissions(permissions, principal)
         } else {
             permissions
         }

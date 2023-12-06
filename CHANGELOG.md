@@ -1,5 +1,86 @@
 # Changelog
 
+## 1.7.0 (09.11.2023)
+
+### Features
+
+- Auto-Save Popup manuell weg klicken (#5670)
+- Icons - Bearbeitungsversion im Tooltip anzeigen (#5651)
+- Parallelisieren der URL-Prüfung (#5606)
+- Funktionsweise der Suche im Baum? (#5534)
+
+### Bugfixes
+
+- Feldzuordnung bei Adressen falsch? (#5672)
+- Fehler GDI-Testsuite (#5671)
+- Fehler ISO-Ansicht und Indexierung (#5666)
+- IGE-NG - XML - gmd:MD_DigitalTransferOptions (#5663)
+- METAVER - kommunaler Metadatenkatalog ST - Ordnerstruktur in den Adressen ist fehlerhaft (#5661)
+- Fehlende Rechte auf Adressen (#5654)
+- Fehler GDI-Testsuite gmd:MD_FeatureCatalogueDescription (#5653)
+- Kommunaler Metadatenkatalog Sachsen-Anhalt - Fehlermeldung bei Datensatzverweis mit ID (#5643)
+- Kommunaler Metadatenkatalog Sachsen-Anhalt - Hilfetexte fehlen (#5642)
+- METAVER Portalsuche findet OpenData oder Open Data in der Verschlagwortung nicht (#5638)
+- Gruppen eines Benutzers bei der Suche nicht katalogspezifisch (#5636)
+- Darstellender Dienst, Kopplung fehlt in ISO (#5617)
+- Partner Bezeichnung im METAVER Profil falsch (#5614)
+- Raumbezug > Freie Eingabe: Geodätisches Datum unklar (#5602)
+- DB-Transaktionsfehler bei Veröffentlichung von Datensatz mit vielen Referenzen (#5593)
+- 'Verweise' section accept an email in the URL field for documents imported using getCapabilities assistant (#5583)
+- Fehler GDI-Testsuite (#5574)
+- Rechte in Menü rechts oben stimmen nicht mit Horizontal Menü überein und hat Zugriff auf Seite (#5541)
+- Text bei Import reflektiert die Importmöglichkeit von ISO Dateien nicht (#5533)
+
+## 1.6.0 (17.10.2023)
+
+### Features
+
+- Profil Kommunaler Datenkatalog ST - Konzeption und Umsetzung (#5285)
+- IGE-NG: Nutzerliste - Sortierung nach Nachnamen anstatt Vornamen (#4244)
+
+### Bugfixes
+
+- ATOM-Feed-Client von ST lädt nicht (#5565)
+- Fehler GDI-Testsuite für INSPIRE-Konformität (#5563)
+- Hilfetext Zeitbezug angleichen (#5560)
+- Capabilites-Assistent: Auswahl Adressordner nicht möglich (#5526)
+- Im IGE-NG wird das Metadaten-Datum angezeigt (UVP Profil) (#5514)
+- Bei Ingrid kommunal St Katalog tritt ein Fehler auf beim veröffentlichen von Geodatensatz (#5460)
+- Messwerte Inhalte pflegen WB und Lasche: Pegel, ODL (#4290)
+
+## 1.5.0 (27.09.2023)
+
+### Features
+
+- Adressverweise in Metadatensatz - min. 2 sind Pflicht! (#5459)
+- Tooltipp über Icon in Formular ist nicht einheitlich (#5448)
+- Reset datasets tree after deleting some datasets using multiple select delete (#5447)
+- App-Screenbsp. für Konferenz-Poster UmweltNAVI (#5418)
+- Sortierung im Baum (#5406)
+- Separate Keycloak-URL für Frontend und Backend (#5386)
+
+### Bugfixes
+
+- JSON-Validierung, Fehler (#5545)
+- URL-Prüfung: URL kann nicht ersetzt werden (#5542)
+- Tabellen-Header wird beim Auswählen markiert (#5530)
+- Images disappear in 'Vorschaugrafik' section after editing (#5517)
+- Checkbox zeigt Tastatur-Fokus bei Mausklick (#5499)
+- Indizierung in mehrere iBusse schlägt fehl (#5490)
+- Veröffentlichungsrecht - falsche Farbe bei Ordnern (#5483)
+- Vorschaugrafik - Dateiname - Umbruch (#5480)
+- Fix 'Vorschaugrafik' dialog design (#5445)
+- AdV-Produktgruppe erscheint auch in Klassen, die nicht AdV relevant sind (#5443)
+- Wiedervorlage + Report - Verbesserungen Wording, Profil Verhalten etc. (#5409)
+- Falsche Baumansicht bei Sprung aus Adress-Dashboard (#5407)
+- "Verwaltungsgebiet" falscher Eintrag nach Import (#5402)
+- Änderung der OpenStreetMap Nominatim URL (#5390)
+- Funktion des Verantwortlichen deaktivieren (#5388)
+- SQL-Suche läuft trotz Fehlermeldung weiter (#5380)
+- Verhalten bei Löschung Codelisten-Eintrag oder Änderung ID (#5365)
+- Optimistic Locking funktioniert nicht, Benutzer überschreibt geänderten Datensatz (#5362)
+- Fehler bei Erfassung von Dienste-MD (#5349)
+
 ## 1.4.1 (19.07.2023)
 
 ### Bugfixes

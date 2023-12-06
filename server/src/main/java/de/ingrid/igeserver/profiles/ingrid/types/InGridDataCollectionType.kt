@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class InGridDataCollectionType @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+class InGridDataCollectionType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
     override val className = "InGridDataCollection"
 
     override val jsonSchema = "/ingrid/schemes/data-collection.schema.json"

@@ -14,6 +14,7 @@ import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
+import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 
 @Component({
   template: "",
@@ -35,6 +36,7 @@ class UVPComponent {
     organisation: UvpOrganisationDoctype,
     private pluginService: PluginService,
     private publishNegativeAssessmentBehaviour: PublishNegativeAssessmentBehaviour,
+    private zabbixReportBehaviour: ZabbixReportBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
     this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
@@ -60,6 +62,8 @@ class UVPComponent {
     this.addUVPReportTab(reportsService);
 
     this.addUVPUploadCheckReportTab(reportsService);
+
+    this.removeExpiredDocumentsTab(reportsService);
   }
 
   private modifyFormHeader() {
@@ -74,6 +78,7 @@ class UVPComponent {
     const uvpNumberPlugin = new UvpNumberBehaviour();
     this.pluginService.registerPlugin(this.publishNegativeAssessmentBehaviour);
     this.pluginService.registerPlugin(uvpNumberPlugin);
+    this.pluginService.registerPlugin(this.zabbixReportBehaviour);
 
     if (this.publishNegativeAssessmentBehaviour.isActive) {
       negativeAssessmentDoctype.forPublish = true;
@@ -106,6 +111,10 @@ class UVPComponent {
         permission: "can_create_uvp_report",
       },
     });
+  }
+
+  private removeExpiredDocumentsTab(reportsService: ReportsService) {
+    reportsService.removeRoute("expiration");
   }
 
   private addStylesheet() {

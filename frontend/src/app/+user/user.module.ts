@@ -42,6 +42,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { PermissionLegendsComponent } from "./permissions/permission-legends/permission-legends.component";
 import { UserTableComponent } from "./user/user-table/user-table.component";
 import { PermissionsComponent } from "./permissions/permissions.component";
+import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 
 @NgModule({
   imports: [
@@ -73,6 +74,7 @@ import { PermissionsComponent } from "./permissions/permissions.component";
     PermissionLegendsComponent,
     UserTableComponent,
     PermissionsComponent,
+    DialogTemplateModule,
   ],
   declarations: [
     UserComponent,

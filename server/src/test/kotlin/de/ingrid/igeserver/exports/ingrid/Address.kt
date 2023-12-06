@@ -2,28 +2,23 @@ package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import initDocumentMocks
-import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
 
-class Address : AnnotationSpec() {
+class Address : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -31,23 +26,12 @@ class Address : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val config = mockk<Config>()
 
     private lateinit var exporter: IngridIDFExporter
-    private lateinit var indexExporter: IngridIndexExporter
-    private lateinit var luceneExporter: IngridLuceneExporter
 
-    @BeforeAll
-    fun beforeAll() {
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
-
-        mockkObject(SpringContext)
-        every { SpringContext.getBean(DocumentService::class.java) } answers {
-            documentService
-        }
+    override suspend fun beforeSpec(spec: Spec) {
+        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
 
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
             val codelistId = secondArg<String>()
@@ -103,38 +87,37 @@ class Address : AnnotationSpec() {
         initDocumentMocks(addresses + datasets, documentService)
     }
 
+    init {
 
-    @Test
-    fun personExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/address.person.sample.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+        should("personExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/address.person.sample.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.expected.idf.xml")
-    }
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.expected.idf.xml")
+        }
 
-    @Test
-    fun person2Export() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/address.person2.sample.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+        should("person2Export") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/address.person2.sample.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
-    }
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
+        }
 
 
-    @Test
-    fun organisationExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/address.organisation.sample.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+        should("organisationExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/address.organisation.sample.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
+        }
     }
 }

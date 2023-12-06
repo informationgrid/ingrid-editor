@@ -12,9 +12,9 @@ import {
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -24,6 +24,7 @@ import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { MatSelectChange } from "@angular/material/select";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -57,6 +58,7 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
+  private documentService = inject(DocumentService);
 
   options = {
     dynamicRequired: {
@@ -110,6 +112,9 @@ export abstract class IngridShared extends BaseDoctype {
     "321": "5",
   };
   showInVeKoSField: boolean = false;
+  showInspireConform: boolean = false;
+  isGeoService: boolean = false;
+  isGeoDataset: boolean = false;
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     return this.addGroupSimple(
@@ -154,7 +159,8 @@ export abstract class IngridShared extends BaseDoctype {
           : null,
         this.addRadioboxes("isInspireConform", "INSPIRE konform", {
           expressions: {
-            hide: "!(model._type === 'InGridGeoDataset' && model.isInspireIdentified)",
+            hide: (field: FormlyFieldConfig) =>
+              !(this.showInspireConform && field.model.isInspireIdentified),
           },
           options: [
             {
@@ -500,8 +506,9 @@ export abstract class IngridShared extends BaseDoctype {
                 options: this.getCodelistForSelect(6360, "spatialScope"),
                 codelistId: 6360,
                 expressions: {
-                  "props.required":
-                    "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
+                  "props.required": (field: FormlyFieldConfig) =>
+                    this.isGeoDataset &&
+                    field.options.formState.mainModel?.isInspireIdentified,
                   className: "field.props.required ? '' : 'optional'",
                   hide: "!formState.mainModel?.isInspireIdentified",
                 },
@@ -698,7 +705,7 @@ export abstract class IngridShared extends BaseDoctype {
       (item) => possibleKeys.indexOf(item.key) !== -1,
     );
     if (connectedInspireTheme) {
-      field.model.push(event);
+      field.model[field.key as string].push(event);
       field.options.formState.updateModel();
       const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
         "6100",
@@ -788,8 +795,7 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(100, "spatialSystems"),
             codelistId: 100,
             expressions: {
-              "props.required":
-                "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+              "props.required": () => this.isGeoDataset || this.isGeoService,
             },
           }),
           this.addGroup(
@@ -1164,7 +1170,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
-                      model._type !== "InGridGeoService" ||
+                      !this.isGeoService ||
                       !model.isInspireConform ||
                       this.conformityExists(ctrl, "10", "1")
                     );
@@ -1177,7 +1183,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
-                      model._type !== "InGridGeoDataset" ||
+                      !this.isGeoDataset ||
                       !model.isInspireConform ||
                       this.conformityExists(ctrl, "12", "1")
                     );
@@ -1190,7 +1196,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const model = field.options.formState.mainModel;
                     return (
                       !model ||
-                      model._type !== "InGridGeoDataset" ||
+                      !this.isGeoDataset ||
                       !model.isInspireIdentified ||
                       model.isInspireConform ||
                       !this.conformityExists(ctrl, "12", "1")
@@ -1261,8 +1267,7 @@ export abstract class IngridShared extends BaseDoctype {
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
           expressions: {
-            "props.required":
-              "formState.mainModel?._type === 'InGridGeoDataset' || formState.mainModel?._type === 'InGridGeoService'",
+            "props.required": () => this.isGeoDataset || this.isGeoService,
             "props.minLength": "field.props.required ? 1 : undefined",
             defaultValue: "field.props.required ? [{}] : null",
             className: "field.props.required ? '' : 'optional'",
@@ -1293,34 +1298,29 @@ export abstract class IngridShared extends BaseDoctype {
           },
         ),
       ]),
-      this.addGroupSimple(
-        "distribution",
-        [
-          this.addRepeat("format", "Datenformat", {
-            expressions: {
-              "props.required":
-                "formState.mainModel?._type === 'InGridGeoDataset' && formState.mainModel?.isInspireIdentified",
-              className: "field.props.required ? '' : 'optional'",
-            },
-            fields: [
-              this.addAutoCompleteInline("name", "Name", {
-                options: this.getCodelistForSelect(1320, "specification"),
-                codelistId: 1320,
-                required: true,
-              }),
-              this.addInputInline("version", "Version"),
-              this.addInputInline("compression", "Kompressionstechnik"),
-              this.addInputInline("specification", "Spezifikation"),
-            ],
-            validators: {
-              validation: ["notEmptyArray"],
-            },
-          }),
-        ],
-        {
-          hideExpression: `formState.mainModel?._type === 'InGridSpecialisedTask'`,
-        },
-      ),
+      this.addGroupSimple("distribution", [
+        this.addRepeat("format", "Datenformat", {
+          expressions: {
+            "props.required": (field: FormlyFieldConfig) =>
+              this.isGeoDataset &&
+              field.options.formState.mainModel?.isInspireIdentified,
+            className: "field.props.required ? '' : 'optional'",
+          },
+          fields: [
+            this.addAutoCompleteInline("name", "Name", {
+              options: this.getCodelistForSelect(1320, "specification"),
+              codelistId: 1320,
+              required: true,
+            }),
+            this.addInputInline("version", "Version"),
+            this.addInputInline("compression", "Kompressionstechnik"),
+            this.addInputInline("specification", "Spezifikation"),
+          ],
+          validators: {
+            validation: ["notEmptyArray"],
+          },
+        }),
+      ]),
       this.addRepeat("digitalTransferOptions", "Medienoption", {
         className: "optional",
         fields: [
@@ -1354,7 +1354,7 @@ export abstract class IngridShared extends BaseDoctype {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.isOpenData ||
-              ctrl.value.some((row) => row.type?.key === "9990"), // Datendownload
+              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
           },
@@ -1441,7 +1441,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addInputInline("uuidRef", "Datensatzverweis", {
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
-        updateOn: "change",
+        // updateOn: "change",
         expressions: {
           "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.url;
@@ -1450,6 +1450,18 @@ export abstract class IngridShared extends BaseDoctype {
         validation: {
           messages: {
             required: "URL oder Datensatzverweis muss ausgefüllt sein",
+          },
+        },
+        asyncValidators: {
+          uuidExists: {
+            expression: (control: AbstractControl) => {
+              if (!control.value) return of(true);
+              return firstValueFrom(
+                this.documentService.uuidExists(control.value),
+              );
+            },
+            message:
+              "Bitte geben Sie eine gültige UUID eines existierenden Datensatzes in diesem Katalog an",
           },
         },
       }),
@@ -1496,18 +1508,15 @@ export abstract class IngridShared extends BaseDoctype {
     const isOpenData = field.model.isOpenData === true;
 
     const executeAction = () => {
-      const isGeoService = field.model._type === "InGridGeoService";
-      const isGeoDataset = field.model._type === "InGridGeoDataset";
-
       field.model.isInspireConform = true;
 
-      if (isGeoService) {
+      if (this.isGeoService) {
         if (isOpenData) {
           field.model.resource.accessConstraints = [{ key: "1" }];
         }
 
         this.addConformanceEntry(field.model, "10", "1");
-      } else if (isGeoDataset) {
+      } else if (this.isGeoDataset) {
         field.model.spatialScope = { key: "885989663" }; // Regional
 
         this.addConformanceEntry(field.model, "12", "1");
@@ -1541,8 +1550,7 @@ export abstract class IngridShared extends BaseDoctype {
   private handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
     const isOpenData = field.model.isOpenData === true;
-    const isGeoService = field.model._type === "InGridGeoService";
-    const specificationToRemove = isGeoService ? "10" : "12";
+    const specificationToRemove = this.isGeoService ? "10" : "12";
 
     const executeAction = () => {
       if (isOpenData) field.model.resource.accessConstraints = [];

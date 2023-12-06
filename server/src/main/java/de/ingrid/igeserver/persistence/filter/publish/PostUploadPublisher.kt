@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class PostUploadPublisher @Autowired constructor(val storage: Storage, val uploadExpiredTask: UploadExpiredTask?) : Filter<PostPublishPayload> {
+class PostUploadPublisher(val storage: Storage, val uploadExpiredTask: UploadExpiredTask?) : Filter<PostPublishPayload> {
 
     override val profiles = emptyArray<String>()
 

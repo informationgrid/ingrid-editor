@@ -16,7 +16,7 @@ import java.security.Principal
 @Profile("elasticsearch")
 @RestController
 @RequestMapping(path = ["/api"])
-class IndexApiController @Autowired constructor(
+class IndexApiController(
     private val catalogService: CatalogService,
     private val indexService: IndexService,
     private val indexingTask: IndexingTask
@@ -44,11 +44,11 @@ class IndexApiController @Autowired constructor(
         return ResponseEntity.ok().build()
     }
 
-    override fun getConfig(principal: Principal, id: String): ResponseEntity<IndexConfigOptions> {
+    override fun getConfig(principal: Principal, catalogId: String): ResponseEntity<IndexConfigOptions> {
 
-        val catalog = catalogService.getCatalogById(id)
-        val profile = catalogService.getCatalogProfile(catalog.type)
-        return ResponseEntity.ok(IndexConfigOptions(id, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
+        val catalog = catalogService.getCatalogById(catalogId)
+        val profile = catalogService.getProfileFromCatalog(catalogId)
+        return ResponseEntity.ok(IndexConfigOptions(catalogId, catalog.settings?.indexCronPattern ?: "", profile.indexExportFormatID ?: ""))
 
     }
 

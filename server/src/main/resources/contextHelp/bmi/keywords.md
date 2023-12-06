@@ -13,5 +13,5 @@ Die Schlagworte sollen das Objekt so genau wie möglich, aber auch so allgemein 
 **Beispiel:**<br />
 Straßenverkehr, Kartierung, Deutschland
 
-## DCAT-AP.de:
+## DCAT-AP.de
 `dcat:Dataset / dcat:keyword`

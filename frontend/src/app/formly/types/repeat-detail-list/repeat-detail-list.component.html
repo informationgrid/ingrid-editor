@@ -1,37 +1,19 @@
-<ige-form-error
-    *ngIf="
-        showError &&
-        formControl.invalid &&
-        formControl.errors &&
-        !formControl.hasError('required')
-    "
->
-    <div *ngFor="let error of formControl.errors | keyvalue">
-        {{ error.value.message }}
-    </div>
+<ige-form-error *ngIf="showError && formControl.invalid && formControl.errors">
+    <formly-validation-message [field]="field"></formly-validation-message>
 </ige-form-error>
 <mat-list
-    *ngIf="field.fieldGroup.length"
+    *ngIf="model[field.key + '']?.length"
     cdkDropList
     cdkDropListOrientation="vertical"
     (cdkDropListDropped)="drop($event)"
 >
     <mat-list-item
-        *ngFor="let item of field.fieldGroup; let i = index"
+        *ngFor="let item of model[field.key]; let i = index"
         cdkDrag
         [cdkDragDisabled]="formControl.disabled"
         [class.clickable]="formControl.enabled"
         [class.draggable]="formControl.enabled"
     >
-        <div *ngFor="let error of item.formControl.errors | keyvalue">
-            {{ error.value.message }}
-        </div>
-        <ige-form-error *ngIf="showError && item.formControl.invalid">
-            <formly-validation-message
-                *ngFor="let subField of item.fieldGroup[0].fieldGroup"
-                [field]="subField"
-            ></formly-validation-message>
-        </ige-form-error>
         <div class="flex-row gap-6">
             <mat-icon
                 *ngIf="formControl.enabled"
@@ -43,34 +25,36 @@
             <div class="flex-1 flex-col align-items-start">
                 <div
                     *ngIf="
-                        field.fieldArray?.fieldGroup?.[0]?.fieldGroup?.[1]
-                            ?.props?.codelistId;
+                        props.fields?.[0]?.fieldGroup?.[1]?.props?.codelistId;
                         else simpleType
                     "
                     class="type"
                 >
                     {{
-                        (model[i].type.key
+                        (model[field.key][i].type.key
                             | codelist
-                                : field.fieldArray?.fieldGroup?.[0]
-                                      ?.fieldGroup?.[1]?.props?.codelistId
-                            | async) ?? model[i].type.value
+                                : props.fields?.[0]?.fieldGroup?.[1]?.props
+                                      ?.codelistId
+                            | async) ?? model[field.key][i].type.value
                     }}
                 </div>
                 <ng-template #simpleType>
-                    <div class="type">{{ model[i].type }}</div>
+                    <div class="type">{{ model[field.key][i].type }}</div>
                 </ng-template>
                 <div class="title">
-                    {{ model[i][props.titleField ?? "title"] }}
+                    {{ model[field.key][i][props.titleField ?? "title"] }}
                 </div>
                 <a
                     class="url no-text-transform"
-                    [href]="model[i].url"
+                    [href]="model[field.key][i].url"
                     target="_blank"
-                    >{{ model[i].url }}</a
+                    >{{ model[field.key][i].url }}</a
                 >
-                <div *ngIf="model[i].explanation" class="explanation">
-                    {{ model[i].explanation }}
+                <div
+                    *ngIf="model[field.key][i].explanation"
+                    class="explanation"
+                >
+                    {{ model[field.key][i].explanation }}
                 </div>
             </div>
 
@@ -87,7 +71,7 @@
 
             <mat-menu #menu>
                 <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
-                <button mat-menu-item (click)="remove(i)">Entfernen</button>
+                <button mat-menu-item (click)="removeItem(i)">Entfernen</button>
             </mat-menu>
         </div>
     </mat-list-item>

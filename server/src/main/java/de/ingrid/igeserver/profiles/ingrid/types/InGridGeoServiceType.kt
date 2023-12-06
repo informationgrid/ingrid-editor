@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class InGridGeoServiceType @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+class InGridGeoServiceType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
     override val className = "InGridGeoService"
 
     override fun onPublish(doc: Document) {

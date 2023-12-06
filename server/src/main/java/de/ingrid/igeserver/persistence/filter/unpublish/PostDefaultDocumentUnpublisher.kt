@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @Profile("elasticsearch")
-class PostDefaultDocumentUnpublisher @Autowired constructor(val indexTask: IndexingTask) :
+class PostDefaultDocumentUnpublisher(val indexTask: IndexingTask) :
     Filter<PostUnpublishPayload> {
 
     override val profiles = arrayOf<String>()

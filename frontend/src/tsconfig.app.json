@@ -2,8 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "types": ["node"],
-    "allowSyntheticDefaultImports": true
+    "types": []
   },
   "files": [
     "main.ts",
@@ -13,6 +12,7 @@
     "profiles/profile-test.ts",
     "profiles/profile-ingrid.ts",
     "profiles/profile-ingrid-kommunal-st.ts",
+    "profiles/profile-ingrid-krzn.ts",
     "profiles/profile-bmi.ts"
   ]
 }

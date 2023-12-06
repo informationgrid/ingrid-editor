@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = InGridProfile.id
 
     override val urlFields = listOf("uri", "url", "methodCall")
 
-    private val sqlUrls = """
+    private fun sqlUrls(profile: String) = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data -> 'graphicOverviews' as graphicOverviews, doc.title, doc.type
         ,doc.data -> 'references' as references, doc.data -> 'service' as service, doc.data -> 'serviceUrls' as serviceUrls
         FROM catalog,
@@ -25,7 +25,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
              document doc
         WHERE dw.catalog_id = catalog.id
           AND doc.catalog_id = catalog.id
-          AND catalog.type = 'ingrid'
+          AND catalog.type = '$profile'
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
@@ -34,10 +34,10 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     """.trimIndent()
 
 
-    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>): List<DocumentLinks> {
+    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
         val extraJsonbFields = arrayOf("references", "service", "serviceUrls")
 
-        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId, extraJsonbFields, groupDocIds)
+        val result = queryDocs(sqlUrls(profile), "graphicOverviews", null, catalogId, extraJsonbFields, groupDocIds)
         return mapQueryResults(result)
     }
 

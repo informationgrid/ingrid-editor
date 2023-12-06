@@ -1,7 +1,6 @@
 import { Component, inject, NgModule, OnInit } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
 import { IngridOrganisationDoctype } from "./ingrid/doctypes/ingrid-organisation.doctype";
 import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
@@ -35,6 +34,7 @@ import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
 import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
+import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
@@ -55,25 +55,25 @@ export class InGridComponent implements OnInit {
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
 
-  protected docTypes = [
-    this.folder,
-    this.specialisedTask,
-    this.geoDataset,
-    this.literature,
-    this.geoService,
-    this.project,
-    this.dataCollection,
-    this.informationSystem,
-    this.person,
-    this.organisation,
-  ];
+  protected getDocTypes = () => {
+    return [
+      this.folder,
+      this.specialisedTask,
+      this.geoDataset,
+      this.literature,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+      this.person,
+      this.organisation,
+    ];
+  };
 
   constructor() {}
 
   ngOnInit() {
-    console.log("PROFILE ON INIT");
-    this.profileService.setProfileId("ingrid");
-    this.profileService.registerProfiles(this.docTypes);
+    this.profileService.registerProfiles(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
   }

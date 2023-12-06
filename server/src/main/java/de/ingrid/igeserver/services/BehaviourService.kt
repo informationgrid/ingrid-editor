@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class BehaviourService @Autowired constructor(
+class BehaviourService(
     private val behaviourRepo: BehaviourRepository,
     private val catalogRepo: CatalogRepository
 ) {

@@ -31,22 +31,28 @@ export const settingsRoutes: Routes = [
       {
         path: "codelist",
         component: CodelistsComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Codelist Repository",
+          permission: "manage_codelist_repository",
         },
       },
       {
         path: "catalog",
         component: CatalogManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Katalogverwaltung",
+          permission: "manage_all_catalogs",
         },
       },
       {
         path: "ibus",
         component: IBusManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "iBus-Verwaltung",
+          permission: "manage_ibus",
         },
       },
       {
@@ -74,7 +80,7 @@ export const settingsRoutes: Routes = [
         canActivate: [AuthGuard],
         data: {
           title: "Inhalte",
-          permission: "manage_all_catalogs",
+          permission: "manage_content",
         },
       },
     ],

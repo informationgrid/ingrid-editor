@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "baseUrl": "",
-    "types": ["jasmine", "node"],
+    "types": ["jasmine"],
     "allowSyntheticDefaultImports": true
   },
   "files": [
@@ -14,6 +14,7 @@
     "profiles/profile-test.ts",
     "profiles/profile-ingrid.ts",
     "profiles/profile-ingrid-kommunal-st.ts",
+    "profiles/profile-ingrid-krzn.ts",
     "profiles/profile-bmi.ts"
   ],
   "include": ["**/*.spec.ts", "**/*.d.ts"]

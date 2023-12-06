@@ -29,7 +29,7 @@ export class DefaultUserBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private eventService: EventService,
     private userService: UserService,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
     super();
@@ -94,7 +94,7 @@ export class DefaultUserBehaviour extends Plugin {
             }),
           )
           .subscribe(() => {
-            this.toast.open("Passwort wurde zurückgesetzt");
+            this.snackBar.open("Passwort wurde zurückgesetzt");
           });
       });
   }

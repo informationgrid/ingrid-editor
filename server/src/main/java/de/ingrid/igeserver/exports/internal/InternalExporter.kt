@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
-class InternalExporter @Autowired constructor(
+class InternalExporter(
     @Lazy val documentService: DocumentService,
     val catalogService: CatalogService
 ) : IgeExporter {
@@ -58,7 +58,7 @@ class InternalExporter @Autowired constructor(
 
     fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
 
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())

@@ -28,6 +28,7 @@ export interface NominatimDetailResult {
 })
 export class NominatimService {
   url: string;
+  detailUrl: string;
   searchInCountries = "de";
 
   constructor(
@@ -35,6 +36,7 @@ export class NominatimService {
     config: ConfigService,
   ) {
     this.url = config.getConfiguration().nominatimUrl;
+    this.detailUrl = config.getConfiguration().nominatimDetailUrl;
   }
 
   search(query: string): Observable<NominatimResult[]> {
@@ -50,7 +52,9 @@ export class NominatimService {
     return (
       this.http
         .get<NominatimDetailResult>(
-          `${this.url}/details?osmtype=${mappedType}&osmid=${id}&format=json`,
+          this.detailUrl
+            .replace("{type}", mappedType)
+            .replace("{id}", id.toString()),
         )
         // just ignore any errors
         .pipe(

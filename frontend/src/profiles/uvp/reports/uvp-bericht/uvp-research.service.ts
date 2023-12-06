@@ -19,6 +19,16 @@ export class UvpReport {
   averageProcedureDuration: number;
 }
 
+export class ZabbixProblem {
+  problemUrl: String;
+  clock: String;
+  docName: String;
+  name: String;
+  url: String;
+  docUrl: String;
+  docUuid: String;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -48,6 +58,12 @@ export class UvpResearchService {
     return this.http.get<UvpReport>(
       `${this.configuration.backendUrl}uvp/report`,
       { params: httpParams },
+    );
+  }
+
+  getZabbixReport(): Observable<ZabbixProblem[]> {
+    return this.http.get<ZabbixProblem[]>(
+      `${this.configuration.backendUrl}uvp/zabbix-report`,
     );
   }
 

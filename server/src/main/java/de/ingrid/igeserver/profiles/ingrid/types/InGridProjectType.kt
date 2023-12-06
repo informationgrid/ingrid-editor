@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class InGridProjectType @Autowired constructor(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+class InGridProjectType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
     override val className = "InGridProject"
 
     override val jsonSchema = "/ingrid/schemes/project.schema.json"

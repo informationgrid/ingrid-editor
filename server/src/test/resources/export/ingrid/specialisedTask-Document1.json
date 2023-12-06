@@ -48,7 +48,7 @@
               "type": {
                 "key": "4"
               },
-              "connection": "grgrgrg"
+              "connection": "https://wemove.com"
             }
           ],
           "organization": "Wemove Test",
@@ -58,7 +58,6 @@
       }
     ],
     "advProductGroups": [],
-    "themes": [],
     "keywords": {
       "free": []
     },

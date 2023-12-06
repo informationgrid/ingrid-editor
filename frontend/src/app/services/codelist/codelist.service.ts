@@ -23,8 +23,8 @@ export class SelectOption {
   }
 
   constructor(value: string, label: string) {
-    this.label = label;
     this.value = value;
+    this.label = label;
   }
 
   forBackend(): BackendOption {
@@ -229,9 +229,12 @@ export class CodelistService {
     });
   }
 
-  observe(codelistId: string): Observable<SelectOptionUi[]> {
+  observe(
+    codelistId: string,
+    sort: boolean = true,
+  ): Observable<SelectOptionUi[]> {
     return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist)),
+      map((codelist) => CodelistService.mapToSelect(codelist, "de", sort)),
     );
   }
 

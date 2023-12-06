@@ -176,7 +176,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">110000000000</gmx:Anchor>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -192,6 +192,9 @@
                             <srv:operationName>
                                 <gco:CharacterString>Download</gco:CharacterString>
                             </srv:operationName>
+                            <srv:DCP>
+                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices">WebServices</srv:DCPList>
+                            </srv:DCP>
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>

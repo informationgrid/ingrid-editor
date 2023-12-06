@@ -214,13 +214,11 @@ export class GetCapabilitiesService {
         const newDoc = await lastValueFrom(savedDoc);
         return <DocumentReference>{
           ...docReferenceTemplate,
-          title: resource.title,
           uuid: newDoc._uuid,
         };
       }
       return <DocumentReference>{
         ...docReferenceTemplate,
-        title: resource.title,
         uuid: uuid,
       };
     });

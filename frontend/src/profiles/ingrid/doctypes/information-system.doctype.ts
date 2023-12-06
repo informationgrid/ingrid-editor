@@ -14,8 +14,8 @@ export class InformationSystemDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
@@ -95,4 +95,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 }

@@ -3,18 +3,14 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ingrid")
-class IngridIndexExporterAddress  @Autowired constructor(
-    @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
+class IngridIndexExporterAddress(
+    idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository
-) : IngridIndexExporter( idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,

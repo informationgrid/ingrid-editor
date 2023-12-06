@@ -6,14 +6,12 @@ import de.ingrid.igeserver.utils.UploadInfo
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
-@Profile("uvp")
 @Component
 class UploadExpiredTask(
     val fileSystemStorage: FileSystemStorage,

@@ -7,9 +7,10 @@ buildscript {
     ext.kotlin_version = '1.9.10'
     ext.spring_boot_version = '3.1.5'
 //    ext.hibernate_version = '6.2.1.Final'
-    ext.kotest_version = '5.7.2'
+    ext.kotest_version = '5.8.0'
     ext.jte_version = '3.1.2'
     ext.geotools_version = '28.2'
+    ext.log4j_version = '2.22.0'
 }
 
 plugins {
@@ -20,7 +21,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
     id "org.springframework.boot" version "$spring_boot_version"
-    id "io.spring.dependency-management" version "1.1.3"
+    id "io.spring.dependency-management" version "1.1.4"
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.0'
@@ -48,6 +49,7 @@ configurations {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-bus'
         exclude group: 'com.sun.mail', module: 'javax.mail'
         exclude group: 'javax.mail', module: 'mailapi'
+        exclude group: 'commons-logging', module: 'commons-logging'
     }
 }
 
@@ -141,8 +143,9 @@ dependencies {
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
-    implementation 'org.apache.logging.log4j:log4j-api:2.21.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.21.0'
+    implementation platform("org.apache.logging.log4j:log4j-bom:$log4j_version")
+    implementation 'org.apache.logging.log4j:log4j-api'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core'
 
 
     // PostgreSQL
@@ -173,6 +176,9 @@ dependencies {
         exclude group: 'javax.media', module: 'jai_core'
         exclude group: 'commons-pool', module: 'commons-pool'
         exclude group: 'systems.uom', module: 'systems-common-java8'
+    }
+    implementation("org.geotools:gt-geojson:$geotools_version") {
+        exclude group: 'javax.media', module: 'jai_core'
     }
 
     // Test
@@ -268,10 +274,6 @@ test {
     ignoreFailures = true
     systemProperty 'user.timezone', 'Europe/Berlin'
     useJUnitPlatform()
-
-    filter {
-        excludeTestsMatching "de.ingrid.igeserver.exports.ingrid.*"
-    }
 }
 
 publishing {
@@ -308,7 +310,9 @@ jib {
     }
     extraDirectories {
         permissions = [
-            '/*.sh': '755'
+            '/*.sh': '755',
+            '/logs': '777',
+            '/codelists': '777'
         ]
         paths {
             path {

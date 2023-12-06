@@ -1,4 +1,5 @@
 import de.ingrid.igeserver.exports.convertToDocument
+import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
@@ -45,23 +46,26 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
         }
         if (document.id != null) {
             every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {
-                createDocumentWrapper().apply {
-                    id = document.id.toInt()
-                    type = document.type ?: "testDocType"
-                    parent = document.parent?.let {
-                        DocumentWrapper().apply {
-                            id = it
-                        }
-                    }
-                    uuid = document.uuid
-                }
+                mockedDocumentSimple(document.id, document)
             }
         }
+    }
+    every { documentService.getIncomingReferences(any(), any()) } answers { emptySet() }
+    every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
+}
+
+fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper {
+    return createDocumentWrapper().apply {
+        this.id = id.toInt()
+        type = document.type ?: "testDocType"
+        parent = document.parent?.let {
+            DocumentWrapper().apply {
+                this.id = it
+            }
+        }
+        uuid = document.uuid
     }
 }
 
 
-fun createDocumentWrapper() =
-    DocumentWrapper().apply {
-        type = "testDocType"
-    }
+fun createDocumentWrapper() = DocumentWrapper().apply { type = "testDocType" }

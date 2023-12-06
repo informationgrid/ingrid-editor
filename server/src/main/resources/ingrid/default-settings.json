@@ -1,9 +1,9 @@
 {
-  "index" : {
-    "number_of_shards" : 1,
-    "number_of_replicas" : 0,
-    "max_ngram_diff": 50,
-    "max_result_window": 100000
+  "index": {
+    "max_result_window": 100000,
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "max_ngram_diff": 50
   },
   "analysis": {
     "filter": {
@@ -54,9 +54,7 @@
       "phrase": {
         "type": "custom",
         "tokenizer": "keyword",
-        "filter": [
-          "lowercase"
-        ]
+        "filter": ["lowercase"]
       }
     }
   }

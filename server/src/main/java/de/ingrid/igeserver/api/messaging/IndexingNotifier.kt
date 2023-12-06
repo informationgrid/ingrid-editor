@@ -15,7 +15,7 @@ data class IndexMessage(
 ) : Message()
 
 @Service
-class IndexingNotifier @Autowired constructor(val msgTemplate: SimpMessagingTemplate) {
+class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
 
     private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"

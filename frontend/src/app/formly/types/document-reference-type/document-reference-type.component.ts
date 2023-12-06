@@ -39,9 +39,6 @@ interface UrlReference extends Reference {
 
 export const docReferenceTemplate: Partial<DocumentReference> = {
   isExternalRef: false,
-  state: "W",
-  type: "InGridGeoDataset",
-  icon: "Geodatensatz",
 };
 
 @UntilDestroy()

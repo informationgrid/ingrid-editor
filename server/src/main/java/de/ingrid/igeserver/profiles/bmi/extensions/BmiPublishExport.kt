@@ -17,8 +17,8 @@ import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("bmi & elasticsearch")
-class BmiPublishExport @Autowired constructor(
+@Profile("elasticsearch")
+class BmiPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.net.URI
@@ -18,7 +17,7 @@ const val JSONRPC = "2.0"
 
 @Service
 @Profile("zabbix")
-class ZabbixService @Autowired constructor(
+class ZabbixService(
     zabbixProperties: ZabbixProperties
 ) {
     private var log = logger()
@@ -87,12 +86,16 @@ class ZabbixService @Autowired constructor(
         return getFromResultAsList(response, "groupids")[0].asText()
     }
 
-    private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
+    private fun getHostGroupId(catalogName: String): String? {
         val jsonHostGroupGet =
             """{"jsonrpc":"$JSONRPC","method":"hostgroup.get","params":{"output":"extend","filter":{"name":["$catalogName"]}},"auth":"$apiKey","id":1}"""
         val responseHostGroupGet = requestApi(jsonHostGroupGet)
-        var groupid = responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText() ?: ""
-        if (groupid.isEmpty()) groupid = createHostgroup(catalogName)
+        return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText()
+    }
+
+    private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
+        var groupid = getHostGroupId(catalogName)
+        if (groupid == null) groupid = createHostgroup(catalogName)
         val hostname = shortenString(name, 255)
         val visiblename = shortenString(name, 117, true) + " (" + uuid.take(8) + ")"
         val hostUrl = shortenString(url, 255)
@@ -119,6 +122,47 @@ class ZabbixService @Autowired constructor(
         }
         return hostId
     }
+
+    fun getProblems(catalogName: String): List<ZabbixModel.Problem> {
+        val groupid = getHostGroupId(catalogName) ?: return emptyList()
+        val jsonProblemsGet =
+            """
+                {
+                    "jsonrpc": "$JSONRPC",
+                    "method": "problem.get",
+                    "params": {
+                        "selectTags": "extend",
+                        "recent": "true",
+                        "sortfield": ["eventid"],
+                        "sortorder": "DESC",
+                        "groupids": "$groupid"
+                    },
+                    "auth": "$apiKey",
+                    "id": 1
+                }
+            """.trimIndent()
+        val response = requestApi(jsonProblemsGet)
+        if (resultArrayIsEmpty(response)) {
+            log.debug("No problems found for catalog $catalogName")
+            return emptyList()
+        }
+        return response.get("result").map { getProblem(it) }
+    }
+
+    private fun getTag(item: JsonNode, tagName: String) =
+        item.get("tags").filter { it.get("tag")?.asText() == tagName }.map { it.get("value") }[0].asText()
+
+    private fun getProblem(item: JsonNode) = ZabbixModel.Problem(
+        eventid = item.get("eventid").asText(),
+        objectid = item.get("objectid").asText(),
+        clock = item.get("clock").asText(),
+        docName = getTag(item, "document name"),
+        name = getTag(item, "name"),
+        url = getTag(item, "url"),
+        docUrl = getTag(item, "document url"),
+        docUuid = getTag(item, "id"),
+    )
+
 
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
         val docNameStep = shortenString(docName, 64)
@@ -182,7 +226,7 @@ class ZabbixService @Autowired constructor(
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output": ["hostid", "name", "status"],"selectTags": "extend","tags":[{"tag":"id","value":"$uuid","operator":"1"}]},"auth":"$apiKey","id":1}"""
         val response = requestApi(deleteJson)
         log.debug(response)
-        if(resultArrayIsEmpty(response)) {
+        if (resultArrayIsEmpty(response)) {
             log.debug("No host found for uuid $uuid")
             return
         }
@@ -200,7 +244,8 @@ class ZabbixService @Autowired constructor(
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
 
-    private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asText()
+    private fun getFromStepsAsString(response: JsonNode, field: String) =
+        response.get("steps").get(0).get(field).asText()
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."

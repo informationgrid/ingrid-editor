@@ -14,7 +14,7 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping(path = ["/api"])
-class MessagesApiController @Autowired constructor(
+class MessagesApiController(
     private val authUtils: AuthUtils
 ) : MessagesApi {
 

@@ -59,7 +59,7 @@ If you use your own Keycloak, then you need to do the following steps to setup t
 To help with the configuration of Keycloak for IGE-NG there's a config file, which contains most of the information needed to successfully support authentication for IGE-NG. When creating a new Realm, just paste the JSON-file into the given field and the realm, roles and client will be created. Then you need to do the following steps:
 
 * create a new realm by importing this link:assets/ingrid-realm.json[JSON-file]
-** update URLs in client -> ige-ng-frontend -> `rootUrl`, `redirectUris`, `webOrigins`
+** update URLs in Clients -> ige-ng-frontend -> `rootUrl`, `redirectUris`, `webOrigins`
 * create super-admin user "ige" (Users -> Add user)
 ** under "Role mapping" assign role: `ige-super-admin`
 ** under Credentials add a new (non-temporary) password
@@ -69,7 +69,7 @@ To configure Keycloak completely manually, the following steps are necessary:
 * create a new realm "InGrid"
 * create the following roles (Realm roles -> Create role)
 ** ige-user
-*** add associated roles from "realm-management": "view-users"
+*** add associated roles from "realm-management": "view-users" (Action -> Add associated roles -> Filter by clients)
 ** ige-user-manager
 *** add associated roles from "realm-management": "manage-realm", "manage-users"
 ** ige-super-admin
@@ -79,13 +79,13 @@ To configure Keycloak completely manually, the following steps are necessary:
 ** under Credentials add a new (non-temporary) password
 * create clients (Clients -> Create client)
 ** ige-ng-frontend
-*** client-id: ige-ng-frontend
-*** Root URL: https://<url-to-ige-ng>
-*** Valid redirect URIs: https://<url-to-ige-ng>/*
-*** Valid post logout redirect URIs: `+`
-*** Web origins: https://<url-to-ige-ng>
-*** Standard flow: checked
-*** Direct access grants: checked
+*** client-id: "ige-ng-frontend"
+*** Standard flow: "checked"
+*** Direct access grants: "checked"
+*** Root URL: "https://<url-to-ige-ng>"
+*** Valid redirect URIs: "https://<url-to-ige-ng>/*"
+*** Valid post logout redirect URIs: "+"
+*** Web origins: "https://<url-to-ige-ng>"
 
 
 === Elasticsearch

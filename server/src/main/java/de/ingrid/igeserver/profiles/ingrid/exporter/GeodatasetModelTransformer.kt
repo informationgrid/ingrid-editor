@@ -2,9 +2,11 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
@@ -14,9 +16,11 @@ open class GeodatasetModelTransformer(
     codelistTransformer: CodelistTransformer,
     config: Config,
     catalogService: CatalogService,
-    cache: TransformerCache
+    cache: TransformerCache,
+    doc: Document? = null,
+    documentService: DocumentService
 ) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService, cache
+    model, catalogIdentifier, codelistTransformer, config, catalogService, cache, doc, documentService
 ) {
 
     override val hierarchyLevel = "dataset"
@@ -254,7 +258,6 @@ open class GeodatasetModelTransformer(
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty() || isAdVCompatible
 
 }
 

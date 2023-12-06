@@ -20,4 +20,6 @@ class FolderModelTransformer(
     val hierarchyParent = model.data._parent
     
     val category = documentService?.getWrapperByDocumentId(model.id)?.category
+
+    val nextParent = documentService!!.getParentWrapper(model.id)?.uuid
 }

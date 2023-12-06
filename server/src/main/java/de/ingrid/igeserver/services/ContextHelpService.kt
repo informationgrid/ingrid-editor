@@ -9,7 +9,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val catalogService: CatalogService) {
+class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val catalogService: CatalogService, val documentService: DocumentService) {
 
     val log = logger()
     val defaultLanguage = "de"
@@ -17,21 +17,21 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
     private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
-
-        val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id) 
-            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) } 
+        val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id)
+            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) }
+            ?: getContextHelp("all", "all", id)
             ?: run {
                 log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: de}.")
                 throw NotFoundException.withMissingResource(id, "ContextHelp")
             }
 
         return HelpMessage(
-                fieldId = id,
-                docType = docType,
-                language = defaultLanguage,
-                name = help.title,
-                helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
-                profile = profile
+            fieldId = id,
+            docType = docType,
+            language = defaultLanguage,
+            name = help.title,
+            helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
+            profile = profile
         )
     }
 

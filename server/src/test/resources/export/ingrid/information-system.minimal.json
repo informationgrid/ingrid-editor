@@ -2,7 +2,6 @@
   "_uuid": "4e52691b-92b2-4f22-bd13-6ba43edf4ab6",
   "_type": "InGridInformationSystem",
   "title": "info-system",
-  "themes": [],
   "dataset": { "languages": [] },
   "spatial": {
     "references": [

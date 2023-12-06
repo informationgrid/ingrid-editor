@@ -166,8 +166,8 @@ class ImportService(
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
-
-        val refType = documentService.getDocumentType(document.type)
+        val profile = documentService.catalogService.getProfileFromCatalog(catalogId).identifier
+        val refType = documentService.getDocumentType(document.type, profile)
 
         val references = refType.pullReferences(document)
             .map {
@@ -177,7 +177,7 @@ class ImportService(
                 DocumentAnalysis(
                     it,
                     wrapper?.id,
-                    isAddress(it.type),
+                    documentService.isAddress(it.type),
                     wrapper != null && wrapper.deleted == 0,
                     wrapper?.deleted == 1,
                     forcePublish = forcePublish
@@ -187,17 +187,14 @@ class ImportService(
         return DocumentAnalysis(
             document,
             documentWrapper?.id,
-            isAddress(document.type),
+            documentService.isAddress(document.type),
             documentWrapper != null && documentWrapper.deleted == 0,
             documentWrapper?.deleted == 1,
             references,
             forcePublish
         )
     }
-
-    private fun isAddress(documentType: String) =
-        documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
-
+    
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
     }

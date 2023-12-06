@@ -29,6 +29,9 @@ export class GeoDatasetDoctype extends IngridShared {
     },
   };
 
+  showInspireConform = true;
+  isGeoDataset = true;
+
   documentFields = () => {
     this.handleInVeKoSBehaviour();
 
@@ -130,6 +133,7 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
               showSearch: true,
+              allowNoValue: false,
               options: <SelectOptionUi[]>[
                 {
                   value: "basis",
@@ -350,7 +354,7 @@ export class GeoDatasetDoctype extends IngridShared {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: "field.props.required ? '' : 'optional'",
             },
-            contextHelpId: "citation_2",
+            contextHelpId: "keyCatalog",
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             className: "optional",

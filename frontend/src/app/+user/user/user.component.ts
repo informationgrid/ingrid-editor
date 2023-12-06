@@ -62,7 +62,7 @@ export class UserComponent
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
     private session: SessionQuery,
-    private toast: MatSnackBar,
+    private snackBar: MatSnackBar,
     private cdRef: ChangeDetectorRef,
   ) {
     this.model = new FrontendUser();
@@ -167,7 +167,10 @@ export class UserComponent
     this.dirtyFormHandled().subscribe((allClear) => {
       if (allClear)
         this.dialog
-          .open(NewUserDialogComponent, { hasBackdrop: true })
+          .open(NewUserDialogComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+          })
           .afterClosed()
           .subscribe((result) => {
             if (result?.id) this.updateUsersAndLoad(result.id);
@@ -191,7 +194,7 @@ export class UserComponent
         if (loadUser) {
           this.form.markAsPristine();
           this.updateUsersAndLoad(user.id);
-          this.toast.open("Benutzer wurde gespeichert", "", {
+          this.snackBar.open("Benutzer wurde gespeichert", "", {
             panelClass: "green",
           });
         }

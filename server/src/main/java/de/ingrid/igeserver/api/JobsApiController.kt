@@ -10,10 +10,10 @@ import de.ingrid.igeserver.model.JobInfo
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
+import de.ingrid.igeserver.profiles.uvp.tasks.UploadCleanupTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
-import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
@@ -33,7 +33,7 @@ import kotlin.io.path.absolutePathString
 
 @RestController
 @RequestMapping(path = ["/api"])
-class JobsApiController @Autowired constructor(
+class JobsApiController(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
     val referenceHandlerFactory: ReferenceHandlerFactory,
@@ -73,7 +73,7 @@ class JobsApiController @Autowired constructor(
 
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
 
         // get only documents with write permission
@@ -104,7 +104,7 @@ class JobsApiController @Autowired constructor(
         command: JobCommand
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
@@ -124,7 +124,7 @@ class JobsApiController @Autowired constructor(
 
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val jobDataMap = JobDataMap().apply {
@@ -140,10 +140,10 @@ class JobsApiController @Autowired constructor(
     @Transactional
     override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Map<String, Any>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId)
 
         val referenceHandler = referenceHandlerFactory.get(profile)
-            ?: throw ClientException.withReason("No reference handler found for profile $profile")
+            ?: throw ClientException.withReason("No reference handler found for profile ${profile.identifier}")
         val docsNumberUpdated = referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
         val status = urlRequestService.getStatus(data.replaceUrl)
 

@@ -18,7 +18,7 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class GroupsApiController @Autowired constructor(
+class GroupsApiController(
     private val catalogService: CatalogService,
     private val groupService: GroupService,
     private val igeAclService: IgeAclService,

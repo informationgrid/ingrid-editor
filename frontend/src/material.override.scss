@@ -1,5 +1,12 @@
 @import "src/variables";
 
+// TODO: temporary fix.
+// Issue caused by upgrading to angular/material 17, that this variable becomes undefined.
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  --mdc-fab-container-shape: 50%;
+}
+
 ::placeholder {
   color: $ige-placeholder-color !important;
 }
@@ -178,5 +185,15 @@ mat-icon.dark-blue {
     color: white;
     font-weight: 500;
     background-color: $ige-primary;
+  }
+}
+
+.mat-mdc-snack-bar-container.green {
+  .mdc-snackbar__label {
+    color: black;
+  }
+
+  .mdc-snackbar__surface {
+    background-color: $ige-info-background;
   }
 }

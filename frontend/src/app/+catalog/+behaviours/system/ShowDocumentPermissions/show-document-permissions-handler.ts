@@ -36,7 +36,8 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     super();
 
     let role = configService.$userInfo.getValue().role;
-    this.isPrivileged = role === "ige-super-admin" || role === "cat-admin";
+    this.isPrivileged =
+      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
 
     inject(PluginService).registerPlugin(this);
   }

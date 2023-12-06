@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
  * Filter for validating document data send from the client before updating in the storage
  */
 @Component
-class PostDefaultUploadSaver @Autowired constructor(val storage: Storage) : Filter<PostUpdatePayload> {
+class PostDefaultUploadSaver(val storage: Storage) : Filter<PostUpdatePayload> {
 
     override val profiles = emptyArray<String>()
 

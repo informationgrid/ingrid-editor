@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before update
  */
 @Component
-class PreDefaultDocumentUpdater @Autowired constructor(
+class PreDefaultDocumentUpdater(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogService: CatalogService,
     val catalogRepo: CatalogRepository,

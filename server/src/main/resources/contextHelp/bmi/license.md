@@ -19,5 +19,5 @@ Weitere empfohlene Open-Data-Lizenzen (siehe http://opendefinition.org/licenses/
 
 Die Datenlizenz Deutschland wird in aller Regel von behördlichen Datenbereitstellern genutzt, während die Creative Commons Lizenzen im privatwirtschaftlichen Umfeld verbreitet sind.
 
-## DCAT-AP.de:
+## DCAT-AP.de
 `dcat:Distribution / dcterms:license`

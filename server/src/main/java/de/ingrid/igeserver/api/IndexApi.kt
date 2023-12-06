@@ -44,11 +44,11 @@ interface IndexApi {
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @GetMapping(value = ["/index/config/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/index/config/{catalogId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getConfig(
             principal: Principal,
             @Parameter(description = "The catalog ID for which to get the configuration", required = true)
-            @PathVariable id: String): ResponseEntity<IndexConfigOptions>
+            @PathVariable catalogId: String): ResponseEntity<IndexConfigOptions>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])

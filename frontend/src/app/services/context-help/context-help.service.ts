@@ -87,7 +87,7 @@ export class ContextHelpService {
 
   public showContextHelpPopup(
     label: string,
-    helpText$: Observable<String>,
+    helpText$: Observable<string>,
     infoElement?: HTMLElement,
   ) {
     const dialogPosition: DialogPosition = infoElement
