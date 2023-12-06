@@ -835,7 +835,10 @@ data class GeometryContext(
     val featureTypeAttributeContent: String,
     val dataType: String,
     val description: String,
-    val attributes: List<GeometryContextAttribute>
+    val attributes: List<GeometryContextAttribute>,
+    val minValue: Number?,
+    val maxValue: Number?,
+    val unit: String?,
 )
 
 data class GeometryContextAttribute(

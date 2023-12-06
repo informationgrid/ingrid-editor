@@ -10,6 +10,8 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getDouble
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
@@ -53,6 +55,9 @@ class GeodatasetTransformerUPSH(
             item.get("attributes")?.asIterable()?.map {
                 GeometryContextAttribute(it.getStringOrEmpty("key"), it.getStringOrEmpty("value"))
             } ?: emptyList(),
+            item.getDouble("min"),
+            item.getDouble("max"),
+            item.getString("unit"),
         )
     }
 

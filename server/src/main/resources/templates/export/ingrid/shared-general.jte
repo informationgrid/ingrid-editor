@@ -248,6 +248,21 @@
                         </igctx:FeatureAttributes>
                     </igctx:featureAttributes>
                     @endif
+                    @if(geometryContext.getMinValue() != null)
+                    <igctx:minValue>
+                        <gco:CharacterString>${geometryContext.getMinValue()}</gco:CharacterString>
+                    </igctx:minValue>
+                    @endif
+                    @if(geometryContext.getMaxValue() != null)
+                    <igctx:maxValue>
+                        <gco:CharacterString>${geometryContext.getMaxValue()}</gco:CharacterString>
+                    </igctx:maxValue>
+                    @endif
+                    @if(TransformationTools.hasValue(geometryContext.getUnit()))
+                    <igctx:units>
+                        <gco:CharacterString>${geometryContext.getUnit()}</gco:CharacterString>
+                    </igctx:units>
+                    @endif
                 </igctx:${geometryContext.getFeatureType()}>
             </igctx:geometricFeature>
         </igctx:MD_GeometryContext>
