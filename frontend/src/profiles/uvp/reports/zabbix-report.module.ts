@@ -12,6 +12,12 @@ import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { ZabbixReportComponent } from "./zabbix-report/zabbix-report.component";
+import { DocumentIconModule } from "../../../app/shared/document-icon/document-icon.module";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { SharedPipesModule } from "../../../app/directives/shared-pipes.module";
 
 const routes: Routes = [
   {
@@ -34,6 +40,12 @@ const routes: Routes = [
     MatSortModule,
     MatButtonToggleModule,
     ReactiveFormsModule,
+    DocumentIconModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    TranslocoDirective,
+    SharedPipesModule,
   ],
   providers: [
     {

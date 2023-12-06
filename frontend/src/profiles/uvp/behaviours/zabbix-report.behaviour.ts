@@ -5,8 +5,9 @@ import { ReportsService } from "../../../app/+reports/reports.service";
 @Injectable({ providedIn: "root" })
 export class ZabbixReportBehaviour extends Plugin {
   id = "plugin.zabbix.report";
-  name = "Datei Ereichbarkeitsbericht";
-  description = "";
+  name = "Monitoring";
+  description =
+    'Es wird ein Monitoring-Report für Katalogadministratoren im "Reports" Bereich angezeigt der alle Erreichbarkeitsprobleme von Dokumenten auflistet. Die Verbindung zu einem Zabbix-Server wird vorausgesetzt.';
   defaultActive = false;
   group = "UVP";
 
@@ -32,7 +33,7 @@ export class ZabbixReportBehaviour extends Plugin {
           (m) => m.ZabbixReportModule,
         ),
       data: {
-        title: "Datei Ereichbarkeitsbericht",
+        title: "Monitoring",
         permission: "manage_catalog",
       },
     });
