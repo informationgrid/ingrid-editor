@@ -3,6 +3,7 @@ package de.ingrid.igeserver.zabbix
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -101,15 +102,15 @@ class ZabbixServiceTest : ShouldSpec() {
                 else response
             }
             val problems = service.getProblems("test_catalog")
-            assert(problems.size == 2)
-            assert(problems[0].eventid == "eventid")
-            assert(problems[0].objectid == "objectid")
-            assert(problems[0].clock == "1701598217")
-            assert(problems[0].name == "Dokument: Name")
-            assert(problems[0].docName == "doc_name")
-            assert(problems[0].docUrl == "doc.url")
-            assert(problems[0].docUuid == "doc_uuid")
-            assert(problems[0].url == "dataset.url")
+            problems.size shouldBe 2
+            problems[0].eventid shouldBe "eventid"
+            problems[0].objectid shouldBe "objectid"
+            problems[0].clock shouldBe "1701598217"
+            problems[0].name shouldBe "dataset_name"
+            problems[0].docName shouldBe "doc_name"
+            problems[0].docUrl shouldBe "doc.url"
+            problems[0].docUuid shouldBe "doc_uuid"
+            problems[0].url shouldBe "dataset.url"
         }
 
     }
