@@ -360,6 +360,45 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         )
     }
 
+    fun getGeometryContexts(): List<GeometryContextInternal> {
+        return metadata.spatialRepresentationInfo
+            ?.mapNotNull {it.mdGeometryContext } 
+            ?.map { 
+                val feature = it.geometricFeature?.nominalFeature ?: it.geometricFeature?.ordinalFeature ?: it.geometricFeature?.scalarFeature ?: it.geometricFeature?.otherFeature
+                GeometryContextInternal(
+                    feature?.featureName?.value,
+                    it.geometryType?.value,
+                    feature?.featureDataType?.value,
+                    feature?.featureDescription?.value,
+                    mapGeometryContextFeatureType(it.geometricFeature),
+                    feature?.minValue?.value?.toDouble(),
+                    feature?.maxValue?.value?.toDouble(),
+                    feature?.units?.value,
+                    mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute)
+                )
+            } ?: emptyList()
+    }
+
+    private fun mapGeometryContextAttributes(attributes: List<FeatureAttribute>?): List<KeyValue> {
+        return attributes?.map { attribute ->
+            val item = attribute.RegularFeatureAttribute ?: attribute.OtherFeatureAttribute
+            KeyValue(
+                item?.attributeCode?.value ?: item?.attributeContent?.value,
+                item?.attributeDescription?.value
+                ) 
+        } ?: emptyList()
+    }
+
+    private fun mapGeometryContextFeatureType(feature: GeometricFeature?): KeyValue? {
+        return when {
+            feature?.nominalFeature != null -> KeyValue("nominal")
+            feature?.ordinalFeature != null -> KeyValue("ordinal")
+            feature?.scalarFeature != null -> KeyValue("scalar")
+            feature?.otherFeature != null -> KeyValue("other")
+            else -> null
+        }
+    }
+
     private fun getVerticalAbsoluteExternalPositionalAccuracy(): Int? {
         return metadata.dataQualityInfo
             ?.flatMap {
@@ -431,4 +470,16 @@ data class PositionalAccuracy(
     val vertical: Int?,
     val horizontal: Int?,
     val griddedDataPositionalAccuracy: Int?
+)
+
+data class GeometryContextInternal(
+    val name: String?,
+    val geometryType: String?,
+    val dataType: String?,
+    val description: String?,
+    val featureType: KeyValue?,
+    val min: Double?,
+    val max: Double?,
+    val unit: String?,
+    val attributes: List<KeyValue>,
 )
