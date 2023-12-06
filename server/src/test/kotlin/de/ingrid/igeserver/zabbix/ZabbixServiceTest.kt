@@ -52,6 +52,66 @@ class ZabbixServiceTest : ShouldSpec() {
             verify(exactly = 3) { httpClientMock.send(any(), bodyHandler) }
         }
 
+        should("get Problems for a catalog") {
+            every { HttpClient.newBuilder().build() } returns httpClientMock
+            every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
+            every { response.body() } returns
+                    """
+                        {
+                        "jsonrpc": "2.0",
+                        "result": [
+                            {
+                                "eventid": "eventid",
+                                "objectid": "objectid",
+                                "clock": "1701598217",
+                                "name": "Dokument: Name",
+                                "tags": [
+                                {"tag": "document name","value": "doc_name"},
+                                {"tag": "document url","value": "doc.url"},
+                                {"tag": "id","value": "doc_uuid"},
+                                {"tag": "name","value": "dataset_name"},
+                                {"tag": "url","value": "dataset.url"}
+                                ]
+                            },
+                            {
+                                "eventid": "eventid2",
+                                "objectid": "objectid2",
+                                "clock": "1701598000",
+                                "name": "Dokument: Name2",
+                                "tags": [
+                                {"tag": "document name","value": "doc_name2"},
+                                {"tag": "document url","value": "doc.url2"},
+                                {"tag": "id","value": "doc_uuid2"},
+                                {"tag": "name","value": "dataset_name2"},
+                                {"tag": "url","value": "dataset.url2"}
+                                ]
+                            }
+                        ],
+                        "id": 1
+                        }
+                    """
+
+            val bodyHandler = HttpResponse.BodyHandlers.ofString()
+            every {
+                httpClientMock.send(any(), bodyHandler)
+            } answers {
+                val requestAsString = getRequestParameter(firstArg())
+                if (requestAsString.contains("hostgroup.get")) responseGetHostGroup
+                else if (requestAsString.contains("host.create")) responseCreateHost
+                else response
+            }
+            val problems = service.getProblems("test_catalog")
+            assert(problems.size == 2)
+            assert(problems[0].eventid == "eventid")
+            assert(problems[0].objectid == "objectid")
+            assert(problems[0].clock == "1701598217")
+            assert(problems[0].name == "Dokument: Name")
+            assert(problems[0].docName == "doc_name")
+            assert(problems[0].docUrl == "doc.url")
+            assert(problems[0].docUuid == "doc_uuid")
+            assert(problems[0].url == "dataset.url")
+        }
+
     }
 
     private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
