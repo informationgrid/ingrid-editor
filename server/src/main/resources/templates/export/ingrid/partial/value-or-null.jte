@@ -1,5 +1,2 @@
 @param Number item
-
-@if (item == null)null
-@else ${item}
-@endif
+@if (item == null)null@else ${item}@endif

@@ -1,6 +1,6 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.SpatialModel;
+@import de.ingrid.igeserver.exporter.model.SpatialModel
 @import de.ingrid.igeserver.profiles.ingrid.exporter.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
