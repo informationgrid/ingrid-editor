@@ -118,6 +118,10 @@
 |VIRUSSCAN_MAIL_RECEIVER
 |
 |
+
+|VIRUSSCAN_SCHEDULE
+|
+|0 0 2 * * *
 |===
 
 === System configuration
