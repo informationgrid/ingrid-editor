@@ -100,4 +100,15 @@ class ZabbixModel {
         val auth: String?,
         val id: Int
     )
+
+    data class Problem(
+        val eventid: String,
+        val objectid: String,
+        val clock: String,
+        val docName: String,
+        val name: String,
+        val url: String,
+        val docUrl: String,
+        val docUuid: String,
+    )
 }

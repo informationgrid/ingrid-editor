@@ -1,0 +1,107 @@
+<page-template-no-header label="Monitoring" class="white">
+    <div left-side>
+        Hier finden Sie eine Übersicht über die Zabbix Monitoring Ergebnisse. Es
+        werden alle Dokumente angezeigt, die aktuell von Zabbix als nicht
+        erreichbar gemeldet werden. Über das Kontextmenü können Sie die Meldung
+        direkt in Zabbix einsehen und die betroffenen Datensätze im Editor oder
+        Portal öffnen.
+    </div>
+    <div main-content class="flex-col gap-24">
+        <ige-card-box
+            class="flex-1"
+            label="Übersicht nicht erreichbarer Dokumente"
+        >
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                matSort
+                class="width-100"
+            >
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Datensatz
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.name }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="docName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Dokument
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        [matTooltip]="element.docUrl"
+                    >
+                        {{ element.docName }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="clock">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Zuletzt erreichbar
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        [matTooltip]="
+                            element.clock * 1000 | date: 'dd.LL.yyyy HH:mm'
+                        "
+                    >
+                        {{ element.clock * 1000 | dateAgo: "DE" }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="settings">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="thin-column"
+                    ></th>
+                    <td mat-cell *matCellDef="let element" class="settings">
+                        <button
+                            mat-icon-button
+                            class="table-options menu-button"
+                            matTooltip="Bearbeiten"
+                            [matMenuTriggerFor]="moreResult"
+                            (click)="$event.stopImmediatePropagation()"
+                            [attr.aria-label]="element.title"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
+                        <mat-menu #moreResult>
+                            <button
+                                mat-menu-item
+                                (click)="openDataset(element)"
+                            >
+                                Datensatz im Editor öffnen
+                            </button>
+                            <a
+                                mat-menu-item
+                                href="{{ element.url }}"
+                                target="_blank"
+                            >
+                                Datensatz im Portal öffnen
+                            </a>
+                            <a
+                                mat-menu-item
+                                href="{{ element.problemUrl }}"
+                                target="_blank"
+                            >
+                                Zabbix Meldung öffnen
+                            </a>
+                        </mat-menu>
+                    </td>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr
+                        mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                    ></tr>
+                </ng-container>
+            </table>
+            <mat-paginator
+                [pageSizeOptions]="[10, 20, 50]"
+                showFirstLastButtons
+            ></mat-paginator>
+        </ige-card-box>
+    </div>
+</page-template-no-header>

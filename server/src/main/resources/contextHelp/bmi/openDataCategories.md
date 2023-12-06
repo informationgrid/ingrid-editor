@@ -9,5 +9,5 @@ Hier können mehrere Open Data Kategorien eingetragen werden.
 
 Es muss mindestens eine Kategorie eingetragen werden.
 
-## DCAT-AP.de:
+## DCAT-AP.de
 `dcat:Dataset / dcat:theme`

@@ -309,10 +309,10 @@ class DocumentService(
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
         // run pre-create pipe(s)
-        val preCreatePayload = PreCreatePayload(docType, document, getCategoryFromType(docTypeName, address), initiator)
+        val preCreatePayload = PreCreatePayload(docType, catalogId, document, getCategoryFromType(docTypeName, address), initiator)
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
-        val preUpdatePayload = PreUpdatePayload(docType, preCreatePayload.document, preCreatePayload.wrapper)
+        val preUpdatePayload = PreUpdatePayload(docType, catalogId, preCreatePayload.document, preCreatePayload.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
 
@@ -338,7 +338,7 @@ class DocumentService(
         if (publish) {
             preUpdatePayload.document.state = DOCUMENT_STATE.PUBLISHED
 
-            val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
+            val prePublishPayload = PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
         }
 
@@ -356,7 +356,7 @@ class DocumentService(
         entityManager.detach(newDocument)
 
         // run post-create pipe(s)
-        val postCreatePayload = PostCreatePayload(docType, newDocument, newWrapper)
+        val postCreatePayload = PostCreatePayload(docType, catalogId, newDocument, newWrapper)
         postCreatePipe.runFilters(postCreatePayload, filterContext)
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
@@ -495,7 +495,7 @@ class DocumentService(
 
         val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
 
-        val preUpdatePayload = PreUpdatePayload(docType, finalUpdatedDoc, docData.wrapper)
+        val preUpdatePayload = PreUpdatePayload(docType, catalogId, finalUpdatedDoc, docData.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
         try {
@@ -602,12 +602,12 @@ class DocumentService(
         }
         val finalUpdatedDoc = prepareDocBeforeUpdate(data, docData.document, principal!!)
 
-        val preUpdatePayload = PreUpdatePayload(docType, finalUpdatedDoc, docData.wrapper)
+        val preUpdatePayload = PreUpdatePayload(docType, catalogId, finalUpdatedDoc, docData.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
 
         // run pre-publish pipe(s)
-        val prePublishPayload = PrePublishPayload(docType, preUpdatePayload.document, preUpdatePayload.wrapper)
+        val prePublishPayload = PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
@@ -708,7 +708,7 @@ class DocumentService(
         val docTypeName = docData.document.type
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
-        val preDeletePayload = PreDeletePayload(docType, docData.document, docData.wrapper)
+        val preDeletePayload = PreDeletePayload(docType, catalogId, docData.document, docData.wrapper)
         preDeletePipe.runFilters(preDeletePayload, filterContext)
 
         // TODO: check if document is referenced by another one and handle
@@ -765,7 +765,7 @@ class DocumentService(
         // run pre-revert pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docType = getDocumentType(docData.wrapper.type, filterContext.profile)
-        val preRevertPayload = PreRevertPayload(docType, docData.document, docData.wrapper)
+        val preRevertPayload = PreRevertPayload(docType, catalogId, docData.document, docData.wrapper)
         preRevertPipe.runFilters(preRevertPayload, filterContext)
 
         // delete draft document
@@ -812,7 +812,7 @@ class DocumentService(
         // run pre-unpublish pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docType = getDocumentType(currentDoc.document.type, filterContext.profile)
-        val preUnpublishPayload = PreUnpublishPayload(docType, lastPublished, currentDoc.wrapper)
+        val preUnpublishPayload = PreUnpublishPayload(docType, catalogId, lastPublished, currentDoc.wrapper)
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
         // update state of published version
@@ -974,7 +974,7 @@ class DocumentService(
         val profile = catalogService.getProfileFromCatalog(catalogId)
         val filterContext = DefaultContext(catalogId, profile.identifier, profile.parentProfile, principal)
         val docType = getDocumentType(docData.wrapper.type, profile.identifier)
-        val prePublishPayload = PrePublishPayload(docType, docData.document, docData.wrapper)
+        val prePublishPayload = PrePublishPayload(docType, catalogId, docData.document, docData.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
     }
 }

@@ -49,20 +49,14 @@ import org.apache.logging.log4j.Logger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
  * Validator implementation that runs a virus scan on the file.
- *
  * The implementation uses a remote HTTP service.
- *
- * Required configuration
- *   - url: The base url of the service
+ * <p>Required configuration</p>
+ * <ul><li>url: The base url of the service</li></ul>>
  */
 public class RemoteServiceVirusScanValidator implements Validator {
 
@@ -74,28 +68,19 @@ public class RemoteServiceVirusScanValidator implements Validator {
 
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    private static final ThreadLocal<HttpClientBuilder> clientBuilder = new ThreadLocal<HttpClientBuilder>() {
-        @Override
-        protected HttpClientBuilder initialValue() {
-            try {
-                return HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
-            }
-            catch (final Exception e) {
-                throw new IllegalArgumentException("Failed to initialize HTTP client builder: ", e);
-            }
+    private static final ThreadLocal<HttpClientBuilder> clientBuilder = ThreadLocal.withInitial(() -> {
+        try {
+            return HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Failed to initialize HTTP client builder: ", e);
         }
-    };
-    private static final ThreadLocal<ObjectMapper> objectMapper = new ThreadLocal<ObjectMapper>() {
-        @Override
-        protected ObjectMapper initialValue() {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setDateFormat(df);
-            return objectMapper;
-        }
-    };
+    });
+    private static final ThreadLocal<ObjectMapper> objectMapper = ThreadLocal.withInitial(() -> {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(df);
+        return objectMapper;
+    });
 
-    private final CloseableHttpClient serviceClient;
-    private String serviceBaseUrl;
     private String scanBaseUrl;
 
     private static final Logger log = LogManager.getLogger(RemoteServiceVirusScanValidator.class);
@@ -104,17 +89,17 @@ public class RemoteServiceVirusScanValidator implements Validator {
      * Remote service interface
      */
 
-    private static enum ScanType {
+    private enum ScanType {
         @JsonProperty("sync") SYNC,
         @JsonProperty("async") ASYNC
     }
 
-    private static enum ScanStatus {
+    private enum ScanStatus {
         @JsonProperty("running") RUNNING,
         @JsonProperty("finished") FINISHED
     }
 
-    private static enum ScanResultCode {
+    private enum ScanResultCode {
         @JsonProperty("ok") OK,
         @JsonProperty("infected") INFECTED,
         @JsonProperty("failure") FAILURE,
@@ -137,23 +122,27 @@ public class RemoteServiceVirusScanValidator implements Validator {
     private static class ServiceResponse {
         public String id;
         public Date date;
-        @JsonDeserialize(converter=ResourceToPathConverter.class)
+        @JsonDeserialize(converter = ResourceToPathConverter.class)
         public Path resource;
         public ScanType type;
         public ScanResult scan;
         public boolean complete;
+
         @JsonIgnore
         public ScanStatus getScanStatus() {
             return scan != null ? scan.status : ScanStatus.FINISHED;
         }
+
         @JsonIgnore
         public ScanResultCode getScanResult() {
             return scan != null ? scan.result : ScanResultCode.UNDEFINED;
         }
+
         @JsonIgnore
         public String getScanReport() {
             return scan != null ? scan.report : "";
         }
+
         @JsonIgnore
         public Map<Path, String> getInfections() {
             final Map<Path, String> result = new HashMap<>();
@@ -169,7 +158,7 @@ public class RemoteServiceVirusScanValidator implements Validator {
 
     @SuppressWarnings("unused")
     private static class ServiceRequest {
-        @JsonSerialize(converter=PathToResourceConverter.class)
+        @JsonSerialize(converter = PathToResourceConverter.class)
         public Path resource;
         public ScanType type;
     }
@@ -178,47 +167,31 @@ public class RemoteServiceVirusScanValidator implements Validator {
         @Override
         public String convert(final Path value) {
             return value != null ? (!value.startsWith(URL_PATH_SEPARATOR) ? URL_PATH_SEPARATOR : "") +
-                    String.join(URL_PATH_SEPARATOR,  value.toString().split(Matcher.quoteReplacement(System.getProperty("file.separator")))) : "";
+                    String.join(URL_PATH_SEPARATOR, value.toString().split(Matcher.quoteReplacement(System.getProperty("file.separator")))) : "";
         }
     }
 
     private static class ResourceToPathConverter extends StdConverter<String, Path> {
-        private static final String[] EMPTY_PARTS = new String[] {};
+        private static final String[] EMPTY_PARTS = new String[]{};
+
         @Override
         public Path convert(final String value) {
-            final String[] parts = value != null ? (value.startsWith(URL_PATH_SEPARATOR) ? value.substring(1) : value.substring(0)).split(URL_PATH_SEPARATOR) : EMPTY_PARTS;
+            final String[] parts = value != null ? (value.startsWith(URL_PATH_SEPARATOR) ? value.substring(1) : value).split(URL_PATH_SEPARATOR) : EMPTY_PARTS;
             return parts.length > 0 ? (parts.length > 1 ? Paths.get(parts[0], Arrays.copyOfRange(parts, 1, parts.length)) : Paths.get(parts[0])) : null;
         }
-    }
-
-    /**
-     * Constructor
-     */
-    public RemoteServiceVirusScanValidator() {
-        // setup HTTP client
-        final HttpClientBuilder builder = clientBuilder.get();
-        serviceClient = builder.build();
     }
 
     @Override
     public void initialize(final Map<String, String> configuration) throws IllegalArgumentException {
         // check required configuration parameters
-        for (final String parameter : new String[] {CONFIG_KEY_URL}) {
+        for (final String parameter : new String[]{CONFIG_KEY_URL}) {
             if (!configuration.containsKey(parameter)) {
-                throw new IllegalArgumentException("Configuration value '"+parameter+"' is required.");
+                throw new IllegalArgumentException("Configuration value '" + parameter + "' is required.");
             }
         }
 
-        serviceBaseUrl = configuration.get(CONFIG_KEY_URL);
-        scanBaseUrl = serviceBaseUrl + (!serviceBaseUrl.endsWith(URL_PATH_SEPARATOR) ? URL_PATH_SEPARATOR: "") + SCAN_BASE_PATH;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        if (serviceClient != null) {
-            serviceClient.close();
-        }
-        super.finalize();
+        String serviceBaseUrl = configuration.get(CONFIG_KEY_URL);
+        scanBaseUrl = serviceBaseUrl + (!serviceBaseUrl.endsWith(URL_PATH_SEPARATOR) ? URL_PATH_SEPARATOR : "") + SCAN_BASE_PATH;
     }
 
     @Override
@@ -245,8 +218,8 @@ public class RemoteServiceVirusScanValidator implements Validator {
                 }
                 try {
                     Thread.sleep(SERVICE_REQUEST_INTERVAL);
+                } catch (final InterruptedException ignored) {
                 }
-                catch (final InterruptedException e) {}
                 response = getScanStatus(response.id);
                 if (response == null) {
                     break;
@@ -259,12 +232,10 @@ public class RemoteServiceVirusScanValidator implements Validator {
                 if (resultCode == ScanResultCode.INFECTED) {
                     final Map<Path, String> infections = response.getInfections();
                     log.warn("Virus found: " + response.getScanReport());
-                    throw new VirusFoundException("Virus found.", path+URL_PATH_SEPARATOR+file, infections);
-                }
-                else if (resultCode != ScanResultCode.OK) {
+                    throw new VirusFoundException("Virus found.", path + URL_PATH_SEPARATOR + file, infections);
+                } else if (resultCode != ScanResultCode.OK) {
                     log.error("Virus scan failed: " + response.getScanReport());
-                }
-                else {
+                } else {
                     if (log.isDebugEnabled()) {
                         log.debug("Scan result: " + response.getScanReport());
                     }
@@ -290,11 +261,9 @@ public class RemoteServiceVirusScanValidator implements Validator {
             request.setEntity(new StringEntity(requestBody));
 
             final String responseBody = sendRequest(request);
-            final ServiceResponse serviceResponse = getObjectMapper().readValue(responseBody, ServiceResponse.class);
 
-            return serviceResponse;
-        }
-        catch (final Exception e) {
+            return getObjectMapper().readValue(responseBody, ServiceResponse.class);
+        } catch (final Exception e) {
             log.error("Virus scan failed: ", e);
         }
         return null;
@@ -308,11 +277,9 @@ public class RemoteServiceVirusScanValidator implements Validator {
             request.setHeader("Accept", "application/json");
 
             final String responseBody = sendRequest(request);
-            final ServiceResponse serviceResponse = objectMapper.readValue(responseBody, ServiceResponse.class);
 
-            return serviceResponse;
-        }
-        catch (final Exception e) {
+            return objectMapper.readValue(responseBody, ServiceResponse.class);
+        } catch (final Exception e) {
             log.error("Virus scan failed: ", e);
         }
         return null;
@@ -320,9 +287,11 @@ public class RemoteServiceVirusScanValidator implements Validator {
 
     private String sendRequest(final HttpUriRequest request) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("Service request: " + request.toString() + " - " + (request instanceof HttpEntityEnclosingRequest ? EntityUtils.toString(((HttpEntityEnclosingRequest)request).getEntity()) : ""));
+            log.debug("Service request: " + request.toString() + " - " + (request instanceof HttpEntityEnclosingRequest ? EntityUtils.toString(((HttpEntityEnclosingRequest) request).getEntity()) : ""));
         }
-        try (final CloseableHttpResponse response = serviceClient.execute(request)) {
+        try (final CloseableHttpClient serviceClient = clientBuilder.get().build();
+             final CloseableHttpResponse response = serviceClient.execute(request)
+        ) {
             final int status = response.getStatusLine().getStatusCode();
             if (status != 200) {
                 log.error("Virus scan service invocation failed: ", response);
