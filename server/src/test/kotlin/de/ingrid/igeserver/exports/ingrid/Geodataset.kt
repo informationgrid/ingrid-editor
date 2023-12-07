@@ -24,7 +24,7 @@ import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
 
-class Geodataset : ShouldSpec() {
+open class Geodataset : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -35,24 +35,29 @@ class Geodataset : ShouldSpec() {
     private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val config = mockk<Config>()
 
-    private lateinit var exporter: IngridIDFExporter
+    protected lateinit var exporter: IngridIDFExporter
     private lateinit var indexExporter: IngridIndexExporter
     private lateinit var luceneExporter: IngridLuceneExporter
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
+        this.exporter = IngridIDFExporter(this.codelistHandler, this.config, this.catalogService, this.documentService)
+        this.luceneExporter = IngridLuceneExporter(
+            this.codelistHandler,
+            this.config,
+            this.catalogService,
+            this.documentService
+        )
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, this.documentWrapperRepository)
 
         mockkObject(SpringContext.Companion)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
-            documentService
+            this@Geodataset.documentService
         }
 
-        every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
-            val codelistId = secondArg<String>()
-            val entryId = thirdArg<String>()
+        every { this@Geodataset.codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
+            val codelistId = this.secondArg<String>()
+            val entryId = this.thirdArg<String>()
             when (codelistId + "_" + entryId) {
                 "1350_1" -> "Baugesetzbuch (BauGB)"
                 "1350_2" -> "Atomgesetz (AtG)"
@@ -65,8 +70,8 @@ class Geodataset : ShouldSpec() {
             }
         }
 
-        mockCatalog(catalogService)
-        mockCodelists(codelistHandler)
+        mockCatalog(this.catalogService)
+        mockCodelists(this.codelistHandler)
 
         val addresses = listOf(
             MockDocument(
@@ -97,8 +102,8 @@ class Geodataset : ShouldSpec() {
             MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
         )
 
-        initDocumentMocks(addresses + datasets, documentService)
-        every { documentService.getIncomingReferences(any(), any()) } answers { emptySet() }
+        initDocumentMocks(addresses + datasets, this.documentService)
+        every { this@Geodataset.documentService.getIncomingReferences(this.any(), this.any()) } answers { emptySet() }
     }
 
     init {
@@ -107,8 +112,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs.
         * address has no organization assigned.
         * */
-        should("minimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
+        this.should("minimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
@@ -119,9 +124,9 @@ class Geodataset : ShouldSpec() {
         * export with all inputs possible.
         * address has an organization assigned.
         * */
-        should("maximalExport") {
+        this.should("maximalExport") {
 
-            var result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.maximal.sample.json")
+            var result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.maximal.sample.json")
             // replace generated UUIDs
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
@@ -134,8 +139,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and openData selected.
         * address has an organization assigned.
         * */
-        should("openDataMinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.openData.json")
+        this.should("openDataMinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.openData.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml")
         }
@@ -144,8 +149,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and INSPIRE selected.
         * address has an organization assigned.
         * */
-        should("inspireMinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
+        this.should("inspireMinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml")
         }
@@ -154,8 +159,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and AdV selected.
         * address has an organization assigned.
         * */
-        should("advMinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.AdV.json")
+        this.should("advMinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.AdV.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml")
         }
@@ -164,8 +169,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and Vektor selected in Digitale Repräsentation.
         * address has an organization assigned.
         * */
-        should("vectorMinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.vector.json")
+        this.should("vectorMinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.vector.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml")
         }
@@ -174,8 +179,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and Geobasis Raster selected in Digitale Repräsentation.
         * address has an organization assigned.
         * */
-        should("raster1MinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
+        this.should("raster1MinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml")
         }
@@ -184,8 +189,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and Georektifiziertes Raster selected in Digitale Repräsentation.
         * address has an organization assigned.
         * */
-        should("raster2MinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
+        this.should("raster2MinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml")
         }
@@ -194,8 +199,8 @@ class Geodataset : ShouldSpec() {
         * export with only required inputs and Georeferenzierbares Raster selected in Digitale Repräsentation.
         * address has an organization assigned.
         * */
-        should("raster3MinimalExport") {
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
+        this.should("raster3MinimalExport") {
+            val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml")
         }
@@ -212,8 +217,8 @@ class Geodataset : ShouldSpec() {
         }*/
 
 
-        xshould("completeLuceneExport") {
-            var result = exportJsonToJson(indexExporter, "/export/ingrid/geodataset-Document2.json")
+        this.xshould("completeLuceneExport") {
+            var result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")
             // replace generated UUIDs
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")

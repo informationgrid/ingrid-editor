@@ -11,7 +11,7 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
     val doc = convertToDocument(input)
 
     if (additional != null) {
-        doc.data.putAll(additional)
+        doc.data.setAll<ObjectNode>(additional)
     }
 
     val result = exporter.run(doc, "test-catalog") as String
