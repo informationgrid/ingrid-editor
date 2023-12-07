@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.ingrid_kommunal_st.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.*
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
+import de.ingrid.igeserver.profiles.ingrid.types.address.InGridPersonType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -46,6 +47,6 @@ class InGridOrganisationTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridOrgan
 }
 
 @Component
-class InGridPersonTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
+class InGridPersonTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
     override val profiles = arrayOf("ingrid-kommunal-st")
 }
