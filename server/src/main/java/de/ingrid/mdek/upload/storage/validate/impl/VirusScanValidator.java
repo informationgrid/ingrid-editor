@@ -131,7 +131,7 @@ public class VirusScanValidator implements Validator {
             }
 
             if (!virusList.isEmpty()) {
-                log.warn("Virus found: " + result);
+                log.warn("Virus found: " + scanResult);
                 throw new VirusFoundException("Virus found.", path+"/"+file, scanResult, virusList);
             }
             else if (scanError) {
