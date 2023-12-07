@@ -104,10 +104,10 @@
     "minimumValue": ${model.getVerticalExtent().getMin()},
     "maximumValue": ${model.getVerticalExtent().getMax()},
     "unitOfMeasure": {
-    "key": "${model.getVerticalExtent().getUom()}"
+        "key": "${model.getVerticalExtent().getUom()}"
     },
     "Datum": {
-    "key": "${model.getVerticalExtent().getDatum()}"
+        "key": "${model.getVerticalExtent().getDatum()}"
     }
     },
 @endif

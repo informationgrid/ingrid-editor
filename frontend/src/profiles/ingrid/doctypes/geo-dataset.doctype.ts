@@ -102,7 +102,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           },
         ),
-        this.addRepeat("vectorSpatialRepresentation", "Topologieinformation", {
+        this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
           fields: [
             this.addSelectInline("topologyLevel", "Topologieinformation", {
               options: this.getCodelistForSelect(528, "topologyLevel"),

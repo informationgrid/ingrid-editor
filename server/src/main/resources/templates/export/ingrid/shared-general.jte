@@ -1,7 +1,7 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.SpatialModel;
-@import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+@import de.ingrid.igeserver.exporter.model.SpatialModel
+@import de.ingrid.igeserver.profiles.ingrid.exporter.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
@@ -95,8 +95,6 @@
 <gmd:metadataStandardVersion>
     <gco:CharacterString>${page.getMdStandardVersion()}</gco:CharacterString>
 </gmd:metadataStandardVersion>
-
-
 @if(page.getGridSpatialRepresentation() != null)
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>
@@ -190,7 +188,6 @@
         </gmd:MD_${page.getGridType()}>
     </gmd:spatialRepresentationInfo>
 @endif
-
 @for(VectorSpatialRepresentation vec : page.getVectorSpatialRepresentation())
     <gmd:spatialRepresentationInfo>
         <gmd:MD_VectorSpatialRepresentation>
@@ -216,7 +213,61 @@
         </gmd:MD_VectorSpatialRepresentation>
     </gmd:spatialRepresentationInfo>
 @endfor
-
+@for(GeometryContext geometryContext : page.getGeometryContexts())
+    <gmd:spatialRepresentationInfo>
+        <igctx:MD_GeometryContext gco:isoType="AbstractMD_SpatialRepresentation_Type">
+            <igctx:geometryType>
+                <gco:CharacterString>${geometryContext.getType()}</gco:CharacterString>
+            </igctx:geometryType>
+            <igctx:geometricFeature>
+                <igctx:${geometryContext.getFeatureType()}>
+                    <igctx:featureName>
+                        <gco:CharacterString>${geometryContext.getName()}</gco:CharacterString>
+                    </igctx:featureName>
+                    <igctx:featureDescription>
+                        <gco:CharacterString>${geometryContext.getDescription()}</gco:CharacterString>
+                    </igctx:featureDescription>
+                    <igctx:featureDataType>
+                        <gco:CharacterString>${geometryContext.getDataType()}</gco:CharacterString>
+                    </igctx:featureDataType>
+                    @if(!geometryContext.getAttributes().isEmpty())
+                    <igctx:featureAttributes>
+                        <igctx:FeatureAttributes>
+                            @for(GeometryContextAttribute attribute : geometryContext.getAttributes())
+                            <igctx:attribute>
+                                <igctx:${geometryContext.getFeatureTypeAttribute()}>
+                                    <igctx:attributeDescription>
+                                        <gco:CharacterString>${attribute.getValue()}</gco:CharacterString>
+                                    </igctx:attributeDescription>
+                                    <igctx:${geometryContext.getFeatureTypeAttributeContent()}>
+                                        <gco:CharacterString>${attribute.getKey()}</gco:CharacterString>
+                                    </igctx:${geometryContext.getFeatureTypeAttributeContent()}>
+                                </igctx:${geometryContext.getFeatureTypeAttribute()}>
+                            </igctx:attribute>
+                            @endfor
+                        </igctx:FeatureAttributes>
+                    </igctx:featureAttributes>
+                    @endif
+                    @if(geometryContext.getMinValue() != null)
+                    <igctx:minValue>
+                        <gco:CharacterString>${geometryContext.getMinValue()}</gco:CharacterString>
+                    </igctx:minValue>
+                    @endif
+                    @if(geometryContext.getMaxValue() != null)
+                    <igctx:maxValue>
+                        <gco:CharacterString>${geometryContext.getMaxValue()}</gco:CharacterString>
+                    </igctx:maxValue>
+                    @endif
+                    @if(TransformationTools.hasValue(geometryContext.getUnit()))
+                    <igctx:units>
+                        <gco:CharacterString>${geometryContext.getUnit()}</gco:CharacterString>
+                    </igctx:units>
+                    @endif
+                </igctx:${geometryContext.getFeatureType()}>
+            </igctx:geometricFeature>
+        </igctx:MD_GeometryContext>
+    </gmd:spatialRepresentationInfo>
+@endfor
 @for(CharacterStringModel spatialSystem : page.getSpatialSystems())
     <gmd:referenceSystemInfo>
         <gmd:MD_ReferenceSystem>
@@ -230,7 +281,6 @@
         </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
 @endfor
-
 <gmd:identificationInfo>
     <${page.getIdentificationType()} uuid="${page.getCitationURL()}">
     <gmd:citation>
@@ -296,7 +346,6 @@
         </gmd:status>
     @endif
     @template.ingrid.pointOfContact(addresses = page.getPointOfContact())
-
     @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -341,7 +390,6 @@
             </gmd:MD_BrowseGraphic>
         </gmd:graphicOverview>
     @endfor
-
     @if( TransformationTools.hasValue(page.getResourceFormat()) )
         <gmd:resourceFormat>
             <gmd:MD_Format>

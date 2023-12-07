@@ -1,6 +1,8 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
+@import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param GeodatasetMapper model
+@param Content contentInfo = null
 
 {
     @template.ingrid.base(model = model)
@@ -128,5 +130,5 @@
         }
         @endif
     }
-    @endif
+    @endif ${contentInfo}
 }

@@ -179,7 +179,7 @@ export class FormFieldHelper {
 
   addGroupSimple(id: string, fields: any[], options?: any) {
     return this.addGroup(id, null, fields, {
-      fieldGroupClassName: "",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "",
       wrappers: [],
       ...options,
     });

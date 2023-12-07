@@ -225,6 +225,9 @@ open class IngridModelTransformer(
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
+    
+    open fun getGeometryContexts(): List<GeometryContext> = emptyList()
+    
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
@@ -486,7 +489,7 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService?.getIncomingReferences(doc, catalogIdentifier)
-                ?.map { documentService!!.getLastPublishedDocument(catalogIdentifier, it) }
+                ?.map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
                 ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
                 ?.mapNotNull {
                     it.data.get("service").get("operations")
@@ -579,7 +582,7 @@ open class IngridModelTransformer(
         if (uuid == null) return null
         try {
             val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
                 IngridModel::class.java
             )
             val transformer = IngridModelTransformer(
@@ -650,7 +653,7 @@ open class IngridModelTransformer(
         val uuid = data.parentIdentifier ?: return null
         try {
             val model = jacksonObjectMapper().convertValue(
-                documentService!!.getLastPublishedDocument(catalogIdentifier, uuid),
+                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
                 IngridModel::class.java
             )
 
@@ -708,7 +711,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = getLastPublishedDocument(model.uuid)
-        return documentService!!.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
+        return documentService.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }
@@ -716,7 +719,7 @@ open class IngridModelTransformer(
     fun getLastPublishedDocument(uuid: String): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService!!.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")
@@ -822,4 +825,23 @@ data class DocumentReference(
     val title: String,
     val serviceType: String,
     val serviceVersion: String
+)
+
+data class GeometryContext(
+    val type: String,
+    val name: String,
+    val featureType: String,
+    val featureTypeAttribute: String,
+    val featureTypeAttributeContent: String,
+    val dataType: String,
+    val description: String,
+    val attributes: List<GeometryContextAttribute>,
+    val minValue: Number?,
+    val maxValue: Number?,
+    val unit: String?,
+)
+
+data class GeometryContextAttribute(
+    val key: String,
+    val value: String,
 )

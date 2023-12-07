@@ -25,6 +25,8 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
+    
+    var profileMapper: ISOImportProfile? = null
 
     override fun run(catalogId: String, data: Any): JsonNode {
 
@@ -45,30 +47,33 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val output = createISO(catalogId, finalObject)
+        val output = convertIsoToJson(catalogId, finalObject)
         
         log.debug("Created JSON from imported file: $output")
 
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
     }
     
-    fun createISO(catalogId: String, data: Metadata): String {
+    fun convertIsoToJson(catalogId: String, data: Metadata): String {
         val output: TemplateOutput = JsonStringOutput()
+        
+        val profileOutput = handleByProfile(catalogId, data)
+        if (profileOutput != null) return profileOutput
 
         when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
                 val model = GeoserviceMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geoservice.jte", model, output)
+                templateEngine.render("ingrid/geoservice.jte", mapOf("model" to model), output)
             }
 
             "dataset" -> {
                 val model = GeodatasetMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geodataset.jte", model, output)
+                templateEngine.render("ingrid/geodataset.jte", mapOf("model" to model), output)
             }
             
             "series" -> {
                 val model = GeodatasetMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geodataset.jte", model, output)
+                templateEngine.render("ingrid/geodataset.jte", mapOf("model" to model), output)
             }
 
             else -> throw ServerException.withReason("Not supported hierarchy level for import: $hierarchyLevel")
@@ -76,11 +81,21 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
         return output.toString()
     }
 
+    private fun handleByProfile(catalogId: String, data: Metadata): String? {
+        return profileMapper?.let {
+            it.handle(catalogId, data)?.let {
+                val output: TemplateOutput = JsonStringOutput()
+                templateEngine.render(it.template, it.mapper, output)
+                output.toString()
+            }
+        }
+    }
+
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
         return "application/xml" == contentType
     }
 
-    private class JsonStringOutput : StringOutput() {
+    internal class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(

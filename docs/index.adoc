@@ -504,15 +504,17 @@ This can be defined in the profile definition file.
 
 * implement a new class defining the new profile by implementing the interface `CatalogProfile`
 ** add this file here: `server/src/main/java/de/ingrid/igeserver/profiles/<name>/<NAME>Profile.kt`
+** annotate it with `@Service`
+** implement at least the following members: `indentifier`, `title`
 * add all your document types under the `types`-folder and extend each type from `EntityType`. You can also override several functions to interact on different situations.
 
 [source, kotlin]
 ----
 @Component
-class <DocType>Type : EntityType() {
-    override val className = "<DocumentTypeName>"
-    override val profiles = arrayOf("<profile>")
-    override val jsonSchema = "/<profile>/schemes/<doctype>.schema.json"
+class DocType : EntityType() {
+    override val className = "DocumentTypeName"
+    override val profiles = arrayOf("profile")
+    override val jsonSchema = "/[profile]/schemes/doctype.schema.json"
 }
 ----
 
@@ -521,10 +523,10 @@ class <DocType>Type : EntityType() {
 
 [source,kotlin]
 ----
-@Profile("<name>")
+@Profile("profile")
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.<name>"])
-class <Name>Config
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.[profile]"])
+class ProfileConfig
 ----
 
 NOTE: This will tell `Spring` to look for services inside the specified profile-package and make them ready to be used.
@@ -537,7 +539,7 @@ NOTE: This will tell `Spring` to look for services inside the specified profile-
 [source, typescript]
 ----
 @Component({template: ""})
-class <Profile>Component {
+class ProfileComponent {
   constructor(
     service: ProfileService,
     test: TestDoctype
@@ -547,11 +549,11 @@ class <Profile>Component {
 }
 
 @NgModule({
-  declarations: [<Profile>Component],
+  declarations: [ProfileComponent],
 })
 export class ProfilePack {
   static getMyComponent() {
-    return <Profile>Component;
+    return ProfileComponent;
   }
 }
 ----
@@ -585,10 +587,45 @@ Sometimes you may want to use a profile as a base and extend it with some other 
 
 To inherit from another profile you need to follow the steps:
 
+Backend:
+
 * Add a new class extending from the profile
-** override at least the fields: `id`, `identifier`, `title` and `parentProfile`
+** annotate it with `@Service`
+** override at least the fields: `identifier`, `title` and `parentProfile`
 ** when modifying the export you should override the field `indexExportFormatID`
 * Optional: 
+* under `types`-directory create the inherited types you want to use
+** need to be created even if the same functionality as from the parent profile
+
+[source,kotlin]
+----
+@Component
+class ParentDocumentTypeProfile(jdbcTemplate: JdbcTemplate) : ParentDocumentType(jdbcTemplate) {
+    override val profiles = arrayOf("inheritedProfile")
+}
+----
+
+* document-types can be extended to use a different JSON-schema for validation for example
+* create a new config file for activating the profile in the `profiles`-directory
+
+[source,kotlin]
+----
+@Profile("inheritedProfile")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.inheritedProfile"])
+class InheritedProfileConfig
+----
+
+Frontend:
+
+* create new profile under `src/profiles` extending another profile
+[source,kotlin]
+----
+@Component({template: ""})
+class InheritedProfileComponent extends ParentProfileComponent {}
+----
+
+* add file to `tsconfig.app.json` und `tsconfig.spec.json`
 
 === Export format
 

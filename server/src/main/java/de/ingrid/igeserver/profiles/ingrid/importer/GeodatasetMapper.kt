@@ -34,14 +34,18 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
     fun getLanguages(): List<String> {
         return identificationInfo?.language
             ?.mapNotNull { it.code?.codeListValue }
-            ?.map { iso639LanguageMapping[it] ?: throw ServerException.withReason("Could not map document language key: $it") }
+            ?.map {
+                iso639LanguageMapping[it]
+                    ?: throw ServerException.withReason("Could not map document language key: $it")
+            }
             ?: emptyList()
     }
 
     fun getFeatureTypes(): List<KeyValue> {
         return metadata.contentInfo
-            ?.flatMap { it.mdFeatureCatalogueDescription?.featureTypes
-                ?.mapNotNull { it.value } ?: emptyList()
+            ?.flatMap {
+                it.mdFeatureCatalogueDescription?.featureTypes
+                    ?.mapNotNull { it.value } ?: emptyList()
             }
             ?.map { KeyValue(null, it) } ?: emptyList()
     }
@@ -86,17 +90,17 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             ?.mapNotNull { it.mdVectorSpatialRepresentation }
             ?.map { mapVectorSpatialRepreseantation(it) } ?: emptyList()
     }
-    
+
     private fun mapVectorSpatialRepreseantation(vector: MDVectorSpatialRepresentation): VectorSpatialRepresentation {
         val topologyLevelValue = vector.topologyLevel?.value?.codeListValue
         val entryIdTopologyLevel = codeListService.getCodeListEntryId("528", topologyLevelValue, "iso")
         val objectTypeValue = vector.geometricObjects?.get(0)?.value?.geometricObjectType?.value?.codeListValue
         val entryIdObjectType = codeListService.getCodeListEntryId("515", objectTypeValue, "iso")
         val objectCount = vector.geometricObjects?.get(0)?.value?.geometricObjectCount?.value
-                
+
         return VectorSpatialRepresentation(KeyValue(entryIdTopologyLevel), KeyValue(entryIdObjectType), objectCount)
     }
-    
+
     fun getGridSpatialRepresentation(): GridSpatialRepresentation? {
         val isGeneral = metadata.spatialRepresentationInfo?.filter { it.mdGridSpatialRepresentation != null }
         val isGeoReferenced = metadata.spatialRepresentationInfo?.filter { it.mdGeoreferenceable != null }
@@ -160,17 +164,22 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
             node.georeferencedParameters.value?.value
         )
     }
-    
+
     private fun getCellGeometryId(cellGeometry: CellGeometry): KeyValue {
-        val cellGeometryId = codeListService.getCodeListEntryId("509", cellGeometry.mdCellGeometryCode?.codeListValue, "iso")
+        val cellGeometryId =
+            codeListService.getCodeListEntryId("509", cellGeometry.mdCellGeometryCode?.codeListValue, "iso")
         return KeyValue(cellGeometryId)
     }
-    
+
     private fun getAxesDimProperties(properties: List<AxisDimensionProperty>): List<AxesDimProperty> {
         return properties.map {
             val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
             val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
-            AxesDimProperty(KeyValue(nameId), it.mdDimension?.dimensionSize?.value ?: 0, it.mdDimension?.resolution?.scale?.value ?: 0f)
+            AxesDimProperty(
+                KeyValue(nameId),
+                it.mdDimension?.dimensionSize?.value ?: 0,
+                it.mdDimension?.resolution?.scale?.value ?: 0f
+            )
         }
     }
 
@@ -188,7 +197,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         val orientationParameterAvailability: Boolean?,
         val geoRefParameters: String?
     )
-    
+
     data class AxesDimProperty(
         val name: KeyValue?,
         val size: Int?,
@@ -204,20 +213,60 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
     private fun mapQuality(report: DQReport): Quality? {
         val info =
             // if (report.dqTemporalValidity != null) QualityInfo("temporalValidity", "", report.dqTemporalValidity)
-            if (report.dqTemporalConsistency != null) QualityInfo("temporalConsistency", "7120", report.dqTemporalConsistency)
+            if (report.dqTemporalConsistency != null) QualityInfo(
+                "temporalConsistency",
+                "7120",
+                report.dqTemporalConsistency
+            )
 //            else if (report.dqAccuracyOfATimeMeasurement != null) QualityInfo("", ", (report.)
-            else if (report.dqQuantitativeAttributeAccuracy != null) QualityInfo("quantitativeAttributeAccuracy", "7127", report.dqQuantitativeAttributeAccuracy)
-            else if (report.dqNonQuantitativeAttributeAccuracy != null) QualityInfo("nonQuantitativeAttributeAccuracy", "7126", report.dqNonQuantitativeAttributeAccuracy)
-            else if (report.dqThematicClassificationCorrectness != null) QualityInfo("thematicClassificationCorrectness", "7125", report.dqThematicClassificationCorrectness)
-            else if (report.dqRelativeInternalPositionalAccuracy != null) QualityInfo("relativeInternalPositionalAccuracy", "7128", report.dqRelativeInternalPositionalAccuracy)
+            else if (report.dqQuantitativeAttributeAccuracy != null) QualityInfo(
+                "quantitativeAttributeAccuracy",
+                "7127",
+                report.dqQuantitativeAttributeAccuracy
+            )
+            else if (report.dqNonQuantitativeAttributeAccuracy != null) QualityInfo(
+                "nonQuantitativeAttributeAccuracy",
+                "7126",
+                report.dqNonQuantitativeAttributeAccuracy
+            )
+            else if (report.dqThematicClassificationCorrectness != null) QualityInfo(
+                "thematicClassificationCorrectness",
+                "7125",
+                report.dqThematicClassificationCorrectness
+            )
+            else if (report.dqRelativeInternalPositionalAccuracy != null) QualityInfo(
+                "relativeInternalPositionalAccuracy",
+                "7128",
+                report.dqRelativeInternalPositionalAccuracy
+            )
 //            else if (report.dqGriddedDataPositionalAccuracy != null) QualityInfo("", ", (report.)
 //            else if (report.dqAbsoluteExternalPositionalAccuracy != null) QualityInfo("", ", (report.)
-            else if (report.dqTopologicalConsistency != null) QualityInfo("topologicalConsistency", "7115", report.dqTopologicalConsistency)
-            else if (report.dqFormatConsistency != null) QualityInfo("formatConsistency", "7114", report.dqFormatConsistency)
-            else if (report.dqDomainConsistency != null) QualityInfo("domainConsistency", "7113", report.dqDomainConsistency)
-            else if (report.dqConceptualConsistency != null) QualityInfo("conceptualConsistency", "7112", report.dqConceptualConsistency)
+            else if (report.dqTopologicalConsistency != null) QualityInfo(
+                "topologicalConsistency",
+                "7115",
+                report.dqTopologicalConsistency
+            )
+            else if (report.dqFormatConsistency != null) QualityInfo(
+                "formatConsistency",
+                "7114",
+                report.dqFormatConsistency
+            )
+            else if (report.dqDomainConsistency != null) QualityInfo(
+                "domainConsistency",
+                "7113",
+                report.dqDomainConsistency
+            )
+            else if (report.dqConceptualConsistency != null) QualityInfo(
+                "conceptualConsistency",
+                "7112",
+                report.dqConceptualConsistency
+            )
 //            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
-            else if (report.dqCompletenessCommission != null) QualityInfo("completenessComission", "7109", report.dqCompletenessCommission)
+            else if (report.dqCompletenessCommission != null) QualityInfo(
+                "completenessComission",
+                "7109",
+                report.dqCompletenessCommission
+            )
             else return null
 
         if (info.element.nameOfMeasure == null) return null
@@ -283,7 +332,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                             it.citation.edition?.value
                         )
                     } ?: emptyList()
-            }?: emptyList()
+            } ?: emptyList()
     }
 
     fun getFeatureCatalogueDescription(): List<CatalogInfo> {
@@ -300,7 +349,7 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                             it.citation.edition?.value
                         )
                     } ?: emptyList()
-            }?: emptyList()
+            } ?: emptyList()
     }
 
     fun getPositionalAccuracy(): PositionalAccuracy {
@@ -311,31 +360,79 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
         )
     }
 
+    fun getGeometryContexts(): List<GeometryContextInternal> {
+        return metadata.spatialRepresentationInfo
+            ?.mapNotNull {it.mdGeometryContext }
+            ?.map {
+                val feature = it.geometricFeature?.nominalFeature ?: it.geometricFeature?.ordinalFeature ?: it.geometricFeature?.scalarFeature ?: it.geometricFeature?.otherFeature
+                GeometryContextInternal(
+                    feature?.featureName?.value,
+                    it.geometryType?.value,
+                    feature?.featureDataType?.value,
+                    feature?.featureDescription?.value,
+                    mapGeometryContextFeatureType(it.geometricFeature),
+                    feature?.minValue?.value?.toDouble(),
+                    feature?.maxValue?.value?.toDouble(),
+                    feature?.units?.value,
+                    mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute)
+                )
+            } ?: emptyList()
+    }
+
+    private fun mapGeometryContextAttributes(attributes: List<FeatureAttribute>?): List<KeyValue> {
+        return attributes?.map { attribute ->
+            val item = attribute.RegularFeatureAttribute ?: attribute.OtherFeatureAttribute
+            KeyValue(
+                item?.attributeCode?.value ?: item?.attributeContent?.value,
+                item?.attributeDescription?.value
+            )
+        } ?: emptyList()
+    }
+
+    private fun mapGeometryContextFeatureType(feature: GeometricFeature?): KeyValue? {
+        return when {
+            feature?.nominalFeature != null -> KeyValue("nominal")
+            feature?.ordinalFeature != null -> KeyValue("ordinal")
+            feature?.scalarFeature != null -> KeyValue("scalar")
+            feature?.otherFeature != null -> KeyValue("other")
+            else -> null
+        }
+    }
+
     private fun getVerticalAbsoluteExternalPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
-            ?.flatMap { it.dqDataQuality?.report
-                ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, vertical accuracy" }
-                ?.map { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                    ?.getOrNull(0)?.value } ?: emptyList()
+            ?.flatMap {
+                it.dqDataQuality?.report
+                    ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, vertical accuracy" }
+                    ?.map {
+                        it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                            ?.getOrNull(0)?.value
+                    } ?: emptyList()
             }
             ?.getOrNull(0)
             ?.toDouble()
     }
     private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
-            ?.flatMap { it.dqDataQuality?.report
-                ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, geographic accuracy" }
-                ?.map { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                    ?.getOrNull(0)?.value } ?: emptyList()
+            ?.flatMap {
+                it.dqDataQuality?.report
+                    ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, geographic accuracy" }
+                    ?.map {
+                        it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                            ?.getOrNull(0)?.value
+                    } ?: emptyList()
             }
             ?.getOrNull(0)
             ?.toDouble()
     }
     private fun getGriddedDataPositionalAccuracy(): Double? {
         return metadata.dataQualityInfo
-            ?.flatMap { it.dqDataQuality?.report
-                ?.mapNotNull { it.dqGriddedDataPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                    ?.getOrNull(0)?.value } ?: emptyList()
+            ?.flatMap {
+                it.dqDataQuality?.report
+                    ?.mapNotNull {
+                        it.dqGriddedDataPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                            ?.getOrNull(0)?.value
+                    } ?: emptyList()
             }
             ?.getOrNull(0)
             ?.toDouble()
@@ -371,4 +468,16 @@ data class PositionalAccuracy(
     val vertical: Double?,
     val horizontal: Double?,
     val griddedDataPositionalAccuracy: Double?
+)
+
+data class GeometryContextInternal(
+    val name: String?,
+    val geometryType: String?,
+    val dataType: String?,
+    val description: String?,
+    val featureType: KeyValue?,
+    val min: Double?,
+    val max: Double?,
+    val unit: String?,
+    val attributes: List<KeyValue>,
 )

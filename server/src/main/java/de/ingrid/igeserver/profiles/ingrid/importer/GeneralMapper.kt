@@ -298,6 +298,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
                 // handle coordinates
                 it.geographicBoundingBox?.let { bbox ->
+                    if (references.isEmpty()) references.add(SpatialReference("free", null))
                     references.last().coordinates = BoundingBox(
                         bbox.southBoundLatitude?.value!!,
                         bbox.westBoundLongitude?.value!!,

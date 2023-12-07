@@ -199,7 +199,49 @@ data class SpatialRepresentationInfo(
     @JacksonXmlProperty(localName = "MD_VectorSpatialRepresentation") val mdVectorSpatialRepresentation: MDVectorSpatialRepresentation?,
     @JacksonXmlProperty(localName = "MD_GridSpatialRepresentation") val mdGridSpatialRepresentation: MDGridSpatialRepresentation?,
     @JacksonXmlProperty(localName = "MD_Georeferenceable") val mdGeoreferenceable: MDGeoreferenceable?,
-    @JacksonXmlProperty(localName = "MD_Georectified") val mdGeorectified: MDGeorectified?
+    @JacksonXmlProperty(localName = "MD_Georectified") val mdGeorectified: MDGeorectified?,
+    @JacksonXmlProperty(localName = "MD_GeometryContext") val mdGeometryContext: MDGeometryContext?
+)
+
+data class MDGeometryContext(
+    val geometryType: CharacterString?,
+    val geometricFeature: GeometricFeature?
+)
+
+data class GeometricFeature(
+    @JacksonXmlProperty(localName = "NominalFeature") val nominalFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "OrdinalFeature") val ordinalFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "ScalarFeature") val scalarFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "OtherFeature") val otherFeature: SpecificGeometricFeature?,
+)
+
+data class SpecificGeometricFeature(
+    val featureName: CharacterString?,
+    val featureDescription: CharacterString?,
+    val featureDataType: CharacterString?,
+    val featureAttributes: FeatureAttributes2?,
+    val minValue: CharacterString?,
+    val maxValue: CharacterString?,
+    val units: CharacterString?
+)
+
+data class FeatureAttributes2(
+    @JacksonXmlProperty(localName = "FeatureAttributes") val featureAttributes: FeatureAttributes
+)
+
+data class FeatureAttributes(
+    val attribute: List<FeatureAttribute>?
+)
+
+data class FeatureAttribute(
+    val RegularFeatureAttribute: SpecificFeatureAttribute?,
+    val OtherFeatureAttribute: SpecificFeatureAttribute?
+)
+
+data class SpecificFeatureAttribute(
+    val attributeDescription: CharacterString?,
+    val attributeContent: CharacterString?,
+    val attributeCode: CharacterString?
 )
 
 data class MDGeoreferenceable(
