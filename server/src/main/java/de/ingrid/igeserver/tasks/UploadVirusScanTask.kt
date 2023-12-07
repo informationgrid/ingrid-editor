@@ -35,12 +35,12 @@ class UploadVirusScanTask(
 
         log(Level.INFO, "Executing UploadVirusScanJob...", report, null)
         log(Level.INFO, "Directories to scan: " + java.lang.String.join(", ", scanDirs), report, null)
-        val infectedFiles: MutableList<Path> = ArrayList()
-        val exceptions: MutableList<Exception> = ArrayList()
+        val infectedFiles = mutableListOf<Path>()
+        val exceptions = mutableListOf<Exception>()
         try {
             // scan files
             for (scanDir in scanDirs) {
-                log(Level.DEBUG, "Scanning directory \"$scanDir\"...", report, null)
+                log(Level.DEBUG, "Scanning directory '$scanDir'...", report, null)
                 try {
                     virusScanValidator.validate(scanDir, null, 0L, 0L, Paths.get(scanDir), false)
                 } catch (vfex: VirusFoundException) {
@@ -61,7 +61,7 @@ class UploadVirusScanTask(
                     log(Level.WARN, "Error(s) found during the scan: $scanReport", report, null)
                     exceptions.add(vscanex)
                 } catch (ex: Exception) {
-                    log(Level.ERROR, "Error scanning directory \"$scanDir\"", report, ex)
+                    log(Level.ERROR, "Error scanning directory '$scanDir'", report, ex)
                     exceptions.add(ex)
                 }
             }
@@ -94,7 +94,7 @@ class UploadVirusScanTask(
         var movedCount = 0
         for (file in infectedFiles) {
             val targetPath = Paths.get(quarantineDir!!, file.toString())
-            log(Level.INFO, "Moving file: \"$file\" to \"$targetPath\"", report, null)
+            log(Level.INFO, "Moving file: '$file' to '$targetPath'", report, null)
             try {
                 log(Level.INFO, Paths.get(file.toString()).toAbsolutePath().toString(), report, null )
                 Files.createDirectories(targetPath.parent)
@@ -102,7 +102,7 @@ class UploadVirusScanTask(
                 movedCount++
             } catch (e: IOException) {
                 // log error, but keep the job running
-                log(Level.ERROR, "File \"$file\" could not be moved to quarantine", report, e)
+                log(Level.ERROR, "File '$file' could not be moved to quarantine", report, e)
             }
         }
         log(Level.INFO, "Moved $movedCount infected file(s)", report, null)
