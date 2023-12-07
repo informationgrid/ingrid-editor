@@ -32,10 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
-import java.net.InetSocketAddress
-import java.net.ProxySelector
-import java.net.URI
-import java.net.URL
+import java.net.*
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
@@ -493,11 +490,13 @@ class KeycloakService : UserManagementService {
 
     private fun sendLoginRequest(username: String, password: String): JSONObject {
         val executor = Executors.newSingleThreadExecutor()
+        val encodedUsername = URLEncoder.encode(username, "utf-8")
+        val encodedPassword = URLEncoder.encode(password, "utf-8")
         val request = HttpRequest.newBuilder()
             .header("Content-Type", "application/x-www-form-urlencoded")
             .method(
                 "POST",
-                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$username&password=$password")
+                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$encodedUsername&password=$encodedPassword")
             )
             .uri(URI.create("$keycloakUrl/realms/$keycloakRealm/protocol/openid-connect/token"))
             .timeout(Duration.ofSeconds(5))
