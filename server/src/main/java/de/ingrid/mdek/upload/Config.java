@@ -111,4 +111,13 @@ public class Config {
     @Value("${upload.unsaved.retentionTime:24}")
     public int uploadUnsavedRetentionTime;
 
+    @Value("${upload.virusscan.schedule:}")
+    public String uploadVirusScanSchedule;
+
+    @Value("${upload.virusscan.quarantinedir:}")
+    public String uploadVirusScanQuarantineDir;
+
+    @Value("${upload.virusscan.mail.receiver:}")
+    public String uploadVirusScanMailReceiver;
+
 }

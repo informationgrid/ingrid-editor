@@ -79,7 +79,7 @@ public class RemoteServicePostVirusScanValidator implements Validator {
         // check required configuration parameters
         for (final String parameter : new String[] {CONFIG_KEY_URL, CONFIG_KEY_VIRUS_PATTERN, CONFIG_KEY_CLEAN_PATTERN}) {
             if (!configuration.containsKey(parameter)) {
-                throw new IllegalArgumentException("Configuration value '"+parameter+"' is required.");
+                throw new IllegalArgumentException("Configuration value '" + parameter + "' is required.");
             }
         }
 
@@ -123,7 +123,7 @@ public class RemoteServicePostVirusScanValidator implements Validator {
             }
             if (!virusList.isEmpty()) {
                 log.warn("Virus found: " + result);
-                throw new VirusFoundException("Virus found.", path+"/"+file, virusList);
+                throw new VirusFoundException("Virus found.", path + "/" + file, "", virusList);
             }
             else if (!cleanPattern.matcher(result).lookingAt()) {
                 log.error("Virus scan failed: " + result);
