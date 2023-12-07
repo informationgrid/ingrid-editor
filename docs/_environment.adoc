@@ -63,6 +63,14 @@
 |
 |ige-ng-frontend
 
+|KEYCLOAK_BACKEND_USER
+|Needed for administrative tasks in Keycloak
+|
+
+|KEYCLOAK_BACKEND_USER_PASSWORD
+|see above
+|
+
 |SHOW_SWAGGER_UI
 |
 |false

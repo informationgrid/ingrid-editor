@@ -1,4 +1,4 @@
-:keycloakversion: 22.0.4-1
+:keycloakversion: 22.0.4-2
 
 == Deployment
 

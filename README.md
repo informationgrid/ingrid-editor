@@ -21,6 +21,14 @@ When using Keycloak then some properties must be configured. Please also check `
 - spring.security.oauth2.resourceserver.jwt.issuer-uri
 - keycloak.auth-server-url
 
+You also need to configure a user with privileged rights in Keycloak, which is needed for the user management. This can be done by setting 
+- keycloak.backend-user
+- keycloak.backend-user-password
+
+You can also configure it by these environment variables respectively:
+- KEYCLOAK_BACKEND_USER
+- KEYCLOAK_BACKEND_USER_PASSWORD
+
 #### Database
 
 The application requires a PostgreSQL database instance which is configured in application.properties.
