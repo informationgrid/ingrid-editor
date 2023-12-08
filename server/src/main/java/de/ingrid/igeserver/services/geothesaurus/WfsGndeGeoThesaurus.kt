@@ -42,7 +42,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         }.joinToString("")
         return """
     <wfs:GetFeature maxFeatures="$maxResults" traverseXlinkDepth="*" resultType="results" version="1.1.0" service="WFS" xmlns:wfs="http://www.opengis.net/wfs"  xmlns:ogc="http://www.opengis.net/ogc"          >
-        <wfs:Query featureVersion="1.1.0" typeName="gn:GnObjekt" xmlns:gn="http://www.geodatenzentrum.de/gnde">
+        <wfs:Query featureVersion="1.1.0" typeName="gn:GnObjekt" xmlns:gn="http://www.geodatenzentrum.de/gnde" srsName="EPSG:4326">
             <ogc:Filter>
                 <ogc:And>
                     <ogc:PropertyIsLike wildCard="*" singleChar="?" matchCase="false" escapeChar="\">
@@ -115,32 +115,13 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
     }
 
     private fun mapBoundingBox(featureMember: JsonNode): BoundingBox {
-        val posList = featureMember.get("box")?.get("Polygon")?.get("exterior")?.get("LinearRing")?.get("posList")
-        return getBBoxFromPosListElement(posList!!)
+        val posListLower = featureMember.get("boundedBy")?.get("Envelope")?.get("lowerCorner")?.asText()?.split(" ")
+        val posListUpper = featureMember.get("boundedBy")?.get("Envelope")?.get("upperCorner")?.asText()?.split(" ")
+        return getBBoxFromBoundedByElement(posListLower!!, posListUpper!!)
     }
-
-    private fun getBBoxFromPosListElement(coords: JsonNode): BoundingBox {
-        val coordsSplitted = coords.asText().split(" ")
-        val box = FloatArray(4)
-
-        // determine bounding box from polygon by getting min/max values
-        var pos = 0
-        while (pos < coordsSplitted.size) {
-            if (box[0] == 0.0f || box[1] > coordsSplitted[pos].toFloat()) {
-                box[0] = coordsSplitted[pos].toFloat()
-            }
-            if (box[1] == 0.0f || box[0] > coordsSplitted[pos + 1].toFloat()) {
-                box[1] = coordsSplitted[pos + 1].toFloat()
-            }
-            if (box[2] < coordsSplitted[pos].toFloat()) {
-                box[2] = coordsSplitted[pos].toFloat()
-            }
-            if (box[3] < coordsSplitted[pos + 1].toFloat()) {
-                box[3] = coordsSplitted[pos + 1].toFloat()
-            }
-            pos += 2
-        }
-        return BoundingBox(box[0], box[1], box[2], box[3])
+    
+    private fun getBBoxFromBoundedByElement(lower: List<String>, upper: List<String>): BoundingBox {
+        return BoundingBox(lower[1].toFloat(), lower[0].toFloat(), upper[1].toFloat(), upper[0].toFloat())
     }
 
     private fun mapName(featureMember: JsonNode): String? {
