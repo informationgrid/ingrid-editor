@@ -5,7 +5,8 @@
   "menu": {
     "application": "Open Data",
     "application-suffix": "Bund",
-    "logo": "assets/profiles/bmi/assets/icons/logo.svg"
+    "logo": "assets/profiles/bmi/assets/icons/logo.svg",
+    "logo-text": "Logo InGrid Framework"
   },
   "dashboard": {
     "welcome": "Willkommen beim Open Data Editor Bund",
