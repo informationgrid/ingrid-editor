@@ -2,6 +2,7 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.*
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
+import de.ingrid.igeserver.profiles.ingrid.types.address.InGridPersonType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -46,6 +47,6 @@ class InGridOrganisationTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridOrganisatio
 }
 
 @Component
-class InGridPersonTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
+class InGridPersonTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
     override val profiles = arrayOf("ingrid-up-sh")
 }
