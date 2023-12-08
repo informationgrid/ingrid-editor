@@ -65,10 +65,6 @@ describe("GeometryContextDialogComponent", () => {
     inputs = await loader.getAllHarnesses(MatInputHarness);
   });
 
-  xit("should create", () => {
-    expect(spectator).toBeTruthy();
-  });
-
   it("should fill a new item of type 'nominal'", async () => {
     await enterCommonData();
     await expectNumInputsForType(select, "nominal", 4);
