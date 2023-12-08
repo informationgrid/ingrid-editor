@@ -522,7 +522,12 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                         val typeId =
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
-                        Reference(keyValue, resource.linkage.url, resource.name?.value, resource.description?.value)
+                        val applicationValue = resource.applicationProfile?.value
+                        val applicationId =
+                            if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationFinalValue = if (applicationId == null) KeyValue(null, applicationValue) else KeyValue(applicationId)
+                        
+                        Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
                     } ?: emptyList()
             } ?: emptyList()
     }
@@ -671,6 +676,7 @@ data class DigitalTransferOption(
 data class Reference(
     val type: KeyValue,
     val url: String?,
+    val urlDataType: KeyValue?,
     val title: String?,
     val explanation: String?
 )

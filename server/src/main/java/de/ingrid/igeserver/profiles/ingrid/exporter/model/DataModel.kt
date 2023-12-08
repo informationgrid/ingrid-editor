@@ -140,6 +140,7 @@ data class Reference(
     val explanation: String?,
     val url: String?,
     val uuidRef: String?,
+    val urlDataType: KeyValueModel?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -1420,24 +1420,35 @@ export abstract class IngridShared extends BaseDoctype {
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
       }),
-      this.addInputInline("url", "URL", {
-        wrappers: ["inline-help", "form-field"],
-        hasInlineContextHelp: true,
-        updateOn: "change",
-        validators: {
-          validation: ["url"],
-        },
-        expressions: {
-          "props.required": (field: FormlyFieldConfig) => {
-            return !field.form.value?.uuidRef;
-          },
-        },
-        validation: {
-          messages: {
-            required: "URL oder Datensatzverweis muss ausgefüllt sein",
-          },
-        },
-      }),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("url", "URL", {
+            wrappers: ["inline-help", "form-field"],
+            className: "flex-3",
+            hasInlineContextHelp: true,
+            updateOn: "change",
+            validators: {
+              validation: ["url"],
+            },
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) => {
+                return !field.form.value?.uuidRef;
+              },
+            },
+            validation: {
+              messages: {
+                required: "URL oder Datensatzverweis muss ausgefüllt sein",
+              },
+            },
+          }),
+          this.addAutoCompleteInline("urlDataType", "Datenformat", {
+            options: this.getCodelistForSelect(1320, "urlDataType"),
+            codelistId: 1320,
+          }),
+        ],
+        { fieldGroupClassName: "flex-row gap-12" },
+      ),
       this.addInputInline("uuidRef", "Datensatzverweis", {
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,

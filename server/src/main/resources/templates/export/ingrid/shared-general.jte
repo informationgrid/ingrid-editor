@@ -829,6 +829,11 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${reference.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                @if(reference.getUrlDataType() != null)
+                                <gmd:applicationProfile>
+                                    <gco:CharacterString>${page.getCodelists().getValue("1320", reference.getUrlDataType(), "de")}</gco:CharacterString>
+                                </gmd:applicationProfile>
+                                @endif
                                 <gmd:name>
                                     <gco:CharacterString>${reference.getTitle()}</gco:CharacterString>
                                 </gmd:name>
