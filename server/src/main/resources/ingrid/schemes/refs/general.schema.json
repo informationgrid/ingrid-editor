@@ -539,6 +539,19 @@
                 "type": "string",
                 "minLength": 1
               },
+              "urlDataType": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/KeyValue"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "uuidRef": {
+                "type": ["null", "string"]
+              },
               "explanation": {
                 "type": ["null", "string"]
               }
@@ -553,6 +566,19 @@
               },
               "title": {
                 "type": "string"
+              },
+              "url": {
+                "type": ["null", "string"]
+              },
+              "urlDataType": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/KeyValue"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "uuidRef": {
                 "type": "string",
