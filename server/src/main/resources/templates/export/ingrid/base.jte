@@ -203,7 +203,7 @@
     "type": @template.ingrid.partial.key-value(item = reference.get().getType()),
     "title": "${reference.get().getTitle()}",
     "url": "${reference.get().getUrl()}",
-    "urlDataType": @template.ingrid.partial.key-value(item = reference.get().getUrlDataType()),
+    @if(reference.get().getUrlDataType() != null) "urlDataType": @template.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
     "explanation": "${reference.get().getExplanation()}"
     }@if (!reference.isLast()),@endif
 @endfor

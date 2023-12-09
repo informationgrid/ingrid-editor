@@ -523,10 +523,12 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId =
-                            if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
-                        val applicationFinalValue = if (applicationId == null) KeyValue(null, applicationValue) else KeyValue(applicationId)
-                        
+                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationFinalValue = when {
+                            applicationValue == null -> null
+                            applicationId == null -> KeyValue(null, applicationValue)
+                            else -> KeyValue(applicationId)
+                        }
                         Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
                     } ?: emptyList()
             } ?: emptyList()
