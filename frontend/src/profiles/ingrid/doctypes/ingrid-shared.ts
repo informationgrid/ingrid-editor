@@ -1442,9 +1442,11 @@ export abstract class IngridShared extends BaseDoctype {
               },
             },
           }),
-          this.addAutoCompleteInline("urlDataType", "Datenformat", {
+          this.addAutoCompleteInline("urlDataType", "Dateiformat", {
             options: this.getCodelistForSelect(1320, "urlDataType"),
             codelistId: 1320,
+            wrappers: ["inline-help", "form-field"],
+            hasInlineContextHelp: true,
           }),
         ],
         { fieldGroupClassName: "flex-row gap-12" },
