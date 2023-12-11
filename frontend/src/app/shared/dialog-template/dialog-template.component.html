@@ -15,6 +15,7 @@
         <h1 mat-dialog-title>
             {{ label }}
         </h1>
+        <ng-content select="[header]"></ng-content>
     </div>
 
     <mat-dialog-content [style.background-color]="contentColor">

@@ -1,32 +1,32 @@
-<div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-        <mat-icon>close</mat-icon>
-    </button>
-    <h1 mat-dialog-title>ISO-Ansicht</h1>
-    <div class="flex-1"></div>
-    <mat-button-toggle-group
-        *ngIf="isoTextPublished"
-        class="pull-right"
-        name="compareView"
-        value="false"
-        aria-label="Ansicht"
-        (change)="this.compareView = !this.compareView"
-    >
-        <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
-        <mat-button-toggle value="true">Vergleichsansicht</mat-button-toggle>
-    </mat-button-toggle-group>
-</div>
+<ige-dialog-template
+    label="ISO-Ansicht"
+    submitLabel="Herunterladen"
+    (submit)="download()"
+>
+    <ng-container header>
+        <div class="flex-1"></div>
+        <mat-button-toggle-group
+            *ngIf="isoTextPublished"
+            name="compareView"
+            value="false"
+            aria-label="Ansicht"
+            (change)="this.compareView = !this.compareView"
+        >
+            <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
+            <mat-button-toggle value="true"
+                >Vergleichsansicht</mat-button-toggle
+            >
+        </mat-button-toggle-group>
+    </ng-container>
 
-<mat-dialog-content id="print-content" class="preview-dialog">
-    <pre [hidden]="compareView">{{ isoText }}</pre>
-    <div [hidden]="!compareView" id="diffView"></div>
-</mat-dialog-content>
+    <div content id="print-content" class="preview-dialog">
+        <pre [hidden]="compareView">{{ isoText }}</pre>
+        <div [hidden]="!compareView" id="diffView"></div>
+    </div>
 
-<mat-dialog-actions>
-    <button mat-button color="primary" mat-dialog-close>Schließen</button>
-    <div class="flex-1"></div>
-    <button mat-flat-button color="primary" (click)="copy()">Kopieren</button>
-    <button mat-flat-button color="primary" (click)="download()">
-        Herunterladen
-    </button>
-</mat-dialog-actions>
+    <ng-container actions>
+        <button mat-flat-button color="primary" (click)="copy()">
+            Kopieren
+        </button>
+    </ng-container>
+</ige-dialog-template>

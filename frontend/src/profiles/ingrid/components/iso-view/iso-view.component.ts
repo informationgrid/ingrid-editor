@@ -7,6 +7,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
 import { ExportService } from "../../../../app/services/export.service";
 import { copyToClipboardFn } from "../../../../app/services/utils";
+import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dialog-template.module";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -17,6 +18,7 @@ import { copyToClipboardFn } from "../../../../app/services/utils";
     MatButtonToggleModule,
     MatButtonModule,
     NgIf,
+    DialogTemplateModule,
   ],
   standalone: true,
 })

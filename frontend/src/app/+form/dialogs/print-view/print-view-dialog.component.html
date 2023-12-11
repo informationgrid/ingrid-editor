@@ -1,52 +1,45 @@
-<div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-        <mat-icon>close</mat-icon>
-    </button>
-    <h1 mat-dialog-title>Vorschau</h1>
-    <div class="flex-1"></div>
-    <mat-button-toggle-group
-        *ngIf="data.modelPublished"
-        class="pull-right"
-        name="compareView"
-        value="false"
-        aria-label="Ansicht"
-        (change)="this.compareView = !this.compareView"
-    >
-        <mat-button-toggle value="false">Druckansicht</mat-button-toggle>
-        <mat-button-toggle value="true">Vergleichsansicht</mat-button-toggle>
-    </mat-button-toggle-group>
-</div>
+<ige-dialog-template label="Vorschau" submitLabel="Drucken" (submit)="print()">
+    <ng-container header>
+        <div class="flex-1"></div>
+        <mat-button-toggle-group
+            *ngIf="data.modelPublished"
+            name="compareView"
+            value="false"
+            aria-label="Ansicht"
+            (change)="this.compareView = !this.compareView"
+        >
+            <mat-button-toggle value="false">Druckansicht</mat-button-toggle>
+            <mat-button-toggle value="true"
+                >Vergleichsansicht</mat-button-toggle
+            >
+        </mat-button-toggle-group>
+    </ng-container>
 
-<mat-dialog-content id="print-content" class="preview-dialog">
-    <formly-form
-        *ngIf="!compareView"
-        [form]="form"
-        [fields]="data.fields"
-        [model]="data.model"
-        [options]="options"
-    ></formly-form>
-    <as-split *ngIf="compareView">
-        <as-split-area class="working">
-            <formly-form
-                [form]="form"
-                [fields]="data.fields"
-                [model]="data.model"
-                [options]="options"
-            ></formly-form>
-        </as-split-area>
-        <as-split-area class="published">
-            <formly-form
-                [form]="formCompare"
-                [fields]="data.fieldsPublished"
-                [model]="data.modelPublished"
-                [options]="options"
-            ></formly-form>
-        </as-split-area>
-    </as-split>
-</mat-dialog-content>
-
-<mat-dialog-actions>
-    <button mat-button color="primary" mat-dialog-close>Schließen</button>
-    <div class="flex-1"></div>
-    <button mat-flat-button color="primary" (click)="print()">Drucken</button>
-</mat-dialog-actions>
+    <div content id="print-content" class="preview-dialog">
+        <formly-form
+            *ngIf="!compareView"
+            [form]="form"
+            [fields]="data.fields"
+            [model]="data.model"
+            [options]="options"
+        ></formly-form>
+        <as-split *ngIf="compareView">
+            <as-split-area class="working">
+                <formly-form
+                    [form]="form"
+                    [fields]="data.fields"
+                    [model]="data.model"
+                    [options]="options"
+                ></formly-form>
+            </as-split-area>
+            <as-split-area class="published">
+                <formly-form
+                    [form]="formCompare"
+                    [fields]="data.fieldsPublished"
+                    [model]="data.modelPublished"
+                    [options]="options"
+                ></formly-form>
+            </as-split-area>
+        </as-split>
+    </div>
+</ige-dialog-template>

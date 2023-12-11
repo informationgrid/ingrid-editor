@@ -15,6 +15,7 @@ import {
   MixedCdkDragDropModule,
   MixedDragDropConfig,
 } from "angular-mixed-cdk-drag-drop";
+import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-template.module";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
@@ -22,6 +23,7 @@ import {
     `
       mat-button-toggle-group {
         font-size: 14px;
+        border: none;
       }
     `,
   ],
@@ -35,6 +37,7 @@ import {
     MatButtonModule,
     NgIf,
     MixedCdkDragDropModule,
+    DialogTemplateModule,
   ],
   standalone: true,
 })
