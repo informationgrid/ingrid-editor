@@ -115,7 +115,7 @@ export class McloudDoctype extends BaseDoctype {
             },
             {
               key: "type",
-              type: "select",
+              type: "ige-select",
               label: "Typ",
               props: {
                 label: "Typ",

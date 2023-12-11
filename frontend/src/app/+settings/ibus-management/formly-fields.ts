@@ -45,7 +45,7 @@ export const iBusFields: FormlyFieldConfig[] = [
         },
         {
           key: "publicationTypes",
-          type: "select",
+          type: "ige-select",
           defaultValue: ["internet"],
           className: "white-bg publicationTypes",
           props: {

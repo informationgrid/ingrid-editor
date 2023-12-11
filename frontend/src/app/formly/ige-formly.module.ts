@@ -167,7 +167,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: UploadTypeComponent,
         },
         {
-          name: "select",
+          name: "ige-select",
           component: SelectTypeComponent,
         },
         {
@@ -216,7 +216,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: PrintTypeComponent,
         },
         {
-          name: "selectPrint",
+          name: "ige-selectPrint",
           component: PrintTypeComponent,
         },
         {

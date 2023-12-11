@@ -81,7 +81,7 @@ export class TestDoctype extends BaseDoctype {
           },
           {
             key: "select",
-            type: "select",
+            type: "ige-select",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox",
@@ -93,7 +93,7 @@ export class TestDoctype extends BaseDoctype {
           },
           {
             key: "selectWithEmpty",
-            type: "select",
+            type: "ige-select",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox mit leerer Option",

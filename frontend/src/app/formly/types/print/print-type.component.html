@@ -37,7 +37,7 @@
             </tr>
         </table>
     </ng-container>-->
-    <ng-container *ngSwitchCase="'selectPrint'">{{
+    <ng-container *ngSwitchCase="'ige-selectPrint'">{{
         props.codelistId
             ? (formControl.value | codelist: props.codelistId | async)
             : getFromOption(formControl.value)

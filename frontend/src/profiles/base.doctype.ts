@@ -263,7 +263,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "input",
       "textarea",
       "address-card",
-      "select",
+      "ige-select",
       "autocomplete",
       "datepicker",
       "repeatList",

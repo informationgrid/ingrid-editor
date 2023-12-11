@@ -29,7 +29,7 @@ export const getNewUserFormFields = (
         },
         {
           key: "role",
-          type: "select",
+          type: "ige-select",
           wrappers: ["panel", "form-field"],
           props: {
             externalLabel: "Rolle",

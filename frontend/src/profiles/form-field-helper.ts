@@ -490,7 +490,7 @@ export class FormFieldHelper {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      type: "select",
+      type: "ige-select",
       className: options?.className,
       defaultValue: options?.defaultValue ?? null,
       wrappers:

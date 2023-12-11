@@ -25,7 +25,7 @@ export abstract class AddressShared extends BaseDoctype {
       fields: [
         this.addSelect("type", "Art", {
           fieldLabel: "Art",
-          wrappers: null,
+          wrappers: ["form-field"],
           className: "flex-1",
           required: true,
           showSearch: true,
@@ -163,7 +163,7 @@ export abstract class AddressShared extends BaseDoctype {
     const country = this.addSelect("country", null, {
       fieldLabel: "Land",
       showSearch: true,
-      wrappers: null,
+      wrappers: ["form-field"],
       className: options.hideAdministrativeArea ? null : "flex-1",
       options: this.getCodelistForSelect(6200, "country"),
       codelistId: 6200,

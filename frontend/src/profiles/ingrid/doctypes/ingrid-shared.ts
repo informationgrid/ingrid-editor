@@ -910,7 +910,7 @@ export abstract class IngridShared extends BaseDoctype {
             this.addSelect("referenceDateType", null, {
               showSearch: true,
               fieldLabel: "Typ",
-              wrappers: null,
+              wrappers: ["form-field"],
               className: "flex-3",
               required: true,
               options: this.getCodelistForSelect(502, "type"),
@@ -1102,7 +1102,7 @@ export abstract class IngridShared extends BaseDoctype {
               columns: [
                 {
                   key: "specification",
-                  type: "select",
+                  type: "ige-select",
                   label: "Spezifikation",
                   props: {
                     required: true,
@@ -1119,7 +1119,7 @@ export abstract class IngridShared extends BaseDoctype {
                 },
                 {
                   key: "pass",
-                  type: "select",
+                  type: "ige-select",
                   label: "Grad",
                   width: "100px",
                   props: {

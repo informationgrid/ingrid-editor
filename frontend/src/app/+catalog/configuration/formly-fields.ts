@@ -25,7 +25,7 @@ export const fields = (codelistService: CodelistService) =>
     },
     {
       key: "partner",
-      type: "select",
+      type: "ige-select",
       wrappers: ["panel", "form-field"],
       className: "width-100",
       props: {
@@ -39,7 +39,7 @@ export const fields = (codelistService: CodelistService) =>
     },
     {
       key: "provider",
-      type: "select",
+      type: "ige-select",
       wrappers: ["panel", "form-field"],
       className: "width-100",
       props: {

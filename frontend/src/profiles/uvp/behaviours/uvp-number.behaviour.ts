@@ -14,7 +14,7 @@ export class UvpNumberBehaviour extends Plugin {
 
     this.fields.push({
       key: "uvpCodelist",
-      type: "select",
+      type: "ige-select",
       defaultValue: "9000",
       props: {
         showSearch: true,
