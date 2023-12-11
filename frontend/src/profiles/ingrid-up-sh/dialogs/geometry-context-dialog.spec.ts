@@ -45,7 +45,7 @@ describe("GeometryContextDialogComponent", () => {
       FormlyModule.forRoot({
         types: [
           { name: "repeat", component: RepeatComponent },
-          { name: "select", component: SelectTypeComponent },
+          { name: "ige-select", component: SelectTypeComponent },
         ],
         wrappers: [{ name: "panel", component: OneColumnWrapperComponent }],
       }),
