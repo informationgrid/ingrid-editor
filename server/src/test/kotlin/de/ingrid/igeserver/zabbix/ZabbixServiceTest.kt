@@ -16,7 +16,7 @@ import java.util.concurrent.Flow
 
 class ZabbixServiceTest : ShouldSpec() {
 
-    val props = ZabbixProperties("", "", "https://abc.de", "","","", emptyList(), "", 0)
+    val props = ZabbixProperties("", "", "https://abc.de", "","https://def.de","", emptyList(), "", 0)
     val service = ZabbixService(props)
     val x = mockkStatic(HttpClient::newBuilder)
     val httpClientMock = mockk<HttpClient>(relaxed = true)
