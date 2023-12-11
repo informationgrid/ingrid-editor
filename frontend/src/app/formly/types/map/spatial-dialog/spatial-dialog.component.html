@@ -19,6 +19,7 @@
                     <mat-select
                         (selectionChange)="updateView($event.value)"
                         [value]="result.type"
+                        required
                         aria-label="Typ des Raumbezuges"
                     >
                         <mat-option
