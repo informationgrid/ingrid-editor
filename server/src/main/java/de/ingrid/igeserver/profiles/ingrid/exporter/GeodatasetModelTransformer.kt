@@ -3,6 +3,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.services.CatalogService
@@ -154,6 +155,12 @@ open class GeodatasetModelTransformer(
         }
     }
 
+    fun mapConformanceResultTitle(result: ConformanceResult): String? {
+        val codelistId = if (result.isInspire == true) "6005" else "6006"
+        return codelists.getValue(codelistId, result.specification, "iso")
+            ?: codelists.getValue(codelistId, result.specification, "de")
+    }
+
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
     private val inapplicableValueUnit = "<gmd:valueUnit gco:nilReason=\"inapplicable\"/>"
     private fun percentageValueUnit(quantityType: String) = """
@@ -251,7 +258,6 @@ open class GeodatasetModelTransformer(
 
 
     val lineageStatement = model.data.lineage?.statement
-    // TODO
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
