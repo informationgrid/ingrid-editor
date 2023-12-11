@@ -517,8 +517,8 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
-    val externalReferences = references.filter { it.uuidRef == null }
-    val referencesWithUuidRefs = references.filter { it.uuidRef != null }
+    val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
+    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not()  }
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
