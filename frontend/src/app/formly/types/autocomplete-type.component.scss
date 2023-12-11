@@ -1,5 +1,9 @@
 @import "src/variables";
 
+:host {
+  display: flex;
+}
+
 .matching {
   background-color: $ige-mark-color !important;
 
@@ -7,4 +11,10 @@
   &.mat-active {
     background-color: darken($ige-mark-color, 5%) !important;
   }
+}
+
+.field-close {
+  padding: 0;
+  height: 24px;
+  width: 24px;
 }
