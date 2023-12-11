@@ -66,6 +66,7 @@ data class DataModel(
     val lineage: Lineage?,
     val service: Service?,
     val spatialScope: KeyValueModel?,
+    val subType: KeyValueModel?,
 )
 
 

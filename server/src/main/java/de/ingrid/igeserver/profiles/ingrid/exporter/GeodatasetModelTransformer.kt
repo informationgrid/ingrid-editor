@@ -23,8 +23,10 @@ open class GeodatasetModelTransformer(
     model, catalogIdentifier, codelistTransformer, config, catalogService, cache, doc, documentService
 ) {
 
-    override val hierarchyLevel = "dataset"
-    override val hierarchyLevelName: String? = null
+    private val isSeries = model.data.subType?.key == "6"
+
+    override val hierarchyLevel = if (isSeries) "series" else "dataset"
+    override val hierarchyLevelName: String? = if (isSeries) "series" else null
 
 
     init {
@@ -249,6 +251,7 @@ open class GeodatasetModelTransformer(
 
 
     val lineageStatement = model.data.lineage?.statement
+    // TODO
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
