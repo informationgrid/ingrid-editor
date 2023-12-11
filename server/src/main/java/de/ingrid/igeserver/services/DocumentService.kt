@@ -361,7 +361,7 @@ class DocumentService(
         postPersistencePipe.runFilters(postCreatePayload as PostPersistencePayload, filterContext)
 
         // also run update/publish pipes!
-        val postWrapper = runPostUpdatePipes(docType, newDocument, newWrapper, filterContext, publish)
+        val postWrapper = runPostUpdatePipes(docType, catalogId, newDocument, newWrapper, filterContext, publish)
 
         return DocumentData(postWrapper, newDocument)
     }
@@ -456,7 +456,7 @@ class DocumentService(
                     wrapper.pending_date = null
                     val updatedWrapper = docWrapperRepo.save(wrapper)
                     val docType = getDocumentType(updatedWrapper.type, filterContext.profile)
-                    runPostUpdatePipes(docType, updatedPublishedDoc, wrapper, filterContext, true)
+                    runPostUpdatePipes(docType, catalogId, updatedPublishedDoc, wrapper, filterContext, true)
                 } catch (e: Exception) {
                     log.error("Error during publishing pending document: ${wrapper.uuid}", e)
                 }
@@ -504,7 +504,7 @@ class DocumentService(
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
             val postWrapper =
-                runPostUpdatePipes(docType, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
+                runPostUpdatePipes(docType, catalogId, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
 
             // since we're within a transaction the expandInternalReferences-function would modify the db-document
             docRepo.flush()
@@ -626,7 +626,7 @@ class DocumentService(
             entityManager.detach(updatedDoc)
 
             val postWrapper =
-                runPostUpdatePipes(docType, updatedDoc, updatedWrapper, filterContext, publishDate == null)
+                runPostUpdatePipes(docType, catalogId, updatedDoc, updatedWrapper, filterContext, publishDate == null)
 
             return DocumentData(
                 postWrapper,
@@ -663,6 +663,7 @@ class DocumentService(
 
     private fun runPostUpdatePipes(
         docType: EntityType,
+        catalogId: String,
         updatedDocument: Document,
         updatedWrapper: DocumentWrapper,
         filterContext: Context,
@@ -672,13 +673,14 @@ class DocumentService(
             // make sure database has current state
             docRepo.flush()
 
-            val postUpdatePayload = PostUpdatePayload(docType, updatedDocument, updatedWrapper)
+            val postUpdatePayload = PostUpdatePayload(docType, catalogId, updatedDocument, updatedWrapper)
             postUpdatePipe.runFilters(postUpdatePayload, filterContext)
             return if (publish) {
                 // run post-publish pipe(s)
                 val postPublishPayload =
                     PostPublishPayload(
                         docType,
+                        catalogId,
                         postUpdatePayload.document,
                         postUpdatePayload.wrapper
                     )
@@ -741,7 +743,7 @@ class DocumentService(
 
         // run post-delete pipe(s)
         val postDeletePayload =
-            PostDeletePayload(docType, preDeletePayload.document, preDeletePayload.wrapper)
+            PostDeletePayload(docType, catalogId, preDeletePayload.document, preDeletePayload.wrapper)
         postDeletePipe.runFilters(postDeletePayload, filterContext)
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
@@ -781,7 +783,7 @@ class DocumentService(
         entityManager.detach(latestPublishedDoc)
 
         // run post-revert pipe(s)
-        val postRevertPayload = PostRevertPayload(docType, latestPublishedDoc, docData.wrapper)
+        val postRevertPayload = PostRevertPayload(docType, catalogId, latestPublishedDoc, docData.wrapper)
         postRevertPipe.runFilters(postRevertPayload, filterContext)
 
         return DocumentData(docData.wrapper, postRevertPayload.document)
@@ -838,7 +840,7 @@ class DocumentService(
         entityManager.detach(updatedDoc)
 
         // run post-unpublish pipe(s)
-        val postUnpublishPayload = PostUnpublishPayload(docType, updatedDoc, currentDoc.wrapper)
+        val postUnpublishPayload = PostUnpublishPayload(docType, catalogId, updatedDoc, currentDoc.wrapper)
         postUnpublishPipe.runFilters(postUnpublishPayload, filterContext)
 
         return DocumentData(currentDoc.wrapper, postUnpublishPayload.document)

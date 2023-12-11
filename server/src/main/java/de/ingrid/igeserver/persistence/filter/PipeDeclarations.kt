@@ -101,8 +101,8 @@ open class PreUpdatePayload(type: EntityType, catalogIdentifier: String, documen
 /**
  * Payload holding document data after updating the document
  */
-open class PostUpdatePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.UPDATE, type, "", document, wrapper)
+open class PostUpdatePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.UPDATE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before publishing the document
@@ -118,8 +118,8 @@ open class PrePublishPayload(
 /**
  * Payload holding document data after publishing the document
  */
-open class PostPublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.PUBLISH, type, "", document, wrapper)
+open class PostPublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before unpublishing the document
@@ -135,8 +135,8 @@ open class PreUnpublishPayload(
 /**
  * Payload holding document data after unpublishing the document
  */
-open class PostUnpublishPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.UNPUBLISH, type, "", document, wrapper)
+open class PostUnpublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before revoking the working copy
@@ -147,8 +147,8 @@ open class PreRevertPayload(type: EntityType, catalogIdentifier: String, documen
 /**
  * Payload holding document data after revoking the working copy
  */
-open class PostRevertPayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.REVERT, type, "", document, wrapper)
+open class PostRevertPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.REVERT, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before deleting the document
@@ -159,8 +159,8 @@ open class PreDeletePayload(type: EntityType, catalogIdentifier: String, documen
 /**
  * Payload holding document data after deleting the document
  */
-open class PostDeletePayload(type: EntityType, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.DELETE, type, "", document, wrapper)
+open class PostDeletePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
+    PostPersistencePayload(Action.DELETE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding index data after indexing the document
