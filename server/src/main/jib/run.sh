@@ -12,7 +12,7 @@ if [[ -n "${BROKER_URL}" ]]; then
 fi
 
 if [[ -n "${SHOW_TEST_BADGE}" ]]; then
-  sed -i -r "s@showTestBadge\":.*@showTestBadge\": \"$SHOW_TEST_BADGE\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@showTestBadge\":.*@showTestBadge\": $SHOW_TEST_BADGE,@" /app/resources/static/assets/config.json
 fi
 
 if [[ -n "${MAP_TILE_URL}" ]]; then
@@ -24,11 +24,11 @@ if [[ -n "${NOMINATIM_URL}" ]]; then
 fi
 
 if [[ -n "${SHOW_ACCESSIBILITY_LINK}" ]]; then
-  sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": \"$SHOW_ACCESSIBILITY_LINK\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": $SHOW_ACCESSIBILITY_LINK,@" /app/resources/static/assets/config.json
 fi
 
 if [[ -n "${ALLOW_OVERWRITE_ON_VERSION_CONFLICT}" ]]; then
-  sed -i -r "s@allowOverwriteOnVersionConflict\":.*@allowOverwriteOnVersionConflict\": \"$ALLOW_OVERWRITE_ON_VERSION_CONFLICT\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@allowOverwriteOnVersionConflict\":.*@allowOverwriteOnVersionConflict\": $ALLOW_OVERWRITE_ON_VERSION_CONFLICT,@" /app/resources/static/assets/config.json
 fi
 
 if [[ -n "${ENABLE_AI}" ]]; then
