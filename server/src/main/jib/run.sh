@@ -27,6 +27,10 @@ if [[ -n "${SHOW_ACCESSIBILITY_LINK}" ]]; then
   sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": \"$SHOW_ACCESSIBILITY_LINK\",@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${ALLOW_OVERWRITE_ON_VERSION_CONFLICT}" ]]; then
+  sed -i -r "s@allowOverwriteOnVersionConflict\":.*@allowOverwriteOnVersionConflict\": \"$ALLOW_OVERWRITE_ON_VERSION_CONFLICT\",@" /app/resources/static/assets/config.json
+fi
+
 if [[ -n "${ENABLE_AI}" ]]; then
   sed -i -r "s@openAISearch\":.*@openAISearch\": $ENABLE_AI@" /app/resources/static/assets/config.json
 fi

@@ -5,6 +5,7 @@
   "nominatimUrl": "https://nominatim.openstreetmap.org/search?q={query}&format=json&countrycodes={countries}",
   "nominatimDetailUrl": "https://nominatim.openstreetmap.org/details?osmtype={type}&osmid={id}&format=json",
   "showAccessibilityLink": true,
+  "allowOverwriteOnVersionConflict": false,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,
