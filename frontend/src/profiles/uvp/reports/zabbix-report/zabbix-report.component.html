@@ -19,7 +19,7 @@
             >
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                        Datensatz
+                        Vorhaben
                     </th>
                     <td mat-cell *matCellDef="let element">
                         {{ element.name }}
@@ -88,6 +88,13 @@
                                 target="_blank"
                             >
                                 Zabbix Meldung öffnen
+                            </a>
+                            <a
+                                mat-menu-item
+                                href="{{ element.docUrl }}"
+                                target="_blank"
+                            >
+                                Dokument URL öffnen
                             </a>
                         </mat-menu>
                     </td>
