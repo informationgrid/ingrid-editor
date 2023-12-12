@@ -650,16 +650,19 @@ export abstract class IngridShared extends BaseDoctype {
     const res = await Promise.all(
       value
         .split(",")
-        .map((item) => item.trim())
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0)
         .map(
           async (item) => await this.assignKeyword(formState, item, options),
         ),
     );
 
-    field.options.formState.updateModel();
+    if (res.length > 0) {
+      field.options.formState.updateModel();
+      this.informUserAboutThesaurusAnalysis(res);
+    }
     field.formControl.enable();
     field.formControl.setValue("");
-    this.informUserAboutThesaurusAnalysis(res);
   }
 
   private async assignKeyword(formState, item, options: KeywordSectionOptions) {
