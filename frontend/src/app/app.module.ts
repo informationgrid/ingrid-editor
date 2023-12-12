@@ -39,11 +39,7 @@ import { FormsModule } from "@angular/forms";
 import de from "@angular/common/locales/de";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { AngularSplitModule } from "angular-split";
-import {
-  FORMLY_CONFIG,
-  FormlyFieldConfig,
-  FormlyModule,
-} from "@ngx-formly/core";
+import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
@@ -109,6 +105,7 @@ export function ConfigLoader(
   router: Router,
   http: HttpClient,
   dialog: MatDialog,
+  translocoService: TranslocoService,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -184,6 +181,7 @@ export function ConfigLoader(
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => console.log("FINISHED APP INIT"))
       .then(() => redirectToCatalogSpecificRoute(router, dialog))
+      .then(() => firstValueFrom(translocoService.load("de")))
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
@@ -197,14 +195,6 @@ export function ConfigLoader(
         throw new IgeError(err);
       });
   };
-}
-
-export function animationExtension(field: FormlyFieldConfig) {
-  if (field.wrappers && field.wrappers.includes("animation")) {
-    return;
-  }
-
-  field.wrappers = ["animation", ...(field.wrappers || [])];
 }
 
 @NgModule({
@@ -301,6 +291,7 @@ export function animationExtension(field: FormlyFieldConfig) {
         Router,
         HttpClient,
         MatDialog,
+        TranslocoService,
       ],
       multi: true,
     },
