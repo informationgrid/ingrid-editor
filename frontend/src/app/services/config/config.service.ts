@@ -24,7 +24,7 @@ export class Configuration {
     public nominatimUrl: string,
     public nominatimDetailUrl: string,
     public showAccessibilityLink: boolean,
-    public allowOverwriteOnVersionConflict: boolean,
+    public allowOverwriteOnVersionConflict?: boolean,
   ) {}
 }
 
