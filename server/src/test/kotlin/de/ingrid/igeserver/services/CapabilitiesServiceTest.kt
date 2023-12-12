@@ -368,7 +368,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     )
                 )
                 timeSpan shouldBe null
-                conformities shouldBe listOf(ConformityBean(3, "Please enter a title"))
+                conformities shouldBe listOf(ConformityBean(3, "Please enter a title", "2006-04-22"))
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         "http://my-download-resource-locator",
@@ -597,7 +597,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
-                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten"
+                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten",
+                        "2009-10-19"
                     )
                 )
                 resourceLocators shouldBe listOf(
@@ -993,11 +994,13 @@ class CapabilitiesServiceTest : ShouldSpec({
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 1,
-                        specification = "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services"
+                        specification = "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services",
+                        "2010-12-08"
                     ),
                     ConformityBean(
                         level = 1,
-                        specification = "REGOLAMENTO (UE) N. 1089/2010 DELLA COMMISSIONE del 23 novembre 2010 recante attuazione della direttiva 2007/2/CE del Parlamento europeo e del Consiglio per quanto riguarda l'interoperabilità dei set di dati territoriali e dei servizi di dati territoriali"
+                        specification = "REGOLAMENTO (UE) N. 1089/2010 DELLA COMMISSIONE del 23 novembre 2010 recante attuazione della direttiva 2007/2/CE del Parlamento europeo e del Consiglio per quanto riguarda l'interoperabilità dei set di dati territoriali e dei servizi di dati territoriali",
+                        "2010-12-08"
                     )
                 )
             }
