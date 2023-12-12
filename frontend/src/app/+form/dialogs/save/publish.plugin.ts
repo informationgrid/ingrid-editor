@@ -166,13 +166,17 @@ export class PublishPlugin extends SaveBase {
     } else {
       if (formIsInvalid || hasOtherErrors) {
         if (hasOtherErrors) console.warn("Other errors:", validation.errors);
-        this.modalService.showIgeError(
-          new IgeError(
-            "Es müssen alle Felder korrekt ausgefüllt werden. " +
-              "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
-              "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler.",
-          ),
+        console.warn(this.formStateService.getForm());
+        const validationErrors = this.extractFormValidationErrors(
+          this.formStateService.getForm().controls,
         );
+        const error = new IgeError(
+          "Es müssen alle Felder korrekt ausgefüllt werden. " +
+            "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
+            "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler.",
+        );
+        if (validationErrors.length > 0) error.items = validationErrors;
+        this.modalService.showIgeError(error);
         return false;
       }
       return true;
@@ -376,5 +380,29 @@ export class PublishPlugin extends SaveBase {
         this.documentService.publishState$.next(false);
       });
     console.log("isValid: ", isValid);
+  }
+
+  private extractFormValidationErrors(controls): string[] {
+    const errors: string[] = [];
+    Object.keys(controls).forEach((controlKey) => {
+      let control = controls[controlKey];
+      if (
+        control.invalid &&
+        control.errors != null &&
+        Object.keys(control.errors).length > 0
+      ) {
+        const controlLabel = control._fields[0].props.externalLabel;
+        const errorKey = Object.keys(control.errors)[0];
+        const error = control.errors[errorKey];
+        if (error.message) errors.push(controlLabel + ": " + error.message);
+        else
+          errors.push(
+            controlLabel +
+              ": " +
+              this.transloco.translate("form.validationMessages." + errorKey),
+          );
+      }
+    });
+    return errors;
   }
 }
