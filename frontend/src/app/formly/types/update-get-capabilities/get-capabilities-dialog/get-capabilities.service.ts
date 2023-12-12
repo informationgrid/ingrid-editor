@@ -148,7 +148,7 @@ export class GetCapabilitiesService {
   }
 
   private mapSpatialReferenceSystems(value: any) {
-    return value.map((item) => {
+    return value.map((item: any) => {
       return item.key !== null ? { key: item.key } : item;
     });
   }
@@ -179,7 +179,7 @@ export class GetCapabilitiesService {
 
   private mapConformities(value: any[]) {
     return value.map((item) => {
-      const entry = this.codelistQuery.getCodelistEntryByValue(
+      const entry: CodelistEntry = this.codelistQuery.getCodelistEntryByValue(
         "6005",
         item.specification,
         "iso",
@@ -190,8 +190,8 @@ export class GetCapabilitiesService {
       return {
         pass: { key: `${item.level}` },
         specification: spec,
-        publicationDate: this.getPublicationDate(entry),
-        isInspire: entry !== null,
+        publicationDate: this.getPublicationDate(entry, item),
+        isInspire: entry !== null && entry !== undefined,
       };
     });
   }
@@ -355,8 +355,11 @@ export class GetCapabilitiesService {
     return template;
   }
 
-  private getPublicationDate(entry: CodelistEntry) {
-    if (!entry) return null;
+  private getPublicationDate(entry: CodelistEntry, item: any) {
+    if (!entry) {
+      if (item.publishDate) return item.publishDate;
+      return null;
+    }
 
     const dateParts = entry.data.split("-");
     return new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);

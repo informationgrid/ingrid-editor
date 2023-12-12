@@ -34,7 +34,7 @@ data class OperationBean(
 )
 
 data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
-data class ConformityBean(var level: Int? = null, var specification: String? = null)
+data class ConformityBean(var level: Int? = null, var specification: String? = null, var publishDate: String? = null)
 data class AddressBean(
     var uuid: String? = null,
     var type: String? = null,
@@ -172,6 +172,13 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 bean.specification = xPathUtils.getString(
                     conformityNodes.item(index),
                     "inspire_common:Specification/inspire_common:Title"
+                )
+                    ?.replace("\t", " ")
+                    ?.replace("\n", " ")
+                    ?.replace("  ", " ")
+                bean.publishDate = xPathUtils.getString(
+                    conformityNodes.item(index),
+                    "inspire_common:Specification/inspire_common:DateOfPublication"
                 )
                 beans.add(bean)
             }
