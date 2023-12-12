@@ -1,6 +1,6 @@
 <span *ngIf="fullPath" [class.emphasize]="emphasize">
     <span class="root">
-        <span
+        <button
             [class.selectable]="selectable && !disableRoot"
             [class.disabled]="disableRoot"
             [matTooltip]="
@@ -9,8 +9,9 @@
                     : ''
             "
             (click)="!disableRoot && onSelect(null)"
-            >{{ rootName }}</span
         >
+            {{ rootName }}
+        </button>
         <ng-container *ngIf="fullPath.length > 0">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>
@@ -20,7 +21,7 @@
     <span
         *ngFor="let item of collapsed ? shortPath : fullPath; let last = last"
     >
-        <span
+        <button
             [matTooltip]="item | breadCrumbTooltip"
             [class.selectable]="
                 selectable &&
@@ -28,8 +29,9 @@
             "
             [class.disabled]="item.disabled"
             (click)="handleClick(item)"
-            >{{ item.title }}</span
         >
+            {{ item.title }}
+        </button>
         <ng-container *ngIf="!last">
             <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
             <span *ngIf="simplePath">/</span>

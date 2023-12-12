@@ -1,10 +1,16 @@
 @import "src/variables";
 
+button {
+  padding: 3px;
+  border: unset;
+  background: unset;
+  color: $ige-secondary;
+}
+
 :host {
   display: block;
   padding: 15px 0 12px;
   font-size: 14px;
-  color: $ige-secondary;
   line-height: 17px;
 
   &.no-padding {
