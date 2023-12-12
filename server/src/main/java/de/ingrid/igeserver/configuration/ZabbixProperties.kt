@@ -8,8 +8,6 @@ data class ZabbixProperties(
     val uploadURL: String,
     val apiURL: String,
     val apiKey: String,
-    val apiURLMonitoring: String?,
-    val apiKeyMonitoring: String?,
     val catalogs: List<String>?,
     val checkDelay: String,
     val checkCount: Int

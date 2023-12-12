@@ -23,8 +23,6 @@ class ZabbixService(
     private var log = logger()
     private val apiKey = zabbixProperties.apiKey
     private val apiURL = zabbixProperties.apiURL
-    private val apiKeyMonitoring = zabbixProperties.apiKeyMonitoring ?: apiKey
-    private val apiURLMonitoring = zabbixProperties.apiURLMonitoring ?: apiURL
     private val checkDelay = zabbixProperties.checkDelay
     private val checkCount = zabbixProperties.checkCount
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
@@ -88,11 +86,10 @@ class ZabbixService(
         return getFromResultAsList(response, "groupids")[0].asText()
     }
 
-    private fun getHostGroupId(catalogName: String, forMonitoring: Boolean=false): String? {
-        val apiKey = if (forMonitoring) apiKeyMonitoring else apiKey
+    private fun getHostGroupId(catalogName: String): String? {
         val jsonHostGroupGet =
             """{"jsonrpc":"$JSONRPC","method":"hostgroup.get","params":{"output":"extend","filter":{"name":["$catalogName"]}},"auth":"$apiKey","id":1}"""
-        val responseHostGroupGet = requestApi(jsonHostGroupGet, forMonitoring)
+        val responseHostGroupGet = requestApi(jsonHostGroupGet)
         return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText()
     }
 
@@ -127,7 +124,7 @@ class ZabbixService(
     }
 
     fun getProblems(catalogName: String): List<ZabbixModel.Problem> {
-        val groupid = getHostGroupId(catalogName, true) ?: return emptyList()
+        val groupid = getHostGroupId(catalogName) ?: return emptyList()
         val jsonProblemsGet =
             """
                 {
@@ -140,11 +137,11 @@ class ZabbixService(
                         "sortorder": "DESC",
                         "groupids": "$groupid"
                     },
-                    "auth": "$apiKeyMonitoring",
+                    "auth": "$apiKey",
                     "id": 1
                 }
             """.trimIndent()
-        val response = requestApi(jsonProblemsGet, true)
+        val response = requestApi(jsonProblemsGet)
         if (resultArrayIsEmpty(response)) {
             log.debug("No problems found for catalog $catalogName")
             return emptyList()
@@ -263,11 +260,10 @@ class ZabbixService(
         }
     }
 
-    private fun requestApi(requestBody: String, forMonitoring: Boolean = false): JsonNode {
-        val apiUrl = if (forMonitoring) apiURLMonitoring else apiURL
+    private fun requestApi(requestBody: String): JsonNode {
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder()
-            .uri(URI.create(apiUrl))
+            .uri(URI.create(this.apiURL))
             .POST(HttpRequest.BodyPublishers.ofString(requestBody))
             .header("Content-Type", "application/json-rpc")
             .build()
