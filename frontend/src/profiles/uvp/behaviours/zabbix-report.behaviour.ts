@@ -11,6 +11,8 @@ export class ZabbixReportBehaviour extends Plugin {
   defaultActive = false;
   group = "UVP";
 
+  path = "uvp-monitoring";
+
   constructor(private reportsService: ReportsService) {
     super();
   }
@@ -27,7 +29,7 @@ export class ZabbixReportBehaviour extends Plugin {
 
   private addReportTab() {
     this.reportsService.addRoute({
-      path: "zabbix-report",
+      path: this.path,
       loadChildren: () =>
         import("../reports/zabbix-report.module").then(
           (m) => m.ZabbixReportModule,
@@ -40,6 +42,6 @@ export class ZabbixReportBehaviour extends Plugin {
   }
 
   private removeReportTab() {
-    this.reportsService.removeRoute("zabbix-report");
+    this.reportsService.removeRoute(this.path);
   }
 }
