@@ -103,6 +103,7 @@
             *matRowDef="let row; columns: displayedColumns"
             [class.readonly]="!row.hasWritePermission || isLoading"
             (click)="isLoading ? undefined : openDataset(row)"
+            (keyup.enter)="isLoading ? undefined : openDataset(row)"
             [attr.aria-label]="
                 'Typ: ' +
                 t(row._type) +

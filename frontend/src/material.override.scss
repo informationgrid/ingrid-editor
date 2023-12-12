@@ -197,3 +197,15 @@ mat-icon.dark-blue {
     background-color: $ige-info-background;
   }
 }
+
+// Accessibility requirement.
+input,
+textarea {
+  &[disabled] {
+    color: $ige-hint-color !important;
+  }
+}
+
+.mat-mdc-standard-chip.mdc-evolution-chip--disabled {
+  opacity: 0.7 !important;
+}

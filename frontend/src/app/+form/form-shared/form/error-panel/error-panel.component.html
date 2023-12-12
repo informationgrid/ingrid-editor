@@ -1,13 +1,26 @@
 <div class="wrapper" [@slideDown]>
     <div>Es gibt {{ numErrors }} Fehler im Formular</div>
-    <button mat-icon-button (click)="jumpToPreviousError()">
+    <button
+        mat-icon-button
+        (click)="jumpToPreviousError()"
+        aria-label="Vorheriger Fehler"
+    >
         <mat-icon>navigate_before</mat-icon>
     </button>
     Springe zu Fehler
-    <button mat-icon-button (click)="jumpToNextError()">
+    <button
+        mat-icon-button
+        (click)="jumpToNextError()"
+        aria-label="Nächster Fehler"
+    >
         <mat-icon>navigate_next</mat-icon>
     </button>
-    <button mat-icon-button class="btn-close" (click)="closeErrorView()">
+    <button
+        mat-icon-button
+        class="btn-close"
+        (click)="closeErrorView()"
+        aria-label="Meldung schließen"
+    >
         <mat-icon>close</mat-icon>
     </button>
 </div>

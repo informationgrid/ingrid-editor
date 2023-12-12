@@ -87,7 +87,7 @@ form-toolbar :not(.save-buttons) > .mdc-button {
   }
 }
 
-.mdc-checkbox input.cdk-keyboard-focused + .mdc-checkbox__ripple {
+.mdc-checkbox input[type="checkbox"]:focus-visible + .mdc-checkbox__ripple {
   border: 2px solid $ige-primary;
   --mdc-checkbox-selected-focus-state-layer-opacity: 1;
   --mdc-checkbox-unselected-focus-state-layer-opacity: 1;

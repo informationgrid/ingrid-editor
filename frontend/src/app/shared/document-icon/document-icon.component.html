@@ -7,6 +7,8 @@
         *ngIf="doc"
         [ngClass]="['document-icon', documentState]"
         [svgIcon]="iconClass"
+        [attr.aria-label]="tooltip"
+        aria-hidden="false"
     ></mat-icon>
     <div *ngIf="hasTags" [ngClass]="['document-icon-tag', documentState]"></div>
 </div>

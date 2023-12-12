@@ -4,7 +4,6 @@
         <div
             class="state"
             data-cy="header-state"
-            [class.working]="model._state === 'W'"
             *transloco="let t; read: 'docState'"
         >
             {{ t(model._state) }}
