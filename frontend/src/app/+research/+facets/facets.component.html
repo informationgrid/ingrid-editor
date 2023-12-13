@@ -190,7 +190,10 @@
         </div>
     </div>
 </div>
-<div class="reset-form-button" *ngIf="filterGroup?.length > 0">
+<div
+    class="reset-form-button"
+    *ngIf="filterGroup?.length > 0 && resetQuery.observed"
+>
     <button mat-button color="primary" (click)="resetQuery.next()">
         Suchparameter zurücksetzen
     </button>
