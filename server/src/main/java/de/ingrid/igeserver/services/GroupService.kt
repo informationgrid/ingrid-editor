@@ -224,7 +224,7 @@ class GroupService(
 
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
             val users = userRepo.findByGroups_Id(id)
                 .mapNotNull {
                     try {

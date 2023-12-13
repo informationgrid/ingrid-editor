@@ -137,7 +137,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
             if (!developmentMode) {
-                keycloakService.getClient(principal).use { client ->
+                keycloakService.getClient().use { client ->
                     val user = keycloakService.getUser(client, login)
                     logger.info("Send deletion email to '${user.login}' (${user.email})")
                     try {
@@ -167,7 +167,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
             val login = frontendUser.userId
             val user = keycloakService.getUser(client, login)
@@ -186,7 +186,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
 
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
             val login = frontendUser.userId
             val user = keycloakService.getUser(client, login)
             return ResponseEntity.ok(user.firstName + " " + user.lastName)
@@ -195,7 +195,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     private fun getSingleUser(principal: Principal, userId: String): User? {
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
 
             val user = try {
@@ -291,7 +291,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
         // TODO set access rights so users can update their own info, but nothing else. especially not other users.
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
             val kcUser = keycloakService.getUser(client, userId)
 
             user.apply {
@@ -496,7 +496,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
             val user = keycloakService.getUser(client, id)
             val password = keycloakService.resetPassword(principal, id)
