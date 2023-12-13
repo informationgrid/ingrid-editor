@@ -9,10 +9,9 @@
   .empty-text-wrapper {
     border-top: 1px solid $ige-background-bar;
     border-bottom: 1px solid $ige-background-bar;
+    font-size: 14px;
     height: 49px;
     line-height: 49px;
-    color: $ige-text-color;
-    font-size: 14px;
-    opacity: 0.38;
+    color: $ige-hint-color;
   }
 }
