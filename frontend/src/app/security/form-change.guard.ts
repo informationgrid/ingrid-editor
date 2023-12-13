@@ -104,6 +104,7 @@ export class FormChangeDeactivateGuard {
       .open(ConfirmDialogComponent, {
         hasBackdrop: true,
         disableClose: true,
+        delayFocusTrap: true,
         data: {
           title: "Änderungen speichern?",
           message:
