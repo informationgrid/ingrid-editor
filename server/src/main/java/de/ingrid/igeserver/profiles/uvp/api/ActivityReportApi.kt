@@ -48,6 +48,7 @@ data class ActivityReportItem(
     val time: Instant,
     val dataset_uuid: String,
     val title: String,
+    val document_type: String,
     val contact_uuid: String?,
     val contact_name: String?,
     val actor: String,

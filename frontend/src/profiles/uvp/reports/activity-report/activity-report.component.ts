@@ -21,11 +21,12 @@ export class ActivityReportComponent implements AfterViewInit {
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = [
-    "time",
+    "document_type",
     "title",
     "contact_name",
     "actor",
     "action",
+    "time",
     "settings",
   ];
 
@@ -49,23 +50,23 @@ export class ActivityReportComponent implements AfterViewInit {
       },
       {
         id: "actionType",
-        label: "Aktionstyp",
+        label: "Aktion",
         filter: [
           {
             id: "create",
-            label: "Erstellen",
+            label: "Erstellt",
           },
           {
             id: "update",
-            label: "Aktualisieren",
+            label: "Aktualisiert",
           },
           {
             id: "publish",
-            label: "Veröffentlichen",
+            label: "Veröffentlicht",
           },
           {
             id: "delete",
-            label: "Löschen",
+            label: "Gelöscht",
           },
         ],
         combine: null,
@@ -103,6 +104,7 @@ export class ActivityReportComponent implements AfterViewInit {
           return {
             time: entry.time,
             title: entry.title,
+            document_type: entry.document_type,
             dataset_uuid: entry.dataset_uuid,
             contact_name: entry.contact_name,
             contact_uuid: entry.contact_uuid,

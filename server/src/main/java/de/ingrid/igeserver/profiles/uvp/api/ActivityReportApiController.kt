@@ -32,10 +32,11 @@ class ActivityReportApiController(
                 time = it[0] as Instant,
                 dataset_uuid = it[1] as String,
                 title = it[2] as String,
-                contact_uuid = it[3] as String?,
-                contact_name = it[4] as String?,
-                actor = it[5] as String,
-                action = it[6] as String
+                document_type = it[3] as String,
+                contact_uuid = it[4] as String?,
+                contact_name = it[5] as String?,
+                actor = it[6] as String,
+                action = it[7] as String
             )
         })
     }
@@ -46,6 +47,7 @@ class ActivityReportApiController(
             timestamp,
             message->>'target' as dataset_uuid,
             message#>>'{data,title}' as title,
+            message#>>'{data,_type}' as document_type,
             message#>'{data,pointOfContact}'->0->>'ref' as contact_uuid,
             document.title as contact_name,
             message->>'actor' as actor,

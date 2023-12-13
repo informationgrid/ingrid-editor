@@ -70,7 +70,7 @@ export class DocumentIconComponent implements OnChanges {
       }
     }
 
-    return type == "FOLDER"
+    return type == "FOLDER" || state == null
       ? tooltipDocType
       : `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
   }

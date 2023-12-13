@@ -33,6 +33,7 @@ export class ActivityItem {
   time: String;
   dataset_uuid: String;
   title: String;
+  document_type: String;
   contact_uuid: String;
   contact_name: String;
   actor: String;
