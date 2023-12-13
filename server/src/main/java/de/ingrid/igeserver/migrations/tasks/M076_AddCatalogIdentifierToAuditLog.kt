@@ -17,13 +17,15 @@ class M076_AddCatalogIdentifierToAuditLog : MigrationBase("0.76") {
     private lateinit var transactionManager: PlatformTransactionManager
 
     private val sql = """
-         UPDATE audit_log SET
-    message = jsonb_set(message, '{catalogIdentifier}', to_jsonb(catalog.identifier))
-    FROM document_wrapper, catalog
-    WHERE message @> '{"cat": "data-history"}'
-    AND NOT message ? 'catalogIdentifier'
-    AND message->>'target' = document_wrapper.uuid
-    AND document_wrapper.catalog_id = catalog.id;
+        UPDATE audit_log SET
+            message = jsonb_set(message, '{catalogIdentifier}', to_jsonb(catalog.identifier))
+        FROM 
+            document_wrapper, catalog
+        WHERE 
+            message @> '{"cat": "data-history"}'
+        AND NOT jsonb_exists(message,  'catalogIdentifier')
+        AND message->>'target' = document_wrapper.uuid
+        AND document_wrapper.catalog_id = catalog.id;
     """.trimIndent()
 
     override fun exec() {
