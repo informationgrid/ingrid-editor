@@ -43,7 +43,7 @@ class KeycloakMockService : UserManagementService {
         return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: Authentication): String {
+    override fun getName(principal: Principal): String {
         return principal.name
     }
 

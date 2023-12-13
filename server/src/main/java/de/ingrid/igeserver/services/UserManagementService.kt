@@ -16,7 +16,7 @@ interface UserManagementService {
 
     fun getUser(client: Closeable, login: String): User
     fun getRoles(principal: Authentication): Set<String>?
-    fun getName(principal: Authentication): String?
+    fun getName(principal: Principal): String?
 
     fun getCurrentPrincipal(): Principal?
     fun userExists(principal: Principal, userId: String): Boolean

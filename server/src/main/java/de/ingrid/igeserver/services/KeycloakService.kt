@@ -227,9 +227,12 @@ class KeycloakService : UserManagementService {
         return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: Authentication): String? {
-        principal as JwtAuthenticationToken
-        return principal.name
+    override fun getName(principal: Principal): String? {
+        return when (principal) {
+            is UsernamePasswordAuthenticationToken -> principal.name
+            is JwtAuthenticationToken -> principal.token.claims["preferred_username"]?.toString() ?: principal.name
+            else -> null
+        }
     }
 
     override fun getCurrentPrincipal(): Principal? {

@@ -99,7 +99,7 @@ class AuditLogger {
             put(RECORD_TYPE, RECORD_TYPE_VALUE)
             put(CATEGORY, category)
             put(ACTION, action)
-            put(ACTOR, userService.getCurrentPrincipal()?.name)
+            put(ACTOR, userService.getCurrentPrincipal()?.let { userService.getName(it) } ?: "unknown")
             put(TIME, dateService.now().toString())
             put(TARGET, target)
             replace(DATA, data)
