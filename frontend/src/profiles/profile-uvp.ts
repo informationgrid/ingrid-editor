@@ -15,6 +15,7 @@ import { PluginService } from "../app/services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
+import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";
 
 @Component({
   template: "",
@@ -37,6 +38,7 @@ class UVPComponent {
     private pluginService: PluginService,
     private publishNegativeAssessmentBehaviour: PublishNegativeAssessmentBehaviour,
     private zabbixReportBehaviour: ZabbixReportBehaviour,
+    private activityReportBehaviour: ActivityReportBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
     this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
@@ -79,6 +81,7 @@ class UVPComponent {
     this.pluginService.registerPlugin(this.publishNegativeAssessmentBehaviour);
     this.pluginService.registerPlugin(uvpNumberPlugin);
     this.pluginService.registerPlugin(this.zabbixReportBehaviour);
+    this.pluginService.registerPlugin(this.activityReportBehaviour);
 
     if (this.publishNegativeAssessmentBehaviour.isActive) {
       negativeAssessmentDoctype.forPublish = true;

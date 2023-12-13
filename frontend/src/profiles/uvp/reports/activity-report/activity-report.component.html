@@ -1,0 +1,117 @@
+<page-template-no-header label="Aktivitätsbericht" class="white">
+    <div left-side>
+        <ige-search-input
+            [query]="query"
+            [showSearchIcon]="true"
+            [flexWidth]="true"
+            placeholder="Suchen"
+            [withWhiteBorder]="false"
+        ></ige-search-input>
+
+        <ige-facets
+            [formControl]="facetForm"
+            [facets]="facets"
+            [forAddresses]="false"
+            [forReports]="true"
+        ></ige-facets>
+    </div>
+    <div main-content class="flex-col gap-24">
+        <ige-card-box class="flex-1" label="Aktionen">
+            <table
+                mat-table
+                [dataSource]="dataSource"
+                matSort
+                class="width-100"
+            >
+                <ng-container matColumnDef="time">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Datum
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        [matTooltip]="element.time | date: 'long'"
+                    >
+                        {{ element.time | date: "dd.LL.yyyy HH:mm" }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="title">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Vorhaben
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        [matTooltip]="element.dataset_uuid"
+                    >
+                        {{ element.title }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="contact_name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Verfahrensführende Behörde
+                    </th>
+                    <td
+                        mat-cell
+                        *matCellDef="let element"
+                        [matTooltip]="element.contact_uuid"
+                    >
+                        {{ element.contact_name }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="actor">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        User
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.actor }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Aktion
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.action }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="settings">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="thin-column"
+                    ></th>
+                    <td mat-cell *matCellDef="let element" class="settings">
+                        <button
+                            mat-icon-button
+                            class="table-options menu-button"
+                            matTooltip="Optionen"
+                            [matMenuTriggerFor]="moreResult"
+                            (click)="$event.stopImmediatePropagation()"
+                            [attr.aria-label]="element.title"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
+                        <mat-menu #moreResult>
+                            <button
+                                mat-menu-item
+                                (click)="openDataset(element)"
+                            >
+                                Vorhaben im Editor öffnen
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr
+                        mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                    ></tr>
+                </ng-container>
+            </table>
+            <mat-paginator
+                [pageSizeOptions]="[10, 20, 50]"
+                showFirstLastButtons
+            ></mat-paginator>
+        </ige-card-box>
+    </div>
+</page-template-no-header>

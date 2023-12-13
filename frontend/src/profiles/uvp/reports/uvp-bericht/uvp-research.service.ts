@@ -29,6 +29,16 @@ export class ZabbixProblem {
   docUuid: String;
 }
 
+export class ActivityItem {
+  time: String;
+  dataset_uuid: String;
+  title: String;
+  contact_uuid: String;
+  contact_name: String;
+  actor: String;
+  action: String;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -64,6 +74,21 @@ export class UvpResearchService {
   getZabbixReport(): Observable<ZabbixProblem[]> {
     return this.http.get<ZabbixProblem[]>(
       `${this.configuration.backendUrl}uvp/zabbix-report`,
+    );
+  }
+
+  getActivityReport(
+    fromDate: string,
+    toDate: string,
+    actions: string[],
+  ): Observable<ActivityItem[]> {
+    return this.http.post<ActivityItem[]>(
+      `${this.configuration.backendUrl}uvp/activity-report`,
+      {
+        from: fromDate,
+        to: toDate,
+        actions: actions,
+      },
     );
   }
 
