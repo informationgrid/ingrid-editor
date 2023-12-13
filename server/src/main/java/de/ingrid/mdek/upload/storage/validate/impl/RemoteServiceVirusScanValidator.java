@@ -24,6 +24,7 @@ package de.ingrid.mdek.upload.storage.validate.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.util.StdConverter;
 import de.ingrid.mdek.upload.ValidationException;
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import de.ingrid.mdek.upload.storage.validate.VirusFoundException;
+import de.ingrid.mdek.upload.storage.validate.VirusScanException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -49,11 +51,7 @@ import org.apache.logging.log4j.Logger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -165,6 +163,10 @@ public class RemoteServiceVirusScanValidator implements Validator {
             }
             return result;
         }
+        @JsonIgnore
+        public Boolean checkScanError(String scanReport) {
+            return scanReport.contains("errors");
+        }
     }
 
     @SuppressWarnings("unused")
@@ -256,17 +258,32 @@ public class RemoteServiceVirusScanValidator implements Validator {
             // analyze result
             if (response != null) {
                 final ScanResultCode resultCode = response.getScanResult();
+                String scanReport = response.getScanReport();
+
                 if (resultCode == ScanResultCode.INFECTED) {
                     final Map<Path, String> infections = response.getInfections();
-                    log.warn("Virus found: " + response.getScanReport());
-                    throw new VirusFoundException("Virus found.", path+URL_PATH_SEPARATOR+file, infections);
+                    log.warn("Virus found: " + scanReport);
+                    throw new VirusFoundException("Virus found.", path+URL_PATH_SEPARATOR+file, scanReport, infections);
                 }
                 else if (resultCode != ScanResultCode.OK) {
-                    log.error("Virus scan failed: " + response.getScanReport());
+                    try {
+                        final String errorMessage ="Virus scan failed: " + getObjectMapper().writeValueAsString(response);
+                        log.error(errorMessage);
+                        throw new RuntimeException(errorMessage);
+                    }
+                    catch (final JsonProcessingException ex) {
+                        log.error("Could not serialize response", ex);
+                    }
                 }
                 else {
                     if (log.isDebugEnabled()) {
-                        log.debug("Scan result: " + response.getScanReport());
+                        log.debug("Scan result: " + scanReport);
+                    }
+
+                    // error is found
+                    if( scanReport.contains( "errors" ) ){
+                        log.info("Scan error found.");
+                        throw new VirusScanException("Error during scan.", path + URL_PATH_SEPARATOR + file, scanReport);
                     }
                 }
             }
