@@ -91,7 +91,7 @@ class KeycloakService : UserManagementService {
     fun init() {
         if (keycloakProxyUrl != null) {
             log.info("Keycloak proxy: $keycloakProxyUrl")
-            with(URL(keycloakProxyUrl)) {
+            with(URI(keycloakProxyUrl).toURL()) {
                 proxyHost = host
                 proxyPort = port
             }
@@ -129,7 +129,7 @@ class KeycloakService : UserManagementService {
         ignoreUsers: Set<User> = emptySet()
     ): List<User> {
         return try {
-            val users = roles[roleName].getRoleUserMembers(0, 10000)
+            val users = roles[roleName].getUserMembers(0, 10000)
                 .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
