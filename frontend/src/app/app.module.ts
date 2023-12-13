@@ -179,9 +179,9 @@ export function ConfigLoader(
     return configService
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
+      .then(() => firstValueFrom(translocoService.load("de")))
       .then(() => console.log("FINISHED APP INIT"))
       .then(() => redirectToCatalogSpecificRoute(router, dialog))
-      .then(() => firstValueFrom(translocoService.load("de")))
       .catch((err) => {
         // remove loading spinner and rethrow error
         document.getElementsByClassName("app-loading").item(0).innerHTML =
