@@ -177,6 +177,7 @@ export class RepeatDistributionDetailListComponent
     const uploadKey = this.getUploadFieldKey();
     return (
       !this.model ||
+      !this.model[this.key + ""] ||
       this.model[this.key + ""]?.findIndex(
         (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri,
       ) === -1
