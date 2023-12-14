@@ -132,7 +132,7 @@ export class NewUserDialogComponent implements OnInit {
         let EMAIL_NOT_UNIQUE =
           "New user cannot be created, because another user might have the same email address";
         if (errorText.includes(EMAIL_NOT_UNIQUE)) {
-          this.modalService.showJavascriptError(
+          throw new IgeError(
             "Es existiert bereits ein Benutzer mit dieser Mailadresse",
           );
         } else {
