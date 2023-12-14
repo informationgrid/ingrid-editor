@@ -91,9 +91,9 @@ class UVPComponent {
   private addUVPReportTab(reportsService: ReportsService) {
     reportsService.addRoute({
       path: "uvp-bericht",
-      loadChildren: () =>
-        import("./uvp/reports/uvp-reports.module").then(
-          (m) => m.UvpReportsModule,
+      loadComponent: () =>
+        import("./uvp/reports/uvp-bericht/uvp-bericht.component").then(
+          (m) => m.UvpBerichtComponent,
         ),
       data: {
         title: "UVP Bericht",
@@ -105,9 +105,9 @@ class UVPComponent {
   private addUVPUploadCheckReportTab(reportsService: ReportsService) {
     reportsService.addRoute({
       path: "uvp-upload-check",
-      loadChildren: () =>
-        import("./uvp/reports/upload-check.module").then(
-          (m) => m.UploadCheckModule,
+      loadComponent: () =>
+        import("./uvp/reports/upload-check/upload-check.component").then(
+          (m) => m.UploadCheckComponent,
         ),
       data: {
         title: "UVP Upload Check",

@@ -30,9 +30,9 @@ export class ZabbixReportBehaviour extends Plugin {
   private addReportTab() {
     this.reportsService.addRoute({
       path: this.path,
-      loadChildren: () =>
-        import("../reports/zabbix-report.module").then(
-          (m) => m.ZabbixReportModule,
+      loadComponent: () =>
+        import("../reports/zabbix-report/zabbix-report.component").then(
+          (m) => m.ZabbixReportComponent,
         ),
       data: {
         title: "Monitoring",

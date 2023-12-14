@@ -30,9 +30,9 @@ export class ActivityReportBehaviour extends Plugin {
   private addReportTab() {
     this.reportsService.addRoute({
       path: this.path,
-      loadChildren: () =>
-        import("../reports/activity-report.module").then(
-          (m) => m.ActivityReportModule,
+      loadComponent: () =>
+        import("../reports/activity-report/activity-report.component").then(
+          (m) => m.ActivityReportComponent,
         ),
       data: {
         title: "Aktivitätsbericht",

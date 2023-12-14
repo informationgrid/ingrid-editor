@@ -3,15 +3,26 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
+import { MatSort, MatSortModule } from "@angular/material/sort";
 import { saveAs } from "file-saver-es";
+import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+import { SharedModule } from "../../../../app/shared/shared.module";
+import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
 
 @UntilDestroy()
 @Component({
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
   styleUrls: ["./uvp-bericht.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateModule,
+    SharedModule,
+    FormSharedModule,
+    MatTableModule,
+    MatSortModule,
+  ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;

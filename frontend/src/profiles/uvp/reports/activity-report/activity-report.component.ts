@@ -1,19 +1,39 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MatSort } from "@angular/material/sort";
+import { MatSort, MatSortModule } from "@angular/material/sort";
 import { UvpResearchService } from "../uvp-bericht/uvp-research.service";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
+import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { FormControl, UntypedFormControl } from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
+import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+import { SearchInputComponent } from "../../../../app/shared/search-input/search-input.component";
+import { SharedModule } from "../../../../app/shared/shared.module";
+import { DocumentIconModule } from "../../../../app/shared/document-icon/document-icon.module";
+import { MatMenuModule } from "@angular/material/menu";
+import { DatePipe } from "@angular/common";
+import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
 
 @UntilDestroy()
 @Component({
   selector: "activity-report",
   templateUrl: "./activity-report.component.html",
   styleUrls: ["./activity-report.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateModule,
+    SearchInputComponent,
+    SharedModule,
+    MatTableModule,
+    DocumentIconModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    DatePipe,
+    FormSharedModule,
+    MatSortModule,
+  ],
 })
 export class ActivityReportComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
