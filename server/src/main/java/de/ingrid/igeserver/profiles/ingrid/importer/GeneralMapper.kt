@@ -14,6 +14,7 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import java.util.*
 
 
 open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
@@ -68,7 +69,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ) else it.responsibleParty?.role!!
 
             PointOfContact(
-                it.responsibleParty?.uuid!!,
+                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
                 mapRoleToContactType(role),
@@ -143,11 +144,20 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     private fun extractPersonInfo(value: String?): PersonInfo? {
-        value?.split(",")?.let { nameSplit ->
+        if (value?.contains(",") == true) {
+            value.split(",").let { nameSplit ->
+                return when (nameSplit.size) {
+                    1 -> PersonInfo(null, nameSplit[0].trim(), null)
+                    2 -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), null)
+                    else -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), getSalutationKeyValue(nameSplit[2]))
+                }
+            }
+        }
+        value?.split(" ")?.let { nameSplit ->
             return when (nameSplit.size) {
                 1 -> PersonInfo(null, nameSplit[0].trim(), null)
-                2 -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), null)
-                else -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), getSalutationKeyValue(nameSplit[2]))
+                2 -> PersonInfo(nameSplit[0].trim(), nameSplit[1].trim(), null)
+                else -> PersonInfo(nameSplit[1].trim(), nameSplit[2].trim(), getSalutationKeyValue(nameSplit[0]))
             }
         }
         return null
