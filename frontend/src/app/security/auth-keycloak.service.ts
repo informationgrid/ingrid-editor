@@ -34,7 +34,7 @@ export class AuthKeycloakService extends AuthenticationService {
     return this.keycloak.init(options);
   }
 
-  isLoggedIn(): Promise<boolean> {
+  isLoggedIn(): boolean {
     return this.keycloak.isLoggedIn();
   }
 

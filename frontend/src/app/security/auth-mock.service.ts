@@ -16,8 +16,8 @@ export class AuthMockService extends AuthenticationService {
     return Promise.resolve();
   }
 
-  isLoggedIn(): Promise<boolean> {
-    return this.login().then(() => true);
+  isLoggedIn(): boolean {
+    return true;
   }
 
   login(): Promise<any> {

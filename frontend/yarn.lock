@@ -7863,7 +7863,7 @@ __metadata:
     karma-jasmine-html-reporter: "npm:^2.1.0"
     karma-junit-reporter: "npm:^2.0.1"
     karma-sourcemap-loader: "npm:^0.4.0"
-    keycloak-angular: "npm:^14.1.0"
+    keycloak-angular: "npm:^15.0.0"
     keycloak-js: "npm:^22.0.4"
     leaflet: "npm:^1.9.4"
     lint-staged: "npm:^15.1.0"
@@ -8948,17 +8948,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-angular@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "keycloak-angular@npm:14.1.0"
+"keycloak-angular@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "keycloak-angular@npm:15.0.0"
   dependencies:
     tslib: "npm:^2.3.1"
   peerDependencies:
-    "@angular/common": ^16
-    "@angular/core": ^16
-    "@angular/router": ^16
+    "@angular/common": ^17
+    "@angular/core": ^17
+    "@angular/router": ^17
     keycloak-js: ^18 || ^19 || ^20 || ^21 || ^22
-  checksum: 77bee939ecfb1fa2cb31c9f474cc8836e8565d162e180905397e55b860282ef2a80f8c7325fd898ddfa9dbd4f04628cd3db066683a706d933737be4fec8e74ed
+  checksum: 374e5d10d2048185fbf14118845a679c2891133bdd212b6957bf8c09569f99ffa34cc314097ff5c0939727133909057dc0f7d74452116799c3433f1a4674c48e
   languageName: node
   linkType: hard
 
