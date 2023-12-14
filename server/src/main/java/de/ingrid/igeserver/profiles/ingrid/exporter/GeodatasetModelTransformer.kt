@@ -156,9 +156,10 @@ open class GeodatasetModelTransformer(
     }
 
     fun mapConformanceResultTitle(result: ConformanceResult): String? {
-        val codelistId = if (result.isInspire == true) "6005" else "6006"
-        return codelists.getValue(codelistId, result.specification, "iso")
-            ?: codelists.getValue(codelistId, result.specification, "de")
+        return when (result.isInspire) {
+            true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+            else -> codelists.getCatalogCodelistValue("6006", result.specification)
+        }
     }
 
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
