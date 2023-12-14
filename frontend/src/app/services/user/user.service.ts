@@ -5,7 +5,6 @@ import { UserDataService } from "./user-data.service";
 import { catchError, map, tap } from "rxjs/operators";
 import { SelectOption, SelectOptionUi } from "../codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { GroupService } from "../role/group.service";
 import { getUserFormFields } from "../../+user/user/user.formly-fields";
 import { getNewUserFormFields } from "../../+user/user/new-user-dialog/new-user.formly-fields";
 import { ConfigService } from "../config/config.service";
@@ -15,6 +14,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthenticationFactory } from "../../security/auth.factory";
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupQuery } from "../../store/group/group.query";
+import { Group } from "../../models/user-group";
 
 @Injectable({
   providedIn: "root",
@@ -38,7 +38,6 @@ export class UserService {
 
   constructor(
     private dataService: UserDataService,
-    private groupService: GroupService,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private keycloakService: AuthenticationFactory,
@@ -158,10 +157,6 @@ export class UserService {
     return this.dataService.getAssignedDatasets(userId);
   }
 
-  getAssignedUsers(dbId: string) {
-    return this.dataService.getAssignedUsers(dbId);
-  }
-
   getExternalUsers(): Observable<BackendUser[]> {
     return this.dataService.getExternalUsers();
   }
@@ -175,7 +170,7 @@ export class UserService {
   }
 
   getUserFormFields(
-    groups,
+    groups: Group[],
     groupClickCallback: (id: string) => void = undefined,
     roleChangeCallback: FormlyAttributeEvent = undefined,
   ): FormlyFieldConfig[] {
