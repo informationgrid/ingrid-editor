@@ -34,23 +34,16 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error) => {
         // if we have been logged out during a request then redirect to the start page
         // so that the keycloak login screen is shown
-        if (error.status === 403) {
-          // TODO: redirect?
-          this.showError(this.getMessage(error));
-        } else if (error.status === 401) {
-          if (!this.auth.isLoggedIn) {
-            const message =
-              "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
-            this.showError(message);
-            console.error(error);
-            setTimeout(() => this.authFactory.get().logout(), 5000);
-          }
+        if (!this.auth.isLoggedIn()) {
+          const message =
+            "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
+          this.showError(message);
+          console.error(error);
+          setTimeout(() => this.authFactory.get().logout(), 5000);
           return null;
         }
-        // intercept the response error and displace it to the console
+        this.showError(this.getMessage(error));
         console.log("Error Occurred", error);
-
-        // return the error to the method that called it
         return throwError(error);
       }),
     );
