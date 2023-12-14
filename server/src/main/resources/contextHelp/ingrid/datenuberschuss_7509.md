@@ -30,7 +30,7 @@ Angaben darüber, wie viele Elemente sich im Konflikt zu der physikalischen Stru
 
 Angaben zu topologischen Fehlern, die zwischen verschiedenen Unterelementen des Datensatzes auftreten; Bsp.: Anzahl fehlender Verbindungen zwischen Unterelementen aufgrund von Undershoots/Overshoots.
 
-# Zeitliche Genauigkeit
+# Zeitliche Konsistenz
 
 Angabe der Anzahl der zeitlich korrekt zugeordneten Elemente zur Gesamtzahl der Elemente
 

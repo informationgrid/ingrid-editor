@@ -466,7 +466,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
             {
               key: "temporalConsistency",
-              value: "Zeitliche Genauigkeit",
+              value: "Zeitliche Konsistenz",
               fields: this.getQualityFields(7120),
             },
             {
