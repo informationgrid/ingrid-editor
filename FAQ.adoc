@@ -1,4 +1,6 @@
 = FAQ
+:source-highlighter: highlight.js
+:highlightjs-languages: kotlin
 :toc: left
 
 == Apache Configuration
@@ -153,9 +155,9 @@ open fun onDelete(doc: Document) {}
 
 Each profile needs a definition file which contains necessary information about the profile. An example can be found below.
 
-<details>
-  <summary>Example</summary>
-
+.Example
+[%collapsible]
+====
 [source,kotlin]
 ----
 @Service()
@@ -178,15 +180,16 @@ class MCloudProfile : CatalogProfile {
 }
 ----
 
-</details>
+====
 
 === Export
 
 For the export feature add a service inside the exporter-package which implements `IgeExporter`.
 Pebbles template engine is used for easier export. Check out `PortalExporter`.
 
-<details>
-  <summary>Example Exporter</summary>
+.Example Exporter
+[%collapsible]
+====
 
 [source,kotlin]
 ----
@@ -230,10 +233,11 @@ class PortalExporter : IgeExporter {
 }
 ----
 
-</details>
+====
 
-<details>
-  <summary>Example Template</summary>
+.Example Template
+[%collapsible]
+====
 
 [source,json]
 ----
@@ -247,7 +251,7 @@ class PortalExporter : IgeExporter {
 }
 ----
 
-</details>
+====
 
 === Import
 
@@ -262,9 +266,9 @@ Here are the steps you should follow:
   - check if this importer can handle the import, by analyzing contentType and file content
 - implement `getName()`-method to return the name of the importer
 
-<details>
-  <summary>Example</summary>
-
+.Example
+[%collapsible]
+====
 [source,kotlin]
 ----
 @Service
@@ -292,7 +296,7 @@ class ExampleImporter : IgeImporter {
 }
 ----
 
-</details>
+====
 
 === Indexing
 
@@ -365,7 +369,7 @@ Auslegungsinformationen hochladen/verlinken ...
 - create a new component under app/+address (e.g. AddressComponent)
 - create a new file "address.routing.ts" with content:
 
-[source]
+[source, typescript]
 ----
 export const routing = RouterModule.forChild( [
   {
@@ -403,13 +407,17 @@ Use the event-service to send events and wait for the responses of all subscribe
 See the following example:
 
 - if we want to execute code only if all subscribers of an event agree:
-  ```
+
+[source,typescript]  
+----
   this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE)
             .subscribe(() => this.showDeleteDialog());
-  ```
+----
+
 - a behaviour which want to allow the showing of the delete dialog only if the folder has no children:
 
-  ```
+[source,typescript]
+----
   this.eventService.respondToEvent(IgeEvent.DELETE)
             .subscribe(resultObserver => {
                 // do some checks and/or show an alternative dialog
@@ -417,7 +425,7 @@ See the following example:
                 const responseData = this.buildResponse(success);
                 resultObserver(responseData);
             });
-  ```
+----
 
 == Migration for a specific version
 
@@ -455,8 +463,8 @@ If you want to create a task which is executed at a certain time also repeatable
   where "cron.codelist.expression" should be replaced by a property from the application.properties file.
   An example would look like this
 
-[source]
-----properties
+[source, properties]
+----
 # scheduler: second, minute, hour, day of month, month, day(s) of week
 cron.codelist.expression=0 */30 * * * *
 ----
