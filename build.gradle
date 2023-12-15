@@ -3,6 +3,7 @@ import org.jetbrains.changelog.ExtensionsKt
 plugins {
     id "fr.brouillard.oss.gradle.jgitver" version "0.9.1"
     id "org.jetbrains.changelog" version "1.1.2"
+    id "com.diffplug.spotless" version "6.23.3" apply false
 }
 
 changelog {
@@ -12,6 +13,7 @@ changelog {
 
 subprojects {
     version = 'MANAGED_BY_JGITVER'
+    apply plugin: "com.diffplug.spotless"
 }
 
 jgitver {

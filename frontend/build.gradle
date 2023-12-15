@@ -87,3 +87,10 @@ clean {
   // delete packageNpmApp.archivePath
   delete "./target"
 }
+
+spotless {
+  typescript {
+    target 'src/**/*.ts'
+    licenseHeaderFile(file('../LICENSE'), '(import|const|declare|export|var) ').updateYearWithLatest(true)
+  }
+}

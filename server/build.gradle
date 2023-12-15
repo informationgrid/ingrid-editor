@@ -358,3 +358,14 @@ tasks.named("dependencyUpdates").configure {
         isNonStable(it.candidate.version)
     }
 }
+
+spotless {
+    
+    kotlin {
+        licenseHeaderFile(file('../LICENSE')).updateYearWithLatest(true)
+    }
+    java {
+        target 'src/*/java/**/*.java'
+        licenseHeaderFile(file('../LICENSE')).updateYearWithLatest(true)
+    }
+}
