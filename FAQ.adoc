@@ -1,4 +1,7 @@
-# Apache Configuration
+= FAQ
+:toc: left
+
+== Apache Configuration
 
 When the IGE-NG is installed there are two options how to access the application.
 
@@ -7,11 +10,12 @@ When the IGE-NG is installed there are two options how to access the application
 
 This needs different configurations.
 
-## Domain/Sub-Domain
+=== Domain/Sub-Domain
 
 Apache
 
-```
+[source]
+----
 <VirtualHost *:443>
     ServerName domain.com
 
@@ -42,13 +46,14 @@ Apache
     # we need encoded slashes for uploads of extracted zip files
     AllowEncodedSlashes On
 </VirtualHost>
-```
+----
 
-## Context-Path
+=== Context-Path
 
 Nginx
 
-```
+[source]
+----
 location /ige-ng/ {
   proxy_pass http://<IP>;
   proxy_redirect default;
@@ -59,18 +64,19 @@ location /ige-ng/ {
   proxy_set_header Host $http_host;
   proxy_set_header X-Forwarded-Proto $scheme;
 }
-```
+----
 
 You also need to add define some environment variables in your docker-compose.yml:
 
-```
+[source]
+----
 CONTEXT_PATH=/ige-ng
 BROKER_URL=wss://<DOMAIN>/ige-ng/ws
-```
+----
 
-# Create a new profile
+== Create a new profile
 
-## Frontend
+=== Frontend
 
 Create a new Module with a component inside "`src/profiles`" - directory. For an example look at the file
 "`profile-mcloud.ts`".
@@ -96,7 +102,7 @@ order, so that on the left side the label is placed and to the right the configu
 You can also define frontend validation for each form field. Please check out the library website and the
 currently implemented doctypes.
 
-## Backend
+== Backend
 
 In the backend create a new package under `de/ingrid/igeserver/profiles/<profile-name>`. Here all supported
 document types are created.
@@ -105,7 +111,8 @@ There you can set the ID, in which profiles the document should be available and
 resolved. Those references can be for example an address, which is referenced by a document. Only the document
 itself knows how to handle these references. For this you can override the following functions:
 
-```kotlin
+[source,kotlin]
+----
 /**
  * Extract referenced documents/addresses and replace them with their ID
  */
@@ -115,11 +122,12 @@ fun pullReferences(doc: Document): List<Document>
  * Replace document/address references with their latest version
  */
 fun updateReferences(doc: Document, onlyPublished: Boolean)
-```
+----
 
 There are also other functions where we can hook into, to react on certain events:
 
-```kotlin
+[source,kotlin]
+----
 /**
  * Persistence hook called when an instance of this type is created
  */
@@ -139,16 +147,17 @@ open fun onPublish(doc: Document) {}
  * Persistence hook called when an instance of this type is deleted
  */
 open fun onDelete(doc: Document) {}
-```
+----
 
-### Profile definition file
+=== Profile definition file
 
 Each profile needs a definition file which contains necessary information about the profile. An example can be found below.
 
 <details>
   <summary>Example</summary>
 
-```kotlin
+[source,kotlin]
+----
 @Service()
 @Profile("mcloud")
 class MCloudProfile : CatalogProfile {
@@ -167,11 +176,11 @@ class MCloudProfile : CatalogProfile {
   override fun getElasticsearchSetting(format: String): String
 
 }
-```
+----
 
 </details>
 
-### Export
+=== Export
 
 For the export feature add a service inside the exporter-package which implements `IgeExporter`.
 Pebbles template engine is used for easier export. Check out `PortalExporter`.
@@ -179,7 +188,8 @@ Pebbles template engine is used for easier export. Check out `PortalExporter`.
 <details>
   <summary>Example Exporter</summary>
 
-```kotlin
+[source,kotlin]
+----
 @Service
 @Profile("mcloud")
 class PortalExporter : IgeExporter {
@@ -218,14 +228,15 @@ class PortalExporter : IgeExporter {
 
     }
 }
-```
+----
 
 </details>
 
 <details>
   <summary>Example Template</summary>
 
-```json
+[source,json]
+----
 {# @pebvariable name="model" type="de.ingrid.igeserver.profiles.mcloud.exporter.model.MCloudModel" #}
 
 {
@@ -234,11 +245,11 @@ class PortalExporter : IgeExporter {
   "description": "{{ model.description }}",
   ...
 }
-```
+----
 
 </details>
 
-### Import
+=== Import
 
 When writing a new importer for a specific document type, we first have to check if the file to be imported is
 recognized. Then the model should be used, which already might have been created for an exporter in this profile.
@@ -254,7 +265,8 @@ Here are the steps you should follow:
 <details>
   <summary>Example</summary>
 
-```kotlin
+[source,kotlin]
+----
 @Service
 @Profile("example")
 class ExampleImporter : IgeImporter {
@@ -278,11 +290,11 @@ class ExampleImporter : IgeImporter {
     }
 
 }
-```
+----
 
 </details>
 
-### Indexing
+=== Indexing
 
 Indexing uses the export functionality of a catalog and can be done in two ways. It can be run for all datasets of a catalog or after a dataset has been published.
 When indexing the whole catalog, each dataset is exported to a specified format that shall be sent to an Elasticsearch index.
@@ -295,7 +307,8 @@ Here are the steps:
   - when using elasticsearch for indexing, make sure to enable profile `elasticsearch`
 - implement `invoke()`-method
 
-```kotlin
+[source,kotlin]
+----
 @Component
 @Profile("mcloud & elasticsearch")
 class MCloudPublishExport : Filter<PostPublishPayload> {
@@ -303,9 +316,9 @@ class MCloudPublishExport : Filter<PostPublishPayload> {
 
   }
 }
-```
+----
 
-# Add / Update / Remove form field
+== Add / Update / Remove form field
 
 Open the according document type file under `de/ingrid/igeserver/profiles/<profile-name>` and edit the
 `documentFields`-function. Check out the [ngx-formly](https://formly.dev/guide/getting-started) website
@@ -313,7 +326,7 @@ how to configure a form field.
 
 Also check out some basics in the section "Create a new profile".
 
-# Add context help for a form field
+== Add context help for a form field
 
 The context help is stored as mark-down files on the server side. They are located under
 `server/src/main/resources/contextHelp/<profile>`. The German translations will be found
@@ -330,7 +343,8 @@ The help text itself can be found under the last separator: `---`
 
 Example:
 
-```markdown
+[source,markdown]
+----
 ---
 # ID des GUI Elements
 id: announcementDocs
@@ -343,16 +357,16 @@ profile: uvp
 ---
 
 Auslegungsinformationen hochladen/verlinken ...
-```
-
-# Create a new page
+----
+== Create a new page
 
 - create a new module under app (e.g. AddressModule)
 - rename created folder "address" to "+address" to show that it's a page
 - create a new component under app/+address (e.g. AddressComponent)
 - create a new file "address.routing.ts" with content:
 
-```
+[source]
+----
 export const routing = RouterModule.forChild( [
   {
     path: '',
@@ -360,12 +374,12 @@ export const routing = RouterModule.forChild( [
     canActivate: [AuthGuard]
   }
 ] );
-```
+----
 
 - put exported constant inside "import" of the module
 - add page to main router (app.router.ts) with configuration
 
-# Add a new toolbar button
+== Add a new toolbar button
 
 - create a new file "<name>.plugin.ts" in a subdirectory of "+forms/dialogs"
 - extend class from "Plugin"
@@ -373,7 +387,7 @@ export const routing = RouterModule.forChild( [
 - react on event from FormToolbarService using eventId of defined button
 - add Plugin to providers in "form-plugin.provider.ts"
 
-# Use a behaviour function for calculations, filtering, ...
+== Use a behaviour function for calculations, filtering, ...
 
 When we want to add a configurable behaviour only to specify a different calulation, filtering
 or sorting, then it's recommended to provide this in a service, which can be overriden by a
@@ -383,7 +397,7 @@ Take care of multiple changes by different behaviours and inform the user!
 
 An example can be seen in tree.service.ts.
 
-# Intercept other functionality and conditionally prevent execution
+== Intercept other functionality and conditionally prevent execution
 
 Use the event-service to send events and wait for the responses of all subscribers.
 See the following example:
@@ -405,7 +419,7 @@ See the following example:
             });
   ```
 
-# Migration for a specific version
+== Migration for a specific version
 
 When there's a need to change the database structure or we need to migrate some data then we can use the
 migration tasks.
@@ -416,7 +430,8 @@ Go to the package `de/ingrid/igeserver/migrations/tasks` and create a new task w
 
 and implement something like this example for a migration to version 0.17:
 
-```kotlin
+[source,kotlin]
+----
 @Service
 class M017_TestMigration : MigrationBase("0.17") {
 
@@ -427,9 +442,9 @@ class M017_TestMigration : MigrationBase("0.17") {
     }
 
 }
-```
+----
 
-# Creating a cron task
+== Creating a cron task
 
 If you want to create a task which is executed at a certain time also repeatable, then do the following:
 
@@ -440,12 +455,13 @@ If you want to create a task which is executed at a certain time also repeatable
   where "cron.codelist.expression" should be replaced by a property from the application.properties file.
   An example would look like this
 
-```properties
+[source]
+----properties
 # scheduler: second, minute, hour, day of month, month, day(s) of week
 cron.codelist.expression=0 */30 * * * *
-```
+----
 
-# Add a new SVG icon
+== Add a new SVG icon
 
 New Icons added to IGE-NG should be integrated the following way:
 
@@ -459,7 +475,7 @@ New Icons added to IGE-NG should be integrated the following way:
 
 For easier editing you can format the file but remember to minimize it afterwards (IntelliJ: Select all + "Join Lines")
 
-# Add a new JSON schema file
+== Add a new JSON schema file
 
 For validation of a JSON-document, before it's being saved to the database, you need to create a JSON schema file under
 `src/main/resources/<profile>/schemas`.
@@ -468,23 +484,43 @@ For schema creation you can use the online generator https://app.quicktype.io/ a
 your document type. The backend entity of your document has to reference this file by overriding the field `jsonSchema`
 with the location of the schema file.
 
-# Restore deleted Documents
+== Restore deleted Documents
 
 When a document is deleted, it's not really deleted from the database. It's just marked as deleted and can be restored.
 The following SQL statement can be used to restore a document:
 
-```sql
+[source,sql]
+----
 UPDATE document_wrapper SET deleted = 0 WHERE uuid = ?;
-```
+----
 
 To permanently delete a document, you can use the following SQL statement:
 
-```sql
+[source,sql]
+----
 DELETE FROM document_wrapper WHERE uuid = ?;
-```
+----
 
 or to permanently delete all documents which are marked as deleted:
 
-```sql
+[source,sql]
+----
 DELETE FROM document_wrapper WHERE deleted = 1;
-```
+----
+
+== Check and update license header
+
+All source files contain a license header which need to be maintained. We use the `spotless` Gradle plugin for this task.
+In order to check for missing or invalid license headers we can run
+
+[source]
+----
+./gradlew spotlessCheck
+----
+
+In order to apply the updated license header, use
+
+[source]
+----
+./gradlew spotlessApply
+----
