@@ -90,40 +90,6 @@ export abstract class IngridShared extends BaseDoctype {
   private inspireDeleteMessage =
     "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
 
-  private inspireToIsoMapping = {
-    "101": "13",
-    "103": "13",
-    "104": "3",
-    "105": "13",
-    "106": "15",
-    "107": "18",
-    "108": "12",
-    "109": "7",
-    "201": "6",
-    "202": "10",
-    "203": "10",
-    "204": "8",
-    "301": "3",
-    "302": "17",
-    "303": "8",
-    "304": "15",
-    "305": "9",
-    "306": "19",
-    "307": "17",
-    "308": "17",
-    "309": "1",
-    "310": "16",
-    "311": "15",
-    "312": "8",
-    "313": "4",
-    "315": "14",
-    "316": "14",
-    "317": "2",
-    "318": "2",
-    "319": "2",
-    "320": "5",
-    "321": "5",
-  };
   showInVeKoSField: boolean = false;
   showInspireConform: boolean = false;
   isGeoService: boolean = false;
@@ -449,10 +415,17 @@ export abstract class IngridShared extends BaseDoctype {
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field.options.formState),
+                this.keywordAnalysis.updateIsoCategory(
+                  $event,
+                  field.options.formState,
+                ),
               remove: (field, $event) =>
                 options.thesaurusTopics &&
-                this.updateIsoCategory($event, field.options.formState, true),
+                this.keywordAnalysis.updateIsoCategory(
+                  $event,
+                  field.options.formState,
+                  true,
+                ),
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
@@ -671,25 +644,12 @@ export abstract class IngridShared extends BaseDoctype {
     );
 
     if (response.length > 0) {
-      this.updateForm(response, field);
+      this.keywordAnalysis.updateForm(response, field, this.thesaurusTopics);
       this.informUserAboutThesaurusAnalysis(response);
     }
 
     field.formControl.enable();
     field.formControl.setValue("");
-  }
-
-  private updateForm(data: ThesaurusResult[], field: FormlyFieldConfig) {
-    const model = field.options.formState.mainModel;
-    data.forEach((item) => {
-      if (!this.keywordAnalysis.keywordExists(item, model)) {
-        this.keywordAnalysis.addKeyword(item, model);
-        if (item.thesaurus === "INSPIRE-Themen" && this.thesaurusTopics) {
-          this.updateIsoCategory(item.value, field.options.formState);
-        }
-      }
-    });
-    field.options.formState.updateModel();
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -704,9 +664,9 @@ export abstract class IngridShared extends BaseDoctype {
     // if themes are removed because not INSPIRE-relevant, then ignore
     if (!themes) return;
 
-    const possibleKeys = Object.keys(this.inspireToIsoMapping).filter(
-      (key) => this.inspireToIsoMapping[key] === event.key,
-    );
+    const possibleKeys = Object.keys(
+      KeywordAnalysis.inspireToIsoMapping,
+    ).filter((key) => KeywordAnalysis.inspireToIsoMapping[key] === event.key);
     const connectedInspireTheme = themes.find(
       (item) => possibleKeys.indexOf(item.key) !== -1,
     );
@@ -719,39 +679,6 @@ export abstract class IngridShared extends BaseDoctype {
       );
       this.snack.open(
         `Die Kategorie muss bestehen bleiben, solange das INSPIRE-Thema '${inspireThemeValue}' verwendet wird.`,
-      );
-    }
-  }
-
-  private updateIsoCategory(
-    item: any,
-    formstate: any,
-    doRemove: boolean = false,
-  ) {
-    const isoKey = this.inspireToIsoMapping[item.key];
-    if (!isoKey) return;
-
-    // check if exists and add if not
-    const topics = formstate.mainModel.topicCategories;
-    const alreadyExists = topics.some((item) => item.key === isoKey);
-    const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
-      "527",
-      isoKey,
-    );
-
-    if (!doRemove && !alreadyExists) {
-      topics.push({ key: isoKey });
-      formstate.updateModel();
-      this.snack.open(
-        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`,
-      );
-    } else if (doRemove && alreadyExists) {
-      formstate.mainModel.topicCategories = topics.filter(
-        (item) => item.key !== isoKey,
-      );
-      formstate.updateModel();
-      this.snack.open(
-        `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`,
       );
     }
   }
@@ -1797,7 +1724,7 @@ export abstract class IngridShared extends BaseDoctype {
       const itemTheme = { key: id };
       formState.mainModel.themes.push(itemTheme);
       if (hasThesaurusTopics) {
-        this.updateIsoCategory(itemTheme, formState);
+        this.keywordAnalysis.updateIsoCategory(itemTheme, formState);
       }
     }
   }
