@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
 import de.ingrid.igeserver.services.getCapabilities.GetCapabilitiesParserFactory
@@ -45,12 +46,12 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         val id = xpath.getString(
             doc,
             "//identificationInfo/MD_DataIdentification//identifier/MD_Identifier/code/CharacterString"
-        )
+        ) ?: throw ServerException.withReason("Identifier could not be found in record")
         val title = xpath.getString(
             doc,
             "//identificationInfo/MD_DataIdentification//citation/CI_Citation/title/CharacterString"
-        )
-        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString")
+        ) ?: throw ServerException.withReason("Title could not be found in record")
+        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString") ?: throw ServerException.withReason("Uuid could not be found in record")
         val downloads = mutableListOf<String>()
 
         val resources = xpath.getNodeList(

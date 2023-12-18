@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.CapabilitiesService
@@ -92,6 +93,9 @@ class UpdateExternalCoupledResourcesTask(
                 }
             } catch (ex: FileNotFoundException) {
                 log.warn("Resource not found: ${it.url}")
+                summary.corrupt++
+            } catch (ex: ServerException) {
+                log.warn("Problem with resource: ${it.url} => ${ex.message}")
                 summary.corrupt++
             }
         }
