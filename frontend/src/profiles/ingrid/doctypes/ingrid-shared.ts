@@ -1380,6 +1380,17 @@ export abstract class IngridShared extends BaseDoctype {
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
           },
+          requiredFieldsInItems: {
+            expression: (ctrl: FormControl) =>
+              (<any[]>ctrl.value)?.every(
+                (row) =>
+                  row.type &&
+                  row.title?.length > 0 &&
+                  (row.url?.length > 0 || row.uuidRef?.length > 0),
+              ),
+            message:
+              "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
+          },
         },
       }),
     ]);

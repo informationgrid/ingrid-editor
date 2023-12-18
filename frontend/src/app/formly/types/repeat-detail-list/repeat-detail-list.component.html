@@ -31,11 +31,11 @@
                     class="type"
                 >
                     {{
-                        (model[field.key][i].type.key
+                        (model[field.key][i].type?.key
                             | codelist
                                 : props.fields?.[0]?.fieldGroup?.[1]?.props
                                       ?.codelistId
-                            | async) ?? model[field.key][i].type.value
+                            | async) ?? model[field.key][i].type?.value
                     }}
                 </div>
                 <ng-template #simpleType>
