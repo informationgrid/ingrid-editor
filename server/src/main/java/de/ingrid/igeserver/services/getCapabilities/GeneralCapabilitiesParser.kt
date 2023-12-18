@@ -351,6 +351,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 val urlBean = UrlBean()
                 val type = xPathUtils.getString(doc, xPathExtCap + "/inspire_common:ResourceType[" + (i + 1) + "]")
                 urlBean.url = url.item(i).textContent
+                urlBean.title = urlBean.url
                 if (type != null) {
                     urlBean.type = getRelationType(type)
                 } else {
