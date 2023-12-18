@@ -391,7 +391,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         "http://my-download-resource-locator",
-                        KeyValue("5066", "Verweis zu Dienst")
+                        KeyValue("5066", "Verweis zu Dienst"),
+                        "http://my-download-resource-locator"
                     )
                 )
                 timeReference shouldBe listOf(TimeReferenceBean(1, formatter.parse("2007-11-13")))
@@ -623,7 +624,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
-                        type = KeyValue("5066", "Verweis zu Dienst")
+                        type = KeyValue("5066", "Verweis zu Dienst"),
+                        title = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?"
                     )
                 )
                 timeReference shouldBe listOf(
@@ -997,7 +999,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://www.wemove.com/my-resource-locator",
-                        type = KeyValue("5066", "Verweis zu Dienst")
+                        type = KeyValue("5066", "Verweis zu Dienst"),
+                        title = "http://www.wemove.com/my-resource-locator"
                     )
                 )
                 timeReference shouldBe listOf(
