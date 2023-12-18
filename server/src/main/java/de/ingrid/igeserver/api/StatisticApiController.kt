@@ -113,7 +113,7 @@ class StatisticApiController(
 
                 val statsType = statsPerType[hit._type]!!
                 statsType.totalNum = statsType.totalNum!! + 1
-                if (hit._state === "PW" || hit._state === "P") {
+                if (hit._state == "PW" || hit._state == "P") {
                     allDataPublished++
                     statsType.numPublished++
                 } else {

@@ -323,7 +323,7 @@ class OgcRecordService(
         val queryLimit: Int = limit ?: defaultLimit
         if(queryLimit < minLimit || queryLimit > maxLimit) throw InvalidParameterException.withInvalidParameters("limit")
 //        if (queryLimit > maxLimit) queryLimit = maxLimit
-        val queryOffset: Int = if (offset === null) 0 else {
+        val queryOffset: Int = if (offset == null) 0 else {
             if (offset < 0) 0 else offset
         }
         return LimitAndOffset(queryLimit, queryOffset)
@@ -340,8 +340,8 @@ class OgcRecordService(
         // prepare string fragments
         val baseUrl = "${hostnameOgcApi}/collections/${collectionId}"
         val recordBaseUrl = "$baseUrl/items?f="
-        val limitString = if (limit !== null) "&limit=${queryLimit}" else ""
-        val selfOffsetString = if (offset !== null) "&offset=${queryOffset}" else ""
+        val limitString = if (limit != null) "&limit=${queryLimit}" else ""
+        val selfOffsetString = if (offset != null) "&offset=${queryOffset}" else ""
         val prevOffsetString = "&offset=$prevOffset"
         val nextOffsetString = "&offset=$nextOffset"
 

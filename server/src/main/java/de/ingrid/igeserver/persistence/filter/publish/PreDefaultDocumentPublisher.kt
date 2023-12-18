@@ -97,7 +97,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
     }
 
     private fun checkPublishState(refData: DocumentData) {
-        if (refData.document.state !== DOCUMENT_STATE.PUBLISHED) {
+        if (refData.document.state != DOCUMENT_STATE.PUBLISHED) {
             throw ServerException.withReason("Latest referenced dataset not published: ${refData.document.uuid}")
         }
     }

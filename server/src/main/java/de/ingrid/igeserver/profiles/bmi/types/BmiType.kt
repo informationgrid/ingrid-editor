@@ -58,7 +58,7 @@ class BmiType : EntityType() {
     }
 
     private fun getUploadFile(download: JsonNode): String {
-        if (download.get("link").get("uri") !== null) {
+        if (download.get("link").get("uri") != null) {
             return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8")
         } else {
             return download.get("link").get("value").textValue()

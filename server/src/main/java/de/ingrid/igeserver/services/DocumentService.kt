@@ -498,7 +498,7 @@ class DocumentService(
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
-        if (data.version !== dbVersion) {
+        if (data.version != dbVersion) {
             throw ConcurrentModificationException.withConflictingResource(
                 docData.document.id.toString(),
                 dbVersion!!,
@@ -604,7 +604,7 @@ class DocumentService(
         val dbVersion = docData.document.version
 
         // check optimistic locking manually, since new versions can be created here when publishing e.g.
-        if (data.version !== dbVersion) {
+        if (data.version != dbVersion) {
             throw ConcurrentModificationException.withConflictingResource(
                 docData.document.id.toString(),
                 dbVersion!!,
