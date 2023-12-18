@@ -132,7 +132,8 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       resource: {},
       spatial: {},
       temporal: { events: [] },
-      keywords: {},
+      keywords: { gemet: [], umthes: [], free: [] },
+      themes: [],
     };
     await this.getCapService.applyChangesToModel(model, result);
     this.documentService

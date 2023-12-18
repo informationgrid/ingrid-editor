@@ -39,6 +39,7 @@ import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
+import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
 
 @Injectable({
   providedIn: "root",
@@ -51,6 +52,7 @@ export class GetCapabilitiesService {
     configService: ConfigService,
     private documentService: DocumentService,
     private codelistQuery: CodelistQuery,
+    private keywordAnalysis: KeywordAnalysis,
   ) {
     configService.$userInfo.subscribe(
       () => (this.backendUrl = configService.getConfiguration().backendUrl),
@@ -74,8 +76,9 @@ export class GetCapabilitiesService {
       if (key === "accessConstraints") model.resource.accessConstraints = value;
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
-      if (key === "keywords")
-        model.keywords.free = (value as any[]).map((item) => ({ label: item }));
+      if (key === "keywords") {
+        await this.addKeywordsToModel(value, model);
+      }
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
           value,
@@ -120,6 +123,26 @@ export class GetCapabilitiesService {
     }
 
     this.handleDefaultTemporalEvent(model);
+  }
+
+  private async addKeywordsToModel(value: string[], model: any) {
+    const response = await this.keywordAnalysis.analyzeKeywords(value, false);
+    response.forEach((item) => {
+      switch (item.thesaurus) {
+        case "INSPIRE-Themen":
+          model.themes.push(item.value);
+          break;
+        case "Gemet Schlagworte":
+          model.keywords.gemet.push(item.value);
+          break;
+        case "Umthes Schlagworte":
+          model.keywords.umthes.push(item.value);
+          break;
+        case "Freie Schlagworte":
+          model.keywords.free.push(item.value);
+          break;
+      }
+    });
   }
 
   private handleDefaultTemporalEvent(model: any) {
@@ -222,7 +245,7 @@ export class GetCapabilitiesService {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
       if (!resource.exists) {
-        const doc = this.mapCoupledResource(resource, parent);
+        const doc = await this.mapCoupledResource(resource, parent);
         const savedDoc = this.documentService.save({
           data: doc,
           isNewDoc: true,
@@ -244,18 +267,23 @@ export class GetCapabilitiesService {
     return await Promise.all(res);
   }
 
-  private mapCoupledResource(
+  private async mapCoupledResource(
     resource: CoupledResource,
     parent: number,
-  ): IgeDocument {
-    return {
+  ): Promise<IgeDocument> {
+    const doc = {
       _uuid: resource.uuid,
       _type: "InGridGeoDataset",
       _parent: parent,
       title: resource.title,
       description: resource.description,
       identifier: resource.objectIdentifier,
-      keywords: resource.keywords,
+      keywords: {
+        gemet: [],
+        umthes: [],
+        free: [],
+      },
+      themes: [],
       spatial: {
         references: resource.spatialReferences.map((item) => {
           return {
@@ -275,6 +303,8 @@ export class GetCapabilitiesService {
         }),
       },
     };
+    await this.addKeywordsToModel(resource.keywords, doc);
+    return doc;
   }
 
   private async handleAddress(value: Address, addressParent: number) {
