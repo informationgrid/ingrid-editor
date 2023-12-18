@@ -23,7 +23,7 @@ export interface ThesaurusResult {
     | "Gemet Schlagworte"
     | "Umthes Schlagworte"
     | "Freie Schlagworte";
-  value: string;
+  value: any;
   found: boolean;
   alreadyExists?: boolean;
 }

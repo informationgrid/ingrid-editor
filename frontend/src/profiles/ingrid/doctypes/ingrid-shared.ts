@@ -44,6 +44,7 @@ import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -51,14 +52,6 @@ interface GeneralSectionOptions {
   openData?: boolean;
   advCompatible?: boolean;
   thesaurusTopics?: boolean;
-}
-
-interface KeywordSectionOptions {
-  priorityDataset?: boolean;
-  spatialScope?: boolean;
-  thesaurusTopics?: boolean;
-  inspireTopics?: boolean;
-  advProductGroup?: boolean;
 }
 
 interface AdditionalInformationSectionOptions {
@@ -78,6 +71,7 @@ export abstract class IngridShared extends BaseDoctype {
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
   private documentService = inject(DocumentService);
+  private keywordAnalysis = inject(KeywordAnalysis);
 
   options = {
     dynamicRequired: {
@@ -134,8 +128,10 @@ export abstract class IngridShared extends BaseDoctype {
   showInspireConform: boolean = false;
   isGeoService: boolean = false;
   isGeoDataset: boolean = false;
+  thesaurusTopics: boolean = false;
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
+    this.thesaurusTopics = options.thesaurusTopics;
     return this.addGroupSimple(
       null,
       [
@@ -665,47 +661,35 @@ export abstract class IngridShared extends BaseDoctype {
     field.formControl.setValue("Schlagworte werden analysiert ...");
     field.formControl.disable();
     this.snack.dismiss();
+
     const formState = field.options.formState;
-    const res = await Promise.all(
-      value
-        .split(",")
-        .map((item: string) => item.trim())
-        .filter((item: string) => item.length > 0)
-        .map(
-          async (item) => await this.assignKeyword(formState, item, options),
-        ),
+    const checkThemes =
+      options.inspireTopics && formState.mainModel.isInspireIdentified;
+    const response = await this.keywordAnalysis.analyzeKeywords(
+      value.split(","),
+      checkThemes,
     );
 
-    if (res.length > 0) {
-      field.options.formState.updateModel();
-      this.informUserAboutThesaurusAnalysis(res);
+    if (response.length > 0) {
+      this.updateForm(response, field);
+      this.informUserAboutThesaurusAnalysis(response);
     }
+
     field.formControl.enable();
     field.formControl.setValue("");
   }
 
-  private async assignKeyword(formState, item, options: KeywordSectionOptions) {
-    if (options.inspireTopics && formState.mainModel.isInspireIdentified) {
-      const resultTheme = this.checkInThemes(formState, item, options);
-      if (resultTheme.found) return resultTheme;
-    }
-
-    const gemetResult = await this.checkInThesaurus(
-      this.http,
-      formState.mainModel,
-      item,
-      "gemet",
-    );
-    if (gemetResult.found) return gemetResult;
-
-    const umthesResult = await this.checkInThesaurus(
-      this.http,
-      formState.mainModel,
-      item,
-      "umthes",
-    );
-    if (umthesResult.found) return umthesResult;
-    else return this.addFreeKeyword(formState.mainModel, item);
+  private updateForm(data: ThesaurusResult[], field: FormlyFieldConfig) {
+    const model = field.options.formState.mainModel;
+    data.forEach((item) => {
+      if (!this.keywordAnalysis.keywordExists(item, model)) {
+        this.keywordAnalysis.addKeyword(item, model);
+        if (item.thesaurus === "INSPIRE-Themen" && this.thesaurusTopics) {
+          this.updateIsoCategory(item.value, field.options.formState);
+        }
+      }
+    });
+    field.options.formState.updateModel();
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -739,7 +723,11 @@ export abstract class IngridShared extends BaseDoctype {
     }
   }
 
-  private updateIsoCategory(item, formstate, doRemove: boolean = false) {
+  private updateIsoCategory(
+    item: any,
+    formstate: any,
+    doRemove: boolean = false,
+  ) {
     const isoKey = this.inspireToIsoMapping[item.key];
     if (!isoKey) return;
 
@@ -766,36 +754,6 @@ export abstract class IngridShared extends BaseDoctype {
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`,
       );
     }
-  }
-
-  private async checkInThesaurus(
-    http: HttpClient,
-    model,
-    item,
-    thesaurus: string,
-  ): Promise<ThesaurusResult> {
-    const response = await firstValueFrom(
-      http.get<any[]>(
-        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
-          item,
-        )}&type=EXACT`,
-      ),
-    );
-    const thesaurusName =
-      thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
-    if (response.length > 0) {
-      const exists = model.keywords[thesaurus].some(
-        (item) => item.label === response[0].label,
-      );
-      if (!exists) model.keywords[thesaurus].push(response[0]);
-      return {
-        thesaurus: thesaurusName,
-        found: true,
-        alreadyExists: exists,
-        value: response[0].label,
-      };
-    }
-    return { thesaurus: thesaurusName, found: false, value: item };
   }
 
   addSpatialSection() {
@@ -1738,44 +1696,6 @@ export abstract class IngridShared extends BaseDoctype {
       item.disabled = true;
     }
     return item;
-  }
-
-  private checkInThemes(
-    formState: any,
-    item: string,
-    options: KeywordSectionOptions,
-  ): ThesaurusResult {
-    const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
-    if (id) {
-      const exists = formState.mainModel.themes.some(
-        (entry) => entry.key === id,
-      );
-      if (!exists) {
-        const itemTheme = { key: id };
-        formState.mainModel.themes.push(itemTheme);
-        if (options.thesaurusTopics) {
-          this.updateIsoCategory(itemTheme, formState);
-        }
-      }
-      return {
-        thesaurus: "INSPIRE-Themen",
-        found: true,
-        alreadyExists: exists,
-        value: item,
-      };
-    }
-    return { thesaurus: "INSPIRE-Themen", found: false, value: item };
-  }
-
-  private addFreeKeyword(model: any, item: string): ThesaurusResult {
-    const exists = model.keywords.free.some((entry) => entry === item);
-    if (!exists) model.keywords.free.push({ label: item });
-    return {
-      found: true,
-      value: item,
-      thesaurus: "Freie Schlagworte",
-      alreadyExists: exists,
-    };
   }
 
   private mapDocumentTypeToClass(id: string) {
