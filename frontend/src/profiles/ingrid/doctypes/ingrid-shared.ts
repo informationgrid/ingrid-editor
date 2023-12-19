@@ -1267,6 +1267,8 @@ export abstract class IngridShared extends BaseDoctype {
           },
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
+              !ctrl.value ||
+              ctrl.value.length === 0 ||
               (<any[]>ctrl.value)?.every(
                 (row) =>
                   row.type &&
