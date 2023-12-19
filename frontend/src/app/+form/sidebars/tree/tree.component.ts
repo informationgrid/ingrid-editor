@@ -141,6 +141,10 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
+    this.selection.onSelectNodeByKeyboard.subscribe((value) => {
+      this.multiEditMode.next(value);
+    });
+
     this.database.init(this.forAddresses);
 
     this.dataSource = new DynamicDataSource(

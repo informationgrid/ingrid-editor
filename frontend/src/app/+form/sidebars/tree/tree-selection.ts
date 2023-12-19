@@ -21,8 +21,11 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { SelectionModel } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
+import { EventEmitter } from "@angular/core";
 
 export class TreeSelection {
+  onSelectNodeByKeyboard = new EventEmitter<any>();
+
   model = new SelectionModel<TreeNode>(true);
 
   lastSelectedNode: TreeNode;
@@ -51,11 +54,13 @@ export class TreeSelection {
         this.model.toggle(node);
         this.multiSelectionModeEnabled = true;
         this.model.select(node);
+        this.onSelectNodeByKeyboard.emit(this.multiSelectionModeEnabled);
         return;
       } else if ($event?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
         this.multiSelectionModeEnabled = true;
         this.nodeSelectionToggle(node, $event);
+        this.onSelectNodeByKeyboard.emit(this.multiSelectionModeEnabled);
         return;
       }
       const isUiEvent = $event !== undefined && $event !== null;
