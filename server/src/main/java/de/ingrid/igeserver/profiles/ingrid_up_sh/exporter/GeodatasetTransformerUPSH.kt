@@ -86,7 +86,7 @@ class GeodatasetTransformerUPSH(
             "ordinal" -> "OrdinalFeature"
             "scalar" -> "ScalarFeature"
             "other" -> "OtherFeature"
-            else -> ""
+            else -> "OtherFeature"
         }
     }
 }
