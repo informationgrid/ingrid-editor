@@ -72,8 +72,7 @@
           }
         },
         "_uuid": {
-          "type": "string",
-          "format": "uuid"
+          "type": "string"
         },
         "title": {
           "type": "string"

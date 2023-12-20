@@ -14,8 +14,7 @@
           "type": ["null", "boolean"]
         },
         "_uuid": {
-          "type": "string",
-          "format": "uuid"
+          "type": "string"
         },
         "_type": {
           "const": "InGridDataCollection"
