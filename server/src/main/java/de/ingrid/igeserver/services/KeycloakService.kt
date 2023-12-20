@@ -212,6 +212,18 @@ class KeycloakService : UserManagementService {
         }
     }
 
+    override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
+        try {
+            return (client as KeycloakCloseableClient).realm().users()
+                .search("id:$uuid", 1,1)
+                .first()
+        } catch (e: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(uuid, "User")
+        } catch (e: Exception) {
+            throw UnauthenticatedException.withUser(uuid, e)
+        }
+    }
+
     override fun getLatestLoginDate(client: Closeable, login: String): Date? {
         // This only works for Users with an active Session
         try {

@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.User
+import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.security.core.Authentication
 import java.io.Closeable
 import java.security.Principal
@@ -34,6 +35,7 @@ interface UserManagementService {
     fun getLatestLoginDate(client: Closeable, login: String): Date?
 
     fun getUser(client: Closeable, login: String): User
+    fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation
     fun getRoles(principal: Authentication): Set<String>?
     fun getName(principal: Principal): String?
 
