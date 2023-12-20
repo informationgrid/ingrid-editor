@@ -1,7 +1,7 @@
 @import "src/variables";
 
 .spacing {
-  padding-bottom: 30px;
+  padding-bottom: 15px;
 }
 
 .search-content {
@@ -14,35 +14,39 @@
   }
 }
 
-.no-padding {
-  padding: 0;
-}
-
-.result-header {
-  font-weight: 500;
-  padding-bottom: 16px;
-
-  .mat-icon {
-    height: 16px;
-    vertical-align: middle;
+::ng-deep .quicksearch-auto {
+  .mat-mdc-option,
+  .mat-mdc-optgroup-label {
+    padding: 0 !important;
   }
-}
 
-.research-icon svg .coloring-stroke {
-  stroke: $ige-secondary;
-}
-
-.result-title {
-  color: $ige-secondary;
-  font-weight: 500;
-  padding-bottom: 6px;
-}
-
-.show-all-link {
-  line-height: 36px;
+  .mat-mdc-optgroup-label span {
+    color: $ige-secondary;
+    font-weight: 500 !important;
+  }
 
   .mat-icon {
-    vertical-align: middle;
-    padding-bottom: 4px;
+    padding-right: 4px;
+
+    svg .coloring-stroke {
+      stroke: $ige-secondary;
+    }
+  }
+
+  .mat-icon + span {
+    color: $ige-secondary;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  .result-header {
+    span {
+      font-weight: 500;
+    }
+
+    .mat-icon {
+      height: 16px;
+    }
   }
 }
