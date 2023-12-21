@@ -153,10 +153,10 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, cat
 
         return (0 until biggestListSize).map {
             Resolution(
-                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toInt(), // "1:1000"
+                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toFloat(), // "1:1000"
                 groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
-                    ?.toInt(),
-                scanResolution.getOrNull(it)?.trim()?.toInt()
+                    ?.toFloat(),
+                scanResolution.getOrNull(it)?.trim()?.toFloat()
             )
         }
     }
