@@ -465,9 +465,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
                     if (constraint.isAnchor) {
-                        // TODO: handle values not found in codelist -> create free entry
                         val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
-                        KeyValue(key)
+                        if (key == null) KeyValue(null, constraint.value) else KeyValue(key)
                     } else {
                         KeyValue(null, constraint.value)
                     }
