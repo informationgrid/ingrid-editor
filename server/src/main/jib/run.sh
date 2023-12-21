@@ -1,6 +1,10 @@
 #!/bin/bash
 if [[ -n "${WAIT_FOR_PARAM}" ]]; then
-  /wait-for-it.sh ${WAIT_FOR_PARAM} -t 120
+  TIMEOUT=120
+  if [[ -n "${WAIT_FOR_PARAM_TIMEOUT}" ]]; then
+    TIMEOUT=${WAIT_FOR_PARAM_TIMEOUT}
+  fi
+  /wait-for-it.sh ${WAIT_FOR_PARAM} -t ${TIMEOUT}
 fi
 
 echo "Adapt index.html to match context path"
