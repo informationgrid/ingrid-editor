@@ -17,7 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
+import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
+import de.ingrid.igeserver.services.UserManagementService
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -36,4 +38,5 @@ import org.springframework.test.context.jdbc.SqlConfig
 @ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud"])
 class IntegrationTest: AnnotationSpec() {
     override fun extensions() = listOf(SpringExtension)
+    @MockkBean(relaxed = true) lateinit var userManagementService: UserManagementService
 }
