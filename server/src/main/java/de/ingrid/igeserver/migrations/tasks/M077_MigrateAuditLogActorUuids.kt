@@ -63,11 +63,13 @@ class M077_MigrateAuditLogActorUuids : MigrationBase("0.77") {
             val keycloakUuids = entityManager.createNativeQuery(uuidSql).resultList
 
             userManagementService.getClient().use { client ->
-                keycloakUuids.forEach { uuid ->
-                    getLogin(uuid as String)?.let { login ->
-                        migrateUUIDToLogin(login, uuid)
+                keycloakUuids
+                    .filterNotNull()
+                    .forEach { uuid ->
+                        getLogin(uuid as String)?.let { login ->
+                            migrateUUIDToLogin(login, uuid)
+                        }
                     }
-                }
             }
         }
     }
