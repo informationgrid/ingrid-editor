@@ -4,11 +4,6 @@
   display: block;
 }
 
-// Accessibility
-mat-drawer-content {
-  min-width: 1024px;
-}
-
 .user-popup {
   padding-right: 0;
 }
@@ -28,7 +23,9 @@ mat-drawer-content {
 :host ::ng-deep mat-drawer-content.mat-drawer-content {
   display: flex;
   flex-direction: column;
-  flex: 1;
+
+  // Accessibility
+  min-width: 1024px;
 }
 
 .mat-drawer {
