@@ -20,6 +20,11 @@
   height: 100%;
 }
 
+// Accessibility
+mat-drawer-container {
+  overflow: auto;
+}
+
 :host ::ng-deep mat-drawer-content.mat-drawer-content {
   display: flex;
   flex-direction: column;
