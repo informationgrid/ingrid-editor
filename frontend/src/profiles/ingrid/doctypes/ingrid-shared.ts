@@ -163,6 +163,7 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 hide: "!model.isInspireIdentified",
               },
+              resetOnHide: false,
               options: [
                 {
                   label: "Kein InVeKoS Datensatz",

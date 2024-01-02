@@ -115,6 +115,7 @@ export interface SelectOptions extends Options {
   noValueLabel?: string;
   change?: any;
   hooks?: any;
+  resetOnHide?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -535,6 +536,7 @@ export class FormFieldHelper {
       },
       expressions: expressions,
       hooks: options?.hooks,
+      resetOnHide: options?.resetOnHide,
     };
   }
 
