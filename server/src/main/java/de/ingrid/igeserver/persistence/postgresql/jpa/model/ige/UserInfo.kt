@@ -62,8 +62,8 @@ class UserInfo {
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
-        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false, updatable = false)],
-        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)]
+        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
