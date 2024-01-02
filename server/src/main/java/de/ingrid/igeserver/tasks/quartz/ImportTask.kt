@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.api.messaging.MessageTarget
@@ -32,6 +33,7 @@ import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import net.pwall.json.schema.output.BasicErrorEntry
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -105,8 +107,9 @@ class ImportTask(
             }
 
         } catch (ex: Exception) {
+            val errorMessage = prepareErrorMessage(ex)
             message.apply {
-                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(ex.message ?: ex.toString())
+                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(errorMessage)
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
@@ -115,6 +118,18 @@ class ImportTask(
         }
 
         log.debug("Task finished: Import for '$info.catalogId'")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun prepareErrorMessage(ex: Exception): String {
+        var message = ex.message ?: ex.toString()
+        if (ex is ValidationException) {
+            val details = ex.data?.get("error") as List<BasicErrorEntry>?
+            message += ": " + details
+                ?.filter { it.error != "A subschema had errors" }
+                ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+        }
+        return message
     }
 
     private fun checkForValidDocumentsInProfile(profile: CatalogProfile, report: OptimizedImportAnalysis) {
