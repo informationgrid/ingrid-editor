@@ -16,69 +16,58 @@
     >
         <ng-container *ngIf="docs?.length > 0 || addresses?.length > 0">
             <div
-                class="result-header flex-row justify-content-space-between align-items-stretch"
+                class="result-header flex-row justify-content-space-between align-items-center"
+                role="group"
+                aria-labelledby="result-header"
             >
-                <div>Suchvorschläge</div>
-                <div class="extra-large-spacing link-text">
-                    <a (click)="openResearchPage()">
-                        <mat-icon
-                            svgIcon="Recherche"
-                            class="research-icon"
-                        ></mat-icon>
-                        Erweiterte Suche
-                    </a>
-                </div>
+                <span id="result-header" role="presentation"
+                    >Suchvorschläge</span
+                >
+                <mat-option (onSelectionChange)="openResearchPage()">
+                    <mat-icon svgIcon="Recherche"></mat-icon>
+                    Erweiterte Suche
+                </mat-option>
             </div>
 
-            <div class="result-title">Daten ({{ numDocs }})</div>
+            <mat-optgroup label="Daten ({{ numDocs }})">
+                <mat-option
+                    *ngFor="let doc of docs"
+                    (onSelectionChange)="selectDoc.next(doc._uuid)"
+                >
+                    <ige-document-list-item
+                        [doc]="doc"
+                    ></ige-document-list-item>
+                </mat-option>
 
-            <mat-option
-                *ngFor="let doc of docs"
-                class="multiline no-padding"
-                (onSelectionChange)="selectDoc.next(doc._uuid)"
-            >
-                <ige-document-list-item [doc]="doc"></ige-document-list-item>
-            </mat-option>
-
-            <div
-                *ngIf="numDocs > 5"
-                class="show-all-link link-text extra-large-spacing"
-            >
-                <a
-                    class="link-text"
-                    (click)="openResearchPage()"
-                    data-cy="all-link-data"
+                <mat-option
+                    *ngIf="numDocs > 5"
+                    (onSelectionChange)="openResearchPage()"
                 >
                     <mat-icon>keyboard_arrow_right</mat-icon>
                     Alle
-                </a>
-            </div>
+                </mat-option>
+            </mat-optgroup>
+
             <div class="spacing"></div>
 
-            <div class="result-title">Adressen ({{ numAddresses }})</div>
-            <mat-option
-                *ngFor="let address of addresses"
-                class="multiline no-padding"
-                (onSelectionChange)="selectAddress.next(address._uuid)"
-            >
-                <ige-document-list-item
-                    [doc]="address"
-                ></ige-document-list-item>
-            </mat-option>
+            <mat-optgroup label="Adressen ({{ numAddresses }})">
+                <mat-option
+                    *ngFor="let address of addresses"
+                    (onSelectionChange)="selectAddress.next(address._uuid)"
+                >
+                    <ige-document-list-item
+                        [doc]="address"
+                    ></ige-document-list-item>
+                </mat-option>
 
-            <div
-                *ngIf="numAddresses > 5"
-                class="show-all-link link-text extra-large-spacing"
-            >
-                <a
-                    class="link-text"
-                    (click)="openResearchPage(true)"
-                    data-cy="all-link-address"
+                <mat-option
+                    *ngIf="numAddresses > 5"
+                    (onSelectionChange)="openResearchPage(true)"
                 >
                     <mat-icon>keyboard_arrow_right</mat-icon>
                     Alle
-                </a>
-            </div>
+                </mat-option>
+            </mat-optgroup>
         </ng-container>
     </mat-autocomplete>
 </div>

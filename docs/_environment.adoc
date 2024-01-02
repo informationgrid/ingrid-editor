@@ -135,6 +135,10 @@
 |Wait for a connection to another service, like a database.
 |
 
+|WAIT_FOR_PARAM_TIMEOUT
+|The timeout in seconds to wait for a connection.
+|
+
 |ZABBIX_API_KEY
 |
 |

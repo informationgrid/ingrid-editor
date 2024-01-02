@@ -43,7 +43,7 @@ export class GeoDatasetDoctypeUPSH extends GeoDatasetDoctype {
   };
 
   private getGeometryContextFieldConfig(): FormlyFieldConfig {
-    return this.addTable("geometryContext", "Geometry Context", {
+    return this.addTable("geometryContext", "Geometry-Kontext", {
       supportUpload: false,
       dialog: GeometryContextDialogComponent,
       columns: [

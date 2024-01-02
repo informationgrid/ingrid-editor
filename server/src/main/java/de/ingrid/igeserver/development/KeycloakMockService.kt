@@ -23,6 +23,7 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.services.KeycloakService
 import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
+import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.security.acls.model.NotFoundException
@@ -75,6 +76,11 @@ class KeycloakMockService : UserManagementService {
         return mapUser(index)
     }
 
+    override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
+        val index = config.logins?.indexOf(uuid) ?: throw NotFoundException("Login not found $uuid")
+        return mapUserRepresentation(index)
+    }
+
     private fun mapUser(index: Int) = User(
         config.logins?.get(index) ?: "",
         config.firstName?.get(index) ?: "",
@@ -89,6 +95,13 @@ class KeycloakMockService : UserManagementService {
         Date(0),
         Date(0)
     )
+
+    private fun mapUserRepresentation(index: Int) = UserRepresentation().apply {
+        username = config.logins?.get(index) ?: ""
+        firstName = config.firstName?.get(index) ?: ""
+        lastName = config.lastName?.get(index) ?: ""
+        email = "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com"
+    }
 
     override fun getCurrentPrincipal(): Principal? {
         return Principal { config.logins?.get(config.currentUser) ?: "unknown" }

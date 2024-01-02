@@ -19,6 +19,6 @@ Umwelt
 
 # ISO Abbildung
 
-Schlüsselwort: umgangssprachlich verwendete Wörter, Ausdrücke oder formalisierte Fachbegriffe, die den Inhalt beschreiben
+Thematische Einordnung des Datenbestandes.
 
-Domain: 53 (gmd:keyword)
+Domain: 41 (gmd:topicCategory)

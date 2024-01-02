@@ -66,7 +66,11 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val output = convertIsoToJson(catalogId, finalObject)
+        val output = try {
+            convertIsoToJson(catalogId, finalObject)
+        } catch (ex: Exception) {
+            throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
+        }
         
         log.debug("Created JSON from imported file: $output")
 

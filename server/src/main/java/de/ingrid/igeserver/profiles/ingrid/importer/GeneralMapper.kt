@@ -411,7 +411,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         val statusKey = if (status == null) null else codeListService.getCodeListEntryId("523", status, "iso")
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
-            ?.mapNotNull {
+            ?.map {
 
                 val instant = it.extent?.extent?.timeInstant?.timePosition
                 if (instant != null) {
@@ -434,7 +434,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull<TimeInfo>(0)
+            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey))
     }
 
     private fun determineTemporalType(period: TimePeriod): KeyValue? {
@@ -465,9 +465,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
                     if (constraint.isAnchor) {
-                        // TODO: handle values not found in codelist -> create free entry
                         val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
-                        KeyValue(key)
+                        if (key == null) KeyValue(null, constraint.value) else KeyValue(key)
                     } else {
                         KeyValue(null, constraint.value)
                     }
@@ -727,9 +726,9 @@ data class MaintenanceInterval(
 )
 
 data class TimeInfo(
-    val date: String?,
-    val type: KeyValue?,
-    val status: KeyValue?,
+    val date: String? = null,
+    val type: KeyValue? = null,
+    var status: KeyValue? = null,
     val untilDate: String? = null,
     val dateTypeSince: KeyValue? = null
 )
