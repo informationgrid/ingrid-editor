@@ -413,8 +413,13 @@ export class PublishPlugin extends SaveBase {
         const controlLabel = control._fields[0].props.externalLabel;
         const errorKey = Object.keys(control.errors)[0];
         const error = control.errors[errorKey];
-        if (error.message) errors.push(controlLabel + ": " + error.message);
-        else
+        if (error.message) {
+          if (typeof error.message === "function") {
+            errors.push(controlLabel);
+          } else {
+            errors.push(controlLabel + ": " + error.message);
+          }
+        } else
           errors.push(
             controlLabel +
               ": " +
