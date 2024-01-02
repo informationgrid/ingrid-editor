@@ -369,7 +369,7 @@ export abstract class IngridShared extends BaseDoctype {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
                       field.options.formState.mainModel?.invekos?.key;
-                    if (invekosValue === "none") return true;
+                    if (!invekosValue || invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
                       ctrl.value?.some(
