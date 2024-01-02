@@ -140,8 +140,8 @@ export class TabSqlComponent implements OnInit {
       start === -1
         ? ""
         : end === -1
-        ? answer.substring(start)
-        : answer.substring(start, end);
+          ? answer.substring(start)
+          : answer.substring(start, end);
     return (
       "SELECT document1.*, document_wrapper.category FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
       adaptedAnswer

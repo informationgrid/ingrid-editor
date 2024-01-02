@@ -103,9 +103,9 @@ export class BreadCrumbTooltipPipe implements PipeTransform {
       return value.disabled && value.permission?.canRead
         ? "Sie haben keine Schreibberechtigung auf diesen Ordner"
         : value.disabled &&
-          value.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id
-        ? "Sie haben keine Leseberechtigung auf diesen Ordner"
-        : "";
+            value.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id
+          ? "Sie haben keine Leseberechtigung auf diesen Ordner"
+          : "";
     }
     return value;
   }

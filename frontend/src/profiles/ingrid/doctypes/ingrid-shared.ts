@@ -1702,8 +1702,8 @@ export abstract class IngridShared extends BaseDoctype {
             (value.value.key === "gsaa"
               ? " + GSAA"
               : value.value.key === "lpis"
-              ? " + LPIS"
-              : "") +
+                ? " + LPIS"
+                : "") +
             "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
             (value.value.key === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
             "</li></ul>",

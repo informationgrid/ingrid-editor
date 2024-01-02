@@ -268,9 +268,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   }
 
   private addUploadUri(uri: string, hash: String) {
-    return (this.imageLinks[
-      uri
-    ] = `${ConfigService.backendApiUrl}upload/download/${hash}`);
+    return (this.imageLinks[uri] =
+      `${ConfigService.backendApiUrl}upload/download/${hash}`);
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
