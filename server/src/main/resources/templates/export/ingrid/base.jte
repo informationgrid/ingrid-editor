@@ -128,7 +128,7 @@
     "resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
     "status": @template.ingrid.partial.key-value(item = time.getStatus()),
     @if(time.getUntilDate() == null)
-        "resourceDate": "${time.getDate()}",
+        "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
     @else
         "resourceRange": {
         "start": "${time.getDate()}",
