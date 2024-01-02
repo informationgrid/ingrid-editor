@@ -35,6 +35,7 @@ export class UvpNumberBehaviour extends Plugin {
       key: "uvpCodelist",
       type: "ige-select",
       defaultValue: "9000",
+      wrappers: ["form-field"],
       props: {
         showSearch: true,
         appearance: "outline",

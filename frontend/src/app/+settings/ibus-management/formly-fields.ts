@@ -28,6 +28,7 @@ export const iBusFields: FormlyFieldConfig[] = [
       noDrag: true,
     },
     fieldArray: {
+      className: "space-bottom flex-1",
       fieldGroup: [
         {
           key: "url",
@@ -67,6 +68,7 @@ export const iBusFields: FormlyFieldConfig[] = [
           type: "ige-select",
           defaultValue: ["internet"],
           className: "white-bg publicationTypes",
+          wrappers: ["form-field"],
           props: {
             label: "Veröffentlichungsrecht",
             placeholder: "",
