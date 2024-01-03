@@ -136,14 +136,14 @@ export class TreeComponent implements OnInit {
     private addressTreeStore: AddressTreeStore,
     private dataTreeStore: TreeStore,
   ) {
-    const store = this.forAddresses
-      ? this.addressTreeStore
-      : this.dataTreeStore;
-    this.selection = new TreeSelection(this.treeControl, store);
     this.treeControl.dataNodes = [];
   }
 
   ngOnInit(): void {
+    const store = this.forAddresses
+      ? this.addressTreeStore
+      : this.dataTreeStore;
+    this.selection = new TreeSelection(this.treeControl, store);
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(
