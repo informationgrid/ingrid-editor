@@ -19,7 +19,6 @@
  */
 import { Injectable } from "@angular/core";
 import {
-  HttpErrorResponse,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
@@ -61,10 +60,7 @@ export class AuthInterceptor implements HttpInterceptor {
           setTimeout(() => this.authFactory.get().logout(), 5000);
           return null;
         }
-        // do not handle 403-errors here
-        // if (error.status === 403) {
-        // this.showError(this.getMessage(error));
-        // }
+
         console.error("Error Occurred", error);
         return throwError(() => error);
       }),
@@ -76,17 +72,5 @@ export class AuthInterceptor implements HttpInterceptor {
     const loggedOutError = new IgeError();
     loggedOutError.setMessage(message);
     this.modalService.showIgeError(loggedOutError, true);
-  }
-
-  private getMessage(error: HttpErrorResponse): string {
-    let errorText = error.error?.errorText ?? null;
-    switch (errorText) {
-      case "No access to referenced dataset":
-        return "Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.";
-      case "No read access to document":
-        return "Sie haben keine Berechtigung auf diesen Datensatz.";
-      default:
-        return "Sie haben keine Berechtigung für diese Aktion.";
-    }
   }
 }

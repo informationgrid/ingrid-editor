@@ -109,6 +109,15 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
       case "MAIL_ERROR":
         return `Es gab ein Problem beim Versenden der Email: ${error.errorText}`;
+      case "FORBIDDEN":
+        switch (error.errorText) {
+          case "No access to referenced dataset":
+            return "Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.";
+          case "No read access to document":
+            return "Sie haben keine Berechtigung auf diesen Datensatz.";
+          default:
+            return "Sie haben keine Berechtigung für diese Aktion.";
+        }
       default:
         return null;
     }
