@@ -21,6 +21,8 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { SelectionModel } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 export class TreeSelection {
   model = new SelectionModel<TreeNode>(true);
@@ -32,8 +34,10 @@ export class TreeSelection {
   allowMultiSelectionMode = true;
 
   activeNode: TreeNode = null;
-
-  constructor(private treeControl: FlatTreeControl<TreeNode>) {}
+  constructor(
+    private treeControl: FlatTreeControl<TreeNode>,
+    private store: TreeStore | AddressTreeStore,
+  ) {}
 
   /**
    *
@@ -51,11 +55,13 @@ export class TreeSelection {
         this.model.toggle(node);
         this.multiSelectionModeEnabled = true;
         this.model.select(node);
+        this.store.update({ multiSelectMode: true });
         return;
       } else if ($event?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
         this.multiSelectionModeEnabled = true;
         this.nodeSelectionToggle(node, $event);
+        this.store.update({ multiSelectMode: true });
         return;
       }
       const isUiEvent = $event !== undefined && $event !== null;
