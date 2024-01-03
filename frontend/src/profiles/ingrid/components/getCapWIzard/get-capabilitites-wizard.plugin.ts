@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -123,8 +123,8 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       doc === null
         ? null
         : doc._type === "FOLDER"
-        ? doc.id
-        : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+          ? doc.id
+          : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
     const newDoc = new IgeDocument("InGridGeoService", +parentFolder);
     const model: IgeDocument = {
       ...newDoc,

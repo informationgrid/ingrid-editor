@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -62,8 +62,8 @@ class UserInfo {
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
-        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false, updatable = false)],
-        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)]
+        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore

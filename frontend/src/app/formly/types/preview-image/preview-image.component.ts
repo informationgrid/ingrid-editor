@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -268,9 +268,8 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   }
 
   private addUploadUri(uri: string, hash: String) {
-    return (this.imageLinks[
-      uri
-    ] = `${ConfigService.backendApiUrl}upload/download/${hash}`);
+    return (this.imageLinks[uri] =
+      `${ConfigService.backendApiUrl}upload/download/${hash}`);
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {

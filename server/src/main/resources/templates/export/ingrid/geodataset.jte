@@ -88,7 +88,7 @@
         @endfor
         ]
     },
-<%--    "isInspireConform": ${model.isInspireConform()},--%>
+    "isInspireConform": false,
     "vectorSpatialRepresentation": [
     @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {

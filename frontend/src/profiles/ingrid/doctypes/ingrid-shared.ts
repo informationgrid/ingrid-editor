@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -163,6 +163,7 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 hide: "!model.isInspireIdentified",
               },
+              resetOnHide: false,
               options: [
                 {
                   label: "Kein InVeKoS Datensatz",
@@ -369,7 +370,7 @@ export abstract class IngridShared extends BaseDoctype {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
                       field.options.formState.mainModel?.invekos?.key;
-                    if (invekosValue === "none") return true;
+                    if (!invekosValue || invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
                       ctrl.value?.some(
@@ -1701,8 +1702,8 @@ export abstract class IngridShared extends BaseDoctype {
             (value.value.key === "gsaa"
               ? " + GSAA"
               : value.value.key === "lpis"
-              ? " + LPIS"
-              : "") +
+                ? " + LPIS"
+                : "") +
             "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
             (value.value.key === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
             "</li></ul>",

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -413,8 +413,13 @@ export class PublishPlugin extends SaveBase {
         const controlLabel = control._fields[0].props.externalLabel;
         const errorKey = Object.keys(control.errors)[0];
         const error = control.errors[errorKey];
-        if (error.message) errors.push(controlLabel + ": " + error.message);
-        else
+        if (error.message) {
+          if (typeof error.message === "function") {
+            errors.push(controlLabel);
+          } else {
+            errors.push(controlLabel + ": " + error.message);
+          }
+        } else
           errors.push(
             controlLabel +
               ": " +

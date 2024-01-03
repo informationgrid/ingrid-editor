@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,6 +28,7 @@ export const iBusFields: FormlyFieldConfig[] = [
       noDrag: true,
     },
     fieldArray: {
+      className: "space-bottom flex-1",
       fieldGroup: [
         {
           key: "url",
@@ -67,6 +68,7 @@ export const iBusFields: FormlyFieldConfig[] = [
           type: "ige-select",
           defaultValue: ["internet"],
           className: "white-bg publicationTypes",
+          wrappers: ["form-field"],
           props: {
             label: "Veröffentlichungsrecht",
             placeholder: "",
