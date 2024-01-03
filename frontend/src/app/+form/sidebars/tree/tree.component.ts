@@ -44,6 +44,10 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
+import { TreeQuery } from "../../../store/tree/tree.query";
+import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 export enum TreeActionType {
   ADD,
@@ -105,7 +109,9 @@ export class TreeComponent implements OnInit {
   );
 
   /** The node selection must be kept local */
-  selection: TreeSelection = new TreeSelection(this.treeControl);
+  selection: TreeSelection;
+
+  private tree: TreeQuery | AddressTreeQuery;
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
@@ -127,11 +133,17 @@ export class TreeComponent implements OnInit {
     public configService: ConfigService,
     private cdr: ChangeDetectorRef,
     private docBehaviour: DocBehavioursService,
+    private addressTreeStore: AddressTreeStore,
+    private dataTreeStore: TreeStore,
   ) {
     this.treeControl.dataNodes = [];
   }
 
   ngOnInit(): void {
+    const store = this.forAddresses
+      ? this.addressTreeStore
+      : this.dataTreeStore;
+    this.selection = new TreeSelection(this.treeControl, store);
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(
