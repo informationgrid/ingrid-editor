@@ -61,11 +61,12 @@ export class AuthInterceptor implements HttpInterceptor {
           setTimeout(() => this.authFactory.get().logout(), 5000);
           return null;
         }
-        if (error.status === 403) {
-          this.showError(this.getMessage(error));
-        }
-        console.log("Error Occurred", error);
-        return throwError(error);
+        // do not handle 403-errors here
+        // if (error.status === 403) {
+        // this.showError(this.getMessage(error));
+        // }
+        console.error("Error Occurred", error);
+        return throwError(() => error);
       }),
     );
   }

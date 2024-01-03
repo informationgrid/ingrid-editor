@@ -78,12 +78,13 @@ export class CodelistsComponent implements OnInit {
     this.disableSyncButton = false;
     if (e.error.errorText === "Failed to synchronize code lists") {
       return throwError(
-        new IgeError(
-          "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository.",
-        ),
+        () =>
+          new IgeError(
+            "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository.",
+          ),
       );
     }
-    return throwError(e);
+    return throwError(() => e);
   }
 
   updateCodelistTable(option: SelectOptionUi) {
