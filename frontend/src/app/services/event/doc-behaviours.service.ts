@@ -34,11 +34,15 @@ export class DocBehavioursService {
     if (forAddress) {
       const profile = this.profileService.getProfile(node.type);
       return (
+        (!node.hasWritePermission && !node.hasOnlySubtreeWritePermission) ||
         profile.addressType === "person" ||
         (typeToInsert === "FOLDER" && node.type !== "FOLDER")
       );
     }
-    return node.type !== "FOLDER";
+    return (
+      (!node.hasWritePermission && !node.hasOnlySubtreeWritePermission) ||
+      node.type !== "FOLDER"
+    );
   };
   private disabledConditionAlternative;
 

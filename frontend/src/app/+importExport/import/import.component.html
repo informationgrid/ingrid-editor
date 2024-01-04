@@ -155,7 +155,9 @@
                             optionsFormGroup.get("parentAddress").invalid
                         ) {
                             <div class="error-box">
-                                Sie haben keine Berechtigung auf den Anlageort
+                                Sie haben keine Berechtigung auf den Anlageort.
+                                Bitte wählen Sie unter Daten und Adressen einen
+                                Ort mit Schreibberechtigungen aus.
                             </div>
                         }
                         @if (datasetsWithNoPermission.length > 0) {
