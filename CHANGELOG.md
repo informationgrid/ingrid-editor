@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.7.3 (13.12.2023)
+
+### Bugfixes
+
+- ARS wird in Nominatim-Suche nicht mehr angezeigt (#5711)
+- IGE-NG: Nächtlicher Virusscan wird nicht ausgeführt (#5031)
+
+## 1.7.1 (14.11.2023)
+
+### Bugfixes
+
+- GDI-Testsuite, Fehler (#5694)
+- Systemumgebung wird nicht korrekt ins ISO geschrieben (#5682)
+- Ordner dürfen nicht indiziert werden (#5681)
+- Fehler GDI-Testsuite (#5671)
+
 ## 1.7.0 (09.11.2023)
 
 ### Features
