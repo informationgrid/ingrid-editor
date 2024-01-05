@@ -1,5 +1,38 @@
 # Changelog
 
+## 7.0.0 (05.01.2024)
+
+### Features
+
+- Status wird über die Importfunktion nicht importiert (#5827)
+- unklare Fehlermeldung beim Import einer XML Datei (#5826)
+- Feld "Datenformat" für Verweise wieder einführen (#5744)
+- Anzeige der "Abgelaufenen Metadaten" im Report ausblenden (#5743)
+- Katalog: "Berechtigungen anzeigen" auch für Metadaten-Admin (#5718)
+- Report Änderungen von Verfahren / neg. Vorprüfungen (insbesondere Löschung) (#5676)
+
+### Bugfixes
+
+- Geodatensatz kann ohne Pflichtfeld Zugriffsbeschränkungen veröffentlicht werden (#5815)
+- Import in Ordner möglich, an denen man nicht berechtigt ist (#5814)
+- Unklare Fehlmeldung bei XML Import (#5801)
+- Titel Symbolkatalog und Schlüsselkatalog werden nicht ins ISO geschrieben (#5799)
+- Druckvorschau beeinflusst Hauptformular (#5792)
+- ISO-Export Konformität, ist das so richtig? (#5786)
+- Anzeige (Koordinaten) der Raumbezüge unterschiedlich, Nominatim vs. wfs_gnde (#5784)
+- gmd:hierarchyLevel für Datenserien richtig setzen (#5779)
+- Capabilites-Assistent: Fehler bei der Veröffentlichung eines Eintrags zum Demokatalog CSW (#5761)
+- Metadaten der Gemeindegrenzen können nicht als XML runtergeladen werden. (#5752)
+- MD-Admin kann keine Benutzer löschen (#5746)
+- Fehler Portalansicht bei MD aus IGE-NG (#5729)
+- URL-Pflege funktioniert nicht im Geodatenkatalog Niederrhein (#5727)
+- Fehler JSON-Validierung (#5722)
+- ARS wird in Nominatim-Suche nicht mehr angezeigt (#5711)
+- Beim Selektieren mehrerer Datensätze werden die verfügbaren Aktionen nicht korrekt ausgeblendet (#5703)
+- GDI-Testsuite, Fehler (#5694)
+- Systemumgebung wird nicht korrekt ins ISO geschrieben (#5682)
+- Ordner dürfen nicht indiziert werden (#5681)
+
 ## 1.7.3 (13.12.2023)
 
 ### Bugfixes
