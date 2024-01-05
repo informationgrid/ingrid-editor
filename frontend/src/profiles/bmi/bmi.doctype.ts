@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseDoctype } from "../base.doctype";
 import { inject, Injectable } from "@angular/core";
@@ -30,6 +49,7 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addInput("landingPage", "Webseite", {
           wrappers: ["panel", "form-field"],
+          placeholder: "https://...",
           validators: {
             validation: ["url"],
           },
@@ -43,7 +63,7 @@ export class BmiDoctype extends BaseDoctype {
                   ? ctrl.value.some((row) => row.type.key === "publisher")
                   : false,
               message:
-                "Fehler: Es muss die veröffentlichende Stelle als Adresse angegeben sein",
+                'Fehler: Es muss eine Adresse als "veröffentlichende Stelle" eingetragen sein.',
             },
             onePublisher: {
               expression: (ctrl) =>
@@ -125,7 +145,7 @@ export class BmiDoctype extends BaseDoctype {
                 options: this.getCodelistForSelect(20003, "type").pipe(
                   map((data) => {
                     return data;
-                  })
+                  }),
                 ),
                 codelistId: 20003,
                 wrappers: ["inline-help", "form-field"],
@@ -160,7 +180,7 @@ export class BmiDoctype extends BaseDoctype {
                 {
                   wrappers: ["inline-help", "form-field"],
                   hasInlineContextHelp: true,
-                }
+                },
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
                 options: this.getCodelistForSelect(20005, "null"),
@@ -178,7 +198,7 @@ export class BmiDoctype extends BaseDoctype {
             requiredLicense: {
               expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
               message:
-                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden.",
+                "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden (Ressource bearbeiten).",
             },
           },
         }),
@@ -187,7 +207,7 @@ export class BmiDoctype extends BaseDoctype {
           "Rechtsgrundlage für die Zugangseröffnung",
           {
             wrappers: ["panel", "form-field"],
-          }
+          },
         ),
         this.addInput("qualityProcessURI", "Qualitätssicherungsprozess URI", {
           wrappers: ["panel", "form-field"],
@@ -203,7 +223,7 @@ export class BmiDoctype extends BaseDoctype {
           {
             options: this.getCodelistForSelect(20006, "null"),
             codelistId: 20006,
-          }
+          },
         ),
       ]),
       this.addSection("Zeitbezüge", [
@@ -248,7 +268,7 @@ export class BmiDoctype extends BaseDoctype {
   addRepeatDistributionDetailList(
     id,
     label,
-    options?: RepeatDetailListOptions
+    options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this._initExpressions(options?.expressions);
     return {
@@ -261,9 +281,7 @@ export class BmiDoctype extends BaseDoctype {
         required: options?.required,
         backendUrl: this.configService.getConfiguration().backendUrl,
         infoText: options?.infoText,
-      },
-      fieldArray: {
-        fieldGroup: options?.fields,
+        fields: options?.fields[0].fieldGroup,
       },
       expressions: expressions,
       validators: options?.validators,

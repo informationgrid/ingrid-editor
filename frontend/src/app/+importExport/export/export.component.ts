@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   UntypedFormBuilder,
@@ -37,7 +56,7 @@ export class ExportComponent implements OnInit {
   exportFormats = this.exportService
     .getExportTypes()
     .pipe(
-      tap((types) => this.optionsFormGroup.get("format").setValue(types[0]))
+      tap((types) => this.optionsFormGroup.get("format").setValue(types[0])),
     );
   path: ShortTreeNode[];
   showMore = false;
@@ -48,7 +67,7 @@ export class ExportComponent implements OnInit {
     private _formBuilder: UntypedFormBuilder,
     private exportService: ExchangeService,
     private docService: DocumentService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -75,7 +94,7 @@ export class ExportComponent implements OnInit {
     let model = this.optionsFormGroup.value;
     const options = ExchangeService.prepareExportInfo(
       this.selectedIds[0],
-      model
+      model,
     );
     this.exportResult = null;
     this.exportFinished = false;
@@ -83,7 +102,7 @@ export class ExportComponent implements OnInit {
       .export(options)
       .pipe(
         catchError((error) => this.handleError(error)),
-        finalize(() => (this.exportFinished = true))
+        finalize(() => (this.exportFinished = true)),
       )
       .subscribe((response: HttpResponse<Blob>) => {
         console.log("Export-Result:", response);
@@ -135,7 +154,7 @@ export class ExportComponent implements OnInit {
     return this.getErrorFromBlob(error).then((jsonError: IgeException) => {
       if (jsonError.errorCode === "PUBLISHED_VERSION_NOT_FOUND") {
         throw new IgeError(
-          "Es können nur veröffentlichte Versionen exportiert werden."
+          "Es können nur veröffentlichte Versionen exportiert werden.",
         );
       }
       throw new IgeError(jsonError.errorText);

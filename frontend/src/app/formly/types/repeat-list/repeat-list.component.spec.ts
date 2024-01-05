@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
@@ -63,7 +82,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       input = await loader.getHarness(MatInputHarness);
@@ -148,7 +167,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
@@ -225,7 +244,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       select = await loader.getHarness(MatSelectHarness);
@@ -250,7 +269,7 @@ describe("RepeatListComponent", () => {
       spectator.detectChanges();
 
       const placeholderElement = document.querySelector(
-        ".mat-mdc-select-placeholder"
+        ".mat-mdc-select-placeholder",
       );
       expect(placeholderElement).toContainText(placeholder);
     });
@@ -286,7 +305,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);
@@ -365,7 +384,7 @@ describe("RepeatListComponent", () => {
             form: form,
             config: fieldConfig,
           },
-        }
+        },
       );
       const loader = TestbedHarnessEnvironment.loader(spectator.fixture);
       auto = await loader.getHarness(MatAutocompleteHarness);

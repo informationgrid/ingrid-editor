@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { AddressRef } from "./address-card/address-card.component";
@@ -37,7 +56,7 @@ export class AddressTypeComponent
     private dialog: MatDialog,
     private router: Router,
     private documentService: DocumentService,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
   ) {
     super();
   }
@@ -61,7 +80,7 @@ export class AddressTypeComponent
           });
           this.removeDuplicates();
           this.updateFormControl(this.addresses);
-        }
+        },
       );
     });
   }
@@ -78,9 +97,9 @@ export class AddressTypeComponent
             });
             this.removeDuplicates();
             this.updateFormControl(this.addresses);
-          }
+          },
         );
-      }
+      },
     );
   }
 
@@ -94,7 +113,7 @@ export class AddressTypeComponent
             (item.type.key === null && item.type.value === value.type.value);
           const sameUuid = item.ref._uuid === value.ref._uuid;
           return sameType && sameUuid;
-        })
+        }),
     );
     if (unique.length !== this.addresses.length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
@@ -104,7 +123,9 @@ export class AddressTypeComponent
 
   private async callEditDialog(address?: AddressRef) {
     const foundAddresses = (
-      await firstValueFrom(this.documentService.find("", 1, true, true))
+      await firstValueFrom(
+        this.documentService.findInTitleOrUuid("", 1, true, true),
+      )
     ).totalHits;
 
     if (foundAddresses) {
@@ -144,10 +165,10 @@ export class AddressTypeComponent
         .pipe(
           filter((response) => response === "confirm"),
           tap((_) =>
-            this.router.navigate([`${ConfigService.catalogId}/address`])
+            this.router.navigate([`${ConfigService.catalogId}/address`]),
           ),
           // no address to return
-          map((_) => undefined)
+          map((_) => undefined),
         );
     }
   }
@@ -176,7 +197,7 @@ export class AddressTypeComponent
   // TODO: let ige-form-error handle all error messages
   getFirstError() {
     return Object.values(this.formControl.errors).map(
-      (error) => error.message
+      (error) => error.message,
     )[0];
   }
 

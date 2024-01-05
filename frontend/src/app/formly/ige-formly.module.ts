@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
@@ -25,7 +44,6 @@ import { LeafletTypeComponent } from "./types/map/leaflet-type.component";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { TableTypeComponent } from "./types/table/table-type.component";
 import { CommonModule } from "@angular/common";
-import { MatPopoverEditModule } from "@angular/material-experimental/popover-edit";
 import { FormFieldsModule } from "../form-fields/form-fields.module";
 import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
@@ -96,6 +114,7 @@ import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-err
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
+import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -115,7 +134,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatDividerModule,
     MatListModule,
     MatTableModule,
-    MatPopoverEditModule,
     MatCardModule,
     FormlyMaterialModule,
     FormlyMatDatepickerModule,
@@ -168,7 +186,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: UploadTypeComponent,
         },
         {
-          name: "select",
+          name: "ige-select",
           component: SelectTypeComponent,
         },
         {
@@ -217,7 +235,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           component: PrintTypeComponent,
         },
         {
-          name: "selectPrint",
+          name: "ige-selectPrint",
           component: PrintTypeComponent,
         },
         {
@@ -319,6 +337,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
     UpdateGetCapabilitiesComponent,
+    HelpContextButtonComponent,
   ],
   exports: [
     ReactiveFormsModule,

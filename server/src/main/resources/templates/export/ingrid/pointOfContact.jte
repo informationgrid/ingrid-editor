@@ -52,39 +52,39 @@
                             <gco:CharacterString>${address.getPostBoxAddress()}</gco:CharacterString>
                         </gmd:deliveryPoint>
                     @endif
-                    @if(address.getStreet() != null)
+                    @if(TransformationTools.hasValue(address.getStreet()))
                         <gmd:deliveryPoint>
                             <gco:CharacterString>${address.getStreet()}</gco:CharacterString>
                         </gmd:deliveryPoint>
                     @endif
-                    @if(address.getCity() != null)
+                    @if(TransformationTools.hasValue(address.getCity()))
                         <gmd:city>
                             <gco:CharacterString>${address.getCity()}</gco:CharacterString>
                         </gmd:city>
                     @endif
-                    @if(address.getAdministrativeArea() != null)
+                    @if(TransformationTools.hasValue(address.getAdministrativeArea()))
                         <gmd:administrativeArea>
                             <gco:CharacterString>${address.getAdministrativeArea()}</gco:CharacterString>
                         </gmd:administrativeArea>
                     @endif
-                    @if(address.getZipCode() != null)
+                    @if(TransformationTools.hasValue(address.getZipCode()))
                         <gmd:postalCode>
                             <gco:CharacterString>${address.getZipCode()}</gco:CharacterString>
                         </gmd:postalCode>
                     @endif
-                    @if(address.getCountry() != null)
+                    @if(TransformationTools.hasValue(address.getCountry()))
                         <gmd:country>
                             <gco:CharacterString>${address.getCountry()}</gco:CharacterString>
                         </gmd:country>
                     @endif
-                    @if(address.getModel().getEmail() != null)
+                    @if(TransformationTools.hasValue(address.getModel().getEmail()))
                         <gmd:electronicMailAddress>
                             <gco:CharacterString>${address.getModel().getEmail()}</gco:CharacterString>
                         </gmd:electronicMailAddress>
                     @endif
                 </gmd:CI_Address>
             </gmd:address>
-            @if(address.getHomepage() != null)
+            @if(TransformationTools.hasValue(address.getHomepage()))
                 <gmd:onlineResource>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
@@ -93,7 +93,7 @@
                     </gmd:CI_OnlineResource>
                 </gmd:onlineResource>
             @endif
-            @if(address.getHoursOfService() != null)
+            @if(TransformationTools.hasValue(address.getHoursOfService()))
                 <gmd:hoursOfService>
                     <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>
                 </gmd:hoursOfService>
@@ -114,7 +114,7 @@
             <gco:DateTime>${address.getLastModified()}</gco:DateTime>
         </idf:last-modified>
     @endif
-    @for( AddressModelTransformer adr : address.getHierarchy(isAddressExport))
+    @for( AddressModelTransformer adr : address.getHierarchy())
         <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
             @if(adr.getIndividualName(false) != null )
                 <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>

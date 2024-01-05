@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject } from "@angular/core";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -19,7 +38,7 @@ export const generateUUID = function () {
     (
       c ^
       (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
+    ).toString(16),
   );
 };
 
@@ -90,12 +109,12 @@ export const copyToClipboardFn = () => {
     opts?: {
       successText?: string;
       errorText?: string;
-    }
+    },
   ) => {
     const isCopied = clipboard.copy(copyText);
     if (isCopied) {
       snackbar.open(
-        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert."
+        opts?.successText ?? "Der Text wurde in die Zwischenablage kopiert.",
       );
     } else {
       snackbar.open(opts?.errorText ?? "Der Text konnte nicht kopiert werden.");

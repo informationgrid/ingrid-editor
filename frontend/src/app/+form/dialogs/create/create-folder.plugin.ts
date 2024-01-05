@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -38,7 +57,7 @@ export class CreateFolderPlugin extends Plugin {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -64,7 +83,7 @@ export class CreateFolderPlugin extends Plugin {
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset"
+        this.forAddress ? "can_create_address" : "can_create_dataset",
       );
       this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
     }
@@ -87,7 +106,7 @@ export class CreateFolderPlugin extends Plugin {
         this.formStateService.getForm(),
         this.documentService,
         this.dialog,
-        this.forAddress
+        this.forAddress,
       );
 
       if (!handled) {
@@ -99,7 +118,7 @@ export class CreateFolderPlugin extends Plugin {
         .pipe(
           untilDestroyed(this),
           filter((entity) => entity !== undefined),
-          take(1)
+          take(1),
         )
         .subscribe((entity) => {
           let parentDocId = null;

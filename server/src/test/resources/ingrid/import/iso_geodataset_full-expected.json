@@ -493,6 +493,7 @@
   "dataset": {
     "languages": ["150", "134"]
   },
+  "isInspireConform": false,
   "vectorSpatialRepresentation": [
     {
       "topologyLevel": {

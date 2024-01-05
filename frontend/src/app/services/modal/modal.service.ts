@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable, NgZone } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ErrorDialogComponent } from "../../dialogs/error/error-dialog.component";
@@ -16,11 +35,14 @@ export class ModalService {
   errors: IgeError[] = [];
   isExclusive = false;
 
-  constructor(private dialog: MatDialog, private ngZone: NgZone) {}
+  constructor(
+    private dialog: MatDialog,
+    private ngZone: NgZone,
+  ) {}
 
   confirmWith(
     options: ConfirmDialogData,
-    hasBackdrop = true
+    hasBackdrop = true,
   ): Observable<boolean> {
     return this.dialog
       .open(ConfirmDialogComponent, {

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   EventEmitter,
@@ -8,11 +27,7 @@ import {
 } from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { ContextHelpComponent } from "../../../../../shared/context-help/context-help.component";
-import { ContextHelpService } from "../../../../../services/context-help/context-help.service";
-import { Observable, of } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { MatDialog } from "@angular/material/dialog";
 import { finalize } from "rxjs/operators";
 
 @Component({
@@ -28,14 +43,11 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   error: string = null;
 
   private drawnWkt: Layer;
-  private currentDialog: MatDialogRef<ContextHelpComponent>;
   isAnalyzing = false;
 
   constructor(
     private leafletService: LeafletService,
-    private contextHelpService: ContextHelpService,
-    private translocoService: TranslocoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -79,18 +91,5 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
 
   private drawWkt(value: string) {
     this.drawnWkt = this.leafletService.convertWKT(this.map, value, true);
-  }
-
-  public showHelpDialog() {
-    let desc: Observable<string> = of(
-      this.translocoService.translate("spatial.spatialWktHelptext")
-    );
-
-    this.currentDialog?.close();
-
-    this.contextHelpService.showContextHelpPopup(
-      "Begrenzungspolygon als WKT",
-      desc
-    );
   }
 }

@@ -1,5 +1,25 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
 import de.ingrid.igeserver.services.getCapabilities.GetCapabilitiesParserFactory
@@ -26,12 +46,12 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         val id = xpath.getString(
             doc,
             "//identificationInfo/MD_DataIdentification//identifier/MD_Identifier/code/CharacterString"
-        )
+        ) ?: throw ServerException.withReason("Identifier could not be found in record")
         val title = xpath.getString(
             doc,
             "//identificationInfo/MD_DataIdentification//citation/CI_Citation/title/CharacterString"
-        )
-        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString")
+        ) ?: throw ServerException.withReason("Title could not be found in record")
+        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString") ?: throw ServerException.withReason("Uuid could not be found in record")
         val downloads = mutableListOf<String>()
 
         val resources = xpath.getNodeList(

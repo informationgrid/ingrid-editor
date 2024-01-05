@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ActivatedRouteSnapshot,
   DetachedRouteHandle,
@@ -20,7 +39,7 @@ export const routes: Routes = [
         path: "dashboard",
         loadChildren: () =>
           import("./+dashboard/dashboard.module").then(
-            (m) => m.DashboardModule
+            (m) => m.DashboardModule,
           ),
         canActivate: [AuthGuard],
         data: {
@@ -78,7 +97,7 @@ export const routes: Routes = [
         path: "importExport",
         loadChildren: () =>
           import("./+importExport/import-export.module").then(
-            (m) => m.ImportExportModule
+            (m) => m.ImportExportModule,
           ),
         canActivate: [AuthGuard],
         data: {
@@ -158,7 +177,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
       .subscribe((user) => {
         const catalogId = user.currentCatalog.id;
         this.routesToCache = this.routesToCache.map(
-          (route) => "/" + catalogId + route
+          (route) => "/" + catalogId + route,
         );
       });
   }
@@ -166,13 +185,13 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
   public shouldDetach(_route: ActivatedRouteSnapshot): boolean {
     return this.routesToCache.some(
       // @ts-ignore
-      (definiton) => _route._routerState.url.indexOf(definiton) === 0
+      (definiton) => _route._routerState.url.indexOf(definiton) === 0,
     );
   }
 
   public store(
     route: ActivatedRouteSnapshot,
-    handle: DetachedRouteHandle
+    handle: DetachedRouteHandle,
   ): void {
     if (!route.routeConfig) return;
     this.handlers.set(route.routeConfig, handle);
@@ -190,7 +209,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
 
   public shouldReuseRoute(
     future: ActivatedRouteSnapshot,
-    curr: ActivatedRouteSnapshot
+    curr: ActivatedRouteSnapshot,
   ): boolean {
     return future.routeConfig === curr.routeConfig;
   }

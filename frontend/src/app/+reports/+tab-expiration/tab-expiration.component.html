@@ -1,0 +1,83 @@
+<page-template label="Abgelaufene Metadaten">
+    <div left-side>
+        <ng-container *ngIf="expiryDurationInDays; else expiryUnset">
+            Hier sehen Sie die Metadaten, deren Verfallszeitspanne abgelaufen
+            ist und auf die Sie Schreib- oder Leserechte haben.
+        </ng-container>
+        <ng-template #expiryUnset
+            >Um hier Datensätze sehen zu können, deren Verfallszeitspanne
+            abgelaufen ist, muss eine Verfallszeitspanne in den
+            Katalogeinstellungen definiert sein.<br /><br />Dies wird bei Bedarf
+            durch den Katalog-Administrator festgelegt.
+        </ng-template>
+    </div>
+
+    <div
+        main-header
+        *ngIf="expiryDurationInDays"
+        class="flex-col gap-12 align-items-start"
+    >
+        <button
+            mat-flat-button
+            color="primary"
+            (click)="onSearch.emit()"
+            (keyup.enter)="onSearch.emit()"
+            aria-description="Die Tabelle der abgelaufenen Metadaten aktualisieren"
+        >
+            Aktualisieren
+        </button>
+        <mat-checkbox
+            [ngModel]="isFiltered$.value"
+            (click)="toggleFilter()"
+            (keyup.enter)="toggleFilter()"
+            >Nur Datensätze für die ich verantwortlich bin
+        </mat-checkbox>
+    </div>
+
+    <div main-content *ngIf="expiryDurationInDays">
+        <ng-container *ngIf="{ shownData: shownData | async } as obs">
+            <div
+                class="leading flex-row align-items-center justify-content-center gap-12"
+            >
+                <ng-container *ngIf="!isSearching; else searching">
+                    <ng-container
+                        *ngIf="expiredData$.value?.totalHits; else noExpiry"
+                    >
+                        {{ obs.shownData.totalHits + " Ergebnisse" }}
+                    </ng-container>
+                </ng-container>
+
+                <ng-template #noExpiry>Alle Daten sind aktuell</ng-template>
+
+                <ng-template #searching>
+                    <mat-spinner strokeWidth="3" diameter="24"></mat-spinner>
+                    wird geprüft...
+                </ng-template>
+            </div>
+
+            <mat-divider aria-hidden="true"></mat-divider>
+
+            <mat-tab-group *ngIf="obs.shownData?.totalHits">
+                <mat-tab label="Daten" *ngIf="obs.shownData.objects.length">
+                    <ng-template matTabContent>
+                        <ige-expiration-table
+                            [isSearching]="isSearching"
+                            [result]="obs.shownData.objects"
+                        ></ige-expiration-table>
+                    </ng-template>
+                </mat-tab>
+                <mat-tab
+                    label="Adressen"
+                    *ngIf="obs.shownData.addresses.length"
+                >
+                    <ng-template matTabContent>
+                        <ige-expiration-table
+                            [isSearching]="isSearching"
+                            [result]="obs.shownData.addresses"
+                        ></ige-expiration-table>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </ng-container>
+    </div>
+</page-template>

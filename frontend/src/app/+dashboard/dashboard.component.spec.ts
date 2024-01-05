@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { DashboardComponent } from "./dashboard.component";
 
 import { RouterTestingModule } from "@angular/router/testing";
@@ -63,7 +82,7 @@ describe("DashboardComponent", () => {
     spectator = createComponent();
     const dataService = spectator.inject<DocumentService>(DocumentService);
     dataService.getStatistic.and.returnValue(
-      of({ totalNum: 5, numDrafts: 3, numPublished: 2 })
+      of({ totalNum: 5, numDrafts: 3, numPublished: 2 }),
     );
   });
 
@@ -82,7 +101,7 @@ describe("DashboardComponent", () => {
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(
-      'ige-card-box[data-cy="card-latest-docs"] .card-title'
+      'ige-card-box[data-cy="card-latest-docs"] .card-title',
     );
     console.log(recentDocs.length);
     console.log(recentDocs[0]);

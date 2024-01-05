@@ -104,10 +104,10 @@
     "minimumValue": ${model.getVerticalExtent().getMin()},
     "maximumValue": ${model.getVerticalExtent().getMax()},
     "unitOfMeasure": {
-    "key": "${model.getVerticalExtent().getUom()}"
+        "key": "${model.getVerticalExtent().getUom()}"
     },
     "Datum": {
-    "key": "${model.getVerticalExtent().getDatum()}"
+        "key": "${model.getVerticalExtent().getDatum()}"
     }
     },
 @endif
@@ -128,7 +128,7 @@
     "resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
     "status": @template.ingrid.partial.key-value(item = time.getStatus()),
     @if(time.getUntilDate() == null)
-        "resourceDate": "${time.getDate()}",
+        "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
     @else
         "resourceRange": {
         "start": "${time.getDate()}",
@@ -203,6 +203,7 @@
     "type": @template.ingrid.partial.key-value(item = reference.get().getType()),
     "title": "${reference.get().getTitle()}",
     "url": "${reference.get().getUrl()}",
+    @if(reference.get().getUrlDataType() != null) "urlDataType": @template.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
     "explanation": "${reference.get().getExplanation()}"
     }@if (!reference.isLast()),@endif
 @endfor

@@ -50,7 +50,7 @@
             </div>
             <div>In Bearbeitung</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataMap.first / total) * 100 ?? 0 | number : "1.0-0" }}%
+                {{ (dataMap.first / total) * 100 ?? 0 | number: "1.0-0" }}%
             </div>
         </div>
 
@@ -60,7 +60,7 @@
             </div>
             <div>Veröffentlicht</div>
             <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataMap.second / total) * 100 ?? 0 | number : "1.0-0" }}%
+                {{ (dataMap.second / total) * 100 ?? 0 | number: "1.0-0" }}%
             </div>
         </div>
     </div>

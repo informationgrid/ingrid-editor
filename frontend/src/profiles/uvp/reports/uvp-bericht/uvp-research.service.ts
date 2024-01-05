@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
@@ -19,6 +38,27 @@ export class UvpReport {
   averageProcedureDuration: number;
 }
 
+export class ZabbixProblem {
+  problemUrl: String;
+  clock: String;
+  docName: String;
+  name: String;
+  url: String;
+  docUrl: String;
+  docUuid: String;
+}
+
+export class ActivityItem {
+  time: String;
+  dataset_uuid: String;
+  title: String;
+  document_type: String;
+  contact_uuid: String;
+  contact_name: String;
+  actor: String;
+  action: String;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -33,7 +73,7 @@ export class UvpResearchService {
     configService: ConfigService,
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
-    private behaviourService: BehaviourService
+    private behaviourService: BehaviourService,
   ) {
     this.configuration = configService.getConfiguration();
 
@@ -47,7 +87,28 @@ export class UvpResearchService {
 
     return this.http.get<UvpReport>(
       `${this.configuration.backendUrl}uvp/report`,
-      { params: httpParams }
+      { params: httpParams },
+    );
+  }
+
+  getZabbixReport(): Observable<ZabbixProblem[]> {
+    return this.http.get<ZabbixProblem[]>(
+      `${this.configuration.backendUrl}uvp/zabbix-report`,
+    );
+  }
+
+  getActivityReport(
+    fromDate: string,
+    toDate: string,
+    actions: string[],
+  ): Observable<ActivityItem[]> {
+    return this.http.post<ActivityItem[]>(
+      `${this.configuration.backendUrl}uvp/activity-report`,
+      {
+        from: fromDate,
+        to: toDate,
+        actions: actions,
+      },
     );
   }
 
@@ -94,7 +155,7 @@ export class UvpResearchService {
       const eiaId = eiaStatistic[i][0]; //string
       const count = eiaStatistic[i][1]; //int
       const codelistItem = this.eiaNumbersCodelist.entries.find(
-        (e) => e.id === eiaId
+        (e) => e.id === eiaId,
       );
       const dataField = JSON.parse(codelistItem.data);
       result.push({

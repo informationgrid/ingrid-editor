@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import {
   FormToolbarService,
@@ -21,6 +40,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { MatMenuTrigger } from "@angular/material/menu";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -57,7 +77,7 @@ export class HistoryPlugin extends Plugin {
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private addressTreeQuery: AddressTreeQuery,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -124,13 +144,34 @@ export class HistoryPlugin extends Plugin {
     this.handleButtonState();
   }
 
+  private eventIdNext = "HISTORY_NEXT";
+  private eventIdPrevious = "HISTORY_PREVIOUS";
+
   private handleEvents() {
     this.formSubscriptions.push(
       // react on event when button is clicked
-      this.docEvents.onEvent("HISTORY_NEXT").subscribe(() => this.handleNext()),
       this.docEvents
-        .onEvent("HISTORY_PREVIOUS")
-        .subscribe(() => this.handlePrevious())
+        .onEvent(this.eventIdNext)
+        .subscribe(() => this.handleNext()),
+      this.docEvents
+        .onEvent(this.eventIdPrevious)
+        .subscribe(() => this.handlePrevious()),
+      this.docEvents
+        .onEvent(`${this.eventIdPrevious}_LONGPRESS`)
+        .subscribe((event) => {
+          this.handleListPrevious(event.data);
+        }),
+      this.docEvents
+        .onEvent(`${this.eventIdNext}_LONGPRESS`)
+        .subscribe((event) => {
+          this.handleListNext(event.data);
+        }),
+      this.docEvents.onEvent("HISTORY_PREVIOUS_SELECT").subscribe((item) => {
+        this.handleHistoryPreviousSelect(item);
+      }),
+      this.docEvents.onEvent("HISTORY_NEXT_SELECT").subscribe((item) => {
+        this.handleHistoryNextSelect(item);
+      }),
     );
   }
 
@@ -141,17 +182,19 @@ export class HistoryPlugin extends Plugin {
         id: "toolBtnPreviousInHistory",
         tooltip: "Springe zum letzten Dokument",
         matSvgVariable: "Vorheriger-Datensatz",
-        eventId: "HISTORY_PREVIOUS",
+        eventId: this.eventIdPrevious,
         pos: 200,
         active: false,
+        hiddenMenu: [],
       },
       {
         id: "toolBtnNextInHistory",
         tooltip: "Springe zum nächsten Dokument",
         matSvgVariable: "Naechster-Datensatz",
-        eventId: "HISTORY_NEXT",
+        eventId: this.eventIdNext,
         pos: 210,
         active: false,
+        hiddenMenu: [],
       },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
@@ -232,7 +275,7 @@ export class HistoryPlugin extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
 
     if (!handled) {
@@ -250,11 +293,11 @@ export class HistoryPlugin extends Plugin {
   private handleButtonState() {
     this.formToolbarService.setButtonState(
       "toolBtnPreviousInHistory",
-      this.hasPrevious()
+      this.hasPrevious(),
     );
     this.formToolbarService.setButtonState(
       "toolBtnNextInHistory",
-      this.hasNext()
+      this.hasNext(),
     );
   }
 
@@ -267,5 +310,70 @@ export class HistoryPlugin extends Plugin {
       }
     });
     this.handleButtonState();
+  }
+
+  private handleListNext(trigger?: MatMenuTrigger) {
+    const history = this.stack.slice(this.pointer + 1).map((item) => {
+      return {
+        eventId: "HISTORY_NEXT_SELECT",
+        label: item.title,
+        data: item,
+      };
+    });
+
+    this.formToolbarService.updateHiddenMenu("toolBtnNextInHistory", history);
+    trigger.openMenu();
+  }
+
+  /**
+   * Initiates and opens a mat-menu with clickable list of previously visited nodes
+   * @param trigger
+   * @private
+   */
+  private handleListPrevious(trigger?: MatMenuTrigger) {
+    const history = this.stack
+      .slice(0, this.pointer)
+      .reverse()
+      .map((item) => {
+        return {
+          eventId: "HISTORY_PREVIOUS_SELECT",
+          label: item.title,
+          data: item,
+        };
+      });
+
+    this.formToolbarService.updateHiddenMenu(
+      "toolBtnPreviousInHistory",
+      history,
+    );
+    trigger.openMenu();
+  }
+
+  /**
+   * Handles the selection of a node from previous history list
+   * @param item
+   * @private
+   */
+  private handleHistoryPreviousSelect(item: any) {
+    console.log("Index:" + item.data.index);
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== item.data.data.id) {
+      this.pointer = this.pointer - item.data.index - 1;
+      this.ignoreNextPush = true;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
+      return;
+    }
+  }
+
+  private handleHistoryNextSelect(item: any) {
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== item.data.data.id) {
+      this.ignoreNextPush = true;
+      this.pointer = this.pointer + item.data.index + 1;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
+      return;
+    }
   }
 }

@@ -1,5 +1,29 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
-import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
+import {
+  FieldArrayType,
+  FieldTypeConfig,
+  FormlyFieldConfig,
+  FormlyFieldProps,
+} from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
 import {
@@ -13,7 +37,13 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, KeyValuePipe, NgForOf, NgIf } from "@angular/common";
+import {
+  AsyncPipe,
+  JsonPipe,
+  KeyValuePipe,
+  NgForOf,
+  NgIf,
+} from "@angular/common";
 import { SharedPipesModule } from "../../../../app/directives/shared-pipes.module";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -26,6 +56,13 @@ import {
 } from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
 import { filter } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { FieldType } from "@ngx-formly/material";
+
+interface RepeatDistributionDetailListProps extends FormlyFieldProps {
+  infoText: string;
+  backendUrl: string;
+  fields: FormlyFieldConfig[];
+}
 
 @Component({
   selector: "ige-repeat-distribution-detail-list",
@@ -49,11 +86,12 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     FormErrorComponent,
     KeyValuePipe,
     MatTooltipModule,
+    JsonPipe,
   ],
   standalone: true,
 })
 export class RepeatDistributionDetailListComponent
-  extends FieldArrayType
+  extends FieldType<FieldTypeConfig<RepeatDistributionDetailListProps>>
   implements OnInit
 {
   showMore = {};
@@ -78,7 +116,7 @@ export class RepeatDistributionDetailListComponent
       .open(UploadFilesDialogComponent, {
         minWidth: 700,
         data: {
-          currentItems: this.model,
+          currentItems: this.model[this.key + ""],
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
@@ -87,7 +125,7 @@ export class RepeatDistributionDetailListComponent
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe((files: LinkInfo[]) =>
-        this.updateTableInformationWithUploadInfo(files)
+        this.updateTableInformationWithUploadInfo(files),
       );
   }
 
@@ -101,9 +139,9 @@ export class RepeatDistributionDetailListComponent
   }
 
   private getUploadFieldKey(): string {
-    return this.getFields(this.field.fieldArray).find(
-      (field) => field.type === "upload"
-    )?.key;
+    return this.props.fields
+      .find((field) => field.type === "upload")
+      ?.key?.toString();
   }
 
   private getDownloadURL(uri: string) {
@@ -129,7 +167,7 @@ export class RepeatDistributionDetailListComponent
       uri: file.uri,
       lastModified: new Date(),
     };
-    this.add(null, newRow);
+    this.replaceItem(null, newRow);
   }
 
   private getEmptyEntry() {
@@ -151,31 +189,18 @@ export class RepeatDistributionDetailListComponent
   }
 
   private addLinkInfoToDatasource(link: any) {
-    this.model.push(link);
+    this.model[this.key + ""].push(link);
   }
 
   private isNotInTable(file: LinkInfo) {
     const uploadKey = this.getUploadFieldKey();
     return (
       !this.model ||
-      this.model?.findIndex(
-        (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri
+      !this.model[this.key + ""] ||
+      this.model[this.key + ""]?.findIndex(
+        (item) => !item[uploadKey].asLink && item[uploadKey].uri === file.uri,
       ) === -1
     );
-  }
-
-  private updateTableDataToForm(data: any[]) {
-    //this.model = new MatTableDataSource<any>(data);
-    this.updateFormControl(data);
-  }
-
-  private updateFormControl(value: any[]) {
-    this.formControl.setValue(value);
-    this.formControl.markAsDirty();
-  }
-
-  private getFields(props: any) {
-    return props.fieldGroup[0].fieldGroup;
   }
 
   private openDialog(index?: number) {
@@ -186,11 +211,11 @@ export class RepeatDistributionDetailListComponent
         maxWidth: "950px",
         disableClose: true,
         data: <FormDialogData>{
-          fields: this.getFields(this.field.fieldArray),
+          fields: this.props.fields,
           model:
             index === undefined
               ? this.getEmptyEntry()
-              : JSON.parse(JSON.stringify(this.model[index])),
+              : JSON.parse(JSON.stringify(this.model[this.key + ""][index])),
           formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
         delayFocusTrap: true,
@@ -199,18 +224,39 @@ export class RepeatDistributionDetailListComponent
       .subscribe((response) => {
         if (response) {
           response.link.value = response.link.uri;
-          if (index !== undefined) {
-            this.remove(index);
-          }
-          this.add(index, response);
+          this.replaceItem(index, response);
         }
       });
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
-    const item = this.model[event.previousIndex];
-    this.remove(event.previousIndex);
-    this.add(event.currentIndex, item);
+    const item = this.model[this.field.key + ""][event.previousIndex];
+    this.replaceItem(event.currentIndex, item, event.previousIndex);
+  }
+
+  replaceItem(index: number, item: any, previousIndex: number = null) {
+    if (previousIndex !== null) {
+      this.removeItem(previousIndex);
+    } else if (index !== null) {
+      this.removeItem(index);
+    }
+    const value: any[] = this.formControl.value || [];
+    if (index === null || index === undefined) {
+      value.push(item);
+    } else {
+      value.splice(index, 0, item);
+    }
+    this.formControl.patchValue([...value]);
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
+  }
+
+  removeItem(index: number) {
+    this.formControl.patchValue(
+      [...(this.formControl.value || [])].filter((_, idx) => idx !== index),
+    );
+    this.formControl.markAsDirty();
+    this.formControl.markAsTouched();
   }
 
   handleCellClick(index: number, element, $event: MouseEvent) {
@@ -218,7 +264,7 @@ export class RepeatDistributionDetailListComponent
 
     const uploadKey = this.getUploadFieldKey();
     if (!element.asLink) {
-      const options = this.getFields(this.field.fieldArray)[2].props;
+      const options = this.props.fields[2].props;
       if (options.onClick) {
         options.onClick(this.form.root.get("_uuid").value, element.uri, $event);
       }

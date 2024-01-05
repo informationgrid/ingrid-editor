@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.ResearchResponse
@@ -60,7 +79,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.336552045994994,
                         longitude2 = 53.74180783201885,
                         name = "Landschaftsform",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.67106756436431,
@@ -68,7 +87,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.299690875096376,
                         longitude2 = 53.722265833076975,
                         name = "Bauwerke",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 10.113665839720433,
@@ -76,7 +95,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.19057884115737,
                         longitude2 = 53.65732655156777,
                         name = "Unsichtbares_Objekt",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.785231755556373,
@@ -84,7 +103,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.25634551900814,
                         longitude2 = 53.598858415633444,
                         name = "Sehenswerte_Objekte",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.67477416867641,
@@ -92,7 +111,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.344173832806435,
                         longitude2 = 53.7278730217161,
                         name = "Bergbau",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.787805791266315,
@@ -100,7 +119,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.407430505549277,
                         longitude2 = 53.7408895104767,
                         name = "Wasser_und_Wasserbau",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.734985189819458,
@@ -108,7 +127,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.27983875300683,
                         longitude2 = 53.70619674206265,
                         name = "GeologischeObjekte",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.798392734190172,
@@ -116,7 +135,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.002871458386743,
                         longitude2 = 53.59727214182555,
                         name = "Stein_und_Fels",
-                        type = "Frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = 9.76557384658799,
@@ -124,7 +143,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 10.302925462393098,
                         longitude2 = 53.72715089146115,
                         name = "Geotope",
-                        type = "Frei"
+                        type = "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
@@ -169,8 +188,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "www.geoinfo.hamburg.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "www.geoinfo.hamburg.de"
                     )
                 )
                 timeSpan shouldBe null
@@ -203,7 +222,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         7.045330,
                         51.946050,
                         "gis:moer_stolpersteine",
-                        "frei"
+                        "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
@@ -250,8 +269,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "https://geoservices.krzn.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "https://geoservices.krzn.de"
                     )
                 )
                 timeSpan shouldBe null
@@ -296,7 +315,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 180.0,
                         longitude2 = 90.0,
                         name = "The Great Northern Forest",
-                        type = "frei"
+                        type = "free"
                     ),
                     LocationBean(
                         latitude1 = -180.0,
@@ -304,7 +323,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 180.0,
                         longitude2 = 90.0,
                         name = "The Great Northern Lakes",
-                        type = "frei"
+                        type = "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
@@ -363,16 +382,17 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.BlueOx.org/contactUs",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.BlueOx.org/contactUs"
                     )
                 )
                 timeSpan shouldBe null
-                conformities shouldBe listOf(ConformityBean(3, "Please enter a title"))
+                conformities shouldBe listOf(ConformityBean(3, "Please enter a title", "2006-04-22"))
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         "http://my-download-resource-locator",
-                        KeyValue("5066", "Verweis zu Dienst")
+                        KeyValue("5066", "Verweis zu Dienst"),
+                        "http://my-download-resource-locator"
                     )
                 )
                 timeReference shouldBe listOf(TimeReferenceBean(1, formatter.parse("2007-11-13")))
@@ -421,7 +441,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         180.0,
                         90.0,
                         "Raumbezug von: Acme Corp. Map Server",
-                        "frei"
+                        "free"
                     )
                 )*/
                 spatialReferenceSystems shouldContainExactly listOf(
@@ -460,8 +480,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://hostname/"
                     )
                 )
                 timeSpan shouldBe null
@@ -516,7 +536,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         90.0,
                         180.0,
                         "Raumbezug von: Acme Corp. Map Server",
-                        "frei"
+                        "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
@@ -528,7 +548,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         null,
                         "123456",
                         "Roads and Rivers",
-                        listOf(LocationBean(41.75, -71.63, 42.9, -70.78, "ROADS_RIVERS", "frei")),
+                        listOf(LocationBean(41.75, -71.63, 42.9, -70.78, "ROADS_RIVERS", "free")),
                         spatialSystems = listOf(
                             KeyValue(null, "EPSG:26986"),
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
@@ -547,7 +567,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                                 90.0,
                                 180.0,
                                 "Raumbezug von: Acme Corp. Map Server",
-                                "frei"
+                                "free"
                             )
                         ),
                         description = "Roads at a scale of 1 to 1 million.",
@@ -589,21 +609,23 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/my-online-resource",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://hostname/my-online-resource"
                     )
                 )
                 timeSpan shouldBe null
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
-                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten"
+                        specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten",
+                        "2009-10-19"
                     )
                 )
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
-                        type = KeyValue("5066", "Verweis zu Dienst")
+                        type = KeyValue("5066", "Verweis zu Dienst"),
+                        title = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?"
                     )
                 )
                 timeReference shouldBe listOf(
@@ -636,7 +658,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                                         180.0,
                                         90.0,
                                         "Raumbezug von: Acme Corp. Map Server",
-                                        "frei"
+                                        "free"
                                     )
                                 )
                 */
@@ -680,8 +702,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.geodatenzentrum.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.geodatenzentrum.de"
                     )
                 )
                 /*timeSpan null
@@ -751,8 +773,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.cubewerx.com/~pvretano",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
+                        KeyValue(null, "Informationen im Internet"),
+                        "http://www.cubewerx.com/~pvretano"
                     )
                 )
                 timeSpan shouldBe null
@@ -973,17 +995,12 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ), listOf(8), "Harvest", KeyValue("7", "Harvest")
                     ),
                 )
-                onlineResources shouldContainExactly listOf(
-                    UrlBean(
-                        "mailto:voges@conterra.de",
-                        KeyValue("9999", "Unspezifischer Verweis"),
-                        "Verweis"
-                    )
-                )
+                onlineResources!! shouldHaveSize 0 
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://www.wemove.com/my-resource-locator",
-                        type = KeyValue("5066", "Verweis zu Dienst")
+                        type = KeyValue("5066", "Verweis zu Dienst"),
+                        title = "http://www.wemove.com/my-resource-locator"
                     )
                 )
                 timeReference shouldBe listOf(
@@ -999,11 +1016,13 @@ class CapabilitiesServiceTest : ShouldSpec({
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 1,
-                        specification = "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services"
+                        specification = "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services",
+                        "2010-12-08"
                     ),
                     ConformityBean(
                         level = 1,
-                        specification = "REGOLAMENTO (UE) N. 1089/2010 DELLA COMMISSIONE del 23 novembre 2010 recante attuazione della direttiva 2007/2/CE del Parlamento europeo e del Consiglio per quanto riguarda l'interoperabilità dei set di dati territoriali e dei servizi di dati territoriali"
+                        specification = "REGOLAMENTO (UE) N. 1089/2010 DELLA COMMISSIONE del 23 novembre 2010 recante attuazione della direttiva 2007/2/CE del Parlamento europeo e del Consiglio per quanto riguarda l'interoperabilità dei set di dati territoriali e dei servizi di dati territoriali",
+                        "2010-12-08"
                     )
                 )
             }
@@ -1034,7 +1053,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         latitude2 = 15.560505271487509,
                         longitude2 = 55.056673348249255,
                         "map_cache_vertical",
-                        "frei"
+                        "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(

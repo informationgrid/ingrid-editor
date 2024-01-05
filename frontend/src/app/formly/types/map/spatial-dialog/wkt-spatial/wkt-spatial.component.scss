@@ -2,12 +2,12 @@
 @import "src/variables";
 
 :host ::ng-deep .mat-form-field-wrapper {
-  padding: 0px !important;
-  margin: 0px !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .mat-form-field-appearance-outline {
-  padding: 0px !important;
+  padding: 0 !important;
   margin-bottom: -10px !important;
 }
 
@@ -21,8 +21,7 @@ button.hint {
   line-height: 18px;
   letter-spacing: 0.4px;
   padding: 6px !important;
-  color: rgba(0, 0, 0, 0.87);
-  opacity: 0.6;
+  color: $ige-hint-color;
 }
 
 .btn-analyze {

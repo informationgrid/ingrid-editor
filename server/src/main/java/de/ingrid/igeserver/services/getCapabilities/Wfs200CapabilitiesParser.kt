@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
@@ -208,25 +227,25 @@ class Wfs200CapabilitiesParser(
         val layers = xPathUtils.getNodeList(doc, "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType")
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
-            val lower = xPathUtils.getString(layer, "ows11:WGS84BoundingBox/ows11:LowerCorner").split(" ".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()
-            val upper = xPathUtils.getString(layer, "ows11:WGS84BoundingBox/ows11:UpperCorner").split(" ".toRegex())
-                .dropLastWhile { it.isEmpty() }
-                .toTypedArray()
-            val box = LocationBean(
-                java.lang.Double.valueOf(lower[0]),
-                java.lang.Double.valueOf(lower[1]),
-                java.lang.Double.valueOf(upper[0]),
-                java.lang.Double.valueOf(upper[1]), "???", "frei"
-            )
-
-            // add a fallback for the name, since it's mandatory
+            val boundingBoxNode = xPathUtils.getNode(layer, "ows11:WGS84BoundingBox")
             val title = xPathUtils.getString(layer, "wfs20:Title")
-            box.name = title
-            // shall be a free spatial reference, but needs an ID to check for duplications!
-//            box.setTopicId(box.getName());
-//            box.setType("free");
+            val box = if (boundingBoxNode != null) {
+                val lower = xPathUtils.getString(boundingBoxNode, "ows11:LowerCorner").split(" ".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+                val upper = xPathUtils.getString(boundingBoxNode, "ows11:UpperCorner").split(" ".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+                LocationBean(
+                    java.lang.Double.valueOf(lower[0]),
+                    java.lang.Double.valueOf(lower[1]),
+                    java.lang.Double.valueOf(upper[0]),
+                    java.lang.Double.valueOf(upper[1]), title, "free"
+                )
+            } else {
+                LocationBean(name = title, type = "free")
+            }
+
             bboxes.add(box)
         }
         return bboxes

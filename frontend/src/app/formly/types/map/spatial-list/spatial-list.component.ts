@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -55,12 +74,12 @@ export class SpatialListComponent implements OnInit {
         prev[curr.type].push(curr);
         return prev;
       },
-      { free: [], wkt: [], coordinates: [], wfsgnde: [] }
+      { free: [], wkt: [], coordinates: [], wfsgnde: [] },
     );
 
     // @ts-ignore
     this.types = Object.keys(this.typedLocations).filter(
-      (type) => this.typedLocations[type].length > 0
+      (type) => this.typedLocations[type].length > 0,
     );
   }
 

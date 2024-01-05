@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
@@ -28,7 +47,7 @@ export class QuickSearchComponent implements OnInit {
 
   constructor(
     private documentService: DocumentService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -46,8 +65,8 @@ export class QuickSearchComponent implements OnInit {
 
     this.searchSub?.unsubscribe();
     this.searchSub = combineLatest([
-      this.documentService.find(value, 5),
-      this.documentService.find(value, 5, true),
+      this.documentService.findInTitleOrUuid(value, 5),
+      this.documentService.findInTitleOrUuid(value, 5, true),
     ]).subscribe((result) => {
       this.docs = this.highlightResult(result[0].hits, value);
       this.numDocs = result[0].totalHits;
@@ -69,12 +88,12 @@ export class QuickSearchComponent implements OnInit {
 
   private highlightResult(
     hits: DocumentAbstract[],
-    textHighlight: string
+    textHighlight: string,
   ): DocumentAbstract[] {
     return hits.map((hit) => {
       hit.title = hit.title.replace(
         new RegExp(textHighlight, "ig"),
-        (match) => `<span class="highlight">${match}</span>`
+        (match) => `<span class="highlight">${match}</span>`,
       );
 
       return hit;

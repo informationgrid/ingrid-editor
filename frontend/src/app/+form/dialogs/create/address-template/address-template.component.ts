@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -26,7 +45,7 @@ export class AddressTemplateComponent implements OnInit {
   @Output() create = new EventEmitter();
 
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
+    null,
   );
 
   documentTypes: DocumentAbstract[];
@@ -34,14 +53,14 @@ export class AddressTemplateComponent implements OnInit {
   constructor(
     private profileQuery: ProfileQuery,
     private docBehaviours: DocBehavioursService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {}
 
   private initializeDocumentTypes(
     profiles: Observable<ProfileAbstract[]>,
-    parent: number
+    parent: number,
   ) {
     profiles
       .pipe(
@@ -50,7 +69,7 @@ export class AddressTemplateComponent implements OnInit {
         map((types) => this.filterDocTypesByParent(types, parent)),
         map((types) => this.prepareDocumentTypes(types)),
         tap((types) => this.setInitialTypeFirstTime(types)),
-        filter((types) => this.skipIfSame(types))
+        filter((types) => this.skipIfSame(types)),
       )
       .subscribe((result) => (this.documentTypes = result));
   }
@@ -60,7 +79,7 @@ export class AddressTemplateComponent implements OnInit {
     if (!this.form.get("choice").value) {
       const initialType =
         types.find(
-          (t) => t.id == this.profileService.getDefaultAddressType()?.id
+          (t) => t.id == this.profileService.getDefaultAddressType()?.id,
         ) || types[0];
       this.setDocType(initialType);
       this.initialActiveDocumentType.next(initialType);
@@ -111,7 +130,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private filterDocTypesByParent(
     types: ProfileAbstract[],
-    parent: number
+    parent: number,
   ): ProfileAbstract[] {
     return this.docBehaviours.filterDocTypesByParent(types, parent);
   }

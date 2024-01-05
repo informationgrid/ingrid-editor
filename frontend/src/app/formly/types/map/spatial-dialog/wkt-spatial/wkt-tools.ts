@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Map } from "leaflet";
 import * as Wkt from "wicket";
 import * as Wktleaflet from "wicket/wicket-leaflet";
@@ -26,7 +45,7 @@ export class WktTools {
       const allClosed = (<any[]>json.coordinates).every(
         (group) =>
           group[0][0] === group[group.length - 1][0] &&
-          group[0][1] === group[group.length - 1][1]
+          group[0][1] === group[group.length - 1][1],
       );
       if (!allClosed) return "Polygon ist nicht geschlossen";
     }
@@ -47,7 +66,7 @@ export class WktTools {
     wktString: string,
     overrideConfig = {},
     editable = false,
-    focus = true
+    focus = true,
   ) {
     try {
       // Catch any malformed WKT strings
@@ -55,13 +74,13 @@ export class WktTools {
     } catch (e1) {
       try {
         this.wkt.read(
-          wktString.replace("\n", "").replace("\r", "").replace("\t", "")
+          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
       } catch (e2) {
         if (e2.name === "WKTError") {
           alert(
             "Wicket could not understand the WKT string you entered. Check that you have parentheses " +
-              "balanced, and try removing tabs and newline characters."
+              "balanced, and try removing tabs and newline characters.",
           );
           return;
         }

@@ -1,12 +1,15 @@
-<div class="wrapper">
-    <ige-main-header></ige-main-header>
+<div class="wrapper" [class.hide]="isLoggingout">
     <div *ngIf="showTestBadge" class="test-instance">TEST</div>
     <mat-drawer-container class="flex-1" [autosize]="true">
+        <!-- Left drawer -->
         <mat-drawer mode="side" [opened]="true" disableClose>
             <ige-side-menu></ige-side-menu>
         </mat-drawer>
 
-        <!-- PAGES -->
-        <router-outlet></router-outlet>
+        <!-- Right content -->
+        <mat-drawer-content>
+            <ige-main-header (onLogout)="isLoggingout = true"></ige-main-header>
+            <router-outlet></router-outlet>
+        </mat-drawer-content>
     </mat-drawer-container>
 </div>

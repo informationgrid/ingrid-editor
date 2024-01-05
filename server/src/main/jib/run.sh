@@ -1,6 +1,10 @@
 #!/bin/bash
 if [[ -n "${WAIT_FOR_PARAM}" ]]; then
-  /wait-for-it.sh ${WAIT_FOR_PARAM} -t 120
+  TIMEOUT=120
+  if [[ -n "${WAIT_FOR_PARAM_TIMEOUT}" ]]; then
+    TIMEOUT=${WAIT_FOR_PARAM_TIMEOUT}
+  fi
+  /wait-for-it.sh ${WAIT_FOR_PARAM} -t ${TIMEOUT}
 fi
 
 echo "Adapt index.html to match context path"
@@ -12,7 +16,7 @@ if [[ -n "${BROKER_URL}" ]]; then
 fi
 
 if [[ -n "${SHOW_TEST_BADGE}" ]]; then
-  sed -i -r "s@showTestBadge\":.*@showTestBadge\": \"$SHOW_TEST_BADGE\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@showTestBadge\":.*@showTestBadge\": $SHOW_TEST_BADGE,@" /app/resources/static/assets/config.json
 fi
 
 if [[ -n "${MAP_TILE_URL}" ]]; then
@@ -24,7 +28,15 @@ if [[ -n "${NOMINATIM_URL}" ]]; then
 fi
 
 if [[ -n "${SHOW_ACCESSIBILITY_LINK}" ]]; then
-  sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": \"SHOW_ACCESSIBILITY_LINK\",@" /app/resources/static/assets/config.json
+  sed -i -r "s@showAccessibilityLink\":.*@showAccessibilityLink\": $SHOW_ACCESSIBILITY_LINK,@" /app/resources/static/assets/config.json
+fi
+
+if [[ -n "${ALLOW_OVERWRITE_ON_VERSION_CONFLICT}" ]]; then
+  sed -i -r "s@allowOverwriteOnVersionConflict\":.*@allowOverwriteOnVersionConflict\": $ALLOW_OVERWRITE_ON_VERSION_CONFLICT,@" /app/resources/static/assets/config.json
+fi
+
+if [[ -n "${ENABLE_AI}" ]]; then
+  sed -i -r "s@openAISearch\":.*@openAISearch\": $ENABLE_AI@" /app/resources/static/assets/config.json
 fi
 
 echo "Run original entrypoint command"

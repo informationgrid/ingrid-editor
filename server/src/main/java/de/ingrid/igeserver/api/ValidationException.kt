@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.ClientException
@@ -13,6 +32,7 @@ open class ValidationException protected constructor(
 
     companion object {
         private const val ERROR_CODE = "VALIDATION_ERROR"
+        private const val ERROR_CODE_FIELD = "VALIDATION_ERROR_FIELD"
         private const val ERROR_TEXT_INVALID = "One or more fields are invalid: \${fieldNames}."
         private const val ERROR_TEXT = "The validation failed for this document"
 
@@ -21,7 +41,7 @@ open class ValidationException protected constructor(
          */
         fun withInvalidFields(vararg fields: InvalidField, cause: Throwable? = null) : ValidationException {
             val errorText = getErrorText(ERROR_TEXT_INVALID, mapOf("fieldNames" to fields.joinToString(", ") { it.name }))
-            return ValidationException(STATUS_CODE, ERROR_CODE, errorText, mapOf("fields" to fields), cause)
+            return ValidationException(STATUS_CODE, ERROR_CODE_FIELD, errorText, mapOf("fields" to fields), cause)
         }
 
         fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null) : ValidationException {

@@ -1,10 +1,25 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
-import { ConfigService } from "../../services/config/config.service";
 import { CatalogQuery } from "../../store/catalog/catalog.query";
-import { MatDialog } from "@angular/material/dialog";
-import { Catalog } from "../../+catalog/services/catalog.model";
 import { CatalogService } from "../../+catalog/services/catalog.service";
-import { SessionService } from "../../services/session.service";
 import { UserService } from "../../services/user/user.service";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
@@ -26,16 +41,16 @@ export class CatalogAssignmentComponent implements OnInit {
           ({
             label: id,
             value: id,
-          } as SelectOptionUi)
-      )
-    )
+          }) as SelectOptionUi,
+      ),
+    ),
   );
 
   constructor(
     private catalogService: CatalogService,
     private catalogQuery: CatalogQuery,
     private userService: UserService,
-    private toast: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {}
@@ -45,10 +60,10 @@ export class CatalogAssignmentComponent implements OnInit {
       .assignUserToCatalog(this.selectedUserId, this.selectedCatalogId)
       .pipe(
         tap(() =>
-          this.toast.open(
-            `Katalog ${this.selectedCatalogId} wurde Nutzer ${this.selectedUserId} zugewiesen`
-          )
-        )
+          this.snackBar.open(
+            `Katalog ${this.selectedCatalogId} wurde Nutzer ${this.selectedUserId} zugewiesen`,
+          ),
+        ),
       )
       .subscribe();
   }

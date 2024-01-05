@@ -10,20 +10,19 @@
 Guten Tag,
 
 Sie sind im Open Data Editor Bund als Verantwortlicher für Metadatensätze eingetragen, für die eine Wiedervorlage vorgesehen ist.
-Bitte prüfen Sie bei den unten aufgeführten Metadaten, ob die Angaben noch aktuell sind.
-Sie können die Angaben aktualisieren und neu veröffentlichen.
-Oder die Metadaten belassen wie sie sind, wenn keine Änderung notwendig ist.
+Bitte prüfen Sie bei den unten aufgeführten Metadaten, ob Änderungen erforderlich sind oder die Metadaten belassen werden können.
 
 Zu prüfende Metadaten:
 
 @for( ExpiredDataset expDS : documents )
-    Titel: ${expDS.getTitle()}
-    Uuid: ${expDS.getUuid()}
-    Geändert am: ${expDS.getModified().toString()}
-    Geändert von: ${expDS.getModifiedBy()}
-    Direkter Link: ${linkstub + "/form;id=" + expDS.getUuid()}
+Titel: ${expDS.getTitle()}
+UUID: ${expDS.getUuid()}
+Geändert am: ${expDS.getModified().toString()}
+Geändert von: ${expDS.getModifiedBy()}
+!{var type = expDS.getType().equals("data") ? "form" : "address";}
+Direkter Link: ${linkstub + "/" + type + ";id=" + expDS.getUuid()}
 
 @endfor
 
 Vielen Dank und viele Grüße,
-Ihr Open-Data-Team
+Ihr Open Data Team

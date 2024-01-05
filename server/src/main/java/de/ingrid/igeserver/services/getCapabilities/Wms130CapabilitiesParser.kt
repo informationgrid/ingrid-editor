@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.services.CodelistHandler
@@ -175,34 +194,35 @@ class Wms130CapabilitiesParser(
         val address = AddressBean()
         setNameInAddressBean(
             address,
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactPersonPrimary/wms:ContactPerson")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactPerson")
         )
         address.organization =
             xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactPersonPrimary/wms:ContactOrganization"
+                "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactOrganization"
             )
 
         address.email =
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactElectronicMailAddress")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactElectronicMailAddress")
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
 
-        address.street = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Address")
-        address.city = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:City")
+        address.street = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Address")
+        address.city = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:City")
         address.postcode =
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:PostCode")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:PostCode")
         address.country = getKeyValue(
             "6200",
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:Country")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Country")
         )
         address.state = getKeyValue(
             "110",
-            xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactAddress/wms:StateOrProvince"),
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:StateOrProvince"),
             "name"
         )
-        address.phone = xPathUtils.getString(doc, XPATH_EXT_WMS_CONTACTINFORMATION + "/wms:ContactVoiceTelephone")
+        address.phone = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactVoiceTelephone")
+        // address.fax = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactFacsimileTelephone")
         return address
     }
 
@@ -218,11 +238,7 @@ class Wms130CapabilitiesParser(
         val east = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude")
         val south = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude")
         val north = xPathUtils.getDouble(layerNode, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude")
-        box = LocationBean()
-        box.latitude1 = south
-        box.longitude1 = west
-        box.latitude2 = north
-        box.longitude2 = east
+        box = LocationBean(south, west, north, east)
 
         // add a fallback for the name, since it's mandatory
         var name = xPathUtils.getString(layerNode, "wms:Name")
@@ -231,7 +247,7 @@ class Wms130CapabilitiesParser(
         box.name = name
         // shall be a free spatial reference, but needs an ID to check for duplications!
 //        box.topicId = (box.name)
-        box.type = "frei"
+        box.type = "free"
         return box
     }
 

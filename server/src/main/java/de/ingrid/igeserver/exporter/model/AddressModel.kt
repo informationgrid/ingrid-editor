@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -8,7 +27,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.SpringContext
 import org.springframework.dao.EmptyResultDataAccessException
 import java.time.OffsetDateTime
 
@@ -37,17 +55,6 @@ data class AddressModel(
     @JsonProperty("_parent") val parent: Int?,
 ) {
 
-    companion object {
-        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
-    }
-
-    init {
-        // TODO: add functionality later (#)
-        /*if (address.inheritAddress) {
-            address = getAddressInformationFromParent(parent)
-        }*/
-    }
-
     /**
      *  Get all ancestors of address including itself.
      *  Addresses with the flag hideAddress are ignored,
@@ -55,16 +62,16 @@ data class AddressModel(
      *  Addresses that are not published are ignored.
      *  @return List of ancestors from eldest to youngest including self
      */
-    fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
+    fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<AddressModel> {
         if (id == null) return mutableListOf()
 
-        val doc = documentService!!.getWrapperByDocumentId(id)
+        val doc = documentService.getWrapperByDocumentId(id)
         if (doc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()
         }
 
         val convertedDoc = try {
-            val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
+            val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, doc.uuid)
             addInternalFields(publishedDoc, doc)
         } catch (ex: EmptyResultDataAccessException) {
             // no published document found
@@ -73,7 +80,7 @@ data class AddressModel(
 
 
         return if (doc.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
+            val ancestors = getAncestorAddressesIncludingSelf(documentService, doc.parent!!.id!!, catalogIdent)
             // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
             if ( convertedDoc?.hideAddress != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
             ancestors
@@ -82,12 +89,12 @@ data class AddressModel(
         }
     }
 
-    fun getPublishedChildren(id: Int?, catalogIdent: String): List<AddressModel> =
-        documentService!!.findChildrenDocs(catalogIdent, id, true).hits
+    fun getPublishedChildren(documentService: DocumentService, id: Int?, catalogIdent: String): List<AddressModel> =
+        documentService.findChildrenDocs(catalogIdent, id, true).hits
             .mapNotNull {
                 try {
                     val doc =
-                        documentService!!.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
+                        documentService.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
                     this.addInternalFields(doc, it.wrapper)
                 } catch (ex: EmptyResultDataAccessException) {
                     null

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, Inject, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -41,9 +60,9 @@ export class TransferResponsibilityDialogComponent implements OnInit {
   query = new FormControl<string>("");
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<TransferResponsibilityDialogComponent>,
-    private userService: UserDataService
+    private userService: UserDataService,
   ) {
     this.oldUser = data.oldUser;
     this.users = data.users;
@@ -53,7 +72,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
 
   transferResponsibility() {
     console.log(
-      `von ${this.oldUser.login} zu ${this.selectedUser.login} wechseln`
+      `von ${this.oldUser.login} zu ${this.selectedUser.login} wechseln`,
     );
     this.userService
       .transferResponsibility(this.oldUser.id, this.selectedUser.id)
@@ -62,14 +81,14 @@ export class TransferResponsibilityDialogComponent implements OnInit {
           const httpError = err.error;
           if (httpError.errorCode === "TRANSFER_RESPONSIBILITY_EXCEPTION") {
             const igeError = new IgeError(
-              `Der Nutzer ${this.selectedUser.login} kann Verantwortung nicht übernehmen, da er keine ausreichenden Berechtigungen auf folgende Datensätze hat:`
+              `Der Nutzer ${this.selectedUser.login} kann Verantwortung nicht übernehmen, da er keine ausreichenden Berechtigungen auf folgende Datensätze hat:`,
             );
             igeError.items = httpError.data.docIds;
             throw igeError;
           } else {
             throw err;
           }
-        })
+        }),
       )
       .subscribe(() => {
         this.dialogRef.close(this.selectedUser.id);

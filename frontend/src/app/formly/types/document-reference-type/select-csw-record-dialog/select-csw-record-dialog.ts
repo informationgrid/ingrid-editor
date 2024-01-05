@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, Inject, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -36,7 +55,7 @@ export class SelectCswRecordDialog implements OnInit {
   constructor(
     private dlg: MatDialogRef<SelectCswRecordResponse>,
     private docRefService: DocumentReferenceService,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.asAtomDownloadService = data.asAtomDownloadService === true;
   }
@@ -47,7 +66,7 @@ export class SelectCswRecordDialog implements OnInit {
         untilDestroyed(this),
         debounceTime(500),
         filter((_) => this.urlControl.valid),
-        tap((_) => (this.phase = "analyzing"))
+        tap((_) => (this.phase = "analyzing")),
       )
       .subscribe((url) => this.analyzeUrl(url));
   }

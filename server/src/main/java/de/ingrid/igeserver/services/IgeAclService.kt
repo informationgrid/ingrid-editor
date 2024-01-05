@@ -1,9 +1,29 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.configuration.acl.CustomPermission
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +35,7 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import java.security.Principal
 
 data class PermissionInfo(
     val canRead: Boolean = false,
@@ -23,7 +44,7 @@ data class PermissionInfo(
 )
 
 @Service
-class IgeAclService @Autowired constructor(
+class IgeAclService(
     val aclService: AclService,
     val docWrapperRepo: DocumentWrapperRepository,
     val authUtils: AuthUtils
@@ -55,6 +76,7 @@ class IgeAclService @Autowired constructor(
                         BasePermission.WRITE,
                         sids
                     )
+
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
@@ -70,7 +92,7 @@ class IgeAclService @Autowired constructor(
         val hasRootWrite =
             checkForRootPermissions(sids, listOf(BasePermission.WRITE))
         val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
-        
+
         if (authUtils.isAdmin(authentication)) {
             return PermissionInfo(true, true, false)
         } else if (id == null) {
@@ -167,6 +189,20 @@ class IgeAclService @Autowired constructor(
     fun removeAclForDocument(id: Int) {
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
+    }
+
+    fun hasRootAccess(groups: Set<Group>) =
+        groups.any {
+            listOf(
+                RootPermissionType.READ,
+                RootPermissionType.WRITE
+            ).contains(it.permissions?.rootPermission)
+        }
+
+    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String, catalogId: String): List<Int> {
+        val groups = authUtils.getCurrentUserRoles(catalogId)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)
     }
 
 }

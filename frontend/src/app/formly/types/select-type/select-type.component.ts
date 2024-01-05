@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -66,7 +85,7 @@ export class SelectTypeComponent
       .pipe(
         untilDestroyed(this),
         filter(([, ready]) => ready),
-        tap(([value]) => this.updateSelectField(value))
+        tap(([value]) => this.updateSelectField(value)),
       )
       .subscribe();
 
@@ -82,13 +101,13 @@ export class SelectTypeComponent
         map((options) =>
           options.map(
             (option) =>
-              <BackendOption>{ key: option.value, value: option.label }
-          )
+              <BackendOption>{ key: option.value, value: option.label },
+          ),
         ),
         tap((data) => (this.selectOptions = data)),
         tap((data) => (this.filteredOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
-        tap(() => this.updateSelectField(this.formControl.value))
+        tap(() => this.updateSelectField(this.formControl.value)),
       )
       .subscribe();
   }
@@ -124,7 +143,7 @@ export class SelectTypeComponent
     this.formControl.setValue(
       !this.value || this.value.length !== selectAllValue.length
         ? selectAllValue
-        : []
+        : [],
     );
 
     this.formControl.markAsDirty();
@@ -152,7 +171,7 @@ export class SelectTypeComponent
     if (!this.selectAllValue || options !== this.selectAllValue.options) {
       const flatOptions: any[] = [];
       options.forEach((o) =>
-        o.group ? flatOptions.push(...o.group) : flatOptions.push(o)
+        o.group ? flatOptions.push(...o.group) : flatOptions.push(o),
       );
 
       this.selectAllValue = {
@@ -167,7 +186,7 @@ export class SelectTypeComponent
   search(value: string) {
     let filter = value.toLowerCase();
     return this.selectOptions.filter(
-      (option) => option.value.toLowerCase().indexOf(filter) !== -1
+      (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
   }
 }

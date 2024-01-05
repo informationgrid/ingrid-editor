@@ -9,9 +9,9 @@
     (keyup.enter)="refreshSession()"
 >
     <span id="timeout-info" aria-hidden="true">
-        <span class="label">Logout in&nbsp;</span>
+        <span>Logout in&nbsp;</span>
         <span *ngIf="timeout >= 300" class="time"
-            >{{ timeout | time : "short" }}&nbsp;Minuten</span
+            >{{ timeout | time: "short" }}&nbsp;Minuten</span
         >
         <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
     </span>

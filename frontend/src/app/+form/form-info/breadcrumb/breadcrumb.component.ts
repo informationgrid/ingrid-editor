@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   EventEmitter,
@@ -37,7 +56,7 @@ export class BreadcrumbComponent implements OnInit {
     -1,
     "...",
     undefined,
-    true
+    true,
   );
 
   constructor() {}
@@ -54,7 +73,7 @@ export class BreadcrumbComponent implements OnInit {
     if (!breadpath) return [];
 
     const shortPath = breadpath.filter(
-      (node) => node.permission.canRead || node.permission.canWrite
+      (node) => node.permission.canRead || node.permission.canWrite,
     );
     const collapsedItemsExist = shortPath.length < breadpath.length;
 
@@ -84,9 +103,9 @@ export class BreadCrumbTooltipPipe implements PipeTransform {
       return value.disabled && value.permission?.canRead
         ? "Sie haben keine Schreibberechtigung auf diesen Ordner"
         : value.disabled &&
-          value.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id
-        ? "Sie haben keine Leseberechtigung auf diesen Ordner"
-        : "";
+            value.id !== BreadcrumbComponent.COLLAPSED_SYMBOL_NODE.id
+          ? "Sie haben keine Leseberechtigung auf diesen Ordner"
+          : "";
     }
     return value;
   }

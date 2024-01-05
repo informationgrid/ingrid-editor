@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { IgeDocument } from "../../../models/ige-document";
 import { Observable, of } from "rxjs";
 import {
@@ -7,7 +26,7 @@ import {
 import { IgeError } from "../../../models/ige-error";
 import { FormMessageService } from "../../../services/form-message.service";
 import { MatDialog } from "@angular/material/dialog";
-import { SessionStore } from "../../../store/session.store";
+import { SessionStore, ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
@@ -23,7 +42,7 @@ export abstract class SaveBase extends Plugin {
 
   protected constructor(
     public sessionStore: SessionStore,
-    public messageService: FormMessageService
+    public messageService: FormMessageService,
   ) {
     super();
   }
@@ -32,14 +51,14 @@ export abstract class SaveBase extends Plugin {
     error,
     data: IgeDocument,
     address: boolean,
-    saveType: "PUBLISH" | "SAVE"
+    saveType: "PUBLISH" | "SAVE",
   ): Observable<void> {
     if (error?.error?.errorCode === "POST_SAVE_ERROR") {
       console.error(error?.error?.errorText);
       this.messageService.sendError(
         `Der Datensatz wurde erfolgreich in der Datenbank ${
           saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
-        }, jedoch trat ein Problem danach auf: ` + error?.error?.errorText
+        }, jedoch trat ein Problem danach auf: ` + error?.error?.errorText,
       );
       this.loadDocument(data._id, address);
     } else if (error?.error?.errorCode === "VERSION_CONFLICT") {
@@ -50,19 +69,20 @@ export abstract class SaveBase extends Plugin {
           this.handleAfterConflictChoice(
             choice,
             error.error.data.databaseVersion,
-            address
-          )
+            address,
+          ),
         );
     } else if (
       error?.status === 400 &&
-      error?.error.errorCode === "VALIDATION_ERROR"
+      (error?.error.errorCode === "VALIDATION_ERROR" ||
+        error?.error.errorCode === "VALIDATION_ERROR_FIELD")
     ) {
       throw this.prepareValidationError(error);
     } else {
       this.messageService.sendError(
         `Der Datensatz wurde nicht erfolgreich ${
           saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
-        }` + (error?.error?.errorText ?? "")
+        }` + (error?.error?.errorText ?? ""),
       );
       throw error;
     }
@@ -70,13 +90,24 @@ export abstract class SaveBase extends Plugin {
   }
 
   protected prepareValidationError(error) {
+    if (error.error.errorCode === "VALIDATION_ERROR_FIELD") {
+      this.sessionStore.update((state) => {
+        return {
+          serverValidationErrors: error.error.data.fields,
+        };
+      });
+      throw new IgeError(
+        "Bei der Validierung trat ein Fehler auf. Bitte prüfen Sie das Formular.",
+      );
+    }
+
     console.error("JSON schema error:", error.error.data);
     const isJsonSchemaError = error?.error?.data?.error instanceof Array;
 
     const igeError = new IgeError(
       isJsonSchemaError
         ? "Es trat ein Fehler bei der JSON-Schema Validierung auf."
-        : "Es trat ein Fehler bei der Validierung auf."
+        : "Es trat ein Fehler bei der Validierung auf.",
     );
 
     if (isJsonSchemaError) {
@@ -84,6 +115,8 @@ export abstract class SaveBase extends Plugin {
         ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
         ?.map((item) => `${item.instanceLocation}: ${item.error}`)
         ?.join("\n");
+
+      this.handleJsonSchemaErrors(error);
     } else {
       igeError.detail = error?.error?.data?.error;
     }
@@ -91,12 +124,37 @@ export abstract class SaveBase extends Plugin {
     return igeError;
   }
 
+  private handleJsonSchemaErrors(error: any) {
+    const invalidFields: string[] = error.error.data.error
+      .map((e: any) => {
+        const correctStart = e.instanceLocation.indexOf("#/") === 0;
+        const noTrailingSlash = e.instanceLocation.indexOf("/", 2) === -1;
+        if (!correctStart || !noTrailingSlash) return null;
+
+        return e.instanceLocation.substring(2);
+      })
+      .filter((e: any) => e !== null);
+
+    const invalidFieldsErrors: ValidationError[] = [
+      ...new Set(invalidFields),
+    ].map((e) => ({
+      name: e,
+      errorCode: "JSON_SCHEMA",
+    }));
+
+    this.sessionStore.update((state) => {
+      return {
+        serverValidationErrors: invalidFieldsErrors,
+      };
+    });
+  }
+
   abstract saveWithData(data: IgeDocument);
 
   private handleAfterConflictChoice(
     choice: VersionConflictChoice,
     latestVersion: number,
-    address: boolean
+    address: boolean,
   ) {
     switch (choice) {
       case "cancel":
@@ -135,8 +193,8 @@ export abstract class SaveBase extends Plugin {
             data: data,
             isNewDoc: false,
             isAddress: address,
-          })
-        )
+          }),
+        ),
       )
       .subscribe();
   }

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import com.fasterxml.jackson.annotation.*
@@ -43,8 +62,8 @@ class UserInfo {
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
-        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false, updatable = false)],
-        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false, updatable = false)]
+        joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)]
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
@@ -88,5 +107,8 @@ class UserInfo {
     @Type(JsonType::class)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
+    
+    fun getGroupsForCatalog(catalogIdentifier: String): Set<Group> =
+        groups.filter { it.catalog?.identifier == catalogIdentifier }.toSet()
 
 }

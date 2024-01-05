@@ -27,6 +27,50 @@
     "description": "Komplett Gefüllte Fachaufgabe Beschreibung",
     "pointOfContact": [
       {
+        "type": {
+          "key": "7"
+        },
+        "ref": {
+          "title": "Wemove Test",
+          "hasWritePermission": true,
+          "hasOnlySubtreeWritePermission": false,
+          "_uuid": "9931a418-a159-4d6e-9b94-f041e3957b24",
+          "_type": "InGridOrganisationDoc",
+          "_version": 3,
+          "_created": "2023-02-09T12:03:47.858725+01:00",
+          "_modified": "2023-02-09T12:04:20.818667+01:00",
+          "_contentModified": "2023-02-09T12:04:20.818667+01:00",
+          "_createdBy": "Max Muster",
+          "_contentModifiedBy": "Max Muster",
+          "_state": "PW",
+          "_id": "5",
+          "address": {
+            "street": "Hanauer Landstr. 52",
+            "zip-code": "60",
+            "city": "Frankfurt",
+            "zip-po-box": "P123 Frankfurt",
+            "po-box": "123",
+            "administrativeArea": {
+              "key": "8"
+            },
+            "country": {
+              "key": "276"
+            }
+          },
+          "positionName": "Positionsname",
+          "contact": [
+            {
+              "type": {
+                "key": "3"
+              },
+              "connection": "test@wemove.com"
+            }
+          ],
+          "organization": "Wemove Test",
+          "_parent": null
+        }
+      },
+      {
         "ref": {
           "title": "Wemove Test",
           "hasWritePermission": true,
@@ -77,14 +121,6 @@
       },
       {
         "key": "2"
-      }
-    ],
-    "themes": [
-      {
-        "key": "105"
-      },
-      {
-        "key": "313"
       }
     ],
     "keywords": {

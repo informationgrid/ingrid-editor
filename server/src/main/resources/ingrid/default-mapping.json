@@ -35,6 +35,10 @@
       "type": "keyword",
       "store": true
     },
+    "capabilities_url_with_client": {
+      "type": "keyword",
+      "store": true
+    },
     "refering_service_uuid": {
       "type": "keyword",
       "store": true
@@ -64,7 +68,7 @@
       "store": true
     },
     "t011_obj_serv.type": {
-      "type": "keyword",
+      "type": "text",
       "store": true
     },
     "t011_obj_serv.type_key": {
@@ -73,6 +77,10 @@
     },
     "t012_obj_adr.adr_id": {
       "type": "keyword"
+    },
+    "t011_obj_serv_version.version_value": {
+      "type": "text",
+      "store": true
     },
     "t01_object.mod_uuid": {
       "type": "keyword"
@@ -105,6 +113,10 @@
       "type": "keyword",
       "store": true
     },
+    "object_reference.version": {
+      "type": "keyword",
+      "store": true
+    },
     "refering.object_reference.obj_uuid": {
       "type": "keyword",
       "store": true
@@ -118,6 +130,10 @@
       "store": true
     },
     "refering.object_reference.type": {
+      "type": "keyword",
+      "store": true
+    },
+    "refering.object_reference.version": {
       "type": "keyword",
       "store": true
     },
@@ -234,12 +250,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
@@ -259,12 +275,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }
@@ -276,12 +292,12 @@
       "store": true,
       "fields": {
         "ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "ngram",
           "search_analyzer": "german"
         },
         "edge_ngram": {
-          "type":  "text",
+          "type": "text",
           "analyzer": "edge_ngram",
           "search_analyzer": "german"
         }

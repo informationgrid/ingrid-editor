@@ -4,8 +4,8 @@
         umwandeln.
 
         <p>
-            Unterstützt wird derzeit nur das interne Format als JSON, welches
-            beim Export produziert wird.
+            Unterstützt werden das interne Format als JSON, welches beim Export
+            produziert wird, sowie das ISO 19139 Format.
         </p>
     </div>
 
@@ -20,8 +20,8 @@
 
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="message as log">
-            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>Status: {{ log.stage }}</div>
             <br />
             <ng-container
@@ -37,6 +37,7 @@
             *ngIf="websocketConnected && lastLogReceived; else waiting"
             [linear]="true"
             labelPosition="bottom"
+            (selectedIndexChange)="handleStepEvent($event)"
         >
             <mat-step [completed]="step1Complete">
                 <ng-template matStepLabel>Hochladen</ng-template>
@@ -108,23 +109,6 @@
                 <form class="content" [formGroup]="optionsFormGroup">
                     <ng-template matStepLabel>Optionen wählen</ng-template>
                     <div class="options">
-                        <!--<div class="section-title space-bottom">Typ</div>
-                        <mat-form-field
-                            appearance="outline"
-                            style="width: 372px"
-                        >
-                            <mat-select
-                                formControlName="importer"
-                                placeholder="Importer auswählen"
-                            >
-                                <mat-option
-                                    *ngFor="let importer of importers"
-                                    [value]="importer.id"
-                                    >{{ importer.name }}</mat-option
-                                >
-                            </mat-select>
-                        </mat-form-field>-->
-
                         <div class="section-title">Optionen</div>
                         <div class="space-bottom flex-col">
                             <mat-checkbox formControlName="overwriteAddresses"
@@ -153,6 +137,7 @@
                             <div>
                                 <ige-breadcrumb
                                     [rootName]="'Adressen'"
+                                    [selectable]
                                     [path]="parent.addressPath"
                                 ></ige-breadcrumb>
                                 <span class="link-text">
@@ -165,6 +150,33 @@
                                 </span>
                             </div>
                         </div>
+                        @if (
+                            optionsFormGroup.get("parentDocument").invalid ||
+                            optionsFormGroup.get("parentAddress").invalid
+                        ) {
+                            <div class="error-box">
+                                Sie haben keine Berechtigung auf den Anlageort.
+                                Bitte wählen Sie unter Daten und Adressen einen
+                                Ort mit Schreibberechtigungen aus.
+                            </div>
+                        }
+                        @if (datasetsWithNoPermission.length > 0) {
+                            <div class="error-box">
+                                Der Import beinhaltet existierende Datensätze.
+                                Sie haben zu mindestens einem Datensatz keine
+                                Berechtigungen:
+                                <ul>
+                                    @for (
+                                        data of datasetsWithNoPermission;
+                                        track data.uuid
+                                    ) {
+                                        <li>
+                                            {{ data.title }} ({{ data.uuid }})
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
                     </div>
                 </form>
 
@@ -179,7 +191,10 @@
                     <button
                         mat-flat-button
                         color="primary"
-                        [disabled]="optionsFormGroup.invalid"
+                        [disabled]="
+                            optionsFormGroup.invalid ||
+                            datasetsWithNoPermission.length > 0
+                        "
                         matStepperNext
                         (click)="startImport()"
                     >

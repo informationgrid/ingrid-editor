@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable, Type } from "@angular/core";
 import { ConfigService, UserInfo } from "./config/config.service";
 import { Doctype } from "./formular/doctype";
@@ -17,13 +36,11 @@ export class ProfileService {
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
 
-  private profileId: string = null;
-
   constructor(
     private configService: ConfigService,
     private profileStore: ProfileStore,
     private contextHelpService: ContextHelpService,
-    private errorService: ModalService
+    private errorService: ModalService,
   ) {}
 
   initProfile(): Observable<Type<any>> {
@@ -34,7 +51,7 @@ export class ProfileService {
       catchError((error) => {
         this.errorService.showJavascriptError(error.message, error.stack);
         throw error;
-      })
+      }),
     );
   }
 
@@ -69,7 +86,7 @@ export class ProfileService {
       .map(
         (doctype) =>
           (doctype.getIconClass && doctype.getIconClass(doc)) ||
-          doctype.iconClass
+          doctype.iconClass,
       );
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
@@ -100,12 +117,12 @@ export class ProfileService {
     // TODO: get ContextHelpIDs of all document types at once to improve speed
     const profile = this.configService.$userInfo.value.currentCatalog.type;
     const helpIdsObservables = this.doctypes.map((type) =>
-      this.contextHelpService.getAvailableHelpFieldIds(profile, type.id)
+      this.contextHelpService.getAvailableHelpFieldIds(profile, type.id),
     );
     forkJoin(helpIdsObservables)
       .pipe(
         tap((results) => this.initDocumentTypes(results)),
-        tap(() => this.finishProfileInitialization())
+        tap(() => this.finishProfileInitialization()),
       )
       .subscribe();
   }
@@ -140,13 +157,5 @@ export class ProfileService {
         ...data,
       },
     }));
-  }
-
-  setProfileId(id: string) {
-    this.profileId = id;
-  }
-
-  getProfileId() {
-    return this.profileId;
   }
 }

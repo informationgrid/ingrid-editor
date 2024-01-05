@@ -9,7 +9,7 @@
 
 <mat-accordion [multi]="!formControl.enabled">
     <mat-list
-        *ngIf="field.fieldGroup.length"
+        *ngIf="model[key + '']?.length"
         cdkDropList
         cdkDropListOrientation="vertical"
         (cdkDropListDropped)="drop($event)"
@@ -17,7 +17,7 @@
         [attr.aria-label]="props?.ariaLabel"
     >
         <mat-list-item
-            *ngFor="let item of field.fieldGroup; let i = index"
+            *ngFor="let item of model[key]; let i = index"
             cdkDrag
             [cdkDragDisabled]="formControl.disabled"
             [class.clickable]="formControl.enabled"
@@ -38,14 +38,14 @@
                             aria-hidden="true"
                             >drag_indicator
                         </mat-icon>
-                        {{ model[i].title }}
+                        {{ model[key][i].title }}
                     </mat-panel-title>
                     <mat-panel-description>
                         <div class="flex-1 flex-col align-items-start">
                             <a
-                                *ngIf="model[i].link.asLink"
+                                *ngIf="model[key][i].link.asLink"
                                 class="url no-text-transform icon-in-table"
-                                [href]="model[i].link.uri"
+                                [href]="model[key][i].link.uri"
                                 (click)="$event.stopPropagation()"
                                 (keydown)="$event.stopPropagation()"
                                 target="_blank"
@@ -54,16 +54,20 @@
                                     width="20"
                                     height="20"
                                     src="assets/icons/external_link.svg"
-                                    alt="link"
+                                    alt="Link"
                                 />
-                                {{ model[i].link.uri }}</a
+                                {{ model[key][i].link.uri }}</a
                             >
                             <a
-                                *ngIf="!model[i].link.asLink"
+                                *ngIf="!model[key][i].link.asLink"
                                 class="url no-text-transform icon-in-table"
-                                [href]="getDownloadURL(model[i].link.uri)"
+                                [href]="getDownloadURL(model[key][i].link.uri)"
                                 (click)="
-                                    handleCellClick(i, model[i].link, $event);
+                                    handleCellClick(
+                                        i,
+                                        model[key][i].link,
+                                        $event
+                                    );
                                     $event.stopPropagation()
                                 "
                                 (keydown)="$event.stopPropagation()"
@@ -73,8 +77,9 @@
                                     width="20"
                                     height="20"
                                     src="assets/icons/download.svg"
+                                    alt="Herunterladen"
                                 />
-                                {{ model[i].link.uri }}</a
+                                {{ model[key][i].link.uri }}</a
                             >
                         </div>
                         <button
@@ -116,7 +121,7 @@
                                 </button>
                                 <button
                                     mat-menu-item
-                                    (click)="moreButton.focus(); remove(i)"
+                                    (click)="moreButton.focus(); removeItem(i)"
                                 >
                                     Entfernen
                                 </button>
@@ -125,53 +130,55 @@
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="flex-1 flex-col align-items-start">
-                    <div *ngIf="model[i].description" class="explanation">
-                        {{ model[i].description }}
+                    <div *ngIf="model[key][i].description" class="explanation">
+                        {{ model[key][i].description }}
                     </div>
 
-                    <div *ngIf="model[i].format?.key">
+                    <div *ngIf="model[key][i].format?.key">
                         <div class="type">
-                            Format: {{ model[i].format?.key }}
+                            Format: {{ model[key][i].format?.key }}
                         </div>
                     </div>
-                    <div *ngIf="model[i].languages?.length > 0">
+                    <div *ngIf="model[key][i].languages?.length > 0">
                         <div class="type">
                             Sprachen:
-                            <span *ngFor="let language of model[i].languages">
-                                {{ language.key | codelist : "20007" | async }}
+                            <span
+                                *ngFor="let language of model[key][i].languages"
+                            >
+                                {{ language.key | codelist: "20007" | async }}
                             </span>
                         </div>
                     </div>
 
-                    <div *ngIf="model[i].modified">
+                    <div *ngIf="model[key][i].modified">
                         <div class="type">
                             Zuletzt Bearbeitet:
-                            {{ getDateString(model[i].modified) }}
+                            {{ getDateString(model[key][i].modified) }}
                         </div>
                     </div>
 
                     <div>
                         <a
-                            *ngIf="model[i].license?.key"
+                            *ngIf="model[key][i].license?.key"
                             class="url no-text-transform icon-in-table"
-                            [href]="model[i].license?.key"
+                            [href]="model[key][i].license?.key"
                             target="_blank"
                         >
                             {{
-                                model[i].license?.key
-                                    | codelist : "20004"
+                                model[key][i].license?.key
+                                    | codelist: "20004"
                                     | async
                             }}
                         </a>
-                        <ng-container *ngIf="model[i].byClause"
+                        <ng-container *ngIf="model[key][i].byClause"
                             >Namensnennung:
-                            {{ model[i].byClause }}</ng-container
+                            {{ model[key][i].byClause }}</ng-container
                         >
                     </div>
-                    <div *ngIf="model[i].availability?.key">
+                    <div *ngIf="model[key][i].availability?.key">
                         {{
-                            model[i].availability?.key
-                                | codelist : "20005"
+                            model[key][i].availability?.key
+                                | codelist: "20005"
                                 | async
                         }}
                     </div>

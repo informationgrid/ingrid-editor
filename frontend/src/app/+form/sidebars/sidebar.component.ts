@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeStore } from "../../store/tree/tree.store";
@@ -42,7 +61,7 @@ export class SidebarComponent implements OnInit {
     private addressTreeStore: AddressTreeStore,
     private docTreeStore: TreeStore,
     private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery
+    private addressTreeQuery: AddressTreeQuery,
   ) {}
 
   ngOnInit() {
@@ -76,7 +95,7 @@ export class SidebarComponent implements OnInit {
       this.treeQuery.openedDocument$
         .pipe(
           filter((doc) => doc !== null),
-          take(1)
+          take(1),
         )
         .subscribe((doc) => this.activeTreeNode.next(<number>doc.id));
     }
@@ -110,7 +129,7 @@ export class SidebarComponent implements OnInit {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.address
+      this.address,
     );
 
     if (handled) {

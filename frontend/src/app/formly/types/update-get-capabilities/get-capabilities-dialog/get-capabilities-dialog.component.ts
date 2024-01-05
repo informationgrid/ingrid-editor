@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, Inject, ViewChild } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
@@ -44,7 +63,7 @@ export class GetCapabilitiesDialogComponent {
     private dlg: MatDialogRef<GetCapabilitiesDialogComponent>,
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private config: ConfigService
+    private config: ConfigService,
   ) {
     if (initialUrl) this.analyze(initialUrl);
   }
@@ -66,7 +85,7 @@ export class GetCapabilitiesDialogComponent {
       .pipe(
         catchError((error) => this.handleError(error)),
         filter((report) => report !== null),
-        finalize(() => (this.isAnalyzing = false))
+        finalize(() => (this.isAnalyzing = false)),
       )
       .subscribe((report) => {
         this.report = this.addOriginalGetCapabilitiesUrl(report, url);
@@ -82,13 +101,13 @@ export class GetCapabilitiesDialogComponent {
 
   submit() {
     const selectedValues = this.selection.selectedOptions.selected.map(
-      (item) => item.value
+      (item) => item.value,
     );
     selectedValues.push("dataServiceType", "serviceType");
     let result = Object.fromEntries(
       Object.entries(this.report).filter(
-        ([key]) => selectedValues.indexOf(key) !== -1
-      )
+        ([key]) => selectedValues.indexOf(key) !== -1,
+      ),
     );
     result.addressParent = this.parentAddress;
     this.dlg.close(result);
@@ -105,7 +124,7 @@ export class GetCapabilitiesDialogComponent {
 
   private handleAddressConstraint() {
     this.addressSelected = this.selection.selectedOptions.selected.some(
-      (item) => item.value === "address"
+      (item) => item.value === "address",
     );
     this.validAddressConstraint =
       !this.addressSelected ||
@@ -116,10 +135,10 @@ export class GetCapabilitiesDialogComponent {
 
   private addOriginalGetCapabilitiesUrl(
     report: GetCapabilitiesAnalysis,
-    originalUrl: string
+    originalUrl: string,
   ) {
     const getCapOp = report.operations.find(
-      (item) => item.name.key === "1" || item.name.value === "GetCapabilities"
+      (item) => item.name.key === "1" || item.name.value === "GetCapabilities",
     );
 
     getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
@@ -132,7 +151,7 @@ export class GetCapabilitiesDialogComponent {
         data: <PasteDialogOptions>{
           forAddress: true,
           titleText: "Ordner auswählen",
-          typeToInsert: "FOLDER",
+          typeToInsert: "InGridOrganisationDoc",
           buttonText: "Auswählen",
         },
       })

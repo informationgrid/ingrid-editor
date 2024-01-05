@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { AppComponent } from "./app.component";
 import { registerLocaleData } from "@angular/common";
 import { CustomReuseStrategy, routing } from "./app.router";
@@ -39,11 +58,7 @@ import { FormsModule } from "@angular/forms";
 import de from "@angular/common/locales/de";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { AngularSplitModule } from "angular-split";
-import {
-  FORMLY_CONFIG,
-  FormlyFieldConfig,
-  FormlyModule,
-} from "@ngx-formly/core";
+import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
 import { OneColumnWrapperComponent } from "./formly/wrapper/one-column-wrapper.component";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
@@ -108,7 +123,8 @@ export function ConfigLoader(
   authFactory: AuthenticationFactory,
   router: Router,
   http: HttpClient,
-  dialog: MatDialog
+  dialog: MatDialog,
+  translocoService: TranslocoService,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -124,7 +140,7 @@ export function ConfigLoader(
 
   async function redirectToCatalogSpecificRoute(
     router: Router,
-    dialog: MatDialog
+    dialog: MatDialog,
   ) {
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
@@ -149,7 +165,7 @@ export function ConfigLoader(
       }
 
       const isAssignedToCatalog = userInfo.assignedCatalogs.some(
-        (assigned) => assigned.id === rootPath
+        (assigned) => assigned.id === rootPath,
       );
       if (isAssignedToCatalog) {
         await firstValueFrom(
@@ -157,8 +173,8 @@ export function ConfigLoader(
             configService.getConfiguration().backendUrl +
               "user/catalog/" +
               rootPath,
-            null
-          )
+            null,
+          ),
         ).then(() => configService.getCurrentUserInfo());
         return;
       }
@@ -182,6 +198,7 @@ export function ConfigLoader(
     return configService
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
+      .then(() => firstValueFrom(translocoService.load("de")))
       .then(() => console.log("FINISHED APP INIT"))
       .then(() => redirectToCatalogSpecificRoute(router, dialog))
       .catch((err) => {
@@ -197,14 +214,6 @@ export function ConfigLoader(
         throw new IgeError(err);
       });
   };
-}
-
-export function animationExtension(field: FormlyFieldConfig) {
-  if (field.wrappers && field.wrappers.includes("animation")) {
-    return;
-  }
-
-  field.wrappers = ["animation", ...(field.wrappers || [])];
 }
 
 @NgModule({
@@ -241,15 +250,6 @@ export function animationExtension(field: FormlyFieldConfig) {
     HttpClientModule,
     HttpClientXsrfModule,
     FormlyModule.forRoot({
-      types: [
-        {
-          name: "just-a-name",
-          extends: "formly-group",
-          defaultOptions: {
-            defaultValue: {},
-          },
-        },
-      ],
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
         { name: "addons", component: AddonsWrapperComponent },
@@ -310,6 +310,7 @@ export function animationExtension(field: FormlyFieldConfig) {
         Router,
         HttpClient,
         MatDialog,
+        TranslocoService,
       ],
       multi: true,
     },

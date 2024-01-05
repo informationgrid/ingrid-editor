@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormToolbarComponent } from "./toolbar/form-toolbar.component";
@@ -50,6 +69,7 @@ import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
 import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
 import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.component";
+import { LongPressDirective } from "../../directives/longPress.directive";
 
 @NgModule({
   declarations: [
@@ -96,6 +116,7 @@ import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.c
     DocumentIconModule,
     FormLabelComponent,
     ErrorPanelComponent,
+    LongPressDirective,
   ],
   providers: [
     CreateDocumentPlugin,

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
@@ -50,7 +69,7 @@ export class PublishPlugin extends SaveBase {
     private docEvents: DocEventsService,
     private transloco: TranslocoService,
     messageService: FormMessageService,
-    sessionStore: SessionStore
+    sessionStore: SessionStore,
   ) {
     super(sessionStore, messageService);
     inject(PluginService).registerPlugin(this);
@@ -72,7 +91,7 @@ export class PublishPlugin extends SaveBase {
       this.docEvents
         .onEvent(this.eventPlanPublishId)
         .subscribe(
-          () => this.validateBeforePublish() && this.showPlanPublishingDialog()
+          () => this.validateBeforePublish() && this.showPlanPublishingDialog(),
         ),
       this.docEvents
         .onEvent(this.eventUnpublishId)
@@ -87,7 +106,7 @@ export class PublishPlugin extends SaveBase {
 
     this.formSubscriptions.push(
       ...toolbarEventSubscription,
-      behaviourSubscription
+      behaviourSubscription,
     );
   }
 
@@ -160,19 +179,23 @@ export class PublishPlugin extends SaveBase {
 
     if (!allParentsPublished) {
       this.modalService.showJavascriptError(
-        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann."
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
       );
       return false;
     } else {
       if (formIsInvalid || hasOtherErrors) {
         if (hasOtherErrors) console.warn("Other errors:", validation.errors);
-        this.modalService.showIgeError(
-          new IgeError(
-            "Es müssen alle Felder korrekt ausgefüllt werden. " +
-              "STRG + ALT + Pfeiltaste-links zum vorherigen Fehler. " +
-              "STRG + ALT + Pfeiltaste-rechts zum nächsten Fehler."
-          )
+        console.warn(this.formStateService.getForm());
+        const validationErrors = this.extractFormValidationErrors(
+          this.formStateService.getForm().controls,
         );
+        const error = new IgeError(
+          "Es müssen alle Felder korrekt ausgefüllt werden. " +
+            "STRG + ALT + R zum vorherigen Fehler. " +
+            "STRG + ALT + W zum nächsten Fehler.",
+        );
+        if (validationErrors.length > 0) error.items = validationErrors;
+        this.modalService.showIgeError(error);
         return false;
       }
       return true;
@@ -255,7 +278,7 @@ export class PublishPlugin extends SaveBase {
       .publish(data, this.forAddress, delay)
       .pipe(
         catchError((error) =>
-          this.handleError(error, data, this.forAddress, "PUBLISH")
+          this.handleError(error, data, this.forAddress, "PUBLISH"),
         ),
         tap((response) => {
           if (delay != null) {
@@ -264,7 +287,7 @@ export class PublishPlugin extends SaveBase {
               forAddress: this.forAddress,
             });
           }
-        })
+        }),
       )
       .subscribe();
   }
@@ -300,7 +323,7 @@ export class PublishPlugin extends SaveBase {
             (err) => {
               console.log("Error when reverting data", err);
               throw err;
-            }
+            },
           );
         }
       });
@@ -325,18 +348,18 @@ export class PublishPlugin extends SaveBase {
         loadedDocument !== null &&
           loadedDocument._pendingDate == null &&
           loadedDocument._type !== "FOLDER" &&
-          loadedDocument.hasWritePermission
+          loadedDocument.hasWritePermission,
       );
       this.formToolbarService.setMenuItemStateOfButton(
         "toolBtnPublish",
         this.eventRevertId,
-        loadedDocument !== null && loadedDocument._state === "PW"
+        loadedDocument !== null && loadedDocument._state === "PW",
       );
       this.formToolbarService.setMenuItemStateOfButton(
         "toolBtnPublish",
         this.eventUnpublishId,
         loadedDocument !== null &&
-          (loadedDocument._state === "PW" || loadedDocument._state === "P")
+          (loadedDocument._state === "PW" || loadedDocument._state === "P"),
       );
     });
   }
@@ -362,7 +385,7 @@ export class PublishPlugin extends SaveBase {
           error.unhandledException = false;
           this.modalService.showIgeError(error);
           return of(error);
-        })
+        }),
       )
       .subscribe((result) => {
         console.log("backendValidation: ", result);
@@ -373,7 +396,37 @@ export class PublishPlugin extends SaveBase {
           message: "Der Datensatz wurde erfolgreich geprüft.",
           hideCancelButton: true,
         });
+        this.documentService.publishState$.next(false);
       });
     console.log("isValid: ", isValid);
+  }
+
+  private extractFormValidationErrors(controls): string[] {
+    const errors: string[] = [];
+    Object.keys(controls).forEach((controlKey) => {
+      let control = controls[controlKey];
+      if (
+        control.invalid &&
+        control.errors != null &&
+        Object.keys(control.errors).length > 0
+      ) {
+        const controlLabel = control._fields[0].props.externalLabel;
+        const errorKey = Object.keys(control.errors)[0];
+        const error = control.errors[errorKey];
+        if (error.message) {
+          if (typeof error.message === "function") {
+            errors.push(controlLabel);
+          } else {
+            errors.push(controlLabel + ": " + error.message);
+          }
+        } else
+          errors.push(
+            controlLabel +
+              ": " +
+              this.transloco.translate("form.validationMessages." + errorKey),
+          );
+      }
+    });
+    return errors;
   }
 }

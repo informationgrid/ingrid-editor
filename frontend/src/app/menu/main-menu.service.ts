@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { Route, Router } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
@@ -16,7 +35,7 @@ export class MainMenuService {
   constructor(
     private router: Router,
     private sessionStore: SessionStore,
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
 
   get mainRoutes(): Route[] {
@@ -25,7 +44,7 @@ export class MainMenuService {
         item.path !== "" &&
         !item.data?.hideFromMenu &&
         (!item.data?.featureFlag ||
-          this.config.hasFlags(item.data?.featureFlag))
+          this.config.hasFlags(item.data?.featureFlag)),
     );
   }
 
@@ -38,12 +57,12 @@ export class MainMenuService {
 
   removeMenuItem(path: string) {
     let indexToRemove = this.router.config.findIndex(
-      (item: any) => item.path === path
+      (item: any) => item.path === path,
     );
     this.router.config.splice(indexToRemove, 1);
 
     indexToRemove = this._mainRoutes.findIndex(
-      (item: any) => item.path === path
+      (item: any) => item.path === path,
     );
     this._mainRoutes.splice(indexToRemove, 1);
 

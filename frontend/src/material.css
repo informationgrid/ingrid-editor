@@ -19,7 +19,9 @@
   font-style: normal;
   font-weight: 400;
   src: url("assets/fonts/roboto-v20-latin-regular.eot"); /* IE9 Compat Modes */
-  src: local("Roboto"), local("Roboto-Regular"),
+  src:
+    local("Roboto"),
+    local("Roboto-Regular"),
     url("assets/fonts/roboto-v20-latin-regular.eot?#iefix")
       format("embedded-opentype"),
     /* IE6-IE8 */ url("assets/fonts/roboto-v20-latin-regular.woff2")
@@ -37,7 +39,9 @@
   font-style: normal;
   font-weight: 500;
   src: url("assets/fonts/roboto-v20-latin-500.eot"); /* IE9 Compat Modes */
-  src: local("Roboto Medium"), local("Roboto-Medium"),
+  src:
+    local("Roboto Medium"),
+    local("Roboto-Medium"),
     url("assets/fonts/roboto-v20-latin-500.eot?#iefix")
       format("embedded-opentype"),
     /* IE6-IE8 */ url("assets/fonts/roboto-v20-latin-500.woff2") format("woff2"),

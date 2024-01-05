@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Configuration, UserInfo } from "./config.service";
 import { IgeException } from "../../server-validation.util";
 import { environment } from "../../../environments/environment";
@@ -27,14 +46,14 @@ export class ConfigDataService {
     return firstValueFrom(
       this.httpClient
         .get<any>(config.contextPath + "api/config")
-        .pipe(map((data) => ({ ...config, ...data })))
+        .pipe(map((data) => ({ ...config, ...data }))),
     );
   }
 
   getCurrentUserInfo(): Promise<UserInfo> {
     return (
       firstValueFrom(
-        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser")
+        this.httpClient.get<any>(this.config.backendUrl + "info/currentUser"),
       )
         // TODO: if database is not initialized then response is not JSON
         //       change backend response or catch parse error
@@ -49,18 +68,18 @@ export class ConfigDataService {
             }
           } else if ((<XMLHttpRequest>e).status === 401) {
             throw new Error(
-              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein"
+              "Backend scheint nicht korrekt für Keycloak konfiguriert zu sein",
             );
           } else if ((<XMLHttpRequest>e).status === 403) {
             throw new Error(
-              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator."
+              "Sie sind kein IGE-Benutzer. Bitte wenden Sie sich an einen Administrator.",
             );
           } else {
             if (e instanceof HttpErrorResponse) {
               const error = <IgeException>e.error;
               if (error.errorCode === "PROFILE_NOT_FOUND") {
                 throw new Error(
-                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`
+                  `Das Profil "${error.data.id}" ist im Backend scheinbar nicht aktiviert.`,
                 );
               } else {
                 throw new Error(error.errorText);

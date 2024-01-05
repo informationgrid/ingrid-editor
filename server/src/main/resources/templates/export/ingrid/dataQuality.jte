@@ -2,10 +2,8 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer.DisplayableQuality
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 
 @param GeodatasetModelTransformer page
-
 <gmd:dataQualityInfo>
     <gmd:DQ_DataQuality>
         <gmd:scope>
@@ -156,7 +154,7 @@
                         <gmd:specification>
                             <gmd:CI_Citation>
                                 <gmd:title>
-                                    <gco:CharacterString>${page.getCodelists().getValue("6005",conformanceResult.getSpecification(), "iso")}</gco:CharacterString>
+                                    <gco:CharacterString>${page.mapConformanceResultTitle(conformanceResult)}</gco:CharacterString>
                                 </gmd:title>
                                 <gmd:date>
                                     <gmd:CI_Date>

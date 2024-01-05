@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -40,7 +59,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
   constructor(
     private _treeControl: FlatTreeControl<TreeNode>,
     private _database: DynamicDatabase,
-    private treeService: TreeService
+    private treeService: TreeService,
   ) {
     super();
   }
@@ -58,7 +77,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       });
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(
-      map(() => this.data)
+      map(() => this.data),
     );
   }
 
@@ -100,9 +119,9 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       .getChildren(node._id, false, this.forAddress)
       .pipe(
         map((docs) =>
-          this._database.mapDocumentsToTreeNodes(docs, node.level + 1)
+          this._database.mapDocumentsToTreeNodes(docs, node.level + 1),
         ),
-        map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction()))
+        map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
         /*tap(docs => {
           if (this.selectionModel.isSelected(node)) {
             this.selectionModel.select(...docs);
@@ -182,7 +201,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       this.data.splice(index, 1);
       const updatedNode = this._database.mapDocumentsToTreeNodes(
         [doc],
-        level
+        level,
       )[0];
       this.insertNodeInTree(updatedNode, updatedNode.parent);
       if (wasExpanded) this.expandNode(updatedNode);
@@ -222,7 +241,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
         }
       } else {
         console.warn(
-          `Could not find parent node "${dest}". Maybe no read access?`
+          `Could not find parent node "${dest}". Maybe no read access?`,
         );
       }
     }
@@ -244,12 +263,12 @@ export class DynamicDataSource extends DataSource<TreeNode> {
 
     // sort children nodes
     childrenNodes = childrenNodes.sort(
-      this.treeService.getSortTreeNodesFunction()
+      this.treeService.getSortTreeNodesFunction(),
     );
 
     // get index of sorted moved node
     const sortedMovedNodeIndex = childrenNodes.findIndex(
-      (item) => item._id === node._id
+      (item) => item._id === node._id,
     );
 
     const atEnd = sortedMovedNodeIndex === childrenNodes.length - 1;
@@ -259,7 +278,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
       this.data.splice(
         destNodeIndex + 1 + childrenNodesWithExpanded.length,
         0,
-        node
+        node,
       );
     } else {
       const successor = childrenNodes[sortedMovedNodeIndex + 1]._id;

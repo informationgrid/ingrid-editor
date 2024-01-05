@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,9 +24,8 @@ import {
   Input,
   OnInit,
 } from "@angular/core";
-import { DocumentState, IgeDocument } from "../../../models/ige-document";
+import { IgeDocument } from "../../../models/ige-document";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { DocumentUtils } from "../../../services/document.utils";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
@@ -55,10 +73,6 @@ export class HeaderMoreComponent implements OnInit {
     this.migrated = new Date(this.model._created) < new Date(catCreateDate);
   }
 
-  getState(state: DocumentState) {
-    return DocumentUtils.getStateName(state);
-  }
-
   mapDocumentType(type: string) {
     return this.profileQuery.getEntity(type).label;
   }
@@ -69,7 +83,7 @@ export class HeaderMoreComponent implements OnInit {
       "all",
       "modifiedMetadata",
       "Metadaten-Datum",
-      null
+      null,
     );
   }
 }

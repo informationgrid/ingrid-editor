@@ -1,9 +1,32 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.configuration
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.servers.Server
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.security.*
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
@@ -12,14 +35,15 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
+import java.util.*
 
 
 @OpenAPIDefinition(
     info = Info(
-        title = "IGE NG API",
+        title = "IGE-NG API",
         version = "v1",
-        description = "This app provides REST APIs for the IGE NG",
-        contact = Contact(name = "André Wallat", email = "andre.wallat@wemove.com", url = "https://www.wemove.com")
+        description = "The IGE-NG provides the following REST-APIs",
+        contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com")
     ),
     servers = [
         Server(url = "http://localhost:8550", description = "Local Server"),
@@ -60,5 +84,26 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                         return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
                     }
                 })
+    }
+
+    @Bean
+    fun openAPI(): OpenAPI {
+        val oauthSchemeName = "Keycloak Token"
+        return OpenAPI()
+            .components(
+                Components()
+                    .addSecuritySchemes(
+                        oauthSchemeName,
+                        SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                    )
+            )
+            .addSecurityItem(
+                SecurityRequirement()
+                    .addList("bearer-jwt", listOf("read", "write"))
+                    .addList(oauthSchemeName, Collections.emptyList())
+            )
     }
 }

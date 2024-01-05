@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -30,7 +49,7 @@ import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api"])
-class DatasetsApiController @Autowired constructor(
+class DatasetsApiController(
     private val authUtils: AuthUtils,
     private val catalogService: CatalogService,
     private val docWrapperRepo: DocumentWrapperRepository,
@@ -370,9 +389,7 @@ class DatasetsApiController @Autowired constructor(
         ) {
             // Calculate Root Objects for non-admin users
             val userName = authUtils.getUsernameFromPrincipal(principal)
-            val userGroups = catalogService.getUser(userName)?.groups
-                ?.filter { it.catalog?.identifier == catalogId }
-                ?.toMutableSet()
+            val userGroups = catalogService.getUser(userName)?.getGroupsForCatalog(catalogId)
             getRootDocsFromGroup(userGroups, isAddress)
         } else {
             documentService.findChildrenDocs(catalogId, parentId?.toInt(), isAddress)
@@ -387,7 +404,7 @@ class DatasetsApiController @Autowired constructor(
     }
 
     private fun getRootDocsFromGroup(
-        userGroups: MutableSet<Group>?,
+        userGroups: Set<Group>?,
         isAddress: Boolean,
     ): FindAllResults<DocumentData> {
 

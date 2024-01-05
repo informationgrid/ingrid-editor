@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -66,6 +85,7 @@ data class DataModel(
     val lineage: Lineage?,
     val service: Service?,
     val spatialScope: KeyValueModel?,
+    val subType: KeyValueModel?,
 )
 
 
@@ -140,6 +160,7 @@ data class Reference(
     val explanation: String?,
     val url: String?,
     val uuidRef: String?,
+    val urlDataType: KeyValueModel?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -147,7 +168,7 @@ data class CoupledResource(
     val title: String?,
     val url: String?,
     val identifier: String?,
-    val uuid: String,
+    val uuid: String?,
     val isExternalRef: Boolean
 )
 
@@ -296,9 +317,9 @@ data class Resolution(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GridSpatialRepresentation(
-    val type: KeyValueModel,
+    val type: KeyValueModel?,
     val axesDimensionProperties: List<AxisDimensionProperties>,
-    val transformationParameterAvailability: Boolean,
+    val transformationParameterAvailability: Boolean = false,
     val numberOfDimensions: Int?,
     val cellGeometry: KeyValueModel?,
     val georectified: Georectified?,
@@ -306,15 +327,15 @@ data class GridSpatialRepresentation(
 )
 
 data class Georectified(
-    val checkPointAvailability: Boolean?,
+    val checkPointAvailability: Boolean? = false,
     val checkPointDescription: String?,
     val cornerPoints: String?,
     val pointInPixel: KeyValueModel?,//2100
 )
 
 data class Georeferenceable(
-    val orientationParameterAvailability: Boolean?,
-    val controlPointAvaliability: Boolean?,
+    val orientationParameterAvailability: Boolean? = false,
+    val controlPointAvaliability: Boolean? = false,
     val parameters: String?,
 )
 

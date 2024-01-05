@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -58,17 +77,19 @@ export class ContextHelpService {
     private http: HttpClient,
     configService: ConfigService,
     private contextHelpQuery: ContextHelpQuery,
-    private contextHelpStore: ContextHelpStore
+    private contextHelpStore: ContextHelpStore,
   ) {
     this.configuration = configService.getConfiguration();
   }
 
   getAvailableHelpFieldIds(
     profile: string,
-    docType: string
+    docType: string,
   ): Observable<string[]> {
     return this.getIdsFromBackend(profile, docType).pipe(
-      tap((helpfieldIds) => this.addHelpToStore(profile, docType, helpfieldIds))
+      tap((helpfieldIds) =>
+        this.addHelpToStore(profile, docType, helpfieldIds),
+      ),
     );
   }
 
@@ -77,7 +98,7 @@ export class ContextHelpService {
     docType: string,
     fieldId: string,
     label: string,
-    infoElement: HTMLElement
+    infoElement: HTMLElement,
   ) {
     const helpText$ = this.getContextHelpText(profile, docType, fieldId); // allows passing in a custom help text
     this.showContextHelpPopup(label, helpText$, infoElement);
@@ -85,8 +106,8 @@ export class ContextHelpService {
 
   public showContextHelpPopup(
     label: string,
-    helpText$: Observable<String>,
-    infoElement?: HTMLElement
+    helpText$: Observable<string>,
+    infoElement?: HTMLElement,
   ) {
     const dialogPosition: DialogPosition = infoElement
       ? {
@@ -112,27 +133,27 @@ export class ContextHelpService {
   private addHelpToStore(
     profile: string,
     docType: string,
-    helpfieldIds: string[]
+    helpfieldIds: string[],
   ) {
     helpfieldIds.forEach((fieldId) =>
-      this.contextHelpStore.add({ docType, profile, fieldId })
+      this.contextHelpStore.add({ docType, profile, fieldId }),
     );
   }
 
   private getContextHelpText(
     profile: string,
     docType: string,
-    fieldId: string
+    fieldId: string,
   ): Observable<string> {
     const contextHelp = this.contextHelpQuery.getContextHelp(
       profile,
       docType,
-      fieldId
+      fieldId,
     );
     if (contextHelp === undefined || !contextHelp.helpText) {
       return this.getHelptextFromBackend(profile, docType, fieldId).pipe(
         tap((help) => this.contextHelpStore.update(help)),
-        map((help) => help.helpText)
+        map((help) => help.helpText),
       );
     }
 
@@ -141,21 +162,21 @@ export class ContextHelpService {
 
   private getIdsFromBackend(
     profile: string,
-    docType: string
+    docType: string,
   ): Observable<string[]> {
     const httpParams = new HttpParams()
       .set("profile", profile)
       .set("docType", docType);
     return this.http.get<string[]>(
       this.configuration.backendUrl + "contexthelpIds",
-      { params: httpParams }
+      { params: httpParams },
     );
   }
 
   private getHelptextFromBackend(
     profile: string,
     docType: string,
-    fieldId: string
+    fieldId: string,
   ): Observable<ContextHelpAbstract> {
     const httpParams = new HttpParams()
       .set("fieldId", fieldId)
@@ -163,7 +184,7 @@ export class ContextHelpService {
       .set("docType", docType);
     return this.http.get<ContextHelpAbstract>(
       this.configuration.backendUrl + "contexthelp",
-      { params: httpParams }
+      { params: httpParams },
     );
   }
 }

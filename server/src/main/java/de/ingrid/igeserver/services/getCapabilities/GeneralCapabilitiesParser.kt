@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services.getCapabilities
 
 import de.ingrid.igeserver.model.BoolFilter
@@ -34,7 +53,7 @@ data class OperationBean(
 )
 
 data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
-data class ConformityBean(var level: Int? = null, var specification: String? = null)
+data class ConformityBean(var level: Int? = null, var specification: String? = null, var publishDate: String? = null)
 data class AddressBean(
     var uuid: String? = null,
     var type: String? = null,
@@ -173,6 +192,13 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                     conformityNodes.item(index),
                     "inspire_common:Specification/inspire_common:Title"
                 )
+                    ?.replace("\t", " ")
+                    ?.replace("\n", " ")
+                    ?.replace("  ", " ")
+                bean.publishDate = xPathUtils.getString(
+                    conformityNodes.item(index),
+                    "inspire_common:Specification/inspire_common:DateOfPublication"
+                )
                 beans.add(bean)
             }
         }
@@ -294,23 +320,20 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
         val urls = mutableListOf<UrlBean>()
-        val orNodes = xPathUtils.getNodeList(doc, xPath)
-        if (orNodes != null) {
-            for (i in 0 until orNodes.length) {
-                val url = UrlBean()
-                val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
+        val orNodes = xPathUtils.getNodeList(doc, xPath) ?: return urls
+        
+        for (i in 0 until orNodes.length) {
+            val url = UrlBean()
+            val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
 
-                // do not add link if there's none (#781)
-                if (link == null || link.trim() == "") continue
+            // do not add link if there's none (#781) or starts with mailto (#5583)
+            if (link.isNullOrEmpty() || link.startsWith("mailto:")) continue
 
-                url.url = link
-//                val type = xPathUtils.getString(orNodes.item(i), "@xlink:type")
-//                if (type != null) url.type = type
-                url.type = KeyValue("9999", "Unspezifischer Verweis")
-                url.title = "Verweis"
+            url.url = link
+            url.type = KeyValue(null, "Informationen im Internet")
+            url.title = link
 
-                urls.add(url)
-            }
+            urls.add(url)
         }
         return urls
     }
@@ -328,6 +351,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 val urlBean = UrlBean()
                 val type = xPathUtils.getString(doc, xPathExtCap + "/inspire_common:ResourceType[" + (i + 1) + "]")
                 urlBean.url = url.item(i).textContent
+                urlBean.title = urlBean.url
                 if (type != null) {
                     urlBean.type = getRelationType(type)
                 } else {
@@ -541,7 +565,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return null;
     }
 
-    protected fun getKeyValue(codelistId: String, value: String, valueField: String = "de"): KeyValue? {
+    protected fun getKeyValue(codelistId: String, value: String?, valueField: String = "de"): KeyValue? {
+        if (value == null) return null
+        
         if (codelistId == "6200" && value.lowercase() == "de") {
             val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
             return KeyValue(id, null)

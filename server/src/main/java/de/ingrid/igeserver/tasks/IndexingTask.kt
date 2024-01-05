@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -21,8 +40,8 @@ import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
-import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
@@ -58,7 +77,7 @@ import kotlin.concurrent.schedule
 
 @Component
 @Profile("elasticsearch")
-class IndexingTask @Autowired constructor(
+class IndexingTask(
     private val indexService: IndexService,
     private val settingsService: SettingsService,
     private val catalogService: CatalogService,
@@ -219,7 +238,7 @@ class IndexingTask @Autowired constructor(
         exporter: IgeExporter,
         indexInfo: IndexInfo
     ) {
-        val catalogType = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
@@ -229,18 +248,31 @@ class IndexingTask @Autowired constructor(
                 try {
                     Pair(doc, exporter.run(doc.document, catalogId))
                 } catch (ex: Exception) {
-                    val errorMessage = "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-                    log.error(errorMessage, ex)
-                    message.errors.add(errorMessage)
-                    sendNotification(category, message, index + (page * generalProperties.indexPageSize))
+                    if (ex is IndexException && ex.errorCode == "FOLDER_WITH_NO_CHILDREN") {
+                        log.debug("Ignore folder with to published datasets: ${ex.message}")
+                    } else {
+                        val errorMessage =
+                            "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+                        log.error(errorMessage, ex)
+                        message.errors.add(errorMessage)
+                        sendNotification(category, message, index + (page * generalProperties.indexPageSize))
+                    }
                     null
                 }
             }
             .onEach { (docInfo, exportedDoc) ->
-                val elasticDocument = convertToElasticDocument(exportedDoc)
-                index(docInfo, indexInfo, elasticDocument)
-                val simpleContext = SimpleContext(catalogId, catalogType, docInfo.document.uuid)
-                postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
+                try {
+                    val elasticDocument = convertToElasticDocument(exportedDoc)
+                    index(docInfo, indexInfo, elasticDocument)
+                    val simpleContext = SimpleContext(catalogId, profile, docInfo.document.uuid)
+                    postIndexPipe.runFilters(PostIndexPayload(elasticDocument, category.name, exporter.typeInfo.type), simpleContext)
+                } catch (ex: Exception) {
+                    val errorMessage =
+                        "Error in PostIndexFilter or during sending to Elasticsearch: '${docInfo.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+                    log.error(errorMessage, ex)
+                    message.errors.add(errorMessage)
+                    notify.sendMessage(message)
+                }
             }
     }
 

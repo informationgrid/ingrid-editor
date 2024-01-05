@@ -1,11 +1,13 @@
-<div class="dialog-title-wrapper" data-cy="form-dialog-title">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close>
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">Suche speichern</span>
-    </h2>
+<div
+    class="dialog-title-wrapper flex-row align-items-center gap-12"
+    data-cy="form-dialog-title"
+>
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h1 mat-dialog-title>Suche speichern</h1>
 </div>
+
 <mat-dialog-content class="flex-col">
     <div class="description">
         Sie können hier Ihre Suche mit den angegebenen Parametern speichern. Sie
@@ -14,6 +16,7 @@
     <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
         <input
+            required
             matInput
             igeFocus
             [(ngModel)]="model.name"
@@ -38,7 +41,12 @@
 <mat-dialog-actions>
     <button mat-flat-button mat-dialog-close>Abbrechen</button>
     <div class="flex-1"></div>
-    <button mat-flat-button color="primary" [matDialogClose]="model">
+    <button
+        mat-flat-button
+        color="primary"
+        [matDialogClose]="model"
+        [disabled]="!model.name"
+    >
         Speichern
     </button>
 </mat-dialog-actions>

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, forwardRef, Input } from "@angular/core";
 import { PermissionLevel, TreePermission } from "../../user";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
@@ -61,7 +80,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
   constructor(
     private dialog: MatDialog,
     private documentService: DocumentService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
   callAddPermissionDialog() {
@@ -139,11 +158,11 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   getDocument(id: number): Promise<IgeDocument> {
     return firstValueFrom(
-      this.documentService.load(id, this.forAddress, false)
+      this.documentService.load(id, this.forAddress, false),
     );
   }
 
-  updatePermission(element, level: PermissionLevel) {
+  updatePermission(element: any, level: PermissionLevel) {
     if (this.disabled) return;
     element.permission = level;
     this.onChange(this.val);

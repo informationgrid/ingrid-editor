@@ -1,6 +1,8 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
+@import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param GeodatasetMapper model
+@param Content contentInfo = null
 
 {
     @template.ingrid.base(model = model)
@@ -86,7 +88,7 @@
         @endfor
         ]
     },
-<%--    "isInspireConform": ${model.isInspireConform()},--%>
+    "isInspireConform": false,
     "vectorSpatialRepresentation": [
     @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {
@@ -112,7 +114,7 @@
         "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
         "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
         "cellGeometry": @template.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
-        @if (gridSpatial.getType().getKey().equals("rectified"))
+        @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("rectified"))
         , "georectified": {
             "checkPointAvailability": ${gridSpatial.getCheckPointAvailability()},
             "checkPointDescription": "${gridSpatial.getCheckPointDescription()}",
@@ -120,7 +122,7 @@
             "pointInPixel": @template.ingrid.partial.key-value(item = gridSpatial.getPointInPixel())
         }
         @endif
-        @if (gridSpatial.getType().getKey().equals("referenced"))
+        @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("referenced"))
         , "georeferenceable": {
             "orientationParameterAvailability": ${gridSpatial.getOrientationParameterAvailability()},
             "controlPointAvaliability": ${gridSpatial.getControlPointAvailability()},
@@ -128,5 +130,5 @@
         }
         @endif
     }
-    @endif
+    @endif ${contentInfo}
 }

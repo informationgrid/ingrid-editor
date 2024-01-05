@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -53,13 +72,13 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null
+    null,
   );
   typeSelectionEnabled = false;
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
 
-  disabledCondition: (TreeNode) => boolean = (node: TreeNode) => {
+  disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
 
@@ -68,11 +87,10 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
     private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
-    private configService: ConfigService,
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -85,22 +103,18 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),
         tap(
-          (items) => (this.referenceTypes = this.prepareReferenceTypes(items))
+          (items) => (this.referenceTypes = this.prepareReferenceTypes(items)),
         ),
         tap((items) => {
           this.typeSelectionEnabled = items.length > 1;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe();
 
     this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
       untilDestroyed(this),
-      map((allRecent) => {
-        const catalogId =
-          this.configService.$userInfo.getValue().currentCatalog.id;
-        return allRecent[catalogId] ?? [];
-      })
+      map((allRecent) => allRecent[ConfigService.catalogId] ?? []),
     );
 
     this.updateModel(this.data.address);
@@ -120,11 +134,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   updateAddressTree(addressId: string) {
     this.selection = this.addressTreeQuery.getEntity(addressId);
-  }
-
-  updateAddressList(address: DocumentAbstract) {
-    this.selection = address;
-    this.selectedNode.next(address.id as number);
   }
 
   getResult(): void {
@@ -163,11 +172,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (error.error.errorText === "No value present") {
       // TODO: remove address from recentAddresses
       this.documentService.removeFromRecentAddresses(
-        this.recentAddressSelect.value.id
+        this.recentAddressSelect.value.id,
       );
       this.recentAddressSelect.value = null;
       throw new IgeError(
-        "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt."
+        "Die Adresse existiert nicht mehr oder Sie besitzen keine Rechte darauf. Sie wurde aus der Liste entfernt.",
       );
     }
     throw error;
@@ -177,7 +186,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (!this.data.allowedTypes) return items;
 
     return items.filter(
-      (item) => this.data.allowedTypes.indexOf(item.value) !== -1
+      (item) => this.data.allowedTypes.indexOf(item.value) !== -1,
     );
   }
 

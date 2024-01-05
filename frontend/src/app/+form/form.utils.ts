@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { FormToolbarService } from "./form-shared/toolbar/form-toolbar.service";
 import { first } from "rxjs/operators";
 import { DocumentService } from "../services/document/document.service";
@@ -15,7 +34,7 @@ export class FormUtils {
   static addHotkeys(
     event: KeyboardEvent,
     service: FormToolbarService,
-    readonly: boolean
+    readonly: boolean,
   ) {
     // CTRL + ALT + S (save current document)
     if (event.ctrlKey && event.altKey && event.key === "s") {
@@ -42,7 +61,7 @@ export class FormUtils {
     form: FormGroup,
     documentService: DocumentService,
     dialog: MatDialog,
-    isAddress: boolean
+    isAddress: boolean,
   ): Promise<boolean> {
     const formHasChanged = form?.dirty;
     if (formHasChanged) {
@@ -56,7 +75,7 @@ export class FormUtils {
             data: value,
             isNewDoc: false,
             isAddress: isAddress,
-          })
+          }),
         );
       } else if (decision === "discard") {
         form.reset(undefined, { emitEvent: false });
@@ -69,7 +88,7 @@ export class FormUtils {
   }
 
   private static showDecisionDialog(
-    dialog: MatDialog
+    dialog: MatDialog,
   ): Promise<undefined | string> {
     return firstValueFrom(
       dialog
@@ -93,7 +112,7 @@ export class FormUtils {
           }) as ConfirmDialogData,
         })
         .afterClosed()
-        .pipe(first())
+        .pipe(first()),
     );
   }
 
@@ -118,7 +137,7 @@ export class FormUtils {
           [controlKey]: control.value,
         };
       },
-      {}
+      {},
     );
   }
 }

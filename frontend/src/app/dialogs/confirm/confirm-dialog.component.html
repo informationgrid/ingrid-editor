@@ -1,11 +1,12 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title [attr.aria-label]="data.title">
-        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{ data.title }}</span>
-    </h2>
+<div class="dialog-title-wrapper flex-row align-items-center gap-12">
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h1 mat-dialog-title>
+        {{ data.title }}
+    </h1>
 </div>
+
 <mat-dialog-content>
     <p
         *ngIf="!data.preformatted"

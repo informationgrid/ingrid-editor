@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -66,21 +85,27 @@ class ImportService(
         }
 
         val fileContent = file.readText(Charsets.UTF_8)
+        return prepareImportAnalysis(catalogId, type, fileContent)
+
+    }
+
+    fun prepareImportAnalysis(catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
         val importer = factory.getImporter(type, fileContent)
 
         val result = importer[0].run(catalogId, fileContent)
         return if (result is ArrayNode) {
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
-                importer.map { it.typeInfo.id }, listOf(
+                    importer.map { it.typeInfo.id }, listOf(
                     analyzeDoc(catalogId, result[0], forcePublish = true, isLatest = false),
                     analyzeDoc(catalogId, result[1], forcePublish = false, isLatest = true, isDraftAndPublished = true)
-                )
+            )
             )
         } else {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
         }
     }
+
 
     private fun prepareForImport(importers: List<String>, analysis: List<DocumentAnalysis>): OptimizedImportAnalysis {
 
@@ -160,8 +185,8 @@ class ImportService(
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
-
-        val refType = documentService.getDocumentType(document.type)
+        val profile = documentService.catalogService.getProfileFromCatalog(catalogId).identifier
+        val refType = documentService.getDocumentType(document.type, profile)
 
         val references = refType.pullReferences(document)
             .map {
@@ -171,7 +196,7 @@ class ImportService(
                 DocumentAnalysis(
                     it,
                     wrapper?.id,
-                    isAddress(it.type),
+                    documentService.isAddress(it.type),
                     wrapper != null && wrapper.deleted == 0,
                     wrapper?.deleted == 1,
                     forcePublish = forcePublish
@@ -181,17 +206,14 @@ class ImportService(
         return DocumentAnalysis(
             document,
             documentWrapper?.id,
-            isAddress(document.type),
+            documentService.isAddress(document.type),
             documentWrapper != null && documentWrapper.deleted == 0,
             documentWrapper?.deleted == 1,
             references,
             forcePublish
         )
     }
-
-    private fun isAddress(documentType: String) =
-        documentService.getDocumentType(documentType).category == DocumentCategory.ADDRESS.value
-
+    
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
     }
@@ -257,7 +279,7 @@ class ImportService(
 
         handleAddressTitle(ref)
         val exists = try {
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid);
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
         } catch (ex: Exception) {
             false

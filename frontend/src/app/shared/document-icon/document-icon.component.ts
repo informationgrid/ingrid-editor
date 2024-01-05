@@ -1,16 +1,27 @@
-import {
-  Component,
-  HostBinding,
-  Input,
-  OnInit,
-  EventEmitter,
-  Output,
-} from "@angular/core";
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+import { Component, HostBinding, Input, OnChanges } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
-import { DocumentUtils } from "../../services/document.utils";
 import { TranslocoService } from "@ngneat/transloco";
-import { IgeDocument } from "../../models/ige-document";
+import { DocumentState, IgeDocument } from "../../models/ige-document";
 import { ProfileService } from "../../services/profile.service";
 
 @Component({
@@ -18,19 +29,14 @@ import { ProfileService } from "../../services/profile.service";
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
 })
-export class DocumentIconComponent implements OnInit {
-  _doc: any;
+export class DocumentIconComponent implements OnChanges {
   tooltip: string;
   iconClass: string;
 
-  @Input() set doc(value: any) {
-    this._doc = value;
-    this.updateDocumentState(value);
-  }
-  @Input() showDelay: number = 0;
-  @Input() explicitTooltip: string;
+  @Input() doc: Partial<IgeDocument> | DocumentAbstract | TreeNode;
 
-  @Output() tooltipEmitter = new EventEmitter<string>();
+  @Input() showDelay: number = 0;
+  @Input() toolTipModifier: (tooltip: string) => string = (tooltip) => tooltip;
 
   documentState: string;
   hasTags = false;
@@ -39,24 +45,19 @@ export class DocumentIconComponent implements OnInit {
 
   constructor(
     private translocoService: TranslocoService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
   ) {}
 
-  ngOnInit(): void {}
-
-  updateDocumentState(doc: DocumentAbstract | TreeNode) {
+  updateDocumentState(doc: Partial<IgeDocument> | DocumentAbstract | TreeNode) {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
     const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
     const publicationType =
       (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags;
 
-    this.documentState = DocumentUtils.getStateClass(
-      state,
-      type,
-      publicationType
-    );
+    this.documentState = this.getStateClass(state, type, publicationType);
     this.hasTags = publicationType?.length > 0;
-    this.tooltip = this.getTooltip(type, publicationType);
+    const tooltip = this.getTooltip(type, state, publicationType);
+    this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
     this.iconClass =
       (<DocumentAbstract>doc).icon ||
       (<TreeNode>doc).iconClass ||
@@ -67,11 +68,55 @@ export class DocumentIconComponent implements OnInit {
     return this.profileService.getDocumentIcon(doc);
   }
 
-  private getTooltip(type: string, publicationType: string): string {
-    const docType = this.translocoService.translate("docType." + type);
-    const returnTooltip =
-      docType + (publicationType ? ` (${publicationType})` : "");
-    this.tooltipEmitter.emit(returnTooltip);
-    return returnTooltip;
+  private getTooltip(
+    type: string,
+    state: DocumentState,
+    publicationType: string,
+  ): string {
+    const tooltipDocType = this.translocoService.translate(`docType.${type}`);
+
+    const tooltipState = this.translocoService.translate(`docState.${state}`);
+
+    let tooltipPubTyp = "";
+    if (publicationType) {
+      const pubTypeLocalized = this.translocoService.translate(
+        `tags.${publicationType}`,
+      );
+      // in case publication type has been disabled then it should be set to an empty string to avoid the display
+      // the tag, which is still set in backend
+      if (pubTypeLocalized.trim().length !== 0) {
+        tooltipPubTyp = `, ${pubTypeLocalized}`;
+      }
+    }
+
+    return type == "FOLDER" || state == null
+      ? tooltipDocType
+      : `${tooltipDocType} (${tooltipState}${tooltipPubTyp})`;
+  }
+
+  private getStateClass(state: DocumentState, type: string, tags: string) {
+    let mappedState = this.mapIconState(state, type);
+
+    const mappedTags = tags?.replaceAll(",", " ") ?? "";
+    return `${mappedState} ${mappedTags}`;
+  }
+
+  private mapIconState(state: DocumentState, type: string) {
+    switch (state) {
+      case "W":
+        return type === "FOLDER" ? "published" : "working";
+      case "PW":
+        return "workingWithPublished";
+      case "P":
+      case "PENDING":
+        return "published";
+      default:
+        console.error("State is not supported: " + state);
+        return "";
+    }
+  }
+
+  ngOnChanges() {
+    this.updateDocumentState(this.doc);
   }
 }

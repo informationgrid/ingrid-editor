@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   ElementRef,
@@ -105,7 +124,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     private leafletService: LeafletService,
     private fb: UntypedFormBuilder,
     public codelistService: CodelistService,
-    private behaviourService: BehaviourService
+    private behaviourService: BehaviourService,
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +138,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       this.facetsInitialized
         .pipe(
           filter((isReady) => isReady),
-          take(1)
+          take(1),
         )
         .subscribe(() => {
           // reset form and remove spatial before updating form
@@ -153,7 +172,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       this.leaflet.nativeElement.style.minWidth = "200px";
       this.leafletReference = this.leafletService.initMap(
         this.leaflet.nativeElement,
-        {}
+        {},
       );
       this.leafletService.zoomToInitialBox(this.leafletReference);
       // @ts-ignore
@@ -172,7 +191,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
           this.fb.group({
             start: [],
             end: [],
-          })
+          }),
         );
       } else {
         const groupControls = group.filter.reduce((prev, current) => {
@@ -264,7 +283,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
-      this.boxes
+      this.boxes,
     );
   }
 
@@ -280,7 +299,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
     let filter = this.allFacets[this._forAddresses ? "addresses" : "documents"];
     if (this.forReports)
       filter = filter.filter(
-        (fg) => !this.researchOnlyFilterIds.includes(fg.id)
+        (fg) => !this.researchOnlyFilterIds.includes(fg.id),
       );
     this.setDefaultModel(filter);
     this.filterGroup = filter;
@@ -305,7 +324,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   private getSpatialKey() {
     return Object.keys(
-      (<UntypedFormGroup>this.form.get("spatial")).controls
+      (<UntypedFormGroup>this.form.get("spatial")).controls,
     )[0];
   }
 

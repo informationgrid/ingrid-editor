@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
     <idf:head/>
     <idf:body>
-        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd">
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:igctx="https://www.ingrid-oss.eu/schemas/igctx" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd https://www.ingrid-oss.eu/schemas/igctx https://www.ingrid-oss.eu/schemas/igctx/igctx.xsd">
             <gmd:fileIdentifier>
                 <gco:CharacterString>ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
             </gmd:fileIdentifier>
@@ -296,7 +296,7 @@
                                 <gco:CharacterString>Boden</gco:CharacterString>
                             </gmd:keyword>
                             <gmd:keyword>
-                                <gco:CharacterString>Bodenbedeckung</gco:CharacterString>
+                                <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/theme/lc">Bodenbedeckung</gmx:Anchor>
                             </gmd:keyword>
                             <gmd:keyword>
                                 <gco:CharacterString>Gebäude</gco:CharacterString>
@@ -474,10 +474,10 @@
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
-                                <gco:CharacterString>Binnenmeer</gco:CharacterString>
+                                <gmx:Anchor xlink:href="https://sns.uba.de/umthes/TH_00040996">Binnenmeer</gmx:Anchor>
                             </gmd:keyword>
                             <gmd:keyword>
-                                <gco:CharacterString>Küste</gco:CharacterString>
+                                <gmx:Anchor xlink:href="https://sns.uba.de/umthes/TH_00015341">Küste</gmx:Anchor>
                             </gmd:keyword>
                             <gmd:type>
                                 <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
@@ -606,7 +606,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">11</gmx:Anchor>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/11">110000000000</gmx:Anchor>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -650,7 +650,7 @@
                                     <gmd:geographicIdentifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/02">02</gmx:Anchor>
+                                                <gmx:Anchor xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/02">020000000000</gmx:Anchor>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:geographicIdentifier>
@@ -763,6 +763,9 @@
                             <srv:operationName>
                                 <gco:CharacterString>Download</gco:CharacterString>
                             </srv:operationName>
+                            <srv:DCP>
+                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices">WebServices</srv:DCPList>
+                            </srv:DCP>
                             <srv:connectPoint>
                                 <gmd:CI_OnlineResource>
                                     <gmd:linkage>
@@ -777,6 +780,9 @@
                             <srv:operationName>
                                 <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
                             </srv:operationName>
+                            <srv:DCP>
+                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
+                            </srv:DCP>
                             <srv:operationDescription>
                                 <gco:CharacterString>OP Beschreibung</gco:CharacterString>
                             </srv:operationDescription>
@@ -794,6 +800,9 @@
                             <srv:operationName>
                                 <gco:CharacterString>DescribeFeatureType</gco:CharacterString>
                             </srv:operationName>
+                            <srv:DCP>
+                                <srv:DCPList codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType" codeListValue="WebServices"/>
+                            </srv:DCP>
                             <srv:operationDescription>
                                 <gco:CharacterString>OP2 Beschreibung</gco:CharacterString>
                             </srv:operationDescription>
@@ -940,7 +949,7 @@
                             <gmd:levelDescription>
                                 <gmd:MD_ScopeDescription>
                                     <gmd:other>
-                                        <gco:CharacterString>3</gco:CharacterString>
+                                        <gco:CharacterString>service</gco:CharacterString>
                                     </gmd:other>
                                 </gmd:MD_ScopeDescription>
                             </gmd:levelDescription>
@@ -958,7 +967,7 @@
                                             <gmd:date>
                                                 <gmd:CI_Date>
                                                     <gmd:date>
-                                                        <gco:Date>2009-20-19T23:00:00.000Z</gco:Date>
+                                                        <gco:Date>2009-10-20</gco:Date>
                                                     </gmd:date>
                                                     <gmd:dateType>
                                                         <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
@@ -1018,7 +1027,7 @@
                             <gmd:levelDescription>
                                 <gmd:MD_ScopeDescription>
                                     <gmd:other>
-                                        <gco:CharacterString>3</gco:CharacterString>
+                                        <gco:CharacterString>service</gco:CharacterString>
                                     </gmd:other>
                                 </gmd:MD_ScopeDescription>
                             </gmd:levelDescription>

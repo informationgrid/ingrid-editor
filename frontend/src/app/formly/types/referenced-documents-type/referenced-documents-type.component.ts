@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectorRef,
   Component,
@@ -38,7 +57,7 @@ export class ReferencedDocumentsTypeComponent
   private referencesElement: ElementRef<HTMLElement>;
 
   @ViewChild("list", { read: ElementRef }) set listElement(
-    content: ElementRef<HTMLElement>
+    content: ElementRef<HTMLElement>,
   ) {
     if (content) this.referencesElement = content;
   }
@@ -71,7 +90,7 @@ export class ReferencedDocumentsTypeComponent
     private researchService: ResearchService,
     private documentService: DocumentService,
     private docEvents: DocEventsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     super();
   }
@@ -90,12 +109,12 @@ export class ReferencedDocumentsTypeComponent
       untilDestroyed(this),
       filter((value) => value),
       distinctUntilChanged(),
-      tap((uuid) => (this.currentUuid = uuid))
+      tap((uuid) => (this.currentUuid = uuid)),
     );
 
     const reloadEvent = this.documentService.reload$.pipe(
       untilDestroyed(this),
-      map((item) => item.uuid)
+      map((item) => item.uuid),
     );
 
     merge(loadEvent, reloadEvent)
@@ -104,7 +123,7 @@ export class ReferencedDocumentsTypeComponent
         startWith(this.currentUuid),
         tap(() => (this.docs = [])),
         tap(() => (this.firstLoaded = true)),
-        switchMap((uuid) => this.searchReferences(uuid))
+        switchMap((uuid) => this.searchReferences(uuid)),
       )
       .subscribe();
   }
@@ -116,11 +135,11 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         tap((response) => (this.totalHits = response.totalHits)),
         map((response) =>
-          this.documentService.mapToDocumentAbstracts(response.hits)
+          this.documentService.mapToDocumentAbstracts(response.hits),
         ),
         tap((docs) => (this.docs = docs)),
         tap(() => (this.isLoading = false)),
-        tap(() => this.cdr.detectChanges())
+        tap(() => this.cdr.detectChanges()),
       );
   }
 
@@ -133,8 +152,8 @@ export class ReferencedDocumentsTypeComponent
           this.referencesElement.nativeElement.scrollIntoView({
             behavior: "smooth",
             block: "center",
-          })
-        )
+          }),
+        ),
       );
     }
     this.firstLoaded = false;
@@ -154,14 +173,14 @@ export class ReferencedDocumentsTypeComponent
       .replace(/<referenceFieldRaw>/g, this.props.referenceField)
       .replace(
         /<referenceField>/g,
-        this.props.referenceField.replaceAll(".", "' -> '")
+        this.props.referenceField.replaceAll(".", "' -> '"),
       );
   }
 
   switchPage(pageEvent: PageEvent) {
     this.searchReferences(
       this.currentUuid,
-      pageEvent.pageIndex + 1
+      pageEvent.pageIndex + 1,
     ).subscribe();
   }
 }

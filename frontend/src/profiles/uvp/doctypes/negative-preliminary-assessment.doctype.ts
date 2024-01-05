@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { UvpShared } from "./uvp-shared";
@@ -37,7 +56,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               this.id,
               {
                 required: true,
-              }
+              },
             ),
             this.addPointOfContact(),
           ]),
@@ -52,7 +71,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               showSearch: true,
               options: this.getCodelistForSelect(
                 this.uvpNumberCodelistId,
-                "eiaNumbers"
+                "eiaNumbers",
               ).pipe(map((list) => this.sortUVPNumber(list))),
               codelistId: this.uvpNumberCodelistId,
               asSelect: true,
@@ -71,7 +90,7 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
                 required: true,
                 columns: this.columnsForDocumentTable,
                 batchValidUntil: "validUntil",
-              }
+              },
             ),
           ]),
         ];

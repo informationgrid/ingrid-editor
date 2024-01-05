@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -11,13 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = InGridProfile.id
 
     override val urlFields = listOf("uri", "url", "methodCall")
 
-    private val sqlUrls = """
+    private fun sqlUrls(profile: String) = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, doc.data -> 'graphicOverviews' as graphicOverviews, doc.title, doc.type
         ,doc.data -> 'references' as references, doc.data -> 'service' as service, doc.data -> 'serviceUrls' as serviceUrls
         FROM catalog,
@@ -25,7 +44,7 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
              document doc
         WHERE dw.catalog_id = catalog.id
           AND doc.catalog_id = catalog.id
-          AND catalog.type = 'ingrid'
+          AND catalog.type = '$profile'
           AND dw.deleted = 0
           AND dw.category = 'data'
           AND dw.uuid = doc.uuid
@@ -34,10 +53,10 @@ class InGridReferenceHandler @Autowired constructor(entityManager: EntityManager
     """.trimIndent()
 
 
-    override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
+    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
         val extraJsonbFields = arrayOf("references", "service", "serviceUrls")
 
-        val result = queryDocs(sqlUrls, "graphicOverviews", null, catalogId, extraJsonbFields)
+        val result = queryDocs(sqlUrls(profile), "graphicOverviews", null, catalogId, extraJsonbFields, groupDocIds)
         return mapQueryResults(result)
     }
 

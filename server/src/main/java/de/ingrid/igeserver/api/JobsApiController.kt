@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -7,14 +26,17 @@ import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
+import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.profiles.ingrid.tasks.UpdateExternalCoupledResourcesTask
 import de.ingrid.igeserver.profiles.uvp.tasks.RemoveUnreferencedDocsTask
+import de.ingrid.igeserver.profiles.uvp.tasks.UploadCleanupTask
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
-import de.ingrid.igeserver.tasks.UploadCleanupTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
+import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -30,11 +52,13 @@ import kotlin.io.path.absolutePathString
 
 @RestController
 @RequestMapping(path = ["/api"])
-class JobsApiController @Autowired constructor(
+class JobsApiController(
     val catalogService: CatalogService,
     val scheduler: SchedulerService,
     val referenceHandlerFactory: ReferenceHandlerFactory,
-    val urlRequestService: UrlRequestService
+    val urlRequestService: UrlRequestService,
+    val aclService: IgeAclService,
+    val authUtils: AuthUtils
 ) : JobsApi {
 
     val log = logger()
@@ -68,12 +92,26 @@ class JobsApiController @Autowired constructor(
 
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
-        val jobKey = JobKey.jobKey(URLChecker.jobKey, catalogId)
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
+        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
 
+        // get only documents with write permission
+        val groups = authUtils.getCurrentUserRoles(catalogId)
+        var docIds = emptyList<Int>()
+        
+        if (groups.isEmpty() && !authUtils.isAdmin(principal)) throw ServerException.withReason("User has not been assigned any groups")
+        
+        val hasWriteRoot = groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
+        if (!hasWriteRoot) {
+            docIds = listOf("writeTree", "writeTreeExceptParent").flatMap {
+                aclService.getDocumentIdsForGroups(principal, it, catalogId)
+            }
+        }
+        
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
+            put("groupDocIds", docIds.joinToString(","))
         }
         scheduler.handleJobWithCommand(command, URLChecker::class.java, jobKey, jobDataMap)
         return ResponseEntity.ok().build()
@@ -85,7 +123,7 @@ class JobsApiController @Autowired constructor(
         command: JobCommand
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
@@ -105,7 +143,7 @@ class JobsApiController @Autowired constructor(
 
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
 
         val jobDataMap = JobDataMap().apply {
@@ -121,10 +159,10 @@ class JobsApiController @Autowired constructor(
     @Transactional
     override fun replaceUrl(principal: Principal, data: UrlReplaceData): ResponseEntity<Map<String, Any>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getCatalogById(catalogId).type
+        val profile = catalogService.getProfileFromCatalog(catalogId)
 
         val referenceHandler = referenceHandlerFactory.get(profile)
-            ?: throw ClientException.withReason("No reference handler found for profile $profile")
+            ?: throw ClientException.withReason("No reference handler found for profile ${profile.identifier}")
         val docsNumberUpdated = referenceHandler.replaceUrl(catalogId, data.source, data.replaceUrl)
         val status = urlRequestService.getStatus(data.replaceUrl)
 
@@ -163,5 +201,10 @@ class JobsApiController @Autowired constructor(
         
         val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: ""
         return ResponseEntity.ok(result)
+    }
+    
+    private fun getJobIdString(id: String, principal: Principal): String {
+        val userId = authUtils.getUsernameFromPrincipal(principal)
+        return "${id}_$userId"
     }
 }

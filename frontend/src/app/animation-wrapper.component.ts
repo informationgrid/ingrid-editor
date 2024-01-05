@@ -1,16 +1,31 @@
-// see https://stackblitz.com/edit/ngx-formly-animation-zzcq4s
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
 import { FieldWrapper, FormlyConfig } from "@ngx-formly/core";
 import {
-  trigger,
+  animate,
+  group,
   state,
   style,
   transition,
-  animate,
-  group,
-  query,
-  stagger,
-  keyframes,
+  trigger,
 } from "@angular/animations";
 
 @Component({
@@ -28,14 +43,14 @@ import {
         style({
           height: "*",
           opacity: "1",
-        })
+        }),
       ),
       state(
         "false",
         style({
           height: "0",
           opacity: "0",
-        })
+        }),
       ),
       transition("true => false", [
         group([
@@ -43,13 +58,13 @@ import {
             "200ms ease-in-out",
             style({
               opacity: "0",
-            })
+            }),
           ),
           animate(
             "200ms ease-in-out",
             style({
               height: "0",
-            })
+            }),
           ),
         ]),
       ]),
@@ -59,13 +74,13 @@ import {
             "200ms ease-in-out",
             style({
               height: "*",
-            })
+            }),
           ),
           animate(
             "200ms ease-in-out",
             style({
               opacity: "1",
-            })
+            }),
           ),
         ]),
       ]),

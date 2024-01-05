@@ -64,12 +64,12 @@
                 <div>
                     <span>{{ location.title }}</span>
                     <p>
-                        L1: {{ location.value.lat1 | number : ".6" : "en-US" }}°
-                        B1: {{ location.value.lon1 | number : ".6" : "en-US" }}°
+                        L1: {{ location.value.lat1 | number: ".6" : "en-US" }}°
+                        B1: {{ location.value.lon1 | number: ".6" : "en-US" }}°
                     </p>
                     <p>
-                        L2: {{ location.value.lat2 | number : ".6" : "en-US" }}°
-                        B2: {{ location.value.lon2 | number : ".6" : "en-US" }}°
+                        L2: {{ location.value.lat2 | number: ".6" : "en-US" }}°
+                        B2: {{ location.value.lon2 | number: ".6" : "en-US" }}°
                     </p>
                 </div>
                 <div class="flex-1"></div>
@@ -190,7 +190,10 @@
         </div>
     </div>
 </div>
-<div class="reset-form-button">
+<div
+    class="reset-form-button"
+    *ngIf="filterGroup?.length > 0 && resetQuery.observed"
+>
     <button mat-button color="primary" (click)="resetQuery.next()">
         Suchparameter zurücksetzen
     </button>

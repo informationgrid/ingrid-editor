@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
@@ -39,9 +58,6 @@ interface UrlReference extends Reference {
 
 export const docReferenceTemplate: Partial<DocumentReference> = {
   isExternalRef: false,
-  state: "W",
-  type: "InGridGeoDataset",
-  icon: "Geodatensatz",
 };
 
 @UntilDestroy()
@@ -64,7 +80,7 @@ export class DocumentReferenceTypeComponent
     private router: Router,
     private docService: DocumentService,
     private tree: TreeQuery,
-    private formStateService: FormStateService
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -80,7 +96,7 @@ export class DocumentReferenceTypeComponent
             JSON.stringify(a.map((item) => item.uuid)) ===
             JSON.stringify(b.map((item) => item.uuid))
           );
-        })
+        }),
       )
       .subscribe((_) => this.buildModel());
   }
@@ -132,7 +148,7 @@ export class DocumentReferenceTypeComponent
         this.formStateService.getForm(),
         this.docService,
         this.dialog,
-        false
+        false,
       );
 
       if (!handled) {
@@ -158,7 +174,7 @@ export class DocumentReferenceTypeComponent
         return item.isExternalRef
           ? this.mapExternalRef(item)
           : this.mapInternalRef(item);
-      })
+      }),
     );
     this.refreshing = false;
     this.cdr.detectChanges();
@@ -182,8 +198,8 @@ export class DocumentReferenceTypeComponent
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
           return this.mapToDocumentReference(doc);
-        })
-      )
+        }),
+      ),
     );
   }
 

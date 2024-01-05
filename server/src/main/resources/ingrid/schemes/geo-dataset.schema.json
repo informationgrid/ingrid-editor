@@ -5,34 +5,28 @@
   "definitions": {
     "GeoDataset": {
       "type": "object",
-      "additionalProperties": false,
       "properties": {
         "isAdVCompatible": {
-          "type": [
-            "null",
-            "boolean"
-          ]
+          "type": ["null", "boolean"]
         },
         "isOpenData": {
-          "type": [
-            "null",
-            "boolean"
-          ]
+          "type": ["null", "boolean"]
         },
         "isInspireIdentified": {
-          "type": [
-            "null",
-            "boolean"
-          ]
+          "type": ["null", "boolean"]
         },
         "isInspireConform": {
-          "type": [
-            "null",
-            "boolean"
-          ]
+          "type": ["null", "boolean"]
         },
         "subType": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "identifier": {
           "type": "string"
@@ -78,11 +72,7 @@
           }
         },
         "_uuid": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "_type": {
-          "const": "InGridGeoDataset"
+          "type": "string"
         },
         "title": {
           "type": "string"
@@ -91,16 +81,10 @@
           "type": "string"
         },
         "alternateTitle": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "parentIdentifier": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "pointOfContact": {
           "type": "array",
@@ -174,10 +158,7 @@
               "additionalProperties": false,
               "properties": {
                 "key": {
-                  "type": [
-                    "null",
-                    "string"
-                  ]
+                  "type": ["null", "string"]
                 },
                 "value": {
                   "type": "string"
@@ -216,10 +197,7 @@
               "additionalProperties": false,
               "properties": {
                 "measResult": {
-                  "type": [
-                    "null",
-                    "number"
-                  ]
+                  "type": ["null", "number"]
                 }
               }
             }
@@ -266,22 +244,13 @@
           "additionalProperties": false,
           "properties": {
             "vertical": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": ["null", "number"]
             },
             "horizontal": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": ["null", "number"]
             },
             "griddedDataPositionalAccuracy": {
-              "type": [
-                "null",
-                "number"
-              ]
+              "type": ["null", "number"]
             }
           }
         },
@@ -362,10 +331,7 @@
               "$ref": "refs/general.schema.json#/definitions/resolution"
             },
             "explanation": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "couplingType": {
               "anyOf": [
@@ -387,22 +353,13 @@
               "$ref": "#/definitions/coupledResources"
             },
             "systemEnvironment": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "hasAccessConstraints": {
-              "type": [
-                "null",
-                "boolean"
-              ]
+              "type": ["null", "boolean"]
             },
             "implementationHistory": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             }
           }
         },
@@ -419,10 +376,7 @@
                 "type": "boolean"
               },
               "explanation": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "specification": {
                 "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -447,7 +401,6 @@
         "_uuid",
         "_type",
         "title",
-        "subType",
         "topicCategories",
         "lineage",
         "identifier",
@@ -531,10 +484,7 @@
           "type": "boolean"
         },
         "numberOfDimensions": {
-          "type": [
-            "null",
-            "number"
-          ]
+          "type": ["null", "number"]
         },
         "cellGeometry": {
           "anyOf": [

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -44,7 +63,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
   ) {}
 
   ngOnInit() {
@@ -64,7 +83,7 @@ export class HeaderTitleRowComponent implements OnInit {
 
   private updateHeaderMenuOptions() {
     this.moreActions = this.formMenuService.getMenuItems(
-      this.address ? "address" : "dataset"
+      this.address ? "address" : "dataset",
     );
     this.showMoreActions = this.moreActions.length > 0;
   }

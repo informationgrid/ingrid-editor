@@ -1,5 +1,12 @@
 @import "src/variables";
 
+// TODO: temporary fix.
+// Issue caused by upgrading to angular/material 17, that this variable becomes undefined.
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  --mdc-fab-container-shape: 50%;
+}
+
 ::placeholder {
   color: $ige-placeholder-color !important;
 }
@@ -31,25 +38,27 @@ ige-side-menu .mat-mdc-list-item {
 
 .mat-mdc-dialog-container {
   .dialog-title-wrapper {
+    padding: 16px 26px 16px 16px;
     background-color: $ige-secondary;
-    padding: 6px 0;
 
     &.error {
       background-color: #cd0909;
     }
 
-    .mat-mdc-dialog-title {
-      display: flex;
-      align-items: end;
-      margin: 0;
+    h1 {
       color: #fff;
+      margin: unset;
+      padding: unset;
       font-size: 24px;
       font-weight: 400;
 
-      .mat-mdc-icon-button {
-        margin-left: -12px;
-        margin-right: 24px;
+      &:before {
+        display: none;
       }
+    }
+
+    mat-icon {
+      color: white;
     }
   }
 
@@ -177,4 +186,26 @@ mat-icon.dark-blue {
     font-weight: 500;
     background-color: $ige-primary;
   }
+}
+
+.mat-mdc-snack-bar-container.green {
+  .mdc-snackbar__label {
+    color: black;
+  }
+
+  .mdc-snackbar__surface {
+    background-color: $ige-info-background;
+  }
+}
+
+// Accessibility requirement.
+input,
+textarea {
+  &[disabled] {
+    color: $ige-hint-color !important;
+  }
+}
+
+.mat-mdc-standard-chip.mdc-evolution-chip--disabled {
+  opacity: 0.7 !important;
 }

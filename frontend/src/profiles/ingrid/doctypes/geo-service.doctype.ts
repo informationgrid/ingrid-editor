@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
@@ -28,6 +47,8 @@ export class GeoServiceDoctype extends IngridShared {
       classification: true,
     },
   };
+
+  isGeoService = true;
 
   tree = inject(TreeQuery);
 
@@ -113,10 +134,10 @@ export class GeoServiceDoctype extends IngridShared {
                     expressions: {
                       hide: "formState.mainModel?.service?.type?.key !== '3'",
                     },
-                  }
+                  },
                 ),
               ],
-              { className: "flex-1" }
+              { className: "flex-1" },
             ),
           ]),
           this.addRepeat("operations", "Operationen", {
@@ -192,7 +213,7 @@ export class GeoServiceDoctype extends IngridShared {
                   "formState.mainModel?.service?.couplingType?.key === 'tight'",
                 className: "field.props.required ? '' : 'optional'",
               },
-            }
+            },
           ),
           this.addResolutionFields(),
           this.addGroup(
@@ -206,7 +227,7 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
-                }
+                },
               ),
               this.addTextAreaInline(
                 "implementationHistory",
@@ -215,10 +236,10 @@ export class GeoServiceDoctype extends IngridShared {
                 {
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
-                }
+                },
               ),
             ],
-            { className: "optional" }
+            { className: "optional" },
           ),
           this.addTextArea("explanation", "Erläuterungen", this.id, {
             className: "optional flex-1",
@@ -252,7 +273,7 @@ export class GeoServiceDoctype extends IngridShared {
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
       tap((value) => this.updateServiceVersionField(value)),
-      tap((value) => this.updateOperationNameField(value))
+      tap((value) => this.updateOperationNameField(value)),
     );
   }
 
@@ -282,7 +303,7 @@ export class GeoServiceDoctype extends IngridShared {
     const operationsField = this.cleanFields
       .find((item) => item?.fieldGroup?.[0]?.key === "service")
       ?.fieldGroup[0].fieldGroup?.find(
-        (item) => item.key === "operations"
+        (item) => item.key === "operations",
         // @ts-ignore
       ).fieldArray?.fieldGroup[0]?.props;
     operationsField.options = value;
@@ -290,7 +311,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   private updateServiceVersionInPrintField(value: SelectOptionUi[]) {
     const versionProps = this.cleanFields.find(
-      (item) => item?.fieldGroup?.[0]?.key === "service"
+      (item) => item?.fieldGroup?.[0]?.key === "service",
     )?.fieldGroup[0].fieldGroup[1].fieldGroup[0].fieldGroup[1].props;
 
     versionProps.options = value;

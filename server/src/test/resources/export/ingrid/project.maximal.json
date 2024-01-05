@@ -2,7 +2,6 @@
   "_uuid": "6fa56623-6def-4438-addf-d2efc1e6ce00",
   "title": "project_max",
   "_type": "InGridProject",
-  "themes": [{ "key": "105" }],
   "dataset": { "languages": ["134"] },
   "manager": "leiter",
   "spatial": {

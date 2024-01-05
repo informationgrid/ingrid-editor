@@ -79,6 +79,9 @@ mat-radio-button {
 
 .back-button {
   padding: 0 10px 0 0;
+  mat-icon {
+    line-height: 17px;
+  }
 }
 
 /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/

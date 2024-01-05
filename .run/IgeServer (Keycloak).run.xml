@@ -1,11 +1,15 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="IgeServer (Keycloak)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="IGE-NG.server.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="de.ingrid.igeserver.IgeServer" />
+    <option name="ACTIVE_PROFILES" value="mcloud,elasticsearch,keycloak,test,ingrid,uvp,bmi,ingrid-krzn,ingrid-kommunal-st" />
     <option name="ENABLE_JMX_AGENT" value="false" />
-    <option name="ACTIVE_PROFILES" value="mcloud,elasticsearch,keycloak,test,ingrid,uvp,bmi" />
-    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
+    <envs>
+      <env name="KEYCLOAK_BACKEND_USER" value="ige" />
+      <env name="KEYCLOAK_BACKEND_USER_PASSWORD" value="ige" />
+    </envs>
+    <module name="ige-ng.server.main" />
     <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="de.ingrid.igeserver.IgeServer" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

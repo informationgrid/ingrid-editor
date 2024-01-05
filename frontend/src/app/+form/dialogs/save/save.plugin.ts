@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -34,7 +53,7 @@ export class SavePlugin extends SaveBase {
     sessionStore: SessionStore,
     messageService: FormMessageService,
 
-    @Inject(DOCUMENT) private _document: Document
+    @Inject(DOCUMENT) private _document: Document,
   ) {
     super(sessionStore, messageService);
     inject(PluginService).registerPlugin(this);
@@ -74,12 +93,12 @@ export class SavePlugin extends SaveBase {
           "toolBtnSave",
           openedDoc !== null &&
             openedDoc._pendingDate == null &&
-            openedDoc.hasWritePermission
+            openedDoc.hasWritePermission,
         );
 
         // do not allow to modify form if multiple nodes have been selected in tree
         // openedDoc !== null ? this.form.enable() : this.form.disable();
-      }
+      },
     );
 
     this.formSubscriptions.push(toolbarEventSubscription, treeSubscription);
@@ -104,11 +123,11 @@ export class SavePlugin extends SaveBase {
         .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
         .pipe(
           catchError((error) =>
-            this.handleError(error, formData, this.forAddress, "SAVE")
+            this.handleError(error, formData, this.forAddress, "SAVE"),
           ),
           finalize(() =>
-            this.formToolbarService.setButtonState("toolBtnSave", true)
-          )
+            this.formToolbarService.setButtonState("toolBtnSave", true),
+          ),
         )
         .subscribe();
     });
@@ -128,7 +147,7 @@ export class SavePlugin extends SaveBase {
     if (numErrors.length > 0) {
       this.formToolbarService.setButtonState("toolBtnSave", true);
       throw new IgeError(
-        "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben."
+        "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben.",
       );
     }
   }

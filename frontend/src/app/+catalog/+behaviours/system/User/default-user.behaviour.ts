@@ -1,5 +1,23 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
-import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { catchError, filter, switchMap } from "rxjs/operators";
 import { FormMenuService } from "../../../../+form/form-menu.service";
@@ -28,11 +46,10 @@ export class DefaultUserBehaviour extends Plugin {
 
   constructor(
     private formMenuService: FormMenuService,
-    private docEvents: DocEventsService,
     private eventService: EventService,
     private userService: UserService,
-    private toast: MatSnackBar,
-    private dialog: MatDialog
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -45,7 +62,7 @@ export class DefaultUserBehaviour extends Plugin {
     this.subscriptions.push(
       this.userService.selectedUser$.subscribe((user) => {
         selectedUser = user;
-      })
+      }),
     );
 
     this.formMenuService.addMenuItem("user", {
@@ -66,7 +83,7 @@ export class DefaultUserBehaviour extends Plugin {
     this.formMenuService.removeMenuItem("user", "delete-user");
   }
 
-  resetPassword(login: string) {
+  private resetPassword(login: string) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: {
@@ -88,20 +105,20 @@ export class DefaultUserBehaviour extends Plugin {
                 err.error.errorText.includes("Mail server connection failed")
               ) {
                 throw new IgeError(
-                  "Es gab ein Problem beim Versenden der Email"
+                  "Es gab ein Problem beim Versenden der Email",
                 );
               } else {
                 throw err;
               }
-            })
+            }),
           )
           .subscribe(() => {
-            this.toast.open("Passwort wurde zurückgesetzt");
+            this.snackBar.open("Passwort wurde zurückgesetzt");
           });
       });
   }
 
-  deleteUser(user: User) {
+  private deleteUser(user: User) {
     this.eventService
       .sendEventAndContinueOnSuccess(IgeEvent.DELETE_USER, user)
       .subscribe(() => this.openDeleteUserDialog(user));
@@ -118,7 +135,7 @@ export class DefaultUserBehaviour extends Plugin {
       .afterClosed()
       .pipe(
         filter((result) => result),
-        switchMap(() => this.userService.deleteUser(user.id))
+        switchMap(() => this.userService.deleteUser(user.id)),
       )
       .subscribe(() => {
         this.userService.selectedUser$.next(null);

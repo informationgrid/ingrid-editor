@@ -3,7 +3,7 @@
         <div>
             Lassen Sie hier die vorhandenen URLs in allen Datensätzen auf ihre
             korrekte Angabe und Erreichbarkeit prüfen. Nicht-erreichbare URLs
-            werden zusammen mit der jeweiligen Fehlermeldung (Stauts) in einer
+            werden zusammen mit der jeweiligen Fehlermeldung (Status) in einer
             Tabelle dargestellt, aus der Sie direkt auf die betroffenen
             Datensätze springen können.
         </div>
@@ -41,9 +41,9 @@
 
     <div status class="status" [class.hide]="!showMore">
         <div *ngIf="liveLog | async as log">
-            <div>Start: {{ log.startTime | date : "dd.LL.yyyy HH:mm:ss" }}</div>
+            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
             <div>
-                &nbsp;Ende: {{ log.endTime | date : "dd.LL.yyyy HH:mm:ss" }}
+                &nbsp;Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
             </div>
             <br />
             <div *ngIf="log.endTime">Analysierte URLs: {{ analyzedUrls }}</div>

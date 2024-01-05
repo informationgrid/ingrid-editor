@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.uvp
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -12,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) : ReferenceHandler(entityManager) {
+class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
     override fun getProfile() = UvpProfile.id
 
@@ -58,9 +77,9 @@ class UvpReferenceHandler @Autowired constructor(entityManager: EntityManager) :
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    override fun getURLsFromCatalog(catalogId: String): List<DocumentLinks> {
-        val result = queryDocs(sqlStepsPublished, "step", null, catalogId)
-        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", null, catalogId)
+    override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
+        val result = queryDocs(sqlStepsPublished, "step", null, catalogId, groupDocIds = groupDocIds)
+        val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", null, catalogId, groupDocIds = groupDocIds)
         return mapQueryResults(result, resultNegativeDocs, true)
     }
 

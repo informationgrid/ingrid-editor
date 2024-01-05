@@ -1,59 +1,69 @@
-import {
-  AfterContentChecked,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from "@angular/core";
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
-import { ConfigService } from "../../../services/config/config.service";
-import {
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
 })
-export class NewUserDialogComponent implements OnInit, AfterContentChecked {
+export class NewUserDialogComponent implements OnInit {
   userSub: Subscription;
   users$: Observable<BackendUser[]> = this.userService.getExternalUsers().pipe(
     tap((users) => (this.noAvailableUsers = users.length === 0)),
     tap((users) => (this.externalUsers = users)),
     tap(
       (users) =>
-        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users))
-    )
+        (this.formlyFieldConfig = this.userService.getNewUserFormFields(users)),
+    ),
   );
   externalUsers: BackendUser[];
-  form: UntypedFormGroup;
+  form: FormGroup;
   noAvailableUsers = true;
-  importExternal: boolean;
+  importExternal = false;
   formlyFieldConfig: FormlyFieldConfig[];
-  options: FormlyFormOptions = {};
+  options: FormlyFormOptions = {
+    formState: {
+      showGroups: false,
+    },
+  };
   model: FrontendUser;
   loginValue = "";
+  asAdmin: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
     private userService: UserService,
-    private configService: ConfigService,
     private modalService: ModalService,
-    private cdRef: ChangeDetectorRef
   ) {}
-
-  ngAfterContentChecked(): void {
-    this.cdRef.detectChanges();
-  }
 
   ngOnInit(): void {
     this.model = {
@@ -67,30 +77,41 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       department: "",
       role: "",
       id: null,
+      groups: [],
     };
-    this.importExternal = false;
 
-    this.form = new UntypedFormGroup({
-      login: new UntypedFormControl("", Validators.required),
+    this.form = new FormGroup({
+      login: new FormControl("", Validators.required),
+      role: new FormControl("", Validators.required),
     });
     this.form
       .get("login")
-      .valueChanges.subscribe((value) => this.updateForm(value));
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((value) => this.updateForm(value));
+    this.form
+      .get("role")
+      .valueChanges.pipe(untilDestroyed(this))
+      .subscribe((role) => {
+        if (typeof role === "string") {
+          this.asAdmin = role === "ige-super-admin" || role === "cat-admin";
+          if (this.asAdmin) this.form.get("groups").reset();
+        }
+      });
 
     this.userSub = this.users$.subscribe();
   }
 
-  updateForm(existingLogin) {
+  updateForm(existingLogin: string) {
     if (existingLogin !== this.loginValue) {
       this.importExternal = false;
       this.loginValue = existingLogin;
+      const role = this.form.get("role").value;
       const potentialMatch = this.externalUsers?.filter((user) => {
         return user.login === existingLogin;
       });
       if (potentialMatch?.length) {
         this.model = new FrontendUser(potentialMatch[0]);
-        // reset role as keycloak role (ige-user) is not applicable
-        this.model.role = "";
+        this.model.role = role;
         this.form.reset(this.model);
         this.importExternal = true;
       }
@@ -107,9 +128,13 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       .createUser(user, !this.importExternal)
       .pipe(
         catchError((error) => this.handleCreateUserError(error)),
-        filter((user) => user)
+        filter((user) => user),
       )
       .subscribe((u) => this.dialogRef.close(u));
+  }
+
+  showGroupsPage(show: boolean) {
+    this.options.formState.showGroups = show;
   }
 
   private handleCreateUserError(error: any): Observable<any> {
@@ -119,15 +144,15 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
       if (errorText.includes("User already exists with login")) {
         const login = errorText.split(" ").pop();
         this.modalService.showJavascriptError(
-          "Es existiert bereits ein Benutzer mit dem Login: " + login
+          "Es existiert bereits ein Benutzer mit dem Login: " + login,
         );
         return null;
       } else {
         let EMAIL_NOT_UNIQUE =
           "New user cannot be created, because another user might have the same email address";
         if (errorText.includes(EMAIL_NOT_UNIQUE)) {
-          this.modalService.showJavascriptError(
-            "Es existiert bereits ein Benutzer mit dieser Mailadresse"
+          throw new IgeError(
+            "Es existiert bereits ein Benutzer mit dieser Mailadresse",
           );
         } else {
           throw error;
@@ -139,5 +164,14 @@ export class NewUserDialogComponent implements OnInit, AfterContentChecked {
     } else {
       throw error;
     }
+  }
+
+  handleSubmit() {
+    if (this.asAdmin || this.options.formState.showGroups) {
+      this.createUser();
+      return;
+    }
+
+    this.options.formState.showGroups = true;
   }
 }

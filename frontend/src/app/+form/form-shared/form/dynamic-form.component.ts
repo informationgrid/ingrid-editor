@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -46,7 +65,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { ProfileService } from "../../../services/profile.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -66,6 +85,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fields: FormlyFieldConfig[] = [];
 
+  // noinspection JSUnusedGlobalSymbols
   formOptions: FormlyFormOptions = {
     showError: (field) => {
       return this.showValidationErrors && field.formControl?.invalid;
@@ -95,11 +115,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showValidationErrors = false;
 
-  hideOptionalFields = false;
+  showAllFields = this.session.select(
+    (state) => state.ui.toggleFieldsButtonShowAll,
+  );
 
   hasOptionalFields = false;
 
-  private formStateName: "document" | "address";
   private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
   showJson = false;
@@ -122,13 +143,13 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
-    private profileService: ProfileService,
     private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private docEvents: DocEventsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translocoService: TranslocoService,
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
   }
@@ -142,10 +163,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     if (this.address) {
-      this.formStateName = "address";
       this.query = this.addressTreeQuery;
     } else {
-      this.formStateName = "document";
       this.query = this.treeQuery;
     }
 
@@ -167,8 +186,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           map((item) => item.uuid),
           // when we revisit this page, make sure to update the form in our service
           // so that other plugins access the current one
-          tap(() => this.formStateService.updateForm(this.form))
-        )
+          tap(() => this.formStateService.updateForm(this.form)),
+        ),
       ),
     ])
       .pipe(untilDestroyed(this))
@@ -195,8 +214,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const showFormDashboard$ = this.query.explicitActiveNode$.pipe(
       untilDestroyed(this),
       filter(
-        (node) => node !== undefined && (node === null || node.id === null)
-      )
+        (node) => node !== undefined && (node === null || node.id === null),
+      ),
     );
 
     showFormDashboard$.subscribe(() => {
@@ -225,12 +244,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // 2) set error on control
 
     this.session.selectServerValidationErrors$
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter((errors) => errors.length > 0),
+      )
       .subscribe((errors: ValidationError[]) => {
+        this.showValidationErrors = true;
         errors.forEach((error) => {
           console.log("Received server side validation error", error);
-          this.form.controls[error.key]?.setErrors(error.messages[0]);
+          const message = this.translocoService.translate(
+            `form.validationMessages.${error.errorCode}`,
+          );
+          this.form.get(error.name)?.setErrors([{ message: message }]);
         });
+        this.numberOfErrors = errors.length;
       });
   }
 
@@ -281,14 +308,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         tap(() =>
           this.treeService.updateScrollPositionInStore(
             this.address,
-            element.scrollTop
-          )
-        )
+            element.scrollTop,
+          ),
+        ),
       )
       .subscribe();
   }
 
-  private determineToggleState(top) {
+  private determineToggleState(top: number) {
     // when we scroll more than the non-sticky area then it should become sticky
     return top > this.formInfoRef.nativeElement.clientHeight;
   }
@@ -318,7 +345,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.loadSubscription.length > 0) {
       this.loadSubscription.forEach((subscription) =>
-        subscription.unsubscribe()
+        subscription.unsubscribe(),
       );
       this.loadSubscription = [];
     }
@@ -330,12 +357,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         filter((doc) => doc != null),
         tap((doc) => this.handleReadOnlyState(doc)),
         tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
-        tap((doc) => this.loadSubscription.push(this.updateBreadcrumb(doc._id)))
+        tap((doc) =>
+          this.loadSubscription.push(this.updateBreadcrumb(doc._id)),
+        ),
       )
       .subscribe(
         (doc) => this.updateFormWithData(doc),
         (error: HttpErrorResponse) =>
-          this.handleLoadError(error, previousDocUuid)
+          this.handleLoadError(error, previousDocUuid),
       );
 
     this.loadSubscription.push(loadSubscription);
@@ -349,7 +378,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.documentService.updateBreadcrumb(id, this.query, this.address);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocUuid) {
+  private handleLoadError(error: HttpErrorResponse, previousDocUuid: string) {
     if (error.status === 403) {
       // select previous document
       const target =
@@ -369,7 +398,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (scrollPosition !== 0) {
       setTimeout(
         () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
-        500
+        500,
       );
     }
   }
@@ -381,7 +410,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.documentService.updateOpenedDocumentInTreestore(
       null,
       this.address,
-      true
+      true,
     );
   }
 
@@ -456,7 +485,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.formularService.getFields(profile);
   }
 
-  rememberSizebarWidth(info) {
+  rememberSizebarWidth(info: any) {
     this.formularService.updateSidebarWidth(info.sizes[0]);
   }
 
@@ -476,7 +505,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.address
+      this.address,
     );
 
     if (!handled) {
@@ -498,11 +527,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         untilDestroyed(this),
         debounceTime(500),
-        filter(() => this.showValidationErrors)
+        filter(() => this.showValidationErrors),
       )
       .subscribe(() => {
         const invalidFields = this.getInvalidControlNames(this.form);
-        console.warn("INVALID FIELDS: ", invalidFields);
+        if (invalidFields.length > 0)
+          console.warn("INVALID FIELDS: ", invalidFields);
         this.numberOfErrors = invalidFields.length;
       });
 

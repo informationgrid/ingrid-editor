@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.index
 
 import de.ingrid.igeserver.api.messaging.IndexMessage
@@ -9,7 +28,6 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
@@ -31,7 +49,7 @@ data class DocumentIndexInfo(
 )
 
 @Service
-class IndexService @Autowired constructor(
+class IndexService(
     private val catalogRepo: CatalogRepository,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
@@ -217,7 +235,7 @@ class IndexService @Autowired constructor(
                 (${iBusConditions.joinToString(" OR ")})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
-        if (profileConditions.isNotEmpty()) sql += " AND ${profileConditions.joinToString(" AND ")}"
+        if (profileConditions.isNotEmpty()) sql += " AND (${profileConditions.joinToString(" AND ")})"
         return sql
     }
 

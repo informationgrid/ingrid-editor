@@ -1,12 +1,14 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-    <div cdkDragHandle class="dialog-title-wrapper">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">Benachrichtigung hinzufügen</span>
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Benachrichtigung hinzufügen</h1>
     </div>
+
     <mat-dialog-content [formGroup]="form">
         <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Benachrichtigungstext</mat-label>
@@ -47,9 +49,8 @@
             <div>
                 <mat-hint matCardSubtitle
                     >Bei aktivierter Option wird die Nachricht in allen
-                    Katalogen angezeigt, ansonsten nur in diesem
-                    Katalog.</mat-hint
-                >
+                    Katalogen angezeigt, ansonsten nur in diesem Katalog.
+                </mat-hint>
             </div>
         </div>
     </mat-dialog-content>

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { filter, map, switchMap, take, tap } from "rxjs/operators";
@@ -81,10 +100,10 @@ export class EventService {
    */
   sendEventAndContinueOnSuccess(
     type: IgeEvent,
-    data: any = null
+    data: any = null,
   ): Observable<EventData[]> {
     return this.sendEvent(type, data).pipe(
-      filter((responses) => this.allResponsesSuccessful(type, responses))
+      filter((responses) => this.allResponsesSuccessful(type, responses)),
     );
   }
 
@@ -102,18 +121,18 @@ export class EventService {
           eventResponseHandler: (eventData) =>
             this.updateEventData(type, eventData),
         };
-      })
+      }),
     );
   }
 
   private allResponsesSuccessful(type: IgeEvent, responses: EventData[]) {
     const isSuccessful = responses.every(
-      (item) => item.result === IgeEventResultType.SUCCESS
+      (item) => item.result === IgeEventResultType.SUCCESS,
     );
     if (!isSuccessful) {
       console.log(
         "One subscriber prevented to run original method for: " + type,
-        responses
+        responses,
       );
     }
     return isSuccessful;
@@ -129,7 +148,7 @@ export class EventService {
       filter((count) => this.allSubscribersHaveFinished(type, count)),
       take(1),
       switchMap(() => of(this.result[type])),
-      tap(() => this.resetEvent(type))
+      tap(() => this.resetEvent(type)),
     );
   }
 

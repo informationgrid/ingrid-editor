@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
 import {
   BehaviourFormatBackend,
@@ -30,7 +49,7 @@ export class BehavioursComponent implements OnInit {
     private builder: FormlyFormBuilder,
     private route: ActivatedRoute,
     private behaviourService: BehaviourService,
-    pluginService: PluginService
+    pluginService: PluginService,
   ) {
     this.plugins = pluginService.plugins.filter((plugin) => !plugin.hide);
   }
@@ -41,7 +60,7 @@ export class BehavioursComponent implements OnInit {
     // this.behaviourService.applyActiveStates(this.plugins);
     this.pluginsGrouped = this.groupBy(
       this.plugins,
-      (plugin: Plugin) => plugin.group || "Andere"
+      (plugin: Plugin) => plugin.group || "Andere",
     );
     this.fields = this.createModelFromPlugins(this.plugins);
   }
@@ -51,14 +70,14 @@ export class BehavioursComponent implements OnInit {
       (previous, current, index, a, field = callback(current)) => (
         (previous[field] || (previous[field] = [])).push(current), previous
       ),
-      {}
+      {},
     );
   }
 
   save() {
     // TODO: improve by saving only modified behaviours states
     const updatedBehaviours = this.plugins.map((item) =>
-      this.mapBehaviourForBackend(item)
+      this.mapBehaviourForBackend(item),
     );
 
     this.behaviourService.saveBehaviours(updatedBehaviours);
@@ -74,7 +93,7 @@ export class BehavioursComponent implements OnInit {
 
   hasDirtyForm() {
     return Object.keys(this.fields).some(
-      (key) => this.fields[key].active.dirty || this.fields[key].form.dirty
+      (key) => this.fields[key].active.dirty || this.fields[key].form.dirty,
     );
   }
 
@@ -89,7 +108,7 @@ export class BehavioursComponent implements OnInit {
           formGroup,
           plugin.fields,
           plugin.data ? plugin.data : {},
-          {}
+          {},
         );
         formGroup.disable();
       }

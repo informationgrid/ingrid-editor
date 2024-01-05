@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { SelectOptionUi } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
@@ -81,7 +100,7 @@ export class TestDoctype extends BaseDoctype {
           },
           {
             key: "select",
-            type: "select",
+            type: "ige-select",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox",
@@ -93,7 +112,7 @@ export class TestDoctype extends BaseDoctype {
           },
           {
             key: "selectWithEmpty",
-            type: "select",
+            type: "ige-select",
             wrappers: ["panel", "form-field"],
             props: {
               externalLabel: "Selectbox mit leerer Option",
@@ -101,7 +120,7 @@ export class TestDoctype extends BaseDoctype {
               appearance: "outline",
               options: this.getCodelistForSelectWithEmtpyOption(
                 8000,
-                "selectWithEmpty"
+                "selectWithEmpty",
               ),
               required: true,
             },
@@ -338,36 +357,38 @@ export class TestDoctype extends BaseDoctype {
               externalLabel: "Image List",
               asImage: true,
               required: true,
-            },
-            fieldArray: {
-              fieldGroup: [
+              fields: [
                 {
-                  key: "type",
-                  type: "input",
-                  props: {
-                    label: "Typ",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "title",
-                  type: "input",
-                  props: {
-                    label: "Titel",
-                    appearance: "outline",
-                    required: true,
-                  },
-                },
-                {
-                  key: "description",
-                  type: "textarea",
-                  props: {
-                    label: "Beschreibung/Link",
-                    appearance: "outline",
-                    autosize: true,
-                    autosizeMinRows: 3,
-                    autosizeMaxRows: 5,
-                  },
+                  fieldGroup: [
+                    {
+                      key: "type",
+                      type: "input",
+                      props: {
+                        label: "Typ",
+                        appearance: "outline",
+                      },
+                    },
+                    {
+                      key: "title",
+                      type: "input",
+                      props: {
+                        label: "Titel",
+                        appearance: "outline",
+                        required: true,
+                      },
+                    },
+                    {
+                      key: "description",
+                      type: "textarea",
+                      props: {
+                        label: "Beschreibung/Link",
+                        appearance: "outline",
+                        autosize: true,
+                        autosizeMinRows: 3,
+                        autosizeMaxRows: 5,
+                      },
+                    },
+                  ],
                 },
               ],
             },
@@ -379,36 +400,38 @@ export class TestDoctype extends BaseDoctype {
             props: {
               externalLabel: "Link List",
               required: true,
-            },
-            fieldArray: {
-              fieldGroup: [
+              fields: [
                 {
-                  key: "type",
-                  type: "input",
-                  props: {
-                    label: "Typ",
-                    appearance: "outline",
-                  },
-                },
-                {
-                  key: "title",
-                  type: "input",
-                  props: {
-                    label: "Titel",
-                    appearance: "outline",
-                    required: true,
-                  },
-                },
-                {
-                  key: "description",
-                  type: "textarea",
-                  props: {
-                    label: "Beschreibung/Link",
-                    appearance: "outline",
-                    autosize: true,
-                    autosizeMinRows: 3,
-                    autosizeMaxRows: 5,
-                  },
+                  fieldGroup: [
+                    {
+                      key: "type",
+                      type: "input",
+                      props: {
+                        label: "Typ",
+                        appearance: "outline",
+                      },
+                    },
+                    {
+                      key: "title",
+                      type: "input",
+                      props: {
+                        label: "Titel",
+                        appearance: "outline",
+                        required: true,
+                      },
+                    },
+                    {
+                      key: "description",
+                      type: "textarea",
+                      props: {
+                        label: "Beschreibung/Link",
+                        appearance: "outline",
+                        autosize: true,
+                        autosizeMinRows: 3,
+                        autosizeMaxRows: 5,
+                      },
+                    },
+                  ],
                 },
               ],
             },

@@ -11,7 +11,7 @@
     @template.ingrid.shared-general(
     page = page,
     contentInfo = @`
-        @if (page.getHasContentInfo())
+        @if (!page.getFeatureTypes().isEmpty())
         <gmd:contentInfo>
             <gmd:MD_FeatureCatalogueDescription>
                 @if (page.isAdVCompatible())
@@ -31,7 +31,7 @@
                     <gmd:featureCatalogueCitation>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                <gco:CharacterString>${page.getCodelists().getValue("3535",citation.getTitle())}</gco:CharacterString>
+                                <gco:CharacterString>${page.getCodelists().getCatalogCodelistValue("3535",citation.getTitle())}</gco:CharacterString>
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>
@@ -63,7 +63,7 @@
             <gmd:portrayalCatalogueCitation>
                 <gmd:CI_Citation>
                     <gmd:title>
-                        <gco:CharacterString>${page.getCodelists().getValue("3555",citation.getTitle())}</gco:CharacterString>
+                        <gco:CharacterString>${page.getCodelists().getCatalogCodelistValue("3555",citation.getTitle())}</gco:CharacterString>
                     </gmd:title>
                     <gmd:date>
                         <gmd:CI_Date>

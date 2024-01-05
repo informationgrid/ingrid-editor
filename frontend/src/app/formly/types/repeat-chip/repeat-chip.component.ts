@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
@@ -43,7 +62,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     private http: HttpClient,
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
   ) {
     super();
 
@@ -103,7 +122,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     response.forEach((item) =>
       !this.model || this.model.indexOf(item) === -1
         ? this.add(null, item)
-        : null
+        : null,
     );
   }
 
@@ -136,7 +155,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
 
     const label = value[this.props.labelField];
     const alreadyExists = this.model.some(
-      (item) => item[this.props.labelField] == label
+      (item) => item[this.props.labelField] == label,
     );
     if (alreadyExists) {
       this.snack.open(`Der Begriff '${label}' existiert bereits`);

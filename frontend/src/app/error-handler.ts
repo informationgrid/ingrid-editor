@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { ErrorHandler, Injectable } from "@angular/core";
 import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
@@ -17,7 +36,7 @@ export interface IgeValidationError {
 export class GlobalErrorHandler implements ErrorHandler {
   constructor(
     private modalService: ModalService,
-    private translocoService: TranslocoService
+    private translocoService: TranslocoService,
   ) {}
 
   handleError(error) {
@@ -33,14 +52,16 @@ export class GlobalErrorHandler implements ErrorHandler {
           this.translateMessage(error.error) ?? error.error.errorText,
           null,
           error.error?.stacktrace,
-          unHandledException
+          unHandledException,
         );
         this.modalService.showIgeError(e);
       } else {
         const e = new IgeError();
         e.setMessage(
           error.message,
-          error.error && error.error.message ? error.error.message : error.error
+          error.error && error.error.message
+            ? error.error.message
+            : error.error,
         );
         this.modalService.showIgeError(e);
       }
@@ -68,7 +89,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     switch (error.errorCode) {
       case "IS_REFERENCED_ERROR":
         return this.translocoService.translate(
-          "replace-address.reference-error-multiple-files"
+          "replace-address.reference-error-multiple-files",
         );
       case "IS_REFERENCED_ERROR_ADDRESS_UNPUBLISH":
         return "Die Adresse wird von mindestens einem veröffentlichten Datensatz referenziert, so dass die Veröffentlichung nicht zurückgezogen werden kann";
@@ -88,6 +109,15 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
       case "MAIL_ERROR":
         return `Es gab ein Problem beim Versenden der Email: ${error.errorText}`;
+      case "FORBIDDEN":
+        switch (error.errorText) {
+          case "No access to referenced dataset":
+            return "Der Datensatz enthält Referenzen, auf die Sie keine Berechtigungen haben.";
+          case "No read access to document":
+            return "Sie haben keine Berechtigung auf diesen Datensatz.";
+          default:
+            return "Sie haben keine Berechtigung für diese Aktion.";
+        }
       default:
         return null;
     }

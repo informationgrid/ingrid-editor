@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject } from "rxjs";
@@ -22,7 +41,9 @@ export class Configuration {
     public supportEmail: string,
     public mapTileUrl: string,
     public nominatimUrl: string,
-    public showAccessibilityLink: boolean
+    public nominatimDetailUrl: string,
+    public showAccessibilityLink: boolean,
+    public allowOverwriteOnVersionConflict?: boolean,
   ) {}
 }
 
@@ -78,9 +99,13 @@ export class ConfigService {
 
   private dataService: ConfigDataService;
   private isAdministrator = false;
+  private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
 
-  constructor(private http: HttpClient, private snackbar: MatSnackBar) {
+  constructor(
+    private http: HttpClient,
+    private snackbar: MatSnackBar,
+  ) {
     this.dataService = new ConfigDataService(http);
   }
 
@@ -102,8 +127,9 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
-      userInfo.role === "ige-super-admin" || userInfo.role === "cat-admin";
+      this.isSuperAdministrator || userInfo.role === "cat-admin";
     this._hasRootWritePermission =
       userInfo.permissions.indexOf("can_write_root") !== -1;
     this.$userInfo.next(userInfo);
@@ -116,6 +142,10 @@ export class ConfigService {
 
   isAdmin(): boolean {
     return this.isAdministrator;
+  }
+
+  isSuperAdmin(): boolean {
+    return this.isSuperAdministrator;
   }
 
   hasWriteRootPermission(): boolean {
@@ -134,12 +164,12 @@ export class ConfigService {
 
   hasExplicitPermission(
     neededPermission: string | string[],
-    user: UserInfo
+    user: UserInfo,
   ): boolean {
     if (neededPermission instanceof Array) {
       return (
         user?.permissions?.filter(
-          (value) => neededPermission.indexOf(value) !== -1
+          (value) => neededPermission.indexOf(value) !== -1,
         ).length > 0
       );
     } else {
@@ -162,7 +192,7 @@ export class ConfigService {
 
   isIBusConnected(index: number) {
     return this.http.get<boolean>(
-      `${this.config.backendUrl}config/ibus/connected/${index}`
+      `${this.config.backendUrl}config/ibus/connected/${index}`,
     );
   }
 

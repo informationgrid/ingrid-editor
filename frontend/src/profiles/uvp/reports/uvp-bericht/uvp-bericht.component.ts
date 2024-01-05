@@ -1,17 +1,47 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
 import { UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
-import { saveAs } from "file-saver";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
+import { MatSort, MatSortModule } from "@angular/material/sort";
+import { saveAs } from "file-saver-es";
+import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+import { SharedModule } from "../../../../app/shared/shared.module";
+import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
 
 @UntilDestroy()
 @Component({
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
   styleUrls: ["./uvp-bericht.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateModule,
+    SharedModule,
+    FormSharedModule,
+    MatTableModule,
+    MatSortModule,
+  ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
@@ -50,7 +80,7 @@ export class UvpBerichtComponent implements AfterViewInit {
     this.uvpResearchService.initialized$
       .pipe(
         untilDestroyed(this),
-        filter((x) => x)
+        filter((x) => x),
       )
       .subscribe(() => {
         this.initData();
@@ -111,10 +141,10 @@ export class UvpBerichtComponent implements AfterViewInit {
   updateReport(report: UvpReport) {
     this.report = report;
     this.averageDuration = this.uvpResearchService.convertAverageDuration(
-      report.averageProcedureDuration
+      report.averageProcedureDuration,
     );
     this.dataSource.data = this.uvpResearchService.createNumberStatistic(
-      report.eiaStatistic
+      report.eiaStatistic,
     );
     this.dataSourceMiscellaneous.data = [
       {
@@ -149,7 +179,7 @@ export class UvpBerichtComponent implements AfterViewInit {
     const filename =
       this.startDate || this.endDate
         ? `report-${this.convertISOtoSimpleLocaleDate(
-            this.startDate
+            this.startDate,
           )}__${this.convertISOtoSimpleLocaleDate(this.endDate)}.csv`
         : "report.csv";
     saveAs(blob, filename);

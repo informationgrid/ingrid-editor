@@ -8,8 +8,7 @@
       "additionalProperties": false,
       "properties": {
         "_uuid": {
-          "type": "string",
-          "format": "uuid"
+          "type": "string"
         },
         "_type": {
           "const": "UvpForeignProjectDoc"

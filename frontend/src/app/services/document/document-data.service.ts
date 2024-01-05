@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { IgeDocument } from "../../models/ige-document";
@@ -12,9 +31,12 @@ import { TagRequest } from "../../models/tag-request.model";
 export class DocumentDataService {
   private configuration: Configuration;
 
-  constructor(private http: HttpClient, configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    configService: ConfigService,
+  ) {
     configService.$userInfo.subscribe(
-      () => (this.configuration = configService.getConfiguration())
+      () => (this.configuration = configService.getConfiguration()),
     );
   }
 
@@ -27,11 +49,11 @@ export class DocumentDataService {
   load(id: string | number, useUuid = false): Observable<IgeDocument> {
     if (useUuid) {
       return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasetsByUuid/" + id
+        this.configuration.backendUrl + "datasetsByUuid/" + id,
       );
     } else {
       return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasets/" + id
+        this.configuration.backendUrl + "datasets/" + id,
       );
     }
   }
@@ -39,11 +61,14 @@ export class DocumentDataService {
   loadPublished(id: string, useUuid = false): Observable<IgeDocument> {
     if (useUuid) {
       return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasetsByUuid/" + id + "?publish=true"
+        this.configuration.backendUrl +
+          "datasetsByUuid/" +
+          id +
+          "?publish=true",
       );
     } else {
       return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasets/" + id + "?publish=true"
+        this.configuration.backendUrl + "datasets/" + id + "?publish=true",
       );
     }
   }
@@ -53,12 +78,12 @@ export class DocumentDataService {
     if (data._id) {
       return this.http.put(
         this.configuration.backendUrl + "datasets/" + data._id + params,
-        data
+        data,
       );
     } else {
       return this.http.post(
         this.configuration.backendUrl + "datasets" + params,
-        data
+        data,
       );
     }
   }
@@ -70,12 +95,12 @@ export class DocumentDataService {
     if (data._id === undefined) {
       return this.http.post(
         this.configuration.backendUrl + "datasets" + parameters,
-        data
+        data,
       );
     } else {
       return this.http.put(
         this.configuration.backendUrl + "datasets/" + data._id + parameters,
-        data
+        data,
       );
     }
   }
@@ -83,7 +108,7 @@ export class DocumentDataService {
   unpublish(id: number): Observable<any> {
     return this.http.put(
       this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
-      {}
+      {},
     );
   }
 
@@ -93,7 +118,7 @@ export class DocumentDataService {
         "datasets/" +
         id +
         "?cancelPendingPublishing=true",
-      {}
+      {},
     );
   }
 
@@ -104,25 +129,25 @@ export class DocumentDataService {
   revert(id: string): Observable<IgeDocument> {
     return this.http.put<IgeDocument>(
       this.configuration.backendUrl + "datasets/" + id + "?revert=true",
-      {}
+      {},
     );
   }
 
   getPath(id: number): Observable<PathResponse[]> {
     return this.http.get<PathResponse[]>(
-      this.configuration.backendUrl + "datasets/" + id + "/path"
+      this.configuration.backendUrl + "datasets/" + id + "/path",
     );
   }
 
   copy(
     srcIDs: number[],
     dest: number,
-    includeTree: boolean
+    includeTree: boolean,
   ): Observable<IgeDocument[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
     return this.http.post<IgeDocument[]>(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/copy",
-      body
+      body,
     );
   }
 
@@ -130,14 +155,14 @@ export class DocumentDataService {
     const body = this.prepareCopyCutBody(dest, true);
     return this.http.post(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/move",
-      body
+      body,
     );
   }
 
   updateTags(id: number, data: TagRequest) {
     return this.http.put(
       `${this.configuration.backendUrl}datasets/${id}/tags`,
-      data
+      data,
     );
   }
 
@@ -151,7 +176,7 @@ export class DocumentDataService {
 
   private createGetChildrenParams(
     parentId: number,
-    isAddress: boolean
+    isAddress: boolean,
   ): string {
     let params = "";
     if (parentId) {

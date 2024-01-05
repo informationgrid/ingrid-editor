@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 declare var Wkt: WktModule.WktStatic;
 
 declare namespace WktModule {
@@ -54,23 +73,23 @@ declare namespace WktModule {
   interface Construct {
     point(
       config: google.maps.MarkerOptions,
-      component?: google.maps.Marker
+      component?: google.maps.Marker,
     ): google.maps.Marker;
     multipoint(config: google.maps.MarkerOptions): google.maps.Marker[];
     linestring(
       config: google.maps.PolylineOptions,
-      component?: google.maps.Polyline
+      component?: google.maps.Polyline,
     ): google.maps.Polyline;
     multilinestring(
-      config: google.maps.PolylineOptions
+      config: google.maps.PolylineOptions,
     ): google.maps.Polyline[];
     box(
       config: google.maps.RectangleOptions,
-      component?: google.maps.Rectangle
+      component?: google.maps.Rectangle,
     ): google.maps.Rectangle;
     polygon(
       config: google.maps.PolygonOptions,
-      component?: google.maps.Polygon
+      component?: google.maps.Polygon,
     ): google.maps.Polygon;
     multipolygon(config: google.maps.PolygonOptions): google.maps.Polygon[];
     deconstruct(
@@ -80,7 +99,7 @@ declare namespace WktModule {
         | google.maps.Polyline
         | google.maps.Rectangle
         | google.maps.Circle,
-      multiFlag: boolean
+      multiFlag: boolean,
     ): any;
   }
 }

@@ -1,42 +1,14 @@
-<div class="dialog-title-wrapper" data-cy="form-dialog-title">
-    <h2 mat-dialog-title [attr.aria-label]="titleText">
-        <button
-            mat-icon-button
-            mat-dialog-close
-            aria-hidden="true"
-            aria-label="Dialog schließen"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{ titleText }}</span>
-    </h2>
-</div>
-<mat-dialog-content data-cy="form-dialog-content">
-    <formly-form
-        [form]="form"
-        [fields]="data.fields"
-        [model]="data.model"
-        [options]="options"
-    ></formly-form>
-</mat-dialog-content>
-
-<mat-dialog-actions>
-    <button
-        mat-button
-        mat-dialog-close
-        color="primary"
-        data-cy="form-dialog-cancel"
-    >
-        Abbrechen
-    </button>
-    <div class="flex-1"></div>
-    <button
-        mat-flat-button
-        color="primary"
-        data-cy="form-dialog-confirm"
-        [disabled]="form.invalid"
-        [mat-dialog-close]="form.value"
-    >
-        Übernehmen
-    </button>
-</mat-dialog-actions>
+<ige-dialog-template
+    [label]="titleText"
+    [disabled]="disabled"
+    (submit)="submit(form.value)"
+>
+    <div content>
+        <formly-form
+            [form]="form"
+            [fields]="data.fields"
+            [model]="data.model"
+            [options]="options"
+        ></formly-form>
+    </div>
+</ige-dialog-template>

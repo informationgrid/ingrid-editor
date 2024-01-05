@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import {
   icon,
@@ -40,7 +59,7 @@ export class LeafletService {
     "#FFBC00",
     "#FF7500",
     "#DE2525",
-    "#DE2525",
+    "#b711c2",
     "#2C4EB7",
   ];
   private wktTools: WktTools;
@@ -60,7 +79,10 @@ export class LeafletService {
         '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
     });
 
-  constructor(private config: ConfigService, private http: HttpClient) {
+  constructor(
+    private config: ConfigService,
+    private http: HttpClient,
+  ) {
     this.configuration = this.config.getConfiguration();
     this.wktTools = new WktTools();
 
@@ -104,17 +126,17 @@ export class LeafletService {
 
   drawSpatialRefs(
     map: Map,
-    locations: SpatialLocationWithColor[]
+    locations: SpatialLocationWithColor[],
   ): Rectangle[] {
     let bounds: LatLngBoundsExpression;
 
     const wktLocations = locations.filter(
-      (location) => location.type === "wkt" && location.wkt
+      (location) => location.type === "wkt" && location.wkt,
     );
     const boxLocations = locations.filter(
       (location) =>
         (location.type === "free" && location.value) ||
-        location.type === "wfsgnde"
+        location.type === "wfsgnde",
     );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
@@ -124,11 +146,11 @@ export class LeafletService {
     const drawnBoxes = [];
     wktLocations.forEach(
       (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnWktLocations[index])
+        (drawnBoxes[location.indexNumber] = drawnWktLocations[index]),
     );
     boxLocations.forEach(
       (location, index) =>
-        (drawnBoxes[location.indexNumber] = drawnBoxLocations[index])
+        (drawnBoxes[location.indexNumber] = drawnBoxLocations[index]),
     );
 
     bounds = this.getBoundingBoxFromLayers(drawnBoxes);
@@ -147,7 +169,7 @@ export class LeafletService {
   private drawBoundingBox(
     map: Map,
     latLonBounds: LatLngBounds,
-    color: string
+    color: string,
   ): Rectangle {
     if (!latLonBounds) {
       return null;
@@ -166,7 +188,7 @@ export class LeafletService {
 
   private extendBounds(
     bounds: LatLngBounds,
-    box: LatLngExpression | LatLngBoundsExpression
+    box: LatLngExpression | LatLngBoundsExpression,
   ): LatLngBounds {
     const boxBounds = bounds
       ? new LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast())
@@ -203,8 +225,8 @@ export class LeafletService {
           fillOpacity: 1,
         },
         false,
-        false
-      )
+        false,
+      ),
     );
   }
 
@@ -222,7 +244,7 @@ export class LeafletService {
   }
 
   extendLocationsWithColor(
-    locations: SpatialLocation[]
+    locations: SpatialLocation[],
   ): SpatialLocationWithColor[] {
     return locations.map((location, index) => ({
       ...location,
@@ -234,7 +256,7 @@ export class LeafletService {
   validateWkt(value: string) {
     return this.http.post<WktValidateResponse>(
       `${this.configuration.backendUrl}tools/validate/wkt`,
-      value
+      value,
     );
   }
 }

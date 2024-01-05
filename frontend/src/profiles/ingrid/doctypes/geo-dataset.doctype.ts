@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
@@ -28,6 +47,9 @@ export class GeoDatasetDoctype extends IngridShared {
         "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
     },
   };
+
+  showInspireConform = true;
+  isGeoDataset = true;
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
@@ -97,9 +119,9 @@ export class GeoDatasetDoctype extends IngridShared {
               "props.required": "formState.mainModel?.isInspireConform",
               className: "field.props.required ? '' : 'optional'",
             },
-          }
+          },
         ),
-        this.addRepeat("vectorSpatialRepresentation", "Topologieinformation", {
+        this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
           fields: [
             this.addSelectInline("topologyLevel", "Topologieinformation", {
               options: this.getCodelistForSelect(528, "topologyLevel"),
@@ -130,6 +152,7 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
               showSearch: true,
+              allowNoValue: false,
               options: <SelectOptionUi[]>[
                 {
                   value: "basis",
@@ -171,7 +194,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 this.addCheckboxInline(
                   "transformationParameterAvailability",
                   "Verfügbarkeit von Transformationsparametern",
-                  { className: "flex-2" }
+                  { className: "flex-2" },
                 ),
                 this.addInputInline(
                   "numberOfDimensions",
@@ -184,7 +207,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
-                  }
+                  },
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
                   options: this.getCodelistForSelect(509, "cellGeometry"),
@@ -199,7 +222,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   wrappers: ["inline-help", "form-field"],
                 }),
               ],
-              { wrappers: [] }
+              { wrappers: [] },
             ),
             this.addGroup(
               "georectified",
@@ -215,7 +238,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-1",
                         hasInlineContextHelp: true,
-                      }
+                      },
                     ),
                     this.addInputInline(
                       "checkPointDescription",
@@ -224,10 +247,10 @@ export class GeoDatasetDoctype extends IngridShared {
                         className: "flex-1",
                         hasInlineContextHelp: true,
                         wrappers: ["inline-help", "form-field"],
-                      }
+                      },
                     ),
                   ],
-                  { wrappers: [] }
+                  { wrappers: [] },
                 ),
                 this.addGroup(
                   null,
@@ -248,7 +271,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       wrappers: ["inline-help", "form-field"],
                     }),
                   ],
-                  { wrappers: [] }
+                  { wrappers: [] },
                 ),
               ],
               {
@@ -256,7 +279,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 fieldGroupClassName: "",
                 hideExpression:
                   'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "rectified"',
-              }
+              },
             ),
             this.addGroup(
               "georeferenceable",
@@ -269,7 +292,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addCheckboxInline(
                       "orientationParameterAvailability",
                       "Verfügbarkeit der Orientierungsparameter",
-                      { className: "flex-3" }
+                      { className: "flex-3" },
                     ),
                     this.addCheckboxInline(
                       "controlPointAvaliability",
@@ -277,10 +300,10 @@ export class GeoDatasetDoctype extends IngridShared {
                       {
                         className: "flex-3",
                         hasInlineContextHelp: true,
-                      }
+                      },
                     ),
                   ],
-                  { wrappers: [] }
+                  { wrappers: [] },
                 ),
                 this.addInputInline(
                   "parameters",
@@ -289,7 +312,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     className: "",
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
-                  }
+                  },
                 ),
               ],
               {
@@ -297,14 +320,14 @@ export class GeoDatasetDoctype extends IngridShared {
                 fieldGroupClassName: "",
                 hideExpression:
                   'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "referenced"',
-              }
+              },
             ),
           ],
           {
             fieldGroupClassName: "",
             hideExpression:
               '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
-          }
+          },
         ),
         this.addResolutionFields(),
         this.addReferencesForAddress(
@@ -318,7 +341,7 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             className: "optional",
             contextHelpId: "coupledResources",
-          }
+          },
         ),
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
@@ -350,7 +373,7 @@ export class GeoDatasetDoctype extends IngridShared {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: "field.props.required ? '' : 'optional'",
             },
-            contextHelpId: "citation_2",
+            contextHelpId: "keyCatalog",
           }),
           this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
             className: "optional",
@@ -411,7 +434,7 @@ export class GeoDatasetDoctype extends IngridShared {
               },
             }),
           ],
-          { fieldGroupClassName: "flex-row" }
+          { fieldGroupClassName: "flex-row" },
         ),
         this.addRepeat("qualities", "Qualitätsinformationen", {
           className: "optional",
@@ -443,7 +466,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
             {
               key: "temporalConsistency",
-              value: "Zeitliche Genauigkeit",
+              value: "Zeitliche Konsistenz",
               fields: this.getQualityFields(7120),
             },
             {
@@ -501,7 +524,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addInputInline("parameter", "Beschreibung"),
       ],
-      { fieldGroupClassName: "flex-row" }
+      { fieldGroupClassName: "flex-row" },
     );
   }
 

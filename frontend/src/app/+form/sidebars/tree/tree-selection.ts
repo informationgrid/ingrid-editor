@@ -1,7 +1,28 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { SelectionModel } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 export class TreeSelection {
   model = new SelectionModel<TreeNode>(true);
@@ -13,8 +34,10 @@ export class TreeSelection {
   allowMultiSelectionMode = true;
 
   activeNode: TreeNode = null;
-
-  constructor(private treeControl: FlatTreeControl<TreeNode>) {}
+  constructor(
+    private treeControl: FlatTreeControl<TreeNode>,
+    private store: TreeStore | AddressTreeStore,
+  ) {}
 
   /**
    *
@@ -32,11 +55,13 @@ export class TreeSelection {
         this.model.toggle(node);
         this.multiSelectionModeEnabled = true;
         this.model.select(node);
+        this.store.update({ multiSelectMode: true });
         return;
       } else if ($event?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
         this.multiSelectionModeEnabled = true;
         this.nodeSelectionToggle(node, $event);
+        this.store.update({ multiSelectMode: true });
         return;
       }
       const isUiEvent = $event !== undefined && $event !== null;
@@ -60,7 +85,7 @@ export class TreeSelection {
   /** Toggle a leaf node selection */
   nodeSelectionToggle(
     node: TreeNode,
-    $event: MouseEvent | MatCheckboxChange
+    $event: MouseEvent | MatCheckboxChange,
   ): void {
     // mark all nodes in between the last selected node
     if ($event instanceof MouseEvent && $event.shiftKey) {
@@ -86,11 +111,11 @@ export class TreeSelection {
 
     if (startIndex < nodeIndex) {
       this.model.select(
-        ...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1)
+        ...this.treeControl.dataNodes.slice(startIndex, nodeIndex + 1),
       );
     } else {
       this.model.select(
-        ...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1)
+        ...this.treeControl.dataNodes.slice(nodeIndex, startIndex + 1),
       );
     }
   }
@@ -140,7 +165,7 @@ export class TreeSelection {
 
   allNodesSelected() {
     return this.treeControl.dataNodes.every((node) =>
-      this.model.isSelected(node)
+      this.model.isSelected(node),
     );
   }
 

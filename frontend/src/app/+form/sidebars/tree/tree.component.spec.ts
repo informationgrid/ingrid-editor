@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { TreeComponent } from "./tree.component";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -63,8 +82,8 @@ function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
         level,
         doc._hasChildren,
         doc._parent,
-        doc.icon
-      )
+        doc.icon,
+      ),
   );
 }
 
@@ -395,7 +414,7 @@ describe("TreeComponent", () => {
     hasNumberOfTreeNodes(3);
 
     db.treeUpdates.next(
-      newNode({ updateType: UpdateType.Move, id: 1, parent: null })
+      newNode({ updateType: UpdateType.Move, id: 1, parent: null }),
     );
 
     tick(5000);
@@ -414,7 +433,7 @@ describe("TreeComponent", () => {
     db.getPath.and.returnValue(Promise.resolve(["1"]));
     db.initialData.and.returnValue(of(recentDocuments));
     db.getChildren.and.callFake((parentId) =>
-      of(treeQuery.getChildren(parentId))
+      of(treeQuery.getChildren(parentId)),
     );
     spectator.detectChanges();
 
@@ -423,7 +442,7 @@ describe("TreeComponent", () => {
     // store must be updated where getChildren info comes from
     store.update(1, { _parent: 2 });
     db.treeUpdates.next(
-      newNode({ updateType: UpdateType.Move, id: 1, parent: 2 })
+      newNode({ updateType: UpdateType.Move, id: 1, parent: 2 }),
     );
 
     tick(1000);
@@ -511,7 +530,7 @@ describe("TreeComponent", () => {
 
       const toggleAllSelectionSpy = spyOn(
         spectator.component.selection,
-        "toggleAllSelection"
+        "toggleAllSelection",
       );
       expect(toggleAllSelectionSpy).toHaveBeenCalledTimes(0);
 
@@ -522,12 +541,12 @@ describe("TreeComponent", () => {
 
       // WORKAROUND: onchange event is not correctly triggered with checkbox, so we set the action ourselves
       spectator.component.selection.model.select(
-        ...spectator.component.treeControl.dataNodes
+        ...spectator.component.treeControl.dataNodes,
       );
       spectator.triggerEventHandler(
         '[data-cy="toggle-all-selection"]',
         "change",
-        {}
+        {},
       );
       checkSelectionCount(3);
 
@@ -536,7 +555,7 @@ describe("TreeComponent", () => {
       spectator.triggerEventHandler(
         '[data-cy="toggle-all-selection"]',
         "change",
-        {}
+        {},
       );
       checkSelectionCount(0);
     });
@@ -720,7 +739,7 @@ describe("TreeComponent", () => {
   function sendTreeEvent(
     type: UpdateType,
     docs: DocumentAbstract[],
-    parent?: number
+    parent?: number,
   ) {
     db.treeUpdates.next({ type: type, data: docs, parent: parent });
 
@@ -745,13 +764,13 @@ describe("TreeComponent", () => {
 
   function nodeImageHasClass(index: number, stateClass: string) {
     expect(spectator.queryAll(".mat-tree-node .mat-icon")[index]).toHaveClass(
-      stateClass
+      stateClass,
     );
   }
 
   function nodeImageHasNotClass(index: number, stateClass: string) {
     expect(
-      spectator.queryAll(".mat-tree-node .mat-icon")[index]
+      spectator.queryAll(".mat-tree-node .mat-icon")[index],
     ).not.toHaveClass(stateClass);
   }
 
@@ -766,8 +785,8 @@ describe("TreeComponent", () => {
   function nodesAreMarkedForSelection(...index: number[]) {
     index.forEach((i) =>
       expect(
-        spectator.queryAll(".mat-tree-node .mat-mdc-checkbox")[i]
-      ).toHaveClass("mat-mdc-checkbox-checked")
+        spectator.queryAll(".mat-tree-node .mat-mdc-checkbox")[i],
+      ).toHaveClass("mat-mdc-checkbox-checked"),
     );
   }
 
@@ -808,13 +827,13 @@ describe("TreeComponent", () => {
   function checkSelectionCount(count: number) {
     expect(
       spectator.queryAll("mat-tree mat-checkbox.mat-mdc-checkbox-checked")
-        .length
+        .length,
     ).toBe(count);
   }
 
   function checkNodeIsCheckboxSelected(index: number) {
     expect(spectator.queryAll("mat-tree mat-checkbox")[index]).toHaveClass(
-      "mat-mdc-checkbox-checked"
+      "mat-mdc-checkbox-checked",
     );
   }
 });

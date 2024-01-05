@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   HostListener,
@@ -31,6 +50,8 @@ export class AppComponent implements OnInit {
   favIcon: HTMLLinkElement = document.querySelector("#appIcon");
   showTestBadge: boolean;
 
+  isLoggingout = false;
+
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
     private configService: ConfigService,
@@ -43,7 +64,7 @@ export class AppComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     @Inject(PluginToken) private autoPlugins: Plugin[],
     private router: Router,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
   ) {
     this.loadProfile();
 
@@ -79,33 +100,33 @@ export class AppComponent implements OnInit {
     // useful tool for merging SVG files: merge-svg-files via npm
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-navigation.svg"
-      )
+        "assets/icons/icon-navigation.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-doc-types.svg"
-      )
+        "assets/icons/icon-doc-types.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-toolbar.svg"
-      )
+        "assets/icons/icon-toolbar.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-general.svg"
-      )
+        "assets/icons/icon-general.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/icons/icon-button.svg"
-      )
+        "assets/icons/icon-button.svg",
+      ),
     );
     this.registry.addSvgIconSet(
       this.domSanitizer.bypassSecurityTrustResourceUrl(
-        "assets/images/banner.svg"
-      )
+        "assets/images/banner.svg",
+      ),
     );
   }
 
@@ -124,7 +145,7 @@ export class AppComponent implements OnInit {
     this.sessionRefresher$
       .pipe(
         untilDestroyed(this),
-        throttleTime(10000) // allow token refresh only every 10s once
+        throttleTime(10000), // allow token refresh only every 10s once
       )
       .subscribe(() => this.authFactory.get().refreshToken());
 

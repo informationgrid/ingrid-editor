@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
@@ -32,8 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
-import java.net.URI
-import java.net.URL
+import java.net.*
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
@@ -66,11 +84,11 @@ class KeycloakService : UserManagementService {
 
     private val log = LogManager.getLogger(KeycloakService::class.java)
 
-    @Value("\${keycloak.super-admin-user:ige}")
-    private val superAdminUser: String? = null
+    @Value("\${keycloak.backend-user}")
+    private val backendUser: String? = null
 
-    @Value("\${keycloak.super-admin-password:ige}")
-    private val superAdminPassword: String? = null
+    @Value("\${keycloak.backend-user-password}")
+    private val backendUserPassword: String? = null
 
     @Value("\${keycloak.auth-server-url}")
     private val keycloakUrl: String? = null
@@ -92,7 +110,7 @@ class KeycloakService : UserManagementService {
     fun init() {
         if (keycloakProxyUrl != null) {
             log.info("Keycloak proxy: $keycloakProxyUrl")
-            with(URL(keycloakProxyUrl)) {
+            with(URI(keycloakProxyUrl).toURL()) {
                 proxyHost = host
                 proxyPort = port
             }
@@ -101,7 +119,7 @@ class KeycloakService : UserManagementService {
 
     override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         try {
-            initClient(principal).use {
+            initAdminClient().use {
                 val roles = it.realm().roles()
                 return getUsersWithRole(roles, "ige-user").toSet()
             }
@@ -113,7 +131,7 @@ class KeycloakService : UserManagementService {
     override fun getUsers(principal: Principal): Set<User> {
 
         try {
-            initClient(principal).use {
+            initAdminClient().use {
                 return it.realm().users().list()
                     .map { user -> mapUser(user) }
                     .toSet()
@@ -130,7 +148,7 @@ class KeycloakService : UserManagementService {
         ignoreUsers: Set<User> = emptySet()
     ): List<User> {
         return try {
-            val users = roles[roleName].getRoleUserMembers(0, 10000)
+            val users = roles[roleName].getUserMembers(0, 10000)
                 .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
             users.forEach { user -> user.role = roleName }
@@ -143,15 +161,15 @@ class KeycloakService : UserManagementService {
 
 
     override fun initAdminClient(): KeycloakCloseableClient {
-        val jsonResponse = this.sendLoginRequest(superAdminUser!!, superAdminPassword!!)
+        val jsonResponse = this.sendLoginRequest(backendUser!!, backendUserPassword!!)
         return initClient(jsonResponse["access_token"].toString())
     }
 
-    private fun initClient(principal: Principal?): KeycloakCloseableClient {
+    /*private fun initClient(principal: Principal?): KeycloakCloseableClient {
         principal as JwtAuthenticationToken
         val tokenString = principal.token.tokenValue
         return initClient(tokenString)
-    }
+    }*/
 
     private fun initClient(tokenString: String): KeycloakCloseableClient {
         val client: Keycloak = KeycloakBuilder.builder()
@@ -173,8 +191,8 @@ class KeycloakService : UserManagementService {
         return client.connectionPoolSize(10).build()
     }
 
-    override fun getClient(principal: Principal?): KeycloakCloseableClient {
-        return initClient(principal)
+    override fun getClient(/*@Deprecated*/principal: Principal?): KeycloakCloseableClient {
+        return initAdminClient()
     }
 
     override fun getUser(client: Closeable, login: String): User {
@@ -191,6 +209,18 @@ class KeycloakService : UserManagementService {
             throw NotFoundException.withMissingResource(username, "User")
         } catch (e: Exception) {
             throw UnauthenticatedException.withUser(username, e)
+        }
+    }
+
+    override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
+        try {
+            return (client as KeycloakCloseableClient).realm().users()
+                .search("id:$uuid", 1,1)
+                .first()
+        } catch (e: NoSuchElementException) {
+            throw NotFoundException.withMissingResource(uuid, "User")
+        } catch (e: Exception) {
+            throw UnauthenticatedException.withUser(uuid, e)
         }
     }
 
@@ -228,9 +258,12 @@ class KeycloakService : UserManagementService {
         return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: Authentication): String? {
-        principal as JwtAuthenticationToken
-        return principal.name
+    override fun getName(principal: Principal): String? {
+        return when (principal) {
+            is UsernamePasswordAuthenticationToken -> principal.name
+            is JwtAuthenticationToken -> principal.token.claims["preferred_username"]?.toString() ?: principal.name
+            else -> null
+        }
     }
 
     override fun getCurrentPrincipal(): Principal? {
@@ -242,14 +275,14 @@ class KeycloakService : UserManagementService {
     }
 
     override fun userExists(principal: Principal, userId: String): Boolean {
-        initClient(principal).use {
+        initAdminClient().use {
             return it.realm().users().search(userId, true).isNotEmpty()
         }
     }
 
     override fun createUser(principal: Principal, user: User): String {
 
-        initClient(principal).use {
+        initAdminClient().use {
             val usersResource = it.realm().users()
             val password = generatePassword()
 
@@ -284,7 +317,7 @@ class KeycloakService : UserManagementService {
 
     override fun updateUser(principal: Principal?, user: User) {
 
-        initClient(principal).use { client ->
+        initAdminClient().use { client ->
             val kcUser = getKeycloakUser(client, user.login)
             mapToKeycloakUser(user, kcUser)
 
@@ -324,7 +357,7 @@ class KeycloakService : UserManagementService {
 
     override fun requestPasswordChange(principal: Principal?, id: String) {
 
-        initClient(principal).use {
+        initAdminClient().use {
 
             val users = it.realm().users()
             val user = users.search(id, true).getOrNull(0)
@@ -347,7 +380,7 @@ class KeycloakService : UserManagementService {
     override fun resetPassword(principal: Principal?, id: String): String {
         val password = generatePassword()
 
-        initClient(principal).use { client ->
+        initAdminClient().use { client ->
             val kcUser = getKeycloakUser(client, id)
             kcUser.apply {
                 requiredActions = listOf("UPDATE_PASSWORD")
@@ -366,7 +399,7 @@ class KeycloakService : UserManagementService {
 
     override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
 
-        initClient(principal).use { client ->
+        initAdminClient().use { client ->
 
             val users = client.realm().users()
             val user = users.search(userId, true).getOrNull(0)
@@ -383,7 +416,7 @@ class KeycloakService : UserManagementService {
 
     override fun addRoles(principal: Principal?, userLogin: String, roles: List<String>) {
 
-        initClient(principal).use { client ->
+        initAdminClient().use { client ->
 
             val users = client.realm().users()
             val user = users.search(userLogin, true).getOrNull(0)
@@ -397,7 +430,7 @@ class KeycloakService : UserManagementService {
     }
 
     override fun deleteUser(principal: Principal?, userId: String) {
-        initClient(principal).use { client ->
+        initAdminClient().use { client ->
 
             val user = getKeycloakUser(client, userId)
             val users = client.realm().users()
@@ -491,16 +524,21 @@ class KeycloakService : UserManagementService {
 
     private fun sendLoginRequest(username: String, password: String): JSONObject {
         val executor = Executors.newSingleThreadExecutor()
+        val encodedUsername = URLEncoder.encode(username, "utf-8")
+        val encodedPassword = URLEncoder.encode(password, "utf-8")
         val request = HttpRequest.newBuilder()
             .header("Content-Type", "application/x-www-form-urlencoded")
             .method(
                 "POST",
-                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$username&password=$password")
+                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$encodedUsername&password=$encodedPassword")
             )
             .uri(URI.create("$keycloakUrl/realms/$keycloakRealm/protocol/openid-connect/token"))
             .timeout(Duration.ofSeconds(5))
             .build()
         val http = HttpClient.newBuilder()
+            .apply { 
+                if (keycloakProxyUrl != null) proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
+            }
             .connectTimeout(Duration.ofSeconds(10))
             .followRedirects(HttpClient.Redirect.NORMAL)
             .executor(executor)

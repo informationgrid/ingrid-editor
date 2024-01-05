@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { PluginToken } from "./tokens/plugin.token";
 import { PublishPlugin } from "./+form/dialogs/save/publish.plugin";
 import { CreateDocumentPlugin } from "./+form/dialogs/create/create-doc.plugin";
@@ -19,6 +38,8 @@ import { InheritContactDataHandler } from "./+catalog/+behaviours/system/Inherit
 import { AutosavePlugin } from "./+catalog/+behaviours/system/Autosave/autosave.plugin";
 import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default-user.behaviour";
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
+import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
+import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -32,6 +53,7 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: TreeModeToolbarBehaviour, multi: true },
   { provide: PluginToken, useClass: PrintViewPlugin, multi: true },
   { provide: PluginToken, useClass: TagsBehaviour, multi: true },
+  { provide: PluginToken, useClass: FieldsToggleButtonBehaviour, multi: true },
   { provide: PluginToken, useClass: AssignedUserBehaviour, multi: true },
   {
     provide: PluginToken,
@@ -57,4 +79,5 @@ export const pluginProvider = [
     useClass: ShowDocumentPermissionsHandlerPlugin,
     multi: true,
   },
+  { provide: PluginToken, useClass: ExpiredDocumentsBehaviour, multi: true },
 ];

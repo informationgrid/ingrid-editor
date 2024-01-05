@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.ingrid.extensions
 
 import de.ingrid.igeserver.ClientException
@@ -8,6 +27,9 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,8 +39,8 @@ import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("ingrid & elasticsearch")
-class InGridPublishExport @Autowired constructor(
+@Profile("elasticsearch")
+class InGridPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
     val indexingTask: IndexingTask
@@ -28,6 +50,7 @@ class InGridPublishExport @Autowired constructor(
 
     override val profiles = arrayOf("ingrid")
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
         val docId = payload.document.uuid
@@ -38,7 +61,9 @@ class InGridPublishExport @Autowired constructor(
             if (isDocument) indexDoc(context, docId, DocumentCategory.DATA)
             else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
-                indexReferencedDocs(context, docId)
+                GlobalScope.launch {
+                    indexReferencedDocs(context, docId)
+                }
             }
         } catch (ex: NoNodeAvailableException) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")

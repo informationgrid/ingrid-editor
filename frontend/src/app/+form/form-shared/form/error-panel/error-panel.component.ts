@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, HostListener, inject, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { MatIconModule } from "@angular/material/icon";
@@ -40,14 +59,15 @@ export class ErrorPanelComponent implements OnInit {
   @HostListener("window: keydown", ["$event"])
   hotKeys(event: KeyboardEvent) {
     if (!event.ctrlKey || !event.altKey) return;
+    console.log(event.key);
 
-    // CTRL + ALT + ArrowLeft (to previous error)
-    if (event.key == "ArrowLeft") {
+    // CTRL + ALT + R (to previous error)
+    if (event.key == "r") {
       this.jumpToPreviousError();
     }
 
-    // CTRL + ALT + ArrowRight (to next error)
-    if (event.key == "ArrowRight") {
+    // CTRL + ALT + W (to next error)
+    if (event.key == "w") {
       this.jumpToNextError();
     }
   }
@@ -66,7 +86,7 @@ export class ErrorPanelComponent implements OnInit {
   private jumpToCurrentError() {
     let element = document
       .querySelectorAll(
-        ".mat-form-field-invalid,.form-error,ige-add-button mat-error"
+        ".mat-form-field-invalid,.form-error,ige-add-button mat-error",
       )
       .item(this.currentError);
     element?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -86,10 +106,11 @@ export class ErrorPanelComponent implements OnInit {
       ...this.dialog.openDialogs.map((dialog) => dialog.afterClosed()),
       // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
       timer(300),
-    ]).subscribe(() =>
-      (<HTMLElement>(
-        element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
-      ))?.focus()
+    ]).subscribe(
+      () =>
+        (<HTMLElement>(
+          element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
+        ))?.focus(),
     );
   }
 

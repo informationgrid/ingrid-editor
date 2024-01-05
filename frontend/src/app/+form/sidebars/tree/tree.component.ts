@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -25,6 +44,8 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 export enum TreeActionType {
   ADD,
@@ -82,11 +103,11 @@ export class TreeComponent implements OnInit {
 
   treeControl: FlatTreeControl<TreeNode> = new FlatTreeControl<TreeNode>(
     this.getLevel,
-    this.isExpandable
+    this.isExpandable,
   );
 
   /** The node selection must be kept local */
-  selection: TreeSelection = new TreeSelection(this.treeControl);
+  selection: TreeSelection;
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
@@ -107,18 +128,24 @@ export class TreeComponent implements OnInit {
     public treeService: TreeService,
     public configService: ConfigService,
     private cdr: ChangeDetectorRef,
-    private docBehaviour: DocBehavioursService
+    private docBehaviour: DocBehavioursService,
+    private addressTreeStore: AddressTreeStore,
+    private dataTreeStore: TreeStore,
   ) {
     this.treeControl.dataNodes = [];
   }
 
   ngOnInit(): void {
+    const store = this.forAddresses
+      ? this.addressTreeStore
+      : this.dataTreeStore;
+    this.selection = new TreeSelection(this.treeControl, store);
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(
         untilDestroyed(this),
         map((data) => data.source.selected.map((item) => item._id)),
-        tap((data) => this.selected.emit(data))
+        tap((data) => this.selected.emit(data)),
       )
       .subscribe();
 
@@ -127,7 +154,7 @@ export class TreeComponent implements OnInit {
     this.dataSource = new DynamicDataSource(
       this.treeControl,
       this.database,
-      this.treeService
+      this.treeService,
     );
     this.dataSource.dataChange
       .pipe(
@@ -136,14 +163,14 @@ export class TreeComponent implements OnInit {
         tap((notEmpty) => {
           this.hasData = notEmpty;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe();
 
     this.dragManager = new DragNDropUtils(
       this.treeControl,
       this.docBehaviour,
-      this.forAddresses
+      this.forAddresses,
     );
     //previous code used to be in constructor
 
@@ -163,10 +190,11 @@ export class TreeComponent implements OnInit {
     this.searchSuggestions
       ?.pipe(
         untilDestroyed(this),
-        map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0))
+        map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0)),
       )
       .subscribe((nodes) => {
         this.emptySearchResults = nodes;
+        this.cdr.detectChanges();
       });
   }
 
@@ -203,14 +231,14 @@ export class TreeComponent implements OnInit {
             return;
           }
           const nodeToExpand = this.dataSource.data.filter(
-            (node) => node._id === nextId
+            (node) => node._id === nextId,
           )[0];
           this.treeControl.expand(nodeToExpand);
-        }
+        },
       );
 
       const nodeToExpand = this.dataSource.data.filter(
-        (node) => node._id === initialId
+        (node) => node._id === initialId,
       )[0];
       this.treeControl.expand(nodeToExpand);
     });
@@ -249,7 +277,7 @@ export class TreeComponent implements OnInit {
         }
         // after new data has arrived call change detection
         this.cdr.detectChanges();
-      })
+      }),
     );
   }
 
@@ -286,7 +314,7 @@ export class TreeComponent implements OnInit {
 
   private deleteNode(updateInfo: UpdateDatasetInfo) {
     const treeNodes = updateInfo["data"].map((doc) =>
-      this.dataSource.data.find((item) => item._id === doc.id)
+      this.dataSource.data.find((item) => item._id === doc.id),
     );
 
     // update parent nodes in case they do not have any children anymore
@@ -311,14 +339,14 @@ export class TreeComponent implements OnInit {
 
     if (updateInfo.parent) {
       const parentNodeIndex = this.dataSource.data.findIndex(
-        (item) => item._id === updateInfo.parent
+        (item) => item._id === updateInfo.parent,
       );
 
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
         console.log(
           "Parent not found, expanding tree nodes: ",
-          updateInfo.path
+          updateInfo.path,
         );
         if (this.expandNodeIds) {
           this.expandNodeIds.next(updateInfo.path);
@@ -329,12 +357,12 @@ export class TreeComponent implements OnInit {
       this.updateChildrenFromServer(
         updateInfo.parent,
         <number>updateInfo.data[0].id,
-        updateInfo.doNotSelect
+        updateInfo.doNotSelect,
       );
     } else {
       const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(
         updateInfo.data,
-        0
+        0,
       );
 
       newRootTreeNodes.forEach((treeNode) => {
@@ -352,7 +380,7 @@ export class TreeComponent implements OnInit {
   private updateChildrenFromServer(
     parentNodeId: number,
     id: number,
-    doNotSelect: boolean
+    doNotSelect: boolean,
   ) {
     if (parentNodeId === null) {
       this.reloadTree(true).subscribe();
@@ -360,7 +388,7 @@ export class TreeComponent implements OnInit {
     }
 
     const parentNodeIndex = this.dataSource.data.findIndex(
-      (item) => item._id === parentNodeId
+      (item) => item._id === parentNodeId,
     );
     const parentNode = this.dataSource.data[parentNodeIndex];
     parentNode.hasChildren = true;
@@ -414,7 +442,7 @@ export class TreeComponent implements OnInit {
   async jumpToNode(
     id: number,
     resetSelection = true,
-    emitActive = true
+    emitActive = true,
   ): Promise<void> {
     if (resetSelection) {
       this.selection.model.clear();
@@ -439,7 +467,7 @@ export class TreeComponent implements OnInit {
   private selectAndScrollToNode(
     id: number,
     resetSelection: boolean,
-    emitActive: boolean
+    emitActive: boolean,
   ) {
     const node = this.dataSource.getNode(id);
     if (node) {
@@ -460,7 +488,7 @@ export class TreeComponent implements OnInit {
 
     const queryFn = () =>
       this.treeContainerElement.nativeElement.querySelector(
-        ".mat-tree-node.active"
+        ".mat-tree-node.active",
       );
 
     this.waitFor(queryFn, () => {
@@ -469,7 +497,7 @@ export class TreeComponent implements OnInit {
         // we need a timeout here to let node settle in tree so we can scroll to it
         setTimeout(
           () => element.scrollIntoView({ behavior: "smooth", block: "center" }),
-          100
+          100,
         );
       }
     });
@@ -548,7 +576,7 @@ export class TreeComponent implements OnInit {
     const id = <number>srcDocIds[0];
 
     const treeNodes = srcDocIds.map((docId) =>
-      this.dataSource.data.find((item) => item._id === docId)
+      this.dataSource.data.find((item) => item._id === docId),
     );
 
     treeNodes.forEach((node) => this.handleNodeRemoval(node));
@@ -556,7 +584,7 @@ export class TreeComponent implements OnInit {
     // make sure new parent has correct children info
     if (destination) {
       const destinationNodeIndex = this.dataSource.data.findIndex(
-        (item) => item._id === destination
+        (item) => item._id === destination,
       );
       if (destinationNodeIndex > -1) {
         this.dataSource.data[destinationNodeIndex].hasChildren = true;
@@ -567,7 +595,7 @@ export class TreeComponent implements OnInit {
     await this.jumpToNode(id, false);
 
     treeNodes.forEach((treeNode) =>
-      this.dataSource.insertNodeInTree(treeNode, destination)
+      this.dataSource.insertNodeInTree(treeNode, destination),
     );
   }
 
@@ -584,7 +612,7 @@ export class TreeComponent implements OnInit {
       // if dragNode is part of selection all selected ids are srcIds, else only dragNode is sourceId
       this.dropped.next({
         srcIds: this.selection.model.selected.some(
-          (node) => node._id === this.dragManager.dragNode._id
+          (node) => node._id === this.dragManager.dragNode._id,
         )
           ? this.selection.model.selected.map((node) => node._id)
           : [this.dragManager.dragNode._id],

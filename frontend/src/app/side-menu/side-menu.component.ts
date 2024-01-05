@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
@@ -31,7 +50,7 @@ export class SideMenuComponent implements OnInit {
   showDrawer: Observable<boolean>;
 
   menuItems: Observable<Route[]> = this.menuService.menu$.pipe(
-    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route)))
+    map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route))),
   );
 
   menuIsExpanded = true;
@@ -45,20 +64,20 @@ export class SideMenuComponent implements OnInit {
     private router: Router,
     private configService: ConfigService,
     private menuService: MainMenuService,
-    private session: SessionQuery
+    private session: SessionQuery,
   ) {}
 
   ngOnInit() {
     this.configuration = this.configService.getConfiguration();
     this.session.isSidebarExpanded$.subscribe(
-      (expanded) => (this.menuIsExpanded = expanded)
+      (expanded) => (this.menuIsExpanded = expanded),
     );
 
     this.router.events.subscribe((event) => this.handleCurrentRoute(event));
 
     // display the drawer if the user has at least one catalog assigned
     this.showDrawer = this.configService.$userInfo.pipe(
-      map((info) => info?.assignedCatalogs?.length > 0)
+      map((info) => info?.assignedCatalogs?.length > 0),
     );
   }
 

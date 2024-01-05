@@ -1,21 +1,46 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { TemplateRef } from "@angular/core";
 import { isObservable } from "rxjs";
 import { AbstractControl } from "@angular/forms";
 
 export const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
-  arr.reduce((groups, item) => {
-    (groups[key(item)] ||= []).push(item);
-    return groups;
-  }, {} as Record<K, T[]>);
+  arr.reduce(
+    (groups, item) => {
+      (groups[key(item)] ||= []).push(item);
+      return groups;
+    },
+    {} as Record<K, T[]>,
+  );
 
 export const groupByWithIndexReference = <T, K extends keyof any>(
   arr: T[],
-  key: (i: T) => number
+  key: (i: T) => number,
 ) =>
-  arr.reduce((groups, item, index) => {
-    (groups[key(item)] ||= []).push(index);
-    return groups;
-  }, {} as Record<K, T[]>);
+  arr.reduce(
+    (groups, item, index) => {
+      (groups[key(item)] ||= []).push(index);
+      return groups;
+    },
+    {} as Record<K, T[]>,
+  );
 
 export function clone(value: any): any {
   if (
@@ -172,7 +197,7 @@ export class JsonDiffMerge {
           var objectDelta = JsonDiffMerge.jsonDiff(
             obj1[property],
             obj2[property],
-            arrayPrimaryKeyByArrayName
+            arrayPrimaryKeyByArrayName,
           );
           if (Object.keys(objectDelta).length > 0) {
             // Changes were found on this object?
@@ -234,7 +259,7 @@ export class JsonDiffMerge {
               var entryDelta = JsonDiffMerge.jsonDiff(
                 arrayObj1,
                 arrayObj2,
-                arrayPrimaryKeyByArrayName
+                arrayPrimaryKeyByArrayName,
               );
               if (Object.keys(entryDelta).length > 0) {
                 // There are diffs. Also capture the uid
@@ -368,7 +393,7 @@ export class JsonDiffMerge {
     node,
     nodeEdits,
     nodeAfterEdits,
-    arrayMergeFieldByArrayName
+    arrayMergeFieldByArrayName,
   ) {
     if (
       arrayMergeFieldByArrayName === null ||
@@ -386,7 +411,7 @@ export class JsonDiffMerge {
       arrayMergeFieldByArrayName,
       updatesWereMade,
       null,
-      null
+      null,
     );
   }
 
@@ -408,7 +433,7 @@ export class JsonDiffMerge {
     arrayMergeFieldByArrayName,
     updatesWereMade,
     nodeParent,
-    nodePathFromParent
+    nodePathFromParent,
   ) {
     if (typeof path === "undefined" || path === null) {
       path = "";
@@ -452,7 +477,7 @@ export class JsonDiffMerge {
             "- Date object converted to ISO date string: " +
               path +
               "." +
-              property
+              property,
           );
         }
 
@@ -481,7 +506,7 @@ export class JsonDiffMerge {
             arrayMergeFieldByArrayName,
             updatesMade,
             node,
-            property
+            property,
           );
           if (updatesMade.value === true) {
             updatesMadeInternal.value = true;
@@ -492,7 +517,7 @@ export class JsonDiffMerge {
               "- Key didn't exist on original object. Added: " +
                 path +
                 "." +
-                property
+                property,
             );
           }
           // This key doesn't exist on the original object. Add it.
@@ -642,7 +667,7 @@ export class JsonDiffMerge {
                           "): " +
                           path +
                           "." +
-                          property
+                          property,
                       );
                     }
                     var updatesMade = { value: false }; // jshint ignore:line
@@ -655,7 +680,7 @@ export class JsonDiffMerge {
                       arrayMergeFieldByArrayName,
                       updatesMade,
                       originalArrayAtKey,
-                      i
+                      i,
                     );
                     if (updatesMade.value === true) {
                       updatesMadeInternal.value = true;
@@ -696,7 +721,7 @@ export class JsonDiffMerge {
                         "). Explicitly add it: " +
                         path +
                         "." +
-                        property
+                        property,
                     );
                   }
                   // Only add this entry if it is not a deleted key or the mergeAction allows it
@@ -746,7 +771,7 @@ export class JsonDiffMerge {
               "- This key (an array) doesn't exist on the original object. Add it: " +
                 path +
                 "." +
-                property
+                property,
             );
           }
           node[property] = editsArrayAtKey;
@@ -786,7 +811,7 @@ export class JsonDiffMerge {
                 existingVal +
                 ", new: " +
                 newVal +
-                ")"
+                ")",
             );
           }
           if (existingVal !== newVal) {
@@ -823,7 +848,7 @@ export class JsonDiffMerge {
           var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8; // jshint ignore:line
           return v.toString(16);
-        }
+        },
       );
     } catch (e) {}
     return guid;

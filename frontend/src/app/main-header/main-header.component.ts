@@ -1,4 +1,23 @@
-import { Component, OnInit } from "@angular/core";
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -21,6 +40,8 @@ import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
   styleUrls: ["./main-header.component.scss"],
 })
 export class MainHeaderComponent implements OnInit {
+  @Output() onLogout = new EventEmitter<void>();
+
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
   pageTitle: string;
@@ -33,9 +54,9 @@ export class MainHeaderComponent implements OnInit {
   config: Configuration;
   otherAssignedCatalogs: any[];
   catalogId: string;
-  menuItems: Routes = settingsRoutes[0].children.filter(
-    (item) => item.path !== ""
-  );
+  menuItems: Routes = settingsRoutes[0].children
+    .filter((item) => item.path !== "")
+    .filter((item) => this.configService.hasPermission(item.data?.permission));
   menuInfos: FormularMenuItem[] = this.formMenuService.getMenuItems("settings");
 
   constructor(
@@ -45,7 +66,7 @@ export class MainHeaderComponent implements OnInit {
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
-    private formMenuService: FormMenuService
+    private formMenuService: FormMenuService,
   ) {}
 
   ngOnInit() {
@@ -58,9 +79,10 @@ export class MainHeaderComponent implements OnInit {
     this.currentCatalog$ = this.configService.$userInfo.pipe(
       tap(
         (userInfo) =>
-          (this.otherAssignedCatalogs = this.getOtherAssignedCatalogs(userInfo))
+          (this.otherAssignedCatalogs =
+            this.getOtherAssignedCatalogs(userInfo)),
       ),
-      map((userInfo) => userInfo?.currentCatalog?.label)
+      map((userInfo) => userInfo?.currentCatalog?.label),
     );
 
     this.router.events.subscribe((event: any) => {
@@ -86,7 +108,13 @@ export class MainHeaderComponent implements OnInit {
     const hasNavigated = await this.router.navigate([
       `${ConfigService.catalogId}`,
     ]);
-    if (!hasNavigated) return;
+
+    if (!hasNavigated) {
+      return;
+    }
+
+    this.onLogout.emit();
+
     setTimeout(() => {
       this.storageService.clear("ige-refresh-token");
       this.authFactory.get().logout();

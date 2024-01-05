@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +27,6 @@ import {
 } from "@angular/core";
 import { IgeDocument } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
-import { DocumentUtils } from "../../../../services/document.utils";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
 
 export interface AddressRef {
@@ -32,7 +50,6 @@ export class AddressCardComponent implements OnInit {
 
   content: {
     iconClass?: string;
-    iconState?: string;
     role?: string | BackendOption;
     title?: string;
     secondTitle?: string;
@@ -48,7 +65,6 @@ export class AddressCardComponent implements OnInit {
       console.error("Address reference is null!");
       this.content = {
         title: "Ungültige Adressreferenz",
-        iconState: "",
       };
       this.invalidAddressReference = true;
       return;
@@ -56,14 +72,8 @@ export class AddressCardComponent implements OnInit {
 
     this.content = {
       iconClass: this.profileService.getDocumentIcon(
-        <IgeDocument>this.address.ref
+        <IgeDocument>this.address.ref,
       ),
-      iconState:
-        DocumentUtils.getStateClass(
-          this.address.ref._state,
-          this.address.ref._type,
-          this.address.ref._tags
-        ) ?? "",
       role: this.address.type,
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),
@@ -100,13 +110,13 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getAddressInfo() {
-    const states = this.content?.iconState?.split(" ");
-
-    if (states.indexOf("working") !== -1)
-      return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
-    if (states.indexOf("workingWithPublished") !== -1)
-      return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
-
-    return "";
+    switch (this.address.ref._state) {
+      case "W":
+        return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
+      case "PW":
+        return "Für die Adresse existiert eine Bearbeitungskopie. Für die Veröffentlichung des Datensatzes wird die veröffentlichte Adresse verwendet. Bitte veröffentlichen Sie die Adresse, um die Daten aktuell zu halten.";
+      default:
+        return "";
+    }
   }
 }

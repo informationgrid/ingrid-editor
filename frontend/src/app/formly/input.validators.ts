@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   UntypedFormControl,
   ValidationErrors,
@@ -6,7 +25,8 @@ import {
 } from "@angular/forms";
 import { isNotEmptyObject } from "../shared/utils";
 
-export const REGEX_URL = "^(https?://)([0-9a-z.-]+)\\.([0-9a-z.]{2,6})(/.*)?";
+export const REGEX_URL =
+  "^(https?://)([0-9a-zA-Z.-]+)\\.([0-9a-z.]{2,6})(:\\d+)?(/.*)?";
 
 export function IpValidator(control: UntypedFormControl): ValidationErrors {
   return /(\d{1,3}\.){3}\d{1,3}/.test(control.value?.trim())
@@ -19,7 +39,7 @@ export function EmailValidator(control: UntypedFormControl): ValidationErrors {
 }
 
 export function NotEmptyArrayValidator(
-  control: UntypedFormControl
+  control: UntypedFormControl,
 ): ValidationErrors {
   const value: any[] = control.value;
   const result = value.every((item) => isNotEmptyObject(item));
@@ -43,7 +63,7 @@ export function UrlValidator(control: UntypedFormControl): ValidationErrors {
 }
 
 export function LowercaseValidator(
-  control: UntypedFormControl
+  control: UntypedFormControl,
 ): ValidationErrors {
   return control.value === control.value?.toLowerCase()
     ? null
@@ -53,7 +73,7 @@ export function LowercaseValidator(
 export function patternWithMessage(
   pattern: string | RegExp,
   errorField: string,
-  message?: string
+  message?: string,
 ): ValidatorFn {
   const delegateFn = Validators.pattern(pattern);
   return (control) => {

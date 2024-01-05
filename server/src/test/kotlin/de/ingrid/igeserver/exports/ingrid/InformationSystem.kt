@@ -1,12 +1,27 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.exports.ingrid
 
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -14,16 +29,18 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.mdek.upload.Config
 import initDocumentMocks
-import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
 
-class InformationSystem : AnnotationSpec() {
+class InformationSystem : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -31,18 +48,13 @@ class InformationSystem : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
     private val config = mockk<Config>()
 
     private lateinit var exporter: IngridIDFExporter
-    private lateinit var indexExporter: IngridIndexExporter
-    private lateinit var luceneExporter: IngridLuceneExporter
 
-    @BeforeAll
-    fun beforeAll() {
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
+    override suspend fun beforeSpec(spec: Spec) {
+        clearAllMocks()
+        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -102,22 +114,20 @@ class InformationSystem : AnnotationSpec() {
         initDocumentMocks(addresses + datasets, documentService)
     }
 
-    /*
-    * export with all inputs possible.
-    * address has an organization assigned.
-    * */
-    @Test
-    fun maximalExport() {
-        var result = exportJsonToXML(exporter, "/export/ingrid/information-system.maximal.sample.json")
-        // replace generated UUIDs and windows line endings
-        result = result
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    init {
 
-        result shouldNotBe null
-        result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml")
-    }
+        /*
+        * export with all inputs possible.
+        * address has an organization assigned.
+        * */
+        should("maximalExport") {
+            var result = exportJsonToXML(exporter, "/export/ingrid/information-system.maximal.sample.json")
+            // replace generated UUIDs and windows line endings
+            result = result
+                .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
-    @Test
-    fun completeExport() {
+            result shouldNotBe null
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml")
+        }
     }
 }

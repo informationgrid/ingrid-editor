@@ -1,11 +1,12 @@
-<div class="dialog-title-wrapper">
-    <h2 mat-dialog-title>
-        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="text">{{ dialogTitle }}</span>
-    </h2>
+<div class="dialog-title-wrapper flex-row align-items-center gap-12">
+    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h1 mat-dialog-title>
+        {{ dialogTitle }}
+    </h1>
 </div>
+
 <mat-dialog-content>
     <div class="spatial-wrapper flex-row gap-24" [ngSwitch]="view">
         <div class="flex-col" style="width: 400px">
@@ -18,7 +19,8 @@
                     <mat-select
                         (selectionChange)="updateView($event.value)"
                         [value]="result.type"
-                        aria-label="Typ des Raumbezuges"
+                        required
+                        aria-label="Typ des Raumbezuges *"
                     >
                         <mat-option
                             *ngFor="let menuItem of types"

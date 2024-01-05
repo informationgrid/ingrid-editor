@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { DocumentService } from "../../app/services/document/document.service";
 import { CodelistService } from "../../app/services/codelist/codelist.service";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
@@ -22,7 +41,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
   constructor(
     storageService: DocumentService,
     codelistService: CodelistService,
-    codelistQuery: CodelistQuery
+    codelistQuery: CodelistQuery,
   ) {
     super(storageService, "addresses");
     this.addressType = "organization";
@@ -47,14 +66,14 @@ export class BmiAddressDoctype extends OrganisationDoctype {
       fields: [
         this.addSelect("type", "Art", {
           fieldLabel: "Art",
-          wrappers: null,
+          wrappers: ["form-field"],
           className: "flex-1",
           required: true,
           showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
-              items.filter((item) => item.value !== "5" && item.value !== "6")
-            )
+              items.filter((item) => item.value !== "5" && item.value !== "6"),
+            ),
           ),
           codelistId: 4430,
         }),
@@ -118,7 +137,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
             this.addSelect("country", null, {
               fieldLabel: "Land",
               showSearch: true,
-              wrappers: null,
+              wrappers: ["form-field"],
               className: options.hideAdministrativeArea ? null : "flex-1",
               options: this.getCodelistForSelect(6200, "country"),
               codelistId: 6200,
@@ -127,7 +146,7 @@ export class BmiAddressDoctype extends OrganisationDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: "" }
+      { fieldGroupClassName: "" },
     );
   }
 }

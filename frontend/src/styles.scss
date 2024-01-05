@@ -1,8 +1,7 @@
-@import "./variables.scss";
-@import "./material.override.scss";
-//@import "./material-fields.override.scss";
-@import "./styles-print.scss";
-@import "./styles-outline";
+@import "src/variables";
+@import "src/material.override";
+@import "src/styles-print";
+@import "src/styles-outline";
 
 html,
 body {
@@ -11,8 +10,14 @@ body {
 }
 
 body {
-  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial,
-    Lucida Grande, sans-serif;
+  font-family:
+    Roboto,
+    Helvetica Neue Light,
+    Helvetica Neue,
+    Helvetica,
+    Arial,
+    Lucida Grande,
+    sans-serif;
   letter-spacing: 0.4px;
 }
 
@@ -79,6 +84,13 @@ button.button-with-text {
   .mat-mdc-form-field-error-wrapper,
   .mat-mdc-form-field-hint-wrapper {
     position: relative;
+  }
+}
+// prevent form field errors overlapping with labels of lower field by reducing padding
+ige-form-dialog {
+  .mat-mdc-form-field-error,
+  .mat-mdc-form-field-hint {
+    padding-top: 3px;
   }
 }
 
@@ -172,8 +184,10 @@ h1 {
     }
 
     &:hover {
-      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.2),
-        0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+      box-shadow:
+        0 3px 3px -2px rgba(0, 0, 0, 0.2),
+        0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 8px 0px rgba(0, 0, 0, 0.12);
     }
   }
 
@@ -1092,8 +1106,10 @@ mat-icon.mark-color .coloring {
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cdk-drag-handle {

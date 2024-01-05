@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -25,6 +44,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: "ige-result-table",
@@ -71,7 +91,8 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     private profileQuery: ProfileQuery,
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private exportService: ExportService
+    private exportService: ExportService,
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -139,12 +160,26 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
-    rows.push(["Typ", "Titel", "Aktualität"]);
+    rows.push([
+      "ID",
+      "Veröffentlichungsstatus",
+      "Veröffentlichungseinschränkungen",
+      "Typ",
+      "Titel",
+      "Aktualität",
+    ]);
     for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
     this.exportService.exportCsv(rows, { exportName: "research" });
   }
 
   private buildRowByDoc(doc: IgeDocument) {
-    return [doc._type, doc.title, doc._contentModified];
+    return [
+      doc._uuid,
+      this.translocoService.translate(`docState.${doc._state}`),
+      doc._tags ? this.translocoService.translate(`tags.${doc._tags}`) : "",
+      this.translocoService.translate(`docType.${doc._type}`),
+      doc.title,
+      doc._contentModified,
+    ];
   }
 }

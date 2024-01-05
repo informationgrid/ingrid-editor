@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.ClientException
@@ -137,7 +156,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
             if (!developmentMode) {
-                keycloakService.getClient(principal).use { client ->
+                keycloakService.getClient().use { client ->
                     val user = keycloakService.getUser(client, login)
                     logger.info("Send deletion email to '${user.login}' (${user.email})")
                     try {
@@ -167,7 +186,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
             val login = frontendUser.userId
             val user = keycloakService.getUser(client, login)
@@ -186,7 +205,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
 
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
             val login = frontendUser.userId
             val user = keycloakService.getUser(client, login)
             return ResponseEntity.ok(user.firstName + " " + user.lastName)
@@ -195,7 +214,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     private fun getSingleUser(principal: Principal, userId: String): User? {
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
 
             val user = try {
@@ -249,11 +268,14 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         // check new user has rights on all docs
         if (!isAdminRole(newResponsibleUser.role?.name)) {
-            val userGroups = newResponsibleUser.groups.toList()
+            val userGroups = newResponsibleUser.getGroupsForCatalog(catalogId).toList()
             val docsWithoutAccess = docs.filter { !groupService.hasAnyGroupAccess(catalogId, userGroups, it.id!!) }
             if (docsWithoutAccess.isNotEmpty()) {
                 val docIds = docsWithoutAccess.map { it.uuid }
-                throw TransferResponsibilityException.withReason("User ${newResponsibleUser.userId} has no access to documents with ids: $docIds", data = mapOf("docIds" to docIds))
+                throw TransferResponsibilityException.withReason(
+                    "User ${newResponsibleUser.userId} has no access to documents with ids: $docIds",
+                    data = mapOf("docIds" to docIds)
+                )
             }
         }
 
@@ -288,7 +310,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
         // TODO set access rights so users can update their own info, but nothing else. especially not other users.
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
             val kcUser = keycloakService.getUser(client, userId)
 
             user.apply {
@@ -312,11 +334,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
             val lastLogin = this.updateAndGetLastLogin(principal, user.login)
             val dbUser = catalogService.getUser(userId)
-            val permissions = try { catalogService.getPermissions(principal) } catch (ex: Exception) {
+            val permissions = try {
+                catalogService.getPermissions(principal)
+            } catch (ex: Exception) {
                 emptyList()
             }
 
             val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
+            val groups = currentCatalog?.let { cat ->
+                dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
+            } ?: emptySet()
             val userInfo = UserInfo(
                 id = dbUser?.id,
                 login = user.login,
@@ -326,17 +353,22 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 email = user.email,
                 assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
                 role = dbUser?.role?.name,
-                groups = dbUser?.groups?.map { it.name!! }?.toSet(),
+                groups = groups,
                 currentCatalog = currentCatalog,
                 version = getVersion(),
                 lastLogin = lastLogin,
                 externalHelp = generalProperties.externalHelp,
                 useElasticsearch = env.activeProfiles.contains("elasticsearch"),
                 permissions = permissions,
-                plugins = behaviourService.get(currentCatalog?.identifier ?: "???" )
+                plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
             )
-            userInfo.currentCatalog?.type?.let {
-                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+            try {
+                userInfo.currentCatalog?.type?.let {
+                    userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+                }
+            } catch (ex: NotFoundException) {
+                // ignore not activated catalog
+                logger.warn(ex.message ?: "Catalog profile not found: ${userInfo.currentCatalog?.type}")
             }
             return ResponseEntity.ok(userInfo)
         }
@@ -483,7 +515,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
-        keycloakService.getClient(principal).use { client ->
+        keycloakService.getClient().use { client ->
 
             val user = keycloakService.getUser(client, id)
             val password = keycloakService.resetPassword(principal, id)

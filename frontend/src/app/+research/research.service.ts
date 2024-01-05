@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import {
@@ -5,7 +24,7 @@ import {
   Configuration,
 } from "../services/config/config.service";
 import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { QueryState, QueryStore } from "../store/query/query.store";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
@@ -13,6 +32,7 @@ import { BackendStoreQuery } from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
 import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
 import { IgeDocument } from "../models/ige-document";
+import { IgeError } from "../models/ige-error";
 
 export interface QuickFilter {
   id: string;
@@ -78,7 +98,7 @@ export class ResearchService {
     private http: HttpClient,
     configService: ConfigService,
     private profileService: ProfileService,
-    private queryStore: QueryStore
+    private queryStore: QueryStore,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -88,7 +108,7 @@ export class ResearchService {
       .get<Facets>(`${this.configuration.backendUrl}search/quickFilter`)
       .pipe(
         tap((filters) => (this.filters = filters)),
-        tap((filters) => this.createFacetModel(filters))
+        tap((filters) => this.createFacetModel(filters)),
       );
   }
 
@@ -101,7 +121,7 @@ export class ResearchService {
       page: number;
       pageSize: number;
     },
-    isNotFacetKeys: string[] = []
+    isNotFacetKeys: string[] = [],
   ): Observable<ResearchResponse> {
     // Remove leading and trailing whitespace
     term = term?.trim();
@@ -112,12 +132,12 @@ export class ResearchService {
       orderByField,
       orderByDirection,
       pagination,
-      isNotFacetKeys
+      isNotFacetKeys,
     );
     return this.http
       .post<ResearchResponse>(
         `${this.configuration.backendUrl}search/query`,
-        backendQuery.get()
+        backendQuery.get(),
       )
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
@@ -125,7 +145,7 @@ export class ResearchService {
   searchBySQL(
     sql: string,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
   ): Observable<ResearchResponse> {
     let paging = "";
     if (page && pageSize) {
@@ -134,7 +154,7 @@ export class ResearchService {
     return this.http
       .post<ResearchResponse>(
         `${this.configuration.backendUrl}search/querySql${paging}`,
-        sql
+        sql,
       )
       .pipe(map((result) => this.mapDocumentIcons(result)));
   }
@@ -143,7 +163,7 @@ export class ResearchService {
     const backendQuery = new BackendQuery("", model, this.filters);
     return this.http.post<any>(
       `${this.configuration.backendUrl}statistic/query`,
-      backendQuery.get()
+      backendQuery.get(),
     );
   }
 
@@ -152,7 +172,7 @@ export class ResearchService {
       .get<BackendStoreQuery[]>(`${this.configuration.backendUrl}search`)
       .pipe(
         map((queries) => queries.map((q) => this.convertToFrontendQuery(q))),
-        tap((queries) => this.queryStore.set(queries))
+        tap((queries) => this.queryStore.set(queries)),
       )
       .subscribe();
   }
@@ -164,17 +184,17 @@ export class ResearchService {
   saveQuery(
     model: any,
     dialogOptions: SaveQueryDialogResponse,
-    asSql: boolean
+    asSql: boolean,
   ): Observable<SqlQuery | FacetQuery> {
     const preparedQuery = this.prepareQuery(model, dialogOptions, asSql);
     return this.http
       .post<BackendStoreQuery>(
         `${this.configuration.backendUrl}search`,
-        this.convertToBackendQuery(preparedQuery)
+        this.convertToBackendQuery(preparedQuery),
       )
       .pipe(
         map((response) => this.convertToFrontendQuery(response)),
-        tap((response) => this.queryStore.add(response))
+        tap((response) => this.queryStore.add(response)),
       );
   }
 
@@ -278,7 +298,7 @@ export class ResearchService {
   private prepareQuery(
     model: any,
     response: SaveQueryDialogResponse,
-    asSql: boolean
+    asSql: boolean,
   ): SqlQuery | FacetQuery {
     let base: Partial<Query> = {
       id: null,
@@ -335,5 +355,17 @@ export class ResearchService {
             .subscribe(() => this.startSearch());
         }
       });*/
+  }
+
+  askAI(question: string) {
+    return this.http
+      .post(`${this.configuration.backendUrl}search/ai`, question, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error) => {
+          throw new IgeError(JSON.parse(error.error)?.errorText);
+        }),
+      );
   }
 }

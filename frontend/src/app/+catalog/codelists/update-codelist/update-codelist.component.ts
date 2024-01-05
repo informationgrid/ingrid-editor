@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   ElementRef,
@@ -33,7 +52,7 @@ export class UpdateCodelistComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     public data: { entry: CodelistEntry; ids: string[] },
     private dialogRef: MatDialogRef<UpdateCodelistComponent>,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
   ) {
     this.isNew = data.entry.id === undefined;
     this.fields = Object.keys(data.entry.fields).map((key) => ({
@@ -50,7 +69,7 @@ export class UpdateCodelistComponent implements OnInit {
           value: this.data.entry.id,
           disabled: this.data.entry.id !== undefined,
         },
-        this.checkForExistingId()
+        this.checkForExistingId(),
       ),
       description: this.fb.control(this.data.entry.description),
       data: this.fb.control(this.data.entry.data),
@@ -59,8 +78,8 @@ export class UpdateCodelistComponent implements OnInit {
           this.fb.group({
             key: [key],
             value: [this.data.entry.fields[key]],
-          })
-        )
+          }),
+        ),
       ),
     });
   }
@@ -68,7 +87,7 @@ export class UpdateCodelistComponent implements OnInit {
   addEntry() {
     this.fields.push({});
     (<UntypedFormArray>this.formGroup.controls.fields).push(
-      this.fb.group({ key: [""], value: [""] })
+      this.fb.group({ key: [""], value: [""] }),
     );
   }
 

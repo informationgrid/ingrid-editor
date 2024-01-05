@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.exports.iso
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
@@ -130,7 +149,7 @@ data class DistributionFormat(
 
 data class MDFormat(
     val name : CharacterString,
-    val version : CharacterString,
+    val version : CharacterString?,
     val amendmentNumber : CharacterString?,
     val specification : CharacterString?,
     val fileDecompressionTechnique : CharacterString?,
@@ -199,7 +218,49 @@ data class SpatialRepresentationInfo(
     @JacksonXmlProperty(localName = "MD_VectorSpatialRepresentation") val mdVectorSpatialRepresentation: MDVectorSpatialRepresentation?,
     @JacksonXmlProperty(localName = "MD_GridSpatialRepresentation") val mdGridSpatialRepresentation: MDGridSpatialRepresentation?,
     @JacksonXmlProperty(localName = "MD_Georeferenceable") val mdGeoreferenceable: MDGeoreferenceable?,
-    @JacksonXmlProperty(localName = "MD_Georectified") val mdGeorectified: MDGeorectified?
+    @JacksonXmlProperty(localName = "MD_Georectified") val mdGeorectified: MDGeorectified?,
+    @JacksonXmlProperty(localName = "MD_GeometryContext") val mdGeometryContext: MDGeometryContext?
+)
+
+data class MDGeometryContext(
+    val geometryType: CharacterString?,
+    val geometricFeature: GeometricFeature?
+)
+
+data class GeometricFeature(
+    @JacksonXmlProperty(localName = "NominalFeature") val nominalFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "OrdinalFeature") val ordinalFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "ScalarFeature") val scalarFeature: SpecificGeometricFeature?,
+    @JacksonXmlProperty(localName = "OtherFeature") val otherFeature: SpecificGeometricFeature?,
+)
+
+data class SpecificGeometricFeature(
+    val featureName: CharacterString?,
+    val featureDescription: CharacterString?,
+    val featureDataType: CharacterString?,
+    val featureAttributes: FeatureAttributes2?,
+    val minValue: CharacterString?,
+    val maxValue: CharacterString?,
+    val units: CharacterString?
+)
+
+data class FeatureAttributes2(
+    @JacksonXmlProperty(localName = "FeatureAttributes") val featureAttributes: FeatureAttributes
+)
+
+data class FeatureAttributes(
+    val attribute: List<FeatureAttribute>?
+)
+
+data class FeatureAttribute(
+    val RegularFeatureAttribute: SpecificFeatureAttribute?,
+    val OtherFeatureAttribute: SpecificFeatureAttribute?
+)
+
+data class SpecificFeatureAttribute(
+    val attributeDescription: CharacterString?,
+    val attributeContent: CharacterString?,
+    val attributeCode: CharacterString?
 )
 
 data class MDGeoreferenceable(

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { RouterModule, Routes } from "@angular/router";
 import { SettingsComponent } from "./settings.component";
 import { GeneralSettingsComponent } from "./general-settings/general-settings.component";
@@ -31,22 +50,28 @@ export const settingsRoutes: Routes = [
       {
         path: "codelist",
         component: CodelistsComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Codelist Repository",
+          permission: "manage_codelist_repository",
         },
       },
       {
         path: "catalog",
         component: CatalogManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Katalogverwaltung",
+          permission: "manage_all_catalogs",
         },
       },
       {
         path: "ibus",
         component: IBusManagementComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "iBus-Verwaltung",
+          permission: "manage_ibus",
         },
       },
       {
@@ -74,7 +99,7 @@ export const settingsRoutes: Routes = [
         canActivate: [AuthGuard],
         data: {
           title: "Inhalte",
-          permission: "manage_all_catalogs",
+          permission: "manage_content",
         },
       },
     ],

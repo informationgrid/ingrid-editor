@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
@@ -82,27 +101,32 @@ export class DocumentService {
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {
     this.configuration = configService.getConfiguration();
   }
 
-  find(
+  findInTitleOrUuid(
     query: string,
     size = 10,
     address = false,
-    excludeFolders = false
+    excludeFolders = false,
   ): Observable<SearchResult> {
+    const categorySQL = ` AND document_wrapper.category = ${
+      address ? "'address'" : "'data'"
+    }`;
+    const excludeFoldersSQL = excludeFolders
+      ? " AND document1.type != 'FOLDER'"
+      : "";
     return this.researchService
-      .search(
-        query,
-        {
-          type: address ? "selectAddresses" : "selectDocuments",
-          ignoreFolders: excludeFolders ? "exceptFolders" : "",
-        },
-        null,
-        "DESC",
-        { page: 1, pageSize: size }
+      .searchBySQL(
+        `SELECT DISTINCT document1.*, document_wrapper.category
+         FROM document_wrapper
+                JOIN document document1 ON document_wrapper.uuid = document1.uuid
+         WHERE (title ILIKE '%${query}%' OR document1.uuid = '${query}')
+           ${categorySQL} ${excludeFoldersSQL}`,
+        1,
+        size,
       )
       .pipe(map((result) => this.mapSearchResults(result)));
   }
@@ -117,11 +141,11 @@ export class DocumentService {
         {
           page: 1,
           pageSize: 10,
-        }
+        },
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits }))
+        tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits })),
       )
       .subscribe();
 
@@ -140,13 +164,13 @@ export class DocumentService {
           page: 1,
           pageSize: 10,
         },
-        ["selectOnlyPublished"]
+        ["selectOnlyPublished"],
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) =>
-          this.sessionStore.update({ latestPublishedDocuments: docs.hits })
-        )
+          this.sessionStore.update({ latestPublishedDocuments: docs.hits }),
+        ),
       )
       .subscribe();
   }
@@ -170,7 +194,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"]
+        ["selectOnlyPublished"],
       ),
       this.researchService.search(
         "",
@@ -184,8 +208,8 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"]
-      )
+        ["selectOnlyPublished"],
+      ),
     )
       .pipe(
         map(([days, docs, addresses]) => {
@@ -199,13 +223,13 @@ export class DocumentService {
             .sort(
               (a, b) =>
                 new Date(a._contentModified).getTime() -
-                new Date(b._contentModified).getTime()
+                new Date(b._contentModified).getTime(),
             );
           return this.mapToDocumentAbstracts(combined, null);
         }),
         tap((docs) =>
-          this.sessionStore.update({ oldestExpiredDocuments: docs })
-        )
+          this.sessionStore.update({ oldestExpiredDocuments: docs }),
+        ),
       )
       .subscribe();
   }
@@ -220,22 +244,22 @@ export class DocumentService {
         {
           page: 1,
           pageSize: 10,
-        }
+        },
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits }))
+        tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits })),
       )
       .subscribe();
   }
 
   getChildren(
     parentId: number,
-    isAddress?: boolean
+    isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress).pipe(
       map((docs) => this.mapToDocumentAbstracts(docs, parentId)),
-      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs))
+      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
     );
   }
 
@@ -243,7 +267,7 @@ export class DocumentService {
     id: string | number,
     address?: boolean,
     updateStore = true,
-    useUuid = false
+    useUuid = false,
   ): Observable<IgeDocument> {
     this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
@@ -254,14 +278,21 @@ export class DocumentService {
       }),
       tap((doc) => this.docEvents.sendAfterLoadAndSet(doc)),
       catchError((e: HttpErrorResponse) => this.handleLoadError(e)),
-      finalize(() => this.documentOperationFinished$.next(true))
+      finalize(() => this.documentOperationFinished$.next(true)),
+    );
+  }
+
+  uuidExists(uuid: string): Observable<boolean> {
+    return this.dataService.load(uuid, true).pipe(
+      catchError(() => of(null)),
+      map((result) => result !== null),
     );
   }
 
   updateOpenedDocumentInTreestore(
     doc: DocumentAbstract,
     address: boolean,
-    keepOpenedDocument = false
+    keepOpenedDocument = false,
   ) {
     const store = address ? this.addressTreeStore : this.treeStore;
 
@@ -284,7 +315,7 @@ export class DocumentService {
           saveOptions.data = json;
           this.postSaveActions(saveOptions);
         }),
-        finalize(() => this.documentOperationFinished$.next(true))
+        finalize(() => this.documentOperationFinished$.next(true)),
       );
     }
 
@@ -294,7 +325,7 @@ export class DocumentService {
         saveOptions.data = json;
         this.postSaveActions(saveOptions);
       }),
-      finalize(() => this.documentOperationFinished$.next(true))
+      finalize(() => this.documentOperationFinished$.next(true)),
     );
   }
 
@@ -313,7 +344,7 @@ export class DocumentService {
             data: [info],
           },
         });
-      })
+      }),
     );
   }
 
@@ -342,12 +373,12 @@ export class DocumentService {
     // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
     let processed = val.replace(
       /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
-      ""
+      "",
     );
     // strip anchors with javascript
     processed = processed.replace(
       /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
-      ""
+      "",
     );
     // remove all event handlers
     processed = processed.replace(/ on\w+="[^"]*"/g, "");
@@ -358,7 +389,7 @@ export class DocumentService {
         "OK",
         {
           duration: 5000,
-        }
+        },
       );
     }
     return processed;
@@ -408,7 +439,7 @@ export class DocumentService {
   publish(
     data: IgeDocument,
     isAddress: boolean,
-    publishDate: Date = null
+    publishDate: Date = null,
   ): Observable<any> {
     const doc = this.preSaveActions(data, isAddress);
 
@@ -424,9 +455,9 @@ export class DocumentService {
           data: json,
           isNewDoc: false,
           isAddress: isAddress,
-        })
+        }),
       ),
-      finalize(() => this.documentOperationFinished$.next(true))
+      finalize(() => this.documentOperationFinished$.next(true)),
     );
   }
 
@@ -440,17 +471,17 @@ export class DocumentService {
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
-        })
+        }),
       ),
       tap((doc) =>
-        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress }),
       ),
       tap((doc) => store.upsert(doc[0].id, doc[0])),
       tap(() =>
         this.messageService.sendInfo(
-          "Die Veröffentlichung wurde zurückgezogen."
-        )
-      )
+          "Die Veröffentlichung wurde zurückgezogen.",
+        ),
+      ),
     );
   }
 
@@ -462,7 +493,7 @@ export class DocumentService {
           console.error(error?.error?.errorText);
           this.messageService.sendError(
             "Problem beim Abbrechen der geplanten Veröffentlichung: " +
-              error?.error?.errorText
+              error?.error?.errorText,
           );
           return this.load(id);
         }
@@ -471,16 +502,16 @@ export class DocumentService {
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
-        })
+        }),
       ),
       tap((doc) =>
-        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress })
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: forAddress }),
       ),
       tap(() =>
         this.messageService.sendInfo(
-          "Die geplante Veröffentlichung wurde abgebrochen."
-        )
-      )
+          "Die geplante Veröffentlichung wurde abgebrochen.",
+        ),
+      ),
     );
   }
 
@@ -497,7 +528,7 @@ export class DocumentService {
         });
       }),
       tap(() => this.updateStoreAfterDelete(ids, isAddress)),
-      catchError((error) => this.handleDeleteError(error))
+      catchError((error) => this.handleDeleteError(error)),
     );
   }
 
@@ -525,7 +556,7 @@ export class DocumentService {
         console.error(error?.error?.errorText);
         this.messageService.sendError(
           "Problem beim Entziehen der Veröffentlichung: " +
-            error?.error?.errorText
+            error?.error?.errorText,
         );
         return this.load(id);
     }
@@ -548,11 +579,11 @@ export class DocumentService {
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
-        })
+        }),
       ),
       tap((doc: DocumentAbstract[]) =>
-        this.reload$.next({ uuid: doc[0]._uuid, forAddress: isAddress })
-      )
+        this.reload$.next({ uuid: doc[0]._uuid, forAddress: isAddress }),
+      ),
     );
   }
 
@@ -574,7 +605,7 @@ export class DocumentService {
           throw error;
         }
       }),
-      map((path) => this.preparePath(path))
+      map((path) => this.preparePath(path)),
     );
   }
 
@@ -598,7 +629,7 @@ export class DocumentService {
     srcIDs: number[],
     dest: number,
     includeTree: boolean,
-    isAddress: boolean
+    isAddress: boolean,
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
@@ -618,7 +649,7 @@ export class DocumentService {
             // path: path
           },
         });
-      })
+      }),
     );
   }
 
@@ -634,7 +665,7 @@ export class DocumentService {
     srcIDs: number[],
     dest: number,
     isAddress: boolean,
-    confirm = false
+    confirm = false,
   ): Observable<any> {
     const moveOperation = () =>
       this.dataService.move(srcIDs, dest).pipe(
@@ -647,7 +678,7 @@ export class DocumentService {
           this.updateStoreAfterMove(srcIDs, dest, isAddress);
 
           this.reloadDocumentIfOpenedChanged(isAddress, srcIDs);
-        })
+        }),
       );
 
     if (confirm) {
@@ -656,7 +687,7 @@ export class DocumentService {
       let destinationTitle;
       if (dest === null) {
         destinationTitle = this.translocoService.translate(
-          isAddress ? "menu.address" : "menu.form"
+          isAddress ? "menu.address" : "menu.form",
         );
       } else {
         destinationTitle = store.getValue().entities[dest].title;
@@ -679,7 +710,7 @@ export class DocumentService {
         })
         .pipe(
           filter((result) => result),
-          tap(() => moveOperation().subscribe())
+          tap(() => moveOperation().subscribe()),
         );
     } else {
       return moveOperation();
@@ -703,7 +734,7 @@ export class DocumentService {
   registerAddressTitleFunction(func: AddressTitleFn) {
     if (func !== null && this.alternateAddressTitle !== null) {
       console.error(
-        "There are multiple sort functions registered for the tree. Will ignore others!"
+        "There are multiple sort functions registered for the tree. Will ignore others!",
       );
     } else {
       this.alternateAddressTitle = func;
@@ -717,16 +748,15 @@ export class DocumentService {
 
   getStatistic(): Observable<StatisticResponse> {
     return this.http.get<StatisticResponse>(
-      `${this.configuration.backendUrl}statistic`
+      `${this.configuration.backendUrl}statistic`,
     );
   }
 
   public addToRecentAddresses(address: DocumentAbstract) {
-    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
     const recentAddresses = this.sessionQuery.recentAddresses;
 
-    let addresses = recentAddresses[catalogId]?.slice() ?? [];
-    addresses = addresses.filter((address) => address.id !== address.id);
+    let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
+    addresses = addresses.filter((addr) => addr.id !== address.id);
     addresses.unshift(address);
 
     // only store 5 most recent addresses
@@ -735,26 +765,31 @@ export class DocumentService {
     }
 
     this.sessionStore.update({
-      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+      recentAddresses: {
+        ...recentAddresses,
+        [ConfigService.catalogId]: addresses,
+      },
     });
   }
 
   public removeFromRecentAddresses(id: string) {
-    const catalogId = this.configService.$userInfo.getValue().currentCatalog.id;
     const recentAddresses = this.sessionQuery.recentAddresses;
 
-    let addresses = recentAddresses[catalogId]?.slice() ?? [];
+    let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((address) => address.id !== id);
 
     this.sessionStore.update({
-      recentAddresses: { ...recentAddresses, [catalogId]: addresses },
+      recentAddresses: {
+        ...recentAddresses,
+        [ConfigService.catalogId]: addresses,
+      },
     });
   }
 
   updateBreadcrumb(
     id: number,
     query: TreeQuery | AddressTreeQuery,
-    isAddress = false
+    isAddress = false,
   ): Subscription {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
@@ -763,8 +798,8 @@ export class DocumentService {
         tap((path) =>
           store.update({
             breadcrumb: path,
-          })
-        )
+          }),
+        ),
       )
       .subscribe();
   }
@@ -772,7 +807,7 @@ export class DocumentService {
   private updateTreeStoreDocs(
     isAddress: boolean,
     parentId: number,
-    docs: DocumentAbstract[]
+    docs: DocumentAbstract[],
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
     if (parentId === null) {
@@ -789,7 +824,7 @@ export class DocumentService {
 
   mapToDocumentAbstracts(
     docs: IgeDocument[],
-    parentId?: number
+    parentId?: number,
   ): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
@@ -841,7 +876,7 @@ export class DocumentService {
   }
 
   private mapSearchResults(
-    result: ServerSearchResult | ResearchResponse
+    result: ServerSearchResult | ResearchResponse,
   ): SearchResult {
     return {
       totalHits: result.totalHits,
@@ -862,7 +897,7 @@ export class DocumentService {
     entities = store.getValue().entities;
     const parentsWithNoChildren = parents.filter(
       (parent) =>
-        !Object.values(entities).some((entity) => entity._parent === parent)
+        !Object.values(entities).some((entity) => entity._parent === parent),
     );
 
     parentsWithNoChildren.forEach((parent) => {
@@ -876,7 +911,7 @@ export class DocumentService {
   private updateStoreAfterMove(
     ids: number[],
     parent: number,
-    isAddress: boolean
+    isAddress: boolean,
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
@@ -889,7 +924,7 @@ export class DocumentService {
       // update children information of parent of each moved dataset
       const entities = store.getValue().entities;
       const hasChildren = Object.keys(entities).some(
-        (key) => entities[key]._parent === parentId
+        (key) => entities[key]._parent === parentId,
       );
 
       if (parentId !== null && !hasChildren) {
@@ -920,7 +955,7 @@ export class DocumentService {
   private updateStoreAfterCopy(
     infos: DocumentAbstract[],
     parentId: number,
-    isAddress: boolean
+    isAddress: boolean,
   ) {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
@@ -938,7 +973,7 @@ export class DocumentService {
 
   private getChildrenIfNotDoneYet(
     parent: number,
-    isAddress: boolean
+    isAddress: boolean,
   ): Observable<DocumentAbstract[]> {
     if (parent !== null) {
       const store = isAddress ? this.addressTreeStore : this.treeStore;
@@ -949,7 +984,7 @@ export class DocumentService {
       // in that case load them so that the caller can continue after store has been updated
       if (parentNode._hasChildren) {
         const hasAnyChildren = Object.keys(entities).some(
-          (id) => entities[id]._parent === parent
+          (id) => entities[id]._parent === parent,
         );
         if (!hasAnyChildren) {
           return this.getChildren(parent, isAddress);
@@ -967,14 +1002,14 @@ export class DocumentService {
           pathItem.id,
           pathItem.title,
           pathItem.permission,
-          !pathItem.permission.canWrite
-        )
+          !pathItem.permission.canWrite,
+        ),
     );
   }
 
   private getPathFromTreeStore(
     entities: HashMap<DocumentAbstract>,
-    id: number
+    id: number,
   ): ShortTreeNode[] {
     const entity = entities[id];
 
@@ -985,7 +1020,7 @@ export class DocumentService {
       }
       const pathFromTreeStore = this.getPathFromTreeStore(
         entities,
-        entity._parent
+        entity._parent,
       );
       if (pathFromTreeStore === null) return null;
       return [shortTreeNode, ...pathFromTreeStore];
@@ -1005,35 +1040,35 @@ export class DocumentService {
         canWrite: entity.hasWritePermission,
         canOnlyWriteSubtree: entity.hasOnlySubtreeWritePermission,
       },
-      !entity.hasWritePermission
+      !entity.hasWritePermission,
     );
   }
 
   replaceAddress(source: string, target: string): Observable<any> {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${source}/replaceAddress/${target}`,
-      null
+      null,
     );
   }
 
   getUsersWithPermission(id: number): Observable<any> {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${id}/users`,
-      null
+      null,
     );
   }
 
   setResponsibleUser(datasetId: number, userId: number) {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${datasetId}/responsibleUser/${userId}`,
-      null
+      null,
     );
   }
 
   validateDocument(id: number) {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${id}/validate`,
-      null
+      null,
     );
   }
 }

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit } from "@angular/core";
 import {
   FieldArrayType,
@@ -33,7 +52,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
       .pipe(
         untilDestroyed(this),
         startWith(this.formControl.value as any[]),
-        tap((value) => this.createGroupedFields(value))
+        tap((value) => this.createGroupedFields(value)),
       )
       .subscribe((value) => this.updateDragState(value));
   }
@@ -42,7 +61,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     moveItemInArray(
       this.field.fieldGroup,
       event.previousIndex,
-      event.currentIndex
+      event.currentIndex,
     );
     moveItemInArray(this.model, event.previousIndex, event.currentIndex);
 
@@ -72,7 +91,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
 
   private getFieldsFromModelType(
     field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
-    type: string
+    type: string,
   ) {
     return field.props.menuOptions.find((opt) => opt.key === type)?.fields;
   }

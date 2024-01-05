@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
@@ -12,6 +31,7 @@ export interface Options {
   className?: string;
   required?: boolean;
   defaultValue?: any;
+  placeholder?: string;
   hasInlineContextHelp?: boolean;
   contextHelpId?: string;
   change?: (field, event) => void;
@@ -29,6 +49,7 @@ export interface Options {
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
   hideInPreview?: boolean;
   validators?: any;
+  asyncValidators?: any;
 }
 
 export interface DatePickerOptions extends Options {
@@ -91,8 +112,10 @@ export interface SelectOptions extends Options {
   externalLabel?: string;
   showSearch?: boolean;
   allowNoValue?: boolean;
+  noValueLabel?: string;
   change?: any;
   hooks?: any;
+  resetOnHide?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -176,7 +199,7 @@ export class FormFieldHelper {
 
   addGroupSimple(id: string, fields: any[], options?: any) {
     return this.addGroup(id, null, fields, {
-      fieldGroupClassName: "",
+      fieldGroupClassName: options?.fieldGroupClassName ?? "",
       wrappers: [],
       ...options,
     });
@@ -193,7 +216,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options?: TextAreaOptions
+    options?: TextAreaOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return <FormlyFieldConfig>{
@@ -228,7 +251,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options: Options = {}
+    options: Options = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
@@ -330,7 +353,7 @@ export class FormFieldHelper {
   addRepeatDetailList(
     id,
     label,
-    options?: RepeatDetailListOptions
+    options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
@@ -342,9 +365,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         titleField: options?.titleField,
-      },
-      fieldArray: {
-        fieldGroup: options?.fields,
+        fields: options?.fields,
       },
       expressions: expressions,
       validators: options?.validators,
@@ -472,6 +493,7 @@ export class FormFieldHelper {
       },
       validation: options?.validation,
       validators: options?.validators,
+      asyncValidators: options?.asyncValidators,
       hooks: options?.hooks,
     };
   }
@@ -488,7 +510,7 @@ export class FormFieldHelper {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
-      type: "select",
+      type: "ige-select",
       className: options?.className,
       defaultValue: options?.defaultValue ?? null,
       wrappers:
@@ -496,7 +518,9 @@ export class FormFieldHelper {
           ? ["panel", "form-field"]
           : options?.wrappers,
       props: {
-        placeholder: this.transloco.translate("form.placeholder.choose"),
+        placeholder:
+          options?.placeholder ??
+          this.transloco.translate("form.placeholder.choose"),
         label: options?.fieldLabel,
         externalLabel: options?.externalLabel === null ? undefined : label,
         appearance: "outline",
@@ -504,6 +528,7 @@ export class FormFieldHelper {
         options: options?.options,
         showSearch: options?.showSearch,
         allowNoValue: options?.allowNoValue ?? !options?.required,
+        noValueLabel: options?.noValueLabel,
         codelistId: options?.codelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
@@ -511,6 +536,7 @@ export class FormFieldHelper {
       },
       expressions: expressions,
       hooks: options?.hooks,
+      resetOnHide: options?.resetOnHide,
     };
   }
 
@@ -702,7 +728,7 @@ export class FormFieldHelper {
     showToggleButton?: boolean,
     messageNoReferences?: string,
     referencesHint?: string,
-    options?
+    options?,
   ): FormlyFieldConfig {
     return {
       type: "referencedDocuments",

@@ -1,6 +1,33 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
 import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from "@angular/forms";
+import {
+  DatasetInfo,
   ExchangeService,
   ImportLogInfo,
   ImportTypeInfo,
@@ -13,8 +40,6 @@ import { DocumentService } from "../../services/document/document.service";
 import { FileUploadModel } from "../../shared/upload/fileUploadModel";
 import { UploadComponent } from "../../shared/upload/upload.component";
 import { TransfersWithErrorInfo } from "../../shared/upload/TransferWithErrors";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -37,16 +62,25 @@ export class ImportComponent implements OnInit {
   file: File;
   droppedFiles: FileUploadModel[] = [];
 
+  private validParentValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      let value = control.value;
+      return value === null && !this.configService.hasWriteRootPermission()
+        ? { invalidParent: { value: value } }
+        : null;
+    };
+  }
+
   step1Complete: any;
   optionsFormGroup = new FormGroup({
     importer: new FormControl<string>(
       { value: "", disabled: true },
-      Validators.required
+      Validators.required,
     ),
     overwriteAddresses: new FormControl<boolean>(false),
     publish: new FormControl<boolean>(false),
-    parentDocument: new FormControl<number>(null),
-    parentAddress: new FormControl<number>(null),
+    parentDocument: new FormControl<number>(null, this.validParentValidator()),
+    parentAddress: new FormControl<number>(null, this.validParentValidator()),
   });
 
   importers: ImportTypeInfo[];
@@ -57,6 +91,8 @@ export class ImportComponent implements OnInit {
   showMore = false;
 
   errorInAnalysis = false;
+
+  datasetsWithNoPermission: DatasetInfo[] = [];
 
   private liveImportMessage: Observable<any> = merge(
     this.exchangeService.lastLog$.pipe(
@@ -70,20 +106,22 @@ export class ImportComponent implements OnInit {
       tap((info: ImportLogInfo) =>
         this.optionsFormGroup
           .get("importer")
-          .setValue(info?.report?.importers ? info?.report?.importers[0] : null)
+          .setValue(
+            info?.report?.importers ? info?.report?.importers[0] : null,
+          ),
       ),
       tap(
         (info: ImportLogInfo) =>
-          (this.errorInAnalysis = info?.errors?.length > 0)
+          (this.errorInAnalysis = info?.errors?.length > 0),
       ),
-      tap(() => (this.lastLogReceived = true))
+      tap(() => (this.lastLogReceived = true)),
     ),
     this.rxStompService
       .watch(`/topic/jobs/import/${ConfigService.catalogId}`)
       .pipe(
         map((msg) => JSON.parse(msg.body)),
-        tap((data) => this.handleRunningInfo(data))
-      )
+        tap((data) => this.handleRunningInfo(data)),
+      ),
   );
 
   message: ImportLogInfo;
@@ -96,14 +134,15 @@ export class ImportComponent implements OnInit {
   lastLogReceived: boolean = false;
   websocketConnected: boolean = false;
 
+  protected readonly ConfigService = ConfigService;
+
   constructor(
     private exchangeService: ExchangeService,
     private router: Router,
     private documentService: DocumentService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private rxStompService: RxStompService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private configService: ConfigService,
   ) {}
 
   ngOnInit(): void {
@@ -123,7 +162,7 @@ export class ImportComponent implements OnInit {
         tap((info) => {
           // activate change detection, since sometimes view is not updated
           setTimeout(() => (this.message = info));
-        })
+        }),
       )
       .subscribe();
 
@@ -185,7 +224,7 @@ export class ImportComponent implements OnInit {
         data: <PasteDialogOptions>{
           forAddress: isAddress,
           titleText: "Ordner auswählen",
-          typeToInsert: "FOLDER",
+          typeToInsert: isAddress ? "organization" : "FOLDER",
         },
       })
       .afterClosed()
@@ -193,14 +232,10 @@ export class ImportComponent implements OnInit {
       .subscribe((target: any) => {
         formControlForParent.setValue(target.selection);
         if (isAddress) {
-          const title = this.addressTreeQuery.getEntity(
-            target.selection
-          )?.title;
           this.documentService
             .getPath(target.selection)
             .subscribe((path) => (this.parent.addressPath = path));
         } else {
-          const title = this.treeQuery.getEntity(target.selection)?.title;
           this.documentService
             .getPath(target.selection)
             .subscribe((path) => (this.parent.documentPath = path));
@@ -208,5 +243,19 @@ export class ImportComponent implements OnInit {
       });
   }
 
-  protected readonly ConfigService = ConfigService;
+  handleStepEvent(index: number) {
+    console.log(index);
+    if (index !== 1) return;
+    this.datasetsWithNoPermission = [];
+
+    this.message.report.existingDatasets.map((dataset) =>
+      this.documentService
+        .uuidExists(dataset.uuid)
+        .pipe(filter((exists) => !exists))
+        .subscribe(() => {
+          console.error(`${dataset.uuid} cannot be accessed`);
+          this.datasetsWithNoPermission.push(dataset);
+        }),
+    );
+  }
 }

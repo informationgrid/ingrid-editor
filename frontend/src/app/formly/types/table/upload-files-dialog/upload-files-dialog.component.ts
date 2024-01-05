@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, Inject, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
@@ -56,7 +75,7 @@ export class UploadFilesDialogComponent implements OnInit {
       allowedUploadTypes?: string[];
       hasExtractZipOption?: boolean;
       infoText?: String;
-    }
+    },
   ) {
     this.docUuid = formStateService.getForm().get("_uuid").value;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
@@ -98,15 +117,15 @@ export class UploadFilesDialogComponent implements OnInit {
         return this.uploadService.extractUploadedFilesOnServer(
           this.docUuid,
           file.transfer.name,
-          option
+          option,
         );
-      })
+      }),
     )
       .pipe(
         untilDestroyed(this),
         catchError((error) => this.handleExtractError(error)),
         filter((result) => result),
-        map(UploadFilesDialogComponent.convertExtractResponse)
+        map(UploadFilesDialogComponent.convertExtractResponse),
       )
       .subscribe((allFiles) => {
         this.dlgRef.close(allFiles);
@@ -115,21 +134,21 @@ export class UploadFilesDialogComponent implements OnInit {
 
   cancel() {
     this.chosenFiles.forEach((file) =>
-      this.removeUploadedFile(file.transfer.name)
+      this.removeUploadedFile(file.transfer.name),
     );
     this.dlgRef.close();
   }
 
   private static convertExtractResponse(
-    response: { files: any[] }[]
+    response: { files: any[] }[],
   ): LinkInfo[] {
     return UploadFilesDialogComponent.flatten(
       response.map((zipFile) =>
         zipFile.files.map((file) => ({
           file: file.file,
           uri: decodeURIComponent(file.uri),
-        }))
-      )
+        })),
+      ),
     );
   }
 
@@ -140,7 +159,7 @@ export class UploadFilesDialogComponent implements OnInit {
   private fileExistsInTable(fileId: string): boolean {
     return (
       this.data.currentItems.find(
-        (item) => item[this.data.uploadFieldKey].value === fileId
+        (item) => item[this.data.uploadFieldKey].value === fileId,
       ) !== undefined
     );
   }
@@ -168,7 +187,7 @@ export class UploadFilesDialogComponent implements OnInit {
               this.extractAndCloseDialog(result);
             }
           }),
-          mapTo(null)
+          mapTo(null),
         );
     }
     throw error;

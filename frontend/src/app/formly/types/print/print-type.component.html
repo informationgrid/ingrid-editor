@@ -1,19 +1,19 @@
 <div [ngSwitch]="field.type">
     <ng-container *ngSwitchCase="'datepickerPrint'">{{
-        formControl.value | date : "dd.MM.yyyy"
+        formControl.value | date: "dd.MM.yyyy"
     }}</ng-container>
     <ng-container *ngSwitchCase="'repeatListPrint'">
         <div *ngFor="let item of formControl.value">
             {{
                 props.codelistId
-                    ? (item | codelist : props.codelistId | async)
+                    ? (item | codelist: props.codelistId | async)
                     : getFromOption(item)
             }}
         </div>
     </ng-container>
     <ng-container *ngSwitchCase="'address-cardPrint'">
         <ng-container *ngFor="let address of formControl.value">
-            <div>{{ address.type | codelist : "505" | async }}</div>
+            <div>{{ address.type | codelist: "505" | async }}</div>
             <div *ngIf="address.ref.organization; else person">
                 {{ address.ref.organization }}
             </div>
@@ -21,9 +21,7 @@
                 <div>
                     <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
                     {{
-                        address.ref["academic-title"]
-                            | codelist : "4305"
-                            | async
+                        address.ref["academic-title"] | codelist: "4305" | async
                     }}
                     {{ address.ref.firstName }} {{ address.ref.lastName }}
                 </div>
@@ -39,14 +37,14 @@
             </tr>
         </table>
     </ng-container>-->
-    <ng-container *ngSwitchCase="'selectPrint'">{{
+    <ng-container *ngSwitchCase="'ige-selectPrint'">{{
         props.codelistId
-            ? (formControl.value | codelist : props.codelistId | async)
+            ? (formControl.value | codelist: props.codelistId | async)
             : getFromOption(formControl.value)
     }}</ng-container>
     <ng-container *ngSwitchCase="'autocompletePrint'">{{
         props.codelistId
-            ? (formControl.value | codelist : props.codelistId | async) ??
+            ? (formControl.value | codelist: props.codelistId | async) ??
               formControl.value?.value
             : getFromOption(formControl.value)
     }}</ng-container>

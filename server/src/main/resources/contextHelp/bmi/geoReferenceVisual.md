@@ -5,7 +5,7 @@ docType: BmiDoc
 profile: bmi
 ---
 
-Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:<br />
+Einen geografischen Bezug können Sie durch drei unterschiedliche Raumbezugssysteme erstellen:
 
 ## Freier Raumbezug
 Der "Freie Raumbezug" wird auf einer Karte festgelegt. Eine Ortssuche kann verwendet werden, um den Raumbezug ortsbezogen auszuwählen.
@@ -21,3 +21,6 @@ Beispiel:
 
 ## Nur Titel
 Geben Sie die geographische Bezeichnung oder auch den Eigennamen des Raumbezugs an.
+
+## DCAT-AP.de:
+`dcterms:spatial / dcterms:Location / skos:prefLabel + locn:geometry`

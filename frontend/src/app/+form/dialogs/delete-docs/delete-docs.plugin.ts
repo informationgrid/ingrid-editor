@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -39,7 +58,7 @@ export class DeleteDocsPlugin extends Plugin {
     private router: Router,
     private route: ActivatedRoute,
     private eventService: EventService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -69,9 +88,9 @@ export class DeleteDocsPlugin extends Plugin {
       this.tree.selectActive().subscribe((data) => {
         this.formToolbarService.setButtonState(
           "toolBtnRemove",
-          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission)
+          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission),
         );
-      })
+      }),
     );
   }
 
@@ -90,7 +109,7 @@ export class DeleteDocsPlugin extends Plugin {
       .selectActive()
       .pipe(
         filter((entity) => entity !== undefined),
-        take(1)
+        take(1),
       )
       .subscribe((docs) => {
         this.dialog
@@ -147,10 +166,10 @@ export class DeleteDocsPlugin extends Plugin {
       tap(() =>
         this.documentService.updateOpenedDocumentInTreestore(
           null,
-          this.forAddress
-        )
+          this.forAddress,
+        ),
       ),
-      tap(() => this.selectParent(docs, currentDoc))
+      tap(() => this.selectParent(docs, currentDoc)),
     );
   }
 

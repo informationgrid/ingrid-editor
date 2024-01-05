@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import {
@@ -30,7 +49,7 @@ export class CatalogService {
     private http: HttpClient,
     private catalogStore: CatalogStore,
     private snackbar: MatSnackBar,
-    configService: ConfigService
+    configService: ConfigService,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -40,13 +59,13 @@ export class CatalogService {
       .get<any[]>(this.configuration.backendUrl + "catalogs")
       .pipe(
         map((catalogs) =>
-          catalogs.map((cat) => CatalogService.mapCatalog(cat))
+          catalogs.map((cat) => CatalogService.mapCatalog(cat)),
         ),
         map((catalogs) =>
-          catalogs.sort((a, b) => a.label.localeCompare(b.label))
+          catalogs.sort((a, b) => a.label.localeCompare(b.label)),
         ),
         tap((catalogs) => this.catalogStore.set(catalogs)),
-        tap((catalogs) => this.handleCatalogStatistics(catalogs))
+        tap((catalogs) => this.handleCatalogStatistics(catalogs)),
       );
   }
 
@@ -67,14 +86,14 @@ export class CatalogService {
         catchError((err) => {
           const httpError = err.error;
           const matches = httpError.errorText?.match(
-            /^Catalog '(.*)' already exists$/
+            /^Catalog '(.*)' already exists$/,
           );
           if (matches?.length > 1) {
             httpError.errorText = `Katalog '${matches[1]}' ist bereits vorhanden`;
           }
           err.error = httpError;
           throw err;
-        })
+        }),
       );
   }
 
@@ -82,7 +101,7 @@ export class CatalogService {
     return this.http
       .put(
         this.configuration.backendUrl + "catalogs/" + catalog.id,
-        CatalogService.prepareForBackend(catalog)
+        CatalogService.prepareForBackend(catalog),
       )
       .pipe(tap(() => this.getCatalogs().subscribe()));
   }
@@ -99,7 +118,7 @@ export class CatalogService {
 
   getCatalog(catalogId: string) {
     return this.http.get(
-      this.configuration.backendUrl + "catalog/" + catalogId
+      this.configuration.backendUrl + "catalog/" + catalogId,
     );
   }
 
@@ -109,14 +128,14 @@ export class CatalogService {
 
   private getCatalogStatistics(identifier: string) {
     return this.http.get<any>(
-      `${this.configuration.backendUrl}catalogStatistic/${identifier}`
+      `${this.configuration.backendUrl}catalogStatistic/${identifier}`,
     );
   }
 
   private handleCatalogStatistics(catalogs: Catalog[]) {
     catalogs.forEach((catalog) => {
       this.getCatalogStatistics(catalog.id).subscribe((statistic) =>
-        this.addStatisticToStore(catalog.id, statistic)
+        this.addStatisticToStore(catalog.id, statistic),
       );
     });
   }
@@ -150,7 +169,7 @@ export class CatalogService {
 
   getExpiryDuration(): Observable<number> {
     return this.getConfig().pipe(
-      map((config) => config.expiredDatasetConfig?.expiryDuration ?? 0)
+      map((config) => config.expiredDatasetConfig?.expiryDuration ?? 0),
     );
   }
 
@@ -162,7 +181,7 @@ export class CatalogService {
           ...response.config,
           catalogName: response.name,
           description: response.description,
-        }))
+        })),
       );
   }
 

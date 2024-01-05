@@ -10,6 +10,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "build/dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -103,27 +104,27 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ige-ng:build",
             "proxyConfig": "src/environments/proxy.config.json",
-            "port": 4300
+            "port": 4300,
+            "buildTarget": "ige-ng:build"
           },
           "configurations": {
             "hmr": {
               "hmr": true,
-              "browserTarget": "ige-ng:build:hmr"
+              "buildTarget": "ige-ng:build:hmr"
             },
             "es5": {
-              "browserTarget": "ige-ng:build:es5"
+              "buildTarget": "ige-ng:build:es5"
             },
             "production": {
-              "browserTarget": "ige-ng:build:production"
+              "buildTarget": "ige-ng:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ige-ng:build"
+            "buildTarget": "ige-ng:build"
           }
         },
         "test": {
@@ -134,6 +135,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": ["."]
+            },
             "styles": ["src/material.css", "src/styles.scss", "src/theme.scss"],
             "assets": [
               {

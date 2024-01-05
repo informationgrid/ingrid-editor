@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -124,10 +143,10 @@ describe("ConformityDialogComponent", () => {
     inspireSpecification = await loader.getHarness(
       MatSelectHarness.with({
         selector: "[data-cy='conformity-specification-id']",
-      })
+      }),
     );
     passField = await loader.getHarness(
-      MatSelectHarness.with({ selector: "[data-cy='conformity-level-id']" })
+      MatSelectHarness.with({ selector: "[data-cy='conformity-level-id']" }),
     );
   });
 
@@ -148,7 +167,7 @@ describe("ConformityDialogComponent", () => {
     await isInspireCheckbox.uncheck();
     // with uncheck the select changes to autocomplete
     inspireSpecificationAutocomplete = await loader.getHarness(
-      MatAutocompleteHarness
+      MatAutocompleteHarness,
     );
     await inspireSpecificationAutocomplete.enterText("text to enter");
     const options = await inspireSpecificationAutocomplete.getOptions();
@@ -164,7 +183,7 @@ describe("ConformityDialogComponent", () => {
       specification: { key: null, value: "text to enter" },
       pass: { key: "1" },
       publicationDate: new Date(
-        "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)"
+        "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
       ),
       explanation: null,
       isInspire: false,
@@ -172,6 +191,7 @@ describe("ConformityDialogComponent", () => {
   });
 
   it("should set date for INSPIRE specification", async () => {
+    const expectedDateInISO = new Date("2009/10/20").toISOString();
     spectator.detectChanges();
 
     await inspireSpecification.open();
@@ -190,7 +210,7 @@ describe("ConformityDialogComponent", () => {
     expect(closeDialog).toHaveBeenCalledWith({
       specification: { key: "1" },
       pass: { key: "1" },
-      publicationDate: "2009-10-20",
+      publicationDate: expectedDateInISO,
       explanation: null,
       isInspire: true,
     });

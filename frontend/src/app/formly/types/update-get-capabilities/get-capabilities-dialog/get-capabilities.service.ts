@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../services/config/config.service";
@@ -20,6 +39,7 @@ import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
+import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
 
 @Injectable({
   providedIn: "root",
@@ -31,17 +51,18 @@ export class GetCapabilitiesService {
     private http: HttpClient,
     configService: ConfigService,
     private documentService: DocumentService,
-    private codelistQuery: CodelistQuery
+    private codelistQuery: CodelistQuery,
+    private keywordAnalysis: KeywordAnalysis,
   ) {
     configService.$userInfo.subscribe(
-      () => (this.backendUrl = configService.getConfiguration().backendUrl)
+      () => (this.backendUrl = configService.getConfiguration().backendUrl),
     );
   }
 
   analyze(url: string) {
     return this.http.post<GetCapabilitiesAnalysis>(
       this.backendUrl + "getCapabilities/analyzeGetCapabilities",
-      url
+      url,
     );
   }
 
@@ -55,27 +76,37 @@ export class GetCapabilitiesService {
       if (key === "accessConstraints") model.resource.accessConstraints = value;
       if (key === "onlineResources") urlReferences.push(...value);
       if (key === "dataServiceType") model.service.type = { key: value };
-      if (key === "keywords")
-        model.keywords.free = (value as any[]).map((item) => ({ label: item }));
+      if (key === "keywords") {
+        await this.addKeywordsToModel(value, model);
+      }
       if (key === "address")
         model.pointOfContact = await this.handleAddress(
           value,
-          values.addressParent
+          values.addressParent,
         );
       if (key === "boundingBoxes")
         model.spatial.references = this.mapBoundingBox(value);
       if (key === "conformities")
         model.conformanceResult = this.mapConformities(value);
-      if (key === "coupledResources")
+      if (key === "coupledResources") {
         model.service.coupledResources = await this.handleCoupledResources(
           value,
-          model._parent
+          model._parent,
         );
+        if (value?.length > 0) {
+          model.service.couplingType = {
+            key: "tight",
+          };
+        }
+      }
       if (key === "operations")
         model.service.operations = this.mapOperations(value);
       if (key === "resourceLocators") urlReferences.push(...value);
-      if (key === "serviceType")
+      if (key === "serviceType") {
         model.service.classification = this.mapClassification(value);
+        if (value === "WCS") model.service.explanation = "WCS Service";
+      }
+
       if (key === "timeReference")
         model.temporal.events = this.mapEvents(value);
       if (key === "timeSpan")
@@ -94,6 +125,26 @@ export class GetCapabilitiesService {
     this.handleDefaultTemporalEvent(model);
   }
 
+  private async addKeywordsToModel(value: string[], model: any) {
+    const response = await this.keywordAnalysis.analyzeKeywords(value, false);
+    response.forEach((item) => {
+      switch (item.thesaurus) {
+        case "INSPIRE-Themen":
+          model.themes.push(item.value);
+          break;
+        case "Gemet Schlagworte":
+          model.keywords.gemet.push(item.value);
+          break;
+        case "Umthes Schlagworte":
+          model.keywords.umthes.push(item.value);
+          break;
+        case "Freie Schlagworte":
+          model.keywords.free.push(item.value);
+          break;
+      }
+    });
+  }
+
   private handleDefaultTemporalEvent(model: any) {
     const currentDateEvent = {
       referenceDate: new Date(),
@@ -108,15 +159,22 @@ export class GetCapabilitiesService {
 
   private mapBoundingBox(bboxes: Location[]): any {
     return bboxes.map((box) => {
-      return {
-        type: "free",
-        value: {
-          lat1: box.latitude1,
-          lon1: box.longitude1,
-          lat2: box.latitude2,
-          lon2: box.longitude2,
-        },
-      };
+      return box.latitude1 === null
+        ? {
+            type: "free",
+            title: box.name,
+            value: null,
+          }
+        : {
+            type: "free",
+            title: box.name,
+            value: {
+              lat1: box.latitude1,
+              lon1: box.longitude1,
+              lat2: box.latitude2,
+              lon2: box.longitude2,
+            },
+          };
     });
   }
 
@@ -132,7 +190,7 @@ export class GetCapabilitiesService {
   }
 
   private mapSpatialReferenceSystems(value: any) {
-    return value.map((item) => {
+    return value.map((item: any) => {
       return item.key !== null ? { key: item.key } : item;
     });
   }
@@ -156,17 +214,17 @@ export class GetCapabilitiesService {
     return value.map((item) => {
       return {
         referenceDate: item.date,
-        referenceDateType: { key: item.type },
+        referenceDateType: { key: item.type + "" },
       };
     });
   }
 
   private mapConformities(value: any[]) {
     return value.map((item) => {
-      const entry = this.codelistQuery.getCodelistEntryByValue(
+      const entry: CodelistEntry = this.codelistQuery.getCodelistEntryByValue(
         "6005",
         item.specification,
-        "iso"
+        "iso",
       );
       const spec = entry
         ? { key: entry.id }
@@ -174,20 +232,20 @@ export class GetCapabilitiesService {
       return {
         pass: { key: `${item.level}` },
         specification: spec,
-        publicationDate: this.getPublicationDate(entry),
-        isInspire: entry !== null,
+        publicationDate: this.getPublicationDate(entry, item),
+        isInspire: entry !== null && entry !== undefined,
       };
     });
   }
 
   private async handleCoupledResources(
     resources: CoupledResource[],
-    parent: number
+    parent: number,
   ): Promise<DocumentReference[]> {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
       if (!resource.exists) {
-        const doc = this.mapCoupledResource(resource, parent);
+        const doc = await this.mapCoupledResource(resource, parent);
         const savedDoc = this.documentService.save({
           data: doc,
           isNewDoc: true,
@@ -198,31 +256,34 @@ export class GetCapabilitiesService {
         const newDoc = await lastValueFrom(savedDoc);
         return <DocumentReference>{
           ...docReferenceTemplate,
-          title: resource.title,
           uuid: newDoc._uuid,
         };
       }
       return <DocumentReference>{
         ...docReferenceTemplate,
-        title: resource.title,
         uuid: uuid,
       };
     });
     return await Promise.all(res);
   }
 
-  private mapCoupledResource(
+  private async mapCoupledResource(
     resource: CoupledResource,
-    parent: number
-  ): IgeDocument {
-    return {
+    parent: number,
+  ): Promise<IgeDocument> {
+    const doc = {
       _uuid: resource.uuid,
       _type: "InGridGeoDataset",
       _parent: parent,
       title: resource.title,
       description: resource.description,
       identifier: resource.objectIdentifier,
-      keywords: resource.keywords,
+      keywords: {
+        gemet: [],
+        umthes: [],
+        free: [],
+      },
+      themes: [],
       spatial: {
         references: resource.spatialReferences.map((item) => {
           return {
@@ -242,6 +303,8 @@ export class GetCapabilitiesService {
         }),
       },
     };
+    await this.addKeywordsToModel(resource.keywords, doc);
+    return doc;
   }
 
   private async handleAddress(value: Address, addressParent: number) {
@@ -268,7 +331,7 @@ export class GetCapabilitiesService {
       });
 
     const state =
-      !value.state.key && !value.state.value
+      !value.state?.key && !value.state?.value
         ? null
         : {
             key: value.state.key,
@@ -341,8 +404,11 @@ export class GetCapabilitiesService {
     return template;
   }
 
-  private getPublicationDate(entry: CodelistEntry) {
-    if (!entry) return null;
+  private getPublicationDate(entry: CodelistEntry, item: any) {
+    if (!entry) {
+      if (item.publishDate) return item.publishDate;
+      return null;
+    }
 
     const dateParts = entry.data.split("-");
     return new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);

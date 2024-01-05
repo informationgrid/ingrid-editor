@@ -1,9 +1,7 @@
 ---
 # ID des GUI Elements
-id: scale
+id: resolution
 docType: InGridGeoService
-profile: ingrid
-
 
 # title, used as window title
 title: Erstellungsmaßstab
@@ -16,7 +14,6 @@ Angabe des Erstellungsmaßstabes, der sich auf die erstellte Karte und/oder Digi
 ## Beispiel:
 
 Bodenauflösung: Auflösungseinheit in Linien/cm; Einheit: z.B. 1 cm geteilt durch 400 Linien multipliziert mit dem Maßstab 1:25.000 ergibt 62,5 cm als Bodenauflösung
-
 
 # ISO Abbildung
 

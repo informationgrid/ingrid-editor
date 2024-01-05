@@ -1,8 +1,8 @@
-# Swagger generated server
+# IGE-NG
 
-Spring Boot Server
+[Full documentation](docs/index.adoc)
 
-## Development
+## Getting started
 
 ### Configure the server
 
@@ -20,6 +20,14 @@ When using Keycloak then some properties must be configured. Please also check `
 - spring.security.oauth2.client.provider.keycloak.issuer-uri
 - spring.security.oauth2.resourceserver.jwt.issuer-uri
 - keycloak.auth-server-url
+
+You also need to configure a user with privileged rights in Keycloak, which is needed for the user management. This can be done by setting 
+- keycloak.backend-user
+- keycloak.backend-user-password
+
+You can also configure it by these environment variables respectively:
+- KEYCLOAK_BACKEND_USER
+- KEYCLOAK_BACKEND_USER_PASSWORD
 
 #### Database
 
@@ -70,7 +78,7 @@ run `npm run start-ie11`.
   - Run > Edit Configurations > Add New Configuration > Kotlin, and apply the following step by step:
     - Name: IgeServerKt
     - VM options: `-Dspring.profiles.active=dev,mcloud,uvp,ingrid,elasticsearch`
-    - Use classpath of module: `IGE-NG.server.main`
+    - Use classpath of module: `ige-ng.server.main`
     - Main class: `de.ingrid.igeserver.IgeServerKt`  
       (The file should automatically appear in the search dialog. When not, choose manually _
       server/src/main/java/de/ingrid/igeserver/IgeServer.kt_)
@@ -133,21 +141,13 @@ For end-to-end tests with Cypress check out the README.md inside `frontend/e2e` 
 
 ## Update changelog
 
-We use the standard of [Keep a Changelog](https://keepachangelog.com/).
-
-The gradle-changelog-plugin can be used to update the unreleased section to the current version
-and to create a new unreleased section.
-
-```shell
-gradlew patchChangelog
-```
+TBD
 
 ## Release a new version
 
 - Set an annotated tag to the latest commit which represents the release
   - use this format `<major>.<minor>.<bugfix>`, e.g. 1.3.0
-- push tag (with commit) to remote
-  - if only tag was pushed, build needs to be triggered manually in Jenkins
+- push tag (with commit) to remote, which will trigger a new build in Jenkins
 
 # Jenkins Setup
 

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Injectable } from "@angular/core";
 import { DocumentAbstract } from "../store/document/document.model";
 import { Doctype } from "../services/formular/doctype";
@@ -38,7 +57,7 @@ export class FormularService {
     private addressTreeQuery: AddressTreeQuery,
     private treeStore: TreeStore,
     private sessionStore: SessionStore,
-    private profileQuery: ProfileQuery
+    private profileQuery: ProfileQuery,
   ) {
     // create profiles after we have logged in
     console.log("init profiles");
@@ -111,7 +130,7 @@ export class FormularService {
         mergeMap((item) => getSectionItem(item)),
         filter((item) => item?.wrappers?.indexOf("section") >= 0),
         map((item) => item.props.label),
-        toArray()
+        toArray(),
       )
       .subscribe((sections) => {
         this.profileSections = sections;
@@ -122,7 +141,7 @@ export class FormularService {
   setAdditionalSections(sections: string[]) {
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() =>
-      this.sections$.next([...this.profileSections, ...sections])
+      this.sections$.next([...this.profileSections, ...sections]),
     );
   }
 }

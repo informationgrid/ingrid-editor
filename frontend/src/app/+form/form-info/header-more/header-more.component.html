@@ -4,9 +4,9 @@
         <div
             class="state"
             data-cy="header-state"
-            [class.working]="model._state === 'W'"
+            *transloco="let t; read: 'docState'"
         >
-            {{ getState(model._state) }}
+            {{ t(model._state) }}
         </div>
     </div>
 
@@ -22,8 +22,8 @@
     <div *ngIf="!hideFields.created" class="flex-row">
         <div>Erstellt am</div>
         <div data-cy="header-created-on">
-            <span [matTooltip]="model._created | date : 'long'">{{
-                model._created | date : "dd.MM.yyyy"
+            <span [matTooltip]="model._created | date: 'long'">{{
+                model._created | date: "dd.MM.yyyy"
             }}</span>
             <span *ngIf="model._createdBy">
                 von
@@ -39,8 +39,8 @@
     <div *ngIf="!hideFields.modified" class="flex-row">
         <div>Geändert am</div>
         <div data-cy="header-modified-on">
-            <span [matTooltip]="model._contentModified | date : 'long'">{{
-                model._contentModified | date : "dd.MM.yyyy"
+            <span [matTooltip]="model._contentModified | date: 'long'">{{
+                model._contentModified | date: "dd.MM.yyyy"
             }}</span>
             <span *ngIf="model._contentModifiedBy">
                 von
@@ -74,10 +74,10 @@
             Metadaten-Datum
         </ige-form-label>
         <span
-            [matTooltip]="model._metadataDate | date : 'long'"
+            [matTooltip]="model._metadataDate | date: 'long'"
             data-cy="header-metadata-date"
         >
-            {{ model._metadataDate | date : "dd.MM.yyyy" }} (veröffentlichte
+            {{ model._metadataDate | date: "dd.MM.yyyy" }} (veröffentlichte
             Version)
         </span>
     </div>

@@ -1,12 +1,19 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane" #contextCodeListContainer>
-    <div cdkDragHandle class="dialog-title-wrapper">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close data-cy="dlg-close">
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">Eintrag bearbeiten</span>
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button
+            mat-icon-button
+            mat-dialog-close
+            data-cy="dlg-close"
+            aria-label="Dialog schließen"
+        >
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Eintrag bearbeiten</h1>
     </div>
+
     <mat-dialog-content class="flex-col" [formGroup]="formGroup">
         <div class="flex-col">
             <div>

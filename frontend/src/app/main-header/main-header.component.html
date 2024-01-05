@@ -75,7 +75,7 @@
                     >
                     <p
                         class="last-login"
-                        title="{{ userInfo.lastLogin | date : 'short' }}"
+                        title="{{ userInfo.lastLogin | date: 'short' }}"
                     >
                         Letzte Anmeldung: {{ userInfo.lastLogin | date }}
                     </p>
@@ -176,7 +176,7 @@
                     <div>Version</div>
                     <div>
                         {{ version.version }},
-                        {{ version.date | date : "dd.LL.yyyy, HH:mm" }}
+                        {{ version.date | date: "dd.LL.yyyy, HH:mm" }}
                     </div>
                     <div>GIT Commit ID</div>
                     <div>{{ version.commitId }}</div>

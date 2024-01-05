@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import {
@@ -58,7 +77,7 @@ export class CopyCutPastePlugin extends Plugin {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -105,7 +124,7 @@ export class CopyCutPastePlugin extends Plugin {
             this.toolbarService.setButtonState("toolBtnCopy", true);
           } else {
             const buttonEnabled = this.config.hasPermission(
-              this.forAddress ? "can_create_address" : "can_create_dataset"
+              this.forAddress ? "can_create_address" : "can_create_dataset",
             );
             this.toolbarService.setButtonState("toolBtnCopy", buttonEnabled);
           }
@@ -114,12 +133,14 @@ export class CopyCutPastePlugin extends Plugin {
           this.toolbarService.setMenuItemStateOfButton(
             "toolBtnCopy",
             "COPY",
-            true
+            true,
           );
           this.toolbarService.setMenuItemStateOfButton(
             "toolBtnCopy",
             "CUT",
-            this.query.getActive().every((active) => active?.hasWritePermission)
+            this.query
+              .getActive()
+              .every((active) => active?.hasWritePermission),
           );
 
           const parentWithChildrenSelected =
@@ -127,19 +148,19 @@ export class CopyCutPastePlugin extends Plugin {
           this.toolbarService.setMenuItemStateOfButton(
             "toolBtnCopy",
             "COPYTREE",
-            parentWithChildrenSelected
+            parentWithChildrenSelected,
           );
         }
       });
 
     this.formSubscriptions.push(
       ...toolbarEventSubscription,
-      treeQuerySubscription
+      treeQuerySubscription,
     );
   }
 
   private async checkForParentsWithSelectedChildren(
-    data: ID[]
+    data: ID[],
   ): Promise<boolean> {
     return new Promise((resolve) => {
       return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
@@ -149,7 +170,7 @@ export class CopyCutPastePlugin extends Plugin {
   private checkForParentsWithSelectedChildrenLoop(
     data: ID[],
     resolve,
-    tries = 10
+    tries = 10,
   ) {
     const allNodesLoaded = data.every((id) => this.query.getEntity(id));
     if (allNodesLoaded) {
@@ -160,16 +181,16 @@ export class CopyCutPastePlugin extends Plugin {
         resolve(false);
       } else {
         console.log(
-          "Tree does not have node information yet. Waiting 200ms ..."
+          "Tree does not have node information yet. Waiting 200ms ...",
         );
         setTimeout(
           () =>
             this.checkForParentsWithSelectedChildrenLoop(
               data,
               resolve,
-              --tries
+              --tries,
             ),
-          200
+          200,
         );
       }
     }
@@ -180,7 +201,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
 
     if (!handled) {
@@ -198,11 +219,11 @@ export class CopyCutPastePlugin extends Plugin {
               : this.getSelectedDatasets(),
             result.selection,
             includeTree,
-            this.forAddress
-          )
+            this.forAddress,
+          ),
         ),
         delay(100), // give some time to be available in store to update tree
-        tap((documents) => this.selectCopiedDataset(documents))
+        tap((documents) => this.selectCopiedDataset(documents)),
       )
       .subscribe();
   }
@@ -222,7 +243,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
 
     if (!handled) {
@@ -235,9 +256,9 @@ export class CopyCutPastePlugin extends Plugin {
           this.documentService.move(
             this.getSelectedDatasetsWithoutChildren(),
             result.selection,
-            this.forAddress
-          )
-        )
+            this.forAddress,
+          ),
+        ),
       )
       .subscribe();
   }
@@ -259,7 +280,7 @@ export class CopyCutPastePlugin extends Plugin {
       .afterClosed()
       .pipe(
         tap(() => this.eventEl?.focus()),
-        filter((result) => result) // only confirmed dialog
+        filter((result) => result), // only confirmed dialog
       );
   }
 
@@ -271,7 +292,7 @@ export class CopyCutPastePlugin extends Plugin {
     const selection = this.getSelectedDatasets();
 
     const filtered = selection.filter(
-      (id) => !this.isChildOfSelectedParent(id, selection)
+      (id) => !this.isChildOfSelectedParent(id, selection),
     );
     console.log("Filtered datasets without children", filtered);
     return filtered;
@@ -297,7 +318,7 @@ export class CopyCutPastePlugin extends Plugin {
   private isChildOfSelectedParent(id: number, selection: number[]): boolean {
     const parents = this.query.getParents(id);
     return parents.some(
-      (parent) => selection.indexOf(<number>parent.id) !== -1
+      (parent) => selection.indexOf(<number>parent.id) !== -1,
     );
   }
 }

@@ -30,7 +30,7 @@
                         <gmd:featureCatalogueCitation>
                             <gmd:CI_Citation>
                                 <gmd:title>
-                                    <gco:CharacterString>${page.getCodelists().getValue("3535",category.getTitle())}</gco:CharacterString>
+                                    <gco:CharacterString>${page.getCodelists().getCatalogCodelistValue("3535",category.getTitle())}</gco:CharacterString>
                                 </gmd:title>
                                 <gmd:date>
                                     <gmd:CI_Date>
@@ -88,7 +88,7 @@
                         <gmd:levelDescription>
                             <gmd:MD_ScopeDescription>
                                 <gmd:other>
-                                    <gco:CharacterString>5</gco:CharacterString>
+                                    <gco:CharacterString>data collection</gco:CharacterString>
                                 </gmd:other>
                             </gmd:MD_ScopeDescription>
                         </gmd:levelDescription>

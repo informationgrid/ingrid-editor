@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { inject, Injectable } from "@angular/core";
 import {
   EventData,
@@ -48,8 +67,8 @@ export class AssignedUserBehaviour extends Plugin {
     private formStateService: FormStateService,
     private documentService: DocumentService,
     configService: ConfigService,
-    private toast: MatSnackBar,
-    private dialog: MatDialog
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -68,7 +87,7 @@ export class AssignedUserBehaviour extends Plugin {
     this.formSubscriptions.push(
       this.docEvents.onEvent("OPEN_ASSIGN_USER_DIALOG").subscribe((event) => {
         this.openAssignUserDialog(event.data.id);
-      })
+      }),
     );
 
     this.formMenuId = this.forAddress ? "address" : "dataset";
@@ -108,7 +127,7 @@ export class AssignedUserBehaviour extends Plugin {
       }),
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
-        .subscribe((eventResponder) => this.handleEvent(eventResponder))
+        .subscribe((eventResponder) => this.handleEvent(eventResponder)),
     );
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",
@@ -178,7 +197,7 @@ export class AssignedUserBehaviour extends Plugin {
       this.formStateService.getForm(),
       this.documentService,
       this.dialog,
-      this.forAddress
+      this.forAddress,
     );
     if (!handled) {
       return;
@@ -216,7 +235,7 @@ export class AssignedUserBehaviour extends Plugin {
         .afterClosed()
         .subscribe((result) => {
           if (result) {
-            this.toast.open("Verantwortung übertragen.");
+            this.snackBar.open("Verantwortung übertragen.");
             resolve(true);
           } else {
             resolve(false);

@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, Inject, OnInit } from "@angular/core";
 import {
   FormBuilder,
@@ -48,23 +67,23 @@ export class ConformityDialogComponent implements OnInit {
     fb: FormBuilder,
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     const model = this.data.model;
     const isInspire = model?.isInspire ?? true;
     const specification = this.prepareSpecification(
       isInspire,
-      model?.specification
+      model?.specification,
     );
     this.form = fb.group({
       specification: fb.control(specification, Validators.required),
       pass: fb.control(
         SelectOption.fromBackend(model?.pass),
-        Validators.required
+        Validators.required,
       ),
       date: fb.control(
         { value: model?.publicationDate, disabled: isInspire },
-        Validators.required
+        Validators.required,
       ),
       verifiedBy: fb.control(model?.explanation),
       isInspire: fb.control(isInspire),
@@ -93,17 +112,22 @@ export class ConformityDialogComponent implements OnInit {
       .get("specification")
       .valueChanges.pipe(
         untilDestroyed(this),
-        filter((option) => option !== null)
+        filter((option) => option !== null),
       )
       .subscribe((option) => {
         const codelistId =
           this.form.get("isInspire").value === true ? "6005" : "6006";
         const codelistEntry = this.codelistQuery.getCodelistEntryByKey(
           codelistId,
-          option.value
+          option.value,
         );
         if (codelistEntry) {
-          this.form.get("date").setValue(codelistEntry.data);
+          try {
+            const date = new Date(codelistEntry.data.replaceAll("-", "/"));
+            this.form.get("date").setValue(date.toISOString());
+          } catch (error) {
+            console.warn(error);
+          }
         }
       });
   }
@@ -116,7 +140,7 @@ export class ConformityDialogComponent implements OnInit {
       specification: new SelectOption(
         value.specification.value,
         // @ts-ignore
-        isObject ? value.specification.label : value.specification
+        isObject ? value.specification.label : value.specification,
       ).forBackend(),
       pass: new SelectOption(value.pass.value, value.pass.value).forBackend(),
       publicationDate: value.date,
@@ -127,13 +151,13 @@ export class ConformityDialogComponent implements OnInit {
 
   private prepareSpecification(
     isInspire: boolean,
-    specification: BackendOption
+    specification: BackendOption,
   ): SelectOption {
     const option = SelectOption.fromBackend(specification);
     if (!isInspire && option.value)
       option.label = this.codelistQuery.getCodelistEntryValueByKey(
         "6006",
-        option.value
+        option.value,
       );
     return option;
   }

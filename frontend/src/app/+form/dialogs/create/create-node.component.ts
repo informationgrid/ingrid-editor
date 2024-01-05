@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import {
   Component,
   ElementRef,
@@ -23,6 +42,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom, Subject } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
+import { TreeNode } from "../../../store/tree/tree-node.model";
 
 export interface CreateOptions {
   parent: string;
@@ -64,17 +84,17 @@ export class CreateNodeComponent implements OnInit {
     private docBehaviours: DocBehavioursService,
     private translocoService: TranslocoService,
     public dialogRef: MatDialogRef<CreateNodeComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CreateOptions
+    @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
     this.isFolder = data.isFolder;
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.translocoService.translate(
-      this.forAddress ? "menu.address" : "menu.form"
+      this.forAddress ? "menu.address" : "menu.form",
     );
 
     if (!this.isFolder) {
       this.title = this.translocoService.translate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument"
+        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
   }
@@ -108,7 +128,7 @@ export class CreateNodeComponent implements OnInit {
       setTimeout(() => {
         this.docTypeChoice = value.choice;
         this.docTypeChanged$.next();
-      }, 0)
+      }, 0),
     );
 
     // set initial path to current position
@@ -186,10 +206,18 @@ export class CreateNodeComponent implements OnInit {
 
     const lastNode = path.pop();
     const entity = this.query.getEntity(lastNode.id);
+    // if entity could not be found because user has no read permission on parent node
+    // then we cannot give any permission to the currently selected path
+    if (!entity) return [];
+
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
       this.forAddress,
-      { type: entity._type },
-      this.docTypeChoice
+      <TreeNode>{
+        type: entity._type,
+        hasWritePermission: entity.hasWritePermission,
+        hasOnlySubtreeWritePermission: entity.hasOnlySubtreeWritePermission,
+      },
+      this.docTypeChoice,
     );
     if (cannotAddBelow) {
       return this.getPathAllowedToAdd(path);
@@ -216,7 +244,7 @@ export class CreateNodeComponent implements OnInit {
   private async handleAddressCreate() {
     const newAddress = new IgeDocument(
       this.formGroup.get("choice").value,
-      this.parent
+      this.parent,
     );
 
     const organization = this.formGroup.get("organization").value;
@@ -235,7 +263,7 @@ export class CreateNodeComponent implements OnInit {
   private async handleDocumentCreate() {
     const newDocument = new IgeDocument(
       this.formGroup.get("choice").value,
-      this.parent
+      this.parent,
     );
     newDocument.title = this.formGroup.get("title").value;
     const savedDoc = await this.saveForm(newDocument);
@@ -251,7 +279,7 @@ export class CreateNodeComponent implements OnInit {
         isNewDoc: true,
         isAddress: this.forAddress,
         path: pathIds,
-      })
+      }),
     );
   }
 

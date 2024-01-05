@@ -1,24 +1,30 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
-        <h2 mat-dialog-title [attr.aria-label]="label">
-            <button
-                mat-icon-button
-                mat-dialog-close
-                (click)="cancel.next()"
-                aria-hidden="true"
-                aria-label="Dialog schließen"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text">{{ label }}</span>
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button
+            mat-icon-button
+            mat-dialog-close
+            (click)="cancel.next()"
+            aria-hidden="true"
+            aria-label="Dialog schließen"
+        >
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>
+            {{ label }}
+        </h1>
+        <ng-content select="[header]"></ng-content>
     </div>
+
     <mat-dialog-content [style.background-color]="contentColor">
         <ng-content select="[content]"></ng-content>
     </mat-dialog-content>
 
     <mat-dialog-actions>
         <button
+            data-cy="cancel"
             mat-button
             color="primary"
             mat-dialog-close
@@ -29,6 +35,7 @@
         <div class="flex-1"></div>
         <ng-content select="[actions]"></ng-content>
         <button
+            data-cy="form-dialog-confirm"
             mat-flat-button
             color="primary"
             [disabled]="disabled"

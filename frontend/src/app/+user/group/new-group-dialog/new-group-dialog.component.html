@@ -1,14 +1,14 @@
 <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
-    <div cdkDragHandle class="dialog-title-wrapper mat-dialog-title">
-        <h2 mat-dialog-title>
-            <button mat-icon-button mat-dialog-close>
-                <mat-icon>close</mat-icon>
-            </button>
-            <span class="text" style="padding-right: 20px"
-                >Gruppe hinzufügen</span
-            >
-        </h2>
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Gruppe hinzufügen</h1>
     </div>
+
     <mat-dialog-content [formGroup]="form">
         <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Gruppenname</mat-label>
@@ -21,6 +21,7 @@
             />
         </mat-form-field>
     </mat-dialog-content>
+
     <mat-dialog-actions>
         <button mat-button mat-dialog-close color="primary">Abbrechen</button>
         <div class="flex-1"></div>

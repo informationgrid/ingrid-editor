@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { BaseDoctype } from "../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { map } from "rxjs/operators";
@@ -6,6 +25,7 @@ import {
   EmailValidator,
   UrlValidator,
 } from "../../app/formly/input.validators";
+import { FormControl } from "@angular/forms";
 
 export interface AddressOptions {
   defaultCountry: BackendOption;
@@ -24,14 +44,14 @@ export abstract class AddressShared extends BaseDoctype {
       fields: [
         this.addSelect("type", "Art", {
           fieldLabel: "Art",
-          wrappers: null,
+          wrappers: ["form-field"],
           className: "flex-1",
           required: true,
           showSearch: true,
           options: this.getCodelistForSelect(4430, "type").pipe(
             map((items) =>
-              items.filter((item) => item.value !== "5" && item.value !== "6")
-            )
+              items.filter((item) => item.value !== "5" && item.value !== "6"),
+            ),
           ),
           codelistId: 4430,
         }),
@@ -58,6 +78,13 @@ export abstract class AddressShared extends BaseDoctype {
           },
         }),
       ],
+      validators: {
+        atLeastEmail: {
+          expression: (ctrl: FormControl<any[]>) =>
+            ctrl.value.some((item) => item.type?.key === "3"),
+          message: "Mindestens ein Eintrag muss vom Typ 'E-Mail' sein",
+        },
+      },
     });
   }
 
@@ -66,7 +93,7 @@ export abstract class AddressShared extends BaseDoctype {
       this.addTextArea(
         "positionName",
         "Position/nachgeordnete Abteilung",
-        this.id
+        this.id,
       ),
       this.addInput("hoursOfService", "Servicezeiten", {
         wrappers: ["panel", "form-field"],
@@ -145,7 +172,7 @@ export abstract class AddressShared extends BaseDoctype {
           ],
         },
       ],
-      { fieldGroupClassName: "" }
+      { fieldGroupClassName: "" },
     );
   }
 
@@ -155,7 +182,7 @@ export abstract class AddressShared extends BaseDoctype {
     const country = this.addSelect("country", null, {
       fieldLabel: "Land",
       showSearch: true,
-      wrappers: null,
+      wrappers: ["form-field"],
       className: options.hideAdministrativeArea ? null : "flex-1",
       options: this.getCodelistForSelect(6200, "country"),
       codelistId: 6200,
@@ -169,7 +196,7 @@ export abstract class AddressShared extends BaseDoctype {
         codelistId: 6250,
         required:
           options.requiredField && options.requiredField["administrativeArea"],
-      }
+      },
     );
 
     return options.hideAdministrativeArea

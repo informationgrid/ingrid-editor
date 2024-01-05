@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.ingrid.importer
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -14,6 +33,7 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import java.util.*
 
 
 open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
@@ -68,7 +88,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ) else it.responsibleParty?.role!!
 
             PointOfContact(
-                it.responsibleParty?.uuid!!,
+                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
                 mapRoleToContactType(role),
@@ -143,11 +163,20 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     private fun extractPersonInfo(value: String?): PersonInfo? {
-        value?.split(",")?.let { nameSplit ->
+        if (value?.contains(",") == true) {
+            value.split(",").let { nameSplit ->
+                return when (nameSplit.size) {
+                    1 -> PersonInfo(null, nameSplit[0].trim(), null)
+                    2 -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), null)
+                    else -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), getSalutationKeyValue(nameSplit[2]))
+                }
+            }
+        }
+        value?.split(" ")?.let { nameSplit ->
             return when (nameSplit.size) {
                 1 -> PersonInfo(null, nameSplit[0].trim(), null)
-                2 -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), null)
-                else -> PersonInfo(nameSplit[1].trim(), nameSplit[0].trim(), getSalutationKeyValue(nameSplit[2]))
+                2 -> PersonInfo(nameSplit[0].trim(), nameSplit[1].trim(), null)
+                else -> PersonInfo(nameSplit[1].trim(), nameSplit[2].trim(), getSalutationKeyValue(nameSplit[0]))
             }
         }
         return null
@@ -298,6 +327,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
                 // handle coordinates
                 it.geographicBoundingBox?.let { bbox ->
+                    if (references.isEmpty()) references.add(SpatialReference("free", null))
                     references.last().coordinates = BoundingBox(
                         bbox.southBoundLatitude?.value!!,
                         bbox.westBoundLongitude?.value!!,
@@ -381,7 +411,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         val statusKey = if (status == null) null else codeListService.getCodeListEntryId("523", status, "iso")
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
-            ?.mapNotNull {
+            ?.map {
 
                 val instant = it.extent?.extent?.timeInstant?.timePosition
                 if (instant != null) {
@@ -404,7 +434,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 log.warn("Do not support time info, returning null")
                 return null
             }
-            ?.getOrNull<TimeInfo>(0)
+            ?.getOrNull<TimeInfo>(0) ?: TimeInfo(status = if (status == null) null else KeyValue(statusKey))
     }
 
     private fun determineTemporalType(period: TimePeriod): KeyValue? {
@@ -435,9 +465,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ?.flatMap {
                 it.legalConstraint?.otherConstraints?.map { constraint ->
                     if (constraint.isAnchor) {
-                        // TODO: handle values not found in codelist -> create free entry
                         val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
-                        KeyValue(key)
+                        if (key == null) KeyValue(null, constraint.value) else KeyValue(key)
                     } else {
                         KeyValue(null, constraint.value)
                     }
@@ -521,7 +550,14 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                         val typeId =
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
-                        Reference(keyValue, resource.linkage.url, resource.name?.value, resource.description?.value)
+                        val applicationValue = resource.applicationProfile?.value
+                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationFinalValue = when {
+                            applicationValue == null -> null
+                            applicationId == null -> KeyValue(null, applicationValue)
+                            else -> KeyValue(applicationId)
+                        }
+                        Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
                     } ?: emptyList()
             } ?: emptyList()
     }
@@ -670,6 +706,7 @@ data class DigitalTransferOption(
 data class Reference(
     val type: KeyValue,
     val url: String?,
+    val urlDataType: KeyValue?,
     val title: String?,
     val explanation: String?
 )
@@ -689,9 +726,9 @@ data class MaintenanceInterval(
 )
 
 data class TimeInfo(
-    val date: String?,
-    val type: KeyValue?,
-    val status: KeyValue?,
+    val date: String? = null,
+    val type: KeyValue? = null,
+    var status: KeyValue? = null,
     val untilDate: String? = null,
     val dateTypeSince: KeyValue? = null
 )

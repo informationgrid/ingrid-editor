@@ -29,14 +29,6 @@ anderen Quellen.
 
 # ISO Abbildung
 
-## Registerkarte Text
-
 allgemeine Aussagen des Datenerzeugers zur Herkunft des Datenbestands
 
 Domain: 83 (gmd:statement)
-
-## Registerkarte Verweis
-
-Adresse für den Online-Zugriff unter Verwendung einer URL (Uniform Resource Locator)
-
-Domain: 397 (gmd:linkage)

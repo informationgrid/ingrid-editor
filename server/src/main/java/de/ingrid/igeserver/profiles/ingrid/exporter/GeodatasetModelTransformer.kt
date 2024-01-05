@@ -1,10 +1,32 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
@@ -14,12 +36,17 @@ open class GeodatasetModelTransformer(
     codelistTransformer: CodelistTransformer,
     config: Config,
     catalogService: CatalogService,
+    cache: TransformerCache,
+    doc: Document? = null,
+    documentService: DocumentService
 ) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService
+    model, catalogIdentifier, codelistTransformer, config, catalogService, cache, doc, documentService
 ) {
 
-    override val hierarchyLevel = "dataset"
-    override val hierarchyLevelName: String? = null
+    private val isSeries = model.data.subType?.key == "6"
+
+    override val hierarchyLevel = if (isSeries) "series" else "dataset"
+    override val hierarchyLevelName: String? = if (isSeries) "series" else null
 
 
     init {
@@ -147,6 +174,13 @@ open class GeodatasetModelTransformer(
         }
     }
 
+    fun mapConformanceResultTitle(result: ConformanceResult): String? {
+        return when (result.isInspire) {
+            true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+            else -> codelists.getCatalogCodelistValue("6006", result.specification)
+        }
+    }
+
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
     private val inapplicableValueUnit = "<gmd:valueUnit gco:nilReason=\"inapplicable\"/>"
     private fun percentageValueUnit(quantityType: String) = """
@@ -253,7 +287,6 @@ open class GeodatasetModelTransformer(
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-    val hasContentInfo = featureTypes.isNotEmpty() || citations.isNotEmpty() || isAdVCompatible
 
 }
 

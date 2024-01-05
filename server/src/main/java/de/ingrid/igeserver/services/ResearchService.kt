@@ -1,10 +1,26 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
-import de.ingrid.igeserver.profiles.CatalogProfile
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
 import org.hibernate.jpa.AvailableHints
@@ -58,10 +74,11 @@ class ResearchService {
 
     }
 
+    
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
-        val groups = authUtils.getCurrentUserRoles()
-        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
+        val groups = authUtils.getCurrentUserRoles(catalogId)
+        val hasAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootAccess(groups)
         val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
 
         // if a user has no groups then user is not allowed anything
@@ -83,14 +100,6 @@ class ResearchService {
 
         return ResearchResponse(totalHits, map)
     }
-
-    private fun hasRootAccess(groups: Set<Group>) =
-            groups.any {
-                listOf(
-                        RootPermissionType.READ,
-                        RootPermissionType.WRITE
-                ).contains(it.permissions?.rootPermission)
-            }
 
     private fun getParameters(query: ResearchQuery): List<Any> {
 
@@ -247,7 +256,7 @@ class ResearchService {
                 .addScalar("state")
                 .addScalar("tags")
                 .addScalar("responsibleUser")
-                .setFirstResult((paging.page - 1) * paging.pageSize)
+                .setFirstResult((paging.page - 1) * paging.pageSize + paging.offset)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
     }
@@ -357,18 +366,19 @@ class ResearchService {
 
         val catalogFilter = createCatalogFilter(catalogId)
         val notDeletedFilter = "document_wrapper.deleted = 0"
+        val isLatestFilter = "document1.is_latest = true"
 
         val fromIndex = sqlQuery.indexOf("FROM")
 
         return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter AND $notDeletedFilter
+                WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
                 """.trimIndent()
 
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND $notDeletedFilter AND
+                $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
                 ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
         }
 

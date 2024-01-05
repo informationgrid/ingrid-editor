@@ -23,11 +23,7 @@
   }
 
   .state {
-    font-weight: 400;
-
-    &.working {
-      color: $state-working-color;
-    }
+    font-weight: 500;
   }
 
   ::ng-deep .contextHelpIcon {
