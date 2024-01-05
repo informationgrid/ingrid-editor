@@ -10,7 +10,7 @@ title: Klassifikation des Dienstes
 
 # Klassifikation des Dienstes
 
-Auswahl der Beschreibung des Dienstes. Dieses Feld dient in erster Linie der Identifikation eines Dienstes durch den recherchierenden Nutzer
+Auswahl der Beschreibung des Dienstes. Dieses Feld dient in erster Linie der Identifikation eines Dienstes durch den recherchierenden Nutzer.
 
 ## Beispiel:
 
@@ -18,6 +18,6 @@ z.B. Katalogdienst, Dienst für geografische Visualisierung, usw.
 
 # ISO Abbildung
 
-Schlüsselwörter: Schlüsselwörter, ihr Typ und Quellenangabe (Service Classification, version 1.0)
+ Die Angaben werden im ISO 19139 Format als Schlüsselwort abgebildet. Die Abbildung folgt der "Technical Guidance for INSPIRE Spatial Data Services". Als Thesaurus Name wird "Service Classification, version 1.0" verwendet.
 
 Domain: 33 (gmd:descriptiveKeywords)

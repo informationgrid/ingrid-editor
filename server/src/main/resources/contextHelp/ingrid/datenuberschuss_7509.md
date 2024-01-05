@@ -32,7 +32,7 @@ Angaben zu topologischen Fehlern, die zwischen verschiedenen Unterelementen des 
 
 # Zeitliche Konsistenz
 
-Angabe der Anzahl der zeitlich korrekt zugeordneten Elemente zur Gesamtzahl der Elemente
+Angabe des Verhältnisses der zeitlich korrekt zugeordneten Elemente zur Gesamtzahl der Elemente
 
 # Korrektheit der thematischen Klassifizierung
 
