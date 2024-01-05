@@ -42,6 +42,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom, Subject } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
+import { TreeNode } from "../../../store/tree/tree-node.model";
 
 export interface CreateOptions {
   parent: string;
@@ -205,9 +206,17 @@ export class CreateNodeComponent implements OnInit {
 
     const lastNode = path.pop();
     const entity = this.query.getEntity(lastNode.id);
+    // if entity could not be found because user has no read permission on parent node
+    // then we cannot give any permission to the currently selected path
+    if (!entity) return [];
+
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
       this.forAddress,
-      { type: entity._type },
+      <TreeNode>{
+        type: entity._type,
+        hasWritePermission: entity.hasWritePermission,
+        hasOnlySubtreeWritePermission: entity.hasOnlySubtreeWritePermission,
+      },
       this.docTypeChoice,
     );
     if (cannotAddBelow) {
