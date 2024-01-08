@@ -78,17 +78,15 @@ export class CreateDocumentPlugin extends Plugin {
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       )
       .subscribe((tooltipText) => {
-        const buttons = [
-          {
-            id: "toolBtnNew",
-            tooltip: tooltipText,
-            matSvgVariable: "Neuer-Datensatz",
-            eventId: "NEW_DOC",
-            pos: 1,
-            active: true,
-          },
-        ];
-        buttons.forEach((button) => this.toolbarService.addButton(button));
+        console.log("init create doc button");
+        this.toolbarService.addButton({
+          id: "toolBtnNew",
+          tooltip: tooltipText,
+          matSvgVariable: "Neuer-Datensatz",
+          eventId: "NEW_DOC",
+          pos: 1,
+          active: true,
+        });
         this.addNonAdminBehaviour();
       });
   }
