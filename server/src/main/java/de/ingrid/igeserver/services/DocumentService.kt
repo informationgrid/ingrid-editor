@@ -55,6 +55,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
+import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
 
@@ -470,7 +471,10 @@ class DocumentService(
                     moveLastPublishedDocumentToArchive(catalogId, wrapper)
 
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
-                    latestDoc.document.state = DOCUMENT_STATE.PUBLISHED
+                    latestDoc.document.apply { 
+                        state = DOCUMENT_STATE.PUBLISHED
+                        contentmodified = OffsetDateTime.now()
+                    }
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
                     wrapper.pending_date = null
                     val updatedWrapper = docWrapperRepo.save(wrapper)
