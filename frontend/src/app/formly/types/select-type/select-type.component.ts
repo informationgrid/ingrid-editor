@@ -120,7 +120,7 @@ export class SelectTypeComponent
         this.formControl.setValue(null);
       }
     } else if (this.props.multiple) {
-      let simpleValues = value.map((item) => item?.key ?? item);
+      let simpleValues = value?.map((item) => item?.key ?? item) ?? null;
       this.formControl.setValue(simpleValues, { emitEvent: false });
     } else if (value?.key) {
       this.formControl.setValue(value.key);
