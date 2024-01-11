@@ -46,7 +46,7 @@
     "t02_address.postbox_pc": "${page.getZipPoBox()}",
     "city": "${page.getCity()}",
     @if(page.getCountry() != null)
-    "t02_address.country_key": "${page.getCountry().getKey()}",
+    "t02_address.country_key": "${page.getCountryKey()}",
     "t02_address.country_code": "${page.getCodelist().getValue("6200", page.getCountry())}",
     @endif
     "summary": "${page.getPositionName()}",

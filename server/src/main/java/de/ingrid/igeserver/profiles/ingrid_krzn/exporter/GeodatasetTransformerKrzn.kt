@@ -37,9 +37,9 @@ class GeodatasetTransformerKrzn(
     config: Config,
     catalogService: CatalogService,
     cache: TransformerCache,
-    doc: Document? = null,
+    doc: Document,
     documentService: DocumentService
-) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, documentService = documentService) {
+) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService) {
 
     private val docData = doc?.data
     override val systemEnvironment =

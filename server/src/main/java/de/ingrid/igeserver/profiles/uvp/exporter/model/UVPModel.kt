@@ -76,7 +76,7 @@ data class UVPModel(
     }
 
     val parentUuid: String? = data._parent
-    var pointOfContact: AddressLong? = null
+    var pointOfContact: AddressModelTransformer? = null
     private var nonHiddenAncestorAddresses: MutableList<DocumentData>? = null
 
     fun init(catalogId: String): UVPModel {
@@ -91,7 +91,7 @@ data class UVPModel(
         return value
     }
 
-    private fun determinePointOfContact(): AddressLong? {
+    private fun determinePointOfContact(): AddressModelTransformer? {
 
         val ref = data.pointOfContact
             ?.firstOrNull()
@@ -99,11 +99,13 @@ data class UVPModel(
 
         val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
-        val addressTransformer = AddressModelTransformer(catalogId, codelistTransformer, address, documentService!!)
+        val addressTransformer = AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
         nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
         return if (nonHiddenAncestorAddresses!!.size > 0) {
             val result = nonHiddenAncestorAddresses!!.last().document
+            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
+/*
             AddressLong(
                 result.uuid,
                 result.title ?: "???",
@@ -124,6 +126,7 @@ data class UVPModel(
                 ),
                 null
             )
+*/
         } else null
 
     }
@@ -223,13 +226,13 @@ data class UVPModel(
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
     fun getPostBoxString(): String {
-        return "Postbox ${pointOfContact?.location?.poBox}, ${pointOfContact?.location?.zipPoBox ?: pointOfContact?.location?.poBox} ${pointOfContact?.location?.city}"
+        return "Postbox ${pointOfContact?.poBox}, ${pointOfContact?.zipPoBox ?: pointOfContact?.poBox} ${pointOfContact?.city}"
     }
 
-    fun hasPoBox(): Boolean = !pointOfContact?.location?.poBox.isNullOrEmpty()
+    fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
     fun getUvpAddressParents(): List<DocumentData> =
-        if (pointOfContact!!.parent == null) emptyList() else nonHiddenAncestorAddresses!!.drop(1)
+        if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.drop(1)
 
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
         if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }

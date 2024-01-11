@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertWktToGeoJson
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -54,7 +55,7 @@ open class IngridModelTransformer(
     val config: Config,
     val catalogService: CatalogService,
     val cache: TransformerCache,
-    val doc: Document? = null,
+    val doc: Document,
     val documentService: DocumentService
 ) {
     var incomingReferencesCache: List<CrossReference>? = null
@@ -596,21 +597,23 @@ open class IngridModelTransformer(
                     AddressModelTransformer(
                         catalogIdentifier,
                         codelists,
+                        it.type,
                         getLastPublishedDocument(it.ref?.uuid!!)!!,
                         documentService = documentService
                     )
                 } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
-        contact =
-            data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-                ?.map {
-                    AddressModelTransformer(
-                        catalogIdentifier,
-                        codelists,
-                        getLastPublishedDocument(it.ref?.uuid!!)!!,
-                        documentService
-                    )
-                }?.firstOrNull()
+        contact = data.pointOfContact
+            ?.firstOrNull { addressIsPointContactMD(it) && hasKnownAddressType(it) }
+            ?.let {
+                AddressModelTransformer(
+                    catalogIdentifier,
+                    codelists,
+                    it.type,
+                    getLastPublishedDocument(it.ref?.uuid!!)!!,
+                    documentService
+                )
+            }
 
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
@@ -724,9 +727,10 @@ open class IngridModelTransformer(
             }
         val service = refTrans.data.get("service")
 
-        val refType = type // type is null only for incoming references, where we don't know the type yet
+        val refType = type // type is null only for incoming references and parents, where we don't know the type yet
+            ?: if (refTrans.data.getString("parentIdentifier") == this.doc?.uuid) KeyValueModel(null, null) else null
             ?: getRefTypeFromIncomingReference(refTrans.data)
-            ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
+            ?: throw ServerException.withReason("Could not find reference type for '${this.doc?.uuid}' in '$uuid'.")
 
         // TODO: refType correct?
 //        val refType = type
@@ -765,7 +769,7 @@ open class IngridModelTransformer(
         if (asCoupledResource != null) return KeyValueModel("3600", null)
 
         val asReference = data.get("references")
-            ?.find { it.get("uuidRef").asText() == this.model.uuid }
+            ?.find { it.get("uuidRef")?.asText() == this.model.uuid }
 
         return if (asReference != null) {
             createKeyValueFromJsonNode(asReference.get("type"))

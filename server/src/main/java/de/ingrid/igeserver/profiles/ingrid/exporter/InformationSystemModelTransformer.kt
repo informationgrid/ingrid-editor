@@ -33,7 +33,7 @@ open class InformationSystemModelTransformer(
     config: Config,
     catalogService: CatalogService,
     cache: TransformerCache,
-    doc: Document? = null,
+    doc: Document,
     documentService: DocumentService
 ) : IngridModelTransformer(
     model, catalogIdentifier, codelistTransformer, config, catalogService, cache, doc, documentService

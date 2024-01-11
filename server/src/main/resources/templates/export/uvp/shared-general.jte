@@ -18,13 +18,13 @@
             <name>${address.getOrganization() != null ? address.getOrganization(): address.getLastName() + ", " + address.getFirstName()}</name>
             <phone>${address.getTelephone()}</phone>
             <fax>${address.getFax()}</fax>
-            <street>${address.getLocation().getStreet()}</street>
-            <city>${address.getLocation().getCity()}</city>
-            <postalcode>${address.getLocation().getZipCode()}</postalcode>
+            <street>${address.getStreet()}</street>
+            <city>${address.getCity()}</city>
+            <postalcode>${address.getZipCode()}</postalcode>
             @if (page.hasPoBox())
             <postbox>${page.getPostBoxString()}</postbox>
             @endif
-            <country>${page.getCodelistValue("6200", address.getLocation().getCountry())}</country>
+            <country>${page.getCodelistValue("6200", address.getCountry())}</country>
             <mail>${address.getEmail()}</mail>
             <url>${address.getHomepage()}</url>
             @for(var parent : page.getUvpAddressParents())

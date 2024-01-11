@@ -129,6 +129,7 @@ class IngridLuceneExporter(
                     AddressModelTransformer(
                         catalog.identifier,
                         codelistTransformer,
+                        null,
                         doc,
                         documentService = documentService
                     )
@@ -153,7 +154,7 @@ class IngridLuceneExporter(
                         catalog.identifier,
                         codelistTransformer,
                         config,
-                        catalogService, TransformerCache(), documentService = documentService
+                        catalogService, TransformerCache(), doc, documentService
                     )
                 }
             }

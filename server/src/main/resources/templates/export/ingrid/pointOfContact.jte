@@ -2,7 +2,6 @@
 @import de.ingrid.igeserver.exporter.ObjectReference
 @import de.ingrid.igeserver.exporter.SubordinatedParty
 @import de.ingrid.igeserver.exporter.TransformationTools
-@import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 @import java.util.List
 
 @param List<AddressModelTransformer> addresses
@@ -101,11 +100,11 @@
             @endif
         </gmd:CI_Contact>
     </gmd:contactInfo>
-    @if(address.getType() != null)
+    @if(address.getRelationType() != null)
         <gmd:role>
             <gmd:CI_RoleCode
                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                    codeListValue="${address.getCodelist().getValue("505", address.getType(), "iso")}" />
+                    codeListValue="${address.getCodelist().getValue("505", address.getRelationType(), "iso")}" />
         </gmd:role>
     @else
         <gmd:role gco:nilReason="inapplicable" />
@@ -115,15 +114,15 @@
             <gco:DateTime>${address.getLastModified()}</gco:DateTime>
         </idf:last-modified>
     @endif
-    @for( Document adr : address.getHierarchy())
+    @for( AddressModelTransformer adr : address.getHierarchy())
         <idf:hierarchyParty uuid="${adr.getUuid()}">
-            @if(address.getIndividualName(adr) != null )
-                <idf:addressIndividualName>${address.getIndividualName(adr)}</idf:addressIndividualName>
+            @if(adr.getIndividualName() != null )
+                <idf:addressIndividualName>${adr.getIndividualName()}</idf:addressIndividualName>
             @endif
-            @if(!adr.data.get("organization").isNull())
-                <idf:addressOrganisationName>${adr.data.get("organization").asText()}</idf:addressOrganisationName>
+            @if(adr.getOrganization() != null)
+                <idf:addressOrganisationName>${adr.getOrganization()}</idf:addressOrganisationName>
             @endif
-            <idf:addressType>${address.getAddressDocType(adr.type)}</idf:addressType>
+            <idf:addressType>${adr.getAddressDocType()}</idf:addressType>
         </idf:hierarchyParty>
     @endfor
     @if(isAddressExport)

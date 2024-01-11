@@ -125,7 +125,7 @@ class IngridIDFExporter(
         
         val transformerClass = profileTransformer?.get(json.type) ?: transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
         return if(isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, json, documentService)
+            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }

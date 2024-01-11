@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -34,6 +35,7 @@ import java.util.*
 class AddressModelTransformer(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
+    val relationType: KeyValueModel?,
     val doc: Document,
     val documentService: DocumentService
 ) {
@@ -85,9 +87,9 @@ class AddressModelTransformer(
         } else doc
     }
 
-    fun getHierarchy(): List<Document> =
+    fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
-            it.document
+            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService)
         }.reversed()
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
@@ -98,8 +100,7 @@ class AddressModelTransformer(
         val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest
             .filter {
-                !it.document.data.get("organization").isNull || !it.document.data.get("organization").asText()
-                    .isNullOrEmpty()
+                it.document.data.getStringOrEmpty("organization").isNotEmpty()
             }.joinToString(", ") { it.document.data.get("organization").asText() }
     }
 
@@ -109,9 +110,13 @@ class AddressModelTransformer(
     //    val isFolder = doc.type == "FOLDER"
     val hoursOfService = data.getString("hoursOfService")
     val country = data.get("address")?.get("country")?.mapToKeyValue()
-    val countryIso3166 =
-        data.get("address")?.get("country")
-            ?.let { TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it.mapToKeyValue()!!) }
+    val countryKey = country?.key ?: ""
+    val countryIso3166 = data.get("address")?.get("country")
+        ?.takeIf { !it.isNull }
+        ?.mapToKeyValue()
+        ?.let {
+            TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
+        }
     val zipCode = data.getString("address.zipCode")
     val zipPoBox = data.getString("address.zipPoBox")
     val poBox = data.getString("address.poBox")
@@ -127,14 +132,14 @@ class AddressModelTransformer(
     val fax = contactType("2")
     val email = contactType("3")
     val homepage = contactType("4")
-    
+
     val firstName = data.getString("firstName")
     val lastName = data.getString("lastName")
-    val salutation = data.get("salutation").mapToKeyValue()
-    val academicTitle = data.get("academicTitle").mapToKeyValue()
+    val salutation = data.get("salutation")?.mapToKeyValue()
+    val academicTitle = data.get("academicTitle")?.mapToKeyValue()
 
     val administrativeArea =
-        codelist.getCatalogCodelistValue("6250", data.get("address").get("administrativeArea")?.mapToKeyValue())
+        codelist.getCatalogCodelistValue("6250", data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(doc.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
 
@@ -147,10 +152,10 @@ class AddressModelTransformer(
         formatter.format(Date.from(date.toInstant()))
 
     val lastModified = formatDate(formatterISO, doc.modified!!)
-    
-    val contactsComTypeKeys = data.get("contact")?.map { it.get("type")?.getString("key") }
-    val contactsComTypeValues = data.get("contact")?.map { it.get("type")?.mapToKeyValue() }
-    val contactsComConnections = data.get("contact")?.map { it.getString("connection")}
+
+    val contactsComTypeKeys = data.get("contact")?.map { it.get("type")?.getString("key") } ?: emptyList()
+    val contactsComTypeValues = data.get("contact")?.map { it.get("type")?.mapToKeyValue() } ?: emptyList()
+    val contactsComConnections = data.get("contact")?.map { it.getString("connection") } ?: emptyList()
 
     /**
      * Get all published objects with references to this address.
@@ -229,7 +234,7 @@ class AddressModelTransformer(
         }
     }
 
-    fun contactType(type: String): String? = data.get("contact")
+    private fun contactType(type: String): String? = data.get("contact")
         .firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
 
