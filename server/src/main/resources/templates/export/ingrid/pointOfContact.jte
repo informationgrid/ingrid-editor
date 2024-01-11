@@ -2,6 +2,7 @@
 @import de.ingrid.igeserver.exporter.ObjectReference
 @import de.ingrid.igeserver.exporter.SubordinatedParty
 @import de.ingrid.igeserver.exporter.TransformationTools
+@import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 @import java.util.List
 
 @param List<AddressModelTransformer> addresses
@@ -72,14 +73,14 @@
                             <gco:CharacterString>${address.getZipCode()}</gco:CharacterString>
                         </gmd:postalCode>
                     @endif
-                    @if(TransformationTools.hasValue(address.getCountry()))
+                    @if(TransformationTools.hasValue(address.getCountryIso3166()))
                         <gmd:country>
-                            <gco:CharacterString>${address.getCountry()}</gco:CharacterString>
+                            <gco:CharacterString>${address.getCountryIso3166()}</gco:CharacterString>
                         </gmd:country>
                     @endif
-                    @if(TransformationTools.hasValue(address.getModel().getEmail()))
+                    @if(TransformationTools.hasValue(address.getEmail()))
                         <gmd:electronicMailAddress>
-                            <gco:CharacterString>${address.getModel().getEmail()}</gco:CharacterString>
+                            <gco:CharacterString>${address.getEmail()}</gco:CharacterString>
                         </gmd:electronicMailAddress>
                     @endif
                 </gmd:CI_Address>
@@ -114,15 +115,15 @@
             <gco:DateTime>${address.getLastModified()}</gco:DateTime>
         </idf:last-modified>
     @endif
-    @for( AddressModelTransformer adr : address.getHierarchy())
-        <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
-            @if(adr.getIndividualName(false) != null )
-                <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>
+    @for( Document adr : address.getHierarchy())
+        <idf:hierarchyParty uuid="${adr.getUuid()}">
+            @if(address.getIndividualName(adr) != null )
+                <idf:addressIndividualName>${address.getIndividualName(adr)}</idf:addressIndividualName>
             @endif
-            @if(adr.getModel().getOrganization() != null)
-                <idf:addressOrganisationName>${adr.getModel().getOrganization()}</idf:addressOrganisationName>
+            @if(!adr.data.get("organization").isNull())
+                <idf:addressOrganisationName>${adr.data.get("organization").asText()}</idf:addressOrganisationName>
             @endif
-            <idf:addressType>${adr.getAddressDocType()}</idf:addressType>
+            <idf:addressType>${address.getAddressDocType(adr.type)}</idf:addressType>
         </idf:hierarchyParty>
     @endfor
     @if(isAddressExport)

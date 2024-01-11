@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
@@ -38,7 +37,6 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
-import org.springframework.dao.EmptyResultDataAccessException
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -177,7 +175,7 @@ open class IngridModelTransformer(
     }
 
     fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
-        ?.let { convertWktToGeoJson(it.wkt!!)}
+        ?.let { convertWktToGeoJson(it.wkt!!) }
         ?.let { Pair(it.replace("\"", "@json@"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
@@ -186,7 +184,7 @@ open class IngridModelTransformer(
         arsSpatial.ars,
         padARS(arsSpatial.ars!!).padEnd(12, '0')
     )
-    
+
     fun padARS(ars: String): String = ars.padEnd(12, '0')
 
     fun getSpatialReferenceComponents(type: COORD_TYPE): String {
@@ -245,9 +243,9 @@ open class IngridModelTransformer(
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
-    
+
     open fun getGeometryContexts(): List<GeometryContext> = emptyList()
-    
+
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
@@ -275,7 +273,12 @@ open class IngridModelTransformer(
     val dateEvents = data.temporal.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
-        keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = mapToInspireLink(it.key)) } ?: emptyList(),
+        keywords = data.themes?.map {
+            KeywordIso(
+                name = codelists.getValue("6100", it),
+                link = mapToInspireLink(it.key)
+            )
+        } ?: emptyList(),
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
@@ -320,7 +323,8 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) } ?: emptyList(),
+        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) }
+            ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
     )
@@ -449,7 +453,12 @@ open class IngridModelTransformer(
 
     // geodataservice
     fun getServiceType(type: KeyValueModel? = null) =
-        codelists.getValue(if (model.type == "InGridInformationSystem") "5300" else "5100", type ?: data.service?.type, "iso")
+        codelists.getValue(
+            if (model.type == "InGridInformationSystem") "5300" else "5100",
+            type ?: data.service?.type,
+            "iso"
+        )
+
     val serviceTypeVersions = data.service?.version?.map { getVersion(it) } ?: emptyList()
     val couplingType = data.service?.couplingType?.key ?: "loose"
 
@@ -510,7 +519,9 @@ open class IngridModelTransformer(
             val doc = getLastPublishedDocument(model.uuid)
             documentService?.getIncomingReferences(doc, catalogIdentifier)
                 ?.map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
-                ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
+                ?.filter {
+                    it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
+                }
                 ?.mapNotNull {
                     it.data.get("service").get("operations")
                         .firstOrNull { it.get("name").get("key").asText() == "1" }?.get("methodCall")?.asText()
@@ -538,10 +549,11 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
-    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not()  }
+    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not() }
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
+
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
     open val systemEnvironment = data.systemEnvironment
 
@@ -580,11 +592,25 @@ open class IngridModelTransformer(
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) } ?: emptyList()
+                ?.map {
+                    AddressModelTransformer(
+                        catalogIdentifier,
+                        codelists,
+                        getLastPublishedDocument(it.ref?.uuid!!)!!,
+                        documentService = documentService
+                    )
+                } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
             data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) }?.firstOrNull()
+                ?.map {
+                    AddressModelTransformer(
+                        catalogIdentifier,
+                        codelists,
+                        getLastPublishedDocument(it.ref?.uuid!!)!!,
+                        documentService
+                    )
+                }?.firstOrNull()
 
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
@@ -600,67 +626,68 @@ open class IngridModelTransformer(
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
-        try {
-            val model = jacksonObjectMapper().convertValue(
-                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
-                IngridModel::class.java
-            )
-            val transformer = IngridModelTransformer(
-                model,
-                catalogIdentifier,
-                codelists,
-                config,
-                catalogService,
-                cache,
-                documentService = documentService
-            )
-            return transformer.citationURL
-        } catch (ex: EmptyResultDataAccessException) {
-            throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
+
+        val doc = getLastPublishedDocument(uuid)
+            ?: throw ServerException.withReason("Could not find published reference of coupled resource '$uuid'.")
+        return getCitationUrlFromDoc(doc)
+    }
+
+    private fun getCitationUrlFromDoc(doc: Document): String {
+        val identifier = doc.data.get("identifier")?.asText()
+            ?: throw ServerException.withReason("Identifier of coupled document not found: ${doc.uuid}")
+        return if (identifier.indexOf("/", 1) == -1) {
+            namespace.suffixIfNot("/") + identifier
+        } else {
+            identifier
         }
     }
 
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
         ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
+
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
             ?: emptyList()
-    open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
-    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
-    
+    open fun getCrossReferences() =
+        getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
+
+    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() =
+        getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+
     fun getSubordinateReferences() = getIncomingReferences().filter { it.isSubordinate }
-    
+
     private fun getCoupledServiceUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
-        
+
         return getIncomingReferencesProxy()
-            .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
+            .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
     }
-    
+
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
         return model.data.service?.operations
             ?.filter { it.name?.key == "1" }
-            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description)} ?: emptyList()
+            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
+            ?: emptyList()
     }
-    
-    private fun getExternalCoupledResources() : List<ServiceUrl> {
+
+    private fun getExternalCoupledResources(): List<ServiceUrl> {
         return model.data.service?.coupledResources
             ?.filter { it.isExternalRef == true }
             ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
-    
+
     private fun getIncomingReferencesProxy(): List<CrossReference> {
         if (incomingReferencesCache == null) {
             incomingReferencesCache = getIncomingReferences().filter { !it.isSubordinate }
         }
-        
+
         return incomingReferencesCache ?: emptyList()
     }
-    
+
     private fun getSuperiorReferenceProxy(): SuperiorReference? {
         if (superiorReferenceCache == null) {
             superiorReferenceCache = getSuperiorReference()
@@ -671,25 +698,17 @@ open class IngridModelTransformer(
 
     private fun getSuperiorReference(): SuperiorReference? {
         val uuid = data.parentIdentifier ?: return null
-        try {
-            val model = jacksonObjectMapper().convertValue(
-                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
-                IngridModel::class.java
-            )
+        val doc = getLastPublishedDocument(uuid) ?: return null
 
-            return SuperiorReference(
-                uuid = uuid,
-                objectName = model.title,
-                objectType = mapDocumentType(model.type),
-                description = model.data.description,
-            )
-        } catch (e: EmptyResultDataAccessException) {
-            // No published reference found for parent identifier
-            return null
-        }
+        return SuperiorReference(
+            uuid = uuid,
+            objectName = doc.title ?: "???",
+            objectType = mapDocumentType(doc.type),
+            description = doc.data.get("description")?.asText(),
+        )
     }
 
-    fun getParentIdentifierReference() : SuperiorReference? = getSuperiorReferenceProxy()
+    fun getParentIdentifierReference(): SuperiorReference? = getSuperiorReferenceProxy()
 
     private fun getCrossReference(
         uuid: String,
@@ -697,7 +716,7 @@ open class IngridModelTransformer(
         direction: String = "OUT",
         ignoreNotFound: Boolean = true
     ): CrossReference? {
-        val refTrans = getLastPublishedModel(uuid)
+        val refTrans = getLastPublishedDocument(uuid)
             ?: if (ignoreNotFound) {
                 return null
             } else {
@@ -709,6 +728,7 @@ open class IngridModelTransformer(
             ?: getRefTypeFromIncomingReference(refTrans.data)
             ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
 
+        // TODO: refType correct?
 //        val refType = type
 //            ?: if (refTrans.model.data.parentIdentifier == this.model.uuid) KeyValueModel(null, null) else null
 //            ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
@@ -733,29 +753,29 @@ open class IngridModelTransformer(
             serviceUrl = service?.get("operations")?.get(0)?.get("identifierLink")?.asText(),
             serviceVersion = getVersion(createKeyValueFromJsonNode(service?.get("version"))),
             hasAccessConstraints = service?.get("hasAccessConstraints")?.asBoolean() ?: false,
-            isSubordinate = refTrans.model.data.parentIdentifier == model.uuid
+            isSubordinate = refTrans.data.get("parentIdentifier")?.asText() == model.uuid
         )
     }
-    
+
     private fun getRefTypeFromIncomingReference(data: JsonNode): KeyValueModel? {
         val asCoupledResource = data.get("service")?.get("coupledResources")
             ?.filter { !it.get("isExternalRef").asBoolean() }
             ?.find { it.get("uuid").asText() == this.model.uuid }
-        
+
         if (asCoupledResource != null) return KeyValueModel("3600", null)
-            
+
         val asReference = data.get("references")
             ?.find { it.get("uuidRef").asText() == this.model.uuid }
-        
+
         return if (asReference != null) {
             createKeyValueFromJsonNode(asReference.get("type"))
         } else null
     }
-    
+
     private fun createKeyValueFromJsonNode(json: JsonNode?): KeyValueModel {
         return KeyValueModel(json?.get("key")?.asText(), json?.get("value")?.asText())
     }
-    
+
     private fun convertToGraphicOverview(json: JsonNode?): GraphicOverview? {
         return null
     }
@@ -777,21 +797,13 @@ open class IngridModelTransformer(
             log.warn("Could not get last published document: $uuid")
             null
         }
-
     }
-
-    private fun getLastPublishedModel(uuid: String?): Document? {
-        if (uuid == null) return null
-
-        return getLastPublishedDocument(uuid)
-    }
-
 
     private fun addressIsPointContactMD(it: AddressRefModel) =
         codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
 
 
-    private fun hasKnownAddressType(it: AddressRefModel): Boolean  =  codelists.getValue("505", it.type, "iso") != null
+    private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso") != null
 
     fun handleContent(value: String?): String? {
         if (value == null) return null
@@ -808,7 +820,7 @@ open class IngridModelTransformer(
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
     }
-    
+
     open val mapLinkUrl: String? = null
 }
 

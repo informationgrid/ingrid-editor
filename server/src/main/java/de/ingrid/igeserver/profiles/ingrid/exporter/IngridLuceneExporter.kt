@@ -39,7 +39,6 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
@@ -75,15 +74,35 @@ class IngridLuceneExporter(
 
     private fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
         return when (doc.type) {
-            "InGridSpecialisedTask" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
+            "InGridSpecialisedTask" -> Pair(
+                "ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
             "InGridGeoDataset" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridLiterature" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridGeoService" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridProject" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridDataCollection" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridInformationSystem" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridOrganisationDoc" -> Pair("ingrid/template-lucene-address.jte", getMapper(IngridDocType.ADDRESS, doc, catalog))
-            "InGridPersonDoc" -> Pair("ingrid/template-lucene-address.jte", getMapper(IngridDocType.ADDRESS, doc, catalog))
+            "InGridDataCollection" -> Pair(
+                "ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
+            "InGridInformationSystem" -> Pair(
+                "ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
+            "InGridOrganisationDoc" -> Pair(
+                "ingrid/template-lucene-address.jte",
+                getMapper(IngridDocType.ADDRESS, doc, catalog)
+            )
+
+            "InGridPersonDoc" -> Pair(
+                "ingrid/template-lucene-address.jte",
+                getMapper(IngridDocType.ADDRESS, doc, catalog)
+            )
+
             "FOLDER" -> Pair("ingrid/template-lucene-folder.jte", getMapper(IngridDocType.FOLDER, doc, catalog))
             else -> {
                 throw ServerException.withReason("Cannot get template for type: ${doc.type}")
@@ -100,19 +119,34 @@ class IngridLuceneExporter(
         val transformer: Any = when (type) {
             IngridDocType.ADDRESS -> {
                 if (otherTransformer != null) {
-                    otherTransformer.constructors.first().call(mapper.convertValue(doc, AddressModel::class.java), catalog.identifier, codelistTransformer, doc)
-                } else {
-                    AddressModelTransformer(
+                    otherTransformer.constructors.first().call(
                         mapper.convertValue(doc, AddressModel::class.java),
                         catalog.identifier,
                         codelistTransformer,
+                        doc
+                    )
+                } else {
+                    AddressModelTransformer(
+                        catalog.identifier,
+                        codelistTransformer,
+                        doc,
                         documentService = documentService
                     )
                 }
             }
+
             IngridDocType.DOCUMENT -> {
                 if (otherTransformer != null) {
-                    otherTransformer.constructors.first().call(mapper.convertValue(doc, IngridModel::class.java), catalog.identifier, codelistTransformer, config, catalogService, TransformerCache(), doc, documentService)
+                    otherTransformer.constructors.first().call(
+                        mapper.convertValue(doc, IngridModel::class.java),
+                        catalog.identifier,
+                        codelistTransformer,
+                        config,
+                        catalogService,
+                        TransformerCache(),
+                        doc,
+                        documentService
+                    )
                 } else {
                     IngridModelTransformer(
                         mapper.convertValue(doc, IngridModel::class.java),
@@ -123,6 +157,7 @@ class IngridLuceneExporter(
                     )
                 }
             }
+
             IngridDocType.FOLDER -> {
                 FolderModelTransformer(
                     mapper.convertValue(doc, FolderModel::class.java),
@@ -131,7 +166,7 @@ class IngridLuceneExporter(
                 )
             }
         }
-        
+
         return mapOf(
             "map" to mapOf(
                 "model" to transformer,
@@ -155,7 +190,7 @@ class IngridLuceneExporter(
             )
         }
     }
-    
+
     enum class IngridDocType {
         ADDRESS, DOCUMENT, FOLDER
     }

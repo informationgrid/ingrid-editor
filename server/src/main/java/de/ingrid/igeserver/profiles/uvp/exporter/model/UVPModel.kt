@@ -23,13 +23,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.mapToKeyValue
+import org.opengis.metadata.citation.Telephone
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -70,7 +76,8 @@ data class UVPModel(
     }
 
     val parentUuid: String? = data._parent
-    var pointOfContact: AddressModel? = null
+    var pointOfContact: AddressLong? = null
+    private var nonHiddenAncestorAddresses: MutableList<DocumentData>? = null
 
     fun init(catalogId: String): UVPModel {
         this.catalogId = catalogId
@@ -84,17 +91,39 @@ data class UVPModel(
         return value
     }
 
-    private fun determinePointOfContact(): AddressModel? {
+    private fun determinePointOfContact(): AddressLong? {
 
         val ref = data.pointOfContact
             ?.firstOrNull()
             ?.ref ?: return null
 
-//        val catalogId = AddressModel.catalogRepository?.getCatalogIdentifier(doc.catalog!!.id!!)!!
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(documentService!!, ref.id, catalogId)
+        val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
+        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
+        val addressTransformer = AddressModelTransformer(catalogId, codelistTransformer, address, documentService!!)
+        nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
-        return if (nonHiddenAddress.size > 0) {
-            nonHiddenAddress.last()
+        return if (nonHiddenAncestorAddresses!!.size > 0) {
+            val result = nonHiddenAncestorAddresses!!.last().document
+            AddressLong(
+                result.uuid,
+                result.title ?: "???",
+                result.data.getString("organization"),
+                result.data.getString("firstName"),
+                result.data.getString("lastName"),
+                addressTransformer.telephone,
+                addressTransformer.fax,
+                addressTransformer.email,
+                addressTransformer.homepage,
+                AddressLocation(
+                    result.data.getString("address.street"),
+                    result.data.getString("address.city"),
+                    result.data.getString("address.zipcode"),
+                    result.data.get("address").get("country").mapToKeyValue(),
+                    result.data.getString("address.pobox"),
+                    result.data.getString("address.zip-po-box"),
+                ),
+                null
+            )
         } else null
 
     }
@@ -194,47 +223,56 @@ data class UVPModel(
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
     fun getPostBoxString(): String {
-        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${pointOfContact?.address?.city}"
+        return "Postbox ${pointOfContact?.location?.poBox}, ${pointOfContact?.location?.zipPoBox ?: pointOfContact?.location?.poBox} ${pointOfContact?.location?.city}"
     }
 
-    fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
+    fun hasPoBox(): Boolean = !pointOfContact?.location?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<AddressModel> =
-        if (pointOfContact!!.parent == null) emptyList() else getUvpAddressParents(pointOfContact!!.parent!!)
+    fun getUvpAddressParents(): List<DocumentData> =
+        if (pointOfContact!!.parent == null) emptyList() else nonHiddenAncestorAddresses!!.drop(1)
 
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
-        if (pointOfContact == null) emptyList() else getUvpAddressParents(pointOfContact!!.id).map { getAddressShort(it) }
+        if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
-    private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
-        if (pointOfContact == null) return emptyList()
-
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(documentService!!, parent, catalogId)
-    }
-
-
-    fun getAddressShort(address: AddressModel): AddressShort {
-        return if (address.organization == null) {
+    fun getAddressShort(address: Document): AddressShort {
+        return if (address.data.get("organization").isNull) {
             AddressShort(address.uuid, getPersonStringFromJson(address))
         } else {
-            AddressShort(address.uuid, address.organization)
+            AddressShort(address.uuid, address.data.getString("organization")!!)
         }
     }
 
-    private fun getPersonStringFromJson(address: AddressModel): String {
+    private fun getPersonStringFromJson(address: Document): String {
         return listOfNotNull(
             getCodelistValue(
                 "4300",
-                address.salutation
+                address.data.get("salutation").mapToKeyValue()
             ),
             getCodelistValue(
                 "4305",
-                address.academicTitle
+                address.data.get("academicTitle").mapToKeyValue()
             ),
-            address.firstName,
-            address.lastName
+            address.data.get("firstName"),
+            address.data.get("lastName")
         ).joinToString(" ")
     }
 
 }
 
 data class AddressShort(val uuid: String, val title: String)
+data class AddressLong(val uuid: String, val title: String, val organization: String?, val firstName: String?, val lastName: String?, 
+    val telephone: String?,
+    val fax: String?,
+    val email: String?,
+    val homepage: String?,
+    val location: AddressLocation?,
+    val parent: AddressLong?,
+    )
+data class AddressLocation(
+    val street: String?,
+    val city: String?,
+    val zipCode: String?,
+    val country: KeyValueModel?,
+    val poBox: String?,
+    val zipPoBox: String?,
+)

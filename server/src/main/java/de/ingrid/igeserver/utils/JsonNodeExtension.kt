@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.utils
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exporter.model.KeyValueModel
 
 /**
  * Get the text value of a given path in a JsonNode. The path is delimited by a "."
@@ -40,4 +41,9 @@ fun JsonNode.getDouble(path: String): Double? {
 
 fun JsonNode.getStringOrEmpty(path: String): String {
     return this.getString(path) ?: ""
+}
+
+fun JsonNode.mapToKeyValue(): KeyValueModel? {
+    if (this.isNull) return null
+    return KeyValueModel(this.get("key")?.asText(), this.get("value")?.asText())
 }

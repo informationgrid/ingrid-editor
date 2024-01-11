@@ -106,13 +106,8 @@ class IngridIDFExporter(
 
     private fun getModelTransformer(json: Document, catalogId: String): Any {
         var ingridModel: IngridModel? = null
-        var addressModel: AddressModel? = null
-        try {
-            ingridModel = mapper.convertValue(json, IngridModel::class.java)
-        } catch (e: Exception) {
-            addressModel = mapper.convertValue(json, AddressModel::class.java)
-        }
-        val isAddress = addressModel != null
+        val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
+        ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
@@ -128,11 +123,11 @@ class IngridIDFExporter(
             "InGridPersonDoc" to AddressModelTransformer::class
         )
         
-        val transformerClass = profileTransformer?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        val transformerClass = profileTransformer?.get(json.type) ?: transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
         return if(isAddress)
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json, documentService)
+            transformerClass.constructors.first().call(catalogId, codelistTransformer, json, documentService)
         else
-            transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
+            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
