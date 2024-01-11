@@ -24,7 +24,6 @@ import {
   BehaviourRegistration,
 } from "../behavior/behaviour.service";
 import { Subject } from "rxjs";
-import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../config/config.service";
 
 @Injectable({
@@ -39,10 +38,7 @@ export class PluginService {
 
   initWithAddress: boolean = null;
 
-  constructor(
-    private http: HttpClient,
-    private configService: ConfigService,
-  ) {
+  constructor(configService: ConfigService) {
     this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
     this.pluginState$.subscribe((value) =>
