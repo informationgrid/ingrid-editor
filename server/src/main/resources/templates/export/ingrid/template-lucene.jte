@@ -85,7 +85,7 @@
         "t02_address.descr": "",
         "t02_address.firstname": "${page.getContact().getFirstName()}",
         "t02_address.lastname": "${page.getContact().getLastName()}",
-        "t02_address.institution": "${page.getContact().getOrganization()}",
+        "t02_address.institution": "${page.getContact().getDisplayOrganization()}",
         "t02_address.job": "",
         "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDoc().getModified())}",
         "t02_address.mod_uuid": "",

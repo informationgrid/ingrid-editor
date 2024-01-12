@@ -60,7 +60,7 @@
     @if(address != null)
         <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
             <gmd:organisationName>
-                <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
+                <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
             </gmd:organisationName>
             <gmd:contactInfo>
                 <gmd:CI_Contact>

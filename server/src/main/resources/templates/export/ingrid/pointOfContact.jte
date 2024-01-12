@@ -17,9 +17,9 @@
             <gco:CharacterString>${address.getIndividualName()}</gco:CharacterString>
         </gmd:individualName>
     @endif
-    @if(address.getOrganization() != null)
+    @if(address.getDisplayOrganization() != null)
         <gmd:organisationName>
-            <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
+            <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
         </gmd:organisationName>
     @endif
     @if(TransformationTools.hasValue(address.getPositionName()))

@@ -56,9 +56,9 @@ class AddressModelTransformer(
     fun getIndividualName(addressDoc: Document): String? {
         val address: JsonNode = addressDoc.data
 
-        // format: "lastName, firstName, salutation academicTitle"
+        // format: "lastName, firstName, salutation academic-title"
         val salutation = codelist.getValue("4300", address.get("salutation")?.mapToKeyValue())
-        val academicTitle = codelist.getValue("4305", address.get("academicTitle")?.mapToKeyValue())
+        val academicTitle = codelist.getValue("4305", address.get("academic-title")?.mapToKeyValue())
         val namePostFix = listOf(salutation, academicTitle).filter { !it.isNullOrBlank() }.joinToString(" ")
         val individualName = listOf(address.getString("lastName"), address.getString("firstName"), namePostFix)
             .filter { !it.isNullOrBlank() }.joinToString(", ")
@@ -68,10 +68,12 @@ class AddressModelTransformer(
 
     fun getIndividualName(): String? = getIndividualName(doc)
 
-    fun getOrganization(): String? =
-        if (data.getString("organization").isNullOrEmpty()) {
+    fun getDisplayOrganization(): String? =
+        if (displayAddress.data.getString("organization").isNullOrEmpty()) {
             determineEldestAncestor()?.document?.data?.getString("organization")
-        } else data.getString("organization")
+        } else displayAddress.data.getString("organization")
+    
+    fun getOrganization(): String? = doc.data.getString("organization")
 
     fun getPositionName(): String? =
         if (data.getString("positionName")
@@ -117,9 +119,9 @@ class AddressModelTransformer(
         ?.let {
             TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
         }
-    val zipCode = data.getString("address.zipCode")
-    val zipPoBox = data.getString("address.zipPoBox")
-    val poBox = data.getString("address.poBox")
+    val zipCode = data.getString("address.zip-code")
+    val zipPoBox = data.getString("address.zip-po-box")
+    val poBox = data.getString("address.po-box")
     val street = data.getString("address.street")
     val city = data.getString("address.city")
     val postBoxAddress =
@@ -136,11 +138,11 @@ class AddressModelTransformer(
     val firstName = data.getString("firstName")
     val lastName = data.getString("lastName")
     val salutation = data.get("salutation")?.mapToKeyValue()
-    val academicTitle = data.get("academicTitle")?.mapToKeyValue()
+    val academicTitle = data.get("academic-title")?.mapToKeyValue()
 
     val administrativeArea =
         codelist.getCatalogCodelistValue("6250", data.get("address")?.get("administrativeArea")?.mapToKeyValue())
-    val addressDocType = getAddressDocType(doc.type)
+    val addressDocType = getAddressDocType(displayAddress.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
 
     val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)

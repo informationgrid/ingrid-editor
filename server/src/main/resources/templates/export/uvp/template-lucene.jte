@@ -113,7 +113,7 @@
         "t02_address.descr": "",
         "t02_address.firstname": "${page.getPointOfContact().getFirstName()}",
         "t02_address.lastname": "${page.getPointOfContact().getLastName()}",
-        "t02_address.institution": "${page.getPointOfContact().getOrganization()}",
+        "t02_address.institution": "${page.getPointOfContact().getDisplayOrganization()}",
         "t02_address.job": "",
         "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getPointOfContact().getDoc().getModified())}",
         "t02_address.mod_uuid": "",

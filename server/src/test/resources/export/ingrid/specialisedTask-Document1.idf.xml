@@ -61,7 +61,7 @@
                         <gco:CharacterString>Meine Beschreibung</gco:CharacterString>
                     </gmd:abstract>
                     <gmd:pointOfContact>
-                        <idf:idfResponsibleParty type="2" uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
+                        <idf:idfResponsibleParty type="0" uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
                             <gmd:organisationName>
                                 <gco:CharacterString>Wemove Test</gco:CharacterString>
                             </gmd:organisationName>
@@ -94,7 +94,7 @@
                             </gmd:role>
                             <idf:hierarchyParty uuid="107d5e76-2df1-4c0e-8af6-c57ad13bfe9a">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
-                                <idf:addressType>2</idf:addressType>
+                                <idf:addressType>0</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>
