@@ -175,7 +175,7 @@ class Geodataservice : ShouldSpec() {
                 documentService.getLastPublishedDocument(
                     "test-catalog",
                     "1000",
-                    false,
+                    true,
                     true
                 )
             } returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json"))

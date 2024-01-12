@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertWktToGeoJson
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -781,7 +782,14 @@ open class IngridModelTransformer(
     }
 
     private fun convertToGraphicOverview(json: JsonNode?): GraphicOverview? {
-        return null
+        if (json == null || json.isNull) return null
+        
+        return GraphicOverview(FileName(
+            json.getBoolean("fileName.asLink")!!,
+            json.getString("fileName.value")!!,
+            json.getString("fileName.uri")!!),
+            json.getString("fieldDescription")
+        )
     }
 
 

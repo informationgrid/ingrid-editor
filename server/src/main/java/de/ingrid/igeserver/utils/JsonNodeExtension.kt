@@ -32,6 +32,13 @@ fun JsonNode.getString(path: String): String? {
         }?.let { if (it.isNull) null else it.asText() }
 }
 
+fun JsonNode.getBoolean(path: String): Boolean? {
+    return path.split(".")
+        .fold<String, JsonNode?>(this) { node, fieldName ->
+            node?.get(fieldName)
+        }?.let { if (it.isNull) null else it.asBoolean() }
+}
+
 fun JsonNode.getDouble(path: String): Double? {
     return path.split(".")
         .fold<String, JsonNode?>(this) { node, fieldName ->
