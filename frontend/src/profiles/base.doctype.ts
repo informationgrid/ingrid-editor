@@ -305,9 +305,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
           field.key as string,
         );
         if (formatter) {
-          field.props.columns.forEach(
-            (column, index) => (column.props.formatter = formatter[index]),
-          );
+          field.props.columns.forEach((column, index) => {
+            if (formatter[index]) {
+              return (column.props.formatter = formatter[index]);
+            }
+          });
         }
       }
 
@@ -395,7 +397,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         if (result) return result;
       }
       if (field.key === tableId) {
-        return field.props.columns.map((column) => column.props.formatter);
+        return field.props.columns.map((column) => column.props?.formatter);
       }
     }
     return null;
