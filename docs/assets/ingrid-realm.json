@@ -10,10 +10,7 @@
         "composite": true,
         "composites": {
           "client": {
-            "realm-management": [
-              "manage-realm",
-              "manage-users"
-            ]
+            "realm-management": ["manage-realm", "manage-users"]
           }
         },
         "clientRole": false,
@@ -27,25 +24,7 @@
         "composite": true,
         "composites": {
           "client": {
-            "realm-management": [
-              "view-users"
-            ]
-          }
-        },
-        "clientRole": false,
-        "containerId": "InGrid",
-        "attributes": {}
-      },
-      {
-        "id": "919f1e09-c14f-4e6d-aa58-2f0513377c87",
-        "name": "ige-user-manager",
-        "composite": true,
-        "composites": {
-          "client": {
-            "realm-management": [
-              "manage-realm",
-              "manage-users"
-            ]
+            "realm-management": ["view-users"]
           }
         },
         "clientRole": false,
@@ -60,12 +39,8 @@
       "rootUrl": "http://localhost:4300",
       "enabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": [
-        "http://localhost:4300/*"
-      ],
-      "webOrigins": [
-        "http://localhost:4300"
-      ],
+      "redirectUris": ["http://localhost:4300/*"],
+      "webOrigins": ["http://localhost:4300"],
       "publicClient": true,
       "protocol": "openid-connect",
       "attributes": {
