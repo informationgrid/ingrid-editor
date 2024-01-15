@@ -293,6 +293,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       if (field.fieldGroup) {
         field.fieldGroup = this.createFieldsForPrint(field.fieldGroup);
       }
+      if (field.props?.menuOptions) {
+        field.props.menuOptions.forEach((option) => {
+          option.fields.fieldGroup = this.createFieldsForPrint(
+            option.fields.fieldGroup,
+          );
+        });
+      }
       if (field.fieldArray) {
         (<FormlyFieldConfig>field.fieldArray).fieldGroup =
           this.createFieldsForPrint(
