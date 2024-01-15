@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: explanation
-docType: InGridLiterature
+docType: InGridPublication
 profile: ingrid
 
 # title, used as window title

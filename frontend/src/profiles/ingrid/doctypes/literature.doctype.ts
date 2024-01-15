@@ -25,7 +25,7 @@ import { IngridShared } from "./ingrid-shared";
   providedIn: "root",
 })
 export class LiteratureDoctype extends IngridShared {
-  id = "InGridLiterature";
+  id = "InGridPublication";
 
   label = "Dokument";
 

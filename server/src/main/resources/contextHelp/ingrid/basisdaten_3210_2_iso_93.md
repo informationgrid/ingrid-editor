@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: baseDataText
-docType: InGridLiterature
+docType: InGridPublication
 profile: ingrid
 
 

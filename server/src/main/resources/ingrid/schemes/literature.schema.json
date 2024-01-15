@@ -20,7 +20,7 @@
           "type": "string"
         },
         "_type": {
-          "const": "InGridLiterature"
+          "const": "InGridPublication"
         },
         "title": {
           "type": "string"

@@ -1,7 +1,7 @@
 {
   "_uuid": "5aaa65dc-e811-40a1-8026-d262b3d9fcf7",
   "title": "literature_5",
-  "_type": "InGridLiterature",
+  "_type": "InGridPublication",
   "dataset": { "languages": ["247"] },
   "spatial": {
     "references": [
