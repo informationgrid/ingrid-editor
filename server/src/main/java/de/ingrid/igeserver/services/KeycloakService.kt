@@ -305,7 +305,6 @@ class KeycloakService : UserManagementService {
                 val userRoles = mutableListOf(
                     roles.get("ige-user").toRepresentation(),
                 )
-                if (userHasAdminRole(user)) userRoles.add(roles.get("ige-user-manager").toRepresentation())
                 roles().realmLevel().add(userRoles)
 
                 return password
@@ -323,12 +322,6 @@ class KeycloakService : UserManagementService {
 
             val userResource = client.realm().users().get(kcUser.id)
             updateKeycloakUser(userResource, kcUser)
-            if (userHasAdminRole(user)) {
-                userResource.apply {
-                    val roles = client.realm().roles()
-                    roles().realmLevel().add(mutableListOf(roles.get("ige-user-manager").toRepresentation()))
-                }
-            }
         }
 
     }
@@ -466,8 +459,7 @@ class KeycloakService : UserManagementService {
             val roles = client.realm().roles()
             roles().realmLevel().remove(
                 listOf(
-                    roles.get("ige-user").toRepresentation(),
-                    roles.get("ige-user-manager").toRepresentation()
+                    roles.get("ige-user").toRepresentation()
                 )
             )
         }
@@ -475,7 +467,7 @@ class KeycloakService : UserManagementService {
 
     private fun filterRoles(roles: List<String>): List<String> {
         val ignoreRoles =
-            listOf("default-roles-ingrid", "ige-user", "ige-user-manager", "offline_access", "uma_authorization")
+            listOf("default-roles-ingrid", "ige-user", "offline_access", "uma_authorization")
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
