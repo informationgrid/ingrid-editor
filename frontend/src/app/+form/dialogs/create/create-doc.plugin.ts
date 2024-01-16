@@ -78,7 +78,6 @@ export class CreateDocumentPlugin extends Plugin {
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       )
       .subscribe((tooltipText) => {
-        console.log("init create doc button");
         this.toolbarService.addButton({
           id: "toolBtnNew",
           tooltip: tooltipText,
