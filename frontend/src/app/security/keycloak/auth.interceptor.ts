@@ -28,7 +28,6 @@ import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ModalService } from "../../services/modal/modal.service";
 import { IgeError } from "../../models/ige-error";
-import { KeycloakService } from "keycloak-angular";
 import { AuthenticationFactory } from "../auth.factory";
 
 @Injectable({
@@ -36,7 +35,6 @@ import { AuthenticationFactory } from "../auth.factory";
 })
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
-    private auth: KeycloakService,
     private authFactory: AuthenticationFactory,
     private modalService: ModalService,
   ) {}
@@ -52,7 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error) => {
         // if we have been logged out during a request then redirect to the start page
         // so that the keycloak login screen is shown
-        if (!this.auth.isLoggedIn()) {
+        if (!this.authFactory.get().isLoggedIn()) {
           const message =
             "Sie wurden abgemeldet und werden in 5 Sekunden zur Login-Seite geschickt.";
           this.showError(message);
