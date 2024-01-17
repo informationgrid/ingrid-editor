@@ -159,7 +159,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     city = "Hamburg",
                     postcode = "21109",
                     country = KeyValue("276", "Germany"),
-                    state = KeyValue("7", "Hamburg"),
+                    state = KeyValue("6", "Hamburg"),
                     phone = "+49 40 42826 5450"
                 )
                 operations shouldContainExactly listOf(
@@ -674,7 +674,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     city = "Potsdam",
                     postcode = "14777",
                     country = KeyValue("276", "Deutschland"),
-                    state = KeyValue("5", "Brandenburg"),
+                    state = KeyValue("4", "Brandenburg"),
                     phone = "+49 341 5634369"
                 )
 

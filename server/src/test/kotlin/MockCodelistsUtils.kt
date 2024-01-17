@@ -63,4 +63,15 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
             ?.entries?.find { it.data.contains(secondArg() as String) }
             ?.id
     }
+    
+    every { codelistHandler.getCatalogCodelistKey(any(), "6250", any()) } answers {
+        when (thirdArg<String>()) {
+                "Brandenburg" -> "4"
+                "Hamburg" -> "6"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
 }
