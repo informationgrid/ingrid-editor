@@ -103,7 +103,8 @@
                 !result.value &&
                 !result.ars &&
                 !result.title) ||
-            (view === 'wkt' && !result.wkt)
+            (view === 'wkt' && !result.wkt) ||
+            (view === 'wfsgnde' && !result.value && !result.title)
         "
         (click)="returnResult()"
     >
