@@ -28,9 +28,9 @@ import org.w3c.dom.Document
 class CswCapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    val catalogId: String
+    catalogId: String
 ) :
-    GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler), ICapabilitiesParser {
+    GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("2.0.2" to "1")
 
@@ -227,7 +227,7 @@ class CswCapabilitiesParser(
             )
         )
         address.state = getKeyValue(
-            "110", xPathUtils.getString(
+            "6250", xPathUtils.getString(
                 doc,
                 "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
             ), "name"

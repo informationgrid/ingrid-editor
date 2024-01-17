@@ -113,7 +113,7 @@ data class KeyValue(val key: String?, val value: String?)
 /**
  * @author André
  */
-open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codelistHandler: CodelistHandler) {
+open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codelistHandler: CodelistHandler, val catalogId: String) {
 
     val log = logger()
 
@@ -571,6 +571,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         if (codelistId == "6200" && value.lowercase() == "de") {
             val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
             return KeyValue(id, null)
+        }
+        if (codelistId == "6250") {
+            val id = codelistHandler.getCatalogCodelistKey(catalogId, codelistId, value)
+            return if (id != null) KeyValue(id, null) else null
         }
         
         var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)

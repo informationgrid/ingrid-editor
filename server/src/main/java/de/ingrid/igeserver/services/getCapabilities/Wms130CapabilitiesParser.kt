@@ -33,9 +33,9 @@ import org.w3c.dom.Node
 class Wms130CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    val catalogId: String
+    catalogId: String
 ) :
-    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler), ICapabilitiesParser {
+    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
@@ -217,7 +217,7 @@ class Wms130CapabilitiesParser(
             xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Country")
         )
         address.state = getKeyValue(
-            "110",
+            "6250",
             xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:StateOrProvince"),
             "name"
         )

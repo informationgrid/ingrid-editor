@@ -31,9 +31,9 @@ import org.w3c.dom.Document
 class Wfs200CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    val catalogId: String
+    catalogId: String
 ) :
-    GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler), ICapabilitiesParser {
+    GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2", "2.0.0" to "2")
 
@@ -280,7 +280,7 @@ class Wfs200CapabilitiesParser(
                     doc,
                     "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country"
                 ))
-            state = getKeyValue("110", xPathUtils.getString(
+            state = getKeyValue("6250", xPathUtils.getString(
                 doc,
                 "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
             ), "name")
