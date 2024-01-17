@@ -27,8 +27,8 @@ import org.w3c.dom.Document
 
 class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
                             private val researchService: ResearchService,
-                            val catalogId: String) :
-    GeneralCapabilitiesParser(XPathUtils(WcsNamespaceContext()), codelistHandler), ICapabilitiesParser {
+                            catalogId: String) :
+    GeneralCapabilitiesParser(XPathUtils(WcsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
@@ -152,7 +152,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:country"
         ))
-        address.state = getKeyValue("110", xPathUtils.getString(
+        address.state = getKeyValue("6250", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:administrativeArea"
         ), "name")

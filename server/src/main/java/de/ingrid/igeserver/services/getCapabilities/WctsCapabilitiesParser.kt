@@ -27,8 +27,8 @@ import org.w3c.dom.Document
 
 class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
                              private val researchService: ResearchService,
-                             val catalogId: String) :
-    GeneralCapabilitiesParser(XPathUtils(WctsNamespaceContext()), codelistHandler), ICapabilitiesParser {
+                             catalogId: String) :
+    GeneralCapabilitiesParser(XPathUtils(WctsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
 
     private val versionSyslistMap = mapOf("1.0" to "1")
@@ -268,7 +268,7 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:Country"
         ))
-        address.state = getKeyValue("110", xPathUtils.getString(
+        address.state = getKeyValue("6250", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:AdministrativeArea"
         ), "name")
