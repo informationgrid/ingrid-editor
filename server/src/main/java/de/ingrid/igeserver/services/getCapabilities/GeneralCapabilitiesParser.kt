@@ -574,7 +574,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         }
         if (codelistId == "6250") {
             val id = codelistHandler.getCatalogCodelistKey(catalogId, codelistId, value)
-            return if (id != null) KeyValue(id, null) else null
+            return KeyValue(id, value)
         }
         
         var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)
