@@ -115,7 +115,11 @@ You are all set. Run server and frontend with the appropriate run configuration.
 To get a list of new versions of our dependencies you can run the following command:
 
 ```shell
+# server
 gradlew :server:dependencyUpdates
+
+# frontend
+yarn upgrade-interactive
 ```
 
 ## Apache Configuration

@@ -9,7 +9,7 @@ buildscript {
     ext.kotest_version = '5.8.0'
     ext.jte_version = '3.1.6'
     ext.geotools_version = '28.2'
-    ext.log4j_version = '2.22.1'
+    ext['log4j2.version'] = '2.22.1'
 }
 
 plugins {
@@ -116,7 +116,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.43'
+    implementation 'net.pwall.json:json-kotlin-schema:0.44'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
@@ -126,7 +126,7 @@ dependencies {
     
     // OpenAI
     // import Kotlin API client BOM
-    implementation platform('com.aallam.openai:openai-client-bom:3.5.0')
+    implementation platform('com.aallam.openai:openai-client-bom:3.6.3')
 
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
@@ -142,21 +142,16 @@ dependencies {
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
-    implementation platform("org.apache.logging.log4j:log4j-bom:$log4j_version")
-    implementation 'org.apache.logging.log4j:log4j-api'
-    runtimeOnly 'org.apache.logging.log4j:log4j-core'
-
-
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.1'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
 
     implementation 'com.github.fge:json-schema-validator:2.2.6'
-    implementation 'de.ingrid:ingrid-codelist-service:6.3.0'
+    implementation 'de.ingrid:ingrid-codelist-service:7.0.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.apache.commons:commons-lang3:3.13.0'
-    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    implementation 'org.apache.commons:commons-text:1.11.0'
 
     // GeoTools
     implementation("org.geotools.xsd:gt-xsd-gml3:$geotools_version") {
@@ -185,7 +180,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.3' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation 'io.mockk:mockk:1.13.9'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -193,11 +188,11 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:6.3.0')
+    implementation('de.ingrid:ingrid-elasticsearch-tools:7.0.0')
     // for javax.annotation-support for elasticsearch-tools
     implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
 
-    implementation('de.ingrid:ingrid-ibus-client:6.3.0') {
+    implementation('de.ingrid:ingrid-ibus-client:7.0.0') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
