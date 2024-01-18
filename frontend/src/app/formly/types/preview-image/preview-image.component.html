@@ -1,70 +1,77 @@
-<div
-    *ngIf="field.fieldGroup.length > 0"
-    class="image-container flex-row flex-wrap gap-24 row-gap-12"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="drop($event)"
->
-    <mat-card
-        *ngFor="let field of field.fieldGroup; let i = index"
-        cdkDrag
-        (mousedown)="prepareForDrag(model[i]?.fileName, i)"
+@if (field.fieldGroup.length > 0) {
+    <div
+        class="image-container flex-row flex-wrap gap-24 row-gap-12"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        (cdkDropListDropped)="drop($event)"
     >
-        <!-- when switching between same datasets, the model might not be initialized for a short time -->
-        <ng-container *ngIf="model">
-            <div class="content">
-                <img
-                    [src]="imageLinks[model[i]?.fileName?.uri]"
-                    [alt]="model[i]?.fileName?.uri"
-                    [class]="'preview-image-' + i"
-                />
+        @for (field of field.fieldGroup; track field; let i = $index) {
+            <mat-card
+                cdkDrag
+                (mousedown)="prepareForDrag(model[i]?.fileName, i)"
+            >
+                <!-- when switching between same datasets, the model might not be initialized for a short time -->
+                @if (model) {
+                    <div class="content">
+                        <img
+                            [src]="imageLinks[model[i]?.fileName?.uri]"
+                            [alt]="model[i]?.fileName?.uri"
+                            [class]="'preview-image-' + i"
+                        />
+                        @if (!formControl.disabled) {
+                            <button
+                                type="button"
+                                mat-icon-button
+                                class="btn-edit"
+                                matTooltip="Bearbeiten"
+                                (click)="edit(i)"
+                            >
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        }
+                        @if (!formControl.disabled) {
+                            <button
+                                type="button"
+                                mat-icon-button
+                                class="btn-close"
+                                matTooltip="Entfernen"
+                                (click)="remove(i)"
+                            >
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        }
+                    </div>
+                    <mat-card-footer>
+                        @if (model[i]?.fileDescription) {
+                            <div class="line-clamp-2">
+                                {{ model[i]?.fileDescription }}
+                            </div>
+                        }
+                    </mat-card-footer>
+                }
+            </mat-card>
+        }
+    </div>
+}
 
-                <button
-                    *ngIf="!formControl.disabled"
-                    type="button"
-                    mat-icon-button
-                    class="btn-edit"
-                    matTooltip="Bearbeiten"
-                    (click)="edit(i)"
-                >
-                    <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                    *ngIf="!formControl.disabled"
-                    type="button"
-                    mat-icon-button
-                    class="btn-close"
-                    matTooltip="Entfernen"
-                    (click)="remove(i)"
-                >
-                    <mat-icon>close</mat-icon>
-                </button>
-            </div>
-            <mat-card-footer>
-                <div class="line-clamp-2" *ngIf="model[i]?.fileDescription">
-                    {{ model[i]?.fileDescription }}
-                </div>
-            </mat-card-footer>
-        </ng-container>
-    </mat-card>
-</div>
-
-<div *ngIf="!formControl.disabled" class="button-wrapper">
-    <button
-        type="button"
-        mat-stroked-button
-        color="primary"
-        (click)="showUploadFilesDialog()"
-    >
-        Dateien hochladen
-    </button>
-    oder
-    <button
-        type="button"
-        mat-stroked-button
-        color="primary"
-        (click)="showAddLinkDialog()"
-    >
-        Link angeben
-    </button>
-</div>
+@if (!formControl.disabled) {
+    <div class="button-wrapper">
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showUploadFilesDialog()"
+        >
+            Dateien hochladen
+        </button>
+        oder
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showAddLinkDialog()"
+        >
+            Link angeben
+        </button>
+    </div>
+}

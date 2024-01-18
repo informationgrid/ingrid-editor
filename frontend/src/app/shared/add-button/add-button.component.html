@@ -1,44 +1,44 @@
 <div class="wrapper">
-    <ng-container *ngIf="_options?.length === 0; else menuButton">
-        <button
-            *ngIf="buttonType == 'flat'"
-            type="button"
-            color="primary"
-            mat-flat-button
-            class="button-with-text primary"
-            data-cy="btn-add"
-            [class.padding-btn]="showTitle"
-            [class.error-outline]="showRequiredError"
-            (click)="add.emit()"
-            aria-haspopup="true"
-            [attr.aria-labelledby]="ariaLabelledBy"
-            aria-description="hinzufügen"
-            [attr.aria-description]="
-                matError?.nativeElement?.textContent ?? 'hinzufügen'
-            "
-        >
-            <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
-        </button>
-        <button
-            *ngIf="buttonType == 'stroked'"
-            type="button"
-            mat-stroked-button
-            class="button-with-text"
-            [class.padding-btn]="showTitle"
-            [class.error-outline]="showRequiredError"
-            (click)="add.emit()"
-            [matTooltip]="showTitle ? '' : 'Hinzufügen'"
-            aria-haspopup="dialog"
-            [attr.aria-labelledby]="ariaLabelledBy"
-            [attr.aria-description]="
-                matError?.nativeElement?.textContent ?? 'hinzufügen'
-            "
-        >
-            <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
-        </button>
-    </ng-container>
-
-    <ng-template #menuButton>
+    @if (_options?.length === 0) {
+        @if (buttonType == "flat") {
+            <button
+                type="button"
+                color="primary"
+                mat-flat-button
+                class="button-with-text primary"
+                data-cy="btn-add"
+                [class.padding-btn]="showTitle"
+                [class.error-outline]="showRequiredError"
+                (click)="add.emit()"
+                aria-haspopup="true"
+                [attr.aria-labelledby]="ariaLabelledBy"
+                aria-description="hinzufügen"
+                [attr.aria-description]="
+                    matError?.nativeElement?.textContent ?? 'hinzufügen'
+                "
+            >
+                <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+            </button>
+        }
+        @if (buttonType == "stroked") {
+            <button
+                type="button"
+                mat-stroked-button
+                class="button-with-text"
+                [class.padding-btn]="showTitle"
+                [class.error-outline]="showRequiredError"
+                (click)="add.emit()"
+                [matTooltip]="showTitle ? '' : 'Hinzufügen'"
+                aria-haspopup="dialog"
+                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-description]="
+                    matError?.nativeElement?.textContent ?? 'hinzufügen'
+                "
+            >
+                <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
+            </button>
+        }
+    } @else {
         <button
             type="button"
             mat-stroked-button
@@ -54,24 +54,26 @@
             <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
         </button>
         <mat-menu #menuOptions="matMenu">
-            <button
-                mat-menu-item
-                *ngFor="let option of _options"
-                (click)="add.emit(option.key)"
-            >
-                {{ option.value }}
-            </button>
+            @for (option of _options; track option) {
+                <button mat-menu-item (click)="add.emit(option.key)">
+                    {{ option.value }}
+                </button>
+            }
         </mat-menu>
-    </ng-template>
+    }
 
     <ng-container *transloco="let t">
-        <mat-error #matError *ngIf="showRequiredError" class="error">{{
-            t("form.validationMessages.createOneEntry")
-        }}</mat-error>
+        @if (showRequiredError) {
+            <mat-error #matError class="error">{{
+                t("form.validationMessages.createOneEntry")
+            }}</mat-error>
+        }
     </ng-container>
 
     <ng-template #buttonContent>
         <mat-icon>add</mat-icon>
-        <span *ngIf="showTitle" class="btn-title">{{ buttonTitle }}</span>
+        @if (showTitle) {
+            <span class="btn-title">{{ buttonTitle }}</span>
+        }
     </ng-template>
 </div>

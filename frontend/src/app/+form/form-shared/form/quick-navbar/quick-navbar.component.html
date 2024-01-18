@@ -1,23 +1,23 @@
-<div class="navigation-bar-wrapper" *ngIf="model._type != 'FOLDER'">
-    <div class="navigation-bar flex-row">
-        <ige-document-icon
-            [doc]="model"
-            [toolTipModifier]="addTitleToTooltip"
-        ></ige-document-icon>
-
-        <ige-header-navigation
-            class="flex-1"
-            [sections]="sections ?? []"
-        ></ige-header-navigation>
+@if (model._type != "FOLDER") {
+    <div class="navigation-bar-wrapper">
+        <div class="navigation-bar flex-row">
+            <ige-document-icon
+                [doc]="model"
+                [toolTipModifier]="addTitleToTooltip"
+            ></ige-document-icon>
+            <ige-header-navigation
+                class="flex-1"
+                [sections]="sections ?? []"
+            ></ige-header-navigation>
+        </div>
     </div>
-</div>
+}
 
 <ige-form-message></ige-form-message>
 
-<ige-error-panel
-    *ngIf="numberOfErrors > 0"
-    [numErrors]="numberOfErrors"
-></ige-error-panel>
+@if (numberOfErrors > 0) {
+    <ige-error-panel [numErrors]="numberOfErrors"></ige-error-panel>
+}
 
 <div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
     <div class="diagonal"></div>

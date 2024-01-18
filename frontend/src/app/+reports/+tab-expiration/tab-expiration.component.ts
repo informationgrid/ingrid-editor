@@ -38,7 +38,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { catchError, filter, map, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatDividerModule } from "@angular/material/divider";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -59,7 +59,6 @@ import { isExpired } from "../../services/utils";
     MatCheckboxModule,
     ExpirationTableComponent,
     MatButtonModule,
-    NgIf,
     MatDividerModule,
     MatTabsModule,
     MatProgressSpinnerModule,

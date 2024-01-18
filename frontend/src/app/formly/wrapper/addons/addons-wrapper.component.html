@@ -1,44 +1,47 @@
 <ng-template #matPrefix>
-    <span
-        *ngIf="props.addonLeft"
-        [ngStyle]="{ cursor: props.addonLeft?.onClick ? 'pointer' : 'inherit' }"
-        (click)="addonLeftClick($event)"
-    >
-        <mat-icon *ngIf="props.addonLeft.icon">{{
-            props.addonLeft.icon
-        }}</mat-icon>
+    @if (props.addonLeft) {
         <span
-            *ngIf="props.addonLeft.text"
-            [class.comment-field]="props.addonLeft.asComment"
-            >{{ props.addonLeft.text }}</span
+            [ngStyle]="{
+                cursor: props.addonLeft?.onClick ? 'pointer' : 'inherit'
+            }"
+            (click)="addonLeftClick($event)"
         >
-    </span>
+            @if (props.addonLeft.icon) {
+                <mat-icon>{{ props.addonLeft.icon }}</mat-icon>
+            }
+            @if (props.addonLeft.text) {
+                <span [class.comment-field]="props.addonLeft.asComment">{{
+                    props.addonLeft.text
+                }}</span>
+            }
+        </span>
+    }
 </ng-template>
 
 <ng-container #fieldComponent></ng-container>
 
 <ng-template #matSuffix>
     <ng-container *ngTemplateOutlet="props._matSuffix"></ng-container>
-    <button
-        *ngIf="props.addonRight?.isButton"
-        type="button"
-        mat-icon-button
-        (click)="addonRightClick($event)"
-    >
-        <mat-icon *ngIf="props.addonRight.icon">{{
-            props.addonRight.icon
-        }}</mat-icon>
-    </button>
-    <span
-        *ngIf="props.addonRight && !props.addonRight.isButton"
-        [ngStyle]="{
-            cursor: props.addonRight.onClick ? 'pointer' : 'inherit'
-        }"
-        (click)="addonRightClick($event)"
-    >
-        <mat-icon *ngIf="props.addonRight.icon">{{
-            props.addonRight.icon
-        }}</mat-icon>
-        <span *ngIf="props.addonRight.text">{{ props.addonRight.text }}</span>
-    </span>
+    @if (props.addonRight?.isButton) {
+        <button type="button" mat-icon-button (click)="addonRightClick($event)">
+            @if (props.addonRight.icon) {
+                <mat-icon>{{ props.addonRight.icon }}</mat-icon>
+            }
+        </button>
+    }
+    @if (props.addonRight && !props.addonRight.isButton) {
+        <span
+            [ngStyle]="{
+                cursor: props.addonRight.onClick ? 'pointer' : 'inherit'
+            }"
+            (click)="addonRightClick($event)"
+        >
+            @if (props.addonRight.icon) {
+                <mat-icon>{{ props.addonRight.icon }}</mat-icon>
+            }
+            @if (props.addonRight.text) {
+                <span>{{ props.addonRight.text }}</span>
+            }
+        </span>
+    }
 </ng-template>

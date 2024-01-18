@@ -18,11 +18,12 @@
         [disabled]="!canCreateDatasets"
         (submit)="createNewDataset()"
     ></ige-action-button>
-    <ige-action-button
-        *ngIf="canImport"
-        [label]="t('importDocument')"
-        icon="import_export"
-        [disabled]="!canImport"
-        (submit)="importDataset()"
-    ></ige-action-button>
+    @if (canImport) {
+        <ige-action-button
+            [label]="t('importDocument')"
+            icon="import_export"
+            [disabled]="!canImport"
+            (submit)="importDataset()"
+        ></ige-action-button>
+    }
 </div>

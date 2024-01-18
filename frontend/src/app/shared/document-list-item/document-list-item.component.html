@@ -1,74 +1,84 @@
-<mat-selection-list
-    *ngIf="docs"
-    class="doc-item"
-    [multiple]="false"
-    [class.dense]="denseMode"
-    [class.hide-divider]="hideDivider"
->
-    <mat-list-option
-        *ngFor="let doc of docs | async as allDocs; let i = index"
-        (click)="makeSelection(doc)"
-        tabindex="0"
-        cdkMonitorElementFocus
-        (keydown.enter)="makeSelection(doc)"
-        [class.selected]="currentSelection && doc.id === currentSelection.id"
-        [class.hide-bg-selection]="showSelection"
-        [class.disabled]="doc.hasWritePermission === false"
-        [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
+@if (docs) {
+    <mat-selection-list
+        class="doc-item"
+        [multiple]="false"
+        [class.dense]="denseMode"
+        [class.hide-divider]="hideDivider"
     >
-        <mat-icon
-            *ngIf="showSelection"
-            [class.invisible]="currentSelection?.id !== doc.id"
-            [class.extra-padding]="!showIcons"
-            class="marker mark-color"
-            matListItemIcon
-            svgIcon="baseline-check-24px"
-        ></mat-icon>
-        <ige-document-icon
-            *ngIf="showIcons"
-            [doc]="doc"
-            matListItemIcon
-        ></ige-document-icon>
-        <span matListItemTitle class="doc-item-content">
-            <span class="card-title">{{ doc.title }}</span>
-            <span
-                *ngIf="!hideDate"
-                class="date"
-                [matTooltip]="doc._contentModified | date: 'dd.LL.yyyy HH:mm'"
-                >{{ doc._contentModified | dateAgo: "DE" }}</span
-            >
-        </span>
-        <mat-divider
-            *ngIf="i < allDocs.length - 1"
-            aria-hidden="true"
-        ></mat-divider>
-    </mat-list-option>
-</mat-selection-list>
-
-<div
-    *ngIf="doc"
-    class="doc-item single multiline flex-row"
-    (click)="makeSelection(doc)"
->
-    <mat-icon
-        *ngIf="
-            showSelection && currentSelection && currentSelection.id === doc.id
-        "
-        class="marker"
-        matListItemIcon
-        svgIcon="baseline-check-24px"
-    ></mat-icon>
-
-    <ige-document-icon [doc]="doc" matListItemIcon></ige-document-icon>
-
-    <span matListItemTitle>
-        <!-- in case we want to style title, we need to add it as innerHTML -->
-        <span [innerHTML]="doc.title"></span>
-        <span
-            *ngIf="!hideDate"
-            class="date"
-            [matTooltip]="doc._contentModified | date: 'dd.LL.yyyy HH:mm'"
-            >{{ doc._contentModified | dateAgo: "DE" }}</span
+        <mat-list-option
+            *ngFor="let doc of docs | async as allDocs; let i = index"
+            (click)="makeSelection(doc)"
+            tabindex="0"
+            cdkMonitorElementFocus
+            (keydown.enter)="makeSelection(doc)"
+            [class.selected]="
+                currentSelection && doc.id === currentSelection.id
+            "
+            [class.hide-bg-selection]="showSelection"
+            [class.disabled]="doc.hasWritePermission === false"
+            [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
         >
-    </span>
-</div>
+            @if (showSelection) {
+                <mat-icon
+                    [class.invisible]="currentSelection?.id !== doc.id"
+                    [class.extra-padding]="!showIcons"
+                    class="marker mark-color"
+                    matListItemIcon
+                    svgIcon="baseline-check-24px"
+                ></mat-icon>
+            }
+            @if (showIcons) {
+                <ige-document-icon
+                    [doc]="doc"
+                    matListItemIcon
+                ></ige-document-icon>
+            }
+            <span matListItemTitle class="doc-item-content">
+                <span class="card-title">{{ doc.title }}</span>
+                @if (!hideDate) {
+                    <span
+                        class="date"
+                        [matTooltip]="
+                            doc._contentModified | date: 'dd.LL.yyyy HH:mm'
+                        "
+                        >{{ doc._contentModified | dateAgo: "DE" }}</span
+                    >
+                }
+            </span>
+            @if (i < allDocs.length - 1) {
+                <mat-divider aria-hidden="true"></mat-divider>
+            }
+        </mat-list-option>
+    </mat-selection-list>
+}
+
+@if (doc) {
+    <div
+        class="doc-item single multiline flex-row"
+        (click)="makeSelection(doc)"
+    >
+        @if (
+            showSelection && currentSelection && currentSelection.id === doc.id
+        ) {
+            <mat-icon
+                class="marker"
+                matListItemIcon
+                svgIcon="baseline-check-24px"
+            ></mat-icon>
+        }
+        <ige-document-icon [doc]="doc" matListItemIcon></ige-document-icon>
+        <span matListItemTitle>
+            <!-- in case we want to style title, we need to add it as innerHTML -->
+            <span [innerHTML]="doc.title"></span>
+            @if (!hideDate) {
+                <span
+                    class="date"
+                    [matTooltip]="
+                        doc._contentModified | date: 'dd.LL.yyyy HH:mm'
+                    "
+                    >{{ doc._contentModified | dateAgo: "DE" }}</span
+                >
+            }
+        </span>
+    </div>
+}

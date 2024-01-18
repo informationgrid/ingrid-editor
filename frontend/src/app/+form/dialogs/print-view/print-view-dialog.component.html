@@ -1,45 +1,51 @@
 <ige-dialog-template label="Vorschau" submitLabel="Drucken" (submit)="print()">
     <ng-container header>
         <div class="flex-1"></div>
-        <mat-button-toggle-group
-            *ngIf="data.modelPublished"
-            name="compareView"
-            value="false"
-            aria-label="Ansicht"
-            (change)="this.compareView = !this.compareView"
-        >
-            <mat-button-toggle value="false">Druckansicht</mat-button-toggle>
-            <mat-button-toggle value="true"
-                >Vergleichsansicht</mat-button-toggle
+        @if (data.modelPublished) {
+            <mat-button-toggle-group
+                name="compareView"
+                value="false"
+                aria-label="Ansicht"
+                (change)="this.compareView = !this.compareView"
             >
-        </mat-button-toggle-group>
+                <mat-button-toggle value="false"
+                    >Druckansicht</mat-button-toggle
+                >
+                <mat-button-toggle value="true"
+                    >Vergleichsansicht</mat-button-toggle
+                >
+            </mat-button-toggle-group>
+        }
     </ng-container>
 
     <div content id="print-content" class="preview-dialog">
-        <formly-form
-            *ngIf="!compareView"
-            [form]="form"
-            [fields]="data.fields"
-            [model]="data.model"
-            [options]="options"
-        ></formly-form>
-        <as-split *ngIf="compareView">
-            <as-split-area class="working">
-                <formly-form
-                    [form]="form"
-                    [fields]="data.fields"
-                    [model]="data.model"
-                    [options]="options"
-                ></formly-form>
-            </as-split-area>
-            <as-split-area class="published">
-                <formly-form
-                    [form]="formCompare"
-                    [fields]="data.fieldsPublished"
-                    [model]="data.modelPublished"
-                    [options]="options"
-                ></formly-form>
-            </as-split-area>
-        </as-split>
+        @if (!compareView) {
+            <formly-form
+                [form]="form"
+                [fields]="data.fields"
+                [model]="data.model"
+                [options]="options"
+            ></formly-form>
+        }
+        @if (compareView) {
+            <as-split>
+                <as-split-area class="working">
+                    <formly-form
+                        [form]="form"
+                        [fields]="data.fields"
+                        [model]="data.model"
+                        [options]="options"
+                    ></formly-form>
+                </as-split-area>
+                <as-split-area class="published">
+                    <formly-form
+                        [form]="formCompare"
+                        [fields]="data.fieldsPublished"
+                        [model]="data.modelPublished"
+                        [options]="options"
+                    ></formly-form>
+                </as-split-area>
+            </as-split>
+        }
     </div>
 </ige-dialog-template>

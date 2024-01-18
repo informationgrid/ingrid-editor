@@ -1,32 +1,33 @@
 <div class="title flex-row" *transloco="let t">
     <ige-document-icon [doc]="_model"></ige-document-icon>
 
-    <span
-        *ngIf="!showTitleInput"
-        class="label flex-1 flex-row justify-content-space-between"
-        [matTooltip]="
-            !address || !disableEdit
-                ? undefined
-                : t(
-                      'form.titleTooltip.' +
-                          (_model.firstName ? 'Person' : 'Organisation')
-                  )
-        "
-        [matTooltipDisabled]="!address || !disableEdit"
-        [class.editable]="!disableEdit"
-        (click)="!disableEdit && editTitle()"
-    >
+    @if (!showTitleInput) {
         <span
-            class="flex-1"
-            tabindex="0"
-            role="textbox"
-            aria-label="Titel der Metadaten"
-            aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
-            (keyup.enter)="!disableEdit && editTitle()"
-            >{{ _form.get("title")?.value || "Kein Titel" }}</span
+            class="label flex-1 flex-row justify-content-space-between"
+            [matTooltip]="
+                !address || !disableEdit
+                    ? undefined
+                    : t(
+                          'form.titleTooltip.' +
+                              (_model.firstName ? 'Person' : 'Organisation')
+                      )
+            "
+            [matTooltipDisabled]="!address || !disableEdit"
+            [class.editable]="!disableEdit"
+            (click)="!disableEdit && editTitle()"
         >
-        <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
-    </span>
+            <span
+                class="flex-1"
+                tabindex="0"
+                role="textbox"
+                aria-label="Titel der Metadaten"
+                aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
+                (keyup.enter)="!disableEdit && editTitle()"
+                >{{ _form.get("title")?.value || "Kein Titel" }}</span
+            >
+            <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
+        </span>
+    }
 
     <form
         class="flex-1 flex-row"
@@ -62,28 +63,30 @@
         <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
     </button>
     <div></div>
-    <button
-        #moreButton
-        *ngIf="showMoreActions && moreActions.length"
-        data-cy="more-actions"
-        mat-icon-button
-        class="menu dark menu-button"
-        [matMenuTriggerFor]="moreActionsMenu"
-        matTooltip="Mehr Optionen"
-    >
-        <mat-icon svgIcon="Mehr"></mat-icon>
-        <mat-menu #moreActionsMenu="matMenu">
-            <button
-                [attr.data-cy]="'action-' + action.name"
-                mat-menu-item
-                *ngFor="let action of moreActions"
-                (click)="moreButton.focus(); action.action()"
-                [disabled]="action.disabled"
-            >
-                {{ action.title }}
-            </button>
-        </mat-menu>
-    </button>
+    @if (showMoreActions && moreActions.length) {
+        <button
+            #moreButton
+            data-cy="more-actions"
+            mat-icon-button
+            class="menu dark menu-button"
+            [matMenuTriggerFor]="moreActionsMenu"
+            matTooltip="Mehr Optionen"
+        >
+            <mat-icon svgIcon="Mehr"></mat-icon>
+            <mat-menu #moreActionsMenu="matMenu">
+                @for (action of moreActions; track action) {
+                    <button
+                        [attr.data-cy]="'action-' + action.name"
+                        mat-menu-item
+                        (click)="moreButton.focus(); action.action()"
+                        [disabled]="action.disabled"
+                    >
+                        {{ action.title }}
+                    </button>
+                }
+            </mat-menu>
+        </button>
+    }
 </div>
 
 <ige-header-more [showMore]="showMore" [model]="_model"></ige-header-more>

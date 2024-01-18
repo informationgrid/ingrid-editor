@@ -29,7 +29,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AngularSplitModule } from "angular-split";
 import { MatButtonModule } from "@angular/material/button";
-import { NgIf } from "@angular/common";
+
 import {
   MixedCdkDragDropModule,
   MixedDragDropConfig,
@@ -54,7 +54,6 @@ import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-tem
     FormlyModule,
     AngularSplitModule,
     MatButtonModule,
-    NgIf,
     MixedCdkDragDropModule,
     DialogTemplateModule,
   ],

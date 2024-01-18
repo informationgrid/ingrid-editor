@@ -35,7 +35,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { TranslocoModule } from "@ngneat/transloco";
-import { NgIf } from "@angular/common";
+
 import { firstValueFrom } from "rxjs";
 
 @Component({
@@ -59,7 +59,6 @@ import { firstValueFrom } from "rxjs";
     MatButtonModule,
     MatTooltipModule,
     TranslocoModule,
-    NgIf,
   ],
   standalone: true,
 })

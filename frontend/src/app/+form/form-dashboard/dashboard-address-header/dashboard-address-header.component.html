@@ -13,11 +13,12 @@
         [disabled]="!canCreateAddress"
         (submit)="createNewAddress()"
     ></ige-action-button>
-    <ige-action-button
-        *ngIf="canImport"
-        label="Adressen Import"
-        icon="import_export"
-        [disabled]="!canImport"
-        (submit)="importDataset()"
-    ></ige-action-button>
+    @if (canImport) {
+        <ige-action-button
+            label="Adressen Import"
+            icon="import_export"
+            [disabled]="!canImport"
+            (submit)="importDataset()"
+        ></ige-action-button>
+    }
 </div>

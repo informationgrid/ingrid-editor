@@ -1,90 +1,95 @@
-<div
-    *ngIf="multiSelectionModeEnabled"
-    class="multi-select-area justify-content-space-between align-items-center"
->
-    <mat-checkbox
-        data-cy="toggle-all-selection"
-        matTooltip="Alle aus-/abwählen"
-        [checked]="checkToggleAll"
-        [indeterminate]="indeterminateToggleAll"
-        (change)="toggleAllSelection.next($event.checked)"
-        (keyup.enter)="toggleAllSelection.next(!checkToggleAll)"
-        aria-label="Alle Metadaten in der Baumansicht auswählen"
-        >Alle
-    </mat-checkbox>
-    <button
-        mat-icon-button
-        matSuffix
-        (click)="deactivateMultiSelection()"
-        data-cy="exit-multi-select-mode"
-        aria-label="Auswahlmodus abbrechen"
+@if (multiSelectionModeEnabled) {
+    <div
+        class="multi-select-area justify-content-space-between align-items-center"
     >
-        <mat-icon>cancel</mat-icon>
-    </button>
-</div>
+        <mat-checkbox
+            data-cy="toggle-all-selection"
+            matTooltip="Alle aus-/abwählen"
+            [checked]="checkToggleAll"
+            [indeterminate]="indeterminateToggleAll"
+            (change)="toggleAllSelection.next($event.checked)"
+            (keyup.enter)="toggleAllSelection.next(!checkToggleAll)"
+            aria-label="Alle Metadaten in der Baumansicht auswählen"
+            >Alle
+        </mat-checkbox>
+        <button
+            mat-icon-button
+            matSuffix
+            (click)="deactivateMultiSelection()"
+            data-cy="exit-multi-select-mode"
+            aria-label="Auswahlmodus abbrechen"
+        >
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </div>
+}
 
 <div class="header flex-col">
-    <div
-        *ngIf="showOptions && !multiSelectionModeEnabled"
-        class="options flex-row flex-wrap-reverse justify-content-space-between align-items-stretch"
-    >
-        <div class="multi-select" *ngIf="showMultiSelectButton">
-            <mat-checkbox
-                data-cy="edit-button"
-                matTooltip="Mehrfachauswahl"
-                (click)="activateMultiSelection()"
-                (keyup.enter)="activateMultiSelection()"
-                aria-label="Auswahl der Metadaten in der Baumansicht aktivieren"
-            >
-                Auswahl
-            </mat-checkbox>
-        </div>
-
-        <div class="flex-1 flex-row justify-content-end align-items-center">
-            <!--            <mat-slide-toggle
-                class="show-all"
-                checked
-                (change)="toggleView.emit($event.checked)"
-                >Alle anzeigen
-            </mat-slide-toggle>-->
-
-            <button
-                *ngIf="showReloadButton"
-                mat-icon-button
-                data-cy="reload-button"
-                class="reload-button"
-                matTooltip="Aktualisieren"
-                (click)="reloadTree()"
-                aria-label="Die Baumansicht der Metadaten neuladen"
-            >
-                <mat-icon>refresh</mat-icon>
-            </button>
-        </div>
-    </div>
-
-    <div *ngIf="showSearch" data-cy="tree-search-field">
-        <ige-search-input
-            [autocompleteRef]="searchAuto"
-            [searchSub]="searchSub"
-            [query]="query"
-            [flexWidth]="true"
-            [focus]="false"
-            [withWhiteBorder]="false"
-            placeholder="Suchen"
-            showSearchIcon="true"
-            ariaLabel="Suche nach der Metadaten in der Baumansicht"
-        ></ige-search-input>
-
-        <mat-autocomplete
-            #searchAuto="matAutocomplete"
-            class="quicksearch-auto-tree dense"
+    @if (showOptions && !multiSelectionModeEnabled) {
+        <div
+            class="options flex-row flex-wrap-reverse justify-content-space-between align-items-stretch"
         >
-            <mat-option
-                *ngFor="let doc of searchResult | async"
-                (onSelectionChange)="loadResultDocument(doc)"
+            @if (showMultiSelectButton) {
+                <div class="multi-select">
+                    <mat-checkbox
+                        data-cy="edit-button"
+                        matTooltip="Mehrfachauswahl"
+                        (click)="activateMultiSelection()"
+                        (keyup.enter)="activateMultiSelection()"
+                        aria-label="Auswahl der Metadaten in der Baumansicht aktivieren"
+                    >
+                        Auswahl
+                    </mat-checkbox>
+                </div>
+            }
+            <div class="flex-1 flex-row justify-content-end align-items-center">
+                <!--            <mat-slide-toggle
+        class="show-all"
+        checked
+        (change)="toggleView.emit($event.checked)"
+        >Alle anzeigen
+      </mat-slide-toggle>-->
+                @if (showReloadButton) {
+                    <button
+                        mat-icon-button
+                        data-cy="reload-button"
+                        class="reload-button"
+                        matTooltip="Aktualisieren"
+                        (click)="reloadTree()"
+                        aria-label="Die Baumansicht der Metadaten neuladen"
+                    >
+                        <mat-icon>refresh</mat-icon>
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    @if (showSearch) {
+        <div data-cy="tree-search-field">
+            <ige-search-input
+                [autocompleteRef]="searchAuto"
+                [searchSub]="searchSub"
+                [query]="query"
+                [flexWidth]="true"
+                [focus]="false"
+                [withWhiteBorder]="false"
+                placeholder="Suchen"
+                showSearchIcon="true"
+                ariaLabel="Suche nach der Metadaten in der Baumansicht"
+            ></ige-search-input>
+            <mat-autocomplete
+                #searchAuto="matAutocomplete"
+                class="quicksearch-auto-tree dense"
             >
-                <ige-document-list-item [doc]="doc"></ige-document-list-item>
-            </mat-option>
-        </mat-autocomplete>
-    </div>
+                @for (doc of searchResult | async; track doc) {
+                    <mat-option (onSelectionChange)="loadResultDocument(doc)">
+                        <ige-document-list-item
+                            [doc]="doc"
+                        ></ige-document-list-item>
+                    </mat-option>
+                }
+            </mat-autocomplete>
+        </div>
+    }
 </div>

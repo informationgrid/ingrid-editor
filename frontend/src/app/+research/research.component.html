@@ -4,18 +4,19 @@
     class="page-tabs-routing"
     [tabPanel]="tabPanel"
 >
-    <a
-        *ngFor="let tab of tabs; let i = index"
-        [attr.data-cy]="'tab-' + tab.path"
-        mat-tab-link
-        #rla="routerLinkActive"
-        routerLinkActive="active-link"
-        [routerLink]="tab.path"
-        (click)="updateTab(i)"
-        [active]="rla.isActive"
-    >
-        {{ tab.label }}
-    </a>
+    @for (tab of tabs; track tab; let i = $index) {
+        <a
+            [attr.data-cy]="'tab-' + tab.path"
+            mat-tab-link
+            #rla="routerLinkActive"
+            routerLinkActive="active-link"
+            [routerLink]="tab.path"
+            (click)="updateTab(i)"
+            [active]="rla.isActive"
+        >
+            {{ tab.label }}
+        </a>
+    }
 </nav>
 
 <mat-tab-nav-panel #tabPanel>

@@ -14,27 +14,35 @@
         </mat-checkbox>
     </div>
 
-    <div *ngFor="let catalogItem of resultsFiltered | keyvalue">
-        {{ catalogItem.key }}
-        <ul>
-            <li *ngFor="let docItem of catalogItem.value | keyvalue">
-                <a
-                    [routerLink]="[
-                        '/' + catalogItem.key + '/form',
-                        { id: docItem.key }
-                    ]"
-                    >{{ docItem.key }} ({{ docItem.value[0].state }})</a
-                >
-
-                <ul>
-                    <li
-                        *ngFor="let item of docItem.value"
-                        [class]="item.valid ? 'success-color' : 'error-color'"
-                    >
-                        {{ item.url }}
+    @for (catalogItem of resultsFiltered | keyvalue; track catalogItem) {
+        <div>
+            {{ catalogItem.key }}
+            <ul>
+                @for (docItem of catalogItem.value | keyvalue; track docItem) {
+                    <li>
+                        <a
+                            [routerLink]="[
+                                '/' + catalogItem.key + '/form',
+                                { id: docItem.key }
+                            ]"
+                            >{{ docItem.key }} ({{ docItem.value[0].state }})</a
+                        >
+                        <ul>
+                            @for (item of docItem.value; track item) {
+                                <li
+                                    [class]="
+                                        item.valid
+                                            ? 'success-color'
+                                            : 'error-color'
+                                    "
+                                >
+                                    {{ item.url }}
+                                </li>
+                            }
+                        </ul>
                     </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+                }
+            </ul>
+        </div>
+    }
 </div>

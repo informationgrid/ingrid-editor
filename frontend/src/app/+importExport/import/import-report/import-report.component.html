@@ -19,7 +19,7 @@
     {{ report.existingAddresses.length }}
 </div>
 
-<ng-container *ngIf="report.importResult">
+@if (report.importResult) {
     <h3>Import-Ergebnis</h3>
     <div>
         Anzahl angelegter Datensätze:
@@ -37,4 +37,4 @@
         Anzahl übersprungener Datensätze/Adressen:
         {{ report.importResult.skipped }}
     </div>
-</ng-container>
+}

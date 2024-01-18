@@ -3,12 +3,15 @@
     [matTooltip]="tooltip"
     [matTooltipShowDelay]="showDelay"
 >
-    <mat-icon
-        *ngIf="doc"
-        [ngClass]="['document-icon', documentState]"
-        [svgIcon]="iconClass"
-        [attr.aria-label]="tooltip"
-        aria-hidden="false"
-    ></mat-icon>
-    <div *ngIf="hasTags" [ngClass]="['document-icon-tag', documentState]"></div>
+    @if (doc) {
+        <mat-icon
+            [ngClass]="['document-icon', documentState]"
+            [svgIcon]="iconClass"
+            [attr.aria-label]="tooltip"
+            aria-hidden="false"
+        ></mat-icon>
+    }
+    @if (hasTags) {
+        <div [ngClass]="['document-icon-tag', documentState]"></div>
+    }
 </div>

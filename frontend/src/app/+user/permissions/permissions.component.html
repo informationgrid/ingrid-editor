@@ -5,48 +5,49 @@
     *transloco="let t; read: 'group'"
 >
     <div class="flex-1 flex-col justify-content-end align-items-end gap-12">
-        <mat-slide-toggle
-            [disabled]="disabled"
-            *ngIf="showRootReadSlider"
-            labelPosition="before"
-            (change)="toggleRootPermission()"
-            [formControl]="rootPermissionRead"
-            title="Wenn aktiviert, können alle {{
-                t('form')
-            }} und Adressen gelesen werden."
-            >Allgemeines Leserecht
-        </mat-slide-toggle>
-        <mat-slide-toggle
-            [disabled]="disabled"
-            *ngIf="showRootWriteSlider"
-            labelPosition="before"
-            (change)="toggleRootPermission()"
-            [formControl]="rootPermissionWrite"
-            title="Wenn aktiviert, können alle {{
-                t('form')
-            }} und Adressen gelesen und bearbeitet werden."
-            >Allgemeines Schreibrecht
-        </mat-slide-toggle>
+        @if (showRootReadSlider) {
+            <mat-slide-toggle
+                [disabled]="disabled"
+                labelPosition="before"
+                (change)="toggleRootPermission()"
+                [formControl]="rootPermissionRead"
+                title="Wenn aktiviert, können alle {{
+                    t('form')
+                }} und Adressen gelesen werden."
+                >Allgemeines Leserecht
+            </mat-slide-toggle>
+        }
+        @if (showRootWriteSlider) {
+            <mat-slide-toggle
+                [disabled]="disabled"
+                labelPosition="before"
+                (change)="toggleRootPermission()"
+                [formControl]="rootPermissionWrite"
+                title="Wenn aktiviert, können alle {{
+                    t('form')
+                }} und Adressen gelesen und bearbeitet werden."
+                >Allgemeines Schreibrecht
+            </mat-slide-toggle>
+        }
     </div>
-    <div
-        *ngIf="this.rootPermissionRead.value || this.rootPermissionWrite.value"
-        class="no-fields-selected-notice"
-    >
-        <div class="infoIcon">
-            <mat-icon
-                class="material-icons-outlined"
-                svgIcon="info-24px"
-            ></mat-icon>
+    @if (this.rootPermissionRead.value || this.rootPermissionWrite.value) {
+        <div class="no-fields-selected-notice">
+            <div class="infoIcon">
+                <mat-icon
+                    class="material-icons-outlined"
+                    svgIcon="info-24px"
+                ></mat-icon>
+            </div>
+            <span>
+                Allgemeine Berechtigung aktiviert.
+                {{
+                    this.rootPermissionWrite.value
+                        ? " Das allgemeine Schreibrecht überschreibt die Tabellenrechte."
+                        : ""
+                }}
+            </span>
         </div>
-        <span>
-            Allgemeine Berechtigung aktiviert.
-            {{
-                this.rootPermissionWrite.value
-                    ? " Das allgemeine Schreibrecht überschreibt die Tabellenrechte."
-                    : ""
-            }}
-        </span>
-    </div>
+    }
     <permission-table
         [disabled]="disabled"
         formControlName="documents"

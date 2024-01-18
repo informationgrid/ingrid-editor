@@ -1,17 +1,21 @@
-<div *ngIf="doc._pendingDate" class="publish-pending-info">
-    <div *transloco="let t; read: 'publish'">
-        {{ t("formWithPronoun") }} wird am
-        {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
+@if (doc._pendingDate) {
+    <div class="publish-pending-info">
+        <div *transloco="let t; read: 'publish'">
+            {{ t("formWithPronoun") }} wird am
+            {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
+        </div>
+        <div *transloco="let t; read: 'dashboard'">
+            @if (doc.hasWritePermission) {
+                <button
+                    mat-button
+                    color="primary"
+                    class="mat-stroked-button"
+                    (click)="stopPublish()"
+                >
+                    Veröffentlichung abbrechen und
+                    {{ t("formSingular") }} bearbeiten
+                </button>
+            }
+        </div>
     </div>
-    <div *transloco="let t; read: 'dashboard'">
-        <button
-            *ngIf="doc.hasWritePermission"
-            mat-button
-            color="primary"
-            class="mat-stroked-button"
-            (click)="stopPublish()"
-        >
-            Veröffentlichung abbrechen und {{ t("formSingular") }} bearbeiten
-        </button>
-    </div>
-</div>
+}

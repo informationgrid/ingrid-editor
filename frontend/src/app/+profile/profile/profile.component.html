@@ -1,93 +1,92 @@
-<page-template-no-header
-    *ngIf="userInfo$ | async as userInfo"
-    [label]="userInfo.firstName"
-    [subLabel]="userInfo.lastName"
-    class="white"
->
-    <div left-side>
-        <div class="side-title">Benutzername</div>
-        <div class="side-item">
-            <mat-icon>login</mat-icon>
-            {{ userInfo.login }}
-        </div>
-        <div class="side-title">Rolle</div>
-        <div class="side-item">
-            <mat-icon
-                [svgIcon]="this.userService.roleIcon[userInfo.role]"
-            ></mat-icon>
-            {{ getRoleLabel(userInfo.role) }}
-        </div>
-        <div class="side-title">Gruppen</div>
-        <div>
-            <div *ngFor="let group of userInfo.groups" class="side-item">
-                <mat-icon svgIcon="group"></mat-icon>
-                {{ group }}
+@if (userInfo$ | async; as userInfo) {
+    <page-template-no-header
+        [label]="userInfo.firstName"
+        [subLabel]="userInfo.lastName"
+        class="white"
+    >
+        <div left-side>
+            <div class="side-title">Benutzername</div>
+            <div class="side-item">
+                <mat-icon>login</mat-icon>
+                {{ userInfo.login }}
             </div>
-            <div *ngIf="userInfo.groups.length === 0" class="side-item">
-                - Keine -
+            <div class="side-title">Rolle</div>
+            <div class="side-item">
+                <mat-icon
+                    [svgIcon]="this.userService.roleIcon[userInfo.role]"
+                ></mat-icon>
+                {{ getRoleLabel(userInfo.role) }}
+            </div>
+            <div class="side-title">Gruppen</div>
+            <div>
+                @for (group of userInfo.groups; track group) {
+                    <div class="side-item">
+                        <mat-icon svgIcon="group"></mat-icon>
+                        {{ group }}
+                    </div>
+                }
+                @if (userInfo.groups.length === 0) {
+                    <div class="side-item">- Keine -</div>
+                }
             </div>
         </div>
-    </div>
-
-    <section main-content>
-        <div class="info-header-row flex-row">
-            <h2>Persönliche Daten</h2>
-            <button
-                data-cy="change-full-name-id"
-                mat-button
-                color="primary"
-                (click)="openChangeNameDialog()"
-            >
-                Ändern
-            </button>
-        </div>
-        <div class="info-row flex-row">
-            <div>Vorname</div>
-            <div>{{ userInfo.firstName }}</div>
-        </div>
-        <div class="info-row flex-row">
-            <div>Nachname</div>
-            <div>{{ userInfo.lastName }}</div>
-        </div>
-
-        <h2>Kontakt</h2>
-
-        <div
-            class="info-row flex-row justify-content-start align-items-stretch"
-        >
-            <div>E-Mail Adresse</div>
-            <ige-emailform
-                *ngIf="editingEmail; else editMail"
-                [initialEmail]="userInfo.email"
-                [canAutocomplete]="true"
-                (onClose)="changeEmail($event)"
-            >
-            </ige-emailform>
-            <ng-template #editMail>
-                <div>{{ userInfo.email }}</div>
+        <section main-content>
+            <div class="info-header-row flex-row">
+                <h2>Persönliche Daten</h2>
                 <button
-                    data-cy="change-email-id"
+                    data-cy="change-full-name-id"
                     mat-button
                     color="primary"
-                    (click)="editingEmail = true"
+                    (click)="openChangeNameDialog()"
                 >
                     Ändern
                 </button>
-            </ng-template>
-        </div>
-
-        <h2>Sicherheit</h2>
-        <div class="info-row flex-row">
-            <div>Passwort</div>
-            <div>••••••</div>
-            <button
-                data-cy="change-password-id"
-                mat-button
-                color="primary"
-                (click)="openResetPasswordDialog()"
+            </div>
+            <div class="info-row flex-row">
+                <div>Vorname</div>
+                <div>{{ userInfo.firstName }}</div>
+            </div>
+            <div class="info-row flex-row">
+                <div>Nachname</div>
+                <div>{{ userInfo.lastName }}</div>
+            </div>
+            <h2>Kontakt</h2>
+            <div
+                class="info-row flex-row justify-content-start align-items-stretch"
             >
-                Ändern
-            </button>
-        </div>
-    </section>
-</page-template-no-header>
+                <div>E-Mail Adresse</div>
+                @if (editingEmail) {
+                    <ige-emailform
+                        [initialEmail]="userInfo.email"
+                        [canAutocomplete]="true"
+                        (onClose)="changeEmail($event)"
+                    >
+                    </ige-emailform>
+                } @else {
+                    <div>{{ userInfo.email }}</div>
+                    <button
+                        data-cy="change-email-id"
+                        mat-button
+                        color="primary"
+                        (click)="editingEmail = true"
+                    >
+                        Ändern
+                    </button>
+                }
+            </div>
+            <h2>Sicherheit</h2>
+            <div class="info-row flex-row">
+                <div>Passwort</div>
+                <div>••••••</div>
+                <button
+                    data-cy="change-password-id"
+                    mat-button
+                    color="primary"
+                    (click)="openResetPasswordDialog()"
+                >
+                    Ändern
+                </button>
+            </div>
+        </section>
+    </page-template-no-header>
+}

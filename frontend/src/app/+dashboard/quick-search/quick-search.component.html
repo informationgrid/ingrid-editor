@@ -14,7 +14,7 @@
         #auto="matAutocomplete"
         class="quicksearch-auto ultra-dense"
     >
-        <ng-container *ngIf="docs?.length > 0 || addresses?.length > 0">
+        @if (docs?.length > 0 || addresses?.length > 0) {
             <div
                 class="result-header flex-row justify-content-space-between align-items-center"
                 role="group"
@@ -28,46 +28,39 @@
                     Erweiterte Suche
                 </mat-option>
             </div>
-
             <mat-optgroup label="Daten ({{ numDocs }})">
-                <mat-option
-                    *ngFor="let doc of docs"
-                    (onSelectionChange)="selectDoc.next(doc._uuid)"
-                >
-                    <ige-document-list-item
-                        [doc]="doc"
-                    ></ige-document-list-item>
-                </mat-option>
-
-                <mat-option
-                    *ngIf="numDocs > 5"
-                    (onSelectionChange)="openResearchPage()"
-                >
-                    <mat-icon>keyboard_arrow_right</mat-icon>
-                    Alle
-                </mat-option>
+                @for (doc of docs; track doc) {
+                    <mat-option (onSelectionChange)="selectDoc.next(doc._uuid)">
+                        <ige-document-list-item
+                            [doc]="doc"
+                        ></ige-document-list-item>
+                    </mat-option>
+                }
+                @if (numDocs > 5) {
+                    <mat-option (onSelectionChange)="openResearchPage()">
+                        <mat-icon>keyboard_arrow_right</mat-icon>
+                        Alle
+                    </mat-option>
+                }
             </mat-optgroup>
-
             <div class="spacing"></div>
-
             <mat-optgroup label="Adressen ({{ numAddresses }})">
-                <mat-option
-                    *ngFor="let address of addresses"
-                    (onSelectionChange)="selectAddress.next(address._uuid)"
-                >
-                    <ige-document-list-item
-                        [doc]="address"
-                    ></ige-document-list-item>
-                </mat-option>
-
-                <mat-option
-                    *ngIf="numAddresses > 5"
-                    (onSelectionChange)="openResearchPage(true)"
-                >
-                    <mat-icon>keyboard_arrow_right</mat-icon>
-                    Alle
-                </mat-option>
+                @for (address of addresses; track address) {
+                    <mat-option
+                        (onSelectionChange)="selectAddress.next(address._uuid)"
+                    >
+                        <ige-document-list-item
+                            [doc]="address"
+                        ></ige-document-list-item>
+                    </mat-option>
+                }
+                @if (numAddresses > 5) {
+                    <mat-option (onSelectionChange)="openResearchPage(true)">
+                        <mat-icon>keyboard_arrow_right</mat-icon>
+                        Alle
+                    </mat-option>
+                }
             </mat-optgroup>
-        </ng-container>
+        }
     </mat-autocomplete>
 </div>

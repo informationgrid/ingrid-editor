@@ -10,25 +10,28 @@
         <h1 mat-dialog-title>Verantwortung übertragen</h1>
     </div>
 
-    <mat-dialog-content *ngIf="users; else loading">
-        <!-- keyword search -->
-        <ige-search-input
-            [query]="query"
-            [showSearchIcon]="true"
-            [flexWidth]="true"
-            placeholder="Suchen"
-            [withWhiteBorder]="false"
-        ></ige-search-input>
-
-        <!-- permission table -->
-        <user-table
-            [users]="users"
-            [query]="query.value"
-            [canExport]="false"
-            (onUserSelect)="selectedUser = $event"
-            tableType="simple"
-        ></user-table>
-    </mat-dialog-content>
+    @if (users) {
+        <mat-dialog-content>
+            <!-- keyword search -->
+            <ige-search-input
+                [query]="query"
+                [showSearchIcon]="true"
+                [flexWidth]="true"
+                placeholder="Suchen"
+                [withWhiteBorder]="false"
+            ></ige-search-input>
+            <!-- permission table -->
+            <user-table
+                [users]="users"
+                [query]="query.value"
+                [canExport]="false"
+                (onUserSelect)="selectedUser = $event"
+                tableType="simple"
+            ></user-table>
+        </mat-dialog-content>
+    } @else {
+        <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
+    }
 
     <!-- dialog action buttons -->
     <mat-dialog-actions>
@@ -44,7 +47,3 @@
         </button>
     </mat-dialog-actions>
 </div>
-
-<ng-template #loading>
-    <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
-</ng-template>

@@ -14,33 +14,28 @@
             />
             <mat-error>Die URL ist nicht gültig</mat-error>
         </mat-form-field>
-        <ige-form-error *ngIf="analysisError">
-            {{analysisError}}</ige-form-error
-        >
-
-        <div *ngIf="phase === 'analyzing'">
+        @if (analysisError) {
+        <ige-form-error> {{analysisError}}</ige-form-error>
+        } @if (phase === 'analyzing') {
+        <div>
             <span>Die URL wird analysiert</span>
             <div class="dot-pulse"></div>
         </div>
-
-        <div *ngIf="analysis">
+        } @if (analysis) {
+        <div>
             <div class="section-title">Identifier</div>
             <div class="space-bottom">{{analysis.identifier}}</div>
-
             <div class="section-title">Titel</div>
             <div class="space-bottom">{{analysis.title}}</div>
-
-            <div
-                *ngIf="analysis?.downloadData?.length > 0"
-                class="section-title"
-            >
-                Downloads
-            </div>
+            @if (analysis?.downloadData?.length > 0) {
+            <div class="section-title">Downloads</div>
+            }
             <ul>
-                <li *ngFor="let download of analysis?.downloadData">
-                    {{download}}
-                </li>
+                @for (download of analysis?.downloadData; track download) {
+                <li>{{download}}</li>
+                }
             </ul>
         </div>
+        }
     </div>
 </ige-dialog-template>

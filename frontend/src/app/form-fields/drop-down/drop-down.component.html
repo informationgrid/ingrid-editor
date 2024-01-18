@@ -3,15 +3,14 @@
 <!-- TODO: check out Combo replacement: https://stackblitz.com/edit/angular-material2-issue-v5gpri -->
 
 <!-- TODO: check out: https://stackblitz.com/angular/gjjmadpndjoa?file=app%2Fchips-autocomplete-example.html
-                 and: https://material.angular.io/components/select/examples
+and: https://material.angular.io/components/select/examples
 -->
 <mat-form-field>
     <mat-select placeholder="Auswählen">
-        <mat-option
-            *ngFor="let option of simpleOptions"
-            [value]="option.fields"
-        >
-            {{ option.fields }}
-        </mat-option>
+        @for (option of simpleOptions; track option) {
+            <mat-option [value]="option.fields">
+                {{ option.fields }}
+            </mat-option>
+        }
     </mat-select>
 </mat-form-field>

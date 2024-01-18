@@ -9,16 +9,19 @@
 
     <div main-content class="flex-1">
         <div class="scrollable">
-            <div *ngFor="let item of pluginsGrouped | keyvalue" class="section">
-                <div class="section-title">{{ item.key }}</div>
-                <ige-behaviour-item
-                    *ngFor="let plugin of item.value"
-                    [title]="plugin.name"
-                    [description]="plugin.description"
-                    [control]="fields[plugin.id]"
-                    (update)="save()"
-                ></ige-behaviour-item>
-            </div>
+            @for (item of pluginsGrouped | keyvalue; track item) {
+                <div class="section">
+                    <div class="section-title">{{ item.key }}</div>
+                    @for (plugin of item.value; track plugin) {
+                        <ige-behaviour-item
+                            [title]="plugin.name"
+                            [description]="plugin.description"
+                            [control]="fields[plugin.id]"
+                            (update)="save()"
+                        ></ige-behaviour-item>
+                    }
+                </div>
+            }
         </div>
     </div>
 </page-template-no-header>

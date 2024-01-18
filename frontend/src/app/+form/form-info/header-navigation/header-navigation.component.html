@@ -3,7 +3,7 @@
     role="menubar"
     aria-label="Navigation zu einzelnem Formularsegment"
 >
-    <ng-container *ngFor="let section of sections; let i = index">
+    @for (section of sections; track section; let i = $index) {
         <button
             mat-button
             class="link-button"
@@ -12,6 +12,8 @@
         >
             {{ section }}
         </button>
-        <ng-container *ngIf="i !== sections.length - 1">|</ng-container>
-    </ng-container>
+        @if (i !== sections.length - 1) {
+            |
+        }
+    }
 </div>

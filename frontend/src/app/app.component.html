@@ -1,5 +1,7 @@
 <div class="wrapper" [class.hide]="isLoggingout">
-    <div *ngIf="showTestBadge" class="test-instance">TEST</div>
+    @if (showTestBadge) {
+        <div class="test-instance">TEST</div>
+    }
     <mat-drawer-container class="flex-1" [autosize]="true">
         <!-- Left drawer -->
         <mat-drawer mode="side" [opened]="true" disableClose>

@@ -48,7 +48,7 @@ import {
 } from "../table/form-dialog/form-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatCardModule } from "@angular/material/card";
-import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage } from "@angular/common";
+import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
@@ -66,16 +66,13 @@ import { TranslocoService } from "@ngneat/transloco";
   standalone: true,
   imports: [
     MatButtonModule,
-
     CdkDropList,
     CdkDrag,
     CdkDragPreview,
     MatCardModule,
-    NgForOf,
     NgOptimizedImage,
     MatIconModule,
     AsyncPipe,
-    NgIf,
     MatTooltipModule,
   ],
 })

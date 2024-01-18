@@ -31,7 +31,7 @@ import {
   MatAutocompleteModule,
 } from "@angular/material/autocomplete";
 import { MatInputModule } from "@angular/material/input";
-import { NgIf } from "@angular/common";
+
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
@@ -56,7 +56,6 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrls: ["./search-input.component.scss"],
   imports: [
     MatInputModule,
-    NgIf,
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatProgressSpinnerModule,

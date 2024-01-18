@@ -4,70 +4,69 @@
     role="menu"
     aria-label="Hauptmenü"
 >
-    <a
-        mat-list-item
-        *ngFor="let item of menuItems | async"
-        (click)="gotoPage(item.path)"
-        (keydown.enter)="gotoPage(item.path)"
-        [attr.data-cy]="item.path"
-        [matTooltip]="t(item.path)"
-        matTooltipPosition="right"
-        [matTooltipDisabled]="menuIsExpanded"
-        [class.active]="
-            currentRoute?.indexOf(catalogId + '/' + item.path) === 0
-        "
-        tabindex="0"
-        role="menuitem"
-    >
-        <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
-        <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
-    </a>
+    @for (item of menuItems | async; track item) {
+        <a
+            mat-list-item
+            (click)="gotoPage(item.path)"
+            (keydown.enter)="gotoPage(item.path)"
+            [attr.data-cy]="item.path"
+            [matTooltip]="t(item.path)"
+            matTooltipPosition="right"
+            [matTooltipDisabled]="menuIsExpanded"
+            [class.active]="
+                currentRoute?.indexOf(catalogId + '/' + item.path) === 0
+            "
+            tabindex="0"
+            role="menuitem"
+        >
+            <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
+            <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
+        </a>
+    }
 
     <div class="fillVertical"></div>
 
-    <a
-        *ngIf="configuration.showAccessibilityLink"
-        mat-list-item
-        class="no-text-transform"
-        [href]="configuration.contextPath + 'barrierefreiheit'"
-        target="_blank"
-        data-cy="link-accessibility"
-        title="Erklärung zur Barrierefreiheit"
-        role="menuitem"
-        matTooltip="Erklärung zur Barrierefreiheit"
-        matTooltipPosition="right"
-        [matTooltipDisabled]="menuIsExpanded"
-    >
-        <mat-icon matListItemIcon svgIcon="info_outline"></mat-icon>
-        <p matListItemTitle aria-hidden="true">
-            Erklärung zur Barrierefreiheit
-        </p>
-    </a>
+    @if (configuration.showAccessibilityLink) {
+        <a
+            mat-list-item
+            class="no-text-transform"
+            [href]="configuration.contextPath + 'barrierefreiheit'"
+            target="_blank"
+            data-cy="link-accessibility"
+            title="Erklärung zur Barrierefreiheit"
+            role="menuitem"
+            matTooltip="Erklärung zur Barrierefreiheit"
+            matTooltipPosition="right"
+            [matTooltipDisabled]="menuIsExpanded"
+        >
+            <mat-icon matListItemIcon svgIcon="info_outline"></mat-icon>
+            <p matListItemTitle aria-hidden="true">
+                Erklärung zur Barrierefreiheit
+            </p>
+        </a>
+    }
 
-    <a
-        *ngIf="showDrawer | async"
-        mat-list-item
-        class="menu-toggle no-text-transform"
-        (click)="toggleSidebar(!menuIsExpanded)"
-        (keydown.enter)="toggleSidebar(!menuIsExpanded)"
-        matTooltipPosition="right"
-        data-cy="menu-scale"
-        tabindex="0"
-        role="menuitem"
-        [title]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
-        [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
-        [matTooltipDisabled]="menuIsExpanded"
-    >
-        <mat-icon
-            *ngIf="!menuIsExpanded"
-            matListItemIcon
-            svgIcon="Nav-auf"
-        ></mat-icon>
-        <mat-icon
-            *ngIf="menuIsExpanded"
-            matListItemIcon
-            svgIcon="Nav-zu"
-        ></mat-icon>
-        <p matListItemTitle aria-hidden="true">Verkleinern</p>
-    </a>
+    @if (showDrawer | async) {
+        <a
+            mat-list-item
+            class="menu-toggle no-text-transform"
+            (click)="toggleSidebar(!menuIsExpanded)"
+            (keydown.enter)="toggleSidebar(!menuIsExpanded)"
+            matTooltipPosition="right"
+            data-cy="menu-scale"
+            tabindex="0"
+            role="menuitem"
+            [title]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+            [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+            [matTooltipDisabled]="menuIsExpanded"
+        >
+            @if (!menuIsExpanded) {
+                <mat-icon matListItemIcon svgIcon="Nav-auf"></mat-icon>
+            }
+            @if (menuIsExpanded) {
+                <mat-icon matListItemIcon svgIcon="Nav-zu"></mat-icon>
+            }
+            <p matListItemTitle aria-hidden="true">Verkleinern</p>
+        </a>
+    }
 </mat-nav-list>

@@ -5,18 +5,19 @@
 >
     <ng-container header>
         <div class="flex-1"></div>
-        <mat-button-toggle-group
-            *ngIf="isoTextPublished"
-            name="compareView"
-            value="false"
-            aria-label="Ansicht"
-            (change)="this.compareView = !this.compareView"
-        >
-            <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
-            <mat-button-toggle value="true"
-                >Vergleichsansicht</mat-button-toggle
+        @if (isoTextPublished) {
+            <mat-button-toggle-group
+                name="compareView"
+                value="false"
+                aria-label="Ansicht"
+                (change)="this.compareView = !this.compareView"
             >
-        </mat-button-toggle-group>
+                <mat-button-toggle value="false">ISO-Ansicht</mat-button-toggle>
+                <mat-button-toggle value="true"
+                    >Vergleichsansicht</mat-button-toggle
+                >
+            </mat-button-toggle-group>
+        }
     </ng-container>
 
     <div content id="print-content" class="preview-dialog">

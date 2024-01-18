@@ -19,263 +19,301 @@
     </div>
 
     <div status class="status" [class.hide]="!showMore">
-        <div *ngIf="message as log">
-            <div>Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-            <div>Status: {{ log.stage }}</div>
-            <br />
-            <ng-container
-                [ngTemplateOutlet]="report"
-                [ngTemplateOutletContext]="{ log: log }"
-            ></ng-container>
-        </div>
+        @if (message; as log) {
+            <div>
+                <div>
+                    Start: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                </div>
+                <div>Ende: {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
+                <div>Status: {{ log.stage }}</div>
+                <br />
+                <ng-container
+                    [ngTemplateOutlet]="report"
+                    [ngTemplateOutletContext]="{ log: log }"
+                ></ng-container>
+            </div>
+        }
     </div>
 
     <section main-content>
-        <mat-horizontal-stepper
-            #stepper
-            *ngIf="websocketConnected && lastLogReceived; else waiting"
-            [linear]="true"
-            labelPosition="bottom"
-            (selectedIndexChange)="handleStepEvent($event)"
-        >
-            <mat-step [completed]="step1Complete">
-                <ng-template matStepLabel>Hochladen</ng-template>
-
-                <div *ngIf="!step1Complete; else uploadFinished">
-                    <ige-file-upload
-                        target="{{
-                            ConfigService.backendApiUrl
-                        }}jobs/import/analyze?command=start"
-                        (complete)="onUploadComplete()"
-                        (chosenFiles)="chosenFiles = $event"
-                    ></ige-file-upload>
-                </div>
-
-                <ng-template #uploadFinished>
-                    <div *ngIf="message" class="content">
-                        <ng-container *ngIf="message.endTime == null">
-                            <div class="section-title">
-                                Analyse der hochgeladenen Datei(en)
-                                <!--                                {{ message.progress }} von {{}}-->
+        @if (websocketConnected && lastLogReceived) {
+            <mat-horizontal-stepper
+                #stepper
+                [linear]="true"
+                labelPosition="bottom"
+                (selectedIndexChange)="handleStepEvent($event)"
+            >
+                <mat-step [completed]="step1Complete">
+                    <ng-template matStepLabel>Hochladen</ng-template>
+                    @if (!step1Complete) {
+                        <div>
+                            <ige-file-upload
+                                target="{{
+                                    ConfigService.backendApiUrl
+                                }}jobs/import/analyze?command=start"
+                                (complete)="onUploadComplete()"
+                                (chosenFiles)="chosenFiles = $event"
+                            ></ige-file-upload>
+                        </div>
+                    } @else {
+                        @if (message) {
+                            <div class="content">
+                                @if (message.endTime == null) {
+                                    <div class="section-title">
+                                        Analyse der hochgeladenen Datei(en)
+                                        <!--                                {{ message.progress }} von {{}}-->
+                                    </div>
+                                    <mat-progress-spinner
+                                        diameter="50"
+                                        [value]="message.progress"
+                                    ></mat-progress-spinner>
+                                    <button
+                                        mat-flat-button
+                                        (click)="abortImportJob()"
+                                    >
+                                        Abbrechen
+                                    </button>
+                                }
+                                @if (message.stage === "ANALYZE") {
+                                    <div class="section-title">
+                                        Analyse abgeschlossen
+                                    </div>
+                                    <div>
+                                        Schauen Sie sich den Bericht an und
+                                        klicken Sie auf "Weiter", um mit dem
+                                        Import fortzufahren
+                                    </div>
+                                }
+                                <!--<mat-icon class="big-icon success-color"
+                >check_circle_outline
+              </mat-icon>-->
                             </div>
-                            <mat-progress-spinner
-                                diameter="50"
-                                [value]="message.progress"
-                            ></mat-progress-spinner>
-
-                            <button mat-flat-button (click)="abortImportJob()">
+                        }
+                    }
+                    <div class="action-bar flex-row">
+                        @if (step1Complete) {
+                            <button
+                                color="primary"
+                                mat-button
+                                (click)="cancel()"
+                            >
                                 Abbrechen
                             </button>
-                        </ng-container>
-
-                        <ng-container *ngIf="message.stage === 'ANALYZE'">
+                        }
+                        <div class="flex-1"></div>
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            matStepperNext
+                            [disabled]="!step1Complete || errorInAnalysis"
+                        >
+                            Weiter
+                        </button>
+                    </div>
+                </mat-step>
+                <mat-step [stepControl]="optionsFormGroup">
+                    <form class="content" [formGroup]="optionsFormGroup">
+                        <ng-template matStepLabel>Optionen wählen</ng-template>
+                        <div class="options">
+                            <div class="section-title">Optionen</div>
+                            <div class="space-bottom flex-col">
+                                <mat-checkbox
+                                    formControlName="overwriteAddresses"
+                                    >Vorhandene Adressen überschreiben
+                                </mat-checkbox>
+                                <mat-checkbox formControlName="publish"
+                                    >Datensätze veröffentlichen
+                                </mat-checkbox>
+                            </div>
+                            <div class="section-title">Anlageort</div>
+                            <div class="padding">
+                                <div>
+                                    <ige-breadcrumb
+                                        [path]="parent.documentPath"
+                                    ></ige-breadcrumb>
+                                    <span class="link-text">
+                                        <a
+                                            data-cy="dataset-location"
+                                            (click)="
+                                                chooseLocationForDatasets()
+                                            "
+                                        >
+                                            Ändern
+                                        </a>
+                                    </span>
+                                </div>
+                                <div>
+                                    <ige-breadcrumb
+                                        [rootName]="'Adressen'"
+                                        [selectable]
+                                        [path]="parent.addressPath"
+                                    ></ige-breadcrumb>
+                                    <span class="link-text">
+                                        <a
+                                            data-cy="address-location"
+                                            (click)="
+                                                chooseLocationForAddresses()
+                                            "
+                                        >
+                                            Ändern
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                            @if (
+                                optionsFormGroup.get("parentDocument")
+                                    .invalid ||
+                                optionsFormGroup.get("parentAddress").invalid
+                            ) {
+                                <div class="error-box">
+                                    Sie haben keine Berechtigung auf den
+                                    Anlageort. Bitte wählen Sie unter Daten und
+                                    Adressen einen Ort mit Schreibberechtigungen
+                                    aus.
+                                </div>
+                            }
+                            @if (datasetsWithNoPermission.length > 0) {
+                                <div class="error-box">
+                                    Der Import beinhaltet existierende
+                                    Datensätze. Sie haben zu mindestens einem
+                                    Datensatz keine Berechtigungen:
+                                    <ul>
+                                        @for (
+                                            data of datasetsWithNoPermission;
+                                            track data.uuid
+                                        ) {
+                                            <li>
+                                                {{ data.title }} ({{
+                                                    data.uuid
+                                                }})
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                    <div class="action-bar flex-row">
+                        <button mat-button color="primary" (click)="cancel()">
+                            Abbrechen
+                        </button>
+                        <div class="flex-1"></div>
+                        <button mat-button color="primary" matStepperPrevious>
+                            Zurück
+                        </button>
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            [disabled]="
+                                optionsFormGroup.invalid ||
+                                datasetsWithNoPermission.length > 0
+                            "
+                            matStepperNext
+                            (click)="startImport()"
+                        >
+                            Importieren
+                        </button>
+                    </div>
+                </mat-step>
+                <mat-step>
+                    <ng-template matStepLabel>Fertig</ng-template>
+                    <div class="content text-center">
+                        @if (message && message.endTime === null) {
                             <div class="section-title">
-                                Analyse abgeschlossen
+                                Datensätze werden importiert
                             </div>
-                            <div>
-                                Schauen Sie sich den Bericht an und klicken Sie
-                                auf "Weiter", um mit dem Import fortzufahren
-                            </div>
-                        </ng-container>
-                        <!--<mat-icon class="big-icon success-color"
-                            >check_circle_outline
-                        </mat-icon>-->
-                    </div>
-                </ng-template>
-
-                <div class="action-bar flex-row">
-                    <button
-                        *ngIf="step1Complete"
-                        color="primary"
-                        mat-button
-                        (click)="cancel()"
-                    >
-                        Abbrechen
-                    </button>
-                    <div class="flex-1"></div>
-                    <button
-                        mat-flat-button
-                        color="primary"
-                        matStepperNext
-                        [disabled]="!step1Complete || errorInAnalysis"
-                    >
-                        Weiter
-                    </button>
-                </div>
-            </mat-step>
-
-            <mat-step [stepControl]="optionsFormGroup">
-                <form class="content" [formGroup]="optionsFormGroup">
-                    <ng-template matStepLabel>Optionen wählen</ng-template>
-                    <div class="options">
-                        <div class="section-title">Optionen</div>
-                        <div class="space-bottom flex-col">
-                            <mat-checkbox formControlName="overwriteAddresses"
-                                >Vorhandene Adressen überschreiben
-                            </mat-checkbox>
-                            <mat-checkbox formControlName="publish"
-                                >Datensätze veröffentlichen
-                            </mat-checkbox>
-                        </div>
-
-                        <div class="section-title">Anlageort</div>
-                        <div class="padding">
-                            <div>
-                                <ige-breadcrumb
-                                    [path]="parent.documentPath"
-                                ></ige-breadcrumb>
-                                <span class="link-text">
-                                    <a
-                                        data-cy="dataset-location"
-                                        (click)="chooseLocationForDatasets()"
-                                    >
-                                        Ändern
-                                    </a>
-                                </span>
-                            </div>
-                            <div>
-                                <ige-breadcrumb
-                                    [rootName]="'Adressen'"
-                                    [selectable]
-                                    [path]="parent.addressPath"
-                                ></ige-breadcrumb>
-                                <span class="link-text">
-                                    <a
-                                        data-cy="address-location"
-                                        (click)="chooseLocationForAddresses()"
-                                    >
-                                        Ändern
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
-                        @if (
-                            optionsFormGroup.get("parentDocument").invalid ||
-                            optionsFormGroup.get("parentAddress").invalid
-                        ) {
-                            <div class="error-box">
-                                Sie haben keine Berechtigung auf den Anlageort.
-                                Bitte wählen Sie unter Daten und Adressen einen
-                                Ort mit Schreibberechtigungen aus.
-                            </div>
+                            <mat-spinner diameter="50"></mat-spinner>
                         }
-                        @if (datasetsWithNoPermission.length > 0) {
-                            <div class="error-box">
-                                Der Import beinhaltet existierende Datensätze.
-                                Sie haben zu mindestens einem Datensatz keine
-                                Berechtigungen:
-                                <ul>
-                                    @for (
-                                        data of datasetsWithNoPermission;
-                                        track data.uuid
-                                    ) {
-                                        <li>
-                                            {{ data.title }} ({{ data.uuid }})
-                                        </li>
-                                    }
-                                </ul>
+                        @if (message?.endTime !== null) {
+                            <div class="flex-col">
+                                <div class="section-title">
+                                    Import abgeschlossen
+                                </div>
+                                @if (message?.errors?.length > 0) {
+                                    <mat-icon class="big-icon error-color"
+                                        >error_outline
+                                    </mat-icon>
+                                } @else {
+                                    <mat-icon class="big-icon success-color"
+                                        >check_circle_outline
+                                    </mat-icon>
+                                    <!--<div class="section-title">Ort:</div>
+                <ige-breadcrumb
+                  [path]="pathToDocument"
+                ></ige-breadcrumb>-->
+                                    <button
+                                        mat-stroked-button
+                                        color="primary"
+                                        (click)="openImportedDocument()"
+                                    >
+                                        Öffnen
+                                    </button>
+                                }
+                                <ng-template #success>
+                                    <mat-icon class="big-icon success-color"
+                                        >check_circle_outline
+                                    </mat-icon>
+                                    <!--<div class="section-title">Ort:</div>
+                <ige-breadcrumb
+                  [path]="pathToDocument"
+                ></ige-breadcrumb>-->
+                                    <button
+                                        mat-stroked-button
+                                        color="primary"
+                                        (click)="openImportedDocument()"
+                                    >
+                                        Öffnen
+                                    </button>
+                                </ng-template>
                             </div>
                         }
                     </div>
-                </form>
-
-                <div class="action-bar flex-row">
-                    <button mat-button color="primary" (click)="cancel()">
-                        Abbrechen
-                    </button>
-                    <div class="flex-1"></div>
-                    <button mat-button color="primary" matStepperPrevious>
-                        Zurück
-                    </button>
-                    <button
-                        mat-flat-button
-                        color="primary"
-                        [disabled]="
-                            optionsFormGroup.invalid ||
-                            datasetsWithNoPermission.length > 0
-                        "
-                        matStepperNext
-                        (click)="startImport()"
+                    <div
+                        class="action-bar flex-row justify-content-end align-items-stretch"
                     >
-                        Importieren
-                    </button>
-                </div>
-            </mat-step>
-
-            <mat-step>
-                <ng-template matStepLabel>Fertig</ng-template>
-                <div class="content text-center">
-                    <ng-container *ngIf="message && message.endTime === null">
-                        <div class="section-title">
-                            Datensätze werden importiert
-                        </div>
-                        <mat-spinner diameter="50"></mat-spinner>
-                    </ng-container>
-
-                    <div *ngIf="message?.endTime !== null" class="flex-col">
-                        <div class="section-title">Import abgeschlossen</div>
-
-                        <mat-icon
-                            *ngIf="message?.errors?.length > 0; else success"
-                            class="big-icon error-color"
-                            >error_outline
-                        </mat-icon>
-                        <ng-template #success>
-                            <mat-icon class="big-icon success-color"
-                                >check_circle_outline
-                            </mat-icon>
-
-                            <!--<div class="section-title">Ort:</div>
-                            <ige-breadcrumb
-                                [path]="pathToDocument"
-                            ></ige-breadcrumb>-->
-                            <button
-                                mat-stroked-button
-                                color="primary"
-                                (click)="openImportedDocument()"
-                            >
-                                Öffnen
-                            </button>
-                        </ng-template>
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            (click)="cancel()"
+                        >
+                            Neuer Import
+                        </button>
                     </div>
-                </div>
-
-                <div
-                    class="action-bar flex-row justify-content-end align-items-stretch"
-                >
-                    <button mat-flat-button color="primary" (click)="cancel()">
-                        Neuer Import
-                    </button>
-                </div>
-            </mat-step>
-        </mat-horizontal-stepper>
-        <ng-template #waiting>
+                </mat-step>
+            </mat-horizontal-stepper>
+        } @else {
             <div class="flex-row justify-content-center">
                 <mat-spinner></mat-spinner>
             </div>
-        </ng-template>
+        }
     </section>
 </page-template>
 
 <ng-template #report let-log="log">
-    <div *ngIf="log.infos?.length > 0">
-        Informationen:
-        <span data-cy="count-infos">{{ log.infos.length }}</span>
-        <ul>
-            <li *ngFor="let info of log.infos">{{ info }}</li>
-        </ul>
-    </div>
-    <div *ngIf="log.errors?.length > 0">
-        Fehler:
-        <span data-cy="count-errors">{{ log.errors.length }}</span>
-        <ul>
-            <li *ngFor="let error of log.errors">{{ error }}</li>
-        </ul>
-    </div>
+    @if (log.infos?.length > 0) {
+        <div>
+            Informationen:
+            <span data-cy="count-infos">{{ log.infos.length }}</span>
+            <ul>
+                @for (info of log.infos; track info) {
+                    <li>{{ info }}</li>
+                }
+            </ul>
+        </div>
+    }
+    @if (log.errors?.length > 0) {
+        <div>
+            Fehler:
+            <span data-cy="count-errors">{{ log.errors.length }}</span>
+            <ul>
+                @for (error of log.errors; track error) {
+                    <li>{{ error }}</li>
+                }
+            </ul>
+        </div>
+    }
 
-    <ige-import-report
-        *ngIf="log.report"
-        [report]="log.report"
-    ></ige-import-report>
+    @if (log.report) {
+        <ige-import-report [report]="log.report"></ige-import-report>
+    }
 </ng-template>

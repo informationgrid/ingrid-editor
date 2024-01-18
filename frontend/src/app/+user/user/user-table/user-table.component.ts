@@ -49,7 +49,7 @@ import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconModule } from "@angular/material/icon";
-import { NgIf, NgSwitch, NgSwitchCase } from "@angular/common";
+
 import { MatButtonModule } from "@angular/material/button";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -65,15 +65,12 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatTableModule,
     MatIconModule,
     MatSortModule,
-    NgSwitch,
     MatButtonModule,
     MatMenuModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
-    NgIf,
     PermissionLegendsComponent,
     TranslocoModule,
-    NgSwitchCase,
     MatTooltipModule,
   ],
   standalone: true,

@@ -1,12 +1,16 @@
-<ng-container *ngIf="field.fieldGroup.length > 0">
-    <ng-container *ngFor="let currentField of field.fieldGroup; let i = index">
+@if (field.fieldGroup.length > 0) {
+    @for (
+        currentField of field.fieldGroup;
+        track currentField;
+        let i = $index
+    ) {
         <div
             class="steps"
             [class.mat-elevation-z4]="markSection[i]"
             [class.elevated]="markSection[i]"
         >
             <formly-field [field]="currentField"></formly-field>
-            <ng-container *ngIf="form.enabled">
+            @if (form.enabled) {
                 <button
                     type="button"
                     class="menu dark menu-button"
@@ -27,50 +31,49 @@
                         Löschen
                     </button>
                 </mat-menu>
-            </ng-container>
+            }
         </div>
-    </ng-container>
+    }
     <div style="display: flex; justify-content: center">
-        <button
-            *ngIf="
-                !(formState.disabled || props.disabled || formControl.disabled)
-            "
-            mat-flat-button
-            type="button"
-            color="primary"
-            class="button-square-icon padding-btn add-button"
-            [matMenuTriggerFor]="menu"
-        >
-            <mat-icon color="white">add</mat-icon>
-            <span class="btn-title">Schritt Hinzufügen</span>
-        </button>
+        @if (!(formState.disabled || props.disabled || formControl.disabled)) {
+            <button
+                mat-flat-button
+                type="button"
+                color="primary"
+                class="button-square-icon padding-btn add-button"
+                [matMenuTriggerFor]="menu"
+            >
+                <mat-icon color="white">add</mat-icon>
+                <span class="btn-title">Schritt Hinzufügen</span>
+            </button>
+        }
     </div>
-</ng-container>
-<ng-container *ngIf="field.fieldGroup.length < 1">
+}
+@if (field.fieldGroup.length < 1) {
     <ige-section-wrapper>
         <h3>Verfahrenschritte</h3>
-        <button
-            *ngIf="
-                !(formState.disabled || props.disabled || formControl.disabled)
-            "
-            mat-flat-button
-            type="button"
-            color="primary"
-            class="button-square-icon padding-btn"
-            [matMenuTriggerFor]="menu"
-        >
-            <mat-icon color="white">add</mat-icon>
-            <span class="btn-title">Hinzufügen</span>
-        </button>
+        @if (!(formState.disabled || props.disabled || formControl.disabled)) {
+            <button
+                mat-flat-button
+                type="button"
+                color="primary"
+                class="button-square-icon padding-btn"
+                [matMenuTriggerFor]="menu"
+            >
+                <mat-icon color="white">add</mat-icon>
+                <span class="btn-title">Hinzufügen</span>
+            </button>
+        }
     </ige-section-wrapper>
-</ng-container>
+}
 <mat-menu #menu="matMenu">
-    <button
-        *ngFor="let type of sectionTypes"
-        mat-menu-item
-        [attr.data-cy]="'add_step_' + type.name"
-        (click)="addSection(type.name)"
-    >
-        <span>{{ type.props.label }}</span>
-    </button>
+    @for (type of sectionTypes; track type) {
+        <button
+            mat-menu-item
+            [attr.data-cy]="'add_step_' + type.name"
+            (click)="addSection(type.name)"
+        >
+            <span>{{ type.props.label }}</span>
+        </button>
+    }
 </mat-menu>

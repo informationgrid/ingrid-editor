@@ -23,25 +23,28 @@
     [aria-labelledby]="field | fieldToAriaLabelledBy"
     [disableOptionCentering]="props.disableOptionCentering"
 >
-    <mat-option *ngIf="props.showSearch">
-        <ngx-mat-select-search
-            [formControl]="filterCtrl"
-        ></ngx-mat-select-search>
-    </mat-option>
-    <ng-container *ngIf="selectOptions">
-        <ng-container
-            *ngIf="props.multiple && props.selectAllOption"
-            [ngTemplateOutlet]="selectAll"
-            [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
-        >
-        </ng-container>
-        <mat-option *ngIf="props.allowNoValue">{{
-            props.noValueLabel ?? "- Keine -"
-        }}</mat-option>
-        <ng-container *ngFor="let item of filteredOptions">
+    @if (props.showSearch) {
+        <mat-option>
+            <ngx-mat-select-search
+                [formControl]="filterCtrl"
+            ></ngx-mat-select-search>
+        </mat-option>
+    }
+    @if (selectOptions) {
+        @if (props.multiple && props.selectAllOption) {
+            <ng-container
+                [ngTemplateOutlet]="selectAll"
+                [ngTemplateOutletContext]="{ selectOptions: selectOptions }"
+            >
+            </ng-container>
+        }
+        @if (props.allowNoValue) {
+            <mat-option>{{ props.noValueLabel ?? "- Keine -" }}</mat-option>
+        }
+        @for (item of filteredOptions; track item) {
             <mat-option [value]="item" [disabled]="item.disabled">{{
                 item.value
             }}</mat-option>
-        </ng-container>
-    </ng-container>
+        }
+    }
 </mat-select>

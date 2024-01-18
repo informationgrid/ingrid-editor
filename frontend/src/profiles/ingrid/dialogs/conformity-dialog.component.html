@@ -13,23 +13,19 @@
             >
             <mat-form-field appearance="outline">
                 <mat-label>Spezifikation der Konformität</mat-label>
-                <mat-select
-                    *ngIf="
-                        form.controls.isInspire.value === true;
-                        else freeSpecs
-                    "
-                    formControlName="specification"
-                    data-cy="conformity-specification-id"
-                    [compareWith]="selectFn"
-                >
-                    <mat-option
-                        *ngFor="let item of specifications | async"
-                        [value]="item"
+                @if (form.controls.isInspire.value === true) {
+                    <mat-select
+                        formControlName="specification"
+                        data-cy="conformity-specification-id"
+                        [compareWith]="selectFn"
                     >
-                        {{ item.label }}
-                    </mat-option>
-                </mat-select>
-                <ng-template #freeSpecs>
+                        @for (item of specifications | async; track item) {
+                            <mat-option [value]="item">
+                                {{ item.label }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                } @else {
                     <input
                         matInput
                         [matAutocomplete]="specificationAuto"
@@ -40,14 +36,13 @@
                         #specificationAuto
                         [displayWith]="displayFn"
                     >
-                        <mat-option
-                            *ngFor="let item of specificationsFree | async"
-                            [value]="item"
-                        >
-                            {{ item.label }}
-                        </mat-option>
+                        @for (item of specificationsFree | async; track item) {
+                            <mat-option [value]="item">
+                                {{ item.label }}
+                            </mat-option>
+                        }
                     </mat-autocomplete>
-                </ng-template>
+                }
             </mat-form-field>
             <mat-form-field appearance="outline">
                 <mat-label>Grad der Konformität</mat-label>
@@ -56,12 +51,11 @@
                     data-cy="conformity-level-id"
                     [compareWith]="selectFn"
                 >
-                    <mat-option
-                        *ngFor="let item of level | async"
-                        [value]="item"
-                    >
-                        {{ item.label }}
-                    </mat-option>
+                    @for (item of level | async; track item) {
+                        <mat-option [value]="item">
+                            {{ item.label }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">

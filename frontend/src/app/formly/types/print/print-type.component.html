@@ -1,55 +1,66 @@
-<div [ngSwitch]="field.type">
-    <ng-container *ngSwitchCase="'datepickerPrint'">{{
-        formControl.value | date: "dd.MM.yyyy"
-    }}</ng-container>
-    <ng-container *ngSwitchCase="'repeatListPrint'">
-        <div *ngFor="let item of formControl.value">
+<div>
+    @switch (field.type) {
+        @case ("datepickerPrint") {
+            {{ formControl.value | date: "dd.MM.yyyy" }}
+        }
+        @case ("repeatListPrint") {
+            @for (item of formControl.value; track item) {
+                <div>
+                    {{
+                        props.codelistId
+                            ? (item | codelist: props.codelistId | async)
+                            : getFromOption(item)
+                    }}
+                </div>
+            }
+        }
+        @case ("address-cardPrint") {
+            @for (address of formControl.value; track address) {
+                <div>{{ address.type | codelist: "505" | async }}</div>
+                @if (address.ref.organization) {
+                    <div>
+                        {{ address.ref.organization }}
+                    </div>
+                } @else {
+                    <div>
+                        <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
+                        {{
+                            address.ref["academic-title"]
+                                | codelist: "4305"
+                                | async
+                        }}
+                        {{ address.ref.firstName }} {{ address.ref.lastName }}
+                    </div>
+                }
+            }
+        }
+        <!--<ng-container *ngSwitchCase="'tablePrint'">
+    <table>
+      <tr *ngFor="let row of formControl.value">
+        <td *ngFor="let column of row | keyvalue">
+          {{ column.value | json }}
+        </td>
+      </tr>
+    </table>
+  </ng-container>-->
+        @case ("ige-selectPrint") {
             {{
                 props.codelistId
-                    ? (item | codelist: props.codelistId | async)
-                    : getFromOption(item)
+                    ? (formControl.value | codelist: props.codelistId | async)
+                    : getFromOption(formControl.value)
             }}
-        </div>
-    </ng-container>
-    <ng-container *ngSwitchCase="'address-cardPrint'">
-        <ng-container *ngFor="let address of formControl.value">
-            <div>{{ address.type | codelist: "505" | async }}</div>
-            <div *ngIf="address.ref.organization; else person">
-                {{ address.ref.organization }}
-            </div>
-            <ng-template #person>
-                <div>
-                    <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
-                    {{
-                        address.ref["academic-title"] | codelist: "4305" | async
-                    }}
-                    {{ address.ref.firstName }} {{ address.ref.lastName }}
-                </div>
-            </ng-template>
-        </ng-container>
-    </ng-container>
-    <!--<ng-container *ngSwitchCase="'tablePrint'">
-        <table>
-            <tr *ngFor="let row of formControl.value">
-                <td *ngFor="let column of row | keyvalue">
-                    {{ column.value | json }}
-                </td>
-            </tr>
-        </table>
-    </ng-container>-->
-    <ng-container *ngSwitchCase="'ige-selectPrint'">{{
-        props.codelistId
-            ? (formControl.value | codelist: props.codelistId | async)
-            : getFromOption(formControl.value)
-    }}</ng-container>
-    <ng-container *ngSwitchCase="'autocompletePrint'">{{
-        props.codelistId
-            ? (formControl.value | codelist: props.codelistId | async) ??
-              formControl.value?.value
-            : getFromOption(formControl.value)
-    }}</ng-container>
-    <div
-        *ngSwitchDefault
-        [innerHTML]="getValueByDefault(formControl.value)"
-    ></div>
+        }
+        @case ("autocompletePrint") {
+            {{
+                props.codelistId
+                    ? (formControl.value
+                          | codelist: props.codelistId
+                          | async) ?? formControl.value?.value
+                    : getFromOption(formControl.value)
+            }}
+        }
+        @default {
+            <div [innerHTML]="getValueByDefault(formControl.value)"></div>
+        }
+    }
 </div>

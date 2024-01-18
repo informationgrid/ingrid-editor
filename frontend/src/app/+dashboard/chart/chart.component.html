@@ -1,67 +1,77 @@
-<div
-    class="flex-1 flex-col justify-content-center"
-    *ngIf="dataMap"
-    role="figure"
->
-    <svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
-        <path
-            *ngIf="dataMap.first != null"
-            class="circle circle-1"
-            [attr.stroke-dasharray]="strokeDash[0][0] + ', ' + strokeDash[0][1]"
-            d="M18 2.0845
+@if (dataMap) {
+    <div class="flex-1 flex-col justify-content-center" role="figure">
+        <svg viewBox="0 0 36 36" class="circular-chart" aria-hidden="true">
+            @if (dataMap.first != null) {
+                <path
+                    class="circle circle-1"
+                    [attr.stroke-dasharray]="
+                        strokeDash[0][0] + ', ' + strokeDash[0][1]
+                    "
+                    d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
-        ></path>
-        <path
-            *ngIf="dataMap.second != null"
-            class="circle circle-2"
-            [attr.stroke-dasharray]="
-                '0, ' + strokeDash[1][0] + ', ' + strokeDash[1][1]
-            "
-            d="M18 2.0845
+                ></path>
+            }
+            @if (dataMap.second != null) {
+                <path
+                    class="circle circle-2"
+                    [attr.stroke-dasharray]="
+                        '0, ' + strokeDash[1][0] + ', ' + strokeDash[1][1]
+                    "
+                    d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
-        ></path>
-        <path
-            class="circle circle-3"
-            stroke-dasharray="0.4, 99.2, 0.4"
-            d="M18 2.0845
+                ></path>
+            }
+            <path
+                class="circle circle-3"
+                stroke-dasharray="0.4, 99.2, 0.4"
+                d="M18 2.0845
           a 15.9155 15.9155 0 0 1 0 31.831
           a 15.9155 15.9155 0 0 1 0 -31.831"
-        ></path>
-        <text
-            class="text"
-            x="18.5"
-            y="19"
-            dominant-baseline="middle"
-            text-anchor="middle"
+            ></path>
+            <text
+                class="text"
+                x="18.5"
+                y="19"
+                dominant-baseline="middle"
+                text-anchor="middle"
+            >
+                {{ total }}
+            </text>
+        </svg>
+        <div
+            id="status"
+            class="wrapper flex-row justify-content-space-between align-items-stretch"
         >
-            {{ total }}
-        </text>
-    </svg>
-
-    <div
-        id="status"
-        class="wrapper flex-row justify-content-space-between align-items-stretch"
-    >
-        <div class="box working">
-            <div data-cy="editModeDocument" class="count">
-                {{ dataMap.first }}
+            <div class="box working">
+                <div data-cy="editModeDocument" class="count">
+                    {{ dataMap.first }}
+                </div>
+                <div>In Bearbeitung</div>
+                @if (showPercentages && total > 0) {
+                    <div class="count">
+                        {{
+                            (dataMap.first / total) * 100 ?? 0
+                                | number: "1.0-0"
+                        }}%
+                    </div>
+                }
             </div>
-            <div>In Bearbeitung</div>
-            <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataMap.first / total) * 100 ?? 0 | number: "1.0-0" }}%
-            </div>
-        </div>
-
-        <div class="box">
-            <div data-cy="publishModeDocument" class="count">
-                {{ dataMap.second }}
-            </div>
-            <div>Veröffentlicht</div>
-            <div *ngIf="showPercentages && total > 0" class="count">
-                {{ (dataMap.second / total) * 100 ?? 0 | number: "1.0-0" }}%
+            <div class="box">
+                <div data-cy="publishModeDocument" class="count">
+                    {{ dataMap.second }}
+                </div>
+                <div>Veröffentlicht</div>
+                @if (showPercentages && total > 0) {
+                    <div class="count">
+                        {{
+                            (dataMap.second / total) * 100 ?? 0
+                                | number: "1.0-0"
+                        }}%
+                    </div>
+                }
             </div>
         </div>
     </div>
-</div>
+}

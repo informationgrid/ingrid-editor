@@ -1,44 +1,49 @@
-<dashboard-address-header
-    [canCreateAddress]="canCreateAddress"
-    [canImport]="canImport"
-    *ngIf="address; else docsHeader"
-></dashboard-address-header>
-<ng-template #docsHeader>
+@if (address) {
+    <dashboard-address-header
+        [canCreateAddress]="canCreateAddress"
+        [canImport]="canImport"
+    ></dashboard-address-header>
+} @else {
     <dashboard-docs-header
         [canCreateDatasets]="canCreateDatasets"
         [canImport]="canImport"
     ></dashboard-docs-header>
-</ng-template>
+}
 
-<div class="flex-row" *ngIf="(childDocs$ | async)?.length > 0">
-    <ige-card-box
-        class="flex-1"
-        label="Zuletzt bearbeitet"
-        data-cy="card-latest-docs"
-    >
-        <ige-document-list-item
-            [docs]="childDocs$"
-            [hideDate]="false"
-            [removeSelectionAfter]="true"
-            (select)="openDocument($event._uuid)"
-        ></ige-document-list-item>
-    </ige-card-box>
-</div>
-
-<div *ngIf="(childDocs$ | async)?.length === 0" class="banner text-center">
-    <div class="circle-wrapper">
-        <mat-icon svgIcon="image-banner-dataset"></mat-icon>
+@if ((childDocs$ | async)?.length > 0) {
+    <div class="flex-row">
+        <ige-card-box
+            class="flex-1"
+            label="Zuletzt bearbeitet"
+            data-cy="card-latest-docs"
+        >
+            <ige-document-list-item
+                [docs]="childDocs$"
+                [hideDate]="false"
+                [removeSelectionAfter]="true"
+                (select)="openDocument($event._uuid)"
+            ></ige-document-list-item>
+        </ige-card-box>
     </div>
-    <h2 *transloco="let t; read: 'dashboard'">
-        Kein Ordner oder {{ address ? "Adresse" : t("formSingular") }} vorhanden
-    </h2>
-    <p *transloco="let t; read: 'dashboard'">
-        Legen Sie einen neuen Ordner oder
-        {{ address ? "Adresse" : t("formSingular") }} an oder importieren Sie
-        {{ address ? "Adressen" : t("form") }}.
-    </p>
-    <p>
-        Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
-        der Werkzeugleiste.
-    </p>
-</div>
+}
+
+@if ((childDocs$ | async)?.length === 0) {
+    <div class="banner text-center">
+        <div class="circle-wrapper">
+            <mat-icon svgIcon="image-banner-dataset"></mat-icon>
+        </div>
+        <h2 *transloco="let t; read: 'dashboard'">
+            Kein Ordner oder
+            {{ address ? "Adresse" : t("formSingular") }} vorhanden
+        </h2>
+        <p *transloco="let t; read: 'dashboard'">
+            Legen Sie einen neuen Ordner oder
+            {{ address ? "Adresse" : t("formSingular") }} an oder importieren
+            Sie {{ address ? "Adressen" : t("form") }}.
+        </p>
+        <p>
+            Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese
+            auch in der Werkzeugleiste.
+        </p>
+    </div>
+}

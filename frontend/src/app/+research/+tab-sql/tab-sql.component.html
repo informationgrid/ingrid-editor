@@ -6,35 +6,40 @@
         </p>
         <p>Hier sind ein paar Beispiele:</p>
 
-        <div *ngIf="sqlExamples.length" class="flex-col gap-6">
-            <button
-                mat-flat-button
-                class="chip-button"
-                *ngFor="let example of sqlExamples"
-                (click)="updateSqlControl(example.value)"
-            >
-                {{ example.label }}
-            </button>
-        </div>
+        @if (sqlExamples.length) {
+            <div class="flex-col gap-6">
+                @for (example of sqlExamples; track example) {
+                    <button
+                        mat-flat-button
+                        class="chip-button"
+                        (click)="updateSqlControl(example.value)"
+                    >
+                        {{ example.label }}
+                    </button>
+                }
+            </div>
+        }
     </div>
 
     <div main-header>
-        <div *ngIf="aiSearchEnabled" class="flex-row gap-12 padding-vertical">
-            <input
-                class="flex-1"
-                matInput
-                [formControl]="request"
-                placeholder="Gib mir alle Datensätze die ..."
-            />
-            <button
-                mat-flat-button
-                color="primary"
-                [disabled]="isSearching || request.value === ''"
-                (click)="askForSQL(request.value)"
-            >
-                Fragen
-            </button>
-        </div>
+        @if (aiSearchEnabled) {
+            <div class="flex-row gap-12 padding-vertical">
+                <input
+                    class="flex-1"
+                    matInput
+                    [formControl]="request"
+                    placeholder="Gib mir alle Datensätze die ..."
+                />
+                <button
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="isSearching || request.value === ''"
+                    (click)="askForSQL(request.value)"
+                >
+                    Fragen
+                </button>
+            </div>
+        }
 
         <mat-form-field appearance="outline" class="width-100">
             <textarea

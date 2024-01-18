@@ -15,9 +15,11 @@
 
     <mat-dialog-content class="hide-tab-header">
         <mat-tab-group [(selectedIndex)]="page" animationDuration="0ms">
-            <mat-tab *ngIf="showInfo">
-                <p>{{ t("reference-error") }}</p>
-            </mat-tab>
+            @if (showInfo) {
+                <mat-tab>
+                    <p>{{ t("reference-error") }}</p>
+                </mat-tab>
+            }
             <mat-tab>
                 <p>
                     Hier können Sie eine neue Adresse auswählen, die in allen
@@ -46,41 +48,37 @@
         </mat-tab-group>
     </mat-dialog-content>
     <mat-dialog-actions>
-        <button
-            *ngIf="page !== (showInfo ? 2 : 1)"
-            mat-button
-            mat-dialog-close
-            data-cy="dialog-abort"
-        >
-            Abbrechen
-        </button>
+        @if (page !== (showInfo ? 2 : 1)) {
+            <button mat-button mat-dialog-close data-cy="dialog-abort">
+                Abbrechen
+            </button>
+        }
         <div class="flex-1"></div>
-        <button
-            *ngIf="showInfo && page === 0"
-            mat-flat-button
-            color="primary"
-            data-cy="dialog-choose-address"
-            (click)="page = page + 1"
-        >
-            Adresse auswählen
-        </button>
-        <button
-            *ngIf="page === (showInfo ? 1 : 0)"
-            mat-flat-button
-            color="primary"
-            data-cy="dialog-replace-address"
-            [disabled]="!selectedAddress"
-            (click)="replaceAddress()"
-        >
-            Adresse ersetzen
-        </button>
-        <button
-            *ngIf="page === (showInfo ? 2 : 1)"
-            mat-flat-button
-            color="primary"
-            [mat-dialog-close]="true"
-        >
-            Schließen
-        </button>
+        @if (showInfo && page === 0) {
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="dialog-choose-address"
+                (click)="page = page + 1"
+            >
+                Adresse auswählen
+            </button>
+        }
+        @if (page === (showInfo ? 1 : 0)) {
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="dialog-replace-address"
+                [disabled]="!selectedAddress"
+                (click)="replaceAddress()"
+            >
+                Adresse ersetzen
+            </button>
+        }
+        @if (page === (showInfo ? 2 : 1)) {
+            <button mat-flat-button color="primary" [mat-dialog-close]="true">
+                Schließen
+            </button>
+        }
     </mat-dialog-actions>
 </div>

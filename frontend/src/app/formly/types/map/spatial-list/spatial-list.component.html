@@ -1,104 +1,113 @@
-<ng-container *ngFor="let type of types">
-    <div
-        *ngFor="let location of typedLocations[type]"
-        class="clickable small-padding-right wrapper"
-        (click)="selectLocation.next(location.indexNumber)"
-        tabindex="0"
-        role="listitem"
-        [attr.aria-label]="location.title"
-    >
-        <mat-icon
-            *ngIf="location.value || location.wkt"
-            [style.background-color]="location.color + '40'"
-            [style.color]="location.color"
-        >
-            <div></div>
-        </mat-icon>
-        <mat-icon
-            *ngIf="!location.value && !location.wkt"
-            svgIcon="tag"
-        ></mat-icon>
-
+@for (type of types; track type) {
+    @for (location of typedLocations[type]; track location) {
         <div
-            class="description flex-row"
-            *transloco="let t; read: 'spatial.types'"
+            class="clickable small-padding-right wrapper"
+            (click)="selectLocation.next(location.indexNumber)"
+            tabindex="0"
+            role="listitem"
+            [attr.aria-label]="location.title"
         >
-            <div class="list-item-content">
-                <div matLine class="spatial-type">
-                    <span>{{ t(type) }}</span>
-                </div>
-                <div matLine class="spatial-title">
-                    <span>{{ location.title }}</span>
-                    <span *ngIf="location.ars">
-                        (ARS: {{ location.ars }})
-                    </span>
-                </div>
-
-                <div
-                    *ngIf="
-                        (location.type === 'free' ||
-                            location.type === 'wfsgnde') &&
-                        location.value
-                    "
-                    matLine
-                    class="coordinates"
+            @if (location.value || location.wkt) {
+                <mat-icon
+                    [style.background-color]="location.color + '40'"
+                    [style.color]="location.color"
                 >
-                    <span
-                        >SW Breite,Länge:
-                        {{ location.value.lat1 | number: ".6" : "en-US" }}°,
-                        {{
-                            location.value.lon1 | number: ".6" : "en-US"
-                        }}°</span
-                    >
-                    <span
-                        >NO Breite,Länge:
-                        {{ location.value.lat2 | number: ".6" : "en-US" }}°,
-                        {{
-                            location.value.lon2 | number: ".6" : "en-US"
-                        }}°</span
-                    >
-                </div>
-
-                <div *ngIf="location.type === 'wkt'" matLine>
-                    {{ location.wkt }}
+                    <div></div>
+                </mat-icon>
+            }
+            @if (!location.value && !location.wkt) {
+                <mat-icon svgIcon="tag"></mat-icon>
+            }
+            <div
+                class="description flex-row"
+                *transloco="let t; read: 'spatial.types'"
+            >
+                <div class="list-item-content">
+                    <div matLine class="spatial-type">
+                        <span>{{ t(type) }}</span>
+                    </div>
+                    <div matLine class="spatial-title">
+                        <span>{{ location.title }}</span>
+                        @if (location.ars) {
+                            <span> (ARS: {{ location.ars }}) </span>
+                        }
+                    </div>
+                    @if (
+                        (location.type === "free" ||
+                            location.type === "wfsgnde") &&
+                        location.value
+                    ) {
+                        <div matLine class="coordinates">
+                            <span
+                                >SW Breite,Länge:
+                                {{
+                                    location.value.lat1
+                                        | number: ".6" : "en-US"
+                                }}°,
+                                {{
+                                    location.value.lon1
+                                        | number: ".6" : "en-US"
+                                }}°</span
+                            >
+                            <span
+                                >NO Breite,Länge:
+                                {{
+                                    location.value.lat2
+                                        | number: ".6" : "en-US"
+                                }}°,
+                                {{
+                                    location.value.lon2
+                                        | number: ".6" : "en-US"
+                                }}°</span
+                            >
+                        </div>
+                    }
+                    @if (location.type === "wkt") {
+                        <div matLine>
+                            {{ location.wkt }}
+                        </div>
+                    }
                 </div>
             </div>
+            @if (!disabled) {
+                <button
+                    #menuButton
+                    type="button"
+                    mat-icon-button
+                    class="menu-button"
+                    [matMenuTriggerFor]="spatialRef"
+                    (click)="$event.stopPropagation()"
+                    matTooltip="Bearbeiten"
+                    aria-label="Bearbeiten"
+                >
+                    <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
+                    <mat-menu #spatialRef="matMenu">
+                        <button
+                            mat-menu-item
+                            (click)="selectLocation.next(location.indexNumber)"
+                        >
+                            Anzeigen
+                        </button>
+                        <button
+                            mat-menu-item
+                            (click)="
+                                menuButton.focus();
+                                edit.next(location.indexNumber)
+                            "
+                        >
+                            Bearbeiten
+                        </button>
+                        <button
+                            mat-menu-item
+                            (click)="
+                                menuButton.focus(); confirmRemove(location)
+                            "
+                        >
+                            Löschen
+                        </button>
+                    </mat-menu>
+                </button>
+            }
         </div>
-
-        <button
-            *ngIf="!disabled"
-            #menuButton
-            type="button"
-            mat-icon-button
-            class="menu-button"
-            [matMenuTriggerFor]="spatialRef"
-            (click)="$event.stopPropagation()"
-            matTooltip="Bearbeiten"
-            aria-label="Bearbeiten"
-        >
-            <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
-            <mat-menu #spatialRef="matMenu">
-                <button
-                    mat-menu-item
-                    (click)="selectLocation.next(location.indexNumber)"
-                >
-                    Anzeigen
-                </button>
-                <button
-                    mat-menu-item
-                    (click)="
-                        menuButton.focus(); edit.next(location.indexNumber)
-                    "
-                >
-                    Bearbeiten
-                </button>
-                <button
-                    mat-menu-item
-                    (click)="menuButton.focus(); confirmRemove(location)"
-                >
-                    Löschen
-                </button>
-            </mat-menu>
-        </button>
-    </div>
-</ng-container>
+    }
+}

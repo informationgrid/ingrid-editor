@@ -1,83 +1,83 @@
-<ige-form-error *ngIf="formControl.invalid && !formControl.hasError('required')"
-    >Dieser Fehler bezieht sich auf die gesamten Einträge
-</ige-form-error>
+@if (formControl.invalid && !formControl.hasError("required")) {
+    <ige-form-error
+        >Dieser Fehler bezieht sich auf die gesamten Einträge
+    </ige-form-error>
+}
 
-<mat-chip-listbox
-    *ngIf="field.fieldGroup.length > 0"
-    [disabled]="formControl.disabled"
-    cdkDropListGroup
-    mixedCdkDragDrop
-    orientation="horizontal"
-    (dropped)="drop($event)"
->
-    <span
-        *ngFor="let field of field.fieldGroup; let i = index"
-        cdkDropList
-        mixedCdkDropList
+@if (field.fieldGroup.length > 0) {
+    <mat-chip-listbox
+        [disabled]="formControl.disabled"
+        cdkDropListGroup
+        mixedCdkDragDrop
+        orientation="horizontal"
+        (dropped)="drop($event)"
     >
-        <mat-chip-option
-            disableRipple
-            cdkDrag
-            [cdkDragDisabled]="formControl.disabled"
-            [removable]="true"
-            [selectable]="false"
-            (removed)="remove(i)"
-        >
-            <mat-icon
-                *ngIf="props.showLanguage"
-                class="avatar gray"
-                svgIcon="language-24px"
-            ></mat-icon>
+        @for (field of field.fieldGroup; track field; let i = $index) {
+            <span cdkDropList mixedCdkDropList>
+                <mat-chip-option
+                    disableRipple
+                    cdkDrag
+                    [cdkDragDisabled]="formControl.disabled"
+                    [removable]="true"
+                    [selectable]="false"
+                    (removed)="remove(i)"
+                >
+                    @if (props.showLanguage) {
+                        <mat-icon
+                            class="avatar gray"
+                            svgIcon="language-24px"
+                        ></mat-icon>
+                    }
+                    @if (type === "codelist") {
+                        <div class="label">
+                            {{ model[i] | codelist: props.codelistId | async }}
+                        </div>
+                    }
+                    @if (type === "simple") {
+                        <div class="label">{{ model[i] }}</div>
+                    }
+                    @if (type === "object") {
+                        <div class="label">
+                            {{ model[i][props.labelField] }}
+                        </div>
+                    }
+                    @if (formControl.enabled) {
+                        <button matChipRemove aria-label="Remove chip">
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    }
+                </mat-chip-option>
+            </span>
+        }
+        @if (props.useDialog && formControl.enabled) {
+            <ige-add-button
+                [showTitle]="false"
+                (add)="openDialog()"
+                [showRequiredError]="
+                    showError &&
+                    formControl.invalid &&
+                    formControl.errors?.required
+                "
+            ></ige-add-button>
+        }
+    </mat-chip-listbox>
+}
 
-            <ng-container *ngIf="type === 'codelist'">
-                <div class="label">
-                    {{ model[i] | codelist: props.codelistId | async }}
-                </div>
-            </ng-container>
-
-            <ng-container *ngIf="type === 'simple'">
-                <div class="label">{{ model[i] }}</div>
-            </ng-container>
-
-            <ng-container *ngIf="type === 'object'">
-                <div class="label">{{ model[i][props.labelField] }}</div>
-            </ng-container>
-
-            <button
-                *ngIf="formControl.enabled"
-                matChipRemove
-                aria-label="Remove chip"
-            >
-                <mat-icon>cancel</mat-icon>
-            </button>
-        </mat-chip-option>
-    </span>
+@if (props.useDialog && formControl.enabled && field.fieldGroup.length === 0) {
     <ige-add-button
-        *ngIf="props.useDialog && formControl.enabled"
-        [showTitle]="false"
+        class="add-button-initial"
+        [class.error-btn]="
+            showError && formControl.invalid && formControl.errors?.required
+        "
+        [showTitle]="field.fieldGroup.length === 0"
         (add)="openDialog()"
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
     ></ige-add-button>
-</mat-chip-listbox>
+}
 
-<ige-add-button
-    *ngIf="
-        props.useDialog && formControl.enabled && field.fieldGroup.length === 0
-    "
-    class="add-button-initial"
-    [class.error-btn]="
-        showError && formControl.invalid && formControl.errors?.required
-    "
-    [showTitle]="field.fieldGroup.length === 0"
-    (add)="openDialog()"
-    [showRequiredError]="
-        showError && formControl.invalid && formControl.errors?.required
-    "
-></ige-add-button>
-
-<ng-container *ngIf="type === 'object'">
+@if (type === "object") {
     <ige-search-input
         [autocompleteRef]="searchAuto"
         [withWhiteBorder]="false"
@@ -87,26 +87,25 @@
         placeholder="Im Umweltthesaurus suchen"
         showSearchIcon="true"
     ></ige-search-input>
-
     <mat-autocomplete
         #searchAuto="matAutocomplete"
         class="denseX"
         (optionSelected)="addValueObject($event.option.value)"
     >
-        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
-            {{ doc[props.labelField] }}
-        </mat-option>
+        @for (doc of searchResult | async; track doc) {
+            <mat-option [value]="doc">
+                {{ doc[props.labelField] }}
+            </mat-option>
+        }
     </mat-autocomplete>
-</ng-container>
+}
 
-<ng-container
-    *ngIf="
-        type !== 'object' &&
-        type !== 'codelist' &&
-        !props.useDialog &&
-        formControl.enabled
-    "
->
+@if (
+    type !== "object" &&
+    type !== "codelist" &&
+    !props.useDialog &&
+    formControl.enabled
+) {
     <mat-form-field class="width-100" appearance="outline">
         <ng-container *transloco="let t">
             <input
@@ -118,16 +117,17 @@
                 (keydown.enter)="addValues(inputControl.value)"
             />
         </ng-container>
-        <button
-            *ngIf="inputControl.value.length > 0"
-            mat-icon-button
-            matSuffix
-            type="button"
-            class="field-close"
-            (click)="inputControl.setValue('')"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
+        @if (inputControl.value.length > 0) {
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                class="field-close"
+                (click)="inputControl.setValue('')"
+            >
+                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            </button>
+        }
         <mat-hint
             >Eingabe mit RETURN bestätigen, mehrere Schlagworte durch Komma
             trennen
@@ -136,11 +136,9 @@
             t("form.validationMessages.createOneEntry")
         }}</mat-error>
     </mat-form-field>
-</ng-container>
+}
 
-<ng-container
-    *ngIf="type === 'codelist' && !props.useDialog && formControl.enabled"
->
+@if (type === "codelist" && !props.useDialog && formControl.enabled) {
     <mat-form-field class="width-100" appearance="outline">
         <ng-container *transloco="let t">
             <mat-select
@@ -149,17 +147,15 @@
                 [required]="showError && props.required && formControl.invalid"
                 (valueChange)="addValueObject($event)"
             >
-                <mat-option
-                    *ngFor="let codelist of codelistOptions | async"
-                    [value]="codelist"
-                >
-                    {{ codelist.label }} ({{ codelist.value }})
-                </mat-option>
+                @for (codelist of codelistOptions | async; track codelist) {
+                    <mat-option [value]="codelist">
+                        {{ codelist.label }} ({{ codelist.value }})
+                    </mat-option>
+                }
             </mat-select>
         </ng-container>
-
         <mat-error *transloco="let t">{{
             t("form.validationMessages.createOneEntry")
         }}</mat-error>
     </mat-form-field>
-</ng-container>
+}

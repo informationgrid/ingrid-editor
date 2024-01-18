@@ -33,9 +33,11 @@ import { ThesaurusResult } from "./thesaurus-result";
       >
       <span
         >Die Schlagwörter wurden zugeordnet.
-        <div *ngFor="let item of report">
-          {{ item }}
-        </div>
+        @for (item of report; track item) {
+          <div>
+            {{ item }}
+          </div>
+        }
       </span>
       <span matSnackBarActions>
         <button

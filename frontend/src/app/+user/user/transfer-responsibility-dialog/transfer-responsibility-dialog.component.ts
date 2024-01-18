@@ -31,7 +31,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { SharedModule } from "../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { NgIf } from "@angular/common";
+
 import { UserDataService } from "../../../services/user/user-data.service";
 import { catchError } from "rxjs/operators";
 import { IgeError } from "../../../models/ige-error";
@@ -49,7 +49,6 @@ import { IgeError } from "../../../models/ige-error";
     SharedModule,
     MatProgressSpinnerModule,
     CdkDragHandle,
-    NgIf,
   ],
   standalone: true,
 })

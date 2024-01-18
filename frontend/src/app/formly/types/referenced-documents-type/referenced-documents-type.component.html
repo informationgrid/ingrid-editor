@@ -1,51 +1,51 @@
 <div class="spinner-wrapper">
-    <button
-        *ngIf="showToggleButton && docs.length > 0"
-        mat-stroked-button
-        type="button"
-        class="toggle-ref-docs-btn"
-        (click)="toggleList()"
-        color="primary"
-        aria-label="Zugeordnete Datensätze"
-        aria-describedby="toggle-ref-desc"
-        [attr.aria-expanded]="showReferences"
-    >
-        <span id="toggle-ref-desc"
-            >{{ totalHits }}
-            {{ showReferences ? "Ausblenden" : "Anzeigen" }}</span
+    @if (showToggleButton && docs.length > 0) {
+        <button
+            mat-stroked-button
+            type="button"
+            class="toggle-ref-docs-btn"
+            (click)="toggleList()"
+            color="primary"
+            aria-label="Zugeordnete Datensätze"
+            aria-describedby="toggle-ref-desc"
+            [attr.aria-expanded]="showReferences"
         >
-    </button>
+            <span id="toggle-ref-desc"
+                >{{ totalHits }}
+                {{ showReferences ? "Ausblenden" : "Anzeigen" }}</span
+            >
+        </button>
+    }
 
-    <ng-container *ngIf="isLoading">
+    @if (isLoading) {
         <mat-spinner diameter="24"></mat-spinner>
-    </ng-container>
+    }
 </div>
 
-<ng-container *ngIf="showReferences && docs.length > 0">
-    <mat-paginator
-        *ngIf="totalHits > pageSize"
-        [length]="totalHits"
-        [pageSize]="pageSize"
-        [hidePageSize]="true"
-        (page)="switchPage($event)"
-    ></mat-paginator>
-
+@if (showReferences && docs.length > 0) {
+    @if (totalHits > pageSize) {
+        <mat-paginator
+            [length]="totalHits"
+            [pageSize]="pageSize"
+            [hidePageSize]="true"
+            (page)="switchPage($event)"
+        ></mat-paginator>
+    }
     <ige-document-list-item
         #list
         [docs]="docs"
         [removeSelectionAfter]="true"
         (select)="openReference($event)"
     ></ige-document-list-item>
+    @if (referencesHint && docs.length > 0) {
+        <mat-hint>
+            {{ referencesHint }}
+        </mat-hint>
+    }
+}
 
-    <mat-hint *ngIf="referencesHint && docs.length > 0">
-        {{ referencesHint }}
-    </mat-hint>
-</ng-container>
-
-<div
-    *ngIf="docs.length === 0 && !isLoading"
-    data-cy="no-ref-docs-hint"
-    class="no-references"
->
-    {{ messageNoReferences }}
-</div>
+@if (docs.length === 0 && !isLoading) {
+    <div data-cy="no-ref-docs-hint" class="no-references">
+        {{ messageNoReferences }}
+    </div>
+}

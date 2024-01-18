@@ -6,26 +6,26 @@
     [placeholder]="props.placeholder"
     [errorStateMatcher]="errorStateMatcher"
 />
-<button
-    *ngIf="
-        formControl.value != null &&
-        !props.hideDeleteButton &&
-        formControl.enabled
-    "
-    matSuffix
-    mat-icon-button
-    type="button"
-    class="field-close"
-    (click)="formControl.setValue(null)"
->
-    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-</button>
-<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
-    <mat-option
-        *ngFor="let option of filteredOptions"
-        [value]="props.simple ? option.key : option"
-        [class.matching]="props.highlightMatches && formControl.value"
+@if (
+    formControl.value != null && !props.hideDeleteButton && formControl.enabled
+) {
+    <button
+        matSuffix
+        mat-icon-button
+        type="button"
+        class="field-close"
+        (click)="formControl.setValue(null)"
     >
-        {{ option.value }}
-    </mat-option>
+        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+    </button>
+}
+<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
+    @for (option of filteredOptions; track option) {
+        <mat-option
+            [value]="props.simple ? option.key : option"
+            [class.matching]="props.highlightMatches && formControl.value"
+        >
+            {{ option.value }}
+        </mat-option>
+    }
 </mat-autocomplete>

@@ -25,7 +25,7 @@ import { DialogTemplateModule } from "../../../app/shared/dialog-template/dialog
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
-import { NgForOf } from "@angular/common";
+
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
 
@@ -38,7 +38,6 @@ import { geometryContextFields } from "./geometry-context.fields";
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
-    NgForOf,
     FormlyModule,
   ],
   standalone: true,

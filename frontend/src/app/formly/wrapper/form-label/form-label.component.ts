@@ -24,7 +24,7 @@ import {
   Input,
   Output,
 } from "@angular/core";
-import { NgIf } from "@angular/common";
+
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 
@@ -32,7 +32,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
   selector: "ige-form-label",
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
-  imports: [NgIf, MatIconModule, MatTooltipModule],
+  imports: [MatIconModule, MatTooltipModule],
   standalone: true,
 })
 export class FormLabelComponent {

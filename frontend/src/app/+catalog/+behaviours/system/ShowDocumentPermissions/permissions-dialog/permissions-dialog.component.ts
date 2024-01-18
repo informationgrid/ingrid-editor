@@ -37,7 +37,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { NgIf } from "@angular/common";
+
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../../services/config/config.service";
 import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
@@ -60,7 +60,6 @@ export interface PermissionDialogData {
     SharedModule,
     MatProgressSpinnerModule,
     CdkDragHandle,
-    NgIf,
   ],
   standalone: true,
 })

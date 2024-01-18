@@ -10,18 +10,23 @@
         ariaLabel="Suche im Geo-Thesaurus"
     ></ige-search-input>
 
-    <div *ngIf="showWelcome" class="padding-vertical comment">
-        Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
-        Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
-        zugehörigen Breiten-/Längenkoordinaten automatisch angezeigt.
-    </div>
+    @if (showWelcome) {
+        <div class="padding-vertical comment">
+            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
+            zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
+            werden die zugehörigen Breiten-/Längenkoordinaten automatisch
+            angezeigt.
+        </div>
+    }
 
-    <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+    @if (showNoResult) {
+        <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+    }
 
     <div class="result-wrapper">
         <div class="list-wrapper">
             <mat-list dense style="overflow: auto" ngDefaultControl>
-                <ng-container *ngFor="let entry of geoThesaurusResults">
+                @for (entry of geoThesaurusResults; track entry) {
                     <mat-list-item
                         (click)="handleSelection(entry)"
                         class="clickable"
@@ -38,24 +43,28 @@
                         </div>
                     </mat-list-item>
                     <mat-divider aria-hidden="true"></mat-divider>
-                </ng-container>
+                }
             </mat-list>
-            <div *ngIf="hasMoreResults" class="comment padding">
-                Max. 50 Treffer. Bitte verfeinern Sie die Suche.
-            </div>
+            @if (hasMoreResults) {
+                <div class="comment padding">
+                    Max. 50 Treffer. Bitte verfeinern Sie die Suche.
+                </div>
+            }
         </div>
     </div>
-    <div *ngIf="spatialSelection?.ars">
-        <mat-checkbox
-            data-cy="ARS-checkbox"
-            checked="true"
-            [(ngModel)]="useArs"
-            (change)="updateArsUsage($event)"
-        >
-            ARS übernehmen: {{ spatialSelection.ars }}
-        </mat-checkbox>
-    </div>
-    <div *ngIf="spatialSelection && !spatialSelection.ars">
-        Kein ARS vorhanden
-    </div>
+    @if (spatialSelection?.ars) {
+        <div>
+            <mat-checkbox
+                data-cy="ARS-checkbox"
+                checked="true"
+                [(ngModel)]="useArs"
+                (change)="updateArsUsage($event)"
+            >
+                ARS übernehmen: {{ spatialSelection.ars }}
+            </mat-checkbox>
+        </div>
+    }
+    @if (spatialSelection && !spatialSelection.ars) {
+        <div>Kein ARS vorhanden</div>
+    }
 </div>

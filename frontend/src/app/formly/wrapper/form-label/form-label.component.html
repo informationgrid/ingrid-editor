@@ -3,18 +3,20 @@
     <label [id]="fieldId" (click)="showContextHelp($event)">
         <ng-content></ng-content>
     </label>
-    <div *ngIf="hasContextHelp" class="context-help">
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="info-24px"
-            (click)="showContextHelp($event)"
-            (keydown.enter)="showContextHelp($event)"
-            tabindex="0"
-            role="button"
-            aria-hidden="false"
-            aria-haspopup="dialog"
-            matTooltip="Eingabehilfe"
-            [attr.aria-labelledby]="fieldId"
-        ></mat-icon>
-    </div>
+    @if (hasContextHelp) {
+        <div class="context-help">
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+                (click)="showContextHelp($event)"
+                (keydown.enter)="showContextHelp($event)"
+                tabindex="0"
+                role="button"
+                aria-hidden="false"
+                aria-haspopup="dialog"
+                matTooltip="Eingabehilfe"
+                [attr.aria-labelledby]="fieldId"
+            ></mat-icon>
+        </div>
+    }
 </div>

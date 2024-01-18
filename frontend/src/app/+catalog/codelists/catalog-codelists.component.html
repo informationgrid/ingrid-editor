@@ -27,9 +27,7 @@
         main-header
         class="flex-1 flex-col justify-content-center align-items-center"
     >
-        <ng-container
-            *ngIf="(hasCatalogCodelists | async) === false; else showSelector"
-        >
+        @if ((hasCatalogCodelists | async) === false) {
             <div>
                 In diesem Katalog liegen keine spezifischen Codelisten vor.
             </div>
@@ -37,62 +35,62 @@
                 Alle Codelisten können über das zentrale Codelist-Repository
                 verwaltet werden.
             </div>
-        </ng-container>
-
-        <ng-template #showSelector>
+        } @else {
             <mat-form-field appearance="outline" class="white-bg main-center">
                 <mat-select
                     (selectionChange)="selectCodelist($event.value)"
                     [value]="initialValue"
                 >
-                    <mat-option
-                        *ngFor="let codelist of catalogCodelists | async"
-                        [value]="codelist"
-                    >
-                        {{ codelist.label }} ({{ codelist.value }})
-                    </mat-option>
+                    @for (
+                        codelist of catalogCodelists | async;
+                        track codelist
+                    ) {
+                        <mat-option [value]="codelist">
+                            {{ codelist.label }} ({{ codelist.value }})
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-        </ng-template>
+        }
     </div>
 
-    <div
-        main-content
-        class="flex-1"
-        *ngIf="(hasCatalogCodelists | async) === true; else showLogo"
-    >
-        <div *ngIf="selectedCodelist?.description" class="description">
-            <div class="section-title">Beschreibung</div>
-            <div>{{ selectedCodelist?.description }}</div>
+    @if ((hasCatalogCodelists | async) === true) {
+        <div main-content class="flex-1">
+            @if (selectedCodelist?.description) {
+                <div class="description">
+                    <div class="section-title">Beschreibung</div>
+                    <div>{{ selectedCodelist?.description }}</div>
+                </div>
+            }
+            <div class="flex-row justify-content-end align-items-end gap-12">
+                <button
+                    mat-flat-button
+                    mat-stroked-button
+                    (click)="resetCodelist()"
+                >
+                    Zurücksetzen
+                </button>
+                <button mat-flat-button color="primary" (click)="addCodelist()">
+                    Hinzufügen
+                </button>
+            </div>
+            <ige-codelist-presenter
+                [codelist]="selectedCodelist"
+                (edit)="editCodelist($event)"
+                (remove)="removeCodelist($event)"
+                (setDefault)="setAsDefault($event)"
+            ></ige-codelist-presenter>
         </div>
-
-        <div class="flex-row justify-content-end align-items-end gap-12">
-            <button
-                mat-flat-button
-                mat-stroked-button
-                (click)="resetCodelist()"
+    } @else {
+        @if (!selectedCodelist) {
+            <div
+                class="flex-1 flex-row justify-content-center align-items-center"
             >
-                Zurücksetzen
-            </button>
-            <button mat-flat-button color="primary" (click)="addCodelist()">
-                Hinzufügen
-            </button>
-        </div>
-
-        <ige-codelist-presenter
-            [codelist]="selectedCodelist"
-            (edit)="editCodelist($event)"
-            (remove)="removeCodelist($event)"
-            (setDefault)="setAsDefault($event)"
-        ></ige-codelist-presenter>
-    </div>
-
-    <ng-template #showLogo>
-        <div
-            *ngIf="!selectedCodelist"
-            class="flex-1 flex-row justify-content-center align-items-center"
-        >
-            <img src="assets/icons/catalog-codelist.png" alt="codelist-repo" />
-        </div>
-    </ng-template>
+                <img
+                    src="assets/icons/catalog-codelist.png"
+                    alt="codelist-repo"
+                />
+            </div>
+        }
+    }
 </page-template>

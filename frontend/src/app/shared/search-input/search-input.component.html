@@ -8,20 +8,20 @@
     [style.min-width]="minWidth"
     appearance="outline"
 >
-    <input
-        *ngIf="autocompleteRef; else noAutocomplete"
-        matInput
-        [igeFocus]="focus"
-        [placeholder]="placeholder"
-        data-cy="search"
-        [formControl]="query"
-        [matAutocomplete]="autocompleteRef"
-        [errorStateMatcher]="matcher"
-        (focusin)="hasFocus = true"
-        (focusout)="hasFocus = false"
-        [attr.aria-label]="ariaLabel"
-    />
-    <ng-template #noAutocomplete>
+    @if (autocompleteRef) {
+        <input
+            matInput
+            [igeFocus]="focus"
+            [placeholder]="placeholder"
+            data-cy="search"
+            [formControl]="query"
+            [matAutocomplete]="autocompleteRef"
+            [errorStateMatcher]="matcher"
+            (focusin)="hasFocus = true"
+            (focusout)="hasFocus = false"
+            [attr.aria-label]="ariaLabel"
+        />
+    } @else {
         <input
             matInput
             [igeFocus]="focus"
@@ -30,40 +30,42 @@
             data-cy="search"
             [attr.aria-label]="ariaLabel"
         />
-    </ng-template>
+    }
     <div matSuffix>
-        <mat-spinner
-            *ngIf="searchSub && !searchSub.closed"
-            [diameter]="24"
-        ></mat-spinner>
-        <button
-            *ngIf="query.value?.length > 0"
-            mat-icon-button
-            class="field-close"
-            (click)="resetSearch()"
-            aria-label="Suche zurücksetzen"
-        >
-            <mat-icon class="gray">close</mat-icon>
-        </button>
-        <mat-icon
-            *ngIf="showSearchIcon && query.value?.length === 0"
-            class="search-icon passive"
-        >
-            search
-        </mat-icon>
+        @if (searchSub && !searchSub.closed) {
+            <mat-spinner [diameter]="24"></mat-spinner>
+        }
+        @if (query.value?.length > 0) {
+            <button
+                mat-icon-button
+                class="field-close"
+                (click)="resetSearch()"
+                aria-label="Suche zurücksetzen"
+            >
+                <mat-icon class="gray">close</mat-icon>
+            </button>
+        }
+        @if (showSearchIcon && query.value?.length === 0) {
+            <mat-icon class="search-icon passive"> search </mat-icon>
+        }
     </div>
-    <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
-    <mat-error *ngIf="errorText">{{ errorText }}</mat-error>
+    @if (hint) {
+        <mat-hint>{{ hint }}</mat-hint>
+    }
+    @if (errorText) {
+        <mat-error>{{ errorText }}</mat-error>
+    }
 </mat-form-field>
 
-<button
-    *ngIf="withButton"
-    mat-flat-button
-    color="primary"
-    class="search-btn button-next-to-input"
-    [class.small]="!withWhiteBorder"
-    (click)="buttonClick.next(query.value)"
->
-    <mat-icon>search</mat-icon>
-    Suchen
-</button>
+@if (withButton) {
+    <button
+        mat-flat-button
+        color="primary"
+        class="search-btn button-next-to-input"
+        [class.small]="!withWhiteBorder"
+        (click)="buttonClick.next(query.value)"
+    >
+        <mat-icon>search</mat-icon>
+        Suchen
+    </button>
+}

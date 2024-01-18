@@ -1,70 +1,87 @@
-<ige-form-error
-    *ngIf="
-        showError &&
-        formControl.invalid &&
-        formControl.errors &&
-        !formControl.hasError('required')
-    "
-    [ariaLabel]="props?.ariaLabel"
->
-    <div *ngFor="let error of formControl.errors | keyvalue">
-        {{ error.value.message }}
-    </div>
-</ige-form-error>
+@if (
+    showError &&
+    formControl.invalid &&
+    formControl.errors &&
+    !formControl.hasError("required")
+) {
+    <ige-form-error [ariaLabel]="props?.ariaLabel">
+        @for (error of formControl.errors | keyvalue; track error) {
+            <div>
+                {{ error.value.message }}
+            </div>
+        }
+    </ige-form-error>
+}
 
 <div>
-    <div
-        *ngFor="let key of groupedFieldsKeys"
-        cdkDropList
-        cdkDropListOrientation="vertical"
-        (cdkDropListDropped)="drop($event)"
-    >
-        <div *ngIf="menuSections" class="section-title">
-            {{ menuSections[key] }}
-        </div>
-
+    @for (key of groupedFieldsKeys; track key) {
         <div
-            *ngFor="let fieldRef of groupedFields[key]; let i = index"
-            class="flex-row"
-            cdkDrag
-            [class.extended-gap]="props.hasExtendedGap"
-            [cdkDragDisabled]="!canBeDragged"
+            cdkDropList
+            cdkDropListOrientation="vertical"
+            (cdkDropListDropped)="drop($event)"
         >
-            <mat-icon *ngIf="canBeDragged" cdkDragHandle matTooltip="Sortieren">
-                drag_indicator
-            </mat-icon>
-            <formly-field
-                [field]="field.fieldGroup[fieldRef]"
-                class="flex-1"
-                [attr.data-cy]="fieldRef"
-            ></formly-field>
-            <button
-                *ngIf="formControl.enabled"
-                [disabled]="
-                    props.minLength &&
-                    groupedFields[key].length <= props.minLength
-                "
-                mat-icon-button
-                class="close"
-                type="button"
-                aria-label="Löschen"
-                (click)="remove(fieldRef)"
-            >
-                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-            </button>
+            @if (menuSections) {
+                <div class="section-title">
+                    {{ menuSections[key] }}
+                </div>
+            }
+            @for (
+                fieldRef of groupedFields[key];
+                track fieldRef;
+                let i = $index
+            ) {
+                <div
+                    class="flex-row"
+                    cdkDrag
+                    [class.extended-gap]="props.hasExtendedGap"
+                    [cdkDragDisabled]="!canBeDragged"
+                >
+                    @if (canBeDragged) {
+                        <mat-icon cdkDragHandle matTooltip="Sortieren">
+                            drag_indicator
+                        </mat-icon>
+                    }
+                    <formly-field
+                        [field]="field.fieldGroup[fieldRef]"
+                        class="flex-1"
+                        [attr.data-cy]="fieldRef"
+                    ></formly-field>
+                    @if (formControl.enabled) {
+                        <button
+                            [disabled]="
+                                props.minLength &&
+                                groupedFields[key].length <= props.minLength
+                            "
+                            mat-icon-button
+                            class="close"
+                            type="button"
+                            aria-label="Löschen"
+                            (click)="remove(fieldRef)"
+                        >
+                            <mat-icon
+                                class="gray"
+                                svgIcon="Entfernen"
+                            ></mat-icon>
+                        </button>
+                    }
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>
 
-<ige-add-button
-    *ngIf="!formState.disabled && formControl.enabled"
-    data-cy="btn-add"
-    (add)="addItem($event)"
-    [options]="props.menuOptions"
-    [buttonTitle]="props.addButtonTitle ? props.addButtonTitle : 'Hinzufügen'"
-    [showRequiredError]="
-        showError && formControl.invalid && formControl.errors?.required
-    "
-    [showTitle]="groupedFieldsKeys.length == 0"
-    [matTooltip]="groupedFieldsKeys.length == 0 ? undefined : 'Hinzufügen'"
-></ige-add-button>
+@if (!formState.disabled && formControl.enabled) {
+    <ige-add-button
+        data-cy="btn-add"
+        (add)="addItem($event)"
+        [options]="props.menuOptions"
+        [buttonTitle]="
+            props.addButtonTitle ? props.addButtonTitle : 'Hinzufügen'
+        "
+        [showRequiredError]="
+            showError && formControl.invalid && formControl.errors?.required
+        "
+        [showTitle]="groupedFieldsKeys.length == 0"
+        [matTooltip]="groupedFieldsKeys.length == 0 ? undefined : 'Hinzufügen'"
+    ></ige-add-button>
+}

@@ -49,34 +49,34 @@
             </mat-form-field>
         </div>
 
-        <mat-divider *ngIf="fields.length" aria-hidden="true"></mat-divider>
+        @if (fields.length) {
+            <mat-divider aria-hidden="true"></mat-divider>
+        }
 
         <div formArrayName="fields">
-            <div
-                *ngFor="let field of fields; let i = index"
-                [formGroupName]="i"
-                class="flex-row gap-24"
-            >
-                <mat-form-field appearance="outline">
-                    <mat-label>Schlüssel</mat-label>
-                    <input
-                        matInput
-                        formControlName="key"
-                        [attr.data-cy]="'codelist-entry-key-' + i"
-                    />
-                </mat-form-field>
-                <mat-form-field class="flex-1" appearance="outline">
-                    <mat-label>Titel</mat-label>
-                    <input
-                        matInput
-                        formControlName="value"
-                        [attr.data-cy]="'codelist-entry-title-' + i"
-                    />
-                </mat-form-field>
-                <button mat-icon-button (click)="removeEntry(i)">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </div>
+            @for (field of fields; track field; let i = $index) {
+                <div [formGroupName]="i" class="flex-row gap-24">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Schlüssel</mat-label>
+                        <input
+                            matInput
+                            formControlName="key"
+                            [attr.data-cy]="'codelist-entry-key-' + i"
+                        />
+                    </mat-form-field>
+                    <mat-form-field class="flex-1" appearance="outline">
+                        <mat-label>Titel</mat-label>
+                        <input
+                            matInput
+                            formControlName="value"
+                            [attr.data-cy]="'codelist-entry-title-' + i"
+                        />
+                    </mat-form-field>
+                    <button mat-icon-button (click)="removeEntry(i)">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </div>
+            }
         </div>
         <ige-add-button (add)="addEntry()"></ige-add-button>
     </mat-dialog-content>

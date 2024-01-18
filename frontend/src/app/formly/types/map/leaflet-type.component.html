@@ -1,19 +1,22 @@
-<div *ngIf="!disabled" class="spatialHelpText">
-    Erstellen Sie auf der Karte Informationen über die räumliche Zuordnung des
-    beschriebenen Datenbestands. Nutzen Sie dazu den blauen „+“-Button auf der
-    Karte.
-    <br />
-    <a
-        *ngIf="props.hasContextHelp"
-        tabindex="0"
-        role="button"
-        aria-label="Hilfe zur Kartenerstellung"
-        aria-haspopup="dialog"
-        (click)="showContextHelp()"
-        (keydown.enter)="showContextHelp()"
-        >Hilfe zu Raumbezügen</a
-    >
-</div>
+@if (!disabled) {
+    <div class="spatialHelpText">
+        Erstellen Sie auf der Karte Informationen über die räumliche Zuordnung
+        des beschriebenen Datenbestands. Nutzen Sie dazu den blauen „+“-Button
+        auf der Karte.
+        <br />
+        @if (props.hasContextHelp) {
+            <a
+                tabindex="0"
+                role="button"
+                aria-label="Hilfe zur Kartenerstellung"
+                aria-haspopup="dialog"
+                (click)="showContextHelp()"
+                (keydown.enter)="showContextHelp()"
+                >Hilfe zu Raumbezügen</a
+            >
+        }
+    </div>
+}
 
 <div
     #leaflet
@@ -21,63 +24,75 @@
     aria-label="Karte der Raumbezüge"
 ></div>
 
-<div
-    *ngIf="formControl.enabled"
-    class="button-wrapper text-center"
-    [class.has-spatial]="hasAnyLocations"
->
-    <div *ngIf="!hasAnyLocations" class="spatialBtnText">
-        Erstellen Sie einen Raumbezug<span *ngIf="props.required">*</span>
-    </div>
-    <button
-        *ngIf="!maxLocationsReached"
-        type="button"
-        mat-fab
-        class="spatialBtn"
-        data-cy="spatialButton"
-        color="primary"
-        matTooltip="Raumbezug hinzufügen"
-        aria-haspopup="dialog"
-        [attr.aria-label]="props.ariaLabel"
-        aria-description="Raumbezug hinzufügen"
-        (click)="openSpatialDialog()"
-        [ngClass]="{
-            'has-error': showError && formControl.errors?.required
-        }"
+@if (formControl.enabled) {
+    <div
+        class="button-wrapper text-center"
+        [class.has-spatial]="hasAnyLocations"
     >
-        <mat-icon svgIcon="spatial-rect"></mat-icon>
-    </button>
-</div>
-
-<div *ngIf="mapHasMoved" class="resetBtn">
-    <button type="button" mat-flat-button (click)="highlightLocation(null)">
-        Zurücksetzen
-    </button>
-</div>
-
-<ige-form-error *ngIf="showError && formControl.errors?.required"
-    >Bitte erstellen Sie einen Raumbezug
-</ige-form-error>
-
-<ige-spatial-list
-    role="list"
-    *ngIf="hasAnyLocations"
-    [class.list-padding]="!maxLocationsReached"
-    [locations]="locationsWithColor$"
-    [disabled]="formControl.disabled"
-    (selectLocation)="highlightLocation($event)"
-    (edit)="openSpatialDialog($event)"
-    (remove)="removeLocation($event)"
-></ige-spatial-list>
-
-<div *ngIf="maxLocationsReached" class="limitHelpText">
-    <div class="limitHelpIcon">
-        <mat-icon
-            class="material-icons-outlined"
-            svgIcon="info-24px"
-        ></mat-icon>
+        @if (!hasAnyLocations) {
+            <div class="spatialBtnText">
+                Erstellen Sie einen Raumbezug
+                @if (props.required) {
+                    <span>*</span>
+                }
+            </div>
+        }
+        @if (!maxLocationsReached) {
+            <button
+                type="button"
+                mat-fab
+                class="spatialBtn"
+                data-cy="spatialButton"
+                color="primary"
+                matTooltip="Raumbezug hinzufügen"
+                aria-haspopup="dialog"
+                [attr.aria-label]="props.ariaLabel"
+                aria-description="Raumbezug hinzufügen"
+                (click)="openSpatialDialog()"
+                [ngClass]="{
+                    'has-error': showError && formControl.errors?.required
+                }"
+            >
+                <mat-icon svgIcon="spatial-rect"></mat-icon>
+            </button>
+        }
     </div>
-    <ng-container *transloco="let t">
-        {{ t("spatial.limitHelpText") }}
-    </ng-container>
-</div>
+}
+
+@if (mapHasMoved) {
+    <div class="resetBtn">
+        <button type="button" mat-flat-button (click)="highlightLocation(null)">
+            Zurücksetzen
+        </button>
+    </div>
+}
+
+@if (showError && formControl.errors?.required) {
+    <ige-form-error>Bitte erstellen Sie einen Raumbezug </ige-form-error>
+}
+
+@if (hasAnyLocations) {
+    <ige-spatial-list
+        role="list"
+        [class.list-padding]="!maxLocationsReached"
+        [locations]="locationsWithColor$"
+        [disabled]="formControl.disabled"
+        (selectLocation)="highlightLocation($event)"
+        (edit)="openSpatialDialog($event)"
+        (remove)="removeLocation($event)"
+    ></ige-spatial-list>
+}
+
+@if (maxLocationsReached) {
+    <div class="limitHelpText">
+        <div class="limitHelpIcon">
+            <mat-icon
+                class="material-icons-outlined"
+                svgIcon="info-24px"
+            ></mat-icon>
+        </div>
+        <ng-container *transloco="let t">
+            {{ t("spatial.limitHelpText") }}
+        </ng-container>
+    </div>
+}

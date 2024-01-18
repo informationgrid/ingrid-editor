@@ -1,15 +1,16 @@
 <!--<p-radioButton [(ngModel)]="value"
-               [name]="radioName"
-               [value]="radioValue"
-               label="{{label}}"
-               (onClick)="handleChange()"></p-radioButton>-->
+[name]="radioName"
+[value]="radioValue"
+label="{{label}}"
+(onClick)="handleChange()"></p-radioButton>-->
 
 <mat-radio-group [(ngModel)]="value">
-    <mat-radio-button
-        *ngFor="let opt of options"
-        [name]="radioName"
-        [value]="opt.value"
-        (change)="handleChange($event)"
-        >{{ opt.label }}</mat-radio-button
-    >
+    @for (opt of options; track opt) {
+        <mat-radio-button
+            [name]="radioName"
+            [value]="opt.value"
+            (change)="handleChange($event)"
+            >{{ opt.label }}</mat-radio-button
+        >
+    }
 </mat-radio-group>

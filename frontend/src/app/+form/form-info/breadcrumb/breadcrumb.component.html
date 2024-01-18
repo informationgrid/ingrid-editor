@@ -1,40 +1,53 @@
-<span *ngIf="fullPath" [class.emphasize]="emphasize">
-    <span class="root">
-        <button
-            [class.selectable]="selectable && !disableRoot"
-            [class.disabled]="disableRoot"
-            [matTooltip]="
-                disableRoot
-                    ? 'Sie dürfen nicht auf das Root-Element zugreifen'
-                    : ''
-            "
-            (click)="!disableRoot && onSelect(null)"
-        >
-            {{ rootName }}
-        </button>
-        <ng-container *ngIf="fullPath.length > 0">
-            <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
-            <span *ngIf="simplePath">/</span>
-        </ng-container>
+@if (fullPath) {
+    <span [class.emphasize]="emphasize">
+        <span class="root">
+            <button
+                [class.selectable]="selectable && !disableRoot"
+                [class.disabled]="disableRoot"
+                [matTooltip]="
+                    disableRoot
+                        ? 'Sie dürfen nicht auf das Root-Element zugreifen'
+                        : ''
+                "
+                (click)="!disableRoot && onSelect(null)"
+            >
+                {{ rootName }}
+            </button>
+            @if (fullPath.length > 0) {
+                @if (!simplePath) {
+                    <mat-icon>chevron_right</mat-icon>
+                }
+                @if (simplePath) {
+                    <span>/</span>
+                }
+            }
+        </span>
+        @for (
+            item of collapsed ? shortPath : fullPath;
+            track item;
+            let last = $last
+        ) {
+            <span>
+                <button
+                    [matTooltip]="item | breadCrumbTooltip"
+                    [class.selectable]="
+                        selectable &&
+                        (item.permission?.canRead || item.permission?.canWrite)
+                    "
+                    [class.disabled]="item.disabled"
+                    (click)="handleClick(item)"
+                >
+                    {{ item.title }}
+                </button>
+                @if (!last) {
+                    @if (!simplePath) {
+                        <mat-icon>chevron_right</mat-icon>
+                    }
+                    @if (simplePath) {
+                        <span>/</span>
+                    }
+                }
+            </span>
+        }
     </span>
-
-    <span
-        *ngFor="let item of collapsed ? shortPath : fullPath; let last = last"
-    >
-        <button
-            [matTooltip]="item | breadCrumbTooltip"
-            [class.selectable]="
-                selectable &&
-                (item.permission?.canRead || item.permission?.canWrite)
-            "
-            [class.disabled]="item.disabled"
-            (click)="handleClick(item)"
-        >
-            {{ item.title }}
-        </button>
-        <ng-container *ngIf="!last">
-            <mat-icon *ngIf="!simplePath">chevron_right</mat-icon>
-            <span *ngIf="simplePath">/</span>
-        </ng-container>
-    </span>
-</span>
+}

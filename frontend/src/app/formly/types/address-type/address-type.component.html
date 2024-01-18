@@ -1,43 +1,43 @@
-<ige-form-error
-    *ngIf="
-        showError && formControl.invalid && !formControl.hasError('required')
-    "
-    >{{ getFirstError() }}</ige-form-error
->
+@if (showError && formControl.invalid && !formControl.hasError("required")) {
+    <ige-form-error>{{ getFirstError() }}</ige-form-error>
+}
 
-<div
-    *ngIf="addresses.length > 0"
-    class="address-cards flex-row flex-wrap gap-24 row-gap-12"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="drop($event)"
-    [attr.aria-label]="props?.ariaLabel"
-    aria-description="Liste der gewählten Adressen"
-    role="list"
->
+@if (addresses.length > 0) {
     <div
-        *ngFor="let address of addresses; let i = index"
-        class="address-card-wrapper"
-        style="max-width: 50%"
-        [class.draggable]="formControl.enabled"
-        cdkDrag
-        [cdkDragDisabled]="formControl.disabled"
+        class="address-cards flex-row flex-wrap gap-24 row-gap-12"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        (cdkDropListDropped)="drop($event)"
+        [attr.aria-label]="props?.ariaLabel"
+        aria-description="Liste der gewählten Adressen"
+        role="list"
     >
-        <ige-address-card
-            (edit)="editAddress(address, i)"
-            (remove)="removeAddress(address)"
-            (gotoAddress)="gotoAddress(address)"
-            [disabled]="formControl.disabled"
-            [address]="address"
-        ></ige-address-card>
+        @for (address of addresses; track address; let i = $index) {
+            <div
+                class="address-card-wrapper"
+                style="max-width: 50%"
+                [class.draggable]="formControl.enabled"
+                cdkDrag
+                [cdkDragDisabled]="formControl.disabled"
+            >
+                <ige-address-card
+                    (edit)="editAddress(address, i)"
+                    (remove)="removeAddress(address)"
+                    (gotoAddress)="gotoAddress(address)"
+                    [disabled]="formControl.disabled"
+                    [address]="address"
+                ></ige-address-card>
+            </div>
+        }
     </div>
-</div>
+}
 
-<ige-add-button
-    *ngIf="formControl.enabled && (!props.max || props.max > addresses.length)"
-    (add)="addAddress()"
-    [showRequiredError]="
-        showError && formControl.invalid && formControl.errors?.required
-    "
-    [ariaLabelledBy]="field | fieldToAriaLabelledBy"
-></ige-add-button>
+@if (formControl.enabled && (!props.max || props.max > addresses.length)) {
+    <ige-add-button
+        (add)="addAddress()"
+        [showRequiredError]="
+            showError && formControl.invalid && formControl.errors?.required
+        "
+        [ariaLabelledBy]="field | fieldToAriaLabelledBy"
+    ></ige-add-button>
+}

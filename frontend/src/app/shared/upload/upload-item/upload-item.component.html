@@ -1,37 +1,45 @@
 <div class="main">
-    <mat-spinner *ngIf="file.transfer.progress < 1" diameter="24"></mat-spinner>
-    <mat-icon
-        *ngIf="file.error === null"
-        class="green"
-        svgIcon="baseline-check-24px"
-    ></mat-icon>
-    <mat-icon *ngIf="file.error" class="error-color">error_outline</mat-icon>
+    @if (file.transfer.progress < 1) {
+        <mat-spinner diameter="24"></mat-spinner>
+    }
+    @if (file.error === null) {
+        <mat-icon class="green" svgIcon="baseline-check-24px"></mat-icon>
+    }
+    @if (file.error) {
+        <mat-icon class="error-color">error_outline</mat-icon>
+    }
     <div>
         <div>{{ file.transfer.name }}</div>
         <div class="comment">
             {{ file.transfer.size | size }}
-            <span *ngIf="file.transfer.progress < 1"
-                >({{ file.transfer.progress * 100 | number: ".1-1" }}%)</span
-            >
+            @if (file.transfer.progress < 1) {
+                <span
+                    >({{
+                        file.transfer.progress * 100 | number: ".1-1"
+                    }}%)</span
+                >
+            }
         </div>
-        <div *ngIf="file.error" class="error-color">
-            {{ file.error.message }}
-        </div>
+        @if (file.error) {
+            <div class="error-color">
+                {{ file.error.message }}
+            </div>
+        }
     </div>
 
     <div class="flex-1"></div>
 
-    <ng-container *ngIf="!showOnlyProgress">
-        <button
-            *ngIf="file.transfer.complete; else pauseButton"
-            data-cy="btn-remove"
-            mat-icon-button
-            (click)="cancelFile()"
-            aria-label="entfernen"
-        >
-            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-        </button>
-        <ng-template #pauseButton>
+    @if (!showOnlyProgress) {
+        @if (file.transfer.complete) {
+            <button
+                data-cy="btn-remove"
+                mat-icon-button
+                (click)="cancelFile()"
+                aria-label="entfernen"
+            >
+                <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+            </button>
+        } @else {
             <button
                 mat-icon-button
                 (click)="file.transfer.paused ? resume() : pause()"
@@ -45,37 +53,36 @@
                     file.transfer.paused ? "not_started" : "pause"
                 }}</mat-icon>
             </button>
-        </ng-template>
-    </ng-container>
+        }
+    }
 </div>
 
-<mat-progress-bar
-    *ngIf="file.transfer.progress < 1"
-    [value]="file.transfer.progress * 100"
-></mat-progress-bar>
+@if (file.transfer.progress < 1) {
+    <mat-progress-bar [value]="file.transfer.progress * 100"></mat-progress-bar>
+}
 
-<div *ngIf="file.error" class="flex-col">
-    <div class="flex-1 align-self-end">
-        <ng-container *ngIf="file.error.status === 409; else retryButton">
-            <button mat-button color="primary" (click)="overwrite()">
-                Überschreiben
-            </button>
-            <button mat-button color="primary" (click)="rename()">
-                Umbenennen
-            </button>
-            <button
-                mat-button
-                color="primary"
-                (click)="useExisting.next(file.transfer)"
-            >
-                Existierende verwenden
-            </button>
-        </ng-container>
-
-        <ng-template #retryButton>
-            <button mat-button color="primary" (click)="retry()">
-                Erneut versuchen
-            </button>
-        </ng-template>
+@if (file.error) {
+    <div class="flex-col">
+        <div class="flex-1 align-self-end">
+            @if (file.error.status === 409) {
+                <button mat-button color="primary" (click)="overwrite()">
+                    Überschreiben
+                </button>
+                <button mat-button color="primary" (click)="rename()">
+                    Umbenennen
+                </button>
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="useExisting.next(file.transfer)"
+                >
+                    Existierende verwenden
+                </button>
+            } @else {
+                <button mat-button color="primary" (click)="retry()">
+                    Erneut versuchen
+                </button>
+            }
+        </div>
     </div>
-</div>
+}

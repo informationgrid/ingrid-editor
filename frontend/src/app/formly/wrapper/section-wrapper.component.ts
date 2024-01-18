@@ -23,7 +23,9 @@ import { FieldWrapper } from "@ngx-formly/core";
 @Component({
   selector: "ige-section-wrapper",
   template: `
-    <h2 role="heading" *ngIf="props.label">{{ props.label }}</h2>
+    @if (props.label) {
+      <h2 role="heading">{{ props.label }}</h2>
+    }
     <ng-container #fieldComponent></ng-container>
 
     <mat-divider aria-hidden="true"></mat-divider>

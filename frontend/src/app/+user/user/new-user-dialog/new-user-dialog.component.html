@@ -8,38 +8,41 @@
 >
     <ng-container content [formGroup]="form">
         <div class="no-selection-text">
-            <ng-container *ngIf="options.formState.showGroups; else userInfo">
+            @if (options.formState.showGroups) {
                 Fügen Sie den Benutzer mindestens einer Gruppe hinzu, so dass
                 dieser Rechte auf die Datensätze erhält.
-            </ng-container>
-            <ng-template #userInfo>
+            } @else {
                 Wählen Sie einen bestehenden Benutzernamen aus oder legen Sie
                 ein neues Login an.
-            </ng-template>
+            }
         </div>
-        <div *ngIf="userSub && !userSub.closed" class="spinner">
-            <mat-spinner></mat-spinner>
-        </div>
-        <formly-form
-            *ngIf="userSub?.closed"
-            [form]="form"
-            [fields]="formlyFieldConfig"
-            [model]="model"
-            [options]="options"
-        >
-        </formly-form>
+        @if (userSub && !userSub.closed) {
+            <div class="spinner">
+                <mat-spinner></mat-spinner>
+            </div>
+        }
+        @if (userSub?.closed) {
+            <formly-form
+                [form]="form"
+                [fields]="formlyFieldConfig"
+                [model]="model"
+                [options]="options"
+            >
+            </formly-form>
+        }
     </ng-container>
     <ng-container actions>
-        <button
-            *ngIf="options.formState.showGroups"
-            color="primary"
-            mat-button
-            data-cy="create-back"
-            (click)="this.showGroupsPage(false)"
-            class="back-button"
-        >
-            <mat-icon>chevron_left</mat-icon>
-            <span>Zurück</span>
-        </button>
+        @if (options.formState.showGroups) {
+            <button
+                color="primary"
+                mat-button
+                data-cy="create-back"
+                (click)="this.showGroupsPage(false)"
+                class="back-button"
+            >
+                <mat-icon>chevron_left</mat-icon>
+                <span>Zurück</span>
+            </button>
+        }
     </ng-container>
 </ige-dialog-template>

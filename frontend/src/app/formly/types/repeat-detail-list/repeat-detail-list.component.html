@@ -1,86 +1,94 @@
-<ige-form-error *ngIf="showError && formControl.invalid && formControl.errors">
-    <formly-validation-message [field]="field"></formly-validation-message>
-</ige-form-error>
-<mat-list
-    *ngIf="model[field.key + '']?.length"
-    cdkDropList
-    cdkDropListOrientation="vertical"
-    (cdkDropListDropped)="drop($event)"
->
-    <mat-list-item
-        *ngFor="let item of model[field.key]; let i = index"
-        cdkDrag
-        [cdkDragDisabled]="formControl.disabled"
-        [class.clickable]="formControl.enabled"
-        [class.draggable]="formControl.enabled"
+@if (showError && formControl.invalid && formControl.errors) {
+    <ige-form-error>
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </ige-form-error>
+}
+@if (model[field.key + ""]?.length) {
+    <mat-list
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        (cdkDropListDropped)="drop($event)"
     >
-        <div class="flex-row gap-6">
-            <mat-icon
-                *ngIf="formControl.enabled"
-                cdkDragHandle
-                matTooltip="Sortieren"
-                >drag_indicator
-            </mat-icon>
-
-            <div class="flex-1 flex-col align-items-start">
-                <div
-                    *ngIf="
-                        props.fields?.[0]?.fieldGroup?.[1]?.props?.codelistId;
-                        else simpleType
-                    "
-                    class="type"
-                >
-                    {{
-                        (model[field.key][i].type?.key
-                            | codelist
-                                : props.fields?.[0]?.fieldGroup?.[1]?.props
-                                      ?.codelistId
-                            | async) ?? model[field.key][i].type?.value
-                    }}
-                </div>
-                <ng-template #simpleType>
-                    <div class="type">{{ model[field.key][i].type }}</div>
-                </ng-template>
-                <div class="title">
-                    {{ model[field.key][i][props.titleField ?? "title"] }}
-                </div>
-                <a
-                    class="url no-text-transform"
-                    [href]="model[field.key][i].url"
-                    target="_blank"
-                    >{{ model[field.key][i].url }}</a
-                >
-                <div
-                    *ngIf="model[field.key][i].explanation"
-                    class="explanation"
-                >
-                    {{ model[field.key][i].explanation }}
-                </div>
-            </div>
-
-            <button
-                *ngIf="formControl.enabled"
-                mat-icon-button
-                type="button"
-                class="menu-button"
-                matTooltip="Bearbeiten"
-                [matMenuTriggerFor]="menu"
+        @for (item of model[field.key]; track item; let i = $index) {
+            <mat-list-item
+                cdkDrag
+                [cdkDragDisabled]="formControl.disabled"
+                [class.clickable]="formControl.enabled"
+                [class.draggable]="formControl.enabled"
             >
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
+                <div class="flex-row gap-6">
+                    @if (formControl.enabled) {
+                        <mat-icon cdkDragHandle matTooltip="Sortieren"
+                            >drag_indicator
+                        </mat-icon>
+                    }
+                    <div class="flex-1 flex-col align-items-start">
+                        @if (
+                            props.fields?.[0]?.fieldGroup?.[1]?.props
+                                ?.codelistId
+                        ) {
+                            <div class="type">
+                                {{
+                                    (model[field.key][i].type?.key
+                                        | codelist
+                                            : props.fields?.[0]?.fieldGroup?.[1]
+                                                  ?.props?.codelistId
+                                        | async) ??
+                                        model[field.key][i].type?.value
+                                }}
+                            </div>
+                        } @else {
+                            <div class="type">
+                                {{ model[field.key][i].type }}
+                            </div>
+                        }
+                        <div class="title">
+                            {{
+                                model[field.key][i][props.titleField ?? "title"]
+                            }}
+                        </div>
+                        <a
+                            class="url no-text-transform"
+                            [href]="model[field.key][i].url"
+                            target="_blank"
+                            >{{ model[field.key][i].url }}</a
+                        >
+                        @if (model[field.key][i].explanation) {
+                            <div class="explanation">
+                                {{ model[field.key][i].explanation }}
+                            </div>
+                        }
+                    </div>
+                    @if (formControl.enabled) {
+                        <button
+                            mat-icon-button
+                            type="button"
+                            class="menu-button"
+                            matTooltip="Bearbeiten"
+                            [matMenuTriggerFor]="menu"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
+                    }
+                    <mat-menu #menu>
+                        <button mat-menu-item (click)="editItem(i)">
+                            Bearbeiten
+                        </button>
+                        <button mat-menu-item (click)="removeItem(i)">
+                            Entfernen
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-list-item>
+        }
+    </mat-list>
+}
 
-            <mat-menu #menu>
-                <button mat-menu-item (click)="editItem(i)">Bearbeiten</button>
-                <button mat-menu-item (click)="removeItem(i)">Entfernen</button>
-            </mat-menu>
-        </div>
-    </mat-list-item>
-</mat-list>
-
-<ige-add-button
-    *ngIf="formControl.enabled"
-    (add)="addItem()"
-    [showRequiredError]="
-        showError && formControl.invalid && formControl.errors?.required
-    "
-></ige-add-button>
+@if (formControl.enabled) {
+    <ige-add-button
+        (add)="addItem()"
+        [showRequiredError]="
+            showError && formControl.invalid && formControl.errors?.required
+        "
+    ></ige-add-button>
+}

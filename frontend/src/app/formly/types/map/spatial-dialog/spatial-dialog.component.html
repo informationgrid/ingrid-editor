@@ -8,9 +8,9 @@
 </div>
 
 <mat-dialog-content>
-    <div class="spatial-wrapper flex-row gap-24" [ngSwitch]="view">
+    <div class="spatial-wrapper flex-row gap-24">
         <div class="flex-col" style="width: 400px">
-            <ng-container *ngIf="types.length > 1">
+            @if (types.length > 1) {
                 <div class="dlg-field-label required">Typ*</div>
                 <mat-form-field
                     appearance="outline"
@@ -22,37 +22,43 @@
                         required
                         aria-label="Typ des Raumbezuges *"
                     >
-                        <mat-option
-                            *ngFor="let menuItem of types"
-                            [value]="menuItem.id"
-                            [attr.data-cy]="menuItem.id"
-                        >
-                            {{ menuItem.label }}
-                        </mat-option>
+                        @for (menuItem of types; track menuItem) {
+                            <mat-option
+                                [value]="menuItem.id"
+                                [attr.data-cy]="menuItem.id"
+                            >
+                                {{ menuItem.label }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-            </ng-container>
+            }
 
-            <ige-free-spatial
-                *ngSwitchCase="'free'"
-                [map]="leafletReference"
-                [value]="result"
-                (updateTitle)="titleInput.setValue($event)"
-                (result)="updateBoundingBox($event)"
-            ></ige-free-spatial>
-            <ige-wkt-spatial
-                *ngSwitchCase="'wkt'"
-                [map]="leafletReference"
-                [wktString]="data?.wkt ?? ''"
-                (result)="this.result.wkt = $event"
-            ></ige-wkt-spatial>
-            <ige-geothesaurus-wfsgnde
-                *ngSwitchCase="'wfsgnde'"
-                [map]="leafletReference"
-                [value]="result"
-                (updateTitle)="titleInput.setValue($event)"
-                (result)="updateBoundingBox($event)"
-            ></ige-geothesaurus-wfsgnde>
+            @switch (view) {
+                @case ("free") {
+                    <ige-free-spatial
+                        [map]="leafletReference"
+                        [value]="result"
+                        (updateTitle)="titleInput.setValue($event)"
+                        (result)="updateBoundingBox($event)"
+                    ></ige-free-spatial>
+                }
+                @case ("wkt") {
+                    <ige-wkt-spatial
+                        [map]="leafletReference"
+                        [wktString]="data?.wkt ?? ''"
+                        (result)="this.result.wkt = $event"
+                    ></ige-wkt-spatial>
+                }
+                @case ("wfsgnde") {
+                    <ige-geothesaurus-wfsgnde
+                        [map]="leafletReference"
+                        [value]="result"
+                        (updateTitle)="titleInput.setValue($event)"
+                        (result)="updateBoundingBox($event)"
+                    ></ige-geothesaurus-wfsgnde>
+                }
+            }
         </div>
 
         <div class="flex-1 flex-col">
@@ -74,13 +80,15 @@
                 data-cy="spatial-dialog-map"
                 aria-description="Die Karte ist eingeschränkt bedienbar, bitte nutzen Sie die Eingabefelder unter der Karte."
             ></div>
-            <div class="coordinates" *ngIf="view === 'free'">
-                <ige-coordinates-spatial
-                    [map]="leafletReference"
-                    [coordinates]="result.value"
-                    (result)="updateBoundingBox($event)"
-                ></ige-coordinates-spatial>
-            </div>
+            @if (view === "free") {
+                <div class="coordinates">
+                    <ige-coordinates-spatial
+                        [map]="leafletReference"
+                        [coordinates]="result.value"
+                        (result)="updateBoundingBox($event)"
+                    ></ige-coordinates-spatial>
+                </div>
+            }
         </div>
     </div>
 </mat-dialog-content>
