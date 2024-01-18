@@ -35,7 +35,6 @@ export abstract class Plugin {
   fields?: FormlyFieldConfig[] = [];
   data?: any;
   hideInAddress = false;
-  private registeredInForm = false;
 
   register(): void {
     console.log("Register Plugin: ", this.name);
@@ -43,15 +42,7 @@ export abstract class Plugin {
   }
 
   registerForm(): void {
-    if (this.registeredInForm) {
-      console.warn(
-        `Plugin already registered in form and registration is skipped: ${this.name}`,
-      );
-      return;
-    }
-
     console.log("Register Form-Plugin: ", this.name);
-    this.registeredInForm = true;
   }
 
   unregister(): void {
@@ -64,7 +55,6 @@ export abstract class Plugin {
   unregisterForm(): void {
     if (this.isActive) {
       console.log("Unregister Form-Plugin: ", this.name);
-      this.registeredInForm = false;
       this.formSubscriptions.forEach((sub) => sub.unsubscribe());
       this.formSubscriptions = [];
     }

@@ -38,6 +38,8 @@ export class PluginService {
 
   initWithAddress: boolean = null;
 
+  registeredForms: { [x: string]: boolean } = {};
+
   constructor(configService: ConfigService) {
     this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
@@ -56,14 +58,22 @@ export class PluginService {
       plugin.register();
 
       // register late plugins, which were not ready during initialization
-      if (this.initWithAddress !== null) {
-        if (
-          !this.initWithAddress ||
-          (this.initWithAddress && !plugin.hideInAddress)
-        ) {
-          plugin.registerForm();
-        }
+      // only activate those form plugins which belong to the form (data/address)
+      if (
+        this.initWithAddress !== null &&
+        (!this.initWithAddress || !plugin.hideInAddress)
+      ) {
+        this.registerForm(plugin);
       }
+    }
+  }
+
+  private registerForm(plugin: Plugin) {
+    const alreadyRegistered = this.registeredForms[plugin.id] === true;
+
+    if (!alreadyRegistered) {
+      this.registeredForms[plugin.id] = true;
+      plugin.registerForm();
     }
   }
 
@@ -72,14 +82,19 @@ export class PluginService {
 
     this.plugins
       .filter((p) => p.isActive)
-      .filter((p) => !forAddress || (forAddress && !p.hideInAddress))
+      .filter((p) => !forAddress || !p.hideInAddress)
       .forEach((p) => p.registerForm());
 
     this.initWithAddress = forAddress;
   }
 
   private unregisterFormPlugins() {
-    return this.plugins.forEach((plugin) => plugin.unregisterForm());
+    return this.plugins.forEach((plugin) => this.unregisterForm(plugin));
+  }
+
+  private unregisterForm(plugin: Plugin) {
+    this.registeredForms[plugin.id] = false;
+    plugin.unregisterForm();
   }
 
   applyActiveStates(behaviours: Plugin[]) {
