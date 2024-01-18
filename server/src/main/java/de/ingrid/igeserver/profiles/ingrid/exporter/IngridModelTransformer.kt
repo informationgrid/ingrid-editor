@@ -437,7 +437,7 @@ open class IngridModelTransformer(
         return when (type) {
             "InGridSpecialisedTask" -> "0"
             "InGridGeoDataset" -> "1"
-            "InGridLiterature" -> "2"
+            "InGridPublication" -> "2"
             "InGridGeoService" -> "3"
             "InGridProject" -> "4"
             "InGridDataCollection" -> "5"

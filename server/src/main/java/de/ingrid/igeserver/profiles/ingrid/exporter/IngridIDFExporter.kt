@@ -89,7 +89,7 @@ class IngridIDFExporter(
         return when (type) {
             "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
             "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
-            "InGridLiterature" -> "ingrid/idf-literature.jte"
+            "InGridPublication" -> "ingrid/idf-literature.jte"
             "InGridGeoService" -> "ingrid/idf-geoservice.jte"
             "InGridProject" -> "ingrid/idf-project.jte"
             "InGridDataCollection" -> "ingrid/idf-dataCollection.jte"
@@ -119,7 +119,7 @@ class IngridIDFExporter(
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridLiterature" to LiteratureModelTransformer::class,
+            "InGridPublication" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
             "InGridProject" to ProjectModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,

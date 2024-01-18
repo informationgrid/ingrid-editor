@@ -59,7 +59,7 @@ class M065_MigrateKeywords : MigrationBase("0.65") {
                 "InGridDataCollection",
                 "InGridGeoService",
                 "InGridInformationSystem",
-                "InGridLiterature",
+                "InGridPublication",
                 "InGridProject",
                 "InGridSpecialisedTask"
             )

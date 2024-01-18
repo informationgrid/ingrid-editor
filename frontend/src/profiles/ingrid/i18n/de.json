@@ -2,7 +2,7 @@
   "docType": {
     "InGridSpecialisedTask": "Organisationseinheit",
     "InGridGeoDataset": "Geodatensatz",
-    "InGridLiterature": "Dokument",
+    "InGridPublication": "Dokument",
     "InGridGeoService": "Geodatendienst",
     "InGridProject": "Projekt",
     "InGridDataCollection": "Datenbank",

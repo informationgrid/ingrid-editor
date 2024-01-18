@@ -30,6 +30,6 @@ class DocumentTypes : QuickFilter() {
 
     override fun filter(parameter: List<*>?) = "document1.type = '${parameter?.get(0)}'"
     override val parameters = listOf(
-        "InGridSpecialisedTask", "InGridGeoDataset", "InGridLiterature", "InGridGeoService", "InGridProject", "InGridDataCollection", "InGridInformationSystem"
+        "InGridSpecialisedTask", "InGridGeoDataset", "InGridPublication", "InGridGeoService", "InGridProject", "InGridDataCollection", "InGridInformationSystem"
     )
 }

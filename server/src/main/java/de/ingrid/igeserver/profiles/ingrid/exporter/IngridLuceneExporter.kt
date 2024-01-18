@@ -77,7 +77,7 @@ class IngridLuceneExporter(
         return when (doc.type) {
             "InGridSpecialisedTask" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridGeoDataset" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridLiterature" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
+            "InGridPublication" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridGeoService" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridProject" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridDataCollection" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))

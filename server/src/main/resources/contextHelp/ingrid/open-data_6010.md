@@ -6,7 +6,7 @@ docType:
   - InGridGeoDataset
   - InGridGeoService
   - InGridInformationSystem
-  - InGridLiterature
+  - InGridPublication
 profile: ingrid
 
 

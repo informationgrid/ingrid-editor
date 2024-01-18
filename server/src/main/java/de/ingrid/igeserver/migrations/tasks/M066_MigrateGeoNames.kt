@@ -60,7 +60,7 @@ class M066_MigrateGeoNames : MigrationBase("0.66") {
                 "InGridDataCollection",
                 "InGridGeoService",
                 "InGridInformationSystem",
-                "InGridLiterature",
+                "InGridPublication",
                 "InGridProject",
                 "InGridSpecialisedTask"
             )

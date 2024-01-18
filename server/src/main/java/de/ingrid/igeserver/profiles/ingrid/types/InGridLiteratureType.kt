@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridLiteratureType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
-    override val className = "InGridLiterature"
+    override val className = "InGridPublication"
 
     override val jsonSchema = "/ingrid/schemes/literature.schema.json"
 }

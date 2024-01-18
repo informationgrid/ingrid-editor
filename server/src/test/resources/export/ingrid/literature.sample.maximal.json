@@ -2,7 +2,7 @@
   "title": "Test-Literatur",
   "_id": 1,
   "_uuid": "8172829b-fba9-4496-9651-9486bef69316",
-  "_type": "InGridLiterature",
+  "_type": "InGridPublication",
   "_created": "2023-07-03T12:10:23.023171Z",
   "_createdBy": "Mike Cat-Miller",
   "_modified": "2023-07-03T12:47:09.942217Z",
@@ -232,9 +232,7 @@
       }
     },
     "dataset": {
-      "languages": [
-        "150"
-      ]
+      "languages": ["150"]
     },
     "extraInfo": {
       "legalBasicsDescriptions": [
