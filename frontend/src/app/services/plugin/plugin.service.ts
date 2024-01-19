@@ -74,6 +74,8 @@ export class PluginService {
     if (!alreadyRegistered) {
       this.registeredForms[plugin.id] = true;
       plugin.registerForm();
+    } else {
+      console.warn(`Already registered form-plugin: ${plugin.id} => Skipping`);
     }
   }
 
@@ -83,7 +85,7 @@ export class PluginService {
     this.plugins
       .filter((p) => p.isActive)
       .filter((p) => !forAddress || !p.hideInAddress)
-      .forEach((p) => p.registerForm());
+      .forEach((p) => this.registerForm(p));
 
     this.initWithAddress = forAddress;
   }
