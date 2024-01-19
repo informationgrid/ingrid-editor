@@ -18,7 +18,7 @@
             [attr.aria-label]="$any(props)?.ariaLabel"
         >
             <mat-list-item
-                *ngFor="let item of model[key]; let i = index"
+                *ngFor="let item of model[$any(key)]; let i = index"
                 cdkDrag
                 [cdkDragDisabled]="formControl.disabled"
                 [class.clickable]="formControl.enabled"
