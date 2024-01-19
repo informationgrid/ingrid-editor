@@ -42,7 +42,7 @@
             <mat-option>{{ props.noValueLabel ?? "- Keine -" }}</mat-option>
         }
         @for (item of filteredOptions; track item) {
-            <mat-option [value]="item" [disabled]="item.disabled">{{
+            <mat-option [value]="item" [disabled]="$any(item).disabled">{{
                 item.value
             }}</mat-option>
         }

@@ -58,7 +58,9 @@
         (click)="makeSelection(doc)"
     >
         @if (
-            showSelection && currentSelection && currentSelection.id === doc.id
+            showSelection &&
+            currentSelection &&
+            currentSelection.id === $any(doc).id
         ) {
             <mat-icon
                 class="marker"
@@ -74,9 +76,9 @@
                 <span
                     class="date"
                     [matTooltip]="
-                        doc._contentModified | date: 'dd.LL.yyyy HH:mm'
+                        $any(doc)._contentModified | date: 'dd.LL.yyyy HH:mm'
                     "
-                    >{{ doc._contentModified | dateAgo: "DE" }}</span
+                    >{{ $any(doc)._contentModified | dateAgo: "DE" }}</span
                 >
             }
         </span>

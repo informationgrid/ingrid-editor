@@ -195,7 +195,7 @@ export class RepeatDistributionDetailListComponent
     );
   }
 
-  private openDialog(index?: number) {
+  openDialog(index?: number) {
     console.log(index);
     this.dialog
       .open(FormDialogComponent, {

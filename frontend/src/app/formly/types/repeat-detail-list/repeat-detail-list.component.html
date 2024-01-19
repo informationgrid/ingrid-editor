@@ -9,78 +9,73 @@
         cdkDropListOrientation="vertical"
         (cdkDropListDropped)="drop($event)"
     >
-        @for (item of model[field.key]; track item; let i = $index) {
-            <mat-list-item
-                cdkDrag
-                [cdkDragDisabled]="formControl.disabled"
-                [class.clickable]="formControl.enabled"
-                [class.draggable]="formControl.enabled"
-            >
-                <div class="flex-row gap-6">
-                    @if (formControl.enabled) {
-                        <mat-icon cdkDragHandle matTooltip="Sortieren"
-                            >drag_indicator
-                        </mat-icon>
-                    }
-                    <div class="flex-1 flex-col align-items-start">
-                        @if (
-                            props.fields?.[0]?.fieldGroup?.[1]?.props
-                                ?.codelistId
-                        ) {
-                            <div class="type">
-                                {{
-                                    (model[field.key][i].type?.key
-                                        | codelist
-                                            : props.fields?.[0]?.fieldGroup?.[1]
-                                                  ?.props?.codelistId
-                                        | async) ??
-                                        model[field.key][i].type?.value
-                                }}
-                            </div>
-                        } @else {
-                            <div class="type">
-                                {{ model[field.key][i].type }}
-                            </div>
-                        }
-                        <div class="title">
+        <mat-list-item
+            *ngFor="let item of model[field.key]; let i = index"
+            cdkDrag
+            [cdkDragDisabled]="formControl.disabled"
+            [class.clickable]="formControl.enabled"
+            [class.draggable]="formControl.enabled"
+        >
+            <div class="flex-row gap-6">
+                @if (formControl.enabled) {
+                    <mat-icon cdkDragHandle matTooltip="Sortieren"
+                        >drag_indicator
+                    </mat-icon>
+                }
+                <div class="flex-1 flex-col align-items-start">
+                    @if (
+                        props.fields?.[0]?.fieldGroup?.[1]?.props?.codelistId
+                    ) {
+                        <div class="type">
                             {{
-                                model[field.key][i][props.titleField ?? "title"]
+                                (model[field.key][i].type?.key
+                                    | codelist
+                                        : props.fields?.[0]?.fieldGroup?.[1]
+                                              ?.props?.codelistId
+                                    | async) ?? model[field.key][i].type?.value
                             }}
                         </div>
-                        <a
-                            class="url no-text-transform"
-                            [href]="model[field.key][i].url"
-                            target="_blank"
-                            >{{ model[field.key][i].url }}</a
-                        >
-                        @if (model[field.key][i].explanation) {
-                            <div class="explanation">
-                                {{ model[field.key][i].explanation }}
-                            </div>
-                        }
-                    </div>
-                    @if (formControl.enabled) {
-                        <button
-                            mat-icon-button
-                            type="button"
-                            class="menu-button"
-                            matTooltip="Bearbeiten"
-                            [matMenuTriggerFor]="menu"
-                        >
-                            <mat-icon svgIcon="Mehr"></mat-icon>
-                        </button>
+                    } @else {
+                        <div class="type">
+                            {{ model[field.key][i].type }}
+                        </div>
                     }
-                    <mat-menu #menu>
-                        <button mat-menu-item (click)="editItem(i)">
-                            Bearbeiten
-                        </button>
-                        <button mat-menu-item (click)="removeItem(i)">
-                            Entfernen
-                        </button>
-                    </mat-menu>
+                    <div class="title">
+                        {{ model[field.key][i][props.titleField ?? "title"] }}
+                    </div>
+                    <a
+                        class="url no-text-transform"
+                        [href]="model[field.key][i].url"
+                        target="_blank"
+                        >{{ model[field.key][i].url }}</a
+                    >
+                    @if (model[field.key][i].explanation) {
+                        <div class="explanation">
+                            {{ model[field.key][i].explanation }}
+                        </div>
+                    }
                 </div>
-            </mat-list-item>
-        }
+                @if (formControl.enabled) {
+                    <button
+                        mat-icon-button
+                        type="button"
+                        class="menu-button"
+                        matTooltip="Bearbeiten"
+                        [matMenuTriggerFor]="menu"
+                    >
+                        <mat-icon svgIcon="Mehr"></mat-icon>
+                    </button>
+                }
+                <mat-menu #menu>
+                    <button mat-menu-item (click)="editItem(i)">
+                        Bearbeiten
+                    </button>
+                    <button mat-menu-item (click)="removeItem(i)">
+                        Entfernen
+                    </button>
+                </mat-menu>
+            </div>
+        </mat-list-item>
     </mat-list>
 }
 

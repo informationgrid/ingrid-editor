@@ -10,10 +10,7 @@
         [ariaLabel]="props.ariaLabel"
         (contextHelp)="showContextHelp($event)"
     >
-        {{ props.externalLabel }}
-        @if (props.required) {
-            <span>*</span>
-        }
+        {{ props.externalLabel }}<span *ngIf="props.required">*</span>
     </ige-form-label>
 
     <ng-container #fieldComponent></ng-container>

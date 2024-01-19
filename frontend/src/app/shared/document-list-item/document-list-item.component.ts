@@ -56,7 +56,7 @@ export class DocumentListItemComponent implements OnInit {
   // this is only needed to prevent expression has changed exception and might be removed later
   @Input() removeSelectionAfter = false;
   @Input() setActiveItem: Subject<Partial<DocumentAbstract>>;
-  @Output() select = new EventEmitter<DocumentAbstract>();
+  @Output() select = new EventEmitter<DocumentAbstract | TreeNode>();
 
   @ViewChild(MatSelectionList) list: MatSelectionList;
 
@@ -76,7 +76,7 @@ export class DocumentListItemComponent implements OnInit {
     this.currentSelection = doc;
   }
 
-  makeSelection(doc: DocumentAbstract) {
+  makeSelection(doc: DocumentAbstract | TreeNode) {
     // we need to deselect, otherwise an ExpressionChangedAfterItHasBeenCheckedError occurs if we
     // come back to this component (clicking on root folder)
     if (this.removeSelectionAfter && this.list) {

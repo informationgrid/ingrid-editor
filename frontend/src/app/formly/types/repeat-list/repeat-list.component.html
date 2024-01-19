@@ -11,48 +11,50 @@
         (dropped)="drop($event)"
         [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
     >
-        @for (item of model[field.key]; track item; let i = $index) {
-            <span cdkDropList mixedCdkDropList>
-                <mat-chip-option
-                    disableRipple
-                    cdkDrag
-                    data-cy="list-item"
-                    [cdkDragDisabled]="formControl.disabled"
-                    [removable]="true"
-                    [selectable]="false"
-                    (removed)="removeItem(i)"
-                >
-                    @if (props.showLanguage) {
-                        <mat-icon
-                            class="avatar gray"
-                            svgIcon="language-24px"
-                        ></mat-icon>
-                    }
-                    @if (!props.labelField) {
-                        <div class="label">
-                            {{ getParameter(item) }}
-                        </div>
-                    }
-                    @if (props.labelField) {
-                        <div class="label">
-                            {{ item[props.labelField] }}
-                        </div>
-                    }
-                    @if (formControl.enabled) {
-                        <button
-                            matChipRemove
-                            [attr.aria-description]="
-                                props.labelField
-                                    ? item[props.labelField]
-                                    : getParameter(item) + 'entfernen'
-                            "
-                        >
-                            <mat-icon>cancel</mat-icon>
-                        </button>
-                    }
-                </mat-chip-option>
-            </span>
-        }
+        <span
+            *ngFor="let item of model[$any(field.key)]; let i = index"
+            cdkDropList
+            mixedCdkDropList
+        >
+            <mat-chip-option
+                disableRipple
+                cdkDrag
+                data-cy="list-item"
+                [cdkDragDisabled]="formControl.disabled"
+                [removable]="true"
+                [selectable]="false"
+                (removed)="removeItem(i)"
+            >
+                @if (props.showLanguage) {
+                    <mat-icon
+                        class="avatar gray"
+                        svgIcon="language-24px"
+                    ></mat-icon>
+                }
+                @if (!props.labelField) {
+                    <div class="label">
+                        {{ getParameter(item) }}
+                    </div>
+                }
+                @if (props.labelField) {
+                    <div class="label">
+                        {{ item[props.labelField] }}
+                    </div>
+                }
+                @if (formControl.enabled) {
+                    <button
+                        matChipRemove
+                        [attr.aria-description]="
+                            props.labelField
+                                ? item[props.labelField]
+                                : getParameter(item) + 'entfernen'
+                        "
+                    >
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                }
+            </mat-chip-option>
+        </span>
     </mat-chip-listbox>
 }
 
@@ -64,54 +66,51 @@
         (cdkDropListDropped)="drop($event)"
         role="list"
     >
-        @for (item of model[field.key]; track item; let i = $index) {
-            <div
-                cdkDrag
-                [cdkDragDisabled]="
-                    props.noDrag ||
-                    formControl.disabled ||
-                    model[field.key]?.length < 2
-                "
-                class="clickable list-item"
-                data-cy="list-item"
-                tabindex="0"
-                (click)="this.onItemClick(item?.key)"
-                (keyup.enter)="removeItem(i, $event)"
-                role="listitem"
-                [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
-                aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
-            >
-                <div class="text-wrapper">
-                    <span class="list-display-element">
-                        @if (this.props.elementIcon) {
-                            <mat-icon
-                                [svgIcon]="this.props.elementIcon"
-                            ></mat-icon>
-                        }
-                        @if (type !== "search") {
-                            {{ getParameter(item) }}
-                        }
-                        @if (type === "search") {
-                            <div class="label">
-                                {{ item[props.labelField] }}
-                            </div>
-                        }
-                    </span>
-                </div>
-                @if (formControl.enabled) {
-                    <button
-                        type="button"
-                        mat-icon-button
-                        class="close gray"
-                        (click)="removeItem(i)"
-                        tabindex="-1"
-                    >
-                        <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
-                        <mat-icon>close</mat-icon>
-                    </button>
-                }
+        <div
+            *ngFor="let item of model[$any(field.key)]; let i = index"
+            cdkDrag
+            [cdkDragDisabled]="
+                props.noDrag ||
+                formControl.disabled ||
+                model[field.key]?.length < 2
+            "
+            class="clickable list-item"
+            data-cy="list-item"
+            tabindex="0"
+            (click)="this.onItemClick(item?.key)"
+            (keyup.enter)="removeItem(i, $event)"
+            role="listitem"
+            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
+            aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
+        >
+            <div class="text-wrapper">
+                <span class="list-display-element">
+                    @if (this.props.elementIcon) {
+                        <mat-icon [svgIcon]="this.props.elementIcon"></mat-icon>
+                    }
+                    @if (type !== "search") {
+                        {{ getParameter(item) }}
+                    }
+                    @if (type === "search") {
+                        <div class="label">
+                            {{ item[props.labelField] }}
+                        </div>
+                    }
+                </span>
             </div>
-        }
+            @if (formControl.enabled) {
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="close gray"
+                    (click)="removeItem(i)"
+                    tabindex="-1"
+                >
+                    <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+                    <mat-icon>close</mat-icon>
+                </button>
+            }
+        </div>
     </div>
 } @else {
     @if (this.props.selectionEmptyNotice) {

@@ -50,7 +50,7 @@
     </div>
 }
 @if (field.fieldGroup.length < 1) {
-    <ige-section-wrapper>
+    <div class="section-wrapper">
         <h3>Verfahrenschritte</h3>
         @if (!(formState.disabled || props.disabled || formControl.disabled)) {
             <button
@@ -64,7 +64,7 @@
                 <span class="btn-title">Hinzufügen</span>
             </button>
         }
-    </ige-section-wrapper>
+    </div>
 }
 <mat-menu #menu="matMenu">
     @for (type of sectionTypes; track type) {
