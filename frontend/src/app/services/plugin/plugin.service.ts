@@ -25,6 +25,7 @@ import {
 } from "../behavior/behaviour.service";
 import { Subject } from "rxjs";
 import { ConfigService } from "../config/config.service";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -40,7 +41,7 @@ export class PluginService {
 
   registeredForms: { [x: string]: boolean } = {};
 
-  constructor(configService: ConfigService) {
+  constructor(private configService: ConfigService) {
     this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
     this.pluginState$.subscribe((value) =>
@@ -51,6 +52,10 @@ export class PluginService {
   }
 
   registerPlugin(plugin: Plugin) {
+    if (this.configService.registeredPlugins[plugin.id] === true)
+      throw new IgeError(`Plugin "${plugin.id}" already registered`);
+    this.configService.registeredPlugins[plugin.id] = true;
+
     this.applyActiveStates([plugin]);
     this.plugins.push(plugin);
 

@@ -97,6 +97,8 @@ export class ConfigService {
 
   $userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject(null);
 
+  registeredPlugins: { [x: string]: boolean } = {};
+
   private dataService: ConfigDataService;
   private isAdministrator = false;
   private isSuperAdministrator = false;
