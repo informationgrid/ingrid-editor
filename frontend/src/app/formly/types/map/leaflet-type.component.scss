@@ -1,6 +1,7 @@
 @import "src/variables";
 
 :host {
+  page-break-inside: avoid;
   padding-bottom: 32px;
   position: relative;
   display: block;
