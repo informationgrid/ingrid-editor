@@ -803,13 +803,16 @@ ${contentInfo}
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            <gmd:CI_ResponsibleParty>
-                                <gmd:role>
-                                    <gmd:CI_RoleCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                                            codeListValue="distributor" />
-                                </gmd:role>
-                            </gmd:CI_ResponsibleParty>
+                            @template.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
+                            @if(page.getOrderInfoContact().isEmpty())
+                                <gmd:CI_ResponsibleParty>
+                                    <gmd:role>
+                                        <gmd:CI_RoleCode
+                                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                                codeListValue="distributor" />
+                                    </gmd:role>
+                                </gmd:CI_ResponsibleParty>
+                            @endif
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>

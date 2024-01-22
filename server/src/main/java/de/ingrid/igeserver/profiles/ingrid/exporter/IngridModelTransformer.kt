@@ -549,6 +549,7 @@ open class IngridModelTransformer(
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact: List<AddressModelTransformer>
+    var orderInfoContact: List<AddressModelTransformer>
 
     var contact: AddressModelTransformer?
 
@@ -579,11 +580,15 @@ open class IngridModelTransformer(
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) } ?: emptyList()
+                ?.map { toAddressModelTransformer(it) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact =
             data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-                ?.map { AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService) }?.firstOrNull()
+                ?.map { toAddressModelTransformer(it) }?.firstOrNull()
+        orderInfoContact =
+            data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
+                ?: emptyList()
+
 
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
@@ -596,6 +601,9 @@ open class IngridModelTransformer(
             )
         } ?: emptyList()
     }
+
+    private fun toAddressModelTransformer(it: AddressRefModel) =
+        AddressModelTransformer(it.ref!!, catalogIdentifier, codelists, it.type, documentService = documentService)
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
@@ -773,6 +781,9 @@ open class IngridModelTransformer(
 
     private fun addressIsPointContactMD(it: AddressRefModel) =
         codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
+
+    private fun addressIsDistributor(it: AddressRefModel) =
+        codelists.getValue("505", it.type, "iso").equals("distributor")
 
 
     private fun hasKnownAddressType(it: AddressRefModel): Boolean  =  codelists.getValue("505", it.type, "iso") != null

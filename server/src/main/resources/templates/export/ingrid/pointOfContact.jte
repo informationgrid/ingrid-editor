@@ -6,10 +6,11 @@
 
 @param List<AddressModelTransformer> addresses
 @param Boolean isAddressExport = false
+@param Boolean asPointOfContact = true
 
 @for(AddressModelTransformer address : addresses)
     @if(!isAddressExport)
-        <gmd:pointOfContact>
+        @if(asPointOfContact) <gmd:pointOfContact> @endif
         <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
     @endif
     @if(address.getIndividualName() != null )
@@ -152,6 +153,6 @@
     @endif
     @if(!isAddressExport)
         </idf:idfResponsibleParty>
-        </gmd:pointOfContact>
+        @if(asPointOfContact) </gmd:pointOfContact> @endif
     @endif
 @endfor
