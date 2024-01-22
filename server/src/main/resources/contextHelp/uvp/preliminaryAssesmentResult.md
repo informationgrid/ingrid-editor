@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: prelimAssessResult
+id: uvpNegativeDecisionDocs
 docType:
     - UvpNegativePreliminaryAssessmentDoc
 profile: uvp
