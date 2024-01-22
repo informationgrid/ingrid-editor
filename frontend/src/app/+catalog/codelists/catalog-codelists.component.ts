@@ -31,13 +31,12 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { combineLatest } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -47,14 +46,17 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class CatalogCodelistsComponent implements OnInit {
   hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
-  // catalogCodelists = this.codelistQuery.catalogCodelists$.pipe( //merge([this.codelistQuery.catalogCodelists$, this.codelistQuery.selectAll()]).pipe(
+
   codelists = combineLatest([
     this.codelistQuery.catalogCodelists$,
     this.codelistQuery.selectAll(),
   ]).pipe(
-    map((codelists) =>
-      this.codelistService.mapToOptions([...codelists[0], ...codelists[1]]),
-    ),
+    map(([catalogCodelists, repoCodelists]) => {
+      return this.codelistService.mapToOptions([
+        ...catalogCodelists,
+        ...repoCodelists,
+      ]);
+    }),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => this.setInitialValue(options)),
     tap((options) => (this.codelistsValue = options)),
@@ -62,7 +64,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   selectedCodelist: Codelist;
   initialValue: SelectOptionUi;
-  descriptionCtrl = new UntypedFormControl();
+  descriptionCtrl = new FormControl();
   favorites: CodelistEntry[];
   filterCtrl = new FormControl();
 
@@ -77,13 +79,18 @@ export class CatalogCodelistsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.codelists.pipe(untilDestroyed(this)).subscribe(() => {
-      this.filterCtrl.valueChanges
-        .pipe(untilDestroyed(this), startWith(""))
-        .subscribe((value) => {
-          this.filteredOptions = this.search(value);
-        });
-    });
+    this.codelists
+      .pipe(
+        untilDestroyed(this),
+        filter((data) => data !== null),
+      )
+      .subscribe(() => {
+        this.filterCtrl.valueChanges
+          .pipe(untilDestroyed(this), startWith(""))
+          .subscribe((value) => {
+            this.filteredOptions = this.search(value);
+          });
+      });
   }
 
   addCodelist() {
@@ -200,7 +207,7 @@ export class CatalogCodelistsComponent implements OnInit {
       .subscribe();
   }
 
-  private modifyCodelistEntry(oldId: string, result) {
+  private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
     if (oldId === null) {
       this.selectedCodelist.entries.push(result);
     } else {
@@ -283,6 +290,8 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   private search(value: string) {
+    if (value === "") return this.codelistsValue;
+
     let filter = value.toLowerCase();
     return this.codelistsValue.filter(
       (option) =>
