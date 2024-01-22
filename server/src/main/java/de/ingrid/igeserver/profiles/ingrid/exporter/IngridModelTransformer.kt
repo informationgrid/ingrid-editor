@@ -176,7 +176,7 @@ open class IngridModelTransformer(
     }
 
     fun wktAsGeoJson() = data.spatial.references?.firstOrNull { it.wkt != null }
-        ?.let { convertWktToGeoJson(it.wkt!!)}
+        ?.let { convertWktToGeoJson(it.wkt!!) }
         ?.let { Pair(it.replace("\"", "@json@"), it) }
 
     val spatialReferences = data.spatial.references ?: emptyList()
@@ -185,7 +185,7 @@ open class IngridModelTransformer(
         arsSpatial.ars,
         padARS(arsSpatial.ars!!).padEnd(12, '0')
     )
-    
+
     fun padARS(ars: String): String = ars.padEnd(12, '0')
 
     fun getSpatialReferenceComponents(type: COORD_TYPE): String {
@@ -244,9 +244,9 @@ open class IngridModelTransformer(
     // Always use UTF-8 (see INGRID-2340)
     val metadataCharacterSet = "utf8"
     val vectorSpatialRepresentation = data.vectorSpatialRepresentation ?: emptyList()
-    
+
     open fun getGeometryContexts(): List<GeometryContext> = emptyList()
-    
+
     val spatialSystems = data.spatial.spatialSystems?.map {
         val referenceSystem =
             codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
@@ -274,7 +274,12 @@ open class IngridModelTransformer(
     val dateEvents = data.temporal.events ?: emptyList()
 
     val inspireKeywords = Thesaurus(
-        keywords = data.themes?.map { KeywordIso(name = codelists.getValue("6100", it), link = mapToInspireLink(it.key)) } ?: emptyList(),
+        keywords = data.themes?.map {
+            KeywordIso(
+                name = codelists.getValue("6100", it),
+                link = mapToInspireLink(it.key)
+            )
+        } ?: emptyList(),
         date = "2008-06-01",
         name = "GEMET - INSPIRE themes, version 1.0"
     )
@@ -319,7 +324,8 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) } ?: emptyList(),
+        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) }
+            ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
     )
@@ -509,7 +515,9 @@ open class IngridModelTransformer(
             val doc = getLastPublishedDocument(model.uuid)
             documentService?.getIncomingReferences(doc, catalogIdentifier)
                 ?.map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
-                ?.filter { it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2" }
+                ?.filter {
+                    it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
+                }
                 ?.mapNotNull {
                     it.data.get("service").get("operations")
                         .firstOrNull { it.get("name").get("key").asText() == "1" }?.get("methodCall")?.asText()
@@ -537,10 +545,11 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
-    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not()  }
+    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not() }
 
     // information system
     val serviceUrls = data.serviceUrls ?: emptyList()
+
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
     open val systemEnvironment = data.systemEnvironment
 
@@ -630,44 +639,49 @@ open class IngridModelTransformer(
 
     private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
         ?.mapNotNull { getCrossReference(it.uuid!!, KeyValueModel("3600", null)) } ?: emptyList()
+
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
             ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
             ?: emptyList()
-    open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
 
-    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
-    
+    open fun getCrossReferences() =
+        getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
+
+    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() =
+        getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+
     fun getSubordinateReferences() = getIncomingReferences().filter { it.isSubordinate }
-    
+
     private fun getCoupledServiceUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
-        
+
         return getIncomingReferencesProxy()
-            .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities"}
+            .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
     }
-    
+
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
         return model.data.service?.operations
             ?.filter { it.name?.key == "1" }
-            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description)} ?: emptyList()
+            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
+            ?: emptyList()
     }
-    
-    private fun getExternalCoupledResources() : List<ServiceUrl> {
+
+    private fun getExternalCoupledResources(): List<ServiceUrl> {
         return model.data.service?.coupledResources
             ?.filter { it.isExternalRef == true }
             ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
-    
+
     private fun getIncomingReferencesProxy(): List<CrossReference> {
         if (incomingReferencesCache == null) {
             incomingReferencesCache = getIncomingReferences().filter { !it.isSubordinate }
         }
-        
+
         return incomingReferencesCache ?: emptyList()
     }
-    
+
     private fun getSuperiorReferenceProxy(): SuperiorReference? {
         if (superiorReferenceCache == null) {
             superiorReferenceCache = getSuperiorReference()
@@ -696,7 +710,7 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getParentIdentifierReference() : SuperiorReference? = getSuperiorReferenceProxy()
+    fun getParentIdentifierReference(): SuperiorReference? = getSuperiorReferenceProxy()
 
     private fun getCrossReference(
         uuid: String,
@@ -713,9 +727,9 @@ open class IngridModelTransformer(
 
         val refType = type
             ?: if (refTrans.model.data.parentIdentifier == this.model.uuid) KeyValueModel(null, null) else null
-            ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
-            ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
-            ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
+                ?: refTrans.getCoupledCrossReferences().find { it.uuid == this.model.uuid }?.refType
+                ?: refTrans.getReferencedCrossReferences().find { it.uuid == this.model.uuid }?.refType
+                ?: throw ServerException.withReason("Could not find reference type for '${this.model.uuid}' in '$uuid'.")
 
         val getCapOperation = refTrans.operations.firstOrNull { it.name == "GetCapabilities" }
         return CrossReference(
@@ -786,7 +800,7 @@ open class IngridModelTransformer(
         codelists.getValue("505", it.type, "iso").equals("distributor")
 
 
-    private fun hasKnownAddressType(it: AddressRefModel): Boolean  =  codelists.getValue("505", it.type, "iso") != null
+    private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso") != null
 
     fun handleContent(value: String?): String? {
         if (value == null) return null
@@ -803,7 +817,7 @@ open class IngridModelTransformer(
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
     }
-    
+
     open val mapLinkUrl: String? = null
 }
 
