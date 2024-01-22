@@ -88,8 +88,13 @@ export class CodelistService {
         }) as SelectOptionUi,
     );
 
-    return sort ? items.sort((a, b) => a.label?.localeCompare(b.label)) : items;
+    return sort
+      ? CodelistService.sortFavorites(
+          items.sort((a, b) => a.label?.localeCompare(b.label)),
+        )
+      : items;
   };
+
   private queue = [];
   private batchProcessed = true;
 
@@ -274,5 +279,29 @@ export class CodelistService {
       filter((codelist) => !!codelist),
       // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
     );
+  }
+
+  static sortFavorites(sortedItems: SelectOptionUi[]): SelectOptionUi[] {
+    const favorites: string[] = ["8"];
+    if (favorites?.length === 0) return sortedItems;
+
+    const favoriteItems = favorites
+      .map((item) => sortedItems.find((it) => it.value === item))
+      .filter((item) => item);
+
+    if (favoriteItems.length > 0) {
+      const separator: SelectOptionUi = new SelectOption(
+        "_SEPARATOR_",
+        "-----",
+      );
+      separator.disabled = true;
+      favoriteItems.push(separator);
+    }
+
+    const itemsWithoutFavorites = sortedItems.filter(
+      (item) => !favorites.includes(item.value),
+    );
+
+    return favoriteItems.concat(itemsWithoutFavorites);
   }
 }

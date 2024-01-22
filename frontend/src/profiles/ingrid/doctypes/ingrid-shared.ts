@@ -1612,6 +1612,7 @@ export abstract class IngridShared extends BaseDoctype {
             if (b.label.indexOf("INVALID -") === 0) return -1;
             return a.label?.localeCompare(b.label);
           });
+        // TODO: add favorite sorting
       }),
     );
   }
