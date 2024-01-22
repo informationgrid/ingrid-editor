@@ -960,6 +960,9 @@ ${contentInfo}
         @if( TransformationTools.hasValue(page.getParentIdentifierReference().getDescription()))
             <idf:description>${page.getParentIdentifierReference().getDescription()}</idf:description>
         @endif
+        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverview()))
+            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverview()}</idf:graphicOverview>
+        @endif
     </idf:superiorReference>
 @endif
 @for( CrossReference ref : page.getSubordinateReferences() )
@@ -968,6 +971,9 @@ ${contentInfo}
         <idf:objectType>${ref.getObjectType()}</idf:objectType>
         @if( TransformationTools.hasValue(ref.getDescription()))
             <idf:description>${ref.getDescription()}</idf:description>
+        @endif
+        @if( TransformationTools.hasValue(ref.getGraphicOverview()))
+            <idf:graphicOverview>${ref.getGraphicOverview()}</idf:graphicOverview>
         @endif
     </idf:subordinatedReference>
 @endfor

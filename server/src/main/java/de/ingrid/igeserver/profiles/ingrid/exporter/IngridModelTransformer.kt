@@ -693,16 +693,15 @@ open class IngridModelTransformer(
     private fun getSuperiorReference(): SuperiorReference? {
         val uuid = data.parentIdentifier ?: return null
         try {
-            val model = jacksonObjectMapper().convertValue(
-                documentService.getLastPublishedDocument(catalogIdentifier, uuid),
-                IngridModel::class.java
-            )
+            val refTrans = getLastPublishedModel(uuid)
+            val model = refTrans?.model ?: return null
 
             return SuperiorReference(
                 uuid = uuid,
                 objectName = model.title,
                 objectType = mapDocumentType(model.type),
                 description = model.data.description,
+                graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
             )
         } catch (e: EmptyResultDataAccessException) {
             // No published reference found for parent identifier
@@ -861,6 +860,7 @@ data class SuperiorReference(
     val objectName: String,
     val objectType: String,
     val description: String?,
+    val graphicOverview: String?
 )
 
 data class DocumentReference(
