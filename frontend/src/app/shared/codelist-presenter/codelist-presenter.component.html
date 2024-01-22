@@ -76,6 +76,12 @@
                                     }
                                     <button
                                         mat-menu-item
+                                        (click)="asFavorite.emit(entry)"
+                                    >
+                                        Als Favorit setzen
+                                    </button>
+                                    <button
+                                        mat-menu-item
                                         (click)="remove.emit(entry)"
                                     >
                                         Löschen

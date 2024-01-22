@@ -52,6 +52,7 @@ import { ConfigurationComponent } from "./configuration/configuration.component"
 import { FormlyModule } from "@ngx-formly/core";
 import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 
 @NgModule({
   imports: [
@@ -82,6 +83,7 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
     FormlyModule,
     JobHandlerHeaderModule,
     SharedPipesModule,
+    NgxMatSelectSearchModule,
   ],
   providers: [CatalogService],
   declarations: [

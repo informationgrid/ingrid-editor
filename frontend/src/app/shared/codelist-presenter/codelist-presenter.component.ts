@@ -39,6 +39,7 @@ export class CodelistPresenterComponent implements OnInit {
   @Output() remove = new EventEmitter<CodelistEntry>();
   @Output() setDefault = new EventEmitter<CodelistEntry>();
   @Output() edit = new EventEmitter<CodelistEntry>();
+  @Output() asFavorite = new EventEmitter<CodelistEntry>();
 
   showMore = {};
   entryFields: { [x: string]: string[][] } = {};

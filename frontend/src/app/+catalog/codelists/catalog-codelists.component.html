@@ -41,10 +41,12 @@
                     (selectionChange)="selectCodelist($event.value)"
                     [value]="initialValue"
                 >
-                    @for (
-                        codelist of catalogCodelists | async;
-                        track codelist
-                    ) {
+                    <mat-option>
+                        <ngx-mat-select-search
+                            [formControl]="filterCtrl"
+                        ></ngx-mat-select-search>
+                    </mat-option>
+                    @for (codelist of filteredOptions; track codelist) {
                         <mat-option [value]="codelist">
                             {{ codelist.label }} ({{ codelist.value }})
                         </mat-option>
@@ -74,11 +76,30 @@
                     Hinzufügen
                 </button>
             </div>
+            @if (favorites?.length > 0) {
+                <div class="section-title">Favoriten</div>
+                <div
+                    class="flex-1 list-wrapper"
+                    cdkDropList
+                    (cdkDropListDropped)="dropFavorite($event)"
+                >
+                    @for (item of favorites; track item) {
+                        <div cdkDrag class="list-item">
+                            <span class="favorite-id">{{ item.id }}</span>
+                            <span class="favorite-title">{{
+                                item.fields["de"]
+                            }}</span>
+                        </div>
+                    }
+                </div>
+            }
             <ige-codelist-presenter
+                class="flex-1"
                 [codelist]="selectedCodelist"
                 (edit)="editCodelist($event)"
                 (remove)="removeCodelist($event)"
                 (setDefault)="setAsDefault($event)"
+                (asFavorite)="setAsFavorite($event)"
             ></ige-codelist-presenter>
         </div>
     } @else {

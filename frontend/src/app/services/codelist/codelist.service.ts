@@ -32,6 +32,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { distinct, filter, map, switchMap, tap } from "rxjs/operators";
 import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
+import { ConfigService } from "../config/config.service";
 
 export class SelectOption {
   label: string;
@@ -90,6 +91,7 @@ export class CodelistService {
 
     return sort
       ? CodelistService.sortFavorites(
+          codelist.id,
           items.sort((a, b) => a.label?.localeCompare(b.label)),
         )
       : items;
@@ -281,8 +283,12 @@ export class CodelistService {
     );
   }
 
-  static sortFavorites(sortedItems: SelectOptionUi[]): SelectOptionUi[] {
-    const favorites: string[] = ["8"];
+  static sortFavorites(
+    codelistId: string,
+    sortedItems: SelectOptionUi[],
+  ): SelectOptionUi[] {
+    const favorites: string[] =
+      ConfigService.codelistFavorites[codelistId] ?? [];
     if (favorites?.length === 0) return sortedItems;
 
     const favoriteItems = favorites
@@ -303,5 +309,9 @@ export class CodelistService {
     );
 
     return favoriteItems.concat(itemsWithoutFavorites);
+  }
+
+  updateFavorites(id: string, entryIds: string[]) {
+    return this.dataService.updateFavorites(id, entryIds);
   }
 }

@@ -23,7 +23,7 @@ import {
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { delay, filter, map, tap } from "rxjs/operators";
+import { delay, filter, map, startWith, tap } from "rxjs/operators";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
@@ -31,9 +31,15 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl, UntypedFormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ConfigService } from "../../services/config/config.service";
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { combineLatest } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
+@UntilDestroy()
 @Component({
   selector: "ige-catalog-codelists",
   templateUrl: "./catalog-codelists.component.html",
@@ -41,15 +47,27 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class CatalogCodelistsComponent implements OnInit {
   hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
-  catalogCodelists = this.codelistQuery.catalogCodelists$.pipe(
-    map((codelists) => this.codelistService.mapToOptions(codelists)),
+  // catalogCodelists = this.codelistQuery.catalogCodelists$.pipe( //merge([this.codelistQuery.catalogCodelists$, this.codelistQuery.selectAll()]).pipe(
+  codelists = combineLatest([
+    this.codelistQuery.catalogCodelists$,
+    this.codelistQuery.selectAll(),
+  ]).pipe(
+    map((codelists) =>
+      this.codelistService.mapToOptions([...codelists[0], ...codelists[1]]),
+    ),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => this.setInitialValue(options)),
+    tap((options) => (this.codelistsValue = options)),
   );
 
   selectedCodelist: Codelist;
   initialValue: SelectOptionUi;
   descriptionCtrl = new UntypedFormControl();
+  favorites: CodelistEntry[];
+  filterCtrl = new FormControl();
+
+  private codelistsValue: SelectOptionUi[];
+  filteredOptions: SelectOptionUi[] = [];
 
   constructor(
     private codelistService: CodelistService,
@@ -58,7 +76,15 @@ export class CatalogCodelistsComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.codelists.pipe(untilDestroyed(this)).subscribe(() => {
+      this.filterCtrl.valueChanges
+        .pipe(untilDestroyed(this), startWith(""))
+        .subscribe((value) => {
+          this.filteredOptions = this.search(value);
+        });
+    });
+  }
 
   addCodelist() {
     this.editCodelist();
@@ -119,13 +145,20 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   selectCodelist(option: SelectOptionUi) {
-    this.selectedCodelist = this.codelistQuery.getCatalogCodelist(option.value);
+    this.selectedCodelist =
+      this.codelistQuery.getCatalogCodelist(option.value) ??
+      this.codelistQuery.getEntity(option.value);
     const other = JSON.parse(JSON.stringify(this.selectedCodelist));
     this.sortCodelist(other);
     this.selectedCodelist = other;
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {
       emitEvent: false,
     });
+    this.favorites = (
+      ConfigService.codelistFavorites?.[option.value] ?? []
+    ).map((entryId) =>
+      this.selectedCodelist.entries.find((entry) => entry.id === entryId),
+    );
   }
 
   setAsDefault(entry: CodelistEntry) {
@@ -228,5 +261,33 @@ export class CatalogCodelistsComponent implements OnInit {
           this.codelistService.resetCodelist(null).subscribe();
         }
       });
+  }
+
+  setAsFavorite(entry: CodelistEntry) {
+    this.favorites.push(entry);
+    this.updateFavorites();
+  }
+
+  dropFavorite(event: CdkDragDrop<CodelistEntry[]>) {
+    moveItemInArray(this.favorites, event.previousIndex, event.currentIndex);
+    this.updateFavorites();
+  }
+
+  private updateFavorites() {
+    this.codelistService
+      .updateFavorites(
+        this.selectedCodelist.id,
+        this.favorites.map((item) => item.id),
+      )
+      .subscribe(() => this._snackBar.open("Favoriten aktualisiert"));
+  }
+
+  private search(value: string) {
+    let filter = value.toLowerCase();
+    return this.codelistsValue.filter(
+      (option) =>
+        option.value.toLowerCase().indexOf(filter) !== -1 ||
+        option.label.toLowerCase().indexOf(filter) !== -1,
+    );
   }
 }
