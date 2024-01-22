@@ -40,6 +40,7 @@ data class CatalogConfig(
     var spatialReference: Any? = null,
     val ibus: IBusConfig? = IBusConfig(),
     val expiredDatasetConfig: ExpiredDatasetConfig? = null,
+    var codelistFavorites: MutableMap<String, List<String>>? = null
 )
 
 data class ExpiredDatasetConfig(

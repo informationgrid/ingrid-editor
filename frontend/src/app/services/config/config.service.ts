@@ -88,6 +88,8 @@ export class ConfigService {
 
   public static backendApiUrl: string;
 
+  public static codelistFavorites: { [x: string]: string[] };
+
   private config: Configuration;
 
   defaultConfig: Partial<Configuration> = {
@@ -129,6 +131,8 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    ConfigService.codelistFavorites =
+      userInfo.currentCatalog.settings.config.codelistFavorites;
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";

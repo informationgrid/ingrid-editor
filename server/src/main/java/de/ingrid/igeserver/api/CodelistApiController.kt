@@ -21,6 +21,8 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -88,6 +90,26 @@ class CodelistApiController : CodelistApi {
         
         return ResponseEntity.ok(response)
         
+    }
+
+    override fun updateFavorites(principal: Principal, id: String, favorites: List<String>?): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalog = catalogService.getCatalogById(catalogId)
+        
+        catalog.settings = catalog.settings ?: CatalogSettings().apply {
+            config = CatalogConfig()
+        }
+        val currentFavorites = catalog.settings!!.config!!.codelistFavorites
+            ?: mutableMapOf<String, List<String>>().also { catalog.settings!!.config!!.codelistFavorites = it }
+
+        if (favorites == null) {
+            currentFavorites.remove(id)
+        } else {
+            currentFavorites[id] = favorites
+        }
+
+        catalogService.updateCatalog(catalog)
+        return ResponseEntity.ok().build()
     }
 
     override fun getAllCodelists(): ResponseEntity<List<CodeList>> {
