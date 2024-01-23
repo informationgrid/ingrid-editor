@@ -140,7 +140,7 @@ export class CodelistService {
 
   update(): Observable<Codelist[]> {
     return this.dataService.update().pipe(
-      map((codelists) => this.prepareCodelists(codelists)),
+      map((codelists) => this.prepareCodelists(codelists, true)),
       tap((codelists) => this.store.set(codelists)),
     );
   }
@@ -149,13 +149,17 @@ export class CodelistService {
     return this.dataService.byIds(ids);
   }
 
-  private prepareCodelists(codelists: CodelistBackend[]): Codelist[] {
+  private prepareCodelists(
+    codelists: CodelistBackend[],
+    isCatalog: boolean = false,
+  ): Codelist[] {
     return codelists.map((codelist) => ({
       id: codelist.id,
       name: codelist.name,
       description: codelist.description,
       entries: this.prepareEntries(codelist.entries),
       default: codelist.defaultEntry,
+      isCatalog: isCatalog,
     }));
   }
 
@@ -188,7 +192,7 @@ export class CodelistService {
     this.dataService
       .getCatalogCodelists()
       .pipe(
-        map((codelists) => this.prepareCodelists(codelists)),
+        map((codelists) => this.prepareCodelists(codelists, true)),
         tap((codelists) =>
           this.store.update({
             catalogCodelists: codelists,
@@ -236,7 +240,7 @@ export class CodelistService {
 
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id).pipe(
-      map((codelists) => this.prepareCodelists(codelists)),
+      map((codelists) => this.prepareCodelists(codelists, true)),
       tap((codelists) => this.updateStore(codelists)),
     );
   }
@@ -288,8 +292,8 @@ export class CodelistService {
     sortedItems: SelectOptionUi[],
   ): SelectOptionUi[] {
     const favorites: string[] =
-      ConfigService.codelistFavorites[codelistId] ?? [];
-    if (favorites?.length === 0) return sortedItems;
+      ConfigService.codelistFavorites?.[codelistId] ?? [];
+    if (favorites.length === 0) return sortedItems;
 
     const favoriteItems = favorites
       .map((item) => sortedItems.find((it) => it.value === item))

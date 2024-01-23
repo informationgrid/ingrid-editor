@@ -36,23 +36,31 @@
                 verwaltet werden.
             </div>
         } @else {
-            <mat-form-field appearance="outline" class="white-bg main-center">
-                <mat-select
-                    (selectionChange)="selectCodelist($event.value)"
-                    [value]="initialValue"
+            <div class="flex-row gap-12 align-items-baseline width-100">
+                <mat-form-field
+                    appearance="outline"
+                    class="white-bg main-center"
                 >
-                    <mat-option>
-                        <ngx-mat-select-search
-                            [formControl]="filterCtrl"
-                        ></ngx-mat-select-search>
-                    </mat-option>
-                    @for (codelist of filteredOptions; track codelist) {
-                        <mat-option [value]="codelist">
-                            {{ codelist.label }} ({{ codelist.value }})
+                    <mat-select
+                        [formControl]="codelistSelect"
+                        (selectionChange)="selectCodelist($event.value)"
+                    >
+                        <mat-option>
+                            <ngx-mat-select-search
+                                [formControl]="filterCtrl"
+                            ></ngx-mat-select-search>
                         </mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+                        @for (codelist of filteredOptions; track codelist) {
+                            <mat-option [value]="codelist">
+                                {{ codelist.name }} ({{ codelist.id }})
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-slide-toggle (change)="handleCodelistToggle($event)"
+                    >Alle Codelisten anzeigen</mat-slide-toggle
+                >
+            </div>
         }
     </div>
 
@@ -84,11 +92,22 @@
                     (cdkDropListDropped)="dropFavorite($event)"
                 >
                     @for (item of favorites; track item) {
-                        <div cdkDrag class="list-item">
-                            <span class="favorite-id">{{ item.id }}</span>
-                            <span class="favorite-title">{{
-                                item.fields["de"]
-                            }}</span>
+                        <div
+                            cdkDrag
+                            class="list-item flex-row align-items-center"
+                        >
+                            <div class="flex-1">
+                                <span class="favorite-id">{{ item.id }}</span>
+                                <span class="favorite-title">{{
+                                    item.fields["de"]
+                                }}</span>
+                            </div>
+                            <button
+                                mat-icon-button
+                                (click)="removeFavorite(item)"
+                            >
+                                <mat-icon>cancel</mat-icon>
+                            </button>
                         </div>
                     }
                 </div>
@@ -96,6 +115,7 @@
             <ige-codelist-presenter
                 class="flex-1"
                 [codelist]="selectedCodelist"
+                [favoriteEntries]="favorites"
                 (edit)="editCodelist($event)"
                 (remove)="removeCodelist($event)"
                 (setDefault)="setAsDefault($event)"

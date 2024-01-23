@@ -54,38 +54,45 @@
                                 <mat-menu #codelistMenu="matMenu">
                                     <button
                                         mat-menu-item
-                                        (click)="edit.emit(entry)"
-                                    >
-                                        Bearbeiten
-                                    </button>
-                                    @if (_codelist.default !== entry.id) {
-                                        <button
-                                            mat-menu-item
-                                            (click)="setDefault.emit(entry)"
-                                        >
-                                            Als Defaultwert übernehmen
-                                        </button>
-                                    }
-                                    @if (_codelist.default === entry.id) {
-                                        <button
-                                            mat-menu-item
-                                            (click)="setDefault.emit(null)"
-                                        >
-                                            Defaultwert entfernen
-                                        </button>
-                                    }
-                                    <button
-                                        mat-menu-item
                                         (click)="asFavorite.emit(entry)"
                                     >
-                                        Als Favorit setzen
+                                        {{
+                                            favoriteEntries.indexOf(entry) >= 0
+                                                ? "Favorit entfernen"
+                                                : "Als Favorit setzen"
+                                        }}
                                     </button>
-                                    <button
-                                        mat-menu-item
-                                        (click)="remove.emit(entry)"
-                                    >
-                                        Löschen
-                                    </button>
+                                    @if (_codelist.isCatalog) {
+                                        <button
+                                            mat-menu-item
+                                            (click)="edit.emit(entry)"
+                                        >
+                                            Bearbeiten
+                                        </button>
+                                        @if (_codelist.default !== entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(entry)"
+                                            >
+                                                Als Defaultwert übernehmen
+                                            </button>
+                                        }
+                                        @if (_codelist.default === entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(null)"
+                                            >
+                                                Defaultwert entfernen
+                                            </button>
+                                        }
+                                        <mat-divider></mat-divider>
+                                        <button
+                                            mat-menu-item
+                                            (click)="remove.emit(entry)"
+                                        >
+                                            Löschen
+                                        </button>
+                                    }
                                 </mat-menu>
                             }
                         </div>

@@ -23,6 +23,7 @@ export interface Codelist {
   description?: string;
   entries: CodelistEntry[];
   default: string;
+  isCatalog?: boolean;
 }
 
 export interface CodelistEntry {
