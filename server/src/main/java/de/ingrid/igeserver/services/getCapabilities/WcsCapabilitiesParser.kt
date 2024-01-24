@@ -67,7 +67,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities"
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -84,7 +84,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
                 "DescribeCoverage"
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
@@ -101,7 +101,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
                 "GetCoverage"
             )
             getCoverageOp.methodCall = "GetCoverage"
