@@ -188,10 +188,10 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 LocationBean(
-                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(lower[1]),
-                    java.lang.Double.valueOf(upper[0]),
+                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(upper[1]),
+                    java.lang.Double.valueOf(upper[0]),
                     title,
                     "free"
                 )
