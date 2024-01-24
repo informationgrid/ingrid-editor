@@ -132,7 +132,7 @@ export class ConfigService {
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
     ConfigService.codelistFavorites =
-      userInfo.currentCatalog.settings.config.codelistFavorites;
+      userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {};
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";
