@@ -226,12 +226,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
       let codelistField = this.fieldWithCodelistMap.get(field.key as string);
       if (codelistField !== undefined) {
-        merge(
-          this.codelistQuery.selectEntity(codelistField),
-          this.codelistQuery.catalogCodelists$.pipe(
-            map((codelists) => codelists.find((cl) => cl.id === codelistField)),
-          ),
-        )
+        this.codelistQuery
+          .selectEntity(codelistField)
           .pipe(
             filter((codelist) => codelist !== undefined),
             take(1),

@@ -27,10 +27,9 @@ import {
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
 import { CodelistStore } from "../../store/codelist/codelist.store";
-import { merge, Observable, Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { distinct, filter, map, switchMap, tap } from "rxjs/operators";
-import { applyTransaction, arrayUpdate, arrayUpsert } from "@datorama/akita";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { ConfigService } from "../config/config.service";
 
@@ -193,28 +192,16 @@ export class CodelistService {
       .getCatalogCodelists()
       .pipe(
         map((codelists) => this.prepareCodelists(codelists, true)),
-        tap((codelists) =>
-          this.store.update({
-            catalogCodelists: codelists,
-          }),
-        ),
+        tap((codelists) => this.store.add(codelists, { loading: true })),
       )
       .subscribe();
   }
 
   updateCodelist(codelist: Codelist): Observable<any> {
     const backendCodelist = this.prepareForBackend(codelist);
-    return this.dataService.updateCodelist(backendCodelist).pipe(
-      tap(() =>
-        this.store.update(({ catalogCodelists }) => ({
-          catalogCodelists: arrayUpdate(
-            catalogCodelists,
-            codelist.id,
-            codelist,
-          ),
-        })),
-      ),
-    );
+    return this.dataService
+      .updateCodelist(backendCodelist)
+      .pipe(tap(() => this.store.update(codelist)));
   }
 
   private prepareForBackend(codelist: Codelist): CodelistBackend {
@@ -241,22 +228,8 @@ export class CodelistService {
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id).pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
-      tap((codelists) => this.updateStore(codelists)),
+      tap((codelists) => this.store.add(codelists)),
     );
-  }
-
-  private updateStore(codelists: Codelist[]) {
-    applyTransaction(() => {
-      codelists.forEach((codelist) => {
-        this.store.update(({ catalogCodelists }) => ({
-          catalogCodelists: arrayUpsert(
-            catalogCodelists,
-            codelist.id,
-            codelist,
-          ),
-        }));
-      });
-    });
   }
 
   observe(
@@ -270,18 +243,13 @@ export class CodelistService {
 
   observeRaw(codelistId: string): Observable<Codelist> {
     const alreadyInQueue = this.queue.some((item) => item === codelistId);
-    const alreadyInStore =
-      this.codelistQuery.getCatalogCodelist(codelistId) ||
-      this.codelistQuery.getEntity(codelistId);
+    const alreadyInStore = this.codelistQuery.getEntity(codelistId);
 
     if (!alreadyInQueue && !alreadyInStore) {
       this.byId(codelistId);
     }
 
-    return merge(
-      this.codelistQuery.selectEntity(codelistId),
-      this.codelistQuery.selectCatalogCodelist(codelistId),
-    ).pipe(
+    return this.codelistQuery.selectEntity(codelistId).pipe(
       filter((codelist) => !!codelist),
       // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
     );

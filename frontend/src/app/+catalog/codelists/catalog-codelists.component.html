@@ -27,7 +27,7 @@
         main-header
         class="flex-1 flex-col justify-content-center align-items-center"
     >
-        @if ((hasCatalogCodelists | async) === false) {
+        @if (filteredOptions.length === 0) {
             <div>
                 In diesem Katalog liegen keine spezifischen Codelisten vor.
             </div>
@@ -64,7 +64,7 @@
         }
     </div>
 
-    @if ((hasCatalogCodelists | async) === true) {
+    @if (filteredOptions.length > 0) {
         <div main-content class="flex-1">
             @if (selectedCodelist?.description) {
                 <div class="description">

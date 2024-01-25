@@ -69,11 +69,11 @@ describe("CatalogCodelistsComponent", () => {
     providers: [
       CodelistService,
       mockProvider(CodelistQuery, {
-        hasCatalogCodelists$: of(true),
-        catalogCodelists$: of(initCatalogCodelists),
-        getCatalogCodelist(id: string): Codelist {
-          return initCatalogCodelists.find((it) => it.id === id);
-        },
+        // hasCatalogCodelists$: of(true),
+        // catalogCodelists$: of(initCatalogCodelists),
+        // getCatalogCodelist(id: string): Codelist {
+        //   return initCatalogCodelists.find((it) => it.id === id);
+        // },
         getEntity(id: string): Codelist {
           return initCodelists.find((it) => it.id === id);
         },

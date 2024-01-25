@@ -76,18 +76,10 @@ import { MatIcon } from "@angular/material/icon";
   standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
-  hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
+  // hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
 
-  private codelists = combineLatest([
-    this.codelistQuery.catalogCodelists$,
-    this.codelistQuery.selectAll(),
-  ]).pipe(
-    map(([catalogCodelists, repoCodelists]) => {
-      return [...catalogCodelists, ...repoCodelists].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
-    }),
-
+  private codelists = this.codelistQuery.selectAll().pipe(
+    map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
     tap((options) => this.setInitialValue(options)),
