@@ -62,7 +62,7 @@ export class CodelistPresenterComponent implements OnInit {
   }
 
   @Input() hideMenu = false;
-  @Input() favoriteEntries: CodelistEntry[] = [];
+  @Input() favoriteEntryIds: string[] = [];
 
   @Output() remove = new EventEmitter<CodelistEntry>();
   @Output() setDefault = new EventEmitter<CodelistEntry>();

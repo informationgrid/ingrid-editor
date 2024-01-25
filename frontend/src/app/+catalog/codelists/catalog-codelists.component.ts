@@ -97,6 +97,7 @@ export class CatalogCodelistsComponent implements OnInit {
   codelistSelect = new FormControl();
   descriptionCtrl = new FormControl();
   favorites: CodelistEntry[];
+  favoriteIds: string[];
   filterCtrl = new FormControl();
   filteredOptions: Codelist[] = [];
 
@@ -195,6 +196,7 @@ export class CatalogCodelistsComponent implements OnInit {
       (entryId) =>
         this.selectedCodelist.entries.find((entry) => entry.id === entryId),
     );
+    this.favoriteIds = this.favorites.map((f) => f.id);
   }
 
   setAsDefault(entry: CodelistEntry) {
@@ -295,7 +297,7 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   setAsFavorite(entry: CodelistEntry) {
-    let entryIndex = this.favorites.findIndex((fav) => fav === entry);
+    let entryIndex = this.favorites.findIndex((fav) => fav.id === entry.id);
     if (entryIndex >= 0) {
       this.favorites.splice(entryIndex, 1);
     } else {
@@ -310,6 +312,7 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   private updateFavorites() {
+    this.favoriteIds = this.favorites.map((f) => f.id);
     this.codelistService
       .updateFavorites(
         this.selectedCodelist.id,

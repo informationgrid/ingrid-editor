@@ -24,16 +24,20 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { CodelistPresenterModule } from "../../shared/codelist-presenter/codelist-presenter.module";
 import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 
 describe("CodelistsComponent", () => {
   let spectator: Spectator<CodelistsComponent>;
   const createHost = createComponentFactory({
     component: CodelistsComponent,
     providers: [mockProvider(CodelistService)],
-    imports: [CodelistPresenterModule, FilterSelectModule, PageTemplateModule],
+    imports: [
+      CodelistPresenterComponent,
+      FilterSelectModule,
+      PageTemplateModule,
+    ],
     detectChanges: false,
   });
 

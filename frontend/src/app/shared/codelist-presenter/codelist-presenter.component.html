@@ -26,6 +26,7 @@
                             <button
                                 mat-icon-button
                                 class="menu-button expander"
+                                data-cy="btn-more"
                                 [class.expanded]="showMore[entry.id]"
                                 [matTooltip]="
                                     showMore[entry.id] ? 'Schließen' : 'Öffnen'
@@ -42,6 +43,7 @@
                                 <button
                                     mat-icon-button
                                     class="menu-button"
+                                    data-cy="btn-menu"
                                     matTooltip="Bearbeiten"
                                     (click)="$event.stopImmediatePropagation()"
                                     (keydown.enter)="
@@ -57,7 +59,9 @@
                                         (click)="asFavorite.emit(entry)"
                                     >
                                         {{
-                                            favoriteEntries.indexOf(entry) >= 0
+                                            favoriteEntryIds.indexOf(
+                                                entry.id
+                                            ) >= 0
                                                 ? "Favorit entfernen"
                                                 : "Als Favorit setzen"
                                         }}
