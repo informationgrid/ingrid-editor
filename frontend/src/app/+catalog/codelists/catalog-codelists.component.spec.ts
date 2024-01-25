@@ -37,11 +37,16 @@ import { MatMenuHarness } from "@angular/material/menu/testing";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
-  let select: MatSelectHarness;
-  let codelistSwitch: MatSlideToggleHarness;
   let loader: HarnessLoader;
 
   let initCodelists: Codelist[] = [
+    {
+      id: "10",
+      name: "Cat Zehn",
+      entries: [{ id: "a1", fields: { de: "Cat Eins A" }, description: "" }],
+      default: null,
+      isCatalog: true,
+    },
     {
       id: "1",
       name: "One",
@@ -53,15 +58,6 @@ describe("CatalogCodelistsComponent", () => {
     },
     { id: "2", name: "Two", entries: [], default: null },
   ];
-  let initCatalogCodelists: Codelist[] = [
-    {
-      id: "10",
-      name: "Cat Zehn",
-      entries: [{ id: "a1", fields: { de: "Cat Eins A" }, description: "" }],
-      default: null,
-      isCatalog: true,
-    },
-  ];
 
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
@@ -69,11 +65,6 @@ describe("CatalogCodelistsComponent", () => {
     providers: [
       CodelistService,
       mockProvider(CodelistQuery, {
-        // hasCatalogCodelists$: of(true),
-        // catalogCodelists$: of(initCatalogCodelists),
-        // getCatalogCodelist(id: string): Codelist {
-        //   return initCatalogCodelists.find((it) => it.id === id);
-        // },
         getEntity(id: string): Codelist {
           return initCodelists.find((it) => it.id === id);
         },
@@ -84,20 +75,20 @@ describe("CatalogCodelistsComponent", () => {
   });
 
   beforeEach(async () => {
-    spectator = createHost();
+    spectator = createHost({});
     // codelistQuery = TestBed.inject(CodelistQuery);
 
     spectator.detectChanges();
     loader = TestbedHarnessEnvironment.loader(spectator.fixture);
-    select = await loader.getHarness(MatSelectHarness);
-    codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
+    await spectator.fixture.whenStable();
   });
 
-  xit("should create with success", () => {
+  it("should create with success", () => {
     expect(spectator).toBeTruthy();
   });
 
   it("should show initially the first codelist", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
     expect(await select.getValueText()).toBe("Cat Zehn (10)");
     const items = spectator.queryAll("mat-expansion-panel");
     expect(items.length).toBe(1);
@@ -105,6 +96,8 @@ describe("CatalogCodelistsComponent", () => {
   });
 
   it("should show both kinds of codelists (catalog and from repo)", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    const codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
     await codelistSwitch.check();
     await select.open();
     const options = await select.getOptions();
@@ -112,12 +105,15 @@ describe("CatalogCodelistsComponent", () => {
   });
 
   it("should show only catalog codelist", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
     await select.open();
     const options = await select.getOptions();
     expect(options.length).toBe(2);
   });
 
   it("should show entries for a repo codelist with no edit option", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    const codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
     await codelistSwitch.check();
     await select.open();
     await select.clickOptions({ text: "One (1)" });
@@ -130,6 +126,7 @@ describe("CatalogCodelistsComponent", () => {
   });
 
   it("should show catalog codelists with edit option", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
     await select.open();
     await select.clickOptions({ text: "Cat Zehn (10)" });
     const items = spectator.queryAll("mat-expansion-panel");
@@ -145,6 +142,7 @@ describe("CatalogCodelistsComponent", () => {
   });
 
   it("should set a favorite", async () => {
+    spectator.detectChanges();
     expect(spectator.query("[main-content]").textContent).not.toContain(
       "Favoriten",
     );
@@ -185,7 +183,7 @@ describe("CatalogCodelistsComponent", () => {
   }
 
   function addFavorite() {
-    spectator.component.favorites.push(initCatalogCodelists[0].entries[0]);
-    spectator.component.favoriteIds.push(initCatalogCodelists[0].entries[0].id);
+    spectator.component.favorites.push(initCodelists[0].entries[0]);
+    spectator.component.favoriteIds.push(initCodelists[0].entries[0].id);
   }
 });
