@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.uvp.api
 
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -59,7 +58,7 @@ class ZabbixReportApiController(
                 // throws an exception if the document does not exist or the principal does not have sufficient rights
                 documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it.docUuid)
                 true
-            } catch (e: NotFoundException) {
+            } catch (e: Exception) {
                 false
             }
         }.let { ResponseEntity.ok(it) }
