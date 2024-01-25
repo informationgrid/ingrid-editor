@@ -19,7 +19,7 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressType, Doctype } from "../app/services/formular/doctype";
-import { merge, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import {
   CodelistService,
   SelectOption,
@@ -155,12 +155,20 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     this.addCodelistDefaultValues(this.fields);
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
-    this.cleanFields = JSON.parse(JSON.stringify(this.fields));
+
+    this.cleanFields = JSON.parse(
+      JSON.stringify(this.fields, this.removeObservables),
+    );
     console.debug(`Document type ${this.id} initialized`);
   }
 
   isInitialized() {
     return Promise.resolve();
+  }
+
+  private removeObservables(_: string, value: any) {
+    if (value?.constructor?.name === "Observable") return undefined;
+    else return value;
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
