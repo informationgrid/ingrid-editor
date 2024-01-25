@@ -26,7 +26,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
@@ -85,6 +84,12 @@ class IgeAclService(
         }
         // if we are here, all permissions are allowed
         return true
+    }
+
+    fun getPermissionInfo(authentication: Authentication, uuid: String?, catalogIdentifier: String): PermissionInfo {
+        return getPermissionInfo(
+            authentication,
+            uuid?.let { try { docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, it).id} catch (e: Exception) { null } })
     }
 
     fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {

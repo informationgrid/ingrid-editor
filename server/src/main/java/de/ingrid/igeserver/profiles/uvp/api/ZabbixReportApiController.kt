@@ -21,9 +21,11 @@ package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -35,6 +37,7 @@ class ZabbixReportApiController(
     val zabbixService: ZabbixService,
     val zabbixProperties: ZabbixProperties,
     val catalogService: CatalogService,
+    val aclService: IgeAclService
 ) : ZabbixReportApi {
     override fun getReport(principal: Principal): ResponseEntity<List<ProblemReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -50,7 +53,8 @@ class ZabbixReportApiController(
                 docUrl = problem.docUrl,
                 docUuid = problem.docUuid,
             )
-        }.let { ResponseEntity.ok(it) }
+        }.filter { aclService.getPermissionInfo(principal as Authentication, it.docUuid, catalogIdentifier).canRead }
+            .let { ResponseEntity.ok(it) }
     }
 
 

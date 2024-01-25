@@ -55,7 +55,7 @@ export class ZabbixReportBehaviour extends Plugin {
         ),
       data: {
         title: "Monitoring",
-        permission: "manage_catalog",
+        permission: "manage_users",
       },
     });
   }
