@@ -51,6 +51,7 @@ import {
 } from "@angular/material/slide-toggle";
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatIcon } from "@angular/material/icon";
+import { MatDivider } from "@angular/material/divider";
 
 @UntilDestroy()
 @Component({
@@ -72,6 +73,7 @@ import { MatIcon } from "@angular/material/icon";
     CodelistPresenterComponent,
     MatIcon,
     MatIconButton,
+    MatDivider,
   ],
   standalone: true,
 })
@@ -114,6 +116,11 @@ export class CatalogCodelistsComponent implements OnInit {
           .pipe(untilDestroyed(this), startWith(""))
           .subscribe((value) => {
             this.filteredOptions = this.getFilteredCodelists(value);
+            if (this.filteredOptions.length === 0) {
+              this.codelistSelect.disable();
+            } else {
+              this.codelistSelect.enable();
+            }
           });
       });
   }
@@ -177,8 +184,7 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   selectCodelist(option: Codelist) {
-    this.selectedCodelist = option;
-    const other = JSON.parse(JSON.stringify(this.selectedCodelist));
+    const other = JSON.parse(JSON.stringify(option));
     this.sortCodelist(other);
     this.selectedCodelist = other;
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {
@@ -259,8 +265,10 @@ export class CatalogCodelistsComponent implements OnInit {
     if (options?.length === 0) return;
 
     let initialValue = this.getFilteredCodelists("")?.[0];
-    this.codelistSelect.setValue(initialValue);
-    this.selectCodelist(initialValue);
+    if (initialValue) {
+      this.codelistSelect.setValue(initialValue);
+      this.selectCodelist(initialValue);
+    }
   }
 
   resetAllCodelists() {
@@ -299,6 +307,8 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   dropFavorite(event: CdkDragDrop<CodelistEntry[]>) {
+    if (event.previousIndex === event.currentIndex) return;
+
     moveItemInArray(this.favorites, event.previousIndex, event.currentIndex);
     this.updateFavorites();
   }
@@ -331,10 +341,10 @@ export class CatalogCodelistsComponent implements OnInit {
   handleCodelistToggle(event: MatSlideToggleChange) {
     this.showAllCodelists = event.checked;
     this.filterCtrl.setValue("");
-    setTimeout(() => {
+    if (this.filteredOptions.length > 0) {
       this.codelistSelect.setValue(this.filteredOptions[0]);
       this.selectCodelist(this.filteredOptions[0]);
-    });
+    }
   }
 
   removeFavorite(item: CodelistEntry) {

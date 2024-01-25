@@ -27,41 +27,28 @@
         main-header
         class="flex-1 flex-col justify-content-center align-items-center"
     >
-        @if (filteredOptions.length === 0) {
-            <div>
-                In diesem Katalog liegen keine spezifischen Codelisten vor.
-            </div>
-            <div>
-                Alle Codelisten können über das zentrale Codelist-Repository
-                verwaltet werden.
-            </div>
-        } @else {
-            <div class="flex-row gap-12 align-items-baseline width-100">
-                <mat-form-field
-                    appearance="outline"
-                    class="white-bg main-center"
+        <div class="flex-row gap-12 align-items-baseline width-100">
+            <mat-form-field appearance="outline" class="white-bg main-center">
+                <mat-select
+                    [formControl]="codelistSelect"
+                    (selectionChange)="selectCodelist($event.value)"
                 >
-                    <mat-select
-                        [formControl]="codelistSelect"
-                        (selectionChange)="selectCodelist($event.value)"
-                    >
-                        <mat-option>
-                            <ngx-mat-select-search
-                                [formControl]="filterCtrl"
-                            ></ngx-mat-select-search>
+                    <mat-option>
+                        <ngx-mat-select-search
+                            [formControl]="filterCtrl"
+                        ></ngx-mat-select-search>
+                    </mat-option>
+                    @for (codelist of filteredOptions; track codelist) {
+                        <mat-option [value]="codelist">
+                            {{ codelist.name }} ({{ codelist.id }})
                         </mat-option>
-                        @for (codelist of filteredOptions; track codelist) {
-                            <mat-option [value]="codelist">
-                                {{ codelist.name }} ({{ codelist.id }})
-                            </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-                <mat-slide-toggle (change)="handleCodelistToggle($event)"
-                    >Alle Codelisten anzeigen</mat-slide-toggle
-                >
-            </div>
-        }
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-slide-toggle (change)="handleCodelistToggle($event)"
+                >Alle Codelisten anzeigen</mat-slide-toggle
+            >
+        </div>
     </div>
 
     @if (filteredOptions.length > 0) {
@@ -87,7 +74,7 @@
             @if (favorites?.length > 0) {
                 <div class="section-title">Favoriten</div>
                 <div
-                    class="flex-1 list-wrapper"
+                    class="flex-1 list-wrapper space-bottom"
                     cdkDropList
                     (cdkDropListDropped)="dropFavorite($event)"
                 >
@@ -104,13 +91,16 @@
                             </div>
                             <button
                                 mat-icon-button
+                                aria-label="Favorit entfernen"
                                 (click)="removeFavorite(item)"
                             >
-                                <mat-icon>cancel</mat-icon>
+                                <mat-icon class="passive">cancel</mat-icon>
                             </button>
                         </div>
                     }
                 </div>
+
+                <mat-divider></mat-divider>
             }
             <ige-codelist-presenter
                 class="flex-1"
@@ -123,15 +113,20 @@
             ></ige-codelist-presenter>
         </div>
     } @else {
-        @if (!selectedCodelist) {
-            <div
-                class="flex-1 flex-row justify-content-center align-items-center"
-            >
+        <div class="flex-1 flex-row justify-content-center align-items-center">
+            <div class="text-center">
+                <div>
+                    In diesem Katalog liegen keine spezifischen Codelisten vor.
+                </div>
+                <div class="space-bottom">
+                    Alle Codelisten können über das zentrale Codelist-Repository
+                    verwaltet werden.
+                </div>
                 <img
                     src="assets/icons/catalog-codelist.png"
                     alt="codelist-repo"
                 />
             </div>
-        }
+        </div>
     }
 </page-template>
