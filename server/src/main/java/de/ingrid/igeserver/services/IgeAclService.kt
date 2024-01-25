@@ -86,12 +86,6 @@ class IgeAclService(
         return true
     }
 
-    fun getPermissionInfo(authentication: Authentication, uuid: String?, catalogIdentifier: String): PermissionInfo {
-        return getPermissionInfo(
-            authentication,
-            uuid?.let { try { docWrapperRepo.findByCatalog_IdentifierAndUuid(catalogIdentifier, it).id} catch (e: Exception) { null } })
-    }
-
     fun getPermissionInfo(authentication: Authentication, id: Int?): PermissionInfo {
         val sids = sidRetrievalStrategy.getSids(authentication)
         val hasRootWrite =

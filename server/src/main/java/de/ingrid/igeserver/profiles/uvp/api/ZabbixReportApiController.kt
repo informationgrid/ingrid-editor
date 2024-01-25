@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.uvp.api
 
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.IgeAclService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
@@ -37,7 +37,7 @@ class ZabbixReportApiController(
     val zabbixService: ZabbixService,
     val zabbixProperties: ZabbixProperties,
     val catalogService: CatalogService,
-    val aclService: IgeAclService
+    val documentService: DocumentService,
 ) : ZabbixReportApi {
     override fun getReport(principal: Principal): ResponseEntity<List<ProblemReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -53,8 +53,16 @@ class ZabbixReportApiController(
                 docUrl = problem.docUrl,
                 docUuid = problem.docUuid,
             )
-        }.filter { aclService.getPermissionInfo(principal as Authentication, it.docUuid, catalogIdentifier).canRead }
-            .let { ResponseEntity.ok(it) }
+        }.filter {
+            // filter out documents that the principal does not have access to
+            try {
+                // throws an exception if the document does not exist or the principal does not have sufficient rights
+                documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it.docUuid)
+                true
+            } catch (e: NotFoundException) {
+                false
+            }
+        }.let { ResponseEntity.ok(it) }
     }
 
 
