@@ -167,7 +167,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   private removeObservables(_: string, value: any) {
-    if (value?.constructor?.name === "Observable") return undefined;
+    if (value?.subscribe !== undefined) return undefined;
     else return value;
   }
 
