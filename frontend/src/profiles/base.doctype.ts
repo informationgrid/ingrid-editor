@@ -240,7 +240,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
               console.log(
                 `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
               );
-              if (field.type === "select") {
+              if (field.type === "ige-select") {
                 field.defaultValue = { key: codelist.default };
               } else if (field.type === "repeatList") {
                 field.defaultValue = [{ key: codelist.default }];
