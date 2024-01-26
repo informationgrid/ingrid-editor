@@ -21,17 +21,22 @@ package de.ingrid.igeserver.exports.ingrid_up_sh
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.Geodataset
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
 import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.UPSHProfileTransformer
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
+import io.mockk.every
 
 class GeometryContext : Geodataset() {
 
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
-        this.exporter.profileTransformer = UPSHProfileTransformer()
+        this.exporter.profileTransformer["ingrid-up-sh"] = UPSHProfileTransformer()
+        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
+            identifier = "ingrid-up-sh"
+        }
     }
 
 
@@ -68,7 +73,7 @@ class GeometryContext : Geodataset() {
 
             result shouldContain geometryContextOther
         }
-        
+
         should("export geometry context of type 'nominal'") {
             val context = jacksonObjectMapper().readTree(
                 """{
