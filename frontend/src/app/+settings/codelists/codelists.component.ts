@@ -27,6 +27,7 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -35,9 +36,17 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   styleUrls: ["./codelists.component.scss"],
 })
 export class CodelistsComponent implements OnInit {
-  codelists = this.codelistQuery
-    .selectAll()
-    .pipe(map((codelists) => this.codelistService.mapToOptions(codelists)));
+  codelists = toSignal(
+    this.codelistQuery.selectAll().pipe(
+      map((codelists) => this.codelistService.mapToOptions(codelists)),
+      map((codelists) =>
+        codelists.map((item) => {
+          item.label = this.codelistLabelFormat(item);
+          return item;
+        }),
+      ),
+    ),
+  );
 
   disableSyncButton = false;
   showMore = false;

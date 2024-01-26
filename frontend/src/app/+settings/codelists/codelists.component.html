@@ -35,10 +35,9 @@
     <div main-content>
         <div class="flex-row justify-content-center align-items-stretch">
             <ige-filter-select
-                [options]="codelists"
+                [options]="codelists()"
                 class="white-bg"
                 style="flex: 1; max-width: 460px"
-                [labelFormat]="codelistLabelFormat"
                 placeholder="Codeliste wählen..."
                 (reset)="resetInput()"
                 (optionSelect)="updateCodelistSelection($event)"
