@@ -96,13 +96,17 @@ class CodelistApiController : CodelistApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
         
-        catalog.settings = catalog.settings ?: CatalogSettings().apply {
-            config = CatalogConfig()
+        // make sure config is initialized
+        catalog.settings?.config ?: catalog.settings?.let { it.config = CatalogConfig() } ?: catalog.also {
+            it.settings = CatalogSettings().apply {
+                config = CatalogConfig()
+            }
         }
+        
         val currentFavorites = catalog.settings!!.config!!.codelistFavorites
             ?: mutableMapOf<String, List<String>>().also { catalog.settings!!.config!!.codelistFavorites = it }
 
-        if (favorites == null) {
+        if (favorites.isNullOrEmpty()) {
             currentFavorites.remove(id)
         } else {
             currentFavorites[id] = favorites

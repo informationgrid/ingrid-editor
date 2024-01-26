@@ -84,7 +84,7 @@ export class CatalogCodelistsComponent implements OnInit {
     map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
-    tap((options) => this.setInitialValue(options)),
+    tap((options) => this.setInitialValue()),
   );
 
   selectedCodelist: Codelist;
@@ -261,10 +261,19 @@ export class CatalogCodelistsComponent implements OnInit {
     codelist.entries.sort((a, b) => a.id.localeCompare(b.id));
   }
 
-  private setInitialValue(options: Codelist[]) {
-    if (options?.length === 0) return;
+  private setInitialValue() {
+    if (this.codelistsValue?.length === 0) return;
 
-    let initialValue = this.getFilteredCodelists("")?.[0];
+    // after a reset we want to stay on an already selected codelist
+    let initialValue: Codelist;
+    if (this.selectedCodelist) {
+      initialValue = this.codelistsValue.find(
+        (option) => option.id === this.selectedCodelist.id,
+      );
+    } else {
+      initialValue = this.getFilteredCodelists("")?.[0];
+    }
+
     if (initialValue) {
       this.codelistSelect.setValue(initialValue);
       this.selectCodelist(initialValue);
