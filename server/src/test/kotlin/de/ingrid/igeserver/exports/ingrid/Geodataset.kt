@@ -48,7 +48,7 @@ open class Geodataset : ShouldSpec() {
     private val documentService = mockk<DocumentService>()
 
     // this bean must be mocked, although it might not be used in this class
-    private val catalogService = mockk<CatalogService>()
+    protected val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
     private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
