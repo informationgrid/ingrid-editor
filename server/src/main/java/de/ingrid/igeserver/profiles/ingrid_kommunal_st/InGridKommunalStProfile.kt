@@ -26,7 +26,6 @@ import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
