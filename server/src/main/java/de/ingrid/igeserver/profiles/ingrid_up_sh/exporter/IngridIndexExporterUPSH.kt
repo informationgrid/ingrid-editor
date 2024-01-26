@@ -47,8 +47,8 @@ class IngridIndexExporterUPSH(
     )
 
     init {
-        idfExporter.profileTransformer = UPSHProfileTransformer
-        luceneExporter.profileTransformer = UPSHProfileTransformer
+        idfExporter.profileTransformer["ingrid-up-sh"] = UPSHProfileTransformer
+        luceneExporter.profileTransformer["ingrid-up-sh"] = UPSHProfileTransformer
     }
 
 }
