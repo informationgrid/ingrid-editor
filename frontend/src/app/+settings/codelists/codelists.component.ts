@@ -17,20 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   CodelistService,
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
-import { throwError } from "rxjs";
-import { catchError, map } from "rxjs/operators";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import { finalize, map, tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { IgeError } from "../../models/ige-error";
-import { HttpErrorResponse } from "@angular/common/http";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @UntilDestroy()
 @Component({
@@ -39,55 +35,36 @@ import { CodelistQuery } from "../../store/codelist/codelist.query";
   styleUrls: ["./codelists.component.scss"],
 })
 export class CodelistsComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
-  codelistDatasource = new MatTableDataSource([]);
-  displayedColumns = ["id", "value", "data"];
-
   codelists = this.codelistQuery
     .selectAll()
     .pipe(map((codelists) => this.codelistService.mapToOptions(codelists)));
 
   disableSyncButton = false;
-  showTable = false;
   showMore = false;
   selectedCodelist: Codelist;
 
   constructor(
     private codelistService: CodelistService,
     private codelistQuery: CodelistQuery,
+    private snack: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
     this.codelistService.getAll();
   }
 
-  ngAfterViewInit() {
-    this.codelistDatasource.sort = this.sort;
-  }
-
   updateCodelists() {
     this.disableSyncButton = true;
     this.codelistService
       .update()
-      .pipe(catchError((e) => this.handleSyncError(e)))
-      .subscribe(() => (this.disableSyncButton = false));
+      .pipe(
+        tap(() => this.snack.open("Codelisten erfolgreich synchronisiert")),
+        finalize(() => (this.disableSyncButton = false)),
+      )
+      .subscribe();
   }
 
-  private handleSyncError(e: HttpErrorResponse) {
-    console.error(e);
-    this.disableSyncButton = false;
-    if (e.error.errorText === "Failed to synchronize code lists") {
-      return throwError(
-        () =>
-          new IgeError(
-            "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository.",
-          ),
-      );
-    }
-    return throwError(() => e);
-  }
-
-  updateCodelistTable(option: SelectOptionUi) {
+  updateCodelistSelection(option: SelectOptionUi) {
     if (!option) {
       this.selectedCodelist = null;
       return;
@@ -97,7 +74,7 @@ export class CodelistsComponent implements OnInit {
   }
 
   resetInput() {
-    this.updateCodelistTable(null);
+    this.updateCodelistSelection(null);
   }
 
   codelistLabelFormat(option: SelectOptionUi) {

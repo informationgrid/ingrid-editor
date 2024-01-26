@@ -27,11 +27,20 @@ import {
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
 import { CodelistStore } from "../../store/codelist/codelist.store";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, throwError } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { distinct, filter, map, switchMap, tap } from "rxjs/operators";
+import {
+  catchError,
+  distinct,
+  filter,
+  map,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { ConfigService } from "../config/config.service";
+import { HttpErrorResponse } from "@angular/common/http";
+import { IgeError } from "../../models/ige-error";
 
 export class SelectOption {
   label: string;
@@ -141,7 +150,21 @@ export class CodelistService {
     return this.dataService.update().pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
       tap((codelists) => this.store.set(codelists)),
+      catchError((e) => this.handleSyncError(e)),
     );
+  }
+
+  private handleSyncError(e: HttpErrorResponse) {
+    console.error(e);
+    if (e.error.errorText === "Failed to synchronize code lists") {
+      return throwError(
+        () =>
+          new IgeError(
+            "Die Codelisten konnten nicht synchronisiert werden. Überprüfen Sie die Verbindung zum Codelist-Repository.",
+          ),
+      );
+    }
+    return throwError(() => e);
   }
 
   private requestCodelists(ids: string[]): Observable<CodelistBackend[]> {
