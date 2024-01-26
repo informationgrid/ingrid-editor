@@ -26,6 +26,7 @@
                             <button
                                 mat-icon-button
                                 class="menu-button expander"
+                                data-cy="btn-more"
                                 [class.expanded]="showMore[entry.id]"
                                 [matTooltip]="
                                     showMore[entry.id] ? 'Schließen' : 'Öffnen'
@@ -42,6 +43,7 @@
                                 <button
                                     mat-icon-button
                                     class="menu-button"
+                                    data-cy="btn-menu"
                                     matTooltip="Bearbeiten"
                                     (click)="$event.stopImmediatePropagation()"
                                     (keydown.enter)="
@@ -54,32 +56,47 @@
                                 <mat-menu #codelistMenu="matMenu">
                                     <button
                                         mat-menu-item
-                                        (click)="edit.emit(entry)"
+                                        (click)="asFavorite.emit(entry)"
                                     >
-                                        Bearbeiten
+                                        {{
+                                            favoriteEntryIds.indexOf(
+                                                entry.id
+                                            ) >= 0
+                                                ? "Favorit entfernen"
+                                                : "Als Favorit setzen"
+                                        }}
                                     </button>
-                                    @if (_codelist.default !== entry.id) {
+                                    @if (_codelist.isCatalog) {
                                         <button
                                             mat-menu-item
-                                            (click)="setDefault.emit(entry)"
+                                            (click)="edit.emit(entry)"
                                         >
-                                            Als Defaultwert übernehmen
+                                            Bearbeiten
                                         </button>
-                                    }
-                                    @if (_codelist.default === entry.id) {
+                                        @if (_codelist.default !== entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(entry)"
+                                            >
+                                                Als Defaultwert übernehmen
+                                            </button>
+                                        }
+                                        @if (_codelist.default === entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(null)"
+                                            >
+                                                Defaultwert entfernen
+                                            </button>
+                                        }
+                                        <mat-divider></mat-divider>
                                         <button
                                             mat-menu-item
-                                            (click)="setDefault.emit(null)"
+                                            (click)="remove.emit(entry)"
                                         >
-                                            Defaultwert entfernen
+                                            Löschen
                                         </button>
                                     }
-                                    <button
-                                        mat-menu-item
-                                        (click)="remove.emit(entry)"
-                                    >
-                                        Löschen
-                                    </button>
                                 </mat-menu>
                             }
                         </div>

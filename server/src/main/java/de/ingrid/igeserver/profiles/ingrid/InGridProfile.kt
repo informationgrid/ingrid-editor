@@ -42,7 +42,6 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
@@ -120,20 +119,20 @@ class InGridProfile(
 
         val codelist6006 = createCodelist6006(catalogRef)
         val codelist1350 = createCodelist1350(catalogRef)
-        val codelist1370 = createCodelist6250(catalogRef)
+        val codelist6250 = createCodelist6250(catalogRef)
         val codelist3535 = createCodelist3535(catalogRef)
         val codelist3555 = createCodelist3555(catalogRef)
 
         when (codelistId) {
             "6006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6006)
             "1350" -> codelistHandler.removeAndAddCodelist(catalogId, codelist1350)
-            "1370" -> codelistHandler.removeAndAddCodelist(catalogId, codelist1370)
+            "6250" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6250)
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist6006, codelist1350, codelist1370, codelist3535, codelist3555)
+                    listOf(codelist6006, codelist1350, codelist6250, codelist3535, codelist3555)
                 )
             }
 

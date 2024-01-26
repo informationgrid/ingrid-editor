@@ -72,4 +72,11 @@ export class CodelistDataService {
       this.configuration.backendUrl + "codelist/manage/" + id,
     );
   }
+
+  updateFavorites(id: string, entryIds: string[]) {
+    return this.http.post<void>(
+      this.configuration.backendUrl + "codelist/favorites/" + id,
+      entryIds,
+    );
+  }
 }

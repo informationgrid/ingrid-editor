@@ -21,11 +21,16 @@
 }
 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
     @for (option of filteredOptions; track option) {
-        <mat-option
-            [value]="props.simple ? option.key : option"
-            [class.matching]="props.highlightMatches && formControl.value"
-        >
-            {{ option.value }}
-        </mat-option>
+        @if (option.key === "_SEPARATOR_") {
+            <mat-divider class="space-bottom"></mat-divider>
+        } @else {
+            <mat-option
+                [value]="props.simple ? option.key : option"
+                [disabled]="$any(option).disabled"
+                [class.matching]="props.highlightMatches && formControl.value"
+            >
+                {{ option.value }}
+            </mat-option>
+        }
     }
 </mat-autocomplete>
