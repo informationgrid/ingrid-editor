@@ -55,7 +55,7 @@ class IngridIDFExporter(
 
     val log = logger()
 
-    var profileTransformer: IngridProfileTransformer? = null
+    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
 
 
     override val typeInfo = ExportTypeInfo(
@@ -75,7 +75,9 @@ class IngridIDFExporter(
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
         
-        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
+        val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
+        
+        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId, catalogProfileId), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
@@ -104,7 +106,7 @@ class IngridIDFExporter(
 
     private val mapper = ObjectMapper().registerKotlinModule()
 
-    private fun getModelTransformer(json: Document, catalogId: String): Any {
+    private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
         var ingridModel: IngridModel? = null
         var addressModel: AddressModel? = null
         try {
@@ -128,15 +130,16 @@ class IngridIDFExporter(
             "InGridPersonDoc" to AddressModelTransformer::class
         )
         
-        val transformerClass = profileTransformer?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
+        // TODO: get profile from catalog in export options!?
+        val transformerClass = profileTransformer[profile]?.get(ingridModel?.type ?: addressModel?.docType ?: "?") ?: transformers[ingridModel?.type ?: addressModel?.docType] ?: throw ServerException.withReason("Cannot get transformer for type: ${ingridModel?.type ?: addressModel?.docType}")
         return if(isAddress)
             transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(ingridModel ?: addressModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        val modelTransformer = getModelTransformer(json, catalogId)
+    private fun getMapFromObject(json: Document, catalogId: String, profile: String): Map<String, Any> {
+        val modelTransformer = getModelTransformer(json, catalogId, profile)
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer
