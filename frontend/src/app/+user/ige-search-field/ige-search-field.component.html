@@ -1,7 +1,7 @@
 <mat-form-field class="ige-form-field" appearance="outline">
-    <mat-icon *ngIf="searchQuery.length === 0" class="passive" matSuffix
-        >search</mat-icon
-    >
+    @if (searchQuery.length === 0) {
+        <mat-icon class="passive" matSuffix>search</mat-icon>
+    }
     <input
         matInput
         placeholder="Suchen"
@@ -9,13 +9,14 @@
         data-cy="search"
         (input)="onSearchChange($event.target.value)"
     />
-    <button
-        *ngIf="searchQuery.length > 0"
-        mat-icon-button
-        matSuffix
-        class="close"
-        (click)="onSearchChange(''); searchField.value = ''"
-    >
-        <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-    </button>
+    @if (searchQuery.length > 0) {
+        <button
+            mat-icon-button
+            matSuffix
+            class="close"
+            (click)="onSearchChange(''); searchField.value = ''"
+        >
+            <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
+        </button>
+    }
 </mat-form-field>

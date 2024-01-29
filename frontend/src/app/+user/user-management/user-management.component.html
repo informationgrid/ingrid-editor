@@ -4,19 +4,20 @@
     mat-stretch-tabs="false"
     [tabPanel]="tabPanel"
 >
-    <a
-        mat-tab-link
-        *ngFor="let tab of tabs; let i = index"
-        [attr.data-cy]="tab.path"
-        #rla="routerLinkActive"
-        routerLinkActive="active-link"
-        [routerLink]="tab.params ? [tab.path, tab.params] : tab.path"
-        [routerLinkActiveOptions]="{ exact: true }"
-        [active]="rla.isActive"
-        (click)="updateTab(i)"
-    >
-        {{ tab.label }}
-    </a>
+    @for (tab of tabs; track tab; let i = $index) {
+        <a
+            mat-tab-link
+            [attr.data-cy]="tab.path"
+            #rla="routerLinkActive"
+            routerLinkActive="active-link"
+            [routerLink]="tab.params ? [tab.path, tab.params] : tab.path"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [active]="rla.isActive"
+            (click)="updateTab(i)"
+        >
+            {{ tab.label }}
+        </a>
+    }
 </nav>
 
 <mat-tab-nav-panel #tabPanel>

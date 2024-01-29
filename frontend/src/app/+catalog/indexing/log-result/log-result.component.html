@@ -1,57 +1,63 @@
-<div *ngIf="data | async as log; else noLog" class="log">
-    <div class="date-area">
-        <div>Startzeit: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}</div>
-        <div *ngIf="log.endTime">
-            &nbsp;&nbsp;Endzeit:
-            {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+@if (data | async; as log) {
+    <div class="log">
+        <div class="date-area">
+            <div>
+                Startzeit: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+            </div>
+            @if (log.endTime) {
+                <div>
+                    &nbsp;&nbsp;Endzeit:
+                    {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                </div>
+            }
         </div>
+        @if (log.progressDocuments != log.numDocuments) {
+            <div>
+                Indizierung von Dokumenten
+                <mat-progress-bar
+                    color="primary"
+                    mode="determinate"
+                    [value]="(log.progressDocuments / log.numDocuments) * 100"
+                ></mat-progress-bar>
+                <div class="progress-hint">
+                    {{ log.progressDocuments }} / {{ log.numDocuments }}
+                </div>
+            </div>
+        } @else {
+            <div>
+                Anzahl Dokumente:
+                <span data-cy="count-documents">{{ log.numDocuments }}</span>
+            </div>
+        }
+        @if (log.progressAddresses != log.numAddresses) {
+            <div style="padding-top: 24px">
+                Indizierung von Adressen
+                <mat-progress-bar
+                    mode="determinate"
+                    [value]="(log.progressAddresses / log.numAddresses) * 100"
+                ></mat-progress-bar>
+                <div class="progress-hint">
+                    {{ log.progressAddresses }} / {{ log.numAddresses }}
+                </div>
+            </div>
+        } @else {
+            <div>
+                Anzahl Adressen:
+                <span data-cy="count-addresses">{{ log.numAddresses }}</span>
+            </div>
+        }
+        @if (log.errors?.length > 0) {
+            <div>
+                Fehler:
+                <span data-cy="count-errors">{{ log.errors.length }}</span>
+                <ul>
+                    @for (error of log.errors; track error) {
+                        <li>{{ error }}</li>
+                    }
+                </ul>
+            </div>
+        }
     </div>
-
-    <div
-        *ngIf="log.progressDocuments != log.numDocuments; else showNumDocuments"
-    >
-        Indizierung von Dokumenten
-        <mat-progress-bar
-            color="primary"
-            mode="determinate"
-            [value]="(log.progressDocuments / log.numDocuments) * 100"
-        ></mat-progress-bar>
-        <div class="progress-hint">
-            {{ log.progressDocuments }} / {{ log.numDocuments }}
-        </div>
-    </div>
-    <ng-template #showNumDocuments>
-        <div>
-            Anzahl Dokumente:
-            <span data-cy="count-documents">{{ log.numDocuments }}</span>
-        </div>
-    </ng-template>
-
-    <div
-        *ngIf="log.progressAddresses != log.numAddresses; else showNumAddresses"
-        style="padding-top: 24px"
-    >
-        Indizierung von Adressen
-        <mat-progress-bar
-            mode="determinate"
-            [value]="(log.progressAddresses / log.numAddresses) * 100"
-        ></mat-progress-bar>
-        <div class="progress-hint">
-            {{ log.progressAddresses }} / {{ log.numAddresses }}
-        </div>
-    </div>
-    <ng-template #showNumAddresses>
-        <div>
-            Anzahl Adressen:
-            <span data-cy="count-addresses">{{ log.numAddresses }}</span>
-        </div>
-    </ng-template>
-
-    <div *ngIf="log.errors?.length > 0">
-        Fehler: <span data-cy="count-errors">{{ log.errors.length }}</span>
-        <ul>
-            <li *ngFor="let error of log.errors">{{ error }}</li>
-        </ul>
-    </div>
-</div>
-<ng-template #noLog>Keine Logausgabe vorhanden.</ng-template>
+} @else {
+    Keine Logausgabe vorhanden.
+}

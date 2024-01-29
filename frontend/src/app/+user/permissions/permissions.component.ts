@@ -30,7 +30,6 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatIconModule } from "@angular/material/icon";
 import { PermissionTableComponent } from "./permission-table/permission-table.component";
 import { TranslocoModule } from "@ngneat/transloco";
-import { NgIf } from "@angular/common";
 
 @UntilDestroy()
 @Component({
@@ -50,7 +49,6 @@ import { NgIf } from "@angular/common";
     MatIconModule,
     PermissionTableComponent,
     TranslocoModule,
-    NgIf,
   ],
   standalone: true,
 })

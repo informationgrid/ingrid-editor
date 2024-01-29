@@ -10,10 +10,12 @@
 >
     <span id="timeout-info" aria-hidden="true">
         <span>Logout in&nbsp;</span>
-        <span *ngIf="timeout >= 300" class="time"
-            >{{ timeout | time: "short" }}&nbsp;Minuten</span
-        >
-        <span *ngIf="timeout < 300" class="time">{{ timeout | time }}</span>
+        @if (timeout >= 300) {
+            <span class="time">{{ timeout | time: "short" }}&nbsp;Minuten</span>
+        }
+        @if (timeout < 300) {
+            <span class="time">{{ timeout | time }}</span>
+        }
     </span>
 
     <div class="separator"></div>

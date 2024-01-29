@@ -6,22 +6,24 @@
 </div>
 
 <mat-dialog-content data-cy="error-dialog-content">
-    <ng-container *ngIf="errors.length === 1">
+    @if (errors.length === 1) {
         <ng-container
             [ngTemplateOutlet]="errorPart"
             [ngTemplateOutletContext]="{ error: errors[0] }"
         ></ng-container>
-    </ng-container>
-    <ng-container *ngIf="errors.length > 1">
+    }
+    @if (errors.length > 1) {
         <ul>
-            <li *ngFor="let error of errors">
-                <ng-container
-                    [ngTemplateOutlet]="errorPart"
-                    [ngTemplateOutletContext]="{ error: error }"
-                ></ng-container>
-            </li>
+            @for (error of errors; track error) {
+                <li>
+                    <ng-container
+                        [ngTemplateOutlet]="errorPart"
+                        [ngTemplateOutletContext]="{ error: error }"
+                    ></ng-container>
+                </li>
+            }
         </ul>
-    </ng-container>
+    }
 </mat-dialog-content>
 <mat-dialog-actions>
     <button
@@ -33,27 +35,31 @@
         Schließen
     </button>
     <div class="flex-1"></div>
-    <a
-        *ngIf="errors[0].unhandledException"
-        mat-stroked-button
-        color="primary"
-        href="mailto:{{ supportEmail }}"
-        >Bericht senden</a
-    >
+    @if (errors[0].unhandledException) {
+        <a mat-stroked-button color="primary" href="mailto:{{ supportEmail }}"
+            >Bericht senden</a
+        >
+    }
 </mat-dialog-actions>
 
 <ng-template #errorPart let-error="error">
-    <div *ngIf="error.unhandledException">
-        {{ generalErrorMessage }}
-    </div>
+    @if (error.unhandledException) {
+        <div>
+            {{ generalErrorMessage }}
+        </div>
+    }
     {{ error.message?.error ?? error.message }}
-    <ul *ngIf="error.items">
-        <li *ngFor="let item of error.items">
-            {{ item }}
-        </li>
-    </ul>
+    @if (error.items) {
+        <ul>
+            @for (item of error.items; track item) {
+                <li>
+                    {{ item }}
+                </li>
+            }
+        </ul>
+    }
 
-    <ng-container *ngIf="error.detail || error.stacktrace">
+    @if (error.detail || error.stacktrace) {
         <button
             mat-button
             (click)="error.showDetails = !error.showDetails"
@@ -62,34 +68,36 @@
             Details
         </button>
         <div>
-            <mat-card
-                appearance="outlined"
-                *ngIf="error.showDetails"
-                class="hover-elevate"
-            >
-                <mat-card-content>
-                    <div class="clipboard-btn">
-                        <button
-                            [cdkCopyToClipboard]="
-                                error.detail + error.stacktrace
-                            "
-                            mat-icon-button=""
-                            title="Copy Error"
-                        >
-                            <mat-icon class="mat-icon">content_copy</mat-icon>
-                        </button>
-                    </div>
-                    <ng-container>
-                        <pre *ngIf="error.detail">
-                            {{ error.detail?.trim() }}
-                        </pre>
-
-                        <pre *ngIf="error.stacktrace">{{
-                            error.stacktrace
-                        }}</pre>
-                    </ng-container>
-                </mat-card-content>
-            </mat-card>
+            @if (error.showDetails) {
+                <mat-card appearance="outlined" class="hover-elevate">
+                    <mat-card-content>
+                        <div class="clipboard-btn">
+                            <button
+                                [cdkCopyToClipboard]="
+                                    error.detail + error.stacktrace
+                                "
+                                mat-icon-button=""
+                                title="Copy Error"
+                            >
+                                <mat-icon class="mat-icon"
+                                    >content_copy</mat-icon
+                                >
+                            </button>
+                        </div>
+                        <ng-container>
+                            @if (error.detail) {
+                                <pre>
+                    {{ error.detail?.trim() }}
+                  </pre
+                                >
+                            }
+                            @if (error.stacktrace) {
+                                <pre>{{ error.stacktrace }}</pre>
+                            }
+                        </ng-container>
+                    </mat-card-content>
+                </mat-card>
+            }
         </div>
-    </ng-container>
+    }
 </ng-template>

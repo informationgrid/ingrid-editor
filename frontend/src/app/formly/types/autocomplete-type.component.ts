@@ -102,7 +102,12 @@ export class AutocompleteTypeComponent
 
   private initInputListener(options: SelectOptionUi[]) {
     this.parameterOptions = options.map(
-      (option) => <BackendOption>{ key: option.value, value: option.label },
+      (option) =>
+        <BackendOption>{
+          key: option.value,
+          value: option.label,
+          disabled: option.disabled,
+        },
     );
     const value = this.getFormValueLabel();
     this.filteredOptions = this.filterParameterByName(value);

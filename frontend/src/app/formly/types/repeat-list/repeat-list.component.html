@@ -1,173 +1,178 @@
-<ige-form-error *ngIf="showError && !formControl.hasError('required')">
-    <formly-validation-message [field]="field"></formly-validation-message>
-</ige-form-error>
-<mat-chip-listbox
-    *ngIf="props.view === 'chip' && model[field.key + '']?.length > 0"
-    [disabled]="formControl.disabled"
-    cdkDropListGroup
-    mixedCdkDragDrop
-    (dropped)="drop($event)"
-    [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
->
-    <span
-        *ngFor="let item of model[field.key]; let i = index"
-        cdkDropList
-        mixedCdkDropList
-    >
-        <mat-chip-option
-            disableRipple
-            cdkDrag
-            data-cy="list-item"
-            [cdkDragDisabled]="formControl.disabled"
-            [removable]="true"
-            [selectable]="false"
-            (removed)="removeItem(i)"
-        >
-            <mat-icon
-                *ngIf="props.showLanguage"
-                class="avatar gray"
-                svgIcon="language-24px"
-            ></mat-icon>
-
-            <ng-container *ngIf="!props.labelField">
-                <div class="label">
-                    {{ getParameter(item) }}
-                </div>
-            </ng-container>
-
-            <ng-container *ngIf="props.labelField">
-                <div class="label">
-                    {{ item[props.labelField] }}
-                </div>
-            </ng-container>
-
-            <button
-                *ngIf="formControl.enabled"
-                matChipRemove
-                [attr.aria-description]="
-                    props.labelField
-                        ? item[props.labelField]
-                        : getParameter(item) + 'entfernen'
-                "
-            >
-                <mat-icon>cancel</mat-icon>
-            </button>
-        </mat-chip-option>
-    </span>
-</mat-chip-listbox>
-
-<div
-    *ngIf="
-        props.view !== 'chip' && model[field.key + '']?.length > 0;
-        else noFieldsSelected
-    "
-    class="component-list"
-    cdkDropList
-    cdkDropListOrientation="vertical"
-    (cdkDropListDropped)="drop($event)"
-    role="list"
->
-    <div
-        *ngFor="let item of model[field.key]; let i = index"
-        cdkDrag
-        [cdkDragDisabled]="
-            props.noDrag || formControl.disabled || model[field.key]?.length < 2
-        "
-        class="clickable list-item"
-        data-cy="list-item"
-        tabindex="0"
-        (click)="this.onItemClick(item?.key)"
-        (keyup.enter)="removeItem(i, $event)"
-        role="listitem"
+@if (showError && !formControl.hasError("required")) {
+    <ige-form-error>
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </ige-form-error>
+}
+@if (props.view === "chip" && model[field.key + ""]?.length > 0) {
+    <mat-chip-listbox
+        [disabled]="formControl.disabled"
+        cdkDropListGroup
+        mixedCdkDragDrop
+        (dropped)="drop($event)"
         [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
-        aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
     >
-        <div class="text-wrapper">
-            <span class="list-display-element">
-                <mat-icon
-                    *ngIf="this.props.elementIcon"
-                    [svgIcon]="this.props.elementIcon"
-                ></mat-icon>
-                <ng-container *ngIf="type !== 'search'">
-                    {{ getParameter(item) }}
-                </ng-container>
-                <ng-container *ngIf="type === 'search'">
+        <span
+            *ngFor="let item of model[$any(field.key)]; let i = index"
+            cdkDropList
+            mixedCdkDropList
+        >
+            <mat-chip-option
+                disableRipple
+                cdkDrag
+                data-cy="list-item"
+                [cdkDragDisabled]="formControl.disabled"
+                [removable]="true"
+                [selectable]="false"
+                (removed)="removeItem(i)"
+            >
+                @if (props.showLanguage) {
+                    <mat-icon
+                        class="avatar gray"
+                        svgIcon="language-24px"
+                    ></mat-icon>
+                }
+                @if (!props.labelField) {
+                    <div class="label">
+                        {{ getParameter(item) }}
+                    </div>
+                }
+                @if (props.labelField) {
                     <div class="label">
                         {{ item[props.labelField] }}
                     </div>
-                </ng-container>
-            </span>
-        </div>
-        <button
-            *ngIf="formControl.enabled"
-            type="button"
-            mat-icon-button
-            class="close gray"
-            (click)="removeItem(i)"
-            tabindex="-1"
-        >
-            <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
-            <mat-icon>close</mat-icon>
-        </button>
-    </div>
-</div>
-<ng-template #noFieldsSelected>
+                }
+                @if (formControl.enabled) {
+                    <button
+                        matChipRemove
+                        [attr.aria-description]="
+                            props.labelField
+                                ? item[props.labelField]
+                                : getParameter(item) + 'entfernen'
+                        "
+                    >
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                }
+            </mat-chip-option>
+        </span>
+    </mat-chip-listbox>
+}
+
+@if (props.view !== "chip" && model[field.key + ""]?.length > 0) {
     <div
-        *ngIf="this.props.selectionEmptyNotice"
-        class="no-fields-selected-notice"
+        class="component-list"
+        cdkDropList
+        cdkDropListOrientation="vertical"
+        (cdkDropListDropped)="drop($event)"
+        role="list"
     >
-        <div class="infoIcon">
-            <mat-icon
-                class="material-icons-outlined"
-                svgIcon="info-24px"
-            ></mat-icon>
-        </div>
-        <span>{{ this.props.selectionEmptyNotice }}</span>
-    </div>
-</ng-template>
-
-<mat-form-field
-    *ngIf="type === 'select'"
-    appearance="outline"
-    class="width-100"
->
-    <mat-select
-        [placeholder]="props.placeholder"
-        (valueChange)="addToList($event)"
-        [formControl]="inputControl"
-        (keydown)="handleKeydown($event)"
-        (blur)="inputControl.setValue('')"
-        [aria-labelledby]="field | fieldToAriaLabelledBy"
-    >
-        <mat-option *ngIf="props.showSearch">
-            <ngx-mat-select-search
-                [formControl]="filterCtrl"
-            ></ngx-mat-select-search>
-        </mat-option>
-        <mat-option
-            *ngFor="let option of filteredOptions | async"
-            [value]="option"
-            [disabled]="option.disabled"
+        <div
+            *ngFor="let item of model[$any(field.key)]; let i = index"
+            cdkDrag
+            [cdkDragDisabled]="
+                props.noDrag ||
+                formControl.disabled ||
+                model[field.key]?.length < 2
+            "
+            class="clickable list-item"
+            data-cy="list-item"
+            tabindex="0"
+            (click)="this.onItemClick(item?.key)"
+            (keyup.enter)="removeItem(i, $event)"
+            role="listitem"
+            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
+            aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
         >
-            <div (click)="onOptionClick($event, option)">
-                {{ option.label }}
+            <div class="text-wrapper">
+                <span class="list-display-element">
+                    @if (this.props.elementIcon) {
+                        <mat-icon [svgIcon]="this.props.elementIcon"></mat-icon>
+                    }
+                    @if (type !== "search") {
+                        {{ getParameter(item) }}
+                    }
+                    @if (type === "search") {
+                        <div class="label">
+                            {{ item[props.labelField] }}
+                        </div>
+                    }
+                </span>
             </div>
-        </mat-option>
-    </mat-select>
-    <!-- help info button -->
-    <ng-container
-        *ngIf="props.suffix"
-        matSuffix
-        [ngTemplateOutlet]="props.suffix"
-    ></ng-container>
-    <mat-error *transloco="let t">{{
-        t("form.validationMessages.createOneEntry")
-    }}</mat-error>
-</mat-form-field>
+            @if (formControl.enabled) {
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="close gray"
+                    (click)="removeItem(i)"
+                    tabindex="-1"
+                >
+                    <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+                    <mat-icon>close</mat-icon>
+                </button>
+            }
+        </div>
+    </div>
+} @else {
+    @if (this.props.selectionEmptyNotice) {
+        <div class="no-fields-selected-notice">
+            <div class="infoIcon">
+                <mat-icon
+                    class="material-icons-outlined"
+                    svgIcon="info-24px"
+                ></mat-icon>
+            </div>
+            <span>{{ this.props.selectionEmptyNotice }}</span>
+        </div>
+    }
+}
 
-<ng-container *ngIf="type === 'autocomplete'">
+@if (type === "select") {
     <mat-form-field appearance="outline" class="width-100">
-        <mat-label *ngIf="props.fieldLabel">{{ props.fieldLabel }}</mat-label>
+        <mat-select
+            [placeholder]="props.placeholder"
+            (valueChange)="addToList($event)"
+            [formControl]="inputControl"
+            (keydown)="handleKeydown($event)"
+            (blur)="inputControl.setValue('')"
+            [aria-labelledby]="field | fieldToAriaLabelledBy"
+        >
+            @if (props.showSearch) {
+                <mat-option>
+                    <ngx-mat-select-search
+                        [formControl]="filterCtrl"
+                    ></ngx-mat-select-search>
+                </mat-option>
+            }
+            @for (option of filteredOptions | async; track option) {
+                @if (option.value === "_SEPARATOR_") {
+                    <mat-divider class="space-bottom"></mat-divider>
+                } @else {
+                    <mat-option [value]="option" [disabled]="option.disabled">
+                        <div (click)="onOptionClick($event, option)">
+                            {{ option.label }}
+                        </div>
+                    </mat-option>
+                }
+            }
+        </mat-select>
+        <!-- help info button -->
+        @if (props.suffix) {
+            <ng-container
+                matSuffix
+                [ngTemplateOutlet]="props.suffix"
+            ></ng-container>
+        }
+        <mat-error *transloco="let t">{{
+            t("form.validationMessages.createOneEntry")
+        }}</mat-error>
+    </mat-form-field>
+}
+
+@if (type === "autocomplete") {
+    <mat-form-field appearance="outline" class="width-100">
+        @if (props.fieldLabel) {
+            <mat-label>{{ props.fieldLabel }}</mat-label>
+        }
         <input
             type="text"
             [placeholder]="props.placeholder"
@@ -183,44 +188,47 @@
             #auto="matAutocomplete"
             (optionSelected)="addToList($event.option.value)"
         >
-            <mat-option
-                *ngFor="let option of filteredOptions | async"
-                [value]="option"
-                [disabled]="option.disabled"
-            >
-                {{ option.label }}
-            </mat-option>
+            @for (option of filteredOptions | async; track option) {
+                @if (option.value === "_SEPARATOR_") {
+                    <mat-divider class="space-bottom"></mat-divider>
+                } @else {
+                    <mat-option [value]="option" [disabled]="option.disabled">
+                        {{ option.label }}
+                    </mat-option>
+                }
+            }
         </mat-autocomplete>
-
         <!-- clean button -->
-        <button
-            *ngIf="inputControl.value?.length > 0"
-            mat-icon-button
-            matSuffix
-            type="button"
-            class="field-close"
-            (click)="inputControl.setValue('')"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
-
+        @if (inputControl.value?.length > 0) {
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                class="field-close"
+                (click)="inputControl.setValue('')"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        }
         <!-- help info button -->
-        <ng-container
-            *ngIf="props.suffix"
-            matSuffix
-            [ngTemplateOutlet]="props.suffix"
-        ></ng-container>
-
-        <mat-hint *ngIf="!parameterOptions">{{ props.hint }} </mat-hint>
+        @if (props.suffix) {
+            <ng-container
+                matSuffix
+                [ngTemplateOutlet]="props.suffix"
+            ></ng-container>
+        }
+        @if (!parameterOptions) {
+            <mat-hint>{{ props.hint }} </mat-hint>
+        }
         <mat-error *transloco="let t">{{
             inputControl.errors?.mustBeEmpty
                 ? t("form.validationMessages.commitWithEnter")
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>
-</ng-container>
+}
 
-<ng-container *ngIf="type === 'search'">
+@if (type === "search") {
     <ige-search-input
         [autocompleteRef]="searchAuto"
         [withWhiteBorder]="false"
@@ -236,19 +244,20 @@
         "
         showSearchIcon="true"
     ></ige-search-input>
-
     <mat-autocomplete
         #searchAuto="matAutocomplete"
         [autoActiveFirstOption]="true"
         (optionSelected)="addValueObject($event.option.value)"
     >
-        <mat-option *ngFor="let doc of searchResult | async" [value]="doc">
-            {{ getLabel(doc) }}
-        </mat-option>
+        @for (doc of searchResult | async; track doc) {
+            <mat-option [value]="doc">
+                {{ getLabel(doc) }}
+            </mat-option>
+        }
     </mat-autocomplete>
-</ng-container>
+}
 
-<ng-container *ngIf="type === 'simple' && formControl.enabled">
+@if (type === "simple" && formControl.enabled) {
     <mat-form-field class="width-100" appearance="outline">
         <input
             matInput
@@ -264,19 +273,19 @@
             aria-description="Die Eingabe muss noch mit der Eingabetaste bestätigt werden"
         />
         <div matSuffix>
-            <mat-spinner
-                *ngIf="searchSub && !searchSub.closed"
-                [diameter]="24"
-            ></mat-spinner>
-            <button
-                *ngIf="inputControl.value?.length > 0"
-                mat-icon-button
-                type="button"
-                class="field-close"
-                (click)="inputControl.setValue('')"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
+            @if (searchSub && !searchSub.closed) {
+                <mat-spinner [diameter]="24"></mat-spinner>
+            }
+            @if (inputControl.value?.length > 0) {
+                <button
+                    mat-icon-button
+                    type="button"
+                    class="field-close"
+                    (click)="inputControl.setValue('')"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            }
         </div>
         <mat-hint>{{ props.hint }} </mat-hint>
         <mat-error *transloco="let t">{{
@@ -285,4 +294,4 @@
                 : "Bitte erstellen Sie mindestens einen Eintrag"
         }}</mat-error>
     </mat-form-field>
-</ng-container>
+}

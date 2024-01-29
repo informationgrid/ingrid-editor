@@ -19,11 +19,11 @@
     </div>
     <mat-action-list>
         <mat-divider aria-hidden="true"></mat-divider>
-        <ng-container *ngFor="let item of data.datasets">
+        @for (item of data.datasets; track item) {
             <button mat-list-item (click)="close(item.uuid)">
                 {{ item.title }} ({{ item.field }})
             </button>
             <mat-divider aria-hidden="true"></mat-divider>
-        </ng-container>
+        }
     </mat-action-list>
 </mat-dialog-content>

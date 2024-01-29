@@ -1,200 +1,226 @@
 <div [formGroup]="form">
-    <div
-        *ngFor="let group of filterGroup"
-        [formGroupName]="group.id"
-        class="flex-col gap-12"
-    >
-        <div class="section flex-row">
-            <div class="section-title">{{ group.label }}</div>
-            <div class="flex-1"></div>
-            <button
-                *ngIf="group.label"
-                mat-icon-button
-                class="toggle"
-                (click)="toggleSection(group.id)"
-                [matTooltip]="
-                    notExpanded[group.id] ? 'Aufklappen' : 'Zuklappen'
-                "
-                aria-label="Filter-Facette"
-            >
-                <mat-icon
-                    class="mat-icon-rtl-mirror expander animated"
-                    [class.expanded]="!notExpanded[group.id]"
-                >
-                    expand_more
-                </mat-icon>
-            </button>
-        </div>
-        <ng-container *ngIf="group.viewComponent === 'RADIO'">
-            <mat-radio-group
-                [name]="group.label"
-                class="flex-col gap-12"
-                [class.invisible]="notExpanded[group.id]"
-            >
-                <mat-radio-button
-                    *ngFor="let filter of group.filter; let i = index"
-                    [value]="filter.id"
-                >
-                    {{ filter.label }}
-                </mat-radio-button>
-            </mat-radio-group>
-        </ng-container>
-
-        <div
-            *ngIf="group.viewComponent === 'CHECKBOX'"
-            [class.invisible]="notExpanded[group.id]"
-            class="flex-col gap-12"
-        >
-            <mat-checkbox
-                *ngFor="let filter of group.filter"
-                class="small-checkbox-spacing"
-                [formControlName]="filter.id"
-                [name]="filter.id"
-                >{{ filter.label }}</mat-checkbox
-            >
-        </div>
-
-        <div
-            class="flex-col"
-            *ngIf="group.viewComponent === 'SPATIAL'"
-            [class.invisible]="notExpanded[group.id]"
-        >
-            <div #leafletDlg class="flex-1"></div>
-            <div *ngIf="location" class="location flex-row">
-                <div>
-                    <span>{{ location.title }}</span>
-                    <p>
-                        L1: {{ location.value.lat1 | number: ".6" : "en-US" }}°
-                        B1: {{ location.value.lon1 | number: ".6" : "en-US" }}°
-                    </p>
-                    <p>
-                        L2: {{ location.value.lat2 | number: ".6" : "en-US" }}°
-                        B2: {{ location.value.lon2 | number: ".6" : "en-US" }}°
-                    </p>
-                </div>
+    @for (group of filterGroup; track group) {
+        <div [formGroupName]="group.id" class="flex-col gap-12">
+            <div class="section flex-row">
+                <div class="section-title">{{ group.label }}</div>
                 <div class="flex-1"></div>
-                <div>
+                @if (group.label) {
                     <button
                         mat-icon-button
-                        class="menu-button"
-                        matTooltip="Bearbeiten"
-                        [matMenuTriggerFor]="spatialRef"
-                    >
-                        <mat-icon svgIcon="Mehr"></mat-icon>
-                    </button>
-                    <mat-menu #spatialRef="matMenu">
-                        <button
-                            mat-menu-item
-                            (click)="showSpatialDialog(location)"
-                        >
-                            Bearbeiten
-                        </button>
-                        <button mat-menu-item (click)="removeLocation()">
-                            Löschen
-                        </button>
-                    </mat-menu>
-                </div>
-            </div>
-            <ige-add-button
-                *ngIf="!location"
-                (add)="showSpatialDialog()"
-            ></ige-add-button>
-        </div>
-
-        <div
-            *ngIf="group.viewComponent === 'TIMESPAN'"
-            [class.invisible]="notExpanded[group.id]"
-            class="flex-col gap-12"
-        >
-            <div *ngFor="let filter of group.filter" class="timespan">
-                <mat-form-field>
-                    <input
-                        formControlName="start"
-                        matInput
-                        placeholder="Von"
-                        [matDatepicker]="startDate"
-                        [matDatepickerFilter]="filterForStartDate"
-                    />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="startDate"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #startDate></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field>
-                    <input
-                        formControlName="end"
-                        matInput
-                        placeholder="Bis"
-                        [matDatepicker]="endDate"
-                        [matDatepickerFilter]="filterForEndDate"
-                    />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="endDate"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #endDate></mat-datepicker>
-                </mat-form-field>
-                <button
-                    *ngIf="
-                        form.get(timeGroupId).get('start').value !== null ||
-                        form.get(timeGroupId).get('end').value !== null
-                    "
-                    mat-icon-button
-                    matSuffix
-                    class="close"
-                    (click)="resetDateFields()"
-                    data-cy="clear-date-fields"
-                >
-                    <mat-icon class="gray" svgIcon="Entfernen"></mat-icon>
-                </button>
-            </div>
-        </div>
-
-        <div
-            *ngIf="group.viewComponent === 'SELECT'"
-            [class.invisible]="notExpanded[group.id]"
-            class="flex-col gap-12"
-            [attr.data-cy]="group.label"
-        >
-            <mat-form-field appearance="outline">
-                <mat-select
-                    [formControlName]="group.filter[0].id"
-                    *transloco="let t; read: group.id"
-                >
-                    <mat-option value="">- keine Auswahl -</mat-option>
-                    <ng-container
-                        *ngIf="
-                            group.filter[0].codelistId ||
-                                group.filter[0].codelistIdFromBehaviour;
-                            else selectWithParameters
+                        class="toggle"
+                        (click)="toggleSection(group.id)"
+                        [matTooltip]="
+                            notExpanded[group.id] ? 'Aufklappen' : 'Zuklappen'
                         "
+                        aria-label="Filter-Facette"
                     >
-                        <mat-option
-                            *ngFor="
-                                let item of codelistOptions[group.id] | async
-                            "
-                            [value]="item.value"
-                            >{{ item.label }}</mat-option
+                        <mat-icon
+                            class="mat-icon-rtl-mirror expander animated"
+                            [class.expanded]="!notExpanded[group.id]"
                         >
-                    </ng-container>
-                    <ng-template #selectWithParameters>
-                        <mat-option
-                            *ngFor="let value of group.filter[0].parameters"
-                            [value]="value"
-                            >{{ t(value) }}</mat-option
+                            expand_more
+                        </mat-icon>
+                    </button>
+                }
+            </div>
+            @if (group.viewComponent === "RADIO") {
+                <mat-radio-group
+                    [name]="group.label"
+                    class="flex-col gap-12"
+                    [class.invisible]="notExpanded[group.id]"
+                >
+                    @for (
+                        filter of group.filter;
+                        track filter;
+                        let i = $index
+                    ) {
+                        <mat-radio-button [value]="filter.id">
+                            {{ filter.label }}
+                        </mat-radio-button>
+                    }
+                </mat-radio-group>
+            }
+            @if (group.viewComponent === "CHECKBOX") {
+                <div
+                    [class.invisible]="notExpanded[group.id]"
+                    class="flex-col gap-12"
+                >
+                    @for (filter of group.filter; track filter) {
+                        <mat-checkbox
+                            class="small-checkbox-spacing"
+                            [formControlName]="filter.id"
+                            [name]="filter.id"
+                            >{{ filter.label }}</mat-checkbox
                         >
-                    </ng-template>
-                </mat-select>
-            </mat-form-field>
+                    }
+                </div>
+            }
+            @if (group.viewComponent === "SPATIAL") {
+                <div class="flex-col" [class.invisible]="notExpanded[group.id]">
+                    <div #leafletDlg class="flex-1"></div>
+                    @if (location) {
+                        <div class="location flex-row">
+                            <div>
+                                <span>{{ location.title }}</span>
+                                <p>
+                                    L1:
+                                    {{
+                                        location.value.lat1
+                                            | number: ".6" : "en-US"
+                                    }}° B1:
+                                    {{
+                                        location.value.lon1
+                                            | number: ".6" : "en-US"
+                                    }}°
+                                </p>
+                                <p>
+                                    L2:
+                                    {{
+                                        location.value.lat2
+                                            | number: ".6" : "en-US"
+                                    }}° B2:
+                                    {{
+                                        location.value.lon2
+                                            | number: ".6" : "en-US"
+                                    }}°
+                                </p>
+                            </div>
+                            <div class="flex-1"></div>
+                            <div>
+                                <button
+                                    mat-icon-button
+                                    class="menu-button"
+                                    matTooltip="Bearbeiten"
+                                    [matMenuTriggerFor]="spatialRef"
+                                >
+                                    <mat-icon svgIcon="Mehr"></mat-icon>
+                                </button>
+                                <mat-menu #spatialRef="matMenu">
+                                    <button
+                                        mat-menu-item
+                                        (click)="showSpatialDialog(location)"
+                                    >
+                                        Bearbeiten
+                                    </button>
+                                    <button
+                                        mat-menu-item
+                                        (click)="removeLocation()"
+                                    >
+                                        Löschen
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
+                    }
+                    @if (!location) {
+                        <ige-add-button
+                            (add)="showSpatialDialog()"
+                        ></ige-add-button>
+                    }
+                </div>
+            }
+            @if (group.viewComponent === "TIMESPAN") {
+                <div
+                    [class.invisible]="notExpanded[group.id]"
+                    class="flex-col gap-12"
+                >
+                    @for (filter of group.filter; track filter) {
+                        <div class="timespan">
+                            <mat-form-field>
+                                <input
+                                    formControlName="start"
+                                    matInput
+                                    placeholder="Von"
+                                    [matDatepicker]="startDate"
+                                    [matDatepickerFilter]="filterForStartDate"
+                                />
+                                <mat-datepicker-toggle
+                                    matSuffix
+                                    [for]="startDate"
+                                ></mat-datepicker-toggle>
+                                <mat-datepicker #startDate></mat-datepicker>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input
+                                    formControlName="end"
+                                    matInput
+                                    placeholder="Bis"
+                                    [matDatepicker]="endDate"
+                                    [matDatepickerFilter]="filterForEndDate"
+                                />
+                                <mat-datepicker-toggle
+                                    matSuffix
+                                    [for]="endDate"
+                                ></mat-datepicker-toggle>
+                                <mat-datepicker #endDate></mat-datepicker>
+                            </mat-form-field>
+                            @if (
+                                form.get(timeGroupId).get("start").value !==
+                                    null ||
+                                form.get(timeGroupId).get("end").value !== null
+                            ) {
+                                <button
+                                    mat-icon-button
+                                    matSuffix
+                                    class="close"
+                                    (click)="resetDateFields()"
+                                    data-cy="clear-date-fields"
+                                >
+                                    <mat-icon
+                                        class="gray"
+                                        svgIcon="Entfernen"
+                                    ></mat-icon>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            @if (group.viewComponent === "SELECT") {
+                <div
+                    [class.invisible]="notExpanded[group.id]"
+                    class="flex-col gap-12"
+                    [attr.data-cy]="group.label"
+                >
+                    <mat-form-field appearance="outline">
+                        <mat-select
+                            [formControlName]="group.filter[0].id"
+                            *transloco="let t; read: group.id"
+                        >
+                            <mat-option value="">- keine Auswahl -</mat-option>
+                            @if (
+                                group.filter[0].codelistId ||
+                                group.filter[0].codelistIdFromBehaviour
+                            ) {
+                                @for (
+                                    item of codelistOptions[group.id] | async;
+                                    track item
+                                ) {
+                                    <mat-option [value]="item.value">{{
+                                        item.label
+                                    }}</mat-option>
+                                }
+                            } @else {
+                                @for (
+                                    value of group.filter[0].parameters;
+                                    track value
+                                ) {
+                                    <mat-option [value]="value">{{
+                                        t(value)
+                                    }}</mat-option>
+                                }
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            }
         </div>
+    }
+</div>
+@if (filterGroup?.length > 0 && resetQuery.observed) {
+    <div class="reset-form-button">
+        <button mat-button color="primary" (click)="resetQuery.next()">
+            Suchparameter zurücksetzen
+        </button>
     </div>
-</div>
-<div
-    class="reset-form-button"
-    *ngIf="filterGroup?.length > 0 && resetQuery.observed"
->
-    <button mat-button color="primary" (click)="resetQuery.next()">
-        Suchparameter zurücksetzen
-    </button>
-</div>
+}

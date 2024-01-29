@@ -21,11 +21,13 @@ When using Keycloak then some properties must be configured. Please also check `
 - spring.security.oauth2.resourceserver.jwt.issuer-uri
 - keycloak.auth-server-url
 
-You also need to configure a user with privileged rights in Keycloak, which is needed for the user management. This can be done by setting 
+You also need to configure a user with privileged rights in Keycloak, which is needed for the user management. This can be done by setting
+
 - keycloak.backend-user
 - keycloak.backend-user-password
 
 You can also configure it by these environment variables respectively:
+
 - KEYCLOAK_BACKEND_USER
 - KEYCLOAK_BACKEND_USER_PASSWORD
 
@@ -41,7 +43,7 @@ directory:
 See also `postgres/.env` for further configuration.
 
 You need to manually create an empty database with the name 'ige' .
-The database gets initialized on startup. Afterwards you can map your db data directory in the docker-compose file to
+The database gets initialized on startup. Afterward you can map your db data directory in the docker-compose file to
 make it persistent.
 
 ### Start the client and server
@@ -113,7 +115,11 @@ You are all set. Run server and frontend with the appropriate run configuration.
 To get a list of new versions of our dependencies you can run the following command:
 
 ```shell
+# server
 gradlew :server:dependencyUpdates
+
+# frontend
+yarn upgrade-interactive
 ```
 
 ## Apache Configuration
@@ -164,16 +170,15 @@ The following behaviours for the Jenkins project have to be applied:
 
 A problem occurs when running Keycloak and Application in a docker container on your local machine. Then it's important
 that the access to the keycloak instance is the same for the backend as in the frontend in the browser, which happens
-actually on the local machine (not inside docker). Therefore you need to configure "/etc/hosts" file or under windows "
-c:\Windows\System32\Drivers\etc\hosts" and add the following entry:
+actually on the local machine (not inside docker). Therefore, you need to configure `/etc/hosts` file or under windows `
+c:\Windows\System32\Drivers\etc\hosts` and add the following entry:
 
 > 127.0.0.1 keycloak
 
 In your docker-compose file you would then use for your app the environment variable "KEYCLOAK_URL=http://keycloak:8080"
-to access keycloak in the container. Moreover make sure the port mapping is the same "8080:8080" otherwise keycloak
+to access keycloak in the container. Moreover, make sure the port mapping is the same "8080:8080" otherwise keycloak
 won't be able to map correctly.
 
 ## Add a new keycloak user
 
-When adding a new keycloak user, make sure to assign the correct roles: ige-user (needed!) and optional ige-user-manager
-or ige-super-admin
+When adding a new keycloak user, make sure to assign the correct roles: ige-user (needed!) and optional ige-super-admin

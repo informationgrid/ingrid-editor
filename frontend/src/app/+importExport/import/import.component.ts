@@ -244,18 +244,22 @@ export class ImportComponent implements OnInit {
   }
 
   handleStepEvent(index: number) {
-    console.log(index);
     if (index !== 1) return;
     this.datasetsWithNoPermission = [];
 
-    this.message.report.existingDatasets.map((dataset) =>
-      this.documentService
-        .uuidExists(dataset.uuid)
-        .pipe(filter((exists) => !exists))
-        .subscribe(() => {
-          console.error(`${dataset.uuid} cannot be accessed`);
-          this.datasetsWithNoPermission.push(dataset);
-        }),
-    );
+    const action = () =>
+      this.message.report.existingDatasets.map((dataset) =>
+        this.documentService
+          .uuidExists(dataset.uuid)
+          .pipe(filter((exists) => !exists))
+          .subscribe(() => {
+            console.error(`${dataset.uuid} cannot be accessed`);
+            this.datasetsWithNoPermission.push(dataset);
+          }),
+      );
+
+    // in case the report has not been ready yet
+    if (this.message.report) action();
+    else setTimeout(() => action(), 100);
   }
 }

@@ -1,22 +1,36 @@
-<div *ngIf="showMore" [@slideDown] class="more-info">
-    <div class="flex-row">
-        <div>Erstellt am</div>
-        <div *ngIf="group?.data?.creationDate">
-            <span [matTooltip]="group.data.creationDate | date: 'long'">{{
-                group.data.creationDate | date: "dd.MM.yyyy"
-            }}</span>
+@if (showMore) {
+    <div [@slideDown] class="more-info">
+        <div class="flex-row">
+            <div>Erstellt am</div>
+            @if (group?.data?.creationDate) {
+                <div>
+                    <span
+                        [matTooltip]="group.data.creationDate | date: 'long'"
+                        >{{
+                            group.data.creationDate | date: "dd.MM.yyyy"
+                        }}</span
+                    >
+                </div>
+            }
+        </div>
+        <div class="flex-row">
+            <div>Geändert am</div>
+            @if (group?.data?.modificationDate) {
+                <div>
+                    <span
+                        [matTooltip]="
+                            group.data.modificationDate | date: 'long'
+                        "
+                        >{{
+                            group.data.modificationDate | date: "dd.MM.yyyy"
+                        }}</span
+                    >
+                </div>
+            }
+        </div>
+        <div class="flex-row">
+            <div>ID</div>
+            <div>{{ group?.id }}</div>
         </div>
     </div>
-    <div class="flex-row">
-        <div>Geändert am</div>
-        <div *ngIf="group?.data?.modificationDate">
-            <span [matTooltip]="group.data.modificationDate | date: 'long'">{{
-                group.data.modificationDate | date: "dd.MM.yyyy"
-            }}</span>
-        </div>
-    </div>
-    <div class="flex-row">
-        <div>ID</div>
-        <div>{{ group?.id }}</div>
-    </div>
-</div>
+}

@@ -28,7 +28,7 @@ import {
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
-import { NgForOf, NgIf } from "@angular/common";
+
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { FormsModule, UntypedFormControl } from "@angular/forms";
@@ -68,8 +68,6 @@ interface GeoThesaurusResult {
     MatDividerModule,
     MatListModule,
     MatRadioModule,
-    NgForOf,
-    NgIf,
     SearchInputComponent,
     MatCheckboxModule,
     FormsModule,

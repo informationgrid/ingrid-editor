@@ -222,14 +222,16 @@ describe("ConformityDialogComponent", () => {
       CodelistEntry
     >{
       id: "1",
-      fields: new Map([["de", "Eins"]]),
+      fields: { de: "Eins" },
       data: "2009-10-20",
+      description: "",
     });
     codelistQuery.getCodelistEntryByKey.withArgs("6006", "1").and.returnValue(<
       CodelistEntry
     >{
       id: "1",
-      fields: new Map([["de", "Zehn"]]),
+      fields: { de: "Zehn" },
+      description: "",
     });
   }
 });

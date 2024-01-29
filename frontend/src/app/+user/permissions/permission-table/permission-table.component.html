@@ -8,11 +8,12 @@
     <ng-container matColumnDef="type-icon">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element" class="thin-column">
-            <mat-icon
-                *ngIf="element.id"
-                [svgIcon]="element.iconClass"
-            ></mat-icon>
-            <mat-icon *ngIf="!element.id"></mat-icon>
+            @if (element.id) {
+                <mat-icon [svgIcon]="element.iconClass"></mat-icon>
+            }
+            @if (!element.id) {
+                <mat-icon></mat-icon>
+            }
         </td>
     </ng-container>
     <!-- Title/path -->
@@ -43,38 +44,41 @@
             >
                 <mat-icon>visibility</mat-icon>
             </mat-button>
-            <mat-button
-                matTooltip="Nur Unterordner"
-                *ngIf="
-                    element.isFolder &&
-                    (element.hasWritePermission ||
-                        element.hasOnlySubtreeWritePermission)
-                "
-                (click)="
-                    updatePermission(
-                        element,
+            @if (
+                element.isFolder &&
+                (element.hasWritePermission ||
+                    element.hasOnlySubtreeWritePermission)
+            ) {
+                <mat-button
+                    matTooltip="Nur Unterordner"
+                    (click)="
+                        updatePermission(
+                            element,
+                            permissionLevel.WRITE_EXCEPT_PARENT
+                        )
+                    "
+                    [class.disabled]="disabled"
+                    [class.active]="
+                        element.permission ==
                         permissionLevel.WRITE_EXCEPT_PARENT
-                    )
-                "
-                [class.disabled]="disabled"
-                [class.active]="
-                    element.permission == permissionLevel.WRITE_EXCEPT_PARENT
-                "
-            >
-                <mat-icon
-                    class="wide-icon-26px"
-                    svgIcon="edit-lock-folder"
-                ></mat-icon>
-            </mat-button>
-            <mat-button
-                *ngIf="element.hasWritePermission"
-                matTooltip="Schreibrecht"
-                (click)="updatePermission(element, permissionLevel.WRITE)"
-                [class.disabled]="disabled"
-                [class.active]="element.permission == permissionLevel.WRITE"
-            >
-                <mat-icon>edit</mat-icon>
-            </mat-button>
+                    "
+                >
+                    <mat-icon
+                        class="wide-icon-26px"
+                        svgIcon="edit-lock-folder"
+                    ></mat-icon>
+                </mat-button>
+            }
+            @if (element.hasWritePermission) {
+                <mat-button
+                    matTooltip="Schreibrecht"
+                    (click)="updatePermission(element, permissionLevel.WRITE)"
+                    [class.disabled]="disabled"
+                    [class.active]="element.permission == permissionLevel.WRITE"
+                >
+                    <mat-icon>edit</mat-icon>
+                </mat-button>
+            }
         </td>
     </ng-container>
 

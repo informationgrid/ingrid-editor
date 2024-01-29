@@ -20,7 +20,7 @@
 import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
-import { AsyncPipe, DatePipe, NgIf } from "@angular/common";
+import { AsyncPipe, DatePipe } from "@angular/common";
 import { DocumentIconModule } from "../../../shared/document-icon/document-icon.module";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { ConfigService } from "../../../services/config/config.service";
@@ -42,7 +42,6 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatTableModule,
     MatSortModule,
     DocumentIconModule,
-    NgIf,
     MatPaginatorModule,
     MatDividerModule,
     MatProgressSpinnerModule,

@@ -11,7 +11,7 @@
     [ignoreTreeUpdates]="true"
 ></ige-tree>
 
-<ng-container *ngIf="!disableRoot">
+@if (!disableRoot) {
     <div class="selection-divider"></div>
     <div class="side-padding dlg-field-hero-label">Oder anlegen unter</div>
     <ige-document-list-item
@@ -20,4 +20,4 @@
         [setActiveItem]="activeListItem"
         (select)="updateParent([null], 'List')"
     ></ige-document-list-item>
-</ng-container>
+}

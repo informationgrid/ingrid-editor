@@ -3,60 +3,64 @@
         Hier können sie Ihre zuvor gespeicherten Suchanfragen wieder laden.
     </div>
     <div main-content>
-        <ige-card-box
-            *ngFor="let type of queryTypes"
-            [label]="type.label"
-            data-cy="card-saved-queries"
-            role="list"
-        >
-            <div
-                *ngFor="
-                    let query of type.queries | async;
-                    trackBy: getIdentifier
-                "
-                tabindex="0"
-                role="listitem"
-                class="item clickable flex-row"
-                (click)="load(query.id)"
-                (keydown.enter)="load(query.id)"
+        @for (type of queryTypes; track type) {
+            <ige-card-box
+                [label]="type.label"
+                data-cy="card-saved-queries"
+                role="list"
             >
-                <mat-icon>star_outline</mat-icon>
-                <div>
-                    <div class="title">{{ query.name }}</div>
-                    <div *ngIf="query.description">
-                        {{ query.description }}
-                    </div>
-                </div>
-
-                <div class="flex-1"></div>
-
-                <span [matTooltip]="query.modified | date: 'long'">{{
-                    query.modified | dateAgo: "DE"
-                }}</span>
-                <ng-container *ngIf="query.canDelete; else placeholder">
-                    <button
-                        #editButton
-                        mat-icon-button
-                        class="menu-button"
-                        matTooltip="Bearbeiten"
-                        [matMenuTriggerFor]="spatialRef"
-                        (click)="$event.stopImmediatePropagation()"
+                @for (
+                    query of type.queries | async;
+                    track getIdentifier($index, query)
+                ) {
+                    <div
+                        tabindex="0"
+                        role="listitem"
+                        class="item clickable flex-row"
+                        (click)="load(query.id)"
+                        (keydown.enter)="load(query.id)"
                     >
-                        <mat-icon svgIcon="Mehr"></mat-icon>
-                    </button>
-                    <mat-menu #spatialRef="matMenu">
-                        <button
-                            mat-menu-item
-                            (click)="editButton.focus(); removeQuery(query.id)"
-                        >
-                            Löschen
-                        </button>
-                    </mat-menu>
-                </ng-container>
-                <ng-template #placeholder
-                    ><span style="width: 66px"></span
-                ></ng-template>
-            </div>
-        </ige-card-box>
+                        <mat-icon>star_outline</mat-icon>
+                        <div>
+                            <div class="title">{{ query.name }}</div>
+                            @if (query.description) {
+                                <div>
+                                    {{ query.description }}
+                                </div>
+                            }
+                        </div>
+                        <div class="flex-1"></div>
+                        <span [matTooltip]="query.modified | date: 'long'">{{
+                            query.modified | dateAgo: "DE"
+                        }}</span>
+                        @if (query.canDelete) {
+                            <button
+                                #editButton
+                                mat-icon-button
+                                class="menu-button"
+                                matTooltip="Bearbeiten"
+                                [matMenuTriggerFor]="spatialRef"
+                                (click)="$event.stopImmediatePropagation()"
+                            >
+                                <mat-icon svgIcon="Mehr"></mat-icon>
+                            </button>
+                            <mat-menu #spatialRef="matMenu">
+                                <button
+                                    mat-menu-item
+                                    (click)="
+                                        editButton.focus();
+                                        removeQuery(query.id)
+                                    "
+                                >
+                                    Löschen
+                                </button>
+                            </mat-menu>
+                        } @else {
+                            <span style="width: 66px"></span>
+                        }
+                    </div>
+                }
+            </ige-card-box>
+        }
     </div>
 </page-template>

@@ -36,8 +36,11 @@ class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, cat
 
     fun getServiceVersions(): List<KeyValue> {
         return info?.serviceTypeVersion
-            ?.map { codeListService.getCodeListEntryId("5153", it.value, "iso") }
-            ?.map { KeyValue(it) } ?: emptyList()
+            ?.map {
+                codeListService.getCodeListEntryId("5153", it.value, "iso")
+                    ?.let { id -> KeyValue(id) }
+                    ?: KeyValue(null, it.value)
+            } ?: emptyList()
     }
 
     fun getOperations(): List<Operation> {

@@ -983,7 +983,7 @@ export abstract class IngridShared extends BaseDoctype {
                 defaultValue: ["150"],
                 expressions: {
                   "props.required":
-                    "['InGridGeoDataset', 'InGridLiterature', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
+                    "['InGridGeoDataset', 'InGridPublication', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
                   className: "field.props.required ? '' : 'optional'",
                 },
               }),
@@ -1612,6 +1612,7 @@ export abstract class IngridShared extends BaseDoctype {
             if (b.label.indexOf("INVALID -") === 0) return -1;
             return a.label?.localeCompare(b.label);
           });
+        // TODO: add favorite sorting
       }),
     );
   }
@@ -1634,7 +1635,7 @@ export abstract class IngridShared extends BaseDoctype {
         return "0";
       case "InGridGeoDataset":
         return "1";
-      case "InGridLiterature":
+      case "InGridPublication":
         return "2";
       case "InGridGeoService":
         return "3";

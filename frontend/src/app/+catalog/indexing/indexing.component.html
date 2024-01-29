@@ -65,35 +65,40 @@
         </p>
     </ng-container>
 
-    <ng-container main-header *ngIf="isActivated; else noElasticsearch">
-        <ige-job-handler-header
-            [message]="liveImportMessage | async"
-            [isRunning]="indexingIsRunning"
-            (showMore)="showMore = $event"
-        >
-            <div class="index-btn">
-                <button
-                    *ngIf="!indexingIsRunning; else indexing"
-                    mat-flat-button
-                    color="primary"
-                    class="start-index"
-                    [disabled]="!initialized"
-                    (click)="index()"
-                >
-                    Indizieren
-                </button>
-                <ng-template #indexing>
-                    <button
-                        mat-flat-button
-                        (click)="cancelIndexing()"
-                        class="cancel-index"
-                    >
-                        Indizierung abbrechen
-                    </button>
-                </ng-template>
-            </div>
-        </ige-job-handler-header>
-    </ng-container>
+    @if (isActivated) {
+        <ng-container main-header>
+            <ige-job-handler-header
+                [message]="liveImportMessage | async"
+                [isRunning]="indexingIsRunning"
+                (showMore)="showMore = $event"
+            >
+                <div class="index-btn">
+                    @if (!indexingIsRunning) {
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            class="start-index"
+                            [disabled]="!initialized"
+                            (click)="index()"
+                        >
+                            Indizieren
+                        </button>
+                    } @else {
+                        <button
+                            mat-flat-button
+                            (click)="cancelIndexing()"
+                            class="cancel-index"
+                        >
+                            Indizierung abbrechen
+                        </button>
+                    }
+                </div>
+            </ige-job-handler-header>
+        </ng-container>
+    } @else {
+        Elasticsearch ist nicht im Backend aktiviert, welches für die
+        Indizierung benötigt wird.
+    }
 
     <div status class="status" [class.hide]="!showMore">
         <div class="copy-button-area">
@@ -138,9 +143,4 @@
             </div>
         </div>
     </div>
-
-    <ng-template #noElasticsearch>
-        Elasticsearch ist nicht im Backend aktiviert, welches für die
-        Indizierung benötigt wird.
-    </ng-template>
 </page-template>

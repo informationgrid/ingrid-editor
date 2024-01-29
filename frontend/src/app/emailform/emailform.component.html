@@ -9,7 +9,9 @@
             required
             [autocomplete]="canAutocomplete ? 'email' : undefined"
         />
-        <mat-error *ngIf="formErrors.email">{{ formErrors.email }}</mat-error>
+        @if (formErrors.email) {
+            <mat-error>{{ formErrors.email }}</mat-error>
+        }
     </mat-form-field>
 
     <div class="comment">

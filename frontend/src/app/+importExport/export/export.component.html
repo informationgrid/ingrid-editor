@@ -69,21 +69,22 @@
                                 formControlName="format"
                                 (selectionChange)="updateDraftsCheckbox($event)"
                             >
-                                <mat-option
-                                    *ngFor="let format of exportFormats | async"
-                                    [value]="format"
-                                >
-                                    {{ format.name }}
-                                </mat-option>
+                                @for (
+                                    format of exportFormats | async;
+                                    track format
+                                ) {
+                                    <mat-option [value]="format">
+                                        {{ format.name }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
 
-                        <mat-checkbox
-                            *ngIf="showDraftsCheckbox"
-                            formControlName="drafts"
-                        >
-                            Auch Entwürfe exportieren
-                        </mat-checkbox>
+                        @if (showDraftsCheckbox) {
+                            <mat-checkbox formControlName="drafts">
+                                Auch Entwürfe exportieren
+                            </mat-checkbox>
+                        }
                     </div>
                 </form>
                 <div class="action-bar flex-row gap-12">
@@ -108,36 +109,32 @@
             <mat-step>
                 <ng-template matStepLabel>Vorschau</ng-template>
 
-                <div
-                    class="flex-col justify-content-center align-items-center"
-                    *ngIf="exportResult"
-                >
-                    <div class="section-title">Exportdatei erstellt:</div>
-                    <mat-icon
-                        class="big-icon gray"
-                        svgIcon="Fachaufgabe"
-                    ></mat-icon>
-                    <ng-container
-                        *ngIf="
-                            exportResult?.body?.type === 'application/zip';
-                            else showPreviewButton
-                        "
+                @if (exportResult) {
+                    <div
+                        class="flex-col justify-content-center align-items-center"
                     >
-                        Für ZIP-Dateien gibt es keine Vorschau.
-                    </ng-container>
-                    <ng-template #showPreviewButton>
-                        <button mat-stroked-button (click)="showPreview()">
-                            Vorschau
-                        </button>
-                    </ng-template>
-                </div>
+                        <div class="section-title">Exportdatei erstellt:</div>
+                        <mat-icon
+                            class="big-icon gray"
+                            svgIcon="Fachaufgabe"
+                        ></mat-icon>
+                        @if (exportResult?.body?.type === "application/zip") {
+                            Für ZIP-Dateien gibt es keine Vorschau.
+                        } @else {
+                            <button mat-stroked-button (click)="showPreview()">
+                                Vorschau
+                            </button>
+                        }
+                    </div>
+                }
 
-                <div
-                    *ngIf="!exportFinished"
-                    class="flex-row justify-content-center align-items-center"
-                >
-                    <mat-spinner></mat-spinner>
-                </div>
+                @if (!exportFinished) {
+                    <div
+                        class="flex-row justify-content-center align-items-center"
+                    >
+                        <mat-spinner></mat-spinner>
+                    </div>
+                }
 
                 <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">
@@ -181,4 +178,6 @@
     </section>
 </page-template>
 
-<pre *ngIf="exportResult">{{ exportResult }}</pre>
+@if (exportResult) {
+    <pre>{{ exportResult }}</pre>
+}

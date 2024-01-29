@@ -1,35 +1,47 @@
 <div [formGroup]="form" class="flex-col">
-    <div
-        *ngIf="isPerson; else organization"
-        class="space-bottom flex-1 flex-row gap-24"
-    >
-        <div class="flex-1">
-            <div class="dlg-field-label required">Vorname</div>
-            <mat-form-field appearance="outline" class="width-100">
-                <input
-                    igeFocus
-                    matInput
-                    data-cy="create-address-firstName"
-                    formControlName="firstName"
-                    autocomplete="off"
-                    (keyup.enter)="create.emit()"
-                    aria-label="Titel der Person"
-                />
-            </mat-form-field>
+    @if (isPerson) {
+        <div class="space-bottom flex-1 flex-row gap-24">
+            <div class="flex-1">
+                <div class="dlg-field-label required">Vorname</div>
+                <mat-form-field appearance="outline" class="width-100">
+                    <input
+                        igeFocus
+                        matInput
+                        data-cy="create-address-firstName"
+                        formControlName="firstName"
+                        autocomplete="off"
+                        (keyup.enter)="create.emit()"
+                        aria-label="Titel der Person"
+                    />
+                </mat-form-field>
+            </div>
+            <div class="flex-1">
+                <div class="dlg-field-label required">Nachname</div>
+                <mat-form-field appearance="outline" class="width-100">
+                    <input
+                        matInput
+                        data-cy="create-address-lastName"
+                        autocomplete="off"
+                        formControlName="lastName"
+                        (keyup.enter)="create.emit()"
+                    />
+                </mat-form-field>
+            </div>
         </div>
-        <div class="flex-1">
-            <div class="dlg-field-label required">Nachname</div>
-            <mat-form-field appearance="outline" class="width-100">
-                <input
-                    matInput
-                    data-cy="create-address-lastName"
-                    autocomplete="off"
-                    formControlName="lastName"
-                    (keyup.enter)="create.emit()"
-                />
-            </mat-form-field>
-        </div>
-    </div>
+    } @else {
+        <div class="dlg-field-label required">Organisation</div>
+        <mat-form-field appearance="outline" class="space-bottom">
+            <input
+                igeFocus
+                matInput
+                data-cy="create-address-organization"
+                name="organization"
+                formControlName="organization"
+                (keyup.enter)="create.emit()"
+                aria-label="Titel der Organisation"
+            />
+        </mat-form-field>
+    }
 
     <ng-template #organization>
         <div class="dlg-field-label required">Organisation</div>
@@ -48,7 +60,7 @@
 
     <ng-content></ng-content>
 
-    <ng-container *ngIf="documentTypes?.length > 1">
+    @if (documentTypes?.length > 1) {
         <div class="dlg-create-place dlg-field-label required" id="doc-type">
             Adresstyp wählen
         </div>
@@ -60,5 +72,5 @@
             [setActiveItem]="initialActiveDocumentType"
             (select)="setDocType($event)"
         ></ige-document-list-item>
-    </ng-container>
+    }
 </div>

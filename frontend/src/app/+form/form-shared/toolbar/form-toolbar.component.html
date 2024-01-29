@@ -1,46 +1,54 @@
 <mat-toolbar>
     <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
         <ng-container *ngFor="let button of buttons_left">
-            <button
-                *ngIf="!button.isSeparator && !button.menu"
-                mat-button
-                long-press
-                class="standard-toolbar-button"
-                [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
-                #hiddenMenuTrigger="matMenuTrigger"
-                [attr.data-cy]="'toolbar_' + button.eventId"
-                (longPress)="
-                    sendEvent(button.eventId + '_LONGPRESS', hiddenMenuTrigger)
-                "
-                (shortClick)="sendEvent(button.eventId)"
-                [disabled]="!button.active || isNotReady"
-                [matTooltip]="button.tooltip"
-                [attr.aria-label]="button.tooltip"
-            >
-                <mat-icon
-                    class="material-icons-outlined"
-                    [svgIcon]="button.matSvgVariable"
-                    >{{ button.matIconVariable }}</mat-icon
-                >
-            </button>
-            <mat-menu #hiddenMenu="matMenu">
+            @if (!button.isSeparator && !button.menu) {
                 <button
-                    *ngFor="let menuItem of button.hiddenMenu; index as idx"
-                    mat-menu-item
-                    [disabled]="false"
-                    [attr.data-cy]="menuItem.eventId + '_' + idx"
-                    (click)="
-                        sendEvent(menuItem.eventId, {
-                            index: idx,
-                            data: menuItem.data
-                        })
+                    mat-button
+                    long-press
+                    class="standard-toolbar-button"
+                    [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
+                    #hiddenMenuTrigger="matMenuTrigger"
+                    [attr.data-cy]="'toolbar_' + button.eventId"
+                    (longPress)="
+                        sendEvent(
+                            button.eventId + '_LONGPRESS',
+                            hiddenMenuTrigger
+                        )
                     "
+                    (shortClick)="sendEvent(button.eventId)"
+                    [disabled]="!button.active || isNotReady"
+                    [matTooltip]="button.tooltip"
+                    [attr.aria-label]="button.tooltip"
                 >
-                    <span>{{ menuItem.label }}</span>
+                    <mat-icon
+                        class="material-icons-outlined"
+                        [svgIcon]="button.matSvgVariable"
+                        >{{ button.matIconVariable }}</mat-icon
+                    >
                 </button>
+            }
+            <mat-menu #hiddenMenu="matMenu">
+                @for (
+                    menuItem of button.hiddenMenu;
+                    track menuItem;
+                    let idx = $index
+                ) {
+                    <button
+                        mat-menu-item
+                        [disabled]="false"
+                        [attr.data-cy]="menuItem.eventId + '_' + idx"
+                        (click)="
+                            sendEvent(menuItem.eventId, {
+                                index: idx,
+                                data: menuItem.data
+                            })
+                        "
+                    >
+                        <span>{{ menuItem.label }}</span>
+                    </button>
+                }
             </mat-menu>
-
-            <ng-container *ngIf="!button.isSeparator && button.menu">
+            @if (!button.isSeparator && button.menu) {
                 <button
                     #actionsMenu
                     mat-button
@@ -63,54 +71,58 @@
                     </mat-icon>
                 </button>
                 <mat-menu #copyMenu="matMenu">
-                    <button
-                        *ngFor="let menuItem of button.menu"
-                        mat-menu-item
-                        [disabled]="!menuItem.active"
-                        [attr.data-cy]="'copyMenu_' + menuItem.eventId"
-                        (click)="
-                            actionsMenu.focus(); sendEvent(menuItem.eventId)
-                        "
-                    >
-                        <span>{{ menuItem.label }}</span>
-                    </button>
+                    @for (menuItem of button.menu; track menuItem) {
+                        <button
+                            mat-menu-item
+                            [disabled]="!menuItem.active"
+                            [attr.data-cy]="'copyMenu_' + menuItem.eventId"
+                            (click)="
+                                actionsMenu.focus(); sendEvent(menuItem.eventId)
+                            "
+                        >
+                            <span>{{ menuItem.label }}</span>
+                        </button>
+                    }
                 </mat-menu>
-            </ng-container>
-            <mat-divider
-                *ngIf="button.isSeparator"
-                class="separator"
-                [vertical]="true"
-                aria-hidden="true"
-            ></mat-divider>
+            }
+            @if (button.isSeparator) {
+                <mat-divider
+                    class="separator"
+                    [vertical]="true"
+                    aria-hidden="true"
+                ></mat-divider>
+            }
         </ng-container>
 
         <div class="flex-1"></div>
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">
-                <button
-                    *ngIf="!button.isSeparator && !button.label"
-                    mat-icon-button
-                    [matTooltip]="button.tooltip"
-                    [attr.data-cy]="'toolbar_' + button.eventId"
-                    (click)="sendEvent(button.eventId)"
-                    [disabled]="!button.active || isNotReady"
-                >
-                    <!--aria-label="{{button.tooltip}}"-->
-                    <mat-icon>{{ button.matIconVariable }}</mat-icon>
-                </button>
-                <button
-                    *ngIf="button.label && !button.isPrimary"
-                    mat-stroked-button
-                    class="toolbar-save-button"
-                    [attr.data-cy]="'toolbar_' + button.eventId"
-                    [disabled]="!button.active || isNotReady"
-                    [attr.aria-label]="button.label"
-                    (click)="sendEvent(button.eventId)"
-                >
-                    {{ button.label }}
-                </button>
-                <ng-container *ngIf="button.label && button.isPrimary">
+                @if (!button.isSeparator && !button.label) {
+                    <button
+                        mat-icon-button
+                        [matTooltip]="button.tooltip"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        (click)="sendEvent(button.eventId)"
+                        [disabled]="!button.active || isNotReady"
+                    >
+                        <!--aria-label="{{button.tooltip}}"-->
+                        <mat-icon>{{ button.matIconVariable }}</mat-icon>
+                    </button>
+                }
+                @if (button.label && !button.isPrimary) {
+                    <button
+                        mat-stroked-button
+                        class="toolbar-save-button"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        [disabled]="!button.active || isNotReady"
+                        [attr.aria-label]="button.label"
+                        (click)="sendEvent(button.eventId)"
+                    >
+                        {{ button.label }}
+                    </button>
+                }
+                @if (button.label && button.isPrimary) {
                     <button
                         class="btnPublish"
                         mat-flat-button
@@ -142,23 +154,23 @@
                                 : "arrow_drop_down"
                         }}</mat-icon>
                     </button>
-
                     <mat-menu
                         #publishMenu="matMenu"
                         class="publish-menu"
                         (closed)="restoreFocus()"
                     >
-                        <button
-                            *ngFor="let menuItem of button.menu"
-                            mat-menu-item
-                            [disabled]="!menuItem.active"
-                            [attr.data-cy]="'toolbar_' + menuItem.eventId"
-                            (click)="sendEvent(menuItem.eventId)"
-                        >
-                            <span>{{ menuItem.label }}</span>
-                        </button>
+                        @for (menuItem of button.menu; track menuItem) {
+                            <button
+                                mat-menu-item
+                                [disabled]="!menuItem.active"
+                                [attr.data-cy]="'toolbar_' + menuItem.eventId"
+                                (click)="sendEvent(menuItem.eventId)"
+                            >
+                                <span>{{ menuItem.label }}</span>
+                            </button>
+                        }
                     </mat-menu>
-                </ng-container>
+                }
             </ng-container>
         </span>
     </mat-toolbar-row>

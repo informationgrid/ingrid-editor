@@ -15,12 +15,11 @@
             [(ngModel)]="data.model"
             data-cy="chip-dialog-option-list"
         >
-            <mat-list-option
-                *ngFor="let option of data.options | async"
-                [value]="option.value"
-            >
-                {{ option.label }}
-            </mat-list-option>
+            @for (option of data.options | async; track option) {
+                <mat-list-option [value]="option.value">
+                    {{ option.label }}
+                </mat-list-option>
+            }
         </mat-selection-list>
     </mat-dialog-content>
     <mat-dialog-actions>

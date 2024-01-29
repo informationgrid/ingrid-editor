@@ -65,8 +65,8 @@
             id="formRoles"
             class="split-pane-content-secondary container-fluid flex-row"
         >
-            <ng-container *ngIf="!isLoading; else loading">
-                <ng-container *ngIf="selectedGroup; else noGroupSelected">
+            @if (!isLoading) {
+                @if (selectedGroup) {
                     <form
                         [formGroup]="form"
                         class="detail-role flex-col gap-12"
@@ -75,13 +75,11 @@
                             <div class="document-type">
                                 <mat-icon svgIcon="group"></mat-icon>
                             </div>
-
                             <span class="label flex-1" [class.editable]="false">
                                 <span>{{
                                     form.get("name")?.value || "Kein Titel"
                                 }}</span>
                             </span>
-
                             <button
                                 mat-icon-button
                                 data-cy="btn-expand-header"
@@ -125,31 +123,31 @@
                             [showMore]="this.showMore"
                             [group]="selectedGroup"
                         ></group-header-more>
-                        <div
-                            *ngIf="selectedGroup.currentUserIsMember"
-                            class="no-fields-selected-notice warn"
-                        >
-                            <div class="infoIcon">
-                                <mat-icon
-                                    class="material-icons-outlined"
-                                    svgIcon="info-24px"
-                                ></mat-icon>
+                        @if (selectedGroup.currentUserIsMember) {
+                            <div class="no-fields-selected-notice warn">
+                                <div class="infoIcon">
+                                    <mat-icon
+                                        class="material-icons-outlined"
+                                        svgIcon="info-24px"
+                                    ></mat-icon>
+                                </div>
+                                <span>
+                                    Für Mitglieder der Gruppe ist die
+                                    Bearbeitung deaktiviert.</span
+                                >
                             </div>
-                            <span>
-                                Für Mitglieder der Gruppe ist die Bearbeitung
-                                deaktiviert.</span
-                            >
-                        </div>
+                        }
                         <!-- TITLE -->
                         <mat-form-field appearance="outline">
                             <mat-label>Name</mat-label>
                             <input matInput formControlName="name" />
-                            <mat-error
-                                *ngIf="form.get('name').errors?.forbiddenName"
-                                >Es gibt bereits eine Gruppe mit diesem Namen
-                            </mat-error>
+                            @if (form.get("name").errors?.forbiddenName) {
+                                <mat-error
+                                    >Es gibt bereits eine Gruppe mit diesem
+                                    Namen
+                                </mat-error>
+                            }
                         </mat-form-field>
-
                         <!-- DESCRIPTION -->
                         <mat-form-field appearance="outline">
                             <mat-label>Beschreibung</mat-label>
@@ -158,7 +156,6 @@
                                 formControlName="description"
                             ></textarea>
                         </mat-form-field>
-
                         <ige-permissions
                             [disabled]="selectedGroup.currentUserIsMember"
                             [showRootReadSlider]="
@@ -171,9 +168,9 @@
                         <div>
                             <div class="section-title">
                                 Zugeordnete Benutzer
-                                <span *ngIf="groupUsers"
-                                    >({{ groupUsers.length }})</span
-                                >
+                                @if (groupUsers) {
+                                    <span>({{ groupUsers.length }})</span>
+                                }
                             </div>
                         </div>
                         <mat-divider aria-hidden="true"></mat-divider>
@@ -183,49 +180,47 @@
                             (onUserSelect)="switchToUser($event)"
                         ></user-table>
                     </form>
-                </ng-container>
-
+                } @else {
+                    @if ((groups | async)?.length > 0) {
+                        <div
+                            class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                        >
+                            <div>
+                                <img
+                                    src="assets/icons/group-management.png"
+                                    alt="group-management"
+                                />
+                            </div>
+                            <div class="no-selection-text">
+                                Wählen Sie einen Eintrag aus, um Berechtigungen
+                                anzuzeigen oder Änderungen durchzuführen.
+                            </div>
+                        </div>
+                    }
+                    @if ((groups | async)?.length === 0) {
+                        <div
+                            class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                        >
+                            <div>
+                                <img
+                                    src="assets/icons/group-management.png"
+                                    alt="group-management"
+                                />
+                            </div>
+                            <div class="no-selection-text">
+                                Noch keine Gruppen erstellt!
+                            </div>
+                            <div class="no-selection-text">
+                                Mit der oben stehenden Funktion „Hinzufügen“
+                                können Sie Gruppen anlegen.
+                            </div>
+                        </div>
+                    }
+                }
                 <!-- NO GROUP SELECTED -->
-
-                <ng-template #noGroupSelected>
-                    <div
-                        *ngIf="(groups | async)?.length > 0"
-                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
-                    >
-                        <div>
-                            <img
-                                src="assets/icons/group-management.png"
-                                alt="group-management"
-                            />
-                        </div>
-                        <div class="no-selection-text">
-                            Wählen Sie einen Eintrag aus, um Berechtigungen
-                            anzuzeigen oder Änderungen durchzuführen.
-                        </div>
-                    </div>
-                    <div
-                        *ngIf="(groups | async)?.length === 0"
-                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
-                    >
-                        <div>
-                            <img
-                                src="assets/icons/group-management.png"
-                                alt="group-management"
-                            />
-                        </div>
-                        <div class="no-selection-text">
-                            Noch keine Gruppen erstellt!
-                        </div>
-                        <div class="no-selection-text">
-                            Mit der oben stehenden Funktion „Hinzufügen“ können
-                            Sie Gruppen anlegen.
-                        </div>
-                    </div>
-                </ng-template>
-            </ng-container>
-            <ng-template #loading>
+            } @else {
                 <mat-spinner style="margin: 100px auto"></mat-spinner>
-            </ng-template>
+            }
         </as-split-area>
     </as-split>
 </div>

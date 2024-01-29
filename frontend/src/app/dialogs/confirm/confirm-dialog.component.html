@@ -8,26 +8,33 @@
 </div>
 
 <mat-dialog-content>
-    <p
-        *ngIf="!data.preformatted"
-        [innerHTML]="data.message?.replace('\n', '<br />')"
-    ></p>
-    <pre *ngIf="data.preformatted">{{ data.message }}</pre>
-    <ul *ngIf="data.list">
-        <li *ngFor="let item of data.list">{{ item }}</li>
-    </ul>
-    <div *ngIf="data.confirmText">
-        <mat-form-field class="width-100">
-            <input
-                matInput
-                igeFocus
-                [placeholder]="
-                    'Geben Sie das Wort \'' + data.confirmText + '\' ein'
-                "
-                [(ngModel)]="textConfirmed"
-            />
-        </mat-form-field>
-    </div>
+    @if (!data.preformatted) {
+        <p [innerHTML]="data.message?.replace('\n', '<br />')"></p>
+    }
+    @if (data.preformatted) {
+        <pre>{{ data.message }}</pre>
+    }
+    @if (data.list) {
+        <ul>
+            @for (item of data.list; track item) {
+                <li>{{ item }}</li>
+            }
+        </ul>
+    }
+    @if (data.confirmText) {
+        <div>
+            <mat-form-field class="width-100">
+                <input
+                    matInput
+                    igeFocus
+                    [placeholder]="
+                        'Geben Sie das Wort \'' + data.confirmText + '\' ein'
+                    "
+                    [(ngModel)]="textConfirmed"
+                />
+            </mat-form-field>
+        </div>
+    }
 </mat-dialog-content>
 
 <mat-dialog-actions>
@@ -35,63 +42,74 @@
         class="flex-row flex-1"
         [class.justify-content-space-between]="data.cookieId"
     >
-        <mat-checkbox *ngIf="data.cookieId" (change)="updateCookie($event)"
-            >Hinweis nicht erneut anzeigen
-        </mat-checkbox>
+        @if (data.cookieId) {
+            <mat-checkbox (change)="updateCookie($event)"
+                >Hinweis nicht erneut anzeigen
+            </mat-checkbox>
+        }
 
         <div class="flex-row flex-1">
-            <ng-container *ngIf="!data.hideCancelButton">
-                <button
-                    *ngFor="let button of leftAlignedButtons"
-                    mat-button
-                    color="primary"
-                    [class.mat-stroked-button]="button.emphasize"
-                    [disabled]="
-                        button.disabledWhenNotConfirmed &&
-                        data.confirmText &&
-                        textConfirmed !== data.confirmText
-                    "
-                    [mat-dialog-close]="button.id || false"
-                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
-                >
-                    {{ button.text }}
-                </button>
-            </ng-container>
+            @if (!data.hideCancelButton) {
+                @for (button of leftAlignedButtons; track button) {
+                    <button
+                        mat-button
+                        color="primary"
+                        [class.mat-stroked-button]="button.emphasize"
+                        [disabled]="
+                            button.disabledWhenNotConfirmed &&
+                            data.confirmText &&
+                            textConfirmed !== data.confirmText
+                        "
+                        [mat-dialog-close]="button.id || false"
+                        [attr.data-cy]="
+                            'confirm-dialog-' + (button.id || 'cancel')
+                        "
+                    >
+                        {{ button.text }}
+                    </button>
+                }
+            }
 
             <div class="flex-1"></div>
 
-            <ng-container *ngFor="let button of rightAlignedButtons">
-                <button
-                    *ngIf="!button.emphasize"
-                    mat-button
-                    color="primary"
-                    [disabled]="
-                        button.disabledWhenNotConfirmed &&
-                        data.confirmText &&
-                        textConfirmed !== data.confirmText
-                    "
-                    igeFocus
-                    [mat-dialog-close]="button.id || false"
-                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
-                >
-                    {{ button.text }}
-                </button>
-                <button
-                    *ngIf="button.emphasize"
-                    mat-flat-button
-                    color="primary"
-                    [disabled]="
-                        button.disabledWhenNotConfirmed &&
-                        data.confirmText &&
-                        textConfirmed !== data.confirmText
-                    "
-                    igeFocus
-                    [mat-dialog-close]="button.id || false"
-                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
-                >
-                    {{ button.text }}
-                </button>
-            </ng-container>
+            @for (button of rightAlignedButtons; track button) {
+                @if (!button.emphasize) {
+                    <button
+                        mat-button
+                        color="primary"
+                        [disabled]="
+                            button.disabledWhenNotConfirmed &&
+                            data.confirmText &&
+                            textConfirmed !== data.confirmText
+                        "
+                        igeFocus
+                        [mat-dialog-close]="button.id || false"
+                        [attr.data-cy]="
+                            'confirm-dialog-' + (button.id || 'cancel')
+                        "
+                    >
+                        {{ button.text }}
+                    </button>
+                }
+                @if (button.emphasize) {
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        [disabled]="
+                            button.disabledWhenNotConfirmed &&
+                            data.confirmText &&
+                            textConfirmed !== data.confirmText
+                        "
+                        igeFocus
+                        [mat-dialog-close]="button.id || false"
+                        [attr.data-cy]="
+                            'confirm-dialog-' + (button.id || 'cancel')
+                        "
+                    >
+                        {{ button.text }}
+                    </button>
+                }
+            }
         </div>
     </div>
 </mat-dialog-actions>

@@ -27,8 +27,8 @@ import org.w3c.dom.Document
 
 class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
                             private val researchService: ResearchService,
-                            val catalogId: String) :
-    GeneralCapabilitiesParser(XPathUtils(WcsNamespaceContext()), codelistHandler), ICapabilitiesParser {
+                            catalogId: String) :
+    GeneralCapabilitiesParser(XPathUtils(WcsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
@@ -67,7 +67,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities"
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -84,7 +84,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
                 "DescribeCoverage"
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
@@ -101,7 +101,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
                 "GetCoverage"
             )
             getCoverageOp.methodCall = "GetCoverage"
@@ -152,7 +152,7 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:country"
         ))
-        address.state = getKeyValue("110", xPathUtils.getString(
+        address.state = getKeyValue("6250", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:administrativeArea"
         ), "name")

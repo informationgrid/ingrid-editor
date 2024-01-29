@@ -27,72 +27,106 @@
         main-header
         class="flex-1 flex-col justify-content-center align-items-center"
     >
-        <ng-container
-            *ngIf="(hasCatalogCodelists | async) === false; else showSelector"
-        >
-            <div>
-                In diesem Katalog liegen keine spezifischen Codelisten vor.
-            </div>
-            <div>
-                Alle Codelisten können über das zentrale Codelist-Repository
-                verwaltet werden.
-            </div>
-        </ng-container>
-
-        <ng-template #showSelector>
+        <div class="flex-row gap-12 align-items-baseline width-100">
             <mat-form-field appearance="outline" class="white-bg main-center">
                 <mat-select
+                    [formControl]="codelistSelect"
                     (selectionChange)="selectCodelist($event.value)"
-                    [value]="initialValue"
                 >
-                    <mat-option
-                        *ngFor="let codelist of catalogCodelists | async"
-                        [value]="codelist"
-                    >
-                        {{ codelist.label }} ({{ codelist.value }})
+                    <mat-option>
+                        <ngx-mat-select-search
+                            [formControl]="filterCtrl"
+                        ></ngx-mat-select-search>
                     </mat-option>
+                    @for (codelist of filteredOptions; track codelist) {
+                        <mat-option [value]="codelist">
+                            {{ codelist.name }} ({{ codelist.id }})
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-        </ng-template>
-    </div>
-
-    <div
-        main-content
-        class="flex-1"
-        *ngIf="(hasCatalogCodelists | async) === true; else showLogo"
-    >
-        <div *ngIf="selectedCodelist?.description" class="description">
-            <div class="section-title">Beschreibung</div>
-            <div>{{ selectedCodelist?.description }}</div>
-        </div>
-
-        <div class="flex-row justify-content-end align-items-end gap-12">
-            <button
-                mat-flat-button
-                mat-stroked-button
-                (click)="resetCodelist()"
+            <mat-slide-toggle (change)="handleCodelistToggle($event)"
+                >Alle Codelisten anzeigen</mat-slide-toggle
             >
-                Zurücksetzen
-            </button>
-            <button mat-flat-button color="primary" (click)="addCodelist()">
-                Hinzufügen
-            </button>
         </div>
-
-        <ige-codelist-presenter
-            [codelist]="selectedCodelist"
-            (edit)="editCodelist($event)"
-            (remove)="removeCodelist($event)"
-            (setDefault)="setAsDefault($event)"
-        ></ige-codelist-presenter>
     </div>
 
-    <ng-template #showLogo>
-        <div
-            *ngIf="!selectedCodelist"
-            class="flex-1 flex-row justify-content-center align-items-center"
-        >
-            <img src="assets/icons/catalog-codelist.png" alt="codelist-repo" />
+    @if (filteredOptions.length > 0) {
+        <div main-content class="flex-1">
+            @if (selectedCodelist?.description) {
+                <div class="description">
+                    <div class="section-title">Beschreibung</div>
+                    <div>{{ selectedCodelist?.description }}</div>
+                </div>
+            }
+            <div class="flex-row justify-content-end align-items-end gap-12">
+                <button
+                    mat-flat-button
+                    mat-stroked-button
+                    (click)="resetCodelist()"
+                >
+                    Zurücksetzen
+                </button>
+                <button mat-flat-button color="primary" (click)="addCodelist()">
+                    Hinzufügen
+                </button>
+            </div>
+            @if (favorites?.length > 0) {
+                <div class="section-title">Favoriten</div>
+                <div
+                    class="flex-1 list-wrapper space-bottom"
+                    cdkDropList
+                    (cdkDropListDropped)="dropFavorite($event)"
+                >
+                    @for (item of favorites; track item) {
+                        <div
+                            cdkDrag
+                            class="list-item flex-row align-items-center"
+                        >
+                            <div class="flex-1">
+                                <span class="favorite-id">{{ item.id }}</span>
+                                <span class="favorite-title">{{
+                                    item.fields["de"]
+                                }}</span>
+                            </div>
+                            <button
+                                mat-icon-button
+                                aria-label="Favorit entfernen"
+                                (click)="removeFavorite(item)"
+                            >
+                                <mat-icon class="passive">cancel</mat-icon>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <mat-divider></mat-divider>
+            }
+            <ige-codelist-presenter
+                class="flex-1"
+                [codelist]="selectedCodelist"
+                [favoriteEntryIds]="favoriteIds"
+                (edit)="editCodelist($event)"
+                (remove)="removeCodelist($event)"
+                (setDefault)="setAsDefault($event)"
+                (asFavorite)="setAsFavorite($event)"
+            ></ige-codelist-presenter>
         </div>
-    </ng-template>
+    } @else {
+        <div class="flex-1 flex-row justify-content-center align-items-center">
+            <div class="text-center">
+                <div>
+                    In diesem Katalog liegen keine spezifischen Codelisten vor.
+                </div>
+                <div class="space-bottom">
+                    Alle Codelisten können über das zentrale Codelist-Repository
+                    verwaltet werden.
+                </div>
+                <img
+                    src="assets/icons/catalog-codelist.png"
+                    alt="codelist-repo"
+                />
+            </div>
+        </div>
+    }
 </page-template>

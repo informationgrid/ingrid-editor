@@ -26,9 +26,11 @@
             <mat-form-field appearance="outline">
                 <mat-label>Typ</mat-label>
                 <mat-select [(ngModel)]="model.type" name="type" required>
-                    <mat-option *ngFor="let type of types" [value]="type.id">
-                        {{ type.title }}
-                    </mat-option>
+                    @for (type of types; track type) {
+                        <mat-option [value]="type.id">
+                            {{ type.title }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </form>

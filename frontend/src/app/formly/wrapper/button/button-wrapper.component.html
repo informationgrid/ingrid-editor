@@ -2,14 +2,15 @@
     <span class="input-coverage">
         <ng-container #fieldComponent></ng-container>
     </span>
-    <button
-        *ngIf="formControl.enabled"
-        class="button-config"
-        (click)="onClick($event)"
-        type="button"
-        mat-stroked-button
-        color="primary"
-    >
-        <span>{{ props.buttonConfig?.text }}</span>
-    </button>
+    @if (formControl.enabled) {
+        <button
+            class="button-config"
+            (click)="onClick($event)"
+            type="button"
+            mat-stroked-button
+            color="primary"
+        >
+            <span>{{ props.buttonConfig?.text }}</span>
+        </button>
+    }
 </div>

@@ -4,17 +4,18 @@
     mat-stretch-tabs="false"
     [tabPanel]="tabPanel"
 >
-    <a
-        *ngFor="let tab of tabs"
-        [attr.data-cy]="tab.path"
-        mat-tab-link
-        #rla="routerLinkActive"
-        routerLinkActive="active-link"
-        [routerLink]="tab.path"
-        [active]="rla.isActive"
-    >
-        {{ tab.label }}
-    </a>
+    @for (tab of tabs; track tab) {
+        <a
+            [attr.data-cy]="tab.path"
+            mat-tab-link
+            #rla="routerLinkActive"
+            routerLinkActive="active-link"
+            [routerLink]="tab.path"
+            [active]="rla.isActive"
+        >
+            {{ tab.label }}
+        </a>
+    }
 </nav>
 
 <mat-tab-nav-panel #tabPanel>

@@ -45,7 +45,7 @@
         </div>
     </mat-dialog-content>
     <mat-dialog-actions>
-        <ng-container *ngIf="activeStep === 1">
+        @if (activeStep === 1) {
             <button
                 mat-button
                 mat-dialog-close
@@ -55,8 +55,8 @@
             >
                 Abbrechen
             </button>
-        </ng-container>
-        <ng-container *ngIf="activeStep === 2">
+        }
+        @if (activeStep === 2) {
             <button
                 mat-button
                 cdkFocusInitial
@@ -66,9 +66,9 @@
             >
                 Zurück
             </button>
-        </ng-container>
+        }
         <div class="flex-1"></div>
-        <ng-container *ngIf="typeSelectionEnabled && activeStep == 1">
+        @if (typeSelectionEnabled && activeStep == 1) {
             <button
                 mat-flat-button
                 color="primary"
@@ -79,8 +79,8 @@
             >
                 Weiter
             </button>
-        </ng-container>
-        <ng-container *ngIf="!typeSelectionEnabled || activeStep == 2">
+        }
+        @if (!typeSelectionEnabled || activeStep == 2) {
             <button
                 mat-flat-button
                 color="primary"
@@ -93,6 +93,6 @@
             >
                 Übernehmen
             </button>
-        </ng-container>
+        }
     </mat-dialog-actions>
 </div>

@@ -1,5 +1,7 @@
 <mat-form-field [appearance]="props.appearance">
-    <mat-label *ngIf="field.props?.label">{{ field.props.label }}</mat-label>
+    @if (field.props?.label) {
+        <mat-label>{{ field.props.label }}</mat-label>
+    }
     <mat-date-range-input
         [rangePicker]="picker"
         [formGroup]="rangeFormGroup"
@@ -21,17 +23,22 @@
             (change)="updateFormControl()"
         />
     </mat-date-range-input>
-    <mat-datepicker-toggle
-        *ngIf="!disabled"
-        matIconSuffix
-        [for]="picker"
-    ></mat-datepicker-toggle>
+    @if (!disabled) {
+        <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+        ></mat-datepicker-toggle>
+    }
     <mat-date-range-picker
         #picker
         (closed)="updateFormControl()"
     ></mat-date-range-picker>
 
-    <mat-error *ngIf="showError">
-        <formly-validation-message [field]="field"></formly-validation-message>
-    </mat-error>
+    @if (showError) {
+        <mat-error>
+            <formly-validation-message
+                [field]="field"
+            ></formly-validation-message>
+        </mat-error>
+    }
 </mat-form-field>

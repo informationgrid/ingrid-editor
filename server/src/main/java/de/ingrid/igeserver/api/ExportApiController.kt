@@ -51,7 +51,8 @@ class ExportApiController : ExportApi {
     }
 
     override fun exportTypes(principal: Principal, profile: String): ResponseEntity<List<ExportTypeInfo>> {
-        return ResponseEntity.ok(exportService.getExportTypes(profile))
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        return ResponseEntity.ok(exportService.getExportTypes(catalogId, profile))
     }
 
 }

@@ -115,6 +115,7 @@ import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
 import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
+import { SectionWrapper } from "./wrapper/section-wrapper.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -286,6 +287,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     PrintViewDialogComponent,
     MatPseudoCheckboxModule,
     FieldToAiraLabelledbyPipe,
+    SectionWrapper,
   ],
   providers: [
     {

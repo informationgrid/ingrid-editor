@@ -52,7 +52,7 @@ class IngridLuceneExporter(
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    var profileTransformer: IngridProfileTransformer? = null
+    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
 
 
     fun run(doc: Document, catalogId: String): Any {
@@ -80,7 +80,7 @@ class IngridLuceneExporter(
             )
 
             "InGridGeoDataset" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridLiterature" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
+            "InGridPublication" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridGeoService" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridProject" -> Pair("ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
             "InGridDataCollection" -> Pair(
@@ -115,7 +115,7 @@ class IngridLuceneExporter(
         val mapper = ObjectMapper().registerKotlinModule()
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
 
-        val otherTransformer = profileTransformer?.get(doc.type)
+        val otherTransformer = profileTransformer[catalog.type]?.get(doc.type)
         val transformer: Any = when (type) {
             IngridDocType.ADDRESS -> {
                 if (otherTransformer != null) {

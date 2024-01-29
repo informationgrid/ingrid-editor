@@ -21,7 +21,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatTabNav } from "@angular/material/tabs";
-import { SessionService } from "../services/session.service";
+import { SessionService, Tab } from "../services/session.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
 
 @UntilDestroy()
@@ -34,7 +34,7 @@ export class CatalogSettingsComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;
   @ViewChild("behaviours") behaviourComponent: BehavioursComponent;
 
-  tabs = [
+  tabs: Tab[] = [
     { label: "Codelisten", path: "codelists" },
     { label: "Verhalten", path: "form-behaviours" },
     { label: "Indizierung", path: "indexing" },

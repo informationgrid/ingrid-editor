@@ -55,7 +55,7 @@ class IngridIDFExporter(
 
     val log = logger()
 
-    var profileTransformer: IngridProfileTransformer? = null
+    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
 
 
     override val typeInfo = ExportTypeInfo(
@@ -75,7 +75,9 @@ class IngridIDFExporter(
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
         
-        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId), output)
+        val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
+        
+        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId, catalogProfileId), output)
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
@@ -89,7 +91,7 @@ class IngridIDFExporter(
         return when (type) {
             "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
             "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
-            "InGridLiterature" -> "ingrid/idf-literature.jte"
+            "InGridPublication" -> "ingrid/idf-literature.jte"
             "InGridGeoService" -> "ingrid/idf-geoservice.jte"
             "InGridProject" -> "ingrid/idf-project.jte"
             "InGridDataCollection" -> "ingrid/idf-dataCollection.jte"
@@ -104,7 +106,7 @@ class IngridIDFExporter(
 
     private val mapper = ObjectMapper().registerKotlinModule()
 
-    private fun getModelTransformer(json: Document, catalogId: String): Any {
+    private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
         var ingridModel: IngridModel? = null
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
         ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
@@ -114,7 +116,7 @@ class IngridIDFExporter(
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridLiterature" to LiteratureModelTransformer::class,
+            "InGridPublication" to LiteratureModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
             "InGridProject" to ProjectModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,
@@ -123,15 +125,16 @@ class IngridIDFExporter(
             "InGridPersonDoc" to AddressModelTransformer::class
         )
         
-        val transformerClass = profileTransformer?.get(json.type) ?: transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
+        // TODO: get profile from catalog in export options!?
+        val transformerClass = profileTransformer[profile]?.get(json.type) ?: transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
         return if(isAddress)
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        val modelTransformer = getModelTransformer(json, catalogId)
+    private fun getMapFromObject(json: Document, catalogId: String, profile: String): Map<String, Any> {
+        val modelTransformer = getModelTransformer(json, catalogId, profile)
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer

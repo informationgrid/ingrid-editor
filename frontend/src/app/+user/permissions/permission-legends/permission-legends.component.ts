@@ -19,7 +19,6 @@
  */
 import { Component, Input, OnInit } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
-import { NgForOf, NgIf } from "@angular/common";
 
 interface Legend {
   icon?: String;
@@ -31,7 +30,7 @@ interface Legend {
   selector: "permission-legends",
   templateUrl: "./permission-legends.component.html",
   styleUrls: ["./permission-legends.component.scss"],
-  imports: [MatIconModule, NgIf, NgForOf],
+  imports: [MatIconModule],
   standalone: true,
 })
 export class PermissionLegendsComponent implements OnInit {

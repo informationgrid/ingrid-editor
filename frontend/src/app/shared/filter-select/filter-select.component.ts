@@ -19,52 +19,40 @@
  */
 import {
   Component,
+  computed,
   ElementRef,
   EventEmitter,
-  Input,
-  OnInit,
+  input,
   Output,
   ViewChild,
 } from "@angular/core";
-import { UntypedFormControl } from "@angular/forms";
-import { combineLatest, Observable } from "rxjs";
-import { filter, map, startWith } from "rxjs/operators";
+import { FormControl } from "@angular/forms";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-filter-select",
   templateUrl: "./filter-select.component.html",
   styleUrls: ["./filter-select.component.scss"],
 })
-export class FilterSelectComponent implements OnInit {
-  @Input() options: Observable<SelectOptionUi[]>;
-  @Input() labelFormat: (value: SelectOptionUi) => string = (value) =>
-    value.label;
-  @Input() placeholder: string;
-  @Input() hintText: string;
+export class FilterSelectComponent {
+  options = input.required<SelectOptionUi[]>();
+  placeholder = input<string>();
+  hintText = input<string>();
 
   @Output() optionSelect = new EventEmitter<SelectOptionUi>();
   @Output() reset = new EventEmitter<string>();
 
   @ViewChild("filter") filter: ElementRef;
 
-  control = new UntypedFormControl();
+  control = new FormControl<string>("");
+  controlValue = toSignal(this.control.valueChanges, { initialValue: "" });
 
-  filteredOptions: Observable<SelectOptionUi[]>;
-  private selectedValue: SelectOptionUi;
+  filteredOptions = computed(() =>
+    this._filter(this.controlValue(), this.options()),
+  );
 
   constructor() {}
-
-  ngOnInit(): void {
-    this.filteredOptions = combineLatest([
-      this.control.valueChanges.pipe(startWith("")),
-      this.options,
-    ]).pipe(
-      // only filter input strings and selections
-      filter((value) => !(value[0] instanceof Object)),
-      map((value) => this._filter(value[0], value[1])),
-    );
-  }
 
   private _filter(
     value: string,
@@ -72,8 +60,10 @@ export class FilterSelectComponent implements OnInit {
   ): SelectOptionUi[] {
     const filterValue = value.toLowerCase();
 
-    return allCodelists.filter((option) =>
-      this.labelFormat(option).toLowerCase().includes(filterValue),
+    return (
+      allCodelists?.filter((option) =>
+        option.label.toLowerCase().includes(filterValue),
+      ) ?? []
     );
   }
 
@@ -84,13 +74,8 @@ export class FilterSelectComponent implements OnInit {
   }
 
   updateSelection(value: SelectOptionUi) {
-    this.control.setValue(this.labelFormat(value));
+    this.control.setValue(value.label);
     // TODO: blur control html element for easier selection?
-    this.selectedValue = value;
     this.optionSelect.emit(value);
-  }
-
-  getSelectedValue() {
-    return this.selectedValue;
   }
 }

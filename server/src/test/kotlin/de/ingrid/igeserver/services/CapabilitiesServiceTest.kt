@@ -74,74 +74,74 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf()
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        latitude1 = 9.699866504129663,
-                        longitude1 = 53.439818489782624,
-                        latitude2 = 10.336552045994994,
-                        longitude2 = 53.74180783201885,
+                        longitude1 = 9.699866504129663,
+                        latitude1 = 53.439818489782624,
+                        longitude2 = 10.336552045994994,
+                        latitude2 = 53.74180783201885,
                         name = "Landschaftsform",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.67106756436431,
-                        longitude1 = 53.398214876212485,
-                        latitude2 = 10.299690875096376,
-                        longitude2 = 53.722265833076975,
+                        longitude1 = 9.67106756436431,
+                        latitude1 = 53.398214876212485,
+                        longitude2 = 10.299690875096376,
+                        latitude2 = 53.722265833076975,
                         name = "Bauwerke",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 10.113665839720433,
-                        longitude1 = 53.39853422093119,
-                        latitude2 = 10.19057884115737,
-                        longitude2 = 53.65732655156777,
+                        longitude1 = 10.113665839720433,
+                        latitude1 = 53.39853422093119,
+                        longitude2 = 10.19057884115737,
+                        latitude2 = 53.65732655156777,
                         name = "Unsichtbares_Objekt",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.785231755556373,
-                        longitude1 = 53.49550985433483,
-                        latitude2 = 10.25634551900814,
-                        longitude2 = 53.598858415633444,
+                        longitude1 = 9.785231755556373,
+                        latitude1 = 53.49550985433483,
+                        longitude2 = 10.25634551900814,
+                        latitude2 = 53.598858415633444,
                         name = "Sehenswerte_Objekte",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.67477416867641,
-                        longitude1 = 53.420062317916845,
-                        latitude2 = 10.344173832806435,
-                        longitude2 = 53.7278730217161,
+                        longitude1 = 9.67477416867641,
+                        latitude1 = 53.420062317916845,
+                        longitude2 = 10.344173832806435,
+                        latitude2 = 53.7278730217161,
                         name = "Bergbau",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.787805791266315,
-                        longitude1 = 53.39162268129673,
-                        latitude2 = 10.407430505549277,
-                        longitude2 = 53.7408895104767,
+                        longitude1 = 9.787805791266315,
+                        latitude1 = 53.39162268129673,
+                        longitude2 = 10.407430505549277,
+                        latitude2 = 53.7408895104767,
                         name = "Wasser_und_Wasserbau",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.734985189819458,
-                        longitude1 = 53.39562626625244,
-                        latitude2 = 10.27983875300683,
-                        longitude2 = 53.70619674206265,
+                        longitude1 = 9.734985189819458,
+                        latitude1 = 53.39562626625244,
+                        longitude2 = 10.27983875300683,
+                        latitude2 = 53.70619674206265,
                         name = "GeologischeObjekte",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.798392734190172,
-                        longitude1 = 53.420911680339664,
-                        latitude2 = 10.002871458386743,
-                        longitude2 = 53.59727214182555,
+                        longitude1 = 9.798392734190172,
+                        latitude1 = 53.420911680339664,
+                        longitude2 = 10.002871458386743,
+                        latitude2 = 53.59727214182555,
                         name = "Stein_und_Fels",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = 9.76557384658799,
-                        longitude1 = 53.402593848198485,
-                        latitude2 = 10.302925462393098,
-                        longitude2 = 53.72715089146115,
+                        longitude1 = 9.76557384658799,
+                        latitude1 = 53.402593848198485,
+                        longitude2 = 10.302925462393098,
+                        latitude2 = 53.72715089146115,
                         name = "Geotope",
                         type = "free"
                     )
@@ -159,7 +159,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     city = "Hamburg",
                     postcode = "21109",
                     country = KeyValue("276", "Germany"),
-                    state = KeyValue("7", "Hamburg"),
+                    state = KeyValue("6", "Hamburg"),
                     phone = "+49 40 42826 5450"
                 )
                 operations shouldContainExactly listOf(
@@ -217,10 +217,10 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "Es gelten keine Beschränkungen."))
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        5.837082,
                         51.102686,
-                        7.045330,
+                        5.837082,
                         51.946050,
+                        7.045330,
                         "gis:moer_stolpersteine",
                         "free"
                     )
@@ -310,18 +310,18 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "NONE"))
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        latitude1 = -180.0,
-                        longitude1 = -90.0,
-                        latitude2 = 180.0,
-                        longitude2 = 90.0,
+                        longitude1 = -180.0,
+                        latitude1 = -90.0,
+                        longitude2 = 180.0,
+                        latitude2 = 90.0,
                         name = "The Great Northern Forest",
                         type = "free"
                     ),
                     LocationBean(
-                        latitude1 = -180.0,
-                        longitude1 = -90.0,
-                        latitude2 = 180.0,
-                        longitude2 = 90.0,
+                        longitude1 = -180.0,
+                        latitude1 = -90.0,
+                        longitude2 = 180.0,
+                        latitude2 = 90.0,
                         name = "The Great Northern Lakes",
                         type = "free"
                     )
@@ -674,7 +674,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     city = "Potsdam",
                     postcode = "14777",
                     country = KeyValue("276", "Deutschland"),
-                    state = KeyValue("5", "Brandenburg"),
+                    state = KeyValue("4", "Brandenburg"),
                     phone = "+49 341 5634369"
                 )
 
@@ -684,7 +684,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         listOf(
                             "http://localhost:8080/wpvs/services?",
                             "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "GetCapabilities", KeyValue(null, "GetCapabilities")
+                        ), listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf(
@@ -759,7 +759,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "GetCapabilities", KeyValue(null, "GetCapabilities")
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
@@ -822,10 +822,10 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "Es gelten keine Zugriffsbeschränkungen."))
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        5.5493554862369905,
                         47.140652918628305,
-                        15.57402035157314,
+                        5.5493554862369905,
                         55.0611433089022,
+                        15.57402035157314,
                         "Grid Coverage",
                         "free"
                     )
@@ -846,7 +846,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "GetCapabilities", KeyValue(null, "GetCapabilities")
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
                     ),
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
@@ -995,7 +995,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         ), listOf(8), "Harvest", KeyValue("7", "Harvest")
                     ),
                 )
-                onlineResources!! shouldHaveSize 0 
+                onlineResources!! shouldHaveSize 0
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://www.wemove.com/my-resource-locator",
@@ -1048,12 +1048,12 @@ class CapabilitiesServiceTest : ShouldSpec({
                 )
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
-                        latitude1 = 5.565645761105227,
-                        longitude1 = 47.14653466517609,
-                        latitude2 = 15.560505271487509,
-                        longitude2 = 55.056673348249255,
-                        "map_cache_vertical",
-                        "free"
+                        longitude1 = 5.565645761105227,
+                        latitude1 = 47.14653466517609,
+                        longitude2 = 15.560505271487509,
+                        latitude2 = 55.056673348249255,
+                        name = "map_cache_vertical",
+                        type = "free"
                     )
                 )
                 spatialReferenceSystems shouldContainExactly listOf(

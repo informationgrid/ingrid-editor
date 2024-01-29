@@ -19,11 +19,38 @@
  */
 import { Component, OnInit, EventEmitter, Output, Input } from "@angular/core";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelDescription,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+} from "@angular/material/expansion";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatDivider } from "@angular/material/divider";
+import { MatIconButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-codelist-presenter",
   templateUrl: "./codelist-presenter.component.html",
   styleUrls: ["./codelist-presenter.component.scss"],
+  imports: [
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelTitle,
+    MatExpansionPanelHeader,
+    MatIcon,
+    MatExpansionPanelDescription,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatDivider,
+    MatIconButton,
+    MatMenuItem,
+  ],
+  standalone: true,
 })
 export class CodelistPresenterComponent implements OnInit {
   _codelist: Codelist;
@@ -35,10 +62,12 @@ export class CodelistPresenterComponent implements OnInit {
   }
 
   @Input() hideMenu = false;
+  @Input() favoriteEntryIds: string[] = [];
 
   @Output() remove = new EventEmitter<CodelistEntry>();
   @Output() setDefault = new EventEmitter<CodelistEntry>();
   @Output() edit = new EventEmitter<CodelistEntry>();
+  @Output() asFavorite = new EventEmitter<CodelistEntry>();
 
   showMore = {};
   entryFields: { [x: string]: string[][] } = {};

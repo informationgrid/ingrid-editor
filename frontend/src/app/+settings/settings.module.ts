@@ -43,7 +43,6 @@ import { AddButtonModule } from "../shared/add-button/add-button.module";
 import { NewCatalogDialogModule } from "./catalog-management/new-catalog/new-catalog-dialog.module";
 import { MatMenuModule } from "@angular/material/menu";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
-import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-presenter.module";
 import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { FormlyModule } from "@ngx-formly/core";
 import { IgeFormlyModule } from "../formly/ige-formly.module";
@@ -55,6 +54,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 import { ContentManagementComponent } from "./content-management/content-management.component";
+import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelist-presenter.component";
 
 @NgModule({
   declarations: [
@@ -90,7 +90,7 @@ import { ContentManagementComponent } from "./content-management/content-managem
     NewCatalogDialogModule,
     MatMenuModule,
     PageTemplateModule,
-    CodelistPresenterModule,
+    CodelistPresenterComponent,
     FormlyModule,
     IgeFormlyModule,
     SharedModule,

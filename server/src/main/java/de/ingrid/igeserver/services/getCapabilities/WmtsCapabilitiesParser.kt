@@ -27,8 +27,8 @@ import org.w3c.dom.Document
 
 class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
                              private val researchService: ResearchService,
-                             val catalogId: String) :
-    GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler), ICapabilitiesParser {
+                             catalogId: String) :
+    GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0.0" to "3")
 
@@ -162,7 +162,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:Country"
         ))
-        address.state = getKeyValue("110", xPathUtils.getString(
+        address.state = getKeyValue("6250", xPathUtils.getString(
             doc,
             XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
         ), "name")
@@ -188,10 +188,10 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 LocationBean(
-                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(lower[1]),
-                    java.lang.Double.valueOf(upper[0]),
+                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(upper[1]),
+                    java.lang.Double.valueOf(upper[0]),
                     title,
                     "free"
                 )

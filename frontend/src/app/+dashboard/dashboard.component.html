@@ -4,9 +4,11 @@
 >
     <div class="welcome" data-cy="welcome-message">
         <div class="greetings">{{ t("welcome") }}</div>
-        <div *ngFor="let message of messages$ | async" class="message">
-            <span>{{ message.text }}</span>
-        </div>
+        @for (message of messages$ | async; track message) {
+            <div class="message">
+                <span>{{ message.text }}</span>
+            </div>
+        }
     </div>
 
     <div class="dashboard-content">
@@ -28,13 +30,14 @@
                 [disabled]="!canCreateDataset"
                 (submit)="createNewFolder()"
             ></ige-action-button>
-            <ige-action-button
-                *ngIf="canImport"
-                [label]="t('importDocument')"
-                icon="import_export"
-                [disabled]="!canImport"
-                (submit)="gotoImportPage()"
-            ></ige-action-button>
+            @if (canImport) {
+                <ige-action-button
+                    [label]="t('importDocument')"
+                    icon="import_export"
+                    [disabled]="!canImport"
+                    (submit)="gotoImportPage()"
+                ></ige-action-button>
+            }
             <ige-action-button
                 label="Neue Adresse"
                 svgIcon="outline-person_add-24px"
@@ -72,22 +75,21 @@
                 ></ige-document-list-item>
             </ige-card-box>
 
-            <ng-container
-                *ngIf="oldestExpiredDocs$ | async as oldestExpiredDocs"
-            >
-                <ige-card-box
-                    *ngIf="oldestExpiredDocs.length"
-                    label="{{ t('oldestExpired') }}"
-                    endBtnTitle="Zur übersicht"
-                    (endBtnOnClick)="goToExpiryPage()"
-                >
-                    <ige-document-list-item
-                        [docs]="oldestExpiredDocs"
-                        [hideDate]="false"
-                        (select)="openByType($event)"
-                    ></ige-document-list-item>
-                </ige-card-box>
-            </ng-container>
+            @if (oldestExpiredDocs$ | async; as oldestExpiredDocs) {
+                @if (oldestExpiredDocs.length) {
+                    <ige-card-box
+                        label="{{ t('oldestExpired') }}"
+                        endBtnTitle="Zur übersicht"
+                        (endBtnOnClick)="goToExpiryPage()"
+                    >
+                        <ige-document-list-item
+                            [docs]="oldestExpiredDocs"
+                            [hideDate]="false"
+                            (select)="openByType($event)"
+                        ></ige-document-list-item>
+                    </ige-card-box>
+                }
+            }
         </div>
     </div>
 </div>

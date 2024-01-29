@@ -7,7 +7,7 @@ docType:
   - InGridGeoService
   - InGridSpecialisedTask
   - InGridInformationSystem
-  - InGridLiterature
+  - InGridPublication
   - InGridProject
 # title, used as window title
 title: Dateiformat

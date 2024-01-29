@@ -8,11 +8,13 @@
     "
 >
     <ng-container content>
-        <div class="flex-col centered">
-            <div *ngIf="!validAddressConstraint" class="error-box">
-                Für das Anlegen einer Adresse müssen Sie einen Ordner mit
-                Schreibrechten auswählen
-            </div>
+        <div class="flex-col align-items-center">
+            @if (!validAddressConstraint) {
+                <div class="error-box">
+                    Für das Anlegen einer Adresse müssen Sie einen Ordner mit
+                    Schreibrechten auswählen
+                </div>
+            }
             <div class="flex-row baselined gap-6">
                 <mat-form-field appearance="outline" class="flex-1">
                     <mat-label>URL</mat-label>
@@ -34,214 +36,233 @@
                 </button>
             </div>
 
-            <mat-spinner
-                *ngIf="isAnalyzing"
-                mode="indeterminate"
-                diameter="48"
-            ></mat-spinner>
+            @if (isAnalyzing) {
+                <mat-spinner mode="indeterminate" diameter="48"></mat-spinner>
+            }
         </div>
 
-        <div *ngIf="error">{{ error }}</div>
+        @if (error) {
+            <div>{{ error }}</div>
+        }
 
-        <mat-selection-list *ngIf="report">
-            <mat-list-option *ngIf="report.title" value="title">
-                <div matListItemTitle>Titel</div>
-                <div matListItemLine>{{ report.title }}</div>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.description"
-                value="description"
-                lines="3"
-            >
-                <div matListItemTitle>Beschreibung</div>
-                <span>{{ report.description }}</span>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.versions.length > 0"
-                value="versions"
-            >
-                <div matListItemTitle>Versionen</div>
-                <span matListItemLine *ngFor="let version of report.versions">{{
-                    version.value
-                }}</span>
-            </mat-list-option>
-            <mat-list-option *ngIf="report.fees" value="fees">
-                <div matListItemTitle>Nutzungsbedingungen</div>
-                <span matListItemLine>{{ report.fees?.value }}</span>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.accessConstraints.length > 0"
-                value="accessConstraints"
-            >
-                <div matListItemTitle>Zugangsbeschränkungen</div>
-                <span
-                    matListItemLine
-                    *ngFor="let constraint of report.accessConstraints"
-                    >{{ constraint.value }}</span
-                >
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.onlineResources.length > 0"
-                value="onlineResources"
-            >
-                <div matListItemTitle>Verweise</div>
-                <span
-                    matListItemLine
-                    *ngFor="let link of report.onlineResources"
-                    >{{ link.url }} ({{ link.type?.value }})</span
-                >
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.resourceLocators.length > 0"
-                value="resourceLocators"
-            >
-                <div matListItemTitle>Verweise zur Ressource</div>
-                <span
-                    matListItemLine
-                    *ngFor="let link of report.resourceLocators"
-                    >{{ link.url }} ({{ link.type?.value }})</span
-                >
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.keywords.length > 0"
-                value="keywords"
-            >
-                <div matListItemTitle>Schlagworte</div>
-                <span matListItemLine *ngFor="let keyword of report.keywords">{{
-                    keyword
-                }}</span>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.boundingBoxes.length > 0"
-                value="boundingBoxes"
-            >
-                <span matListItemTitle
-                    >Raumbezüge {{ report.boundingBoxes.length }}</span
-                >
-                <span>
-                    <ng-container *ngFor="let bbox of report.boundingBoxes">
-                        <span *ngIf="bbox.name">{{ bbox.name }} => </span>
-                        <span
-                            >Lat1: {{ bbox.latitude1 }} Lon1:
-                            {{ bbox.longitude1 }} Lat2:
-                            {{ bbox.latitude2 }} Lon2:
-                            {{ bbox.longitude2 }}
+        @if (report) {
+            <mat-selection-list>
+                @if (report.title) {
+                    <mat-list-option value="title">
+                        <div matListItemTitle>Titel</div>
+                        <div matListItemLine>{{ report.title }}</div>
+                    </mat-list-option>
+                }
+                @if (report.description) {
+                    <mat-list-option value="description" lines="3">
+                        <div matListItemTitle>Beschreibung</div>
+                        <span>{{ report.description }}</span>
+                    </mat-list-option>
+                }
+                @if (report.versions.length > 0) {
+                    <mat-list-option value="versions">
+                        <div matListItemTitle>Versionen</div>
+                        @for (version of report.versions; track version) {
+                            <span matListItemLine>{{ version.value }}</span>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.fees) {
+                    <mat-list-option value="fees">
+                        <div matListItemTitle>Nutzungsbedingungen</div>
+                        <span matListItemLine>{{ report.fees?.value }}</span>
+                    </mat-list-option>
+                }
+                @if (report.accessConstraints.length > 0) {
+                    <mat-list-option value="accessConstraints">
+                        <div matListItemTitle>Zugangsbeschränkungen</div>
+                        @for (
+                            constraint of report.accessConstraints;
+                            track constraint
+                        ) {
+                            <span matListItemLine>{{ constraint.value }}</span>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.onlineResources.length > 0) {
+                    <mat-list-option value="onlineResources">
+                        <div matListItemTitle>Verweise</div>
+                        @for (link of report.onlineResources; track link) {
+                            <span matListItemLine
+                                >{{ link.url }} ({{ link.type?.value }})</span
+                            >
+                        }
+                    </mat-list-option>
+                }
+                @if (report.resourceLocators.length > 0) {
+                    <mat-list-option value="resourceLocators">
+                        <div matListItemTitle>Verweise zur Ressource</div>
+                        @for (link of report.resourceLocators; track link) {
+                            <span matListItemLine
+                                >{{ link.url }} ({{ link.type?.value }})</span
+                            >
+                        }
+                    </mat-list-option>
+                }
+                @if (report.keywords.length > 0) {
+                    <mat-list-option value="keywords">
+                        <div matListItemTitle>Schlagworte</div>
+                        @for (keyword of report.keywords; track keyword) {
+                            <span matListItemLine>{{ keyword }}</span>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.boundingBoxes.length > 0) {
+                    <mat-list-option value="boundingBoxes">
+                        <span matListItemTitle
+                            >Raumbezüge {{ report.boundingBoxes.length }}</span
+                        >
+                        <span>
+                            @for (bbox of report.boundingBoxes; track bbox) {
+                                @if (bbox.name) {
+                                    <span>{{ bbox.name }} => </span>
+                                }
+                                <span
+                                    >Lat1: {{ bbox.latitude1 }} Lon1:
+                                    {{ bbox.longitude1 }} Lat2:
+                                    {{ bbox.latitude2 }} Lon2:
+                                    {{ bbox.longitude2 }}
+                                </span>
+                            }
                         </span>
-                    </ng-container>
-                </span>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.spatialReferenceSystems.length > 0"
-                value="spatialReferenceSystems"
-            >
-                <div matListItemTitle>Koordinatenreferenzsysteme</div>
-                <span
-                    matListItemLine
-                    *ngFor="let srs of report.spatialReferenceSystems"
-                    >{{ srs.value }}</span
-                >
-            </mat-list-option>
-            <mat-list-option *ngIf="report.address" value="address">
-                <div matListItemTitle>Adresse</div>
-                <div matListItemLine>
-                    {{ report.address.exists ? "bereits vorhanden" : "neu" }}:
-                    {{ report.address.firstName }} {{ report.address.lastName }}
-                    {{ report.address.organization }}
-                </div>
-                <div *ngIf="report.address?.exists === false" matListItemLine>
-                    Wird angelegt unter:
-                    <ige-breadcrumb
-                        [path]="addressPath"
-                        rootName="Adressen"
-                        [selectable]="false"
-                        [disableRoot]="!hasWriteRootPermission"
-                    ></ige-breadcrumb>
-                </div>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.operations.length > 0"
-                value="operations"
-            >
-                <span matListItemTitle>Operationen</span>
-                <span
-                    matListItemLine
-                    *ngFor="let operation of report.operations"
-                    >{{ operation.name.value }}:
-                    {{ operation.addressList[0] }}</span
-                >
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.timeReference.length > 0"
-                value="timeReference"
-            >
-                <div matListItemTitle>Zeitbezug der Resource</div>
-                <div
-                    matListItemLine
-                    *ngFor="let timeReference of report.timeReference"
-                >
-                    <span
-                        >{{
-                            timeReference.type.toString()
-                                | codelist: "502"
-                                | async
-                        }}: {{ timeReference.date | date }}</span
-                    >
-                </div>
-            </mat-list-option>
-            <mat-list-option *ngIf="report.timeSpan" value="timeSpan">
-                <div matListItemTitle>Zeitspannen</div>
-                Von: {{ report.timeSpan.from | date }} bis:
-                {{ report.timeSpan.to | date }}
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.conformities.length > 0"
-                value="conformities"
-            >
-                <div matListItemTitle>Konformitäten</div>
-                <div
-                    matListItemLine
-                    *ngFor="let conformity of report.conformities"
-                >
-                    <span
-                        >{{
-                            conformity.level.toString()
-                                | codelist: "6000"
-                                | async
-                        }}: {{ conformity.specification }}</span
-                    >
-                </div>
-            </mat-list-option>
-            <mat-list-option
-                *ngIf="report.coupledResources.length > 0"
-                value="coupledResources"
-            >
-                <div matListItemTitle>Gekoppelte Daten</div>
-                <span
-                    matListItemLine
-                    *ngFor="let coupledResource of report.coupledResources"
-                    >{{ coupledResource.exists ? "bereits vorhanden" : "neu" }}:
-                    {{ coupledResource.title }}</span
-                >
-            </mat-list-option>
-        </mat-selection-list>
+                    </mat-list-option>
+                }
+                @if (report.spatialReferenceSystems.length > 0) {
+                    <mat-list-option value="spatialReferenceSystems">
+                        <div matListItemTitle>Koordinatenreferenzsysteme</div>
+                        @for (
+                            srs of report.spatialReferenceSystems;
+                            track srs
+                        ) {
+                            <span matListItemLine>{{ srs.value }}</span>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.address) {
+                    <mat-list-option value="address">
+                        <div matListItemTitle>Adresse</div>
+                        <div matListItemLine>
+                            {{
+                                report.address.exists
+                                    ? "bereits vorhanden"
+                                    : "neu"
+                            }}: {{ report.address.firstName }}
+                            {{ report.address.lastName }}
+                            {{ report.address.organization }}
+                        </div>
+                        @if (report.address?.exists === false) {
+                            <div matListItemLine>
+                                Wird angelegt unter:
+                                <ige-breadcrumb
+                                    [path]="addressPath"
+                                    rootName="Adressen"
+                                    [selectable]="false"
+                                    [disableRoot]="!hasWriteRootPermission"
+                                ></ige-breadcrumb>
+                            </div>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.operations.length > 0) {
+                    <mat-list-option value="operations">
+                        <span matListItemTitle>Operationen</span>
+                        @for (operation of report.operations; track operation) {
+                            <span matListItemLine
+                                >{{ operation.name.value }}:
+                                {{ operation.addressList[0] }}</span
+                            >
+                        }
+                    </mat-list-option>
+                }
+                @if (report.timeReference.length > 0) {
+                    <mat-list-option value="timeReference">
+                        <div matListItemTitle>Zeitbezug der Resource</div>
+                        @for (
+                            timeReference of report.timeReference;
+                            track timeReference
+                        ) {
+                            <div matListItemLine>
+                                <span
+                                    >{{
+                                        timeReference.type.toString()
+                                            | codelist: "502"
+                                            | async
+                                    }}: {{ timeReference.date | date }}</span
+                                >
+                            </div>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.timeSpan) {
+                    <mat-list-option value="timeSpan">
+                        <div matListItemTitle>Zeitspannen</div>
+                        Von: {{ report.timeSpan.from | date }} bis:
+                        {{ report.timeSpan.to | date }}
+                    </mat-list-option>
+                }
+                @if (report.conformities.length > 0) {
+                    <mat-list-option value="conformities">
+                        <div matListItemTitle>Konformitäten</div>
+                        @for (
+                            conformity of report.conformities;
+                            track conformity
+                        ) {
+                            <div matListItemLine>
+                                <span
+                                    >{{
+                                        conformity.level.toString()
+                                            | codelist: "6000"
+                                            | async
+                                    }}: {{ conformity.specification }}</span
+                                >
+                            </div>
+                        }
+                    </mat-list-option>
+                }
+                @if (report.coupledResources.length > 0) {
+                    <mat-list-option value="coupledResources">
+                        <div matListItemTitle>Gekoppelte Daten</div>
+                        @for (
+                            coupledResource of report.coupledResources;
+                            track coupledResource
+                        ) {
+                            <span matListItemLine
+                                >{{
+                                    coupledResource.exists
+                                        ? "bereits vorhanden"
+                                        : "neu"
+                                }}: {{ coupledResource.title }}</span
+                            >
+                        }
+                    </mat-list-option>
+                }
+            </mat-selection-list>
+        }
     </ng-container>
 
-    <ng-container actions *ngIf="report">
-        <mat-checkbox
-            class="toggle-checkbox"
-            [checked]="allChecked"
-            (change)="toggleAll($event.checked)"
-        >
-            Alles auswählen
-        </mat-checkbox>
-
-        <button
-            *ngIf="report.address?.exists === false && addressSelected"
-            mat-stroked-button
-            color="primary"
-            (click)="changeAddressLocation()"
-        >
-            Adressordner wählen ...
-        </button>
-    </ng-container>
+    @if (report) {
+        <ng-container actions>
+            <mat-checkbox
+                class="toggle-checkbox"
+                [checked]="allChecked"
+                (change)="toggleAll($event.checked)"
+            >
+                Alles auswählen
+            </mat-checkbox>
+            @if (report.address?.exists === false && addressSelected) {
+                <button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="changeAddressLocation()"
+                >
+                    Adressordner wählen ...
+                </button>
+            }
+        </ng-container>
+    }
 </ige-dialog-template>

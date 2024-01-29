@@ -23,7 +23,7 @@ import { diffLines } from "diff";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
-import { NgIf } from "@angular/common";
+
 import { ExportService } from "../../../../app/services/export.service";
 import { copyToClipboardFn } from "../../../../app/services/utils";
 import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dialog-template.module";
@@ -36,7 +36,6 @@ import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dia
     MatIconModule,
     MatButtonToggleModule,
     MatButtonModule,
-    NgIf,
     DialogTemplateModule,
   ],
   standalone: true,

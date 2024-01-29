@@ -27,8 +27,8 @@ import org.w3c.dom.Document
 
 class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
                                private val researchService: ResearchService,
-                               val catalogId: String) :
-    GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), codelistHandler), ICapabilitiesParser {
+                               catalogId: String) :
+    GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         return CapabilitiesBean().apply {
@@ -78,7 +78,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities"
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -97,7 +97,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
                 "DescribeCoverage"
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
@@ -114,7 +114,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                null, 
+                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"), 
                 "GetCoverage"
             )
             getCoverageOp.methodCall = "GetCoverage"
@@ -161,7 +161,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:Country"
         ))
-        address.state = getKeyValue("110", xPathUtils.getString(
+        address.state = getKeyValue("6250", xPathUtils.getString(
             doc,
             "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:AdministrativeArea"
         ), "name")
@@ -188,10 +188,10 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
                 xPathUtils.getString(layer, "ows20:UpperCorner").split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
             val box = LocationBean()
-            box.latitude1 = java.lang.Double.valueOf(lower[0])
-            box.longitude1 = java.lang.Double.valueOf(lower[1])
-            box.latitude2 = java.lang.Double.valueOf(upper[0])
-            box.longitude2 = java.lang.Double.valueOf(upper[1])
+            box.latitude1 = java.lang.Double.valueOf(lower[1])
+            box.longitude1 = java.lang.Double.valueOf(lower[0])
+            box.latitude2 = java.lang.Double.valueOf(upper[1])
+            box.longitude2 = java.lang.Double.valueOf(upper[0])
 
             // add a fallback for the name, since it's mandatory
             box.name = title

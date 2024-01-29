@@ -17,45 +17,173 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { TestBed } from "@angular/core/testing";
-
 import { CatalogCodelistsComponent } from "./catalog-codelists.component";
 import {
   createComponentFactory,
   mockProvider,
   Spectator,
 } from "@ngneat/spectator";
-import { MatDialogModule } from "@angular/material/dialog";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
-import { CodelistPresenterModule } from "../../shared/codelist-presenter/codelist-presenter.module";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
+import { MatSelectHarness } from "@angular/material/select/testing";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { of } from "rxjs";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { Codelist } from "../../store/codelist/codelist.model";
+import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
+import { MatSlideToggleHarness } from "@angular/material/slide-toggle/testing";
+import { HarnessLoader } from "@angular/cdk/testing";
+import { MatMenuHarness } from "@angular/material/menu/testing";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
-  let codelistQuery: CodelistQuery;
+  let loader: HarnessLoader;
+
+  let initCodelists: Codelist[] = [
+    {
+      id: "10",
+      name: "Cat Zehn",
+      entries: [{ id: "a1", fields: { de: "Cat Eins A" }, description: "" }],
+      default: null,
+      isCatalog: true,
+    },
+    {
+      id: "1",
+      name: "One",
+      entries: [
+        { id: "r1", fields: { de: "Eins A" }, description: "" },
+        { id: "r2", fields: { de: "Zwei A" }, description: "" },
+      ],
+      default: null,
+    },
+    { id: "2", name: "Two", entries: [], default: null },
+  ];
 
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
-    imports: [
-      MatDialogModule,
-      MatSnackBarModule,
-      FilterSelectModule,
-      CodelistPresenterModule,
-      PageTemplateModule,
+    imports: [CodelistPresenterComponent, HttpClientTestingModule],
+    providers: [
+      CodelistService,
+      mockProvider(CodelistQuery, {
+        getEntity(id: string): Codelist {
+          return initCodelists.find((it) => it.id === id);
+        },
+        selectAll: () => of(initCodelists),
+      }),
     ],
-    providers: [mockProvider(CodelistService), CodelistQuery],
     detectChanges: false,
   });
 
-  beforeEach(() => {
-    spectator = createHost();
-    codelistQuery = TestBed.inject(CodelistQuery);
+  beforeEach(async () => {
+    spectator = createHost({});
+    // codelistQuery = TestBed.inject(CodelistQuery);
+
+    spectator.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(spectator.fixture);
+    await spectator.fixture.whenStable();
   });
 
   it("should create with success", () => {
     expect(spectator).toBeTruthy();
   });
+
+  it("should show initially the first codelist", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    expect(await select.getValueText()).toBe("Cat Zehn (10)");
+    const items = spectator.queryAll("mat-expansion-panel");
+    expect(items.length).toBe(1);
+    expect(items[0].textContent).toContain("Cat Eins A");
+  });
+
+  it("should show both kinds of codelists (catalog and from repo)", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    const codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
+    await codelistSwitch.check();
+    await select.open();
+    const options = await select.getOptions();
+    expect(options.length).toBe(4);
+  });
+
+  it("should show only catalog codelist", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    await select.open();
+    const options = await select.getOptions();
+    expect(options.length).toBe(2);
+  });
+
+  it("should show entries for a repo codelist with no edit option", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    const codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
+    await codelistSwitch.check();
+    await select.open();
+    await select.clickOptions({ text: "One (1)" });
+    const items = spectator.queryAll("mat-expansion-panel");
+    expect(items.length).toBe(2);
+
+    let menuItems = await openMenuOfEntry(0);
+    expect(menuItems.length).toBe(1);
+    expect(await menuItems[0].getText()).toBe("Als Favorit setzen");
+  });
+
+  it("should show catalog codelists with edit option", async () => {
+    const select = await loader.getHarness(MatSelectHarness);
+    await select.open();
+    await select.clickOptions({ text: "Cat Zehn (10)" });
+    const items = spectator.queryAll("mat-expansion-panel");
+    expect(items.length).toBe(1);
+
+    let menuItems = await openMenuOfEntry(0);
+    expect(menuItems.length).toBe(4);
+    await menuItems[1].click();
+
+    spectator.detectChanges();
+    let dialogTitle = spectator.query(".dialog-title-wrapper", { root: true });
+    expect(dialogTitle.textContent).toContain("Eintrag bearbeiten");
+  });
+
+  it("should set a favorite", async () => {
+    spectator.detectChanges();
+    expect(spectator.query("[main-content]").textContent).not.toContain(
+      "Favoriten",
+    );
+    const menuItems = await openMenuOfEntry(0);
+    await menuItems[0].click();
+    expect(spectator.query("[main-content]").textContent).toContain(
+      "Favoriten",
+    );
+    const listItems = spectator.queryAll(".list-item");
+    expect(listItems.length).toBe(1);
+    expect(listItems[0].textContent).toContain("Cat Eins A");
+  });
+
+  it("should remove a favorite by menu item", async () => {
+    addFavorite();
+    spectator.detectChanges();
+
+    expect(spectator.query("[main-content]").textContent).toContain(
+      "Favoriten",
+    );
+    const menuItems = await openMenuOfEntry(0);
+    expect(await menuItems[0].getText()).toBe("Favorit entfernen");
+    await menuItems[0].click();
+
+    expect(spectator.query("[main-content]").textContent).not.toContain(
+      "Favoriten",
+    );
+  });
+
+  async function openMenuOfEntry(index: number) {
+    const menuButton = spectator.queryAll(
+      "mat-expansion-panel [data-cy=btn-menu]",
+    )[index];
+    spectator.click(menuButton);
+
+    const menu = await loader.getHarness(MatMenuHarness);
+    return await menu.getItems();
+  }
+
+  function addFavorite() {
+    spectator.component.favorites.push(initCodelists[0].entries[0]);
+    spectator.component.favoriteIds.push(initCodelists[0].entries[0].id);
+  }
 });

@@ -1,20 +1,21 @@
-<ige-dialog-template
-    *ngIf="data.fields.length > 0"
-    label="Link angeben"
-    [formGroup]="form"
-    [disabled]="form.invalid"
-    (submit)="submit()"
->
-    <ng-container content>
-        <div class="info">
-            Dokumente können per URL importiert werden. Geben Sie dabei die
-            vollständige Internetadresse an (http://… oder https://…).
-        </div>
-        <formly-form
-            [form]="form"
-            [fields]="data.fields"
-            [model]="data.model"
-            [options]="options"
-        ></formly-form>
-    </ng-container>
-</ige-dialog-template>
+@if (data.fields.length > 0) {
+    <ige-dialog-template
+        label="Link angeben"
+        [formGroup]="form"
+        [disabled]="form.invalid"
+        (submit)="submit()"
+    >
+        <ng-container content>
+            <div class="info">
+                Dokumente können per URL importiert werden. Geben Sie dabei die
+                vollständige Internetadresse an (http://… oder https://…).
+            </div>
+            <formly-form
+                [form]="form"
+                [fields]="data.fields"
+                [model]="data.model"
+                [options]="options"
+            ></formly-form>
+        </ng-container>
+    </ige-dialog-template>
+}

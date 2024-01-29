@@ -803,13 +803,16 @@ ${contentInfo}
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            <gmd:CI_ResponsibleParty>
-                                <gmd:role>
-                                    <gmd:CI_RoleCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                                            codeListValue="distributor" />
-                                </gmd:role>
-                            </gmd:CI_ResponsibleParty>
+                            @template.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
+                            @if(page.getOrderInfoContact().isEmpty())
+                                <gmd:CI_ResponsibleParty>
+                                    <gmd:role>
+                                        <gmd:CI_RoleCode
+                                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                                codeListValue="distributor" />
+                                    </gmd:role>
+                                </gmd:CI_ResponsibleParty>
+                            @endif
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>
@@ -957,6 +960,9 @@ ${contentInfo}
         @if( TransformationTools.hasValue(page.getParentIdentifierReference().getDescription()))
             <idf:description>${page.getParentIdentifierReference().getDescription()}</idf:description>
         @endif
+        @if( TransformationTools.hasValue(page.getParentIdentifierReference().getGraphicOverview()))
+            <idf:graphicOverview>${page.getParentIdentifierReference().getGraphicOverview()}</idf:graphicOverview>
+        @endif
     </idf:superiorReference>
 @endif
 @for( CrossReference ref : page.getSubordinateReferences() )
@@ -965,6 +971,9 @@ ${contentInfo}
         <idf:objectType>${ref.getObjectType()}</idf:objectType>
         @if( TransformationTools.hasValue(ref.getDescription()))
             <idf:description>${ref.getDescription()}</idf:description>
+        @endif
+        @if( TransformationTools.hasValue(ref.getGraphicOverview()))
+            <idf:graphicOverview>${ref.getGraphicOverview()}</idf:graphicOverview>
         @endif
     </idf:subordinatedReference>
 @endfor

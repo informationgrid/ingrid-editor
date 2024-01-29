@@ -64,8 +64,8 @@
             id="formUser"
             class="split-pane-content-secondary container-fluid flex-row"
         >
-            <ng-container *ngIf="!isLoading; else loading">
-                <ng-container *ngIf="selectedUser; else noUserSelected">
+            @if (!isLoading) {
+                @if (selectedUser) {
                     <div class="detail-user">
                         <div class="user-title">
                             <div class="document-type">
@@ -77,14 +77,12 @@
                                     "
                                 ></mat-icon>
                             </div>
-
                             <span class="label flex-1">
                                 <span>{{
                                     model.firstName + " " + model.lastName ||
                                         "Kein Titel"
                                 }}</span>
                             </span>
-
                             <button
                                 data-cy="showMoreData"
                                 mat-icon-button
@@ -97,25 +95,27 @@
                                     >keyboard_arrow_down
                                 </mat-icon>
                             </button>
-                            <button
-                                *ngIf="menuItems.length > 0"
-                                data-cy="more-actions"
-                                mat-icon-button
-                                class="menu-button"
-                                matTooltip="Bearbeiten"
-                                [matMenuTriggerFor]="userMoreMenu"
-                            >
-                                <mat-icon svgIcon="Mehr"></mat-icon>
-                            </button>
-                            <mat-menu #userMoreMenu="matMenu">
+                            @if (menuItems.length > 0) {
                                 <button
-                                    *ngFor="let menuItem of menuItems"
-                                    mat-menu-item
-                                    (click)="menuItem.action()"
-                                    [name]="menuItem.name"
+                                    data-cy="more-actions"
+                                    mat-icon-button
+                                    class="menu-button"
+                                    matTooltip="Bearbeiten"
+                                    [matMenuTriggerFor]="userMoreMenu"
                                 >
-                                    {{ menuItem.title }}
+                                    <mat-icon svgIcon="Mehr"></mat-icon>
                                 </button>
+                            }
+                            <mat-menu #userMoreMenu="matMenu">
+                                @for (menuItem of menuItems; track menuItem) {
+                                    <button
+                                        mat-menu-item
+                                        (click)="menuItem.action()"
+                                        [name]="menuItem.name"
+                                    >
+                                        {{ menuItem.title }}
+                                    </button>
+                                }
                             </mat-menu>
                         </div>
                         <user-header-more
@@ -131,47 +131,46 @@
                         >
                         </formly-form>
                     </div>
-                </ng-container>
-
-                <ng-template #noUserSelected>
-                    <div
-                        *ngIf="users?.length > 0"
-                        class="detail-user no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
-                    >
-                        <div>
-                            <img
-                                src="assets/icons/user-management.png"
-                                alt="user-management"
-                            />
+                } @else {
+                    @if (users?.length > 0) {
+                        <div
+                            class="detail-user no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                        >
+                            <div>
+                                <img
+                                    src="assets/icons/user-management.png"
+                                    alt="user-management"
+                                />
+                            </div>
+                            <div class="no-selection-text">
+                                Wählen Sie einen Eintrag aus, um Nutzerdaten
+                                anzuzeigen oder Änderungen durchzuführen.
+                            </div>
                         </div>
-                        <div class="no-selection-text">
-                            Wählen Sie einen Eintrag aus, um Nutzerdaten
-                            anzuzeigen oder Änderungen durchzuführen.
+                    }
+                    @if (users?.length === 0) {
+                        <div
+                            class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                        >
+                            <div>
+                                <img
+                                    src="assets/icons/user-management.png"
+                                    alt="user-management"
+                                />
+                            </div>
+                            <div class="no-selection-text">
+                                Noch keine Benutzer erstellt!
+                            </div>
+                            <div class="no-selection-text">
+                                Mit der oben stehenden Funktion „Hinzufügen“
+                                können Sie Benutzer anlegen.
+                            </div>
                         </div>
-                    </div>
-                    <div
-                        *ngIf="users?.length === 0"
-                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
-                    >
-                        <div>
-                            <img
-                                src="assets/icons/user-management.png"
-                                alt="user-management"
-                            />
-                        </div>
-                        <div class="no-selection-text">
-                            Noch keine Benutzer erstellt!
-                        </div>
-                        <div class="no-selection-text">
-                            Mit der oben stehenden Funktion „Hinzufügen“ können
-                            Sie Benutzer anlegen.
-                        </div>
-                    </div>
-                </ng-template>
-            </ng-container>
-            <ng-template #loading>
+                    }
+                }
+            } @else {
                 <mat-spinner style="margin: 100px auto"></mat-spinner>
-            </ng-template>
+            }
         </as-split-area>
     </as-split>
 </div>

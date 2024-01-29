@@ -25,18 +25,17 @@
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
             <mat-tab>
                 <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
-                    <ige-document-template
-                        *ngIf="isFolder || !forAddress; else addressForm"
-                        [isFolder]="isFolder"
-                        [form]="formGroup"
-                        (create)="handleCreate()"
-                    >
-                        <ng-container
-                            [ngTemplateOutlet]="destinationTemplate"
-                        ></ng-container>
-                    </ige-document-template>
-
-                    <ng-template #addressForm>
+                    @if (isFolder || !forAddress) {
+                        <ige-document-template
+                            [isFolder]="isFolder"
+                            [form]="formGroup"
+                            (create)="handleCreate()"
+                        >
+                            <ng-container
+                                [ngTemplateOutlet]="destinationTemplate"
+                            ></ng-container>
+                        </ige-document-template>
+                    } @else {
                         <ige-address-template
                             [form]="formGroup"
                             [isPerson]="isPerson"
@@ -47,7 +46,7 @@
                                 [ngTemplateOutlet]="destinationTemplate"
                             ></ng-container>
                         </ige-address-template>
-                    </ng-template>
+                    }
                 </div>
             </mat-tab>
 
@@ -73,58 +72,62 @@
             Abbrechen
         </button>
 
-        <button
-            *ngIf="selectedPage === 1"
-            color="primary"
-            mat-button
-            data-cy="create-back"
-            (click)="selectedPage = 0"
-            class="back-button"
-        >
-            <mat-icon>chevron_left</mat-icon>
-            <span>Zurück</span>
-        </button>
+        @if (selectedPage === 1) {
+            <button
+                color="primary"
+                mat-button
+                data-cy="create-back"
+                (click)="selectedPage = 0"
+                class="back-button"
+            >
+                <mat-icon>chevron_left</mat-icon>
+                <span>Zurück</span>
+            </button>
+        }
 
         <div class="flex-1"></div>
 
         <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-        <button
-            *ngIf="selectedPage === 0"
-            mat-button
-            color="primary"
-            data-cy="create-changeLocation"
-            [disabled]="alreadySubmitted"
-            (click)="jumpToTree(this.parent)"
-        >
-            Zielordner ändern
-        </button>
+        @if (selectedPage === 0) {
+            <button
+                mat-button
+                color="primary"
+                data-cy="create-changeLocation"
+                [disabled]="alreadySubmitted"
+                (click)="jumpToTree(this.parent)"
+            >
+                Zielordner ändern
+            </button>
+        }
 
-        <button
-            *ngIf="selectedPage === 0"
-            mat-flat-button
-            color="primary"
-            class="btn-create"
-            data-cy="create-action"
-            [disabled]="
-                formGroup.invalid ||
-                (!isAdmin && !pathWithWritePermission) ||
-                alreadySubmitted
-            "
-            (click)="handleCreate()"
-        >
-            Anlegen
-        </button>
+        @if (selectedPage === 0) {
+            <button
+                mat-flat-button
+                color="primary"
+                class="btn-create"
+                data-cy="create-action"
+                [disabled]="
+                    formGroup.invalid ||
+                    (!isAdmin && !pathWithWritePermission) ||
+                    alreadySubmitted
+                "
+                (click)="handleCreate()"
+            >
+                Anlegen
+            </button>
+        }
 
-        <button
-            *ngIf="selectedPage === 1"
-            mat-flat-button
-            color="primary"
-            data-cy="create-applyLocation"
-            [disabled]="!isAdmin && !selectedLocation"
-            (click)="applyLocation()"
-        >
-            Übernehmen
-        </button>
+        @if (selectedPage === 1) {
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="create-applyLocation"
+                [disabled]="!isAdmin && !selectedLocation"
+                (click)="applyLocation()"
+            >
+                Übernehmen
+            </button>
+        }
     </mat-dialog-actions>
 </div>
 
@@ -140,8 +143,10 @@
             [disableRoot]="!isAdmin"
             (select)="quickBreadcrumbChange($event)"
         ></ige-breadcrumb>
-        <div *ngIf="!pathWithWritePermission" class="error-box">
-            {{ t("missingWritePermission") }}
-        </div>
+        @if (!pathWithWritePermission) {
+            <div class="error-box">
+                {{ t("missingWritePermission") }}
+            </div>
+        }
     </div>
 </ng-template>

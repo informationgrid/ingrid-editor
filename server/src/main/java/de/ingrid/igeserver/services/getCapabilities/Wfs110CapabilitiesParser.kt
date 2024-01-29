@@ -29,9 +29,9 @@ import javax.xml.xpath.XPathExpressionException
 class Wfs110CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    val catalogId: String
+    catalogId: String
 ) :
-    GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler), ICapabilitiesParser {
+    GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2")
 
@@ -211,10 +211,10 @@ class Wfs110CapabilitiesParser(
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 LocationBean(
-                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(lower[1]),
-                    java.lang.Double.valueOf(upper[0]),
+                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(upper[1]),
+                    java.lang.Double.valueOf(upper[0]),
                     title, "free"
                 )
             } else {
@@ -266,7 +266,7 @@ class Wfs110CapabilitiesParser(
             )
         )
         address.state = getKeyValue(
-            "110", xPathUtils.getString(
+            "6250", xPathUtils.getString(
                 doc,
                 "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
             ), "name"

@@ -30,6 +30,7 @@ export type TabPage = "research" | "manage" | "importExport" | "catalogs";
 export interface Tab {
   label: string;
   path: string;
+  params?: string;
 }
 
 @Injectable({

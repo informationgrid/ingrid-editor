@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: volume
-docType: InGridLiterature
+docType: InGridPublication
 profile: ingrid
 
 

@@ -226,7 +226,6 @@ export function ConfigLoader(
     ReplaceAddressDialogComponent,
     OneColumnWrapperComponent,
     FullWidthWrapperComponent,
-    SectionWrapper,
     InlineHelpWrapperComponent,
     SideMenuComponent,
     MainHeaderComponent,
@@ -298,6 +297,7 @@ export function ConfigLoader(
     ClipboardModule,
     SessionTimeoutInfoComponent,
     FieldToAriaLabelPipe,
+    SectionWrapper,
   ],
   providers: [
     // make sure we are authenticated by keycloak before bootstrap

@@ -20,6 +20,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { IgeError } from "../../../models/ige-error";
 
 export interface DefaultToolbarItem {
   id: string;
@@ -70,6 +71,8 @@ export class FormToolbarService {
   }
 
   addButton(button: ToolbarItem | Separator) {
+    this.checkButtonExists(button);
+
     const pos = this._buttons.length;
 
     this._buttons.splice(pos, 0, button);
@@ -80,6 +83,17 @@ export class FormToolbarService {
     );
 
     this.toolbar$.next(this.buttons);
+  }
+
+  private checkButtonExists(button: ToolbarItem | Separator) {
+    const alreadyExists = this._buttons.find((but) => but.id === button.id);
+    if (alreadyExists)
+      throw new IgeError(
+        "Toolbar-Button mit gleicher ID existiert bereits: " +
+          JSON.stringify(button) +
+          " <=> " +
+          JSON.stringify(alreadyExists),
+      );
   }
 
   removeButton(id: string): void {

@@ -9,27 +9,31 @@
         ariaLabel="Suche nach Orten"
     ></ige-search-input>
 
-    <div *ngIf="showWelcome" class="comment">
-        Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis zur
-        Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“ werden die
-        zugehörigen Breiten-/Längenkoordinaten automatisch unterhalb der Karte
-        angezeigt.
-        <p>
-            Alternativ können Sie einen Raumbezug direkt über die Eingabe der
-            Koordinaten erfassen.
-        </p>
-        <p>
-            Die Anzeige sowie die Erfassung der Koordinaten erfolgt in WGS 84
-            (EPSG:4326).
-        </p>
-    </div>
+    @if (showWelcome) {
+        <div class="comment">
+            Suchen Sie nach einem Gebiet oder Ort und wählen Sie ein Ergebnis
+            zur Darstellung auf der Karte aus. Nach Klick auf „Übernehmen“
+            werden die zugehörigen Breiten-/Längenkoordinaten automatisch
+            unterhalb der Karte angezeigt.
+            <p>
+                Alternativ können Sie einen Raumbezug direkt über die Eingabe
+                der Koordinaten erfassen.
+            </p>
+            <p>
+                Die Anzeige sowie die Erfassung der Koordinaten erfolgt in WGS
+                84 (EPSG:4326).
+            </p>
+        </div>
+    }
 
-    <div *ngIf="showNoResult">Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+    @if (showNoResult) {
+        <div>Keine Ergebnisse. Ändern Sie Ihre Suche.</div>
+    }
 
     <div class="result-wrapper">
         <div class="list-wrapper">
             <mat-list dense style="overflow: auto" ngDefaultControl>
-                <ng-container *ngFor="let entry of nominatimResult">
+                @for (entry of nominatimResult; track entry) {
                     <mat-list-item
                         class="clickable"
                         [title]="entry.display_name"
@@ -47,7 +51,7 @@
                         </div>
                     </mat-list-item>
                     <mat-divider aria-hidden="true"></mat-divider>
-                </ng-container>
+                }
             </mat-list>
         </div>
     </div>

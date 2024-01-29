@@ -19,7 +19,7 @@
  */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatRadioModule } from "@angular/material/radio";
-import { NgForOf, NgIf } from "@angular/common";
+
 import { MatDividerModule } from "@angular/material/divider";
 import { FormsModule } from "@angular/forms";
 
@@ -33,7 +33,7 @@ export interface Option {
   templateUrl: "./option-list.component.html",
   styleUrls: ["./option-list.component.scss"],
   standalone: true,
-  imports: [MatRadioModule, NgIf, NgForOf, MatDividerModule, FormsModule],
+  imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {
   @Input() options: Option[];

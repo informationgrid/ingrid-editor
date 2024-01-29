@@ -158,7 +158,7 @@ interface OgcApiRecords {
                     "\n\n### To do:" +
                     "\n\n• The definition of the `type` parameter SHOULD be extended to enumerate the list of known record types." +
                     "\n\n### List of record types" +
-                    "\n\nInGridSpecialisedTask, InGridGeoDataset, InGridLiterature, InGridGeoService, InGridProject, InGridDataCollection, InGridInformationSystem, InGridOrganisationDoc, InGridPersonDoc",
+                    "\n\nInGridSpecialisedTask, InGridGeoDataset, InGridPublication, InGridGeoService, InGridProject, InGridDataCollection, InGridInformationSystem, InGridOrganisationDoc, InGridPersonDoc",
                     explode = Explode.FALSE,
                     style = ParameterStyle.MATRIX,
             ) @RequestParam(value = "type", required = false) type: List<String>?,

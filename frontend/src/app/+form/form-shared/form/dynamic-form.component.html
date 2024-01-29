@@ -17,41 +17,45 @@
         <!-- The form -->
         <as-split-area
             #scrollForm
-            [size]="100 - sidebarWidth"
+            [size]="100 - sidebarWidth - (showJson ? 20 : 0)"
             id="form"
             class="form-content"
             cdkScrollable
         >
-            <div *ngIf="isLoading" class="loading">
-                <div>Lade Dokument ...</div>
-                <mat-spinner [diameter]="30"></mat-spinner>
-            </div>
+            @if (isLoading) {
+                <div class="loading">
+                    <div>Lade Dokument ...</div>
+                    <mat-spinner [diameter]="30"></mat-spinner>
+                </div>
+            }
 
-            <ng-container *ngIf="!isLoading">
-                <ng-content *ngIf="fields.length === 0"></ng-content>
-
+            @if (!isLoading) {
+                @if (fields.length === 0) {
+                    <ng-content></ng-content>
+                }
                 <div [class.hide]="fields.length === 0">
-                    <ige-form-info
-                        #formInfo
-                        *ngIf="formInfoModel !== null"
-                        [form]="form"
-                        [model]="formInfoModel"
-                        [forAddress]="address"
-                        [disableTitleEdit]="
-                            formOptions.formState.disabled === true ||
-                            (address && model._type !== 'FOLDER')
-                        "
-                    >
-                    </ige-form-info>
-                    <ige-quick-navbar
-                        *ngIf="formInfoModel !== null"
-                        [class.sticky-header]="isStickyHeader"
-                        [model]="formInfoModel"
-                        [sections]="sections | async"
-                        [numberOfErrors]="numberOfErrors"
-                        [hasOptionalFields]="hasOptionalFields"
-                    ></ige-quick-navbar>
-
+                    @if (formInfoModel !== null) {
+                        <ige-form-info
+                            #formInfo
+                            [form]="form"
+                            [model]="formInfoModel"
+                            [forAddress]="address"
+                            [disableTitleEdit]="
+                                formOptions.formState.disabled === true ||
+                                (address && model._type !== 'FOLDER')
+                            "
+                        >
+                        </ige-form-info>
+                    }
+                    @if (formInfoModel !== null) {
+                        <ige-quick-navbar
+                            [class.sticky-header]="isStickyHeader"
+                            [model]="formInfoModel"
+                            [sections]="sections | async"
+                            [numberOfErrors]="numberOfErrors"
+                            [hasOptionalFields]="hasOptionalFields"
+                        ></ige-quick-navbar>
+                    }
                     <div
                         class="form-inner"
                         [class.extra-space-toggle-button]="hasOptionalFields"
@@ -74,33 +78,33 @@
                                 [options]="formOptions"
                             ></formly-form>
                             <!--<pre>
-            JSON:
-            {{model | json}}
-                            </pre>-->
+              JSON:
+              {{model | json}}
+            </pre>-->
                             <div class="requiredDescription">
                                 STRG + ALT + S zum Speichern<br />STRG + ALT + V
                                 zum Veröffentlichen
                             </div>
                         </form>
                     </div>
-
-                    <div
-                        *ngIf="model._type === 'FOLDER'"
-                        class="folder-content"
-                    >
-                        <ige-folder-dashboard
-                            [isAddress]="address"
-                        ></ige-folder-dashboard>
-                    </div>
+                    @if (model._type === "FOLDER") {
+                        <div class="folder-content">
+                            <ige-folder-dashboard
+                                [isAddress]="address"
+                            ></ige-folder-dashboard>
+                        </div>
+                    }
                 </div>
-            </ng-container>
+            }
         </as-split-area>
 
-        <as-split-area *ngIf="showJson">
-            <pre
-                >{{ form.value | json }}
-           </pre
-            >
-        </as-split-area>
+        @if (showJson) {
+            <as-split-area [size]="20">
+                <pre
+                    >{{ form.value | json }}
+        </pre
+                >
+            </as-split-area>
+        }
     </as-split>
 </div>

@@ -23,12 +23,13 @@ export interface Codelist {
   description?: string;
   entries: CodelistEntry[];
   default: string;
+  isCatalog?: boolean;
 }
 
 export interface CodelistEntry {
   id: string;
   description: string;
-  fields: Map<string, string>; // { [x: string]: string };
+  fields: { [x: string]: string };
   data?: string;
 }
 

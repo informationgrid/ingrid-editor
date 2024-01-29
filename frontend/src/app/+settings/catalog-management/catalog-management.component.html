@@ -2,48 +2,52 @@
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
-        <div *ngIf="profiles">
-            <ige-add-button
-                buttonType="flat"
-                (add)="showCreateCatalogDialog()"
-            ></ige-add-button>
-        </div>
-        <p *ngIf="noAssignedCatalogs">
-            Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem Katalog
-            angehören, können Sie zusätzliche Operationen ausführen.
-        </p>
+        @if (profiles) {
+            <div>
+                <ige-add-button
+                    buttonType="flat"
+                    (add)="showCreateCatalogDialog()"
+                ></ige-add-button>
+            </div>
+        }
+        @if (noAssignedCatalogs) {
+            <p>
+                Sie sind noch keinem Katalog zugewiesen. Erst wenn Sie einem
+                Katalog angehören, können Sie zusätzliche Operationen ausführen.
+            </p>
+        }
     </div>
 
     <div main-content>
         <div class="section-title">Aktiver Katalog</div>
         <div class="flex-row" style="padding-bottom: 48px">
-            <div
-                *ngIf="activeCatalog | async as catalog"
-                class="catalog-wrapper"
-            >
-                <ng-container
-                    [ngTemplateOutlet]="catContent"
-                    [ngTemplateOutletContext]="{ cat: catalog }"
-                ></ng-container>
-            </div>
+            @if (activeCatalog | async; as catalog) {
+                <div class="catalog-wrapper">
+                    <ng-container
+                        [ngTemplateOutlet]="catContent"
+                        [ngTemplateOutletContext]="{ cat: catalog }"
+                    ></ng-container>
+                </div>
+            }
         </div>
 
         <div class="section-title">Weitere Kataloge</div>
         <div class="flex-row flex-wrap gap-36">
-            <div
-                *ngFor="
-                    let cat of nonActiveCatalogs | async;
-                    trackBy: trackByCatalogId
-                "
-                class="catalog-wrapper"
-            >
-                <ng-container
-                    [ngTemplateOutlet]="catContent"
-                    [ngTemplateOutletContext]="{ cat: cat }"
-                ></ng-container>
-            </div>
+            @for (
+                cat of nonActiveCatalogs | async;
+                track trackByCatalogId($index, cat)
+            ) {
+                <div class="catalog-wrapper">
+                    <ng-container
+                        [ngTemplateOutlet]="catContent"
+                        [ngTemplateOutletContext]="{ cat: cat }"
+                    ></ng-container>
+                </div>
+            }
 
-            <mat-spinner *ngIf="showSpinner" diameter="50"></mat-spinner>
+            @if (showSpinner) {
+                <mat-spinner diameter="50"></mat-spinner>
+            }
         </div>
     </div>
 
@@ -78,25 +82,27 @@
                 </div>
 
                 <div class="title">{{ cat.label }}</div>
-                <div *ngIf="cat.lastDocModification" class="subtitle">
-                    Letzte Änderung am
-                    {{ cat.lastDocModification | date: "dd.LL.yyyy HH:mm" }}
-                </div>
-                <div *ngIf="!cat.lastDocModification" class="subtitle">
-                    Erstellt am
-                    {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
-                </div>
+                @if (cat.lastDocModification) {
+                    <div class="subtitle">
+                        Letzte Änderung am
+                        {{ cat.lastDocModification | date: "dd.LL.yyyy HH:mm" }}
+                    </div>
+                }
+                @if (!cat.lastDocModification) {
+                    <div class="subtitle">
+                        Erstellt am
+                        {{ cat.created | date: "dd.LL.yyyy HH:mm" }}
+                    </div>
+                }
 
-                <div
-                    *ngIf="cat.countDocuments !== undefined; else spinner"
-                    class="content"
-                >
-                    {{ cat.countDocuments | number }} Datensätze
-                </div>
-                <ng-template #spinner>
+                @if (cat.countDocuments !== undefined) {
+                    <div class="content">
+                        {{ cat.countDocuments | number }} Datensätze
+                    </div>
+                } @else {
                     <mat-spinner diameter="18"></mat-spinner>
                     Hole Statistik
-                </ng-template>
+                }
             </mat-card-content>
         </mat-card>
     </ng-template>

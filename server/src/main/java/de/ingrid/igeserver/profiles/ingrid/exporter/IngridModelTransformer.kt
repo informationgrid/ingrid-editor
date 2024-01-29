@@ -444,7 +444,7 @@ open class IngridModelTransformer(
         return when (type) {
             "InGridSpecialisedTask" -> "0"
             "InGridGeoDataset" -> "1"
-            "InGridLiterature" -> "2"
+            "InGridPublication" -> "2"
             "InGridGeoService" -> "3"
             "InGridProject" -> "4"
             "InGridDataCollection" -> "5"
@@ -564,6 +564,7 @@ open class IngridModelTransformer(
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact: List<AddressModelTransformer>
+    var orderInfoContact: List<AddressModelTransformer>
 
     var contact: AddressModelTransformer?
 
@@ -594,27 +595,14 @@ open class IngridModelTransformer(
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map {
-                    AddressModelTransformer(
-                        catalogIdentifier,
-                        codelists,
-                        it.type,
-                        getLastPublishedDocument(it.ref?.uuid!!)!!,
-                        documentService = documentService
-                    )
-                } ?: emptyList()
+                ?.map { toAddressModelTransformer(it) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported yet only [1..1]
         contact = data.pointOfContact
             ?.firstOrNull { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-            ?.let {
-                AddressModelTransformer(
-                    catalogIdentifier,
-                    codelists,
-                    it.type,
-                    getLastPublishedDocument(it.ref?.uuid!!)!!,
-                    documentService
-                )
-            }
+            ?.let {toAddressModelTransformer(it)}
+        orderInfoContact =
+            data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
+                ?: emptyList()
 
         atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
 
@@ -627,6 +615,14 @@ open class IngridModelTransformer(
             )
         } ?: emptyList()
     }
+
+    private fun toAddressModelTransformer(it: AddressRefModel) =
+        AddressModelTransformer(
+            catalogIdentifier,
+            codelists,
+            it.type,
+            getLastPublishedDocument(it.ref?.uuid!!)!!,
+            documentService)
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
@@ -709,6 +705,7 @@ open class IngridModelTransformer(
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
             description = doc.data.get("description")?.asText(),
+            graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
         )
     }
 
@@ -814,6 +811,9 @@ open class IngridModelTransformer(
     private fun addressIsPointContactMD(it: AddressRefModel) =
         codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
 
+    private fun addressIsDistributor(it: AddressRefModel) =
+        codelists.getValue("505", it.type, "iso").equals("distributor")
+
 
     private fun hasKnownAddressType(it: AddressRefModel): Boolean = codelists.getValue("505", it.type, "iso") != null
 
@@ -876,6 +876,7 @@ data class SuperiorReference(
     val objectName: String,
     val objectType: String,
     val description: String?,
+    val graphicOverview: String?
 )
 
 data class DocumentReference(

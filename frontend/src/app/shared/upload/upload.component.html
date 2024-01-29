@@ -8,38 +8,42 @@
     (drop)="setDragged(false)"
 >
     <div flowDrop [flow]="flow.flowJs" class="upload-content">
-        <div *ngIf="!showOnlyProgress" class="text-center">
-            <div *ngIf="infoText">{{ infoText }}</div>
-            <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
-            <mat-icon class="upload light" svgIcon="upload"></mat-icon>
-            <div class="alternative-text">oder</div>
-
-            <button
-                mat-button
-                mat-flat-button
-                color="primary"
-                (click)="hiddenUploadInput.click()"
-            >
-                {{ text }}
-            </button>
-        </div>
+        @if (!showOnlyProgress) {
+            <div class="text-center">
+                @if (infoText) {
+                    <div>{{ infoText }}</div>
+                }
+                <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
+                <mat-icon class="upload light" svgIcon="upload"></mat-icon>
+                <div class="alternative-text">oder</div>
+                <button
+                    mat-button
+                    mat-flat-button
+                    color="primary"
+                    (click)="hiddenUploadInput.click()"
+                >
+                    {{ text }}
+                </button>
+            </div>
+        }
 
         <div class="upload-items" role="list">
-            <ige-upload-item
-                *ngFor="
-                    let file of filesForUpload | async;
-                    trackBy: getIdentifier
-                "
-                [file]="file"
-                [flow]="flow"
-                [showOnlyProgress]="showOnlyProgress"
-                (remove)="removeFile.next($event)"
-                (useExisting)="updateFileToUseExisting($event)"
-                (retryUpload)="retryUpload(file, $event)"
-                tabindex="0"
-                role="listitem"
-                [attr.aria-label]="file.transfer.name"
-            ></ige-upload-item>
+            @for (
+                file of filesForUpload | async;
+                track getIdentifier($index, file)
+            ) {
+                <ige-upload-item
+                    [file]="file"
+                    [flow]="flow"
+                    [showOnlyProgress]="showOnlyProgress"
+                    (remove)="removeFile.next($event)"
+                    (useExisting)="updateFileToUseExisting($event)"
+                    (retryUpload)="retryUpload(file, $event)"
+                    tabindex="0"
+                    role="listitem"
+                    [attr.aria-label]="file.transfer.name"
+                ></ige-upload-item>
+            }
         </div>
 
         <input

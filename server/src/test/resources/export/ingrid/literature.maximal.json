@@ -1,7 +1,7 @@
 {
   "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4393a7be",
   "title": "literatur_maximal_test",
-  "_type": "InGridLiterature",
+  "_type": "InGridPublication",
   "dataset": { "languages": ["113"] },
   "spatial": {
     "references": [

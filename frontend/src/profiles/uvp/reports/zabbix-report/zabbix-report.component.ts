@@ -30,6 +30,7 @@ import { PageTemplateModule } from "../../../../app/shared/page-template/page-te
 import { DatePipe } from "@angular/common";
 import { SharedPipesModule } from "../../../../app/directives/shared-pipes.module";
 import { MatMenuModule } from "@angular/material/menu";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @UntilDestroy()
 @Component({
@@ -46,6 +47,7 @@ import { MatMenuModule } from "@angular/material/menu";
     MatPaginatorModule,
     MatTableModule,
     MatSortModule,
+    MatProgressSpinner,
   ],
 })
 export class ZabbixReportComponent implements AfterViewInit {
@@ -54,6 +56,7 @@ export class ZabbixReportComponent implements AfterViewInit {
 
   dataSource = new MatTableDataSource([]);
   displayedColumns = ["name", "docName", "clock", "settings"];
+  isLoading = true;
 
   constructor(
     uvpResearchService: UvpResearchService,
@@ -61,6 +64,7 @@ export class ZabbixReportComponent implements AfterViewInit {
   ) {
     uvpResearchService.getZabbixReport().subscribe((data) => {
       this.dataSource.data = data;
+      this.isLoading = false;
     });
   }
 

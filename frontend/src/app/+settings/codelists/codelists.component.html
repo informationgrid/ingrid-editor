@@ -5,7 +5,7 @@
     </div>
 
     <div main-header class="header">
-        <div>Letzte Synchronisation erfolgte am ...</div>
+        <!--<div>Letzte Synchronisation erfolgte am ...</div>
         <button
             mat-icon-button
             class="dark menu-button"
@@ -14,7 +14,7 @@
             (click)="showMore = !showMore"
         >
             <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
-        </button>
+        </button>-->
         <div class="flex-1"></div>
         <div>
             <button
@@ -28,40 +28,44 @@
         </div>
     </div>
 
-    <div *ngIf="showMore" status class="status">Letzte Information ...</div>
+    @if (showMore) {
+        <div status class="status">Letzte Information ...</div>
+    }
 
     <div main-content>
         <div class="flex-row justify-content-center align-items-stretch">
             <ige-filter-select
-                [options]="codelists"
+                [options]="codelists()"
                 class="white-bg"
                 style="flex: 1; max-width: 460px"
-                [labelFormat]="codelistLabelFormat"
                 placeholder="Codeliste wählen..."
                 (reset)="resetInput()"
-                (optionSelect)="updateCodelistTable($event)"
+                (optionSelect)="updateCodelistSelection($event)"
             ></ige-filter-select>
         </div>
 
-        <div *ngIf="selectedCodelist?.description" class="description">
-            <div class="section-title">Beschreibung</div>
-            <div>{{ selectedCodelist?.description }}</div>
-        </div>
+        @if (selectedCodelist?.description) {
+            <div class="description">
+                <div class="section-title">Beschreibung</div>
+                <div>{{ selectedCodelist?.description }}</div>
+            </div>
+        }
 
         <ige-codelist-presenter
             [codelist]="selectedCodelist"
             [hideMenu]="true"
         ></ige-codelist-presenter>
 
-        <div
-            *ngIf="!selectedCodelist"
-            class="flex-row justify-content-center align-items-stretch"
-            style="padding-top: 60px"
-        >
-            <img
-                src="assets/icons/codelist-repository.png"
-                alt="codelist-repo"
-            />
-        </div>
+        @if (!selectedCodelist) {
+            <div
+                class="flex-row justify-content-center align-items-stretch"
+                style="padding-top: 60px"
+            >
+                <img
+                    src="assets/icons/codelist-repository.png"
+                    alt="codelist-repo"
+                />
+            </div>
+        }
     </div>
 </page-template>

@@ -13,36 +13,40 @@
     ></ige-action-button>
 </div>
 
-<div class="flex-row" *ngIf="numChildren">
-    <ige-card-box
-        class="flex-1"
-        label="Zuletzt bearbeitet im Ordner"
-        data-cy="card-latest-docs"
-    >
-        <ige-document-list-item
-            [docs]="childDocs$"
-            [hideDate]="false"
-            (select)="openDocument($event._uuid)"
-        ></ige-document-list-item>
-    </ige-card-box>
-</div>
-
-<div *ngIf="numChildren === 0" class="banner text-center">
-    <div class="circle-wrapper">
-        <mat-icon
-            [svgIcon]="
-                isAddress ? 'image-banner-address' : 'image-banner-dataset'
-            "
-        ></mat-icon>
+@if (numChildren) {
+    <div class="flex-row">
+        <ige-card-box
+            class="flex-1"
+            label="Zuletzt bearbeitet im Ordner"
+            data-cy="card-latest-docs"
+        >
+            <ige-document-list-item
+                [docs]="childDocs$"
+                [hideDate]="false"
+                (select)="openDocument($event._uuid)"
+            ></ige-document-list-item>
+        </ige-card-box>
     </div>
-    <!--    <h2>Kein Ordner oder {{isAddress ? "Adresse" : "Datensatz"}} vorhanden</h2>-->
-    <h2>Dieser Ordner ist noch leer</h2>
-    <p *transloco="let t; read: 'dashboard'">
-        Legen Sie einen neuen Unterordner oder
-        {{ isAddress ? "Adresse" : t("formSingular") }} an.
-    </p>
-    <p>
-        Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese auch in
-        der Werkzeugleiste.
-    </p>
-</div>
+}
+
+@if (numChildren === 0) {
+    <div class="banner text-center">
+        <div class="circle-wrapper">
+            <mat-icon
+                [svgIcon]="
+                    isAddress ? 'image-banner-address' : 'image-banner-dataset'
+                "
+            ></mat-icon>
+        </div>
+        <!--    <h2>Kein Ordner oder {{isAddress ? "Adresse" : "Datensatz"}} vorhanden</h2>-->
+        <h2>Dieser Ordner ist noch leer</h2>
+        <p *transloco="let t; read: 'dashboard'">
+            Legen Sie einen neuen Unterordner oder
+            {{ isAddress ? "Adresse" : t("formSingular") }} an.
+        </p>
+        <p>
+            Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese
+            auch in der Werkzeugleiste.
+        </p>
+    </div>
+}

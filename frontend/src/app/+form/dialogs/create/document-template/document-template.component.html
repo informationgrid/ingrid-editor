@@ -23,7 +23,7 @@
 
     <ng-content></ng-content>
 
-    <ng-container *ngIf="documentTypes?.length > 1">
+    @if (documentTypes?.length > 1) {
         <div class="dlg-create-place dlg-field-label required" id="doc-type">
             Datensatztyp wählen:
         </div>
@@ -35,5 +35,5 @@
             [setActiveItem]="initialActiveDocumentType"
             (select)="setDocType($event)"
         ></ige-document-list-item>
-    </ng-container>
+    }
 </div>

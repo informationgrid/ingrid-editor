@@ -96,10 +96,10 @@ class ImportService(
         return if (result is ArrayNode) {
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
-                    importer.map { it.typeInfo.id }, listOf(
-                    analyzeDoc(catalogId, result[0], forcePublish = true, isLatest = false),
-                    analyzeDoc(catalogId, result[1], forcePublish = false, isLatest = true, isDraftAndPublished = true)
-            )
+                importer.map { it.typeInfo.id }, listOfNotNull(
+                    if (!result[0].isNull) analyzeDoc(catalogId, result[0], forcePublish = true, isLatest = false) else null,
+                    analyzeDoc(catalogId, result[1], forcePublish = false, isLatest = true, isDraftAndPublished = !result[0].isNull)
+                )
             )
         } else {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))

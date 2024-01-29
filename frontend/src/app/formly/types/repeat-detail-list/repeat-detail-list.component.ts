@@ -36,13 +36,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import {
-  AsyncPipe,
-  JsonPipe,
-  KeyValuePipe,
-  NgForOf,
-  NgIf,
-} from "@angular/common";
+import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
 import { SharedPipesModule } from "../../../directives/shared-pipes.module";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -62,8 +56,6 @@ interface RepeatDetailListProps extends FormlyFieldProps {
   templateUrl: "./repeat-detail-list.component.html",
   styleUrls: ["./repeat-detail-list.component.scss"],
   imports: [
-    NgIf,
-    NgForOf,
     AsyncPipe,
     CdkDrag,
     CdkDropList,
@@ -80,6 +72,7 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     FormlyModule,
     MatTooltipModule,
     JsonPipe,
+    NgForOf,
   ],
   standalone: true,
 })

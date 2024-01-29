@@ -1,18 +1,19 @@
-<div
-    class="wrapper"
-    *ngFor="let type of types"
-    [ngClass]="type.severity"
-    [@slideDown]
-    data-cy="form-message"
->
-    <span class="message-wrapper">
-        <mat-icon>{{ getIconClass(type.severity) }}</mat-icon>
-        <span>{{ type.message }}</span>
-    </span>
-    <ng-container *ngIf="type.severity === 'error'">
-        <div class="flex-1"></div>
-        <button mat-icon-button (click)="resetMessage(type)">
-            <mat-icon>close</mat-icon>
-        </button>
-    </ng-container>
-</div>
+@for (type of types; track type) {
+    <div
+        class="wrapper"
+        [ngClass]="type.severity"
+        [@slideDown]
+        data-cy="form-message"
+    >
+        <span class="message-wrapper">
+            <mat-icon>{{ getIconClass(type.severity) }}</mat-icon>
+            <span>{{ type.message }}</span>
+        </span>
+        @if (type.severity === "error") {
+            <div class="flex-1"></div>
+            <button mat-icon-button (click)="resetMessage(type)">
+                <mat-icon>close</mat-icon>
+            </button>
+        }
+    </div>
+}

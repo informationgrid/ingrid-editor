@@ -1,91 +1,119 @@
 <!--<cdk-virtual-scroll-viewport itemSize="60" class="virtual-viewport">-->
-<mat-accordion *ngIf="_codelist" class="entry-list">
-    <mat-expansion-panel
-        *ngFor="let entry of _codelist.entries"
-        hideToggle
-        [class.default]="_codelist.default === entry.id"
-        (opened)="showMore[entry.id] = true"
-        (closed)="showMore[entry.id] = false"
-    >
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                <mat-icon svgIcon="codelist"></mat-icon>
-                <div class="flex-1">
-                    <div class="identifier">{{ entry.id }}</div>
-                    <div class="name">
-                        <div>{{ entry.fields["de"] }}</div>
-                    </div>
-                </div>
-            </mat-panel-title>
-            <mat-panel-description>
-                <div
-                    *ngIf="_codelist.default === entry.id"
-                    class="default-item"
-                >
-                    Defaultwert
-                </div>
-
-                <div>
-                    <button
-                        mat-icon-button
-                        class="menu-button expander"
-                        [class.expanded]="showMore[entry.id]"
-                        [matTooltip]="
-                            showMore[entry.id] ? 'Schließen' : 'Öffnen'
-                        "
-                        (click)="showMore[entry.id] = !showMore[entry.id]"
-                    >
-                        <mat-icon class="animated"
-                            >keyboard_arrow_down
-                        </mat-icon>
-                    </button>
-
-                    <ng-container *ngIf="!hideMenu">
-                        <button
-                            mat-icon-button
-                            class="menu-button"
-                            matTooltip="Bearbeiten"
-                            (click)="$event.stopImmediatePropagation()"
-                            (keydown.enter)="$event.stopImmediatePropagation()"
-                            [matMenuTriggerFor]="codelistMenu"
-                        >
-                            <mat-icon svgIcon="Mehr"></mat-icon>
-                        </button>
-                        <mat-menu #codelistMenu="matMenu">
-                            <button mat-menu-item (click)="edit.emit(entry)">
-                                Bearbeiten
-                            </button>
+@if (_codelist) {
+    <mat-accordion class="entry-list">
+        @for (entry of _codelist.entries; track entry) {
+            <mat-expansion-panel
+                hideToggle
+                [class.default]="_codelist.default === entry.id"
+                (opened)="showMore[entry.id] = true"
+                (closed)="showMore[entry.id] = false"
+            >
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <mat-icon svgIcon="codelist"></mat-icon>
+                        <div class="flex-1">
+                            <div class="identifier">{{ entry.id }}</div>
+                            <div class="name">
+                                <div>{{ entry.fields["de"] }}</div>
+                            </div>
+                        </div>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        @if (_codelist.default === entry.id) {
+                            <div class="default-item">Defaultwert</div>
+                        }
+                        <div>
                             <button
-                                *ngIf="_codelist.default !== entry.id"
-                                mat-menu-item
-                                (click)="setDefault.emit(entry)"
+                                mat-icon-button
+                                class="menu-button expander"
+                                data-cy="btn-more"
+                                [class.expanded]="showMore[entry.id]"
+                                [matTooltip]="
+                                    showMore[entry.id] ? 'Schließen' : 'Öffnen'
+                                "
+                                (click)="
+                                    showMore[entry.id] = !showMore[entry.id]
+                                "
                             >
-                                Als Defaultwert übernehmen
+                                <mat-icon class="animated"
+                                    >keyboard_arrow_down
+                                </mat-icon>
                             </button>
-                            <button
-                                *ngIf="_codelist.default === entry.id"
-                                mat-menu-item
-                                (click)="setDefault.emit(null)"
-                            >
-                                Defaultwert entfernen
-                            </button>
-                            <button mat-menu-item (click)="remove.emit(entry)">
-                                Löschen
-                            </button>
-                        </mat-menu>
-                    </ng-container>
+                            @if (!hideMenu) {
+                                <button
+                                    mat-icon-button
+                                    class="menu-button"
+                                    data-cy="btn-menu"
+                                    matTooltip="Bearbeiten"
+                                    (click)="$event.stopImmediatePropagation()"
+                                    (keydown.enter)="
+                                        $event.stopImmediatePropagation()
+                                    "
+                                    [matMenuTriggerFor]="codelistMenu"
+                                >
+                                    <mat-icon svgIcon="Mehr"></mat-icon>
+                                </button>
+                                <mat-menu #codelistMenu="matMenu">
+                                    <button
+                                        mat-menu-item
+                                        (click)="asFavorite.emit(entry)"
+                                    >
+                                        {{
+                                            favoriteEntryIds.indexOf(
+                                                entry.id
+                                            ) >= 0
+                                                ? "Favorit entfernen"
+                                                : "Als Favorit setzen"
+                                        }}
+                                    </button>
+                                    @if (_codelist.isCatalog) {
+                                        <button
+                                            mat-menu-item
+                                            (click)="edit.emit(entry)"
+                                        >
+                                            Bearbeiten
+                                        </button>
+                                        @if (_codelist.default !== entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(entry)"
+                                            >
+                                                Als Defaultwert übernehmen
+                                            </button>
+                                        }
+                                        @if (_codelist.default === entry.id) {
+                                            <button
+                                                mat-menu-item
+                                                (click)="setDefault.emit(null)"
+                                            >
+                                                Defaultwert entfernen
+                                            </button>
+                                        }
+                                        <mat-divider></mat-divider>
+                                        <button
+                                            mat-menu-item
+                                            (click)="remove.emit(entry)"
+                                        >
+                                            Löschen
+                                        </button>
+                                    }
+                                </mat-menu>
+                            }
+                        </div>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div class="content">
+                    <div>{{ entry.description }}</div>
+                    <div>data: {{ entry.data }}</div>
+                    @for (
+                        entryField of entryFields[entry.id];
+                        track entryField
+                    ) {
+                        <div>{{ entryField[0] }}: {{ entryField[1] }}</div>
+                    }
                 </div>
-            </mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="content">
-            <div>{{ entry.description }}</div>
-            <div>data: {{ entry.data }}</div>
-
-            <div *ngFor="let entryField of entryFields[entry.id]">
-                {{ entryField[0] }}: {{ entryField[1] }}
-            </div>
-        </div>
-    </mat-expansion-panel>
-</mat-accordion>
+            </mat-expansion-panel>
+        }
+    </mat-accordion>
+}
 <!--</cdk-virtual-scroll-viewport>-->

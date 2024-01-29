@@ -1,84 +1,97 @@
-<div *ngIf="showMore" [@slideDown] class="more-info">
-    <div class="flex-row" *ngIf="model._type !== 'FOLDER' && !hideFields.state">
-        <div>Status</div>
-        <div
-            class="state"
-            data-cy="header-state"
-            *transloco="let t; read: 'docState'"
-        >
-            {{ t(model._state) }}
+@if (showMore) {
+    <div [@slideDown] class="more-info">
+        @if (model._type !== "FOLDER" && !hideFields.state) {
+            <div class="flex-row">
+                <div>Status</div>
+                <div
+                    class="state"
+                    data-cy="header-state"
+                    *transloco="let t; read: 'docState'"
+                >
+                    {{ t(model._state) }}
+                </div>
+            </div>
+        }
+        @if (!hideFields.type) {
+            <div class="flex-row">
+                <div>Typ</div>
+                <div data-cy="header-type">
+                    {{ mapDocumentType(model._type) }}
+                </div>
+            </div>
+        }
+        <div class="flex-row padding-below">
+            <div>ID</div>
+            <div data-cy="header-id">{{ model._uuid }}</div>
         </div>
+        @if (!hideFields.created) {
+            <div class="flex-row">
+                <div>Erstellt am</div>
+                <div data-cy="header-created-on">
+                    <span [matTooltip]="model._created | date: 'long'">{{
+                        model._created | date: "dd.MM.yyyy"
+                    }}</span>
+                    @if (model._createdBy) {
+                        <span>
+                            von
+                            {{
+                                model._createdBy +
+                                    (!model._creatorExists && !this.migrated
+                                        ? " (ausgeschieden)"
+                                        : "")
+                            }}</span
+                        >
+                    }
+                </div>
+            </div>
+        }
+        @if (!hideFields.modified) {
+            <div class="flex-row">
+                <div>Geändert am</div>
+                <div data-cy="header-modified-on">
+                    <span
+                        [matTooltip]="model._contentModified | date: 'long'"
+                        >{{ model._contentModified | date: "dd.MM.yyyy" }}</span
+                    >
+                    @if (model._contentModifiedBy) {
+                        <span>
+                            von
+                            {{
+                                model._contentModifiedBy +
+                                    (!model._modifierExists && !this.migrated
+                                        ? " (ausgeschieden)"
+                                        : "")
+                            }}
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+        @if (!hideFields._responsibleUser && model._responsibleUser) {
+            <div class="flex-row">
+                <div>Verantwortlich</div>
+                <div data-cy="header-responsible-user">
+                    {{ model._responsibleUser | fullName | async }}
+                </div>
+            </div>
+        }
+        @if (!hideFields._metadataDate && model._metadataDate) {
+            <div class="flex-row hasContextHelp">
+                <ige-form-label
+                    class="flex-row"
+                    [hasContextHelp]="true"
+                    (contextHelp)="showHelp()"
+                >
+                    Metadaten-Datum
+                </ige-form-label>
+                <span
+                    [matTooltip]="model._metadataDate | date: 'long'"
+                    data-cy="header-metadata-date"
+                >
+                    {{ model._metadataDate | date: "dd.MM.yyyy" }}
+                    (veröffentlichte Version)
+                </span>
+            </div>
+        }
     </div>
-
-    <div *ngIf="!hideFields.type" class="flex-row">
-        <div>Typ</div>
-        <div data-cy="header-type">{{ mapDocumentType(model._type) }}</div>
-    </div>
-    <div class="flex-row padding-below">
-        <div>ID</div>
-        <div data-cy="header-id">{{ model._uuid }}</div>
-    </div>
-
-    <div *ngIf="!hideFields.created" class="flex-row">
-        <div>Erstellt am</div>
-        <div data-cy="header-created-on">
-            <span [matTooltip]="model._created | date: 'long'">{{
-                model._created | date: "dd.MM.yyyy"
-            }}</span>
-            <span *ngIf="model._createdBy">
-                von
-                {{
-                    model._createdBy +
-                        (!model._creatorExists && !this.migrated
-                            ? " (ausgeschieden)"
-                            : "")
-                }}</span
-            >
-        </div>
-    </div>
-    <div *ngIf="!hideFields.modified" class="flex-row">
-        <div>Geändert am</div>
-        <div data-cy="header-modified-on">
-            <span [matTooltip]="model._contentModified | date: 'long'">{{
-                model._contentModified | date: "dd.MM.yyyy"
-            }}</span>
-            <span *ngIf="model._contentModifiedBy">
-                von
-                {{
-                    model._contentModifiedBy +
-                        (!model._modifierExists && !this.migrated
-                            ? " (ausgeschieden)"
-                            : "")
-                }}
-            </span>
-        </div>
-    </div>
-    <div
-        *ngIf="!hideFields._responsibleUser && model._responsibleUser"
-        class="flex-row"
-    >
-        <div>Verantwortlich</div>
-        <div data-cy="header-responsible-user">
-            {{ model._responsibleUser | fullName | async }}
-        </div>
-    </div>
-    <div
-        *ngIf="!hideFields._metadataDate && model._metadataDate"
-        class="flex-row hasContextHelp"
-    >
-        <ige-form-label
-            class="flex-row"
-            [hasContextHelp]="true"
-            (contextHelp)="showHelp()"
-        >
-            Metadaten-Datum
-        </ige-form-label>
-        <span
-            [matTooltip]="model._metadataDate | date: 'long'"
-            data-cy="header-metadata-date"
-        >
-            {{ model._metadataDate | date: "dd.MM.yyyy" }} (veröffentlichte
-            Version)
-        </span>
-    </div>
-</div>
+}

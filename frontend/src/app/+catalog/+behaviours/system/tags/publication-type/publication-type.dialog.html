@@ -2,17 +2,18 @@
     <ng-container content>
         <label class="padding">{{title}}</label>
         <mat-radio-group [(ngModel)]="currentValue">
-            <mat-radio-button
-                *ngFor="let option of options"
-                [value]="option.key"
-            >
+            @for (option of options; track option) {
+            <mat-radio-button [value]="option.key">
                 {{option.value}}
             </mat-radio-button>
+            }
         </mat-radio-group>
 
-        <div *ngIf="helpText" class="help flex-row align-items-center">
+        @if (helpText) {
+        <div class="help flex-row align-items-center">
             <mat-icon svgIcon="info-24px"></mat-icon>
             <div class="legend" [innerHTML]="helpText"></div>
         </div>
+        }
     </ng-container>
 </ige-dialog-template>

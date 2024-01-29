@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.CapabilitiesService
@@ -75,26 +74,26 @@ class UpdateExternalCoupledResourcesTask(
         summaries: MutableMap<Int, Summary>
     ) {
         val summary = summaries.getOrPut(resource.catalogId) { Summary(0, 0, 0) }
-        
+
         resource.links.forEach {
             if (it.url == null) return@forEach
 
             try {
                 if (!urlCache.containsKey(it.url)) summary.count++
                 val record = urlCache[it.url] ?: capabilitiesService.analyzeGetRecordUrl(it.url)
-                
+
                 urlCache[it.url] = record
                 if (it.identifier != record.identifier || it.uuid != record.uuid) {
                     updateDocument(resource.id, it.url, record)
                     summary.updated++
                     log.info("External Coupled Resource Identifier changed from: " + it.identifier + " to: " + record.identifier + " for UUID: " + it.uuid)
                 } else {
-                    log.debug("Coupled Resource Identifier did not change");
+                    log.debug("Coupled Resource Identifier did not change")
                 }
             } catch (ex: FileNotFoundException) {
                 log.warn("Resource not found: ${it.url}")
                 summary.corrupt++
-            } catch (ex: ServerException) {
+            } catch (ex: Exception) {
                 log.warn("Problem with resource: ${it.url} => ${ex.message}")
                 summary.corrupt++
             }
@@ -146,7 +145,12 @@ class UpdateExternalCoupledResourcesTask(
 
     private data class Summary(var count: Int, var corrupt: Int, var updated: Int)
 
-    private data class CoupledResourceResult(val id: Int, val uuid: String, val links: List<CoupledResource>, val catalogId: Int)
+    private data class CoupledResourceResult(
+        val id: Int,
+        val uuid: String,
+        val links: List<CoupledResource>,
+        val catalogId: Int
+    )
 
     private data class CoupledResource(
         var uuid: String?,

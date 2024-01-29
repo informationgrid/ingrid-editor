@@ -4,31 +4,31 @@
         oder mehreren Katalogen verwendet werden können.
 
         <h4>Verbindungsstatus:</h4>
-        <div
-            *ngFor="let info of connectionStates"
-            class="flex-row align-items-center gap-6"
-        >
-            <span>{{ info.id }}:</span>
-            <span
-                *ngIf="info.connected !== undefined; else waiting"
-                class="flex-row"
-                ><mat-icon
-                    [class.success-color]="info.connected"
-                    [class.error-color]="!info.connected"
-                    [matTooltip]="
-                        info.connected ? 'Ok' : 'Keine Verbindung zum iBus'
-                    "
-                    >{{
-                        info.connected
-                            ? "check_circle_outline"
-                            : "error_outline"
-                    }}</mat-icon
-                ></span
-            >
-            <ng-template #waiting
-                ><mat-spinner diameter="24"></mat-spinner
-            ></ng-template>
-        </div>
+        @for (info of connectionStates; track info) {
+            <div class="flex-row align-items-center gap-6">
+                <span>{{ info.id }}:</span>
+                @if (info.connected !== undefined) {
+                    <span class="flex-row"
+                        ><mat-icon
+                            [class.success-color]="info.connected"
+                            [class.error-color]="!info.connected"
+                            [matTooltip]="
+                                info.connected
+                                    ? 'Ok'
+                                    : 'Keine Verbindung zum iBus'
+                            "
+                            >{{
+                                info.connected
+                                    ? "check_circle_outline"
+                                    : "error_outline"
+                            }}</mat-icon
+                        ></span
+                    >
+                } @else {
+                    <mat-spinner diameter="24"></mat-spinner>
+                }
+            </div>
+        }
     </div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">

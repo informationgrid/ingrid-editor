@@ -13,175 +13,175 @@
         <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
 
         <div class="center-header flex-grow">
-            <ige-session-timeout-info
-                *ngIf="timeout$ | async as timer"
-                [timeout]="timer"
-                [class.show]="timer < 300"
-            ></ige-session-timeout-info>
+            @if (timeout$ | async; as timer) {
+                <ige-session-timeout-info
+                    [timeout]="timer"
+                    [class.show]="timer < 300"
+                ></ige-session-timeout-info>
+            }
         </div>
 
-        <div
-            *ngIf="currentCatalog$ | async as currentCatalog"
-            class="header-info flex-grow flex-row align-items-center justify-content-end"
-            [class.single]="otherAssignedCatalogs.length == 0"
-        >
-            Katalog:
-            <button
-                class="catalog-button"
-                mat-button
-                [matTooltip]="currentCatalog"
-                [matMenuTriggerFor]="catMenu"
-                [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
-                [disabled]="otherAssignedCatalogs.length == 0"
-                aria-label="Menü zur Auswahl der Kataloge"
-                aria-describedby="catalog-label"
+        @if (currentCatalog$ | async; as currentCatalog) {
+            <div
+                class="header-info flex-grow flex-row align-items-center justify-content-end"
+                [class.single]="otherAssignedCatalogs.length == 0"
             >
-                <span id="catalog-label">{{ currentCatalog }}</span>
-                <mat-icon
-                    *ngIf="otherAssignedCatalogs.length > 0"
-                    iconPositionEnd
-                    >keyboard_arrow_down
-                </mat-icon>
-            </button>
-            <mat-menu #catMenu="matMenu">
-                <span
-                    *ngFor="let catalog of otherAssignedCatalogs"
-                    mat-menu-item
-                    class="menu-item"
-                    (click)="chooseCatalog(catalog.id)"
-                >
-                    {{ catalog.name }}
-                </span>
-            </mat-menu>
-        </div>
-
-        <span *ngIf="userInfo$ | async as userInfo" class="flex-row">
-            <button
-                type="button"
-                class="user-popup pad-right"
-                mat-icon-button
-                [matMenuTriggerFor]="menu"
-                aria-label="Nutzerprofil"
-                matTooltip="Nutzerprofil"
-                data-cy="header-profile-button"
-            >
-                {{ initials }}
-            </button>
-            <mat-menu #menu="matMenu" class="user-popup-menu">
-                <div class="user-popup-header">
-                    <mat-card-title
-                        >{{ userInfo.firstName }}
-                        {{ userInfo.lastName }}</mat-card-title
-                    >
-                    <p
-                        class="last-login"
-                        title="{{ userInfo.lastLogin | date: 'short' }}"
-                    >
-                        Letzte Anmeldung: {{ userInfo.lastLogin | date }}
-                    </p>
-                </div>
-                <!--<span
-                    mat-menu-item
-                    disabled
-                    [disableRipple]="true"
-                    (click)="$event.stopPropagation()"
-                >
-                    <mat-icon svgIcon="german_flag-24px"></mat-icon>
-                    Sprache: Deutsch
-                    <mat-icon>arrow_drop_down</mat-icon>
-                </span>-->
+                Katalog:
                 <button
-                    mat-menu-item
-                    [disableRipple]="true"
-                    (click)="openProfileSettings()"
+                    class="catalog-button"
+                    mat-button
+                    [matTooltip]="currentCatalog"
+                    [matMenuTriggerFor]="catMenu"
+                    [tabindex]="otherAssignedCatalogs.length > 0 ? 0 : -1"
+                    [disabled]="otherAssignedCatalogs.length == 0"
+                    aria-label="Menü zur Auswahl der Kataloge"
+                    aria-describedby="catalog-label"
                 >
-                    <mat-icon svgIcon="perm_identity-24px"></mat-icon>
-                    Profil verwalten
+                    <span id="catalog-label">{{ currentCatalog }}</span>
+                    @if (otherAssignedCatalogs.length > 0) {
+                        <mat-icon iconPositionEnd
+                            >keyboard_arrow_down
+                        </mat-icon>
+                    }
                 </button>
-                <!--<span
-                    mat-menu-item
-                    disabled
-                    [disableRipple]="true"
-                    (click)="$event.stopPropagation()"
-                >
-                    <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
-                    Einstellungen
-                </span>-->
+                <mat-menu #catMenu="matMenu">
+                    @for (catalog of otherAssignedCatalogs; track catalog) {
+                        <span
+                            mat-menu-item
+                            class="menu-item"
+                            (click)="chooseCatalog(catalog.id)"
+                        >
+                            {{ catalog.name }}
+                        </span>
+                    }
+                </mat-menu>
+            </div>
+        }
+
+        @if (userInfo$ | async; as userInfo) {
+            <span class="flex-row">
                 <button
-                    mat-menu-item
-                    class="user-popup-footer"
-                    (click)="logout()"
-                    data-cy="logout-button"
+                    type="button"
+                    class="user-popup pad-right"
+                    mat-icon-button
+                    [matMenuTriggerFor]="menu"
+                    aria-label="Nutzerprofil"
+                    matTooltip="Nutzerprofil"
+                    data-cy="header-profile-button"
                 >
-                    <span class="label">Abmelden</span>
+                    {{ initials }}
                 </button>
-            </mat-menu>
-
-            <button
-                type="button"
-                class="user-popup"
-                mat-icon-button
-                [matMenuTriggerFor]="menuInfo"
-                aria-label="Systemeinstellungen"
-                matTooltip="Systemeinstellungen"
-                data-cy="header-info-button"
-            >
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
-            <mat-menu #menuInfo="matMenu" class="info-menu user-popup-menu">
-                <div class="user-popup-header">
-                    <mat-card-title
-                        ><strong>{{ t("application") }}</strong> EDITOR
-                        <strong>{{
-                            t("application-suffix")
-                        }}</strong></mat-card-title
+                <mat-menu #menu="matMenu" class="user-popup-menu">
+                    <div class="user-popup-header">
+                        <mat-card-title
+                            >{{ userInfo.firstName }}
+                            {{ userInfo.lastName }}</mat-card-title
+                        >
+                        <p
+                            class="last-login"
+                            title="{{ userInfo.lastLogin | date: 'short' }}"
+                        >
+                            Letzte Anmeldung: {{ userInfo.lastLogin | date }}
+                        </p>
+                    </div>
+                    <!--<span
+              mat-menu-item
+              disabled
+              [disableRipple]="true"
+              (click)="$event.stopPropagation()"
+              >
+              <mat-icon svgIcon="german_flag-24px"></mat-icon>
+              Sprache: Deutsch
+              <mat-icon>arrow_drop_down</mat-icon>
+            </span>-->
+                    <button
+                        mat-menu-item
+                        [disableRipple]="true"
+                        (click)="openProfileSettings()"
                     >
-                </div>
-
-                <ng-container *ngIf="menuItems.length > 0 && isAdmin">
+                        <mat-icon svgIcon="perm_identity-24px"></mat-icon>
+                        Profil verwalten
+                    </button>
+                    <!--<span
+            mat-menu-item
+            disabled
+            [disableRipple]="true"
+            (click)="$event.stopPropagation()"
+            >
+            <mat-icon svgIcon="baseline-settings-24px"></mat-icon>
+            Einstellungen
+          </span>-->
+                    <button
+                        mat-menu-item
+                        class="user-popup-footer"
+                        (click)="logout()"
+                        data-cy="logout-button"
+                    >
+                        <span class="label">Abmelden</span>
+                    </button>
+                </mat-menu>
+                <button
+                    type="button"
+                    class="user-popup"
+                    mat-icon-button
+                    [matMenuTriggerFor]="menuInfo"
+                    aria-label="Systemeinstellungen"
+                    matTooltip="Systemeinstellungen"
+                    data-cy="header-info-button"
+                >
+                    <mat-icon svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #menuInfo="matMenu" class="info-menu user-popup-menu">
+                    <div class="user-popup-header">
+                        <mat-card-title
+                            ><strong>{{ t("application") }}</strong> EDITOR
+                            <strong>{{
+                                t("application-suffix")
+                            }}</strong></mat-card-title
+                        >
+                    </div>
+                    @if (menuItems.length > 0 && isAdmin) {
+                        <div
+                            class="popup-leading upper-case flex-row align-items-center"
+                        >
+                            Verwaltung
+                        </div>
+                        <mat-divider aria-hidden="true"></mat-divider>
+                        @for (group of menuItems; track group) {
+                            <button
+                                mat-menu-item
+                                [routerLink]="[
+                                    catalogId + '/settings/' + group.path
+                                ]"
+                            >
+                                {{ group.data?.title }}
+                            </button>
+                            <mat-divider aria-hidden="true"></mat-divider>
+                        }
+                    }
                     <div
                         class="popup-leading upper-case flex-row align-items-center"
                     >
-                        Verwaltung
+                        Informationen
                     </div>
                     <mat-divider aria-hidden="true"></mat-divider>
-                    <ng-container *ngFor="let group of menuItems">
-                        <button
-                            mat-menu-item
-                            [routerLink]="[
-                                catalogId + '/settings/' + group.path
-                            ]"
-                        >
-                            {{ group.data?.title }}
-                        </button>
+                    @for (item of menuInfos; track item) {
+                        <a mat-menu-item href="{{ item.link }}" target="_blank">
+                            {{ item.title }}
+                        </a>
                         <mat-divider aria-hidden="true"></mat-divider>
-                    </ng-container>
-                </ng-container>
-
-                <div
-                    class="popup-leading upper-case flex-row align-items-center"
-                >
-                    Informationen
-                </div>
-                <mat-divider aria-hidden="true"></mat-divider>
-
-                <ng-container *ngFor="let item of menuInfos">
-                    <a mat-menu-item href="{{ item.link }}" target="_blank">
-                        {{ item.title }}
-                    </a>
-
-                    <mat-divider aria-hidden="true"></mat-divider>
-                </ng-container>
-                <div (click)="$event.stopPropagation()" class="versioninfo">
-                    <div>Version</div>
-                    <div>
-                        {{ version.version }},
-                        {{ version.date | date: "dd.LL.yyyy, HH:mm" }}
+                    }
+                    <div (click)="$event.stopPropagation()" class="versioninfo">
+                        <div>Version</div>
+                        <div>
+                            {{ version.version }},
+                            {{ version.date | date: "dd.LL.yyyy, HH:mm" }}
+                        </div>
+                        <div>GIT Commit ID</div>
+                        <div>{{ version.commitId }}</div>
                     </div>
-                    <div>GIT Commit ID</div>
-                    <div>{{ version.commitId }}</div>
-                </div>
-            </mat-menu>
-        </span>
+                </mat-menu>
+            </span>
+        }
     </mat-toolbar-row>
 </mat-toolbar>

@@ -23,7 +23,7 @@ import { A11yModule } from "@angular/cdk/a11y";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
-import { NgIf } from "@angular/common";
+
 import { TimePipe } from "../../directives/time.pipe";
 
 @Component({
@@ -36,7 +36,6 @@ import { TimePipe } from "../../directives/time.pipe";
     MatButtonModule,
     MatTooltipModule,
     MatIconModule,
-    NgIf,
     TimePipe,
   ],
 })

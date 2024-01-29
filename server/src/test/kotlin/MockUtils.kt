@@ -17,6 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
+import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -41,6 +42,8 @@ fun mockCatalog(catalogService: CatalogService) {
             }
         }
     }
+    
+    every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
 }
 
 data class MockDocument(

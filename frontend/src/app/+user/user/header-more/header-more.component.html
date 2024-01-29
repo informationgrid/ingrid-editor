@@ -1,46 +1,52 @@
-<div
-    *ngIf="showMore"
-    [@slideDown]
-    data-cy="headerMoreData"
-    class="more-info"
-    [formGroup]="form"
->
-    <div class="flex-row">
-        <div>Zuletzt eingeloggt am</div>
-        <div *ngIf="user.latestLogin; else neverLoggedIn">
-            <span
-                [title]="user.latestLogin | date: 'long'"
-                data-cy="latest-login"
-                >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
-            >
+@if (showMore) {
+    <div
+        [@slideDown]
+        data-cy="headerMoreData"
+        class="more-info"
+        [formGroup]="form"
+    >
+        <div class="flex-row">
+            <div>Zuletzt eingeloggt am</div>
+            @if (user.latestLogin) {
+                <div>
+                    <span
+                        [title]="user.latestLogin | date: 'long'"
+                        data-cy="latest-login"
+                        >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
+                    >
+                </div>
+            } @else {
+                <div data-cy="latest-login">Nie</div>
+            }
         </div>
-        <ng-template #neverLoggedIn>
-            <div data-cy="latest-login">Nie</div>
-        </ng-template>
-    </div>
-    <div class="flex-row">
-        <div>Erstellt am</div>
-        <div *ngIf="user.creationDate">
-            <span
-                [title]="user.creationDate | date: 'long'"
-                data-cy="date-created"
-                >{{ user.creationDate | date: "dd.MM.yyyy" }}</span
-            >
+        <div class="flex-row">
+            <div>Erstellt am</div>
+            @if (user.creationDate) {
+                <div>
+                    <span
+                        [title]="user.creationDate | date: 'long'"
+                        data-cy="date-created"
+                        >{{ user.creationDate | date: "dd.MM.yyyy" }}</span
+                    >
+                </div>
+            }
         </div>
-    </div>
-    <div class="flex-row">
-        <div>Geändert am</div>
-        <div *ngIf="user.modificationDate">
-            <span
-                [title]="user.modificationDate | date: 'long'"
-                data-cy="date-modified"
-                >{{ user.modificationDate | date: "dd.MM.yyyy" }}</span
-            >
+        <div class="flex-row">
+            <div>Geändert am</div>
+            @if (user.modificationDate) {
+                <div>
+                    <span
+                        [title]="user.modificationDate | date: 'long'"
+                        data-cy="date-modified"
+                        >{{ user.modificationDate | date: "dd.MM.yyyy" }}</span
+                    >
+                </div>
+            }
         </div>
+        <div class="flex-row">
+            <div>ID/login</div>
+            <div data-cy="login">{{ user.login }}</div>
+        </div>
+        <div class="padding-below"></div>
     </div>
-    <div class="flex-row">
-        <div>ID/login</div>
-        <div data-cy="login">{{ user.login }}</div>
-    </div>
-    <div class="padding-below"></div>
-</div>
+}

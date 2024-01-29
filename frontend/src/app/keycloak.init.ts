@@ -39,18 +39,16 @@ export function initializeKeycloakAndGetUserInfo(
     .catch((ex) => handleKeycloakConfigError(ex, config));
 }
 
-export function getUserInfo(configService: ConfigService) {
-  return configService.getCurrentUserInfo().then((userInfo) => {
-    // an admin role has no constraints
-    if (!configService.isAdmin()) {
-      // check if user has any assigned catalog
-      if (userInfo.assignedCatalogs.length === 0) {
-        throw new IgeError(
-          "Ihnen wurde bisher kein Katalog zugewiesen. Lassen Sie sich durch einen Administrator einen Katalog zuweisen.",
-        );
-      }
+export async function getUserInfo(configService: ConfigService) {
+  let userInfo = await configService.getCurrentUserInfo();
+  if (!configService.isSuperAdmin()) {
+    // check if user has any assigned catalog
+    if (userInfo.assignedCatalogs.length === 0) {
+      throw new IgeError(
+        "Ihnen wurde bisher kein Katalog zugewiesen. Lassen Sie sich durch einen Administrator einen Katalog zuweisen.",
+      );
     }
-  });
+  }
 }
 
 function getKeycloakOptions(configService: ConfigService): KeycloakOptions {

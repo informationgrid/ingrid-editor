@@ -48,7 +48,7 @@
             </mat-menu>
         </div>
 
-        <ng-container *ngIf="address.ref?.organization; else person">
+        @if (address.ref?.organization) {
             <div
                 class="title address-title"
                 [class.error]="invalidAddressReference"
@@ -56,9 +56,7 @@
                 {{ content.title }}
             </div>
             <div class="organization-person">{{ content.secondTitle }}</div>
-        </ng-container>
-
-        <ng-template #person>
+        } @else {
             <div class="title address-title">
                 <span
                     >{{
@@ -66,10 +64,12 @@
                     }} </span
                 >{{ content.title }}
             </div>
-        </ng-template>
+        }
 
-        <div *ngIf="content.emailOrPhone" class="email">
-            {{ content.emailOrPhone }}
-        </div>
+        @if (content.emailOrPhone) {
+            <div class="email">
+                {{ content.emailOrPhone }}
+            </div>
+        }
     </mat-card-content>
 </mat-card>
