@@ -705,7 +705,9 @@ open class IngridModelTransformer(
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
             description = doc.data.get("description")?.asText(),
-            graphicOverview = refTrans.browseGraphics.firstOrNull()?.uri,
+            graphicOverview = generateBrowseGraphics(
+                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0)))
+            ).firstOrNull()?.uri,
         )
     }
 

@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
@@ -35,7 +35,6 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
-import org.opengis.metadata.citation.Telephone
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -99,34 +98,13 @@ data class UVPModel(
 
         val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
-        val addressTransformer = AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
+        val addressTransformer =
+            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
         nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
         return if (nonHiddenAncestorAddresses!!.size > 0) {
             val result = nonHiddenAncestorAddresses!!.last().document
-            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
-/*
-            AddressLong(
-                result.uuid,
-                result.title ?: "???",
-                result.data.getString("organization"),
-                result.data.getString("firstName"),
-                result.data.getString("lastName"),
-                addressTransformer.telephone,
-                addressTransformer.fax,
-                addressTransformer.email,
-                addressTransformer.homepage,
-                AddressLocation(
-                    result.data.getString("address.street"),
-                    result.data.getString("address.city"),
-                    result.data.getString("address.zipcode"),
-                    result.data.get("address").get("country").mapToKeyValue(),
-                    result.data.getString("address.pobox"),
-                    result.data.getString("address.zip-po-box"),
-                ),
-                null
-            )
-*/
+            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!)
         } else null
 
     }
@@ -188,7 +166,8 @@ data class UVPModel(
 
     fun getDecisionDate(): List<String> {
 
-        val decisionDates = data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        val decisionDates =
+            data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
         if (data.decisionDate != null) decisionDates += data.decisionDate
 
         return decisionDates
@@ -200,7 +179,7 @@ data class UVPModel(
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
         }
-        
+
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
 
@@ -263,19 +242,3 @@ data class UVPModel(
 }
 
 data class AddressShort(val uuid: String, val title: String)
-data class AddressLong(val uuid: String, val title: String, val organization: String?, val firstName: String?, val lastName: String?, 
-    val telephone: String?,
-    val fax: String?,
-    val email: String?,
-    val homepage: String?,
-    val location: AddressLocation?,
-    val parent: AddressLong?,
-    )
-data class AddressLocation(
-    val street: String?,
-    val city: String?,
-    val zipCode: String?,
-    val country: KeyValueModel?,
-    val poBox: String?,
-    val zipPoBox: String?,
-)
