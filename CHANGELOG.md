@@ -1,5 +1,31 @@
 # Changelog
 
+## 7.0.2 (29.01.2024)
+
+### Features
+
+- Pflichtfeld "Alternativer Kartenclient" (#5885)
+- Defaultwert "Alternativer Kartenclient" wird nicht übernommen (#5884)
+
+### Bugfixes
+
+- Beim Export von erweiterten InGrid-Profilen werden nicht alle Export-Typen angezeigt (#5907)
+- Konflikt beim Export wenn mehrere Profile aktiv sind (#5906)
+- Anzeige der Längen- / Breitengrade korrigieren (#5897)
+- IGE-NG Capabilities Assistent ändert Bundesland (#5874)
+- Vorschaubilder in Über-/Untgereordneten Objekten aus dem IGE-NG erscheinen nicht im Portal (#5866)
+- Fehlermeldung bei Vorschau (#5852)
+- "Version des Dienstes" wird über die Importfunktion nicht importiert (#5831)
+- gmd:MD_Distributor Element: CI_ResponsibeParty wird nicht mehr in XML exportiert, aber die Rolle (#5818)
+
+## 7.0.1 (11.01.2024)
+
+### Bugfixes
+
+- "Datenformat" für Verweise wurde nicht migriert (#5853)
+- Aufruf Ansicht von IBus-Verwaltung wirft Fehler (#5811)
+- IGE-NG: Verbesserung Datumsbehandlung bei verzögertem Veröffentlichen (#5770)
+
 ## 7.0.0 (05.01.2024)
 
 ### Features
