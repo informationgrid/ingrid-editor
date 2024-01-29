@@ -41,12 +41,12 @@ export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-
   recentDocs$: Observable<DocumentAbstract[]>;
   recentPublishedDocs$: Observable<DocumentAbstract[]>;
   oldestExpiredDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
+  FromCurrentUser: boolean = false;
 
   constructor(
     configService: ConfigService,
@@ -151,5 +151,12 @@ export class DashboardComponent implements OnInit {
         isFolder: true,
       } as CreateOptions,
     });
+  }
+
+  updateLatestDocumentList(checked: boolean) {
+    this.FromCurrentUser = checked;
+
+    this.docService.findRecent(this.FromCurrentUser);
+    this.docService.findExpired(this.FromCurrentUser);
   }
 }

@@ -131,17 +131,26 @@ export class DocumentService {
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 
-  findRecent(): void {
+  findRecent(fromCurrentUser: boolean = false): void {
+    let currentUser = fromCurrentUser
+      ? "and document1.modifiedbyuser = " +
+        this.configService.$userInfo.getValue().id
+      : "";
     this.researchService
       .search(
         "",
-        { type: "selectDocuments", ignoreFolders: "exceptFolders" },
+        {
+          type: "selectDocuments",
+          ignoreFolders: "exceptFolders",
+          selectConditions: "document1.state = 'PUBLISHED' " + currentUser,
+        },
         "modified",
         "DESC",
         {
           page: 1,
           pageSize: 10,
         },
+        ["selectConditions"],
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
@@ -156,7 +165,7 @@ export class DocumentService {
         {
           type: "selectDocuments",
           ignoreFolders: "exceptFolders",
-          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+          selectConditions: "document1.state = 'PUBLISHED' " + currentUser,
         },
         "modified",
         "DESC",
@@ -164,7 +173,7 @@ export class DocumentService {
           page: 1,
           pageSize: 10,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
@@ -175,10 +184,14 @@ export class DocumentService {
       .subscribe();
   }
 
-  findExpired(): void {
+  findExpired(fromCurrentUser: boolean = false): void {
+    let currentUser = fromCurrentUser
+      ? "and document1.modifiedbyuser = " +
+        this.configService.$userInfo.getValue().id
+      : "";
     const model = {
       ignoreFolders: "exceptFolders",
-      selectOnlyPublished: "document1.state = 'PUBLISHED'",
+      selectConditions: "document1.state = 'PUBLISHED'" + currentUser,
     };
     combineLatest(
       this.catalogService.getExpiryDuration(),
@@ -208,7 +221,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       ),
     )
       .pipe(

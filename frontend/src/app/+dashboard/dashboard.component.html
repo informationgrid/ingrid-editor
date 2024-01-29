@@ -53,6 +53,11 @@
                 </ige-card-box>
             </div>
 
+            <mat-checkbox
+                [checked]="FromCurrentUser"
+                (change)="updateLatestDocumentList($event.checked)"
+                >Von mir</mat-checkbox
+            >
             <ige-card-box
                 label="{{ t('mostRecent') }}"
                 data-cy="card-latest-docs"

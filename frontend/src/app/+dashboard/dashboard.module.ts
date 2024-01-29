@@ -37,6 +37,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActionButtonModule } from "../shared/action-button/action-button.module";
+import { MatCheckbox } from "@angular/material/checkbox";
 
 const routes: Routes = [
   {
@@ -65,6 +66,7 @@ const routes: Routes = [
     TranslocoModule,
     MatProgressSpinnerModule,
     ActionButtonModule,
+    MatCheckbox,
   ],
   declarations: [
     DashboardComponent,
