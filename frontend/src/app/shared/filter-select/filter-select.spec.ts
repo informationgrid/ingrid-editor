@@ -28,6 +28,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { createSignal } from "@angular/core/primitives/signals";
+import { InputSignal } from "@angular/core";
+import { SelectOptionUi } from "../../services/codelist/codelist.service";
 
 describe("FilterSelectComponent", () => {
   let spectator: Spectator<FilterSelectComponent>;
@@ -47,8 +49,10 @@ describe("FilterSelectComponent", () => {
 
   it("should create", () => {
     spectator = createComponent();
-    // @ts-ignore
-    spectator.setInput("options", createSignal([]));
+    spectator.setInput(
+      "options",
+      createSignal([]) as InputSignal<SelectOptionUi[]>,
+    );
 
     expect(spectator.component).toBeTruthy();
   });

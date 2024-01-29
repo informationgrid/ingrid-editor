@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Signal } from "@angular/core";
 import {
   CodelistService,
   SelectOptionUi,
@@ -36,7 +36,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
   styleUrls: ["./codelists.component.scss"],
 })
 export class CodelistsComponent implements OnInit {
-  codelists = toSignal(
+  codelists: Signal<SelectOptionUi[]> = toSignal(
     this.codelistQuery.selectAll().pipe(
       map((codelists) => this.codelistService.mapToOptions(codelists)),
       map((codelists) =>
