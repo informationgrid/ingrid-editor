@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   Input,
@@ -44,8 +45,6 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { TreeStore } from "../../../store/tree/tree.store";
 
 export enum TreeActionType {
   ADD,
@@ -129,17 +128,15 @@ export class TreeComponent implements OnInit {
     public configService: ConfigService,
     private cdr: ChangeDetectorRef,
     private docBehaviour: DocBehavioursService,
-    private addressTreeStore: AddressTreeStore,
-    private dataTreeStore: TreeStore,
   ) {
     this.treeControl.dataNodes = [];
+    effect(() => {
+      this.multiEditMode.next(this.selection.multiSelectionModeEnabled());
+    });
   }
 
   ngOnInit(): void {
-    const store = this.forAddresses
-      ? this.addressTreeStore
-      : this.dataTreeStore;
-    this.selection = new TreeSelection(this.treeControl, store);
+    this.selection = new TreeSelection(this.treeControl);
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(
@@ -293,7 +290,7 @@ export class TreeComponent implements OnInit {
 
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     // disable multi selection mode after a tree operation
-    this.selection.multiSelectionModeEnabled = false;
+    this.selection.multiSelectionModeEnabled.set(false);
 
     switch (updateInfo.type) {
       case UpdateType.New:
@@ -639,7 +636,7 @@ export class TreeComponent implements OnInit {
   }
 
   async handleSelection(id: number) {
-    if (this.selection.multiSelectionModeEnabled) {
+    if (this.selection.multiSelectionModeEnabled()) {
       await this.jumpToNode(id, false);
       const node = this.dataSource.getNode(id);
       this.selectNode(node);
@@ -655,9 +652,6 @@ export class TreeComponent implements OnInit {
 
   toggleSelectionMode(isEditMode: boolean) {
     this.selection.toggleSelectionMode(isEditMode);
-
-    // notify external components
-    this.multiEditMode.next(this.selection.multiSelectionModeEnabled);
   }
 
   selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {

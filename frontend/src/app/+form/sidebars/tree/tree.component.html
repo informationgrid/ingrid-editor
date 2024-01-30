@@ -13,7 +13,7 @@
             [indeterminateToggleAll]="
                 selection?.atLeastOneButNotAllNodesSelected()
             "
-            [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled"
+            [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled()"
             (toggleAllSelection)="selection?.toggleAllSelection($event)"
             (toggleView)="toggleView($event)"
             (edit)="toggleSelectionMode($event)"
@@ -93,7 +93,7 @@
             </div>
 
             <div class="label">
-                @if (selection.multiSelectionModeEnabled) {
+                @if (selection.multiSelectionModeEnabled()) {
                     <mat-checkbox
                         [class.docNode]="node.level !== 0"
                         [checked]="selection.isSelected(node)"
@@ -163,7 +163,7 @@
             </div>
 
             <div class="label">
-                @if (selection.showFolderCheckbox()) {
+                @if (selection.multiSelectionModeEnabled()) {
                     <mat-checkbox
                         (change)="selection.nodeSelectionToggle(node, $event)"
                         (click)="$event.stopImmediatePropagation()"
