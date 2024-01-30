@@ -60,8 +60,8 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     // TODO: add permission check
     @Deprecated("Is not secured")
-    @Query("SELECT d FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
-    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DOCUMENT_STATE): Document
+    @Query("SELECT d, dw.id as wrapperId FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND dw.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
+    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DOCUMENT_STATE): Array<Any>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
