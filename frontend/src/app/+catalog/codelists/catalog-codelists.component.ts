@@ -30,14 +30,12 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ConfigService } from "../../services/config/config.service";
 import {
   CdkDrag,
   CdkDragDrop,
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { combineLatest } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { AsyncPipe } from "@angular/common";
@@ -78,8 +76,6 @@ import { MatDivider } from "@angular/material/divider";
   standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
-  // hasCatalogCodelists = this.codelistQuery.hasCatalogCodelists$;
-
   private codelists = this.codelistQuery.selectAll().pipe(
     map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
@@ -106,6 +102,8 @@ export class CatalogCodelistsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.codelistService.getAll();
+
     this.codelists
       .pipe(
         untilDestroyed(this),
@@ -190,10 +188,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {
       emitEvent: false,
     });
-    this.favorites = (ConfigService.codelistFavorites?.[option.id] ?? []).map(
-      (entryId) =>
-        this.selectedCodelist.entries.find((entry) => entry.id === entryId),
-    );
+    this.favorites = this.codelistQuery.getFavorite(option.id);
     this.favoriteIds = this.favorites.map((f) => f.id);
   }
 

@@ -21,9 +21,13 @@ import { Injectable } from "@angular/core";
 import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
 import { Codelist } from "./codelist.model";
 
-export interface CodelistState extends EntityState<Codelist> {}
+export interface CodelistState extends EntityState<Codelist> {
+  favorites: { [x: string]: string[] };
+}
 
-const initialState = {};
+const initialState = {
+  favorites: {},
+};
 
 @Injectable({ providedIn: "root" })
 @StoreConfig({ name: "codelist" })

@@ -38,7 +38,6 @@ import {
   tap,
 } from "rxjs/operators";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
-import { ConfigService } from "../config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
 
@@ -99,7 +98,7 @@ export class CodelistService {
 
     return sort
       ? CodelistService.sortFavorites(
-          codelist.id,
+          CodelistService.favorites[codelist.id] ?? [],
           items.sort((a, b) => a.label?.localeCompare(b.label)),
         )
       : items;
@@ -108,11 +107,16 @@ export class CodelistService {
   private queue = [];
   private batchProcessed = true;
 
+  private static favorites: { [x: string]: string[] } = {};
+
   constructor(
     private store: CodelistStore,
     protected codelistQuery: CodelistQuery,
     private dataService: CodelistDataService,
   ) {
+    this.codelistQuery
+      .select((item) => item.favorites)
+      .subscribe((favorites) => (CodelistService.favorites = favorites));
     this.requestedCodelists
       .pipe(
         untilDestroyed(this),
@@ -199,7 +203,7 @@ export class CodelistService {
       .getAll()
       .pipe(
         map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.set(codelists)),
+        tap((codelists) => this.store.upsertMany(codelists)),
       )
       .subscribe();
   }
@@ -279,11 +283,9 @@ export class CodelistService {
   }
 
   static sortFavorites(
-    codelistId: string,
+    favorites: string[],
     sortedItems: SelectOptionUi[],
   ): SelectOptionUi[] {
-    const favorites: string[] =
-      ConfigService.codelistFavorites?.[codelistId] ?? [];
     if (favorites.length === 0) return sortedItems;
 
     const favoriteItems = favorites
@@ -307,6 +309,18 @@ export class CodelistService {
   }
 
   updateFavorites(id: string, entryIds: string[]) {
+    this.updateFavoriteInStore(id, entryIds);
+
     return this.dataService.updateFavorites(id, entryIds);
+  }
+
+  private updateFavoriteInStore(id: string, entryIds: string[]) {
+    const newFavorites = {
+      ...this.store.getValue().favorites,
+    };
+    newFavorites[id] = entryIds;
+    this.store.update(() => ({
+      favorites: newFavorites,
+    }));
   }
 }

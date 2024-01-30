@@ -27,17 +27,16 @@ import { map } from "rxjs/operators";
   providedIn: "root",
 })
 export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
-  /*
-  catalogCodelists$ = this.selectAll({
-    filterBy: (entity) => entity.isCatalog,
-  });
-*/
-  // hasCatalogCodelists$ = this.selectCount((entity) => entity.isCatalog).pipe(
-  //   map((count) => count > 0),
-  // );
-
   constructor(protected store: CodelistStore) {
     super(store);
+  }
+
+  getFavorite(id: string): CodelistEntry[] {
+    return (
+      this.getValue().favorites[id]?.map((entryId) =>
+        this.getEntity(id).entries.find((entry) => entry.id === entryId),
+      ) ?? []
+    );
   }
 
   getCodelistEntryValueByKey(
