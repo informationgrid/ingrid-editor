@@ -106,24 +106,24 @@ class AddressModelTransformer(
             }.joinToString(", ") { it.document.data.get("organization").asText() }
     }
 
-    val id = doc.id
-    val uuid = doc.uuid
+    val id = displayAddress.id
+    val uuid = displayAddress.uuid
 
     //    val isFolder = doc.type == "FOLDER"
-    val hoursOfService = data.getString("hoursOfService")
-    val country = data.get("address")?.get("country")?.mapToKeyValue()
+    val hoursOfService = displayAddress.data.getString("hoursOfService")
+    val country = displayAddress.data.get("address")?.get("country")?.mapToKeyValue()
     val countryKey = country?.key ?: ""
-    val countryIso3166 = data.get("address")?.get("country")
+    val countryIso3166 = displayAddress.data.get("address")?.get("country")
         ?.takeIf { !it.isNull }
         ?.mapToKeyValue()
         ?.let {
             TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
         }
-    val zipCode = data.getString("address.zip-code")
-    val zipPoBox = data.getString("address.zip-po-box")
-    val poBox = data.getString("address.po-box")
-    val street = data.getString("address.street")
-    val city = data.getString("address.city")
+    val zipCode = displayAddress.data.getString("address.zip-code")
+    val zipPoBox = displayAddress.data.getString("address.zip-po-box")
+    val poBox = displayAddress.data.getString("address.po-box")
+    val street = displayAddress.data.getString("address.street")
+    val city = displayAddress.data.getString("address.city")
     val postBoxAddress =
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
@@ -135,13 +135,13 @@ class AddressModelTransformer(
     val email = contactType("3")
     val homepage = contactType("4")
 
-    val firstName = data.getString("firstName")
-    val lastName = data.getString("lastName")
-    val salutation = data.get("salutation")?.mapToKeyValue()
-    val academicTitle = data.get("academic-title")?.mapToKeyValue()
+    val firstName = displayAddress.data.getString("firstName")
+    val lastName = displayAddress.data.getString("lastName")
+    val salutation = displayAddress.data.get("salutation")?.mapToKeyValue()
+    val academicTitle = displayAddress.data.get("academic-title")?.mapToKeyValue()
 
     val administrativeArea =
-        codelist.getCatalogCodelistValue("6250", data.get("address")?.get("administrativeArea")?.mapToKeyValue())
+        codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(displayAddress.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
 
@@ -153,11 +153,11 @@ class AddressModelTransformer(
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
         formatter.format(Date.from(date.toInstant()))
 
-    val lastModified = formatDate(formatterISO, doc.modified!!)
+    val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
-    val contactsComTypeKeys = data.get("contact")?.map { it.get("type")?.getString("key") } ?: emptyList()
-    val contactsComTypeValues = data.get("contact")?.map { it.get("type")?.mapToKeyValue() } ?: emptyList()
-    val contactsComConnections = data.get("contact")?.map { it.getString("connection") } ?: emptyList()
+    val contactsComTypeKeys = displayAddress.data.get("contact")?.map { it.get("type")?.getString("key") } ?: emptyList()
+    val contactsComTypeValues = displayAddress.data.get("contact")?.map { it.get("type")?.mapToKeyValue() } ?: emptyList()
+    val contactsComConnections = displayAddress.data.get("contact")?.map { it.getString("connection") } ?: emptyList()
 
     /**
      * Get all published objects with references to this address.
@@ -236,7 +236,7 @@ class AddressModelTransformer(
         }
     }
 
-    private fun contactType(type: String): String? = data.get("contact")
+    private fun contactType(type: String): String? = displayAddress.data.get("contact")
         .firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
 
