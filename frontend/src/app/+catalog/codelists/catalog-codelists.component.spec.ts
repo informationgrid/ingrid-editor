@@ -34,6 +34,8 @@ import { CodelistPresenterComponent } from "../../shared/codelist-presenter/code
 import { MatSlideToggleHarness } from "@angular/material/slide-toggle/testing";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { MatMenuHarness } from "@angular/material/menu/testing";
+import { TestBed } from "@angular/core/testing";
+import { CodelistStore } from "../../store/codelist/codelist.store";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
@@ -62,21 +64,14 @@ describe("CatalogCodelistsComponent", () => {
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
     imports: [CodelistPresenterComponent, HttpClientTestingModule],
-    providers: [
-      CodelistService,
-      mockProvider(CodelistQuery, {
-        getEntity(id: string): Codelist {
-          return initCodelists.find((it) => it.id === id);
-        },
-        selectAll: () => of(initCodelists),
-      }),
-    ],
+    providers: [mockProvider(CodelistService)],
     detectChanges: false,
   });
 
   beforeEach(async () => {
     spectator = createHost({});
-    // codelistQuery = TestBed.inject(CodelistQuery);
+    let codelistStore = TestBed.inject(CodelistStore);
+    codelistStore.set(initCodelists);
 
     spectator.detectChanges();
     loader = TestbedHarnessEnvironment.loader(spectator.fixture);
