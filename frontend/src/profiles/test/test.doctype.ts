@@ -202,13 +202,15 @@ export class TestDoctype extends BaseDoctype {
             {
               key: "type",
               type: "ige-select",
+              wrappers: ["form-field"],
               label: "Typ",
               props: {
-                placeholder: "Typ",
+                label: "Typ",
                 appearance: "outline",
-                wrappers: ["form-field"],
                 options: this.getCodelistForSelect(20002, null),
                 codelistId: 20002,
+                formatter: (item: any) =>
+                  this.formatCodelistValue("20002", item),
               },
             },
           ],
