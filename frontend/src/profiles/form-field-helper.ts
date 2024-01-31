@@ -44,6 +44,7 @@ export interface Options {
     "props.disabled"?;
     "props.minLength"?;
     "props.hintStart"?;
+    "props.description"?;
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };
@@ -142,6 +143,8 @@ export interface InputOptions extends Options {
   prefix?: any;
   min?: number;
   max?: number;
+  maxLength?: number;
+  animation?: boolean;
   hintStart?: string | any;
   updateOn?: "change" | "blur" | "submit";
   keydown?: (field: FormlyFieldConfig, event) => void;
@@ -151,6 +154,9 @@ export interface InputOptions extends Options {
 export interface TextAreaOptions extends Options {
   fieldLabel?: string;
   rows?: number;
+  autosize?: boolean;
+  autosizeMinRows?: number;
+  autosizeMaxRows?: number;
 }
 
 export interface AutocompleteOptions extends Options {
@@ -229,10 +235,12 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
-        autosize: false,
+        autosize: options?.autosize ?? false,
         rows: options?.rows ?? "3",
+        autosizeMinRows: options?.autosizeMinRows,
+        autosizeMaxRows: options?.autosizeMaxRows,
         attributes: {
-          style: "resize:vertical;",
+          style: options?.autosize ? null : "resize:vertical;",
         },
         appearance: "outline",
         required: options?.required,
@@ -476,8 +484,10 @@ export class FormFieldHelper {
         buttonConfig: options?.buttonConfig,
         min: options?.min,
         max: options?.max,
+        maxLength: options?.maxLength,
         hintStart: options?.hintStart,
         keydown: options?.keydown,
+        animation: options?.animation,
         placeholder: options?.placeholder,
         hideInPreview: options?.hideInPreview ?? false,
         // [attributes] must be defined first for assigning values, e.g. aria-labelledby below.
