@@ -109,12 +109,18 @@ export class TestDoctype extends BaseDoctype {
         this.addAddressCard("addresses", "Addresses", {
           required: true,
         }),
-        this.addRepeatList("multiChips", "Chips (Select List)", {
-          required: true,
-          asSelect: true,
-          options: this.getCodelistForSelect(100, "multiChips"),
-          codelistId: 100,
-        }),
+        {
+          key: "multiChips",
+          type: "repeatChip",
+          wrappers: ["panel"],
+          props: {
+            externalLabel: "Chips (Dialog)",
+            required: true,
+            useDialog: true,
+            options: this.getCodelistForSelect(100, "multiChips"),
+            codelistId: 100,
+          },
+        },
         this.addRepeatList("multiChipsSimple", "Chips (Input)", {
           view: "chip",
           required: true,
@@ -191,6 +197,18 @@ export class TestDoctype extends BaseDoctype {
               props: {
                 label: "Spalte 3",
                 appearance: "outline",
+              },
+            },
+            {
+              key: "type",
+              type: "ige-select",
+              label: "Typ",
+              props: {
+                placeholder: "Typ",
+                appearance: "outline",
+                wrappers: ["form-field"],
+                options: this.getCodelistForSelect(20002, null),
+                codelistId: 20002,
               },
             },
           ],
