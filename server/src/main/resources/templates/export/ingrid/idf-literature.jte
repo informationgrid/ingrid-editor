@@ -6,7 +6,6 @@
 
 !{var page = ((LiteratureModelTransformer)map.get("model"));}
 !{var publication = page.getPublication();}
-
 @template.template-idf(content = @`
     @template.ingrid.shared-general(page = page, additionalCitation =  @`
         @if(publication != null)

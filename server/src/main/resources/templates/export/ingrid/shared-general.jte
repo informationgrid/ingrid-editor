@@ -19,18 +19,15 @@
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
-
 <gmd:fileIdentifier>
     <gco:CharacterString>${page.getModel().getUuid()}</gco:CharacterString>
 </gmd:fileIdentifier>
-
 @if(page.getRegionKey() != null)
     <idf:regionKey>
         <key>${page.getRegionKey().getValue()}</key>
         <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}</url>
     </idf:regionKey>
 @endif
-
 <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${page.getMetadataLanguage()}" />
 </gmd:language>
