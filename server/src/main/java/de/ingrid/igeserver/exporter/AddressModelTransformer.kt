@@ -40,7 +40,7 @@ class AddressModelTransformer(
     val documentService: DocumentService
 ) {
 
-    private var displayAddress: Document
+    var displayAddress: Document
 
     // needs to be set in during init phase
     private val ancestorAddressesIncludingSelf: MutableList<DocumentData>
@@ -144,7 +144,7 @@ class AddressModelTransformer(
 
     val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
 
-    fun getNextParent() = documentService.getParentWrapper(doc.id!!)?.uuid
+    fun getNextParent() = documentService.getParentWrapper(doc.wrapperId!!)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
@@ -183,8 +183,8 @@ class AddressModelTransformer(
      *  @return List of children
      */
     fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return getPublishedChildren(doc.id)
-            .filter { !it.document.data.get("hideAddress").asBoolean() }
+        return getPublishedChildren(doc.wrapperId)
+            .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
             .map {
                 SubordinatedParty(
                     it.wrapper.uuid,

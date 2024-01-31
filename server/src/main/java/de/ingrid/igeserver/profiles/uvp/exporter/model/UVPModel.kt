@@ -217,7 +217,7 @@ data class UVPModel(
         if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
     fun getAddressShort(address: Document): AddressShort {
-        return if (address.data.get("organization").isNull) {
+        return if (address.data.getString("organization") == null) {
             AddressShort(address.uuid, getPersonStringFromJson(address))
         } else {
             AddressShort(address.uuid, address.data.getString("organization")!!)
@@ -228,14 +228,14 @@ data class UVPModel(
         return listOfNotNull(
             getCodelistValue(
                 "4300",
-                address.data.get("salutation").mapToKeyValue()
+                address.data.get("salutation")?.mapToKeyValue()
             ),
             getCodelistValue(
                 "4305",
-                address.data.get("academicTitle").mapToKeyValue()
+                address.data.get("academicTitle")?.mapToKeyValue()
             ),
-            address.data.get("firstName"),
-            address.data.get("lastName")
+            address.data.getString("firstName"),
+            address.data.getString("lastName")
         ).joinToString(" ")
     }
 

@@ -565,6 +565,9 @@ open class IngridModelTransformer(
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact: List<AddressModelTransformer>
     var orderInfoContact: List<AddressModelTransformer>
+    fun getAddressesToUuids() = pointOfContact.flatMap {model -> 
+        model.getSubordinatedParties().map { it.uuid }
+    }
 
     var contact: AddressModelTransformer?
 

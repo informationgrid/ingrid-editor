@@ -77,17 +77,17 @@
             @endfor
         ],
         "t02_address.address_key": "",
-        "t02_address.address_value": "${page.getContact().getDoc().getTitle()}",
+        "t02_address.address_value": "${page.getContact().getDisplayAddress().getTitle()}",
         "t02_address.city": "${page.getContact().getCity()}",
         "t02_address.country_code": "${page.getCodelists().getValue("6200", page.getContact().getCountry())}",
         "t02_address.country_key": "${page.getContact().getCountryKey()}",
-        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDoc().getCreated())}",
+        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getCreated())}",
         "t02_address.descr": "",
         "t02_address.firstname": "${page.getContact().getFirstName()}",
         "t02_address.lastname": "${page.getContact().getLastName()}",
         "t02_address.institution": "${page.getContact().getDisplayOrganization()}",
         "t02_address.job": "",
-        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDoc().getModified())}",
+        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getModified())}",
         "t02_address.mod_uuid": "",
         "t02_address.org_adr_id": "",
         "t02_address.postbox": "${page.getContact().getPoBox()}",
@@ -269,7 +269,11 @@
     "doi.type": "",
     "t011_obj_geo_symc.symbol_cat": "",
     "t011_obj_geo.datasource_uuid": "",
-    "t022_adr_adr.adr_to_id": [],
+    "t022_adr_adr.adr_to_id": [
+    @for(var entry : ForSupport.of(page.getAddressesToUuids()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "t011_obj_geo.vector_topology_level": "",
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
     "object_access.restriction_key": "",
