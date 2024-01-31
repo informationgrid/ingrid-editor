@@ -61,6 +61,18 @@ export class LeafletService {
     "#DE2525",
     "#b711c2",
     "#2C4EB7",
+    "#0a5383",
+    "#55d04a",
+    "#ad8009",
+    "#bd5600",
+    "#bd0202",
+    "#8d0094",
+    "#10c790",
+    "#8f7fd5",
+    "#efc59f",
+    "#ef9494",
+    "#ea86ef",
+    "#9ff3d9",
   ];
   private wktTools: WktTools;
   private configuration: Configuration;

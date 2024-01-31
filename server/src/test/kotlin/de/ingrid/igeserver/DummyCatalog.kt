@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class DummyCatalog : CatalogProfile {
-    override val identifier = "DUMMY"
+    override var identifier = "DUMMY"
     override val title = "DUMMY Catalog"
     override val description = "This catalog is only used for test purpose"
     override val indexExportFormatID = null

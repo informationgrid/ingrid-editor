@@ -23,13 +23,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.exporter.model.AddressModel
+import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.mapToKeyValue
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -70,7 +75,8 @@ data class UVPModel(
     }
 
     val parentUuid: String? = data._parent
-    var pointOfContact: AddressModel? = null
+    var pointOfContact: AddressModelTransformer? = null
+    private var nonHiddenAncestorAddresses: MutableList<DocumentData>? = null
 
     fun init(catalogId: String): UVPModel {
         this.catalogId = catalogId
@@ -84,17 +90,21 @@ data class UVPModel(
         return value
     }
 
-    private fun determinePointOfContact(): AddressModel? {
+    private fun determinePointOfContact(): AddressModelTransformer? {
 
         val ref = data.pointOfContact
             ?.firstOrNull()
             ?.ref ?: return null
 
-//        val catalogId = AddressModel.catalogRepository?.getCatalogIdentifier(doc.catalog!!.id!!)!!
-        val nonHiddenAddress = ref.getAncestorAddressesIncludingSelf(documentService!!, ref.id, catalogId)
+        val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
+        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
+        val addressTransformer =
+            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
+        nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
-        return if (nonHiddenAddress.size > 0) {
-            nonHiddenAddress.last()
+        return if (nonHiddenAncestorAddresses!!.size > 0) {
+            val result = nonHiddenAncestorAddresses!!.last().document
+            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!)
         } else null
 
     }
@@ -156,7 +166,8 @@ data class UVPModel(
 
     fun getDecisionDate(): List<String> {
 
-        val decisionDates = data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        val decisionDates =
+            data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
         if (data.decisionDate != null) decisionDates += data.decisionDate
 
         return decisionDates
@@ -168,7 +179,7 @@ data class UVPModel(
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
         }
-        
+
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
 
@@ -194,44 +205,37 @@ data class UVPModel(
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
     fun getPostBoxString(): String {
-        return "Postbox ${pointOfContact?.address?.poBox}, ${pointOfContact?.address?.zipPoBox ?: pointOfContact?.address?.poBox} ${pointOfContact?.address?.city}"
+        return "Postbox ${pointOfContact?.poBox}, ${pointOfContact?.zipPoBox ?: pointOfContact?.poBox} ${pointOfContact?.city}"
     }
 
-    fun hasPoBox(): Boolean = !pointOfContact?.address?.poBox.isNullOrEmpty()
+    fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<AddressModel> =
-        if (pointOfContact!!.parent == null) emptyList() else getUvpAddressParents(pointOfContact!!.parent!!)
+    fun getUvpAddressParents(): List<DocumentData> =
+        if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
 
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
-        if (pointOfContact == null) emptyList() else getUvpAddressParents(pointOfContact!!.id).map { getAddressShort(it) }
+        if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
-    private fun getUvpAddressParents(parent: Int?): List<AddressModel> {
-        if (pointOfContact == null) return emptyList()
-
-        return pointOfContact!!.getAncestorAddressesIncludingSelf(documentService!!, parent, catalogId)
-    }
-
-
-    fun getAddressShort(address: AddressModel): AddressShort {
-        return if (address.organization == null) {
+    fun getAddressShort(address: Document): AddressShort {
+        return if (address.data.getString("organization") == null) {
             AddressShort(address.uuid, getPersonStringFromJson(address))
         } else {
-            AddressShort(address.uuid, address.organization)
+            AddressShort(address.uuid, address.data.getString("organization")!!)
         }
     }
 
-    private fun getPersonStringFromJson(address: AddressModel): String {
+    private fun getPersonStringFromJson(address: Document): String {
         return listOfNotNull(
             getCodelistValue(
                 "4300",
-                address.salutation
+                address.data.get("salutation")?.mapToKeyValue()
             ),
             getCodelistValue(
                 "4305",
-                address.academicTitle
+                address.data.get("academicTitle")?.mapToKeyValue()
             ),
-            address.firstName,
-            address.lastName
+            address.data.getString("firstName"),
+            address.data.getString("lastName")
         ).joinToString(" ")
     }
 

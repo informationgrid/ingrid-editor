@@ -21,23 +21,20 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { SelectionModel } from "@angular/cdk/collections";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import { TreeStore } from "../../../store/tree/tree.store";
-import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { signal } from "@angular/core";
 
 export class TreeSelection {
   model = new SelectionModel<TreeNode>(true);
 
   lastSelectedNode: TreeNode;
 
-  multiSelectionModeEnabled = false;
+  multiSelectionModeEnabled = signal(false);
 
   allowMultiSelectionMode = true;
 
   activeNode: TreeNode = null;
-  constructor(
-    private treeControl: FlatTreeControl<TreeNode>,
-    private store: TreeStore | AddressTreeStore,
-  ) {}
+
+  constructor(private treeControl: FlatTreeControl<TreeNode>) {}
 
   /**
    *
@@ -48,20 +45,18 @@ export class TreeSelection {
     if (!this.allowMultiSelectionMode) {
       return this.handleSingleSelection(node);
     }
-    if (this.multiSelectionModeEnabled) {
+    if (this.multiSelectionModeEnabled()) {
       this.nodeSelectionToggle(node, $event);
     } else {
       if ($event?.ctrlKey) {
         this.model.toggle(node);
-        this.multiSelectionModeEnabled = true;
+        this.multiSelectionModeEnabled.set(true);
         this.model.select(node);
-        this.store.update({ multiSelectMode: true });
         return;
       } else if ($event?.shiftKey) {
         this.lastSelectedNode = this.activeNode;
-        this.multiSelectionModeEnabled = true;
+        this.multiSelectionModeEnabled.set(true);
         this.nodeSelectionToggle(node, $event);
-        this.store.update({ multiSelectMode: true });
         return;
       }
       const isUiEvent = $event !== undefined && $event !== null;
@@ -146,8 +141,8 @@ export class TreeSelection {
   }
 
   toggleSelectionMode(isEditMode: boolean) {
-    this.multiSelectionModeEnabled = isEditMode;
-    if (!this.multiSelectionModeEnabled) {
+    this.multiSelectionModeEnabled.set(isEditMode);
+    if (!this.multiSelectionModeEnabled()) {
       this.model.clear();
       if (this.activeNode) {
         this.model.select(this.activeNode);
@@ -157,10 +152,6 @@ export class TreeSelection {
         this.lastSelectedNode = this.activeNode;
       }
     }
-  }
-
-  showFolderCheckbox(): boolean {
-    return this.multiSelectionModeEnabled;
   }
 
   allNodesSelected() {

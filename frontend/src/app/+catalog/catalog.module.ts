@@ -44,7 +44,6 @@ import { PageTemplateModule } from "../shared/page-template/page-template.module
 import { MatMenuModule } from "@angular/material/menu";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { CodelistPresenterModule } from "../shared/codelist-presenter/codelist-presenter.module";
 import { LogResultComponent } from "./indexing/log-result/log-result.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -52,12 +51,14 @@ import { ConfigurationComponent } from "./configuration/configuration.component"
 import { FormlyModule } from "@ngx-formly/core";
 import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelist-presenter.component";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    CodelistPresenterModule,
+    CodelistPresenterComponent,
     MatSnackBarModule,
     MatCardModule,
     MatButtonModule,
@@ -82,11 +83,12 @@ import { SharedPipesModule } from "../directives/shared-pipes.module";
     FormlyModule,
     JobHandlerHeaderModule,
     SharedPipesModule,
+    NgxMatSelectSearchModule,
+    CatalogCodelistsComponent,
   ],
   providers: [CatalogService],
   declarations: [
     CatalogSettingsComponent,
-    CatalogCodelistsComponent,
     IndexingComponent,
     UpdateCodelistComponent,
     LogResultComponent,

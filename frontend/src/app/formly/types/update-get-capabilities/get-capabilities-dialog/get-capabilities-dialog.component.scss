@@ -2,13 +2,13 @@
 
 @include mat.list-density(0);
 
+::ng-deep .mdc-list-item.mdc-list-item--with-two-lines {
+  height: auto;
+}
+
 mat-spinner {
   display: inline-block;
   vertical-align: middle;
-}
-
-.centered {
-  align-items: center;
 }
 
 .baselined {

@@ -13,7 +13,7 @@
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
-    "title": "${page.getModel().getTitle()}",
+    "title": "${page.getDoc().getTitle()}",
     "partner": [
         "${partner}"
     ],
@@ -30,26 +30,26 @@
     "t02_address.id": "${page.getId()}",
     "t02_address.typ": "${page.getAddressDocType()}",
 
-    "t02_address.lastname": "${page.getModel().getLastName()}",
-    "t02_address.firstname": "${page.getModel().getFirstName()}",
-    @if(page.getModel().getSalutation() != null)
-    "t02_address.address_key": "${page.getModel().getSalutation().getKey()}",
-    "t02_address.address_value": "${page.getCodelist().getValue("4300", page.getModel().getSalutation())}",
+    "t02_address.lastname": "${page.getLastName()}",
+    "t02_address.firstname": "${page.getFirstName()}",
+    @if(page.getSalutation() != null)
+    "t02_address.address_key": "${page.getSalutation().getKey()}",
+    "t02_address.address_value": "${page.getCodelist().getValue("4300", page.getSalutation())}",
     @endif
-    @if(page.getModel().getAcademicTitle() != null)
-    "t02_address.title_key": "${page.getModel().getAcademicTitle().getKey()}",
-    "t02_address.title": "${page.getCodelist().getValue("4305", page.getModel().getAcademicTitle())}",
+    @if(page.getAcademicTitle() != null)
+    "t02_address.title_key": "${page.getAcademicTitle().getKey()}",
+    "t02_address.title": "${page.getCodelist().getValue("4305", page.getAcademicTitle())}",
     @endif
-    "street": "${page.getModel().getAddress().getStreet()}",
-    "zip": "${page.getModel().getAddress().getZipCode()}",
-    "t02_address.postbox": "${page.getModel().getAddress().getPoBox()}",
-    "t02_address.postbox_pc": "${page.getModel().getAddress().getZipPoBox()}",
-    "city": "${page.getModel().getAddress().getCity()}",
-    @if(page.getModel().getAddress().getCountry() != null)
-    "t02_address.country_key": "${page.getModel().getAddress().getCountry().getKey()}",
-    "t02_address.country_code": "${page.getCodelist().getValue("6200", page.getModel().getAddress().getCountry())}",
+    "street": "${page.getStreet()}",
+    "zip": "${page.getZipCode()}",
+    "t02_address.postbox": "${page.getPoBox()}",
+    "t02_address.postbox_pc": "${page.getZipPoBox()}",
+    "city": "${page.getCity()}",
+    @if(page.getCountry() != null)
+    "t02_address.country_key": "${page.getCountryKey()}",
+    "t02_address.country_code": "${page.getCodelist().getValue("6200", page.getCountry())}",
     @endif
-    "summary": "${page.getModel().getPositionName()}",
+    "summary": "${page.getPositionName()}",
 
     @if(page.getNextParent() != null)
     "parent.address_node.addr_uuid": "${page.getNextParent()}",
@@ -57,29 +57,29 @@
 
 @for(var entry : ForSupport.of(page.getParentAddresses()))
     @if(entry.isFirst())
-        "parent.address_node.addr_uuid": "${entry.get().getUuid()}",
+        "parent.address_node.addr_uuid": "${entry.get().getDocument().getUuid()}",
     @else
-        "parent${entry.getIndex()}.address_node.addr_uuid": "${entry.get().getUuid()}",
+        "parent${entry.getIndex()}.address_node.addr_uuid": "${entry.get().getDocument().getUuid()}",
     @endif
-    "t02_address${entry.getIndex() + 1}.adr_id": "${entry.get().getUuid()}",
-    "t02_address${entry.getIndex() + 1}.typ": "${page.getAddressDocType(entry.get().getDocType())}",
-    "title${entry.getIndex() + 1}": "${entry.get().getOrganization()}",
-    "t02_address.parents.title": "${entry.get().getOrganization()}",
+    "t02_address${entry.getIndex() + 1}.adr_id": "${entry.get().getDocument().getUuid()}",
+    "t02_address${entry.getIndex() + 1}.typ": "${page.getAddressDocType(entry.get().getDocument().type)}",
+    "title${entry.getIndex() + 1}": "${entry.get().getDocument().data.get("organization").asText()}",
+    "t02_address.parents.title": "${entry.get().getDocument().data.get("organization").asText()}",
 @endfor
 
     "t021_communication.commtype_key": [
-    @for(var entry : ForSupport.of(page.getModel().getContact()))
-        "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getContactsComTypeKeys()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t021_communication.commtype_value": [
-    @for(var entry : ForSupport.of(page.getModel().getContact()))
-        "${page.getCodelist().getValue("4430", entry.get().getType())}"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getContactsComTypeValues()))
+        "${page.getCodelist().getValue("4430", entry.get())}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t021_communication.comm_value": [
-    @for(var entry : ForSupport.of(page.getModel().getContact()))
-        "${entry.get().getConnection()}"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getContactsComConnections()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ]
 }

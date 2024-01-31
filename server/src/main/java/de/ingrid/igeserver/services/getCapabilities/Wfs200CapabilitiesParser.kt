@@ -237,10 +237,10 @@ class Wfs200CapabilitiesParser(
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
                 LocationBean(
-                    java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(lower[1]),
-                    java.lang.Double.valueOf(upper[0]),
-                    java.lang.Double.valueOf(upper[1]), title, "free"
+                    java.lang.Double.valueOf(lower[0]),
+                    java.lang.Double.valueOf(upper[1]),
+                    java.lang.Double.valueOf(upper[0]), title, "free"
                 )
             } else {
                 LocationBean(name = title, type = "free")

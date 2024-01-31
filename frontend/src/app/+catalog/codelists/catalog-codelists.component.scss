@@ -23,3 +23,29 @@ ige-codelist-presenter {
   min-width: 300px;
   max-width: 600px;
 }
+
+.list-wrapper {
+  margin-top: 12px;
+  max-width: 100%;
+  overflow: hidden;
+}
+.list-item {
+  padding: 8px 24px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: move;
+  background: white;
+
+  .favorite-id {
+    display: block;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .favorite-title {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}

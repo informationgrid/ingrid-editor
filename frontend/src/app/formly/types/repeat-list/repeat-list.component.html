@@ -144,11 +144,15 @@
                 </mat-option>
             }
             @for (option of filteredOptions | async; track option) {
-                <mat-option [value]="option" [disabled]="option.disabled">
-                    <div (click)="onOptionClick($event, option)">
-                        {{ option.label }}
-                    </div>
-                </mat-option>
+                @if (option.value === "_SEPARATOR_") {
+                    <mat-divider class="space-bottom"></mat-divider>
+                } @else {
+                    <mat-option [value]="option" [disabled]="option.disabled">
+                        <div (click)="onOptionClick($event, option)">
+                            {{ option.label }}
+                        </div>
+                    </mat-option>
+                }
             }
         </mat-select>
         <!-- help info button -->
@@ -185,9 +189,13 @@
             (optionSelected)="addToList($event.option.value)"
         >
             @for (option of filteredOptions | async; track option) {
-                <mat-option [value]="option" [disabled]="option.disabled">
-                    {{ option.label }}
-                </mat-option>
+                @if (option.value === "_SEPARATOR_") {
+                    <mat-divider class="space-bottom"></mat-divider>
+                } @else {
+                    <mat-option [value]="option" [disabled]="option.disabled">
+                        {{ option.label }}
+                    </mat-option>
+                }
             }
         </mat-autocomplete>
         <!-- clean button -->

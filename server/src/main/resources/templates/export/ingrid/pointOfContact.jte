@@ -18,9 +18,9 @@
             <gco:CharacterString>${address.getIndividualName()}</gco:CharacterString>
         </gmd:individualName>
     @endif
-    @if(address.getOrganization() != null)
+    @if(address.getDisplayOrganization() != null)
         <gmd:organisationName>
-            <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
+            <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
         </gmd:organisationName>
     @endif
     @if(TransformationTools.hasValue(address.getPositionName()))
@@ -73,14 +73,14 @@
                             <gco:CharacterString>${address.getZipCode()}</gco:CharacterString>
                         </gmd:postalCode>
                     @endif
-                    @if(TransformationTools.hasValue(address.getCountry()))
+                    @if(TransformationTools.hasValue(address.getCountryIso3166()))
                         <gmd:country>
-                            <gco:CharacterString>${address.getCountry()}</gco:CharacterString>
+                            <gco:CharacterString>${address.getCountryIso3166()}</gco:CharacterString>
                         </gmd:country>
                     @endif
-                    @if(TransformationTools.hasValue(address.getModel().getEmail()))
+                    @if(TransformationTools.hasValue(address.getEmail()))
                         <gmd:electronicMailAddress>
-                            <gco:CharacterString>${address.getModel().getEmail()}</gco:CharacterString>
+                            <gco:CharacterString>${address.getEmail()}</gco:CharacterString>
                         </gmd:electronicMailAddress>
                     @endif
                 </gmd:CI_Address>
@@ -101,11 +101,11 @@
             @endif
         </gmd:CI_Contact>
     </gmd:contactInfo>
-    @if(address.getType() != null)
+    @if(address.getRelationType() != null)
         <gmd:role>
             <gmd:CI_RoleCode
                     codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                    codeListValue="${address.getCodelist().getValue("505", address.getType(), "iso")}" />
+                    codeListValue="${address.getCodelist().getValue("505", address.getRelationType(), "iso")}" />
         </gmd:role>
     @else
         <gmd:role gco:nilReason="inapplicable" />
@@ -116,12 +116,12 @@
         </idf:last-modified>
     @endif
     @for( AddressModelTransformer adr : address.getHierarchy())
-        <idf:hierarchyParty uuid="${adr.getModel().getUuid()}">
-            @if(adr.getIndividualName(false) != null )
-                <idf:addressIndividualName>${adr.getIndividualName(false)}</idf:addressIndividualName>
+        <idf:hierarchyParty uuid="${adr.getUuid()}">
+            @if(adr.getIndividualName() != null )
+                <idf:addressIndividualName>${adr.getIndividualName()}</idf:addressIndividualName>
             @endif
-            @if(adr.getModel().getOrganization() != null)
-                <idf:addressOrganisationName>${adr.getModel().getOrganization()}</idf:addressOrganisationName>
+            @if(adr.getOrganization() != null)
+                <idf:addressOrganisationName>${adr.getOrganization()}</idf:addressOrganisationName>
             @endif
             <idf:addressType>${adr.getAddressDocType()}</idf:addressType>
         </idf:hierarchyParty>

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
@@ -35,6 +36,7 @@ class ZabbixReportApiController(
     val zabbixService: ZabbixService,
     val zabbixProperties: ZabbixProperties,
     val catalogService: CatalogService,
+    val documentService: DocumentService,
 ) : ZabbixReportApi {
     override fun getReport(principal: Principal): ResponseEntity<List<ProblemReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -50,6 +52,15 @@ class ZabbixReportApiController(
                 docUrl = problem.docUrl,
                 docUuid = problem.docUuid,
             )
+        }.filter {
+            // filter out documents that the principal does not have access to
+            try {
+                // throws an exception if the document does not exist or the principal does not have sufficient rights
+                documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, it.docUuid)
+                true
+            } catch (e: Exception) {
+                false
+            }
         }.let { ResponseEntity.ok(it) }
     }
 

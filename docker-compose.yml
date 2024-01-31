@@ -2,8 +2,30 @@ version: '3'
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:19.0.3-1-dev
+    image: docker-registry.wemove.com/keycloak:22.0.4-2
     restart: unless-stopped
+    environment:
+      - SIMPLE_SECURITY=true
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_RELATIVE_PATH=
+      - KC_HOSTNAME=
+      - KC_HOSTNAME_URL=http://localhost:8080
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=db
+      - KC_DB_USERNAME=admin
+      - KC_DB_PASSWORD=admin
+      - MAIL_SMTP=mailrelay
+      - MAIL_FROM=keycloak@wemove.com
+      #- IGE_CLIENT_ID=ige-ng
+      - IGE_FRONTEND_URL=http://localhost:4300
+      - IGE_SUPER_USER_LOGIN=ige
+      - IGE_SUPER_USER_PASSWORD=ige
+      - IGE_SUPER_USER_FIRSTNAME=Super
+      - IGE_SUPER_USER_LASTNAME=User
+      - IGE_SUPER_USER_EMAIL=super@user.test
     ports:
       - "8080:8080"
     networks:
@@ -45,12 +67,16 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       PGDATA: /pgdata
+    networks:
+      - ige-ng-network
 
   adminer:
     image: adminer
     restart: unless-stopped
     ports:
       - "8081:8080"
+    networks:
+      - ige-ng-network
 
 networks:
   ige-ng-network:

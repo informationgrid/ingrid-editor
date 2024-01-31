@@ -27,6 +27,7 @@ import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
+import { CodelistStore } from "../../store/codelist/codelist.store";
 
 export class Configuration {
   constructor(
@@ -107,6 +108,7 @@ export class ConfigService {
   constructor(
     private http: HttpClient,
     private snackbar: MatSnackBar,
+    private codelistStore: CodelistStore,
   ) {
     this.dataService = new ConfigDataService(http);
   }
@@ -129,6 +131,10 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
+    this.codelistStore.update(() => ({
+      favorites:
+        userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
+    }));
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";

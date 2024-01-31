@@ -41,7 +41,7 @@ class IngridIndexExporterAddressKrzn(
         "Export von Ingrid Adressen ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
-        listOf("krzn"),
+        listOf("ingrid-krzn"),
         false
     )
 

@@ -41,7 +41,7 @@ class GeodatasetTransformerUPSH(
     config: Config,
     catalogService: CatalogService,
     cache: TransformerCache,
-    doc: Document? = null,
+    doc: Document,
     documentService: DocumentService
 ) : GeodatasetModelTransformer(
     model,
@@ -50,14 +50,14 @@ class GeodatasetTransformerUPSH(
     config,
     catalogService,
     cache,
-    null,
+    doc,
     documentService
 ) {
 
-    private val docData = doc?.data
+    private val docData = doc.data
 
     override fun getGeometryContexts(): List<GeometryContext> {
-        return docData?.get("geometryContext")
+        return docData.get("geometryContext")
             ?.map { convertToGeometryContext(it) } ?: emptyList()
     }
 

@@ -22,11 +22,11 @@ import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
 import { Codelist } from "./codelist.model";
 
 export interface CodelistState extends EntityState<Codelist> {
-  catalogCodelists: Codelist[];
+  favorites: { [x: string]: string[] };
 }
 
 const initialState = {
-  catalogCodelists: [],
+  favorites: {},
 };
 
 @Injectable({ providedIn: "root" })

@@ -53,9 +53,10 @@ class ExportService(val exporterFactory: ExporterFactory) {
     fun getExporter(category: DocumentCategory, format: String): IgeExporter =
         exporterFactory.getExporter(category, format)
 
-    fun getExportTypes(profile: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
+    fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
+        val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
         return exporterFactory.typeInfos
-            .filter { it.profiles.isEmpty() || it.profiles.contains(profile) }
+            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.contains(profile.parentProfile)}
             .filter { if (onlyPublic) it.isPublic else true }
     }
 

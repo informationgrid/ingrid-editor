@@ -67,5 +67,13 @@ interface CodelistApi {
         principal: Principal,
         @Parameter() @PathVariable id: String?
     ): ResponseEntity<List<CodeList>>
+    
+    @Operation
+    @PostMapping(value = ["/favorites/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateFavorites(
+        principal: Principal,
+        @Parameter() @PathVariable id: String,
+        @Parameter() @RequestBody favorites: List<String>?,
+    ): ResponseEntity<Unit>
 
 }

@@ -42,13 +42,14 @@ class IngridIndexExporterKrzn(
         "Export von Ingrid Dokumenten ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
-        listOf("krzn"),
+        listOf("ingrid-krzn"),
         false
     )
 
     init {
-        idfExporter.profileTransformer = krznProfileTransformer
-        luceneExporter.profileTransformer = krznProfileTransformer
+        // FIXME: multiple profiles will override profileTransformer!!!
+        idfExporter.profileTransformer["ingrid-krzn"] = krznProfileTransformer
+        luceneExporter.profileTransformer["ingrid-krzn"] = krznProfileTransformer
     }
 
 }

@@ -5,7 +5,7 @@
     </div>
 
     <div main-header class="header">
-        <div>Letzte Synchronisation erfolgte am ...</div>
+        <!--<div>Letzte Synchronisation erfolgte am ...</div>
         <button
             mat-icon-button
             class="dark menu-button"
@@ -14,7 +14,7 @@
             (click)="showMore = !showMore"
         >
             <mat-icon class="rotating animated">keyboard_arrow_down</mat-icon>
-        </button>
+        </button>-->
         <div class="flex-1"></div>
         <div>
             <button
@@ -35,13 +35,12 @@
     <div main-content>
         <div class="flex-row justify-content-center align-items-stretch">
             <ige-filter-select
-                [options]="codelists"
+                [options]="codelists()"
                 class="white-bg"
                 style="flex: 1; max-width: 460px"
-                [labelFormat]="codelistLabelFormat"
                 placeholder="Codeliste wählen..."
                 (reset)="resetInput()"
-                (optionSelect)="updateCodelistTable($event)"
+                (optionSelect)="updateCodelistSelection($event)"
             ></ige-filter-select>
         </div>
 

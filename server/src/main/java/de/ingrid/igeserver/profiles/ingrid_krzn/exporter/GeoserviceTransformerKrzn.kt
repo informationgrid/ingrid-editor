@@ -37,7 +37,7 @@ class GeoserviceTransformerKrzn(
     config: Config,
     catalogService: CatalogService,
     cache: TransformerCache,
-    doc: Document? = null,
+    doc: Document,
     documentService: DocumentService
 ) : GeodataserviceModelTransformer(
     model,
@@ -46,7 +46,8 @@ class GeoserviceTransformerKrzn(
     config,
     catalogService,
     cache,
-    documentService = documentService
+    doc,
+    documentService
 ) {
 
     private val docData = doc?.data

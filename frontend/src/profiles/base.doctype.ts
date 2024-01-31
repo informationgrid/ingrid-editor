@@ -19,7 +19,7 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressType, Doctype } from "../app/services/formular/doctype";
-import { merge, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import {
   CodelistService,
   SelectOption,
@@ -155,12 +155,20 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     this.addCodelistDefaultValues(this.fields);
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
     this.getFieldMap(this.fields);
-    this.cleanFields = JSON.parse(JSON.stringify(this.fields));
+
+    this.cleanFields = JSON.parse(
+      JSON.stringify(this.fields, this.removeObservables),
+    );
     console.debug(`Document type ${this.id} initialized`);
   }
 
   isInitialized() {
     return Promise.resolve();
+  }
+
+  private removeObservables(_: string, value: any) {
+    if (value?.subscribe !== undefined) return undefined;
+    else return value;
   }
 
   private hasOptionals(fields: FormlyFieldConfig[]): boolean {
@@ -226,12 +234,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
       let codelistField = this.fieldWithCodelistMap.get(field.key as string);
       if (codelistField !== undefined) {
-        merge(
-          this.codelistQuery.selectEntity(codelistField),
-          this.codelistQuery.catalogCodelists$.pipe(
-            map((codelists) => codelists.find((cl) => cl.id === codelistField)),
-          ),
-        )
+        this.codelistQuery
+          .selectEntity(codelistField)
           .pipe(
             filter((codelist) => codelist !== undefined),
             take(1),
@@ -240,7 +244,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
               console.log(
                 `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
               );
-              if (field.type === "select") {
+              if (field.type === "ige-select") {
                 field.defaultValue = { key: codelist.default };
               } else if (field.type === "repeatList") {
                 field.defaultValue = [{ key: codelist.default }];

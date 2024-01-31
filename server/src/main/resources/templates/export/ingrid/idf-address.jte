@@ -6,7 +6,6 @@
 @param Map<String, Object> map
 
 !{var page = ((AddressModelTransformer)map.get("model"));}
-
 @template.template-idf(
 idfTag = "idfResponsibleParty",
 idfAdditionalAttributes = @`type="${page.getAddressDocType()}" uuid="${page.getUuid()}"`,
