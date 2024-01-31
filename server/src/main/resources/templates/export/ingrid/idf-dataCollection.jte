@@ -7,7 +7,6 @@
 @param Map<String, Object> map
 
 !{var page = ((DataCollectionModelTransformer)map.get("model"));}
-
 @template.template-idf(content = @`
     @template.ingrid.shared-general(page = page, contentInfo = @`
         @if (page.hasContentInfo())

@@ -19,18 +19,15 @@
 
 !{var spatial = page.getData().getSpatial();}
 !{var verticalExtent = spatial.getVerticalExtent();}
-
 <gmd:fileIdentifier>
     <gco:CharacterString>${page.getModel().getUuid()}</gco:CharacterString>
 </gmd:fileIdentifier>
-
 @if(page.getRegionKey() != null)
     <idf:regionKey>
         <key>${page.getRegionKey().getValue()}</key>
         <url>https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${page.getRegionKey().getKey()}</url>
     </idf:regionKey>
 @endif
-
 <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${page.getMetadataLanguage()}" />
 </gmd:language>
@@ -60,7 +57,7 @@
     @if(address != null)
         <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
             <gmd:organisationName>
-                <gco:CharacterString>${address.getOrganization()}</gco:CharacterString>
+                <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
             </gmd:organisationName>
             <gmd:contactInfo>
                 <gmd:CI_Contact>
@@ -535,9 +532,9 @@
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
     @endfor
-    @if(TransformationTools.hasValue(page.getServiceType()))
+    @if(TransformationTools.hasValue(page.getServiceType(null)))
         <srv:serviceType>
-            <gco:LocalName>${page.getServiceType()}</gco:LocalName>
+            <gco:LocalName>${page.getServiceType(null)}</gco:LocalName>
         </srv:serviceType>
     @endif
     @for(String version : page.getServiceTypeVersions())

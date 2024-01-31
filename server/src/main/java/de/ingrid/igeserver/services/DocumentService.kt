@@ -814,9 +814,14 @@ class DocumentService(
 
     fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false, resolveLinks: Boolean = true): Document {
         val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
-        entityManager.detach(doc)
+        if (doc.isEmpty()) throw NotFoundException.withMissingResource(uuid, null)
+        
+        val result = doc[0] as Array<*>
+//        entityManager.detach(result)
+        val finalDoc = result[0] as Document
+        finalDoc.wrapperId = result[1] as Int
         return expandInternalReferences(
-            doc,
+            finalDoc,
             resolveLinks = resolveLinks,
             options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
         )

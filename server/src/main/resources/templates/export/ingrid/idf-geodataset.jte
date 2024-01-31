@@ -6,7 +6,6 @@
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
-
 @template.template-idf(content = @`
     @template.ingrid.shared-general(
     page = page,

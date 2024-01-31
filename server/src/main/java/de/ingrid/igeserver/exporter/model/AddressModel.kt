@@ -22,10 +22,8 @@ package de.ingrid.igeserver.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.dao.EmptyResultDataAccessException
 import java.time.OffsetDateTime
@@ -62,47 +60,37 @@ data class AddressModel(
      *  Addresses that are not published are ignored.
      *  @return List of ancestors from eldest to youngest including self
      */
-    fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<AddressModel> {
+/*
+    fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<DocumentData> {
         if (id == null) return mutableListOf()
 
-        val doc = documentService.getWrapperByDocumentId(id)
-        if (doc.type == "FOLDER") {
-            return emptyList<AddressModel>().toMutableList()
-        }
+        val wrapper = documentService.getWrapperByDocumentId(id)
+        if (wrapper.type == "FOLDER") return mutableListOf()
 
         val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, doc.uuid)
-            addInternalFields(publishedDoc, doc)
+            val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, wrapper.uuid)
+            DocumentData(wrapper, publishedDoc)
         } catch (ex: EmptyResultDataAccessException) {
             // no published document found
             null
         }
 
-
-        return if (doc.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(documentService, doc.parent!!.id!!, catalogIdent)
+        return if (wrapper.parent != null) {
+            val ancestors = getAncestorAddressesIncludingSelf(documentService, wrapper.parent!!.id!!, catalogIdent)
             // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
-            if ( convertedDoc?.hideAddress != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
+            if ( convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
             ancestors
         } else {
             if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
         }
     }
+*/
 
-    fun getPublishedChildren(documentService: DocumentService, id: Int?, catalogIdent: String): List<AddressModel> =
-        documentService.findChildrenDocs(catalogIdent, id, true).hits
-            .mapNotNull {
-                try {
-                    val doc =
-                        documentService.getLastPublishedDocument(catalogIdent, it.wrapper.uuid, resolveLinks = false)
-                    this.addInternalFields(doc, it.wrapper)
-                } catch (ex: EmptyResultDataAccessException) {
-                    null
-                }
-            }
+    /*fun getPublishedChildren(documentService: DocumentService, id: Int?, catalogIdent: String): List<DocumentData> =
+        documentService.findChildrenDocs(catalogIdent, id, true).hits*/
 
 
-    private fun addInternalFields(document: Document, wrapper: DocumentWrapper): AddressModel {
+    /*private fun addInternalFields(document: Document, wrapper: DocumentWrapper): Document {
 
         val visibleAddress = document.data.apply {
             put("_id", wrapper.id)
@@ -115,8 +103,8 @@ data class AddressModel(
             put("title", document.title)
         }
 
-        return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
-    }
+        return visibleAddress
+    }*/
 
     /*
         private fun getAddressInformationFromParent(parentId: Int?): Address {

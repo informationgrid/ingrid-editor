@@ -59,31 +59,35 @@
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
     "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)
-        @for(var entry : ForSupport.of((page.getContact().getModel().getContact())))
-            "t021_communication.comm_type": "${entry.get().getType().getValue()}",
-            "t021_communication.comm_value": "${page.handleContent(entry.get().getConnection())}",
-            "t021_communication.commtype_key": "${entry.get().getType().getKey()}",
-            "t021_communication.descr": "",
+        @for(var entry : ForSupport.of(page.getContact().getContactsComTypeValues()))
+            "t021_communication.comm_type": "${entry.get().getValue()}",
             "t021_communication.line": "${entry.getIndex() + 1}",
         @endfor
-        "t02_address.adr_id": "${page.handleContent(page.getContact().getModel().getUuid())}",
+        @for(var entry : ForSupport.of(page.getContact().getContactsComConnections()))
+            "t021_communication.comm_value": "${page.handleContent(entry.get())}",
+        @endfor
+        @for(var entry : ForSupport.of(page.getContact().getContactsComTypeKeys()))
+            "t021_communication.commtype_key": "${entry.get()}",
+        @endfor
+        "t021_communication.descr": "",
+        "t02_address.adr_id": "${page.handleContent(page.getContact().getUuid())}",
         "t02_address.adr_id": [
             @for(var entry : ForSupport.of(page.getPointOfContact()))
                 "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
             @endfor
         ],
         "t02_address.address_key": "",
-        "t02_address.address_value": "${page.getContact().getModel().getTitle()}",
-        "t02_address.city": "${page.getContact().getModel().getAddress().getCity()}",
-        "t02_address.country_code": "${page.getCodelists().getValue("6200", page.getContact().getModel().getAddress().getCountry())}",
-        "t02_address.country_key": "${page.getContact().getModel().getAddress().getCountryKey()}",
-        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getModel().getCreated())}",
+        "t02_address.address_value": "${page.getContact().getDisplayAddress().getTitle()}",
+        "t02_address.city": "${page.getContact().getCity()}",
+        "t02_address.country_code": "${page.getCodelists().getValue("6200", page.getContact().getCountry())}",
+        "t02_address.country_key": "${page.getContact().getCountryKey()}",
+        "t02_address.create_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getCreated())}",
         "t02_address.descr": "",
-        "t02_address.firstname": "${page.getContact().getModel().getFirstName()}",
-        "t02_address.lastname": "${page.getContact().getModel().getLastName()}",
-        "t02_address.institution": "${page.getContact().getModel().getOrganization()}",
+        "t02_address.firstname": "${page.getContact().getFirstName()}",
+        "t02_address.lastname": "${page.getContact().getLastName()}",
+        "t02_address.institution": "${page.getContact().getDisplayOrganization()}",
         "t02_address.job": "",
-        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getModel().getModified())}",
+        "t02_address.mod_time": "${page.formatDate(page.getFormatterNoSeparator(), page.getContact().getDisplayAddress().getModified())}",
         "t02_address.mod_uuid": "",
         "t02_address.org_adr_id": "",
         "t02_address.postbox": "${page.getContact().getPoBox()}",
@@ -107,7 +111,7 @@
     "t01_object.org_obj_id": null,
     @if("3".equals(page.getDocumentType()))
     "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
-    "t011_obj_serv.type": "${page.getServiceType()}",
+    "t011_obj_serv.type": "${page.getServiceType(null)}",
     "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
     "t011_obj_serv_version.version_value": [
         @for(var entry : ForSupport.of(page.getServiceTypeVersions()))
@@ -122,12 +126,12 @@
     ],
     "t02_address.title": [
     @for(var entry : ForSupport.of(page.getPointOfContact()))
-        "${page.getCodelists().getValue("4300", entry.get().getModel().getSalutation())}"@if (!entry.isLast()),@endif
+        "${page.getCodelists().getValue("4300", entry.get().getSalutation())}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t022_adr_adr.adr_from_id": [
     @for(var entry : ForSupport.of(page.getPointOfContact()))
-        "${entry.get().getModel().getParent()}"@if (!entry.isLast()),@endif
+        "${entry.get().getNextParent()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t011_obj_serv_op_connpoint.connect_point": [
@@ -265,7 +269,11 @@
     "doi.type": "",
     "t011_obj_geo_symc.symbol_cat": "",
     "t011_obj_geo.datasource_uuid": "",
-    "t022_adr_adr.adr_to_id": [],
+    "t022_adr_adr.adr_to_id": [
+    @for(var entry : ForSupport.of(page.getAddressesToUuids()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "t011_obj_geo.vector_topology_level": "",
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
     "object_access.restriction_key": "",
