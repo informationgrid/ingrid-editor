@@ -31,8 +31,6 @@ import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
-import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -53,9 +51,7 @@ class CatalogService(
     private val catalogProfiles: List<CatalogProfile>
 ) {
 
-    private val log = logger()
-    
-    private val catalogProfileMap = mutableMapOf<String, CatalogProfile>() 
+    private val catalogProfileMap = mutableMapOf<String, CatalogProfile>()
 
     fun getCurrentCatalogForPrincipal(principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -119,10 +115,10 @@ class CatalogService(
         user.data?.recentLogins = recentLogins.map { it.time }
         userRepo.save(user)
     }
-    
-    fun getProfileFromCatalog(catalogId: String) : CatalogProfile {
+
+    fun getProfileFromCatalog(catalogId: String): CatalogProfile {
         catalogProfileMap[catalogId]?.let { return it }
-        
+
         val profile = getCatalogById(catalogId).type
         return catalogProfiles.find { it.identifier == profile }
             ?.also { catalogProfileMap[catalogId] = it }
@@ -165,7 +161,7 @@ class CatalogService(
     private fun transformNameToIdentifier(name: String): String {
         return name.lowercase()
             .replace(" ".toRegex(), "_")
-        // slash not valid as it makes problems in URLs
+            // slash not valid as it makes problems in URLs
             .replace("/".toRegex(), "_")
     }
 
@@ -372,6 +368,7 @@ class CatalogService(
         val catalogId = getCurrentCatalogForPrincipal(principal)
         return getAllCatalogUsers(principal, catalogId)
     }
+
     fun getAllCatalogUsers(principal: Principal, catalogId: String): List<User> {
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
         val catalogUsers = getUserOfCatalog(catalogId)
@@ -396,8 +393,10 @@ class CatalogService(
         // meta admins don't have access to superadmins and katadmins
         if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return false
 
-        // if principal has rights to every group of user or user has no groups
-        return requestedUser?.groups?.all { hasRightsForGroup(principal, it) } ?: true
+        // check principal has rights for all groups of the requested user (in the active catalog) or the user has no groups
+        val catalogId = getCurrentCatalogForPrincipal(principal)
+        return requestedUser?.groups?.filter { it.catalog?.identifier == catalogId }
+            ?.all { hasRightsForGroup(principal, it) } ?: true
     }
 
     fun hasRightsForGroup(
@@ -415,6 +414,7 @@ class CatalogService(
         user.modificationDate = igeUser.data?.modificationDate ?: Date(0)
         user.role = igeUser.role?.name ?: ""
         // if not already set with keycloak check in legacy field of UserInfoData
+        @Suppress("DEPRECATION")
         user.organisation = if (user.organisation != "") user.organisation else igeUser.data?.organisation ?: ""
         return user
     }
