@@ -40,8 +40,7 @@ class AddressModelTransformer(
     val documentService: DocumentService
 ) {
 
-    var displayAddress: Document
-//    fun getModel() = displayAddress
+    private var displayAddress: Document
 
     // needs to be set in during init phase
     private val ancestorAddressesIncludingSelf: MutableList<DocumentData>
@@ -51,9 +50,7 @@ class AddressModelTransformer(
         displayAddress = determineDisplayAddress()
     }
 
-    private val data = doc.data
-
-    fun getIndividualName(addressDoc: Document): String? {
+    private fun getIndividualName(addressDoc: Document): String? {
         val address: JsonNode = addressDoc.data
 
         // format: "lastName, firstName, salutation academic-title"
@@ -66,19 +63,19 @@ class AddressModelTransformer(
         return individualName.ifBlank { null }
     }
 
-    fun getIndividualName(): String? = getIndividualName(doc)
+    fun getIndividualName(): String? = getIndividualName(displayAddress)
 
     fun getDisplayOrganization(): String? =
         if (displayAddress.data.getString("organization").isNullOrEmpty()) {
             determineEldestAncestor()?.document?.data?.getString("organization")
         } else displayAddress.data.getString("organization")
     
-    fun getOrganization(): String? = doc.data.getString("organization")
+    fun getOrganization(): String? = displayAddress.data.getString("organization")
 
     fun getPositionName(): String? =
-        if (data.getString("positionName")
+        if (displayAddress.data.getString("positionName")
                 .isNullOrEmpty()
-        ) determinePositionNameFromAncestors() else data.getString("positionName")
+        ) determinePositionNameFromAncestors() else displayAddress.data.getString("positionName")
 
 
     private fun determineDisplayAddress(): Document {
@@ -97,7 +94,7 @@ class AddressModelTransformer(
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
 
     private fun determinePositionNameFromAncestors(): String {
-        if (!data.getString("positionName").isNullOrEmpty()) return data.getStringOrEmpty("positionName")
+        if (!displayAddress.data.getString("positionName").isNullOrEmpty()) return displayAddress.data.getStringOrEmpty("positionName")
 
         val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest
