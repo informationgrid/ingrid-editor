@@ -134,7 +134,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
       .afterClosed()
       .subscribe((newTag: string) => {
         if (!newTag) return;
-        this.tagsService.updateTagForDocument(doc, newTag);
+        this.tagsService.updateTagForDocument(doc, newTag, this.forAddress);
       });
   }
 }
