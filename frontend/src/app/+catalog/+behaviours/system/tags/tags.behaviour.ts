@@ -114,7 +114,11 @@ export class TagsBehaviour extends Plugin {
       .afterClosed()
       .pipe(filter((item) => item))
       .subscribe((newTag) =>
-        this.tagsService.updateTagForDocument(currentDocument, newTag),
+        this.tagsService.updateTagForDocument(
+          currentDocument,
+          newTag,
+          this.forAddress,
+        ),
       );
   }
 }

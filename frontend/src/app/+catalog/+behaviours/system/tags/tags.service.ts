@@ -30,7 +30,7 @@ export class TagsService {
   updateTagForDocument(
     doc: DocumentAbstract,
     newTag: string,
-    forAddress = false,
+    forAddress: boolean,
   ) {
     this.updatePublicationType(doc.id as number, newTag, forAddress).subscribe(
       () => {
