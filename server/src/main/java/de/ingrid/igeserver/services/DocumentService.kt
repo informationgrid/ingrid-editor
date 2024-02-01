@@ -526,12 +526,12 @@ class DocumentService(
             preUpdatePayload.document.wrapperId = docData.wrapper.id
             val updatedDoc = docRepo.save(preUpdatePayload.document)
 
-            val postWrapper =
-                runPostUpdatePipes(docType, catalogId, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
-
             // since we're within a transaction the expandInternalReferences-function would modify the db-document
             docRepo.flush()
             entityManager.detach(updatedDoc)
+
+            val postWrapper =
+                runPostUpdatePipes(docType, catalogId, updatedDoc, preUpdatePayload.wrapper, filterContext, false)
 
             return DocumentData(
                 postWrapper,
@@ -817,8 +817,8 @@ class DocumentService(
         if (doc.isEmpty()) throw NotFoundException.withMissingResource(uuid, null)
         
         val result = doc[0] as Array<*>
-//        entityManager.detach(result)
         val finalDoc = result[0] as Document
+        entityManager.detach(finalDoc)
         finalDoc.wrapperId = result[1] as Int
         return expandInternalReferences(
             finalDoc,
