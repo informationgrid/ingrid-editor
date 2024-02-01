@@ -262,28 +262,10 @@ export class TestDoctype extends BaseDoctype {
         this.addRepeatDetailList("repeatDetailListImage", "Image List", {
           fields: [this.urlRefFields()],
           required: true,
-          validators: {
-            requiredFieldsInItems: {
-              expression: (ctrl: FormControl) =>
-                !ctrl.value ||
-                ctrl.value.length === 0 ||
-                (<any[]>ctrl.value)?.every((row) => row.title?.length > 0),
-              message: "Es müssen alle Pflichtfelder ausgefüllt sein",
-            },
-          },
         }),
         this.addRepeatDetailList("repeatDetailListLink", "Link List", {
           fields: [this.urlRefFields()],
           required: true,
-          validators: {
-            requiredFieldsInItems: {
-              expression: (ctrl: FormControl) =>
-                !ctrl.value ||
-                ctrl.value.length === 0 ||
-                (<any[]>ctrl.value)?.every((row) => row.title?.length > 0),
-              message: "Es müssen alle Pflichtfelder ausgefüllt sein",
-            },
-          },
         }),
       ]),
 
@@ -301,6 +283,7 @@ export class TestDoctype extends BaseDoctype {
       this.addInputInline("title", "Titel", {
         required: true,
         wrappers: ["inline-help", "form-field"],
+        updateOn: "change",
       }),
       this.addGroupSimple(null, [
         this.addTextAreaInline("description", "Beschreibung/Link", {
