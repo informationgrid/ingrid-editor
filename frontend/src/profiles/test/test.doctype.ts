@@ -22,7 +22,7 @@ import { SelectOptionUi } from "../../app/services/codelist/codelist.service";
 import { BaseDoctype } from "../base.doctype";
 import { inject, Injectable } from "@angular/core";
 import { of } from "rxjs";
-import { FormControl, UntypedFormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
 
@@ -103,7 +103,6 @@ export class TestDoctype extends BaseDoctype {
           wrappers: ["panel", "inline-help"],
           fieldLabel: "Open Data",
         }),
-        ,
       ]),
       this.addSection("Mehrfacheingaben", [
         this.addAddressCard("addresses", "Addresses", {
