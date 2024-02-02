@@ -270,7 +270,7 @@ export class TestDoctype extends BaseDoctype {
       ]),
 
       this.addSection("Raumbezüge", [
-        this.addSpatial("spatial", "Raumbezüge", { required: true }),
+        this.addSpatial("map", "Raumbezüge", { required: true }),
       ]),
     ];
 
