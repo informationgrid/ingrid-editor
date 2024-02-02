@@ -117,7 +117,7 @@ form-toolbar :not(.save-buttons) > .mdc-button {
   }
 }
 
-// custom components, e.g. role, tabindex
+// Outline for custom components, e.g. role, tabindex.
 .cdk-keyboard-focused {
   &[role="row"],
   [role="button"],
@@ -128,6 +128,11 @@ form-toolbar :not(.save-buttons) > .mdc-button {
     outline-offset: -2px;
     outline: 2px solid $ige-primary;
   }
+}
+
+// Disable default outline when using shift to group select.
+mat-tree-node.cdk-mouse-focused {
+  outline: none;
 }
 
 h2[tabindex="0"] {
