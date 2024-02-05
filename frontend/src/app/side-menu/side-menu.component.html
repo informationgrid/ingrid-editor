@@ -1,8 +1,8 @@
 <mat-nav-list
     [class.collapsed]="!menuIsExpanded"
     *transloco="let t; read: 'menu'"
-    role="menu"
     aria-label="Hauptmenü"
+    role="menu"
 >
     @for (item of menuItems | async; track item) {
         <a
@@ -16,8 +16,9 @@
             [class.active]="
                 currentRoute?.indexOf(catalogId + '/' + item.path) === 0
             "
-            tabindex="0"
+            [attr.aria-label]="t(item.path)"
             role="menuitem"
+            tabindex="0"
         >
             <mat-icon matListItemIcon [svgIcon]="item.data?.icon"></mat-icon>
             <p matListItemTitle aria-hidden="true">{{ t(item.path) }}</p>
@@ -33,11 +34,12 @@
             [href]="configuration.contextPath + 'barrierefreiheit'"
             target="_blank"
             data-cy="link-accessibility"
-            title="Erklärung zur Barrierefreiheit"
-            role="menuitem"
             matTooltip="Erklärung zur Barrierefreiheit"
             matTooltipPosition="right"
             [matTooltipDisabled]="menuIsExpanded"
+            aria-label="Erklärung zur Barrierefreiheit"
+            role="menuitem"
+            tabindex="0"
         >
             <mat-icon matListItemIcon svgIcon="info_outline"></mat-icon>
             <p matListItemTitle aria-hidden="true">
@@ -54,11 +56,11 @@
             (keydown.enter)="toggleSidebar(!menuIsExpanded)"
             matTooltipPosition="right"
             data-cy="menu-scale"
-            tabindex="0"
-            role="menuitem"
-            [title]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
             [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
             [matTooltipDisabled]="menuIsExpanded"
+            [attr.aria-label]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+            role="menuitem"
+            tabindex="0"
         >
             @if (!menuIsExpanded) {
                 <mat-icon matListItemIcon svgIcon="Nav-auf"></mat-icon>
