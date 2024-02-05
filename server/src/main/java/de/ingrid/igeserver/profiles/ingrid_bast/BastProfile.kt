@@ -17,12 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_up_sh
+package de.ingrid.igeserver.profiles.ingrid_bast
 
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
-import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportUPSH
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
@@ -32,26 +30,23 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class UPSHProfile(
+class BastProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory,
-    isoImport: ISOImport,
-    isoImportUPSH: ISOImportUPSH,
+    openDataCategory: OpenDataCategory
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-up-sh"
+        const val id = "ingrid-bast"
     }
-    
+
     override val identifier = id
-    override val title = "InGrid Katalog (UP-SH)"
+    override val title = "InGrid Katalog (BASt)"
     override val parentProfile = "ingrid"
-    
-    init {
-        isoImport.profileMapper = isoImportUPSH
-    }
+
+    override val indexExportFormatID = "indexInGridIDFBast"
+
 }

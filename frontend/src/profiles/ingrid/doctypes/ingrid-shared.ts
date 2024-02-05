@@ -82,6 +82,7 @@ export abstract class IngridShared extends BaseDoctype {
       useLimitation: false,
       topicCategories: true,
       accessConstraints: false,
+      resourceDateType: false,
     },
   };
 
@@ -850,6 +851,7 @@ export abstract class IngridShared extends BaseDoctype {
           "Durch die Ressource abgedeckte Zeitspanne",
           [
             this.addSelect("resourceDateType", null, {
+              required: this.options.required.resourceDateType,
               showSearch: true,
               wrappers: ["form-field"],
               options: [
@@ -859,6 +861,7 @@ export abstract class IngridShared extends BaseDoctype {
               ],
             }),
             this.addSelect("resourceDateTypeSince", null, {
+              required: this.options.required.resourceDateType,
               showSearch: true,
               wrappers: ["form-field"],
               options: [
@@ -874,6 +877,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDatepicker("resourceDate", null, {
+              required: this.options.required.resourceDateType,
               placeholder: "TT.MM.JJJJ",
               wrappers: ["form-field"],
               expressions: {
@@ -881,6 +885,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDateRange("resourceRange", null, {
+              required: this.options.required.resourceDateType,
               wrappers: [],
               expressions: {
                 hide: "formState.mainModel?.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
@@ -888,7 +893,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
           ],
           {
-            className: "optional",
+            className: this.options.required.resourceDateType ? "" : "optional",
+            required: this.options.required.resourceDateType,
             contextHelpId: "resourceTime",
           },
         ),
