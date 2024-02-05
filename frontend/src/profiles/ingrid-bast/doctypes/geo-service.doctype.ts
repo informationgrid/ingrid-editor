@@ -18,39 +18,30 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctype } from "../../ingrid/doctypes/geo-service.doctype";
+import { CommonFieldsBast } from "./common-fields";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoServiceDoctypeBast extends GeoServiceDoctype {
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    // add "Produktionsumgebung"
-    fieldConfig
-      .find((field) => field.props.label === "Fachbezug")
-      .fieldGroup.push(this.getEnvironmentDescriptionFieldConfig());
+  common = inject(CommonFieldsBast);
 
-    // add map link field
-    fieldConfig
-      .find((field) => field.props.label === "Raumbezug")
-      .fieldGroup.push(this.getMapLinkFieldConfig());
+  defaultKeySpatialScope = "-673152846";
+
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    fieldConfig[1].fieldGroup
+      .find((field) => field.props.label === "Allgemeines")
+      .fieldGroup.push(...this.common.getFields());
+
+    fieldConfig[7].fieldGroup[0].fieldGroup.splice(
+      2,
+      0,
+      this.common.getUseConstraintsCommentsFieldConfig(),
+    );
 
     return fieldConfig;
   };
-
-  private getEnvironmentDescriptionFieldConfig(): FormlyFieldConfig {
-    return this.addInput("environmentDescription", "Produktionsumgebung", {
-      wrappers: ["panel", "form-field"],
-    });
-  }
-
-  private getMapLinkFieldConfig() {
-    return this.addSelect("mapLink", "Alternativer Karten Client", {
-      required: true,
-      allowNoValue: false,
-      options: this.getCodelistForSelect(10500, "mapLink", false),
-    });
-  }
 }

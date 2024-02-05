@@ -21,6 +21,9 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { CodelistQuery } from "../app/store/codelist/codelist.query";
+import { filter, map, take } from "rxjs/operators";
 
 @Component({
   template: "",
@@ -28,13 +31,15 @@ import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctyp
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
   geoService = inject(GeoServiceDoctypeBast);
+  codelistQuery = inject(CodelistQuery);
+  codelistStore = inject(CodelistStore);
 
   constructor() {
     super();
 
-    // TODO: add BASt-Projektnummer
+    // add BASt-Projektnummer and -title
     this.addNewFields();
-    // TODO: spatialScope default auf "National"
+
     // TODO: Datenmenge? (vorhandenes oder neues Feld)
     // TODO: Speicherort
     // TODO: Bemerkungen
@@ -55,15 +60,7 @@ class InGridBastComponent extends InGridComponent {
   private addNewFields() {}
 
   private modifyFormFieldConfiguration() {
-    [
-      // this.specialisedTask,
-      this.geoDataset,
-      // this.literature,
-      this.geoService,
-      // this.project,
-      // this.dataCollection,
-      // this.informationSystem,
-    ].forEach((docType) => {
+    [this.geoDataset, this.geoService].forEach((docType) => {
       docType.options.required.resourceDateType = true;
     });
   }

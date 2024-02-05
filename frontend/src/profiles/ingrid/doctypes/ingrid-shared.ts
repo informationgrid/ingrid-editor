@@ -97,6 +97,8 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoDataset: boolean = false;
   thesaurusTopics: boolean = false;
 
+  defaultKeySpatialScope = null; // Regional
+
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
     return this.addGroupSimple(
@@ -1450,6 +1452,12 @@ export abstract class IngridShared extends BaseDoctype {
     const executeAction = () => {
       field.model.isInspireConform = true;
 
+      if (this.defaultKeySpatialScope) {
+        field.model.spatialScope = {
+          key: this.defaultKeySpatialScope,
+        };
+      }
+
       if (this.isGeoService) {
         if (isOpenData) {
           field.model.resource.accessConstraints = [{ key: "1" }];
@@ -1457,8 +1465,6 @@ export abstract class IngridShared extends BaseDoctype {
 
         this.addConformanceEntry(field.model, "10", "1");
       } else if (this.isGeoDataset) {
-        field.model.spatialScope = { key: "885989663" }; // Regional
-
         this.addConformanceEntry(field.model, "12", "1");
       }
 

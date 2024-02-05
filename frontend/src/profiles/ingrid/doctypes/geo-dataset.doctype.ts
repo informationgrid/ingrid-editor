@@ -50,6 +50,7 @@ export class GeoDatasetDoctype extends IngridShared {
 
   showInspireConform = true;
   isGeoDataset = true;
+  defaultKeySpatialScope = "885989663";
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
