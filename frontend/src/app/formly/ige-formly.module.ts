@@ -48,9 +48,7 @@ import { FormFieldsModule } from "../form-fields/form-fields.module";
 import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
-import {
-  ChooseAddressDialogComponent
-} from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
+import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatMenuModule } from "@angular/material/menu";
 import { SpatialDialogComponent } from "./types/map/spatial-dialog/spatial-dialog.component";
@@ -65,7 +63,10 @@ import { RepeatChipComponent } from "./types/repeat-chip/repeat-chip.component";
 import { MatChipsModule } from "@angular/material/chips";
 import { ChipDialogComponent } from "./types/repeat-chip/chip-dialog/chip-dialog.component";
 import { DateRangeTypeComponent } from "./types/date-range-type/date-range-type.component";
-import { MatDatepickerIntl, MatDatepickerModule } from "@angular/material/datepicker";
+import {
+  MatDatepickerIntl,
+  MatDatepickerModule,
+} from "@angular/material/datepicker";
 import { MatRadioModule } from "@angular/material/radio";
 import { RepeatDetailListComponent } from "./types/repeat-detail-list/repeat-detail-list.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -90,9 +91,7 @@ import { SelectTypeComponent } from "./types/select-type/select-type.component";
 import { FormlySelectModule } from "@ngx-formly/core/select";
 import { UvpSectionsComponent } from "./types/uvp-sections/uvp-sections.component";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
-import {
-  ReferencedDocumentsTypeComponent
-} from "./types/referenced-documents-type/referenced-documents-type.component";
+import { ReferencedDocumentsTypeComponent } from "./types/referenced-documents-type/referenced-documents-type.component";
 import {
   MatPaginatorIntl,
   MatPaginatorModule,
@@ -105,28 +104,18 @@ import { PrintViewDialogComponent } from "../+form/dialogs/print-view/print-view
 import { AngularSplitModule } from "angular-split";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { DocumentReferenceTypeComponent } from "./types/document-reference-type/document-reference-type.component";
-import {
-  SelectGeoDatasetDialog
-} from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
-import {
-  SelectCswRecordDialog
-} from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
+import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
+import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
-import {
-  CoordinatesSpatialComponent
-} from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
+import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
 import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 import { TranslocoModule } from "@ngneat/transloco";
 import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
-import {
-  GeothesaurusWfsgndeComponent
-} from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
+import { GeothesaurusWfsgndeComponent } from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
 import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
 import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
-import {
-  RepeatDistributionDetailListComponent
-} from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
+import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
 import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
 import { SectionWrapper } from "./wrapper/section-wrapper.component";
@@ -264,12 +253,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         },
       ],
       validators: [
-        {name: "ip", validation: IpValidator},
-        {name: "lowercase", validation: LowercaseValidator},
-        {name: "email", validation: EmailValidator},
-        {name: "notEmptyArray", validation: NotEmptyArrayValidator},
-        {name: "url", validation: UrlValidator},
-        {name: "positiveNum", validation: PositiveNumValidator},
+        { name: "ip", validation: IpValidator },
+        { name: "lowercase", validation: LowercaseValidator },
+        { name: "email", validation: EmailValidator },
+        { name: "notEmptyArray", validation: NotEmptyArrayValidator },
+        { name: "url", validation: UrlValidator },
+        { name: "positiveNum", validation: PositiveNumValidator },
       ],
       /*,
       wrappers: [
@@ -367,5 +356,4 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ContextHelpComponent,
   ],
 })
-export class IgeFormlyModule {
-}
+export class IgeFormlyModule {}
