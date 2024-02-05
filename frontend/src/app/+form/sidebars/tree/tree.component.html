@@ -30,7 +30,7 @@
         >
             <div class="zone">
                 <span
-                    >Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
+                >Ablegen unter: <mat-icon svgIcon="Ordner"></mat-icon>
                     {{ forAddresses ? "Adressen" : t("form") }}</span
                 >
             </div>
@@ -78,7 +78,7 @@
                     class="toggle"
                     matTreeNodeToggle
                     [disabled]="!isExpandable(node)"
-                    [attr.aria-label]="'toggle ' + node.title"
+                    [attr.aria-label]="node.title + ' ' + (node.isExpanded ? 'schließen': 'öffnen')"
                 >
                     @if (isExpandable(node)) {
                         <mat-icon class="mat-icon-rtl-mirror expander animated">
@@ -148,7 +148,7 @@
                     matTreeNodeToggle
                     tabindex="-1"
                     [disabled]="!isExpandable(node)"
-                    [attr.aria-label]="'toggle ' + node.title"
+                    [attr.aria-label]="node.title + ' ' + (node.isExpanded ? 'schließen': 'öffnen')"
                 >
                     @if (isExpandable(node)) {
                         <mat-icon class="mat-icon-rtl-mirror expander animated">
