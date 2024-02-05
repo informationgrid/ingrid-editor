@@ -1,0 +1,11 @@
+<mat-form-field>
+    <input matInput [formControl]="control" />
+    <div matSuffix [matMenuTriggerFor]="suffixMenu">
+        <div>{{ unit$().label }} <mat-icon>arrow_drop_down</mat-icon></div>
+    </div>
+    <mat-menu #suffixMenu>
+        @for (item of unitOptions(); track item) {
+            <button mat-menu-item (click)="updateUnit(item)">{{ item }}</button>
+        }
+    </mat-menu>
+</mat-form-field>
