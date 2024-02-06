@@ -21,6 +21,7 @@ import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import {
   CodelistService,
+  SelectOption,
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
@@ -1245,13 +1246,15 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect(520, "specification"),
             codelistId: 520,
           }),
-          this.addInputInline("transferSize", "Datenvolumen", {
+          this.addUnitInputInline("transferSize", "Datenvolumen", {
             type: "number",
             className: "right-align",
-            wrappers: ["form-field", "addons"],
-            suffix: {
-              text: "MB",
-            },
+            unitOptions: of<SelectOption[]>([
+              new SelectOption("mb", "MB"),
+              new SelectOption("gb", "GB"),
+              new SelectOption("tb", "TB"),
+            ]),
+            fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
