@@ -102,8 +102,8 @@ export class LiteratureDoctype extends IngridShared {
             className: "optional",
           }),
           this.addAutocomplete("documentType", "Dokumententyp", {
-            options: this.getCodelistForSelect(3385, "documentType"),
-            codelistId: 3385,
+            options: this.getCodelistForSelect("3385", "documentType"),
+            codelistId: "3385",
             className: "optional",
           }),
           this.addTextArea("baseDataText", "Basisdaten", this.id, {

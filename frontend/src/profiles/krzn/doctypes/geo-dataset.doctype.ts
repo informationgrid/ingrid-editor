@@ -49,7 +49,7 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
     return this.addSelect("mapLink", "Alternativer Karten Client", {
       required: true,
       allowNoValue: false,
-      options: this.getCodelistForSelect(10500, "mapLink", false),
+      options: this.getCodelistForSelect("10500", "mapLink", false),
     });
   }
 }

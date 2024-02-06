@@ -316,8 +316,8 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
-              options: this.getCodelistForSelect(8010, "advProductGroups"),
-              codelistId: 8010,
+              options: this.getCodelistForSelect("8010", "advProductGroups"),
+              codelistId: "8010",
               expressions: {
                 "props.required": "formState.mainModel?.isAdVCompatible",
                 className: "field.props.required ? '' : 'optional'",
@@ -407,8 +407,8 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
-              options: this.getCodelistForSelect(6100, "themes"),
-              codelistId: 6100,
+              options: this.getCodelistForSelect("6100", "themes"),
+              codelistId: "6100",
               expressions: {
                 "props.required": "formState.mainModel?.isInspireIdentified",
                 className: "field.props.required ? '' : 'optional'",
@@ -465,8 +465,8 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: true,
           showSearch: true,
           required: true,
-          options: this.getCodelistForSelect(6400, "openDataCategories"),
-          codelistId: 6400,
+          options: this.getCodelistForSelect("6400", "openDataCategories"),
+          codelistId: "6400",
           expressions: { hide: "!formState.mainModel?.isOpenData" },
         }),
         options.priorityDataset
@@ -479,7 +479,7 @@ export abstract class IngridShared extends BaseDoctype {
                 showSearch: true,
                 className: "optional",
                 options: this.getPriorityDatasets(),
-                codelistId: 6350,
+                codelistId: "6350",
                 expressions: {
                   hide: "!formState.mainModel?.isInspireIdentified",
                 },
@@ -492,8 +492,8 @@ export abstract class IngridShared extends BaseDoctype {
               "INSPIRE - Räumlicher Anwendungsbereich",
               {
                 showSearch: true,
-                options: this.getCodelistForSelect(6360, "spatialScope"),
-                codelistId: 6360,
+                options: this.getCodelistForSelect("6360", "spatialScope"),
+                codelistId: "6360",
                 expressions: {
                   "props.required": (field: FormlyFieldConfig) =>
                     this.isGeoDataset &&
@@ -509,8 +509,8 @@ export abstract class IngridShared extends BaseDoctype {
               view: "chip",
               asSelect: true,
               showSearch: true,
-              options: this.getCodelistForSelect(527, "topicCategories"),
-              codelistId: 527,
+              options: this.getCodelistForSelect("527", "topicCategories"),
+              codelistId: "527",
               required: this.options.required.topicCategories,
               remove: (field, event) =>
                 this.checkConnectedIsoCategory(event, field),
@@ -700,8 +700,8 @@ export abstract class IngridShared extends BaseDoctype {
           this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
             asSelect: false,
             showSearch: true,
-            options: this.getCodelistForSelect(100, "spatialSystems"),
-            codelistId: 100,
+            options: this.getCodelistForSelect("100", "spatialSystems"),
+            codelistId: "100",
             expressions: {
               "props.required": () => this.isGeoDataset || this.isGeoService,
             },
@@ -734,10 +734,10 @@ export abstract class IngridShared extends BaseDoctype {
                   }),
                   this.addSelectInline("unitOfMeasure", "Maßeinheit", {
                     options: this.getCodelistForSelect(
-                      102,
+                      "102",
                       "spatialRefAltMeasure",
                     ),
-                    codelistId: 102,
+                    codelistId: "102",
                     showSearch: true,
                     allowNoValue: true,
                     wrappers: ["inline-help", "form-field"],
@@ -770,10 +770,10 @@ export abstract class IngridShared extends BaseDoctype {
                 [
                   this.addAutoCompleteInline("Datum", "Vertikaldatum", {
                     options: this.getCodelistForSelect(
-                      101,
+                      "101",
                       "spatialRefAltVDate",
                     ),
-                    codelistId: 101,
+                    codelistId: "101",
                     expressions: {
                       "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value),
@@ -821,8 +821,8 @@ export abstract class IngridShared extends BaseDoctype {
               wrappers: ["form-field"],
               className: "flex-3",
               required: true,
-              options: this.getCodelistForSelect(502, "type"),
-              codelistId: 502,
+              options: this.getCodelistForSelect("502", "type"),
+              codelistId: "502",
             }),
           ],
           validators: {
@@ -894,16 +894,16 @@ export abstract class IngridShared extends BaseDoctype {
         ),
         this.addSelect("status", "Status", {
           showSearch: true,
-          options: this.getCodelistForSelect(523, "timeRefStatus"),
-          codelistId: 523,
+          options: this.getCodelistForSelect("523", "timeRefStatus"),
+          codelistId: "523",
           className: "optional",
         }),
       ]),
       this.addGroupSimple("maintenanceInformation", [
         this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
           showSearch: true,
-          options: this.getCodelistForSelect(518, "timeRefPeriodicity"),
-          codelistId: 518,
+          options: this.getCodelistForSelect("518", "timeRefPeriodicity"),
+          codelistId: "518",
           className: "optional",
         }),
         this.addGroup(
@@ -922,8 +922,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addSelectInline("unit", "Einheit", {
               showSearch: true,
-              options: this.getCodelistForSelect(1230, "timeRefStatus"),
-              codelistId: 1230,
+              options: this.getCodelistForSelect("1230", "timeRefStatus"),
+              codelistId: "1230",
               className: "flex-3",
               allowNoValue: true,
               expressions: {
@@ -957,10 +957,10 @@ export abstract class IngridShared extends BaseDoctype {
           this.addSelect("language", "Sprache des Metadatensatzes", {
             showSearch: true,
             options: this.getCodelistForSelect(
-              99999999,
+              "99999999",
               "extraInfoLangMetaData",
             ),
-            codelistId: 99999999,
+            codelistId: "99999999",
             required: true,
             defaultValue: {
               key: "150",
@@ -975,10 +975,10 @@ export abstract class IngridShared extends BaseDoctype {
                 asSelect: true,
                 asSimpleValues: true,
                 options: this.getCodelistForSelect(
-                  99999999,
+                  "99999999",
                   "extraInfoLangData",
                 ),
-                codelistId: 99999999,
+                codelistId: "99999999",
                 required: true,
                 defaultValue: ["150"],
                 expressions: {
@@ -993,8 +993,8 @@ export abstract class IngridShared extends BaseDoctype {
           ? this.addGroupSimple("metadata", [
               this.addSelect("characterSet", "Zeichensatz des Datensatzes", {
                 showSearch: true,
-                options: this.getCodelistForSelect(510, "characterSet"),
-                codelistId: 510,
+                options: this.getCodelistForSelect("510", "characterSet"),
+                codelistId: "510",
                 className: "optional",
               }),
             ])
@@ -1017,7 +1017,7 @@ export abstract class IngridShared extends BaseDoctype {
                     label: "Spezifikation",
                     appearance: "outline",
                     // needed just to wait for codelist being loaded
-                    options: this.getCodelistForSelect(6005, "specification"),
+                    options: this.getCodelistForSelect("6005", "specification"),
                     formatter: (item: any, form: any, row: any) =>
                       this.formatCodelistValue(
                         row.isInspire ? "6005" : "6006",
@@ -1034,8 +1034,8 @@ export abstract class IngridShared extends BaseDoctype {
                     required: true,
                     label: "Grad",
                     appearance: "outline",
-                    options: this.getCodelistForSelect(6000, "level"),
-                    codelistId: 6000,
+                    options: this.getCodelistForSelect("6000", "level"),
+                    codelistId: "6000",
                     formatter: (item: any) =>
                       this.formatCodelistValue("6000", item),
                   },
@@ -1124,10 +1124,10 @@ export abstract class IngridShared extends BaseDoctype {
               asSelect: false,
               showSearch: true,
               options: this.getCodelistForSelect(
-                1350,
+                "1350",
                 "extraInfoLegalBasicsTable",
               ),
-              codelistId: 1350,
+              codelistId: "1350",
               className: "optional",
             },
           ),
@@ -1164,10 +1164,10 @@ export abstract class IngridShared extends BaseDoctype {
           showSearch: true,
           required: this.options.required.accessConstraints,
           options: this.getCodelistForSelect(
-            6010,
+            "6010",
             "availabilityAccessConstraints",
           ),
-          codelistId: 6010,
+          codelistId: "6010",
           expressions: {
             "props.required": this.options.dynamicRequired.accessConstraints,
             className: "field.props.required ? '' : 'optional'",
@@ -1183,9 +1183,9 @@ export abstract class IngridShared extends BaseDoctype {
           fields: [
             this.addAutocomplete("title", null, {
               required: true,
-              options: this.getCodelistForSelect(6500, "license"),
+              options: this.getCodelistForSelect("6500", "license"),
               fieldLabel: "Lizenz",
-              codelistId: 6500,
+              codelistId: "6500",
               wrappers: ["form-field"],
               className: "flex-1",
             }),
@@ -1216,8 +1216,8 @@ export abstract class IngridShared extends BaseDoctype {
           },
           fields: [
             this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(1320, "specification"),
-              codelistId: 1320,
+              options: this.getCodelistForSelect("1320", "specification"),
+              codelistId: "1320",
               required: true,
             }),
             this.addInputInline("version", "Version"),
@@ -1234,8 +1234,8 @@ export abstract class IngridShared extends BaseDoctype {
         fields: [
           this.addSelectInline("name", "Medium", {
             showSearch: true,
-            options: this.getCodelistForSelect(520, "specification"),
-            codelistId: 520,
+            options: this.getCodelistForSelect("520", "specification"),
+            codelistId: "520",
           }),
           this.addInputInline("transferSize", "Datenvolumen", {
             type: "number",
@@ -1319,7 +1319,7 @@ export abstract class IngridShared extends BaseDoctype {
       { key: "_type" },
       this.addAutoCompleteInline("type", "Typ", {
         required: true,
-        options: this.getCodelistForSelect(2000, "type").pipe(
+        options: this.getCodelistForSelect("2000", "type").pipe(
           map((data) => {
             const mappedDoctype = this.mapDocumentTypeToClass(this.id);
             return data.filter((item) => {
@@ -1332,7 +1332,7 @@ export abstract class IngridShared extends BaseDoctype {
             });
           }),
         ),
-        codelistId: 2000,
+        codelistId: "2000",
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
       }),
@@ -1364,8 +1364,8 @@ export abstract class IngridShared extends BaseDoctype {
             },
           }),
           this.addAutoCompleteInline("urlDataType", "Dateiformat", {
-            options: this.getCodelistForSelect(1320, "urlDataType"),
-            codelistId: 1320,
+            options: this.getCodelistForSelect("1320", "urlDataType"),
+            codelistId: "1320",
             wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
           }),
@@ -1408,7 +1408,7 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  protected titleDateEditionFields(codelistForTitle: number) {
+  protected titleDateEditionFields(codelistForTitle: string) {
     return [
       this.addAutoCompleteInline("title", "Titel", {
         className: "flex-3",

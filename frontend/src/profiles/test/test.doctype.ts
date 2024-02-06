@@ -73,23 +73,23 @@ export class TestDoctype extends BaseDoctype {
         this.addSelect("select", "Selectbox", {
           required: true,
           placeholder: "Bitte wählen...",
-          options: this.getCodelistForSelect(8000, "select"),
-          codelistId: 8000,
+          options: this.getCodelistForSelect("8000", "select"),
+          codelistId: "8000",
         }),
         this.addSelect("selectWithEmpty", "Selectbox mit leerer Option", {
           required: true,
           placeholder: "Bitte wählen...",
           options: this.getCodelistForSelectWithEmtpyOption(
-            8000,
+            "8000",
             "selectWithEmpty",
           ),
-          codelistId: 8000,
+          codelistId: "8000",
         }),
         this.addAutocomplete("autocomplete", "Combobox/Autocomplete", {
           required: true,
-          options: this.getCodelistForSelect(6500, "autocomplete"),
+          options: this.getCodelistForSelect("6500", "autocomplete"),
           placeholder: "Bitte wählen...",
-          codelistId: 6500,
+          codelistId: "6500",
         }),
         this.addDatepicker("date", "Date", {
           required: true,
@@ -116,8 +116,8 @@ export class TestDoctype extends BaseDoctype {
             externalLabel: "Chips (Dialog)",
             required: true,
             useDialog: true,
-            options: this.getCodelistForSelect(100, "multiChips"),
-            codelistId: 100,
+            options: this.getCodelistForSelect("100", "multiChips"),
+            codelistId: "100",
           },
         },
         this.addRepeatList("multiChipsSimple", "Chips (Input)", {
@@ -206,8 +206,8 @@ export class TestDoctype extends BaseDoctype {
               props: {
                 label: "Typ",
                 appearance: "outline",
-                options: this.getCodelistForSelect(20002, null),
-                codelistId: 20002,
+                options: this.getCodelistForSelect("20002", null),
+                codelistId: "20002",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20002", item),
               },
@@ -229,8 +229,8 @@ export class TestDoctype extends BaseDoctype {
         this.addRepeatList("repeatListCodelist", "Mehrfacheingabe (Codelist)", {
           labelField: "Mehrfacheingabe (Codelist)",
           placeholder: "Raumbezugscode eingeben...",
-          options: this.getCodelistForSelect(100, "repeatListCodelist"),
-          codelistId: 100,
+          options: this.getCodelistForSelect("100", "repeatListCodelist"),
+          codelistId: "100",
         }),
         this.addRepeatList("repeatListStatic", "Mehrfacheingabe (Statisch)", {
           labelField: "Mehrfacheingabe (Statisch)",

@@ -26,7 +26,7 @@ import { inject } from "@angular/core";
 import { REGEX_URL } from "../../../app/formly/input.validators";
 
 export class UvpShared extends BaseDoctype {
-  protected uvpNumberCodelistId: number;
+  protected uvpNumberCodelistId: string;
 
   private uploadService = inject(UploadService);
   private behaviourService = inject(BehaviourService);

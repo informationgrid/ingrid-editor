@@ -63,8 +63,8 @@ export class GeoDatasetDoctype extends IngridShared {
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
           showSearch: true,
-          options: this.getCodelistForSelect(525, "subType"),
-          codelistId: 525,
+          options: this.getCodelistForSelect("525", "subType"),
+          codelistId: "525",
         }),
       }),
       this.addKeywordsSection({
@@ -113,8 +113,8 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             asSelect: true,
             showSearch: true,
-            options: this.getCodelistForSelect(526, "priorityDataset"),
-            codelistId: 526,
+            options: this.getCodelistForSelect("526", "priorityDataset"),
+            codelistId: "526",
             expressions: {
               "props.required": "formState.mainModel?.isInspireConform",
               className: "field.props.required ? '' : 'optional'",
@@ -124,13 +124,13 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
           fields: [
             this.addSelectInline("topologyLevel", "Topologieinformation", {
-              options: this.getCodelistForSelect(528, "topologyLevel"),
-              codelistId: 528,
+              options: this.getCodelistForSelect("528", "topologyLevel"),
+              codelistId: "528",
               showSearch: true,
             }),
             this.addSelectInline("geometricObjectType", "Geometrietyp", {
-              options: this.getCodelistForSelect(515, "geometricObjectType"),
-              codelistId: 515,
+              options: this.getCodelistForSelect("515", "geometricObjectType"),
+              codelistId: "515",
               showSearch: true,
               expressions: {
                 "props.required": (field) =>
@@ -171,8 +171,8 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addRepeat("axesDimensionProperties", null, {
               fields: [
                 this.addSelectInline("name", "Achsenbezeichnung", {
-                  options: this.getCodelistForSelect(514, "name"),
-                  codelistId: 514,
+                  options: this.getCodelistForSelect("514", "name"),
+                  codelistId: "514",
                   required: true,
                   showSearch: true,
                 }),
@@ -210,8 +210,8 @@ export class GeoDatasetDoctype extends IngridShared {
                   },
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
-                  options: this.getCodelistForSelect(509, "cellGeometry"),
-                  codelistId: 509,
+                  options: this.getCodelistForSelect("509", "cellGeometry"),
+                  codelistId: "509",
                   showSearch: true,
                   allowNoValue: true,
                   expressions: {
@@ -262,8 +262,11 @@ export class GeoDatasetDoctype extends IngridShared {
                       wrappers: ["inline-help", "form-field"],
                     }),
                     this.addSelectInline("pointInPixel", "Punkt im Pixel", {
-                      options: this.getCodelistForSelect(2100, "pointInPixel"),
-                      codelistId: 2100,
+                      options: this.getCodelistForSelect(
+                        "2100",
+                        "pointInPixel",
+                      ),
+                      codelistId: "2100",
                       showSearch: true,
                       className: "flex-3",
                       allowNoValue: true,
@@ -363,12 +366,12 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
             className: "optional",
-            fields: this.titleDateEditionFields(3555),
+            fields: this.titleDateEditionFields("3555"),
           }),
         ]),
         this.addGroupSimple("featureCatalogueDescription", [
           this.addRepeat("citation", "Schlüsselkatalog", {
-            fields: this.titleDateEditionFields(3535),
+            fields: this.titleDateEditionFields("3535"),
             expressions: {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: "field.props.required ? '' : 'optional'",
@@ -442,52 +445,52 @@ export class GeoDatasetDoctype extends IngridShared {
             {
               key: "completenessComission",
               value: "Datenüberschuss",
-              fields: this.getQualityFields(7109),
+              fields: this.getQualityFields("7109"),
             },
             {
               key: "conceptualConsistency",
               value: "Konzeptionelle Konsistenz",
-              fields: this.getQualityFields(7112),
+              fields: this.getQualityFields("7112"),
             },
             {
               key: "domainConsistency",
               value: "Konsistenz des Wertebereichs",
-              fields: this.getQualityFields(7113),
+              fields: this.getQualityFields("7113"),
             },
             {
               key: "formatConsistency",
               value: "Formatkonsistenz",
-              fields: this.getQualityFields(7114),
+              fields: this.getQualityFields("7114"),
             },
             {
               key: "topologicalConsistency",
               value: "Topologische Konsistenz",
-              fields: this.getQualityFields(7115),
+              fields: this.getQualityFields("7115"),
             },
             {
               key: "temporalConsistency",
               value: "Zeitliche Konsistenz",
-              fields: this.getQualityFields(7120),
+              fields: this.getQualityFields("7120"),
             },
             {
               key: "thematicClassificationCorrectness",
               value: "Korrektheit der thematischen Klassifizierung",
-              fields: this.getQualityFields(7125),
+              fields: this.getQualityFields("7125"),
             },
             {
               key: "nonQuantitativeAttributeAccuracy",
               value: "Genauigkeit nicht-quantitativer Attribute",
-              fields: this.getQualityFields(7126),
+              fields: this.getQualityFields("7126"),
             },
             {
               key: "quantitativeAttributeAccuracy",
               value: "Genauigkeit quantitativer Attribute",
-              fields: this.getQualityFields(7127),
+              fields: this.getQualityFields("7127"),
             },
             {
               key: "relativeInternalPositionalAccuracy",
               value: "Relative Positionsgenauigkeit",
-              fields: this.getQualityFields(7128),
+              fields: this.getQualityFields("7128"),
             },
           ],
         }),
@@ -507,7 +510,7 @@ export class GeoDatasetDoctype extends IngridShared {
     return this.manipulateDocumentFields(fields);
   };
 
-  private getQualityFields(codelistId: number) {
+  private getQualityFields(codelistId: string) {
     return this.addGroupSimple(
       null,
       [

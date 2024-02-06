@@ -93,8 +93,8 @@ export class BmiDoctype extends BaseDoctype {
           view: "chip",
           asSelect: true,
           required: true,
-          options: this.getCodelistForSelect(20001, "DCATThemes"),
-          codelistId: 20001,
+          options: this.getCodelistForSelect("20001", "DCATThemes"),
+          codelistId: "20001",
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
@@ -142,12 +142,12 @@ export class BmiDoctype extends BaseDoctype {
               }),
               this.addSelectInline("format", "Format", {
                 showSearch: true,
-                options: this.getCodelistForSelect(20003, "type").pipe(
+                options: this.getCodelistForSelect("20003", "type").pipe(
                   map((data) => {
                     return data;
                   }),
                 ),
-                codelistId: 20003,
+                codelistId: "20003",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
               }),
@@ -155,8 +155,8 @@ export class BmiDoctype extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 placeholder: "Sprachen",
-                options: this.getCodelistForSelect(20007, "null"),
-                codelistId: 20007,
+                options: this.getCodelistForSelect("20007", "null"),
+                codelistId: "20007",
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
                 contextHelpId: "language",
@@ -169,8 +169,8 @@ export class BmiDoctype extends BaseDoctype {
               this.addSelectInline("license", "Lizenz", {
                 required: true,
                 showSearch: true,
-                options: this.getCodelistForSelect(20004, "null"),
-                codelistId: 20004,
+                options: this.getCodelistForSelect("20004", "null"),
+                codelistId: "20004",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
               }),
@@ -183,8 +183,8 @@ export class BmiDoctype extends BaseDoctype {
                 },
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
-                options: this.getCodelistForSelect(20005, "null"),
-                codelistId: 20005,
+                options: this.getCodelistForSelect("20005", "null"),
+                codelistId: "20005",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
               }),
@@ -221,8 +221,8 @@ export class BmiDoctype extends BaseDoctype {
           "politicalGeocodingLevel",
           "Ebene der geopolitischen Abdeckung",
           {
-            options: this.getCodelistForSelect(20006, "null"),
-            codelistId: 20006,
+            options: this.getCodelistForSelect("20006", "null"),
+            codelistId: "20006",
           },
         ),
       ]),
@@ -259,8 +259,11 @@ export class BmiDoctype extends BaseDoctype {
         ]),
         this.addSelect("periodicity", "Periodizität", {
           showSearch: true,
-          options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
-          codelistId: 518,
+          options: this.getCodelistForSelectWithEmtpyOption(
+            "518",
+            "periodicity",
+          ),
+          codelistId: "518",
         }),
       ]),
     ];

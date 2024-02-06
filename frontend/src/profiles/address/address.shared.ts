@@ -48,12 +48,12 @@ export abstract class AddressShared extends BaseDoctype {
           className: "flex-1",
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(4430, "type").pipe(
+          options: this.getCodelistForSelect("4430", "type").pipe(
             map((items) =>
               items.filter((item) => item.value !== "5" && item.value !== "6"),
             ),
           ),
-          codelistId: 4430,
+          codelistId: "4430",
         }),
         this.addInput("connection", "Verbindung", {
           fieldLabel: "Verbindung",
@@ -184,16 +184,16 @@ export abstract class AddressShared extends BaseDoctype {
       showSearch: true,
       wrappers: ["form-field"],
       className: options.hideAdministrativeArea ? null : "flex-1",
-      options: this.getCodelistForSelect(6200, "country"),
-      codelistId: 6200,
+      options: this.getCodelistForSelect("6200", "country"),
+      codelistId: "6200",
       defaultValue: options?.defaultCountry,
     });
     const administrativeArea = this.addAutoCompleteInline(
       "administrativeArea",
       "Verwaltungsgebiet",
       {
-        options: this.getCodelistForSelect(6250, "administrativeArea"),
-        codelistId: 6250,
+        options: this.getCodelistForSelect("6250", "administrativeArea"),
+        codelistId: "6250",
         required:
           options.requiredField && options.requiredField["administrativeArea"],
       },

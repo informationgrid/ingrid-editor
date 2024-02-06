@@ -47,8 +47,8 @@ export class InformationSystemDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addSelect("serviceType", "Art des Dienstes", {
           showSearch: true,
-          options: this.getCodelistForSelect(5300, "serviceType"),
-          codelistId: 5300,
+          options: this.getCodelistForSelect("5300", "serviceType"),
+          codelistId: "5300",
         }),
         this.addRepeatList("serviceVersion", "Version", {
           asAutocomplete: true,

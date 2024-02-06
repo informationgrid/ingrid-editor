@@ -72,14 +72,14 @@ export class McloudDoctype extends BaseDoctype {
         this.addRepeatChip("mCloudCategories", "mCLOUD Kategorie", {
           required: true,
           useDialog: true,
-          options: this.getCodelistForSelect(20000, "mCloudCategories"),
-          codelistId: 20000,
+          options: this.getCodelistForSelect("20000", "mCloudCategories"),
+          codelistId: "20000",
         }),
         this.addRepeatChip("DCATThemes", "OpenData Kategorie", {
           required: true,
           useDialog: true,
-          options: this.getCodelistForSelect(20001, "DCATThemes"),
-          codelistId: 20001,
+          options: this.getCodelistForSelect("20001", "DCATThemes"),
+          codelistId: "20001",
         }),
         this.addTable("distributions", "Downloads", {
           required: true,
@@ -141,8 +141,8 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Typ",
                 appearance: "outline",
                 required: true,
-                options: this.getCodelistForSelect(20002, null),
-                codelistId: 20002,
+                options: this.getCodelistForSelect("20002", null),
+                codelistId: "20002",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20002", item),
               },
@@ -156,8 +156,8 @@ export class McloudDoctype extends BaseDoctype {
               props: {
                 label: "Datenformat",
                 appearance: "outline",
-                options: this.getCodelistForSelect(20003, null),
-                codelistId: 20003,
+                options: this.getCodelistForSelect("20003", null),
+                codelistId: "20003",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20003", item),
               },
@@ -173,8 +173,8 @@ export class McloudDoctype extends BaseDoctype {
         }),
         this.addAutocomplete("license", "Lizenz", {
           required: true,
-          options: this.getCodelistForSelect(6500, "license"),
-          codelistId: 6500,
+          options: this.getCodelistForSelect("6500", "license"),
+          codelistId: "6500",
         }),
         this.addTextArea("origin", "Quellenvermerk", this.id),
         this.addGroup(null, "mFUND", [
@@ -215,10 +215,10 @@ export class McloudDoctype extends BaseDoctype {
                 className: "flex-1",
                 wrappers: ["form-field"],
                 externalLabel: null,
-                options: this.getCodelistForSelect(502, "text").pipe(
+                options: this.getCodelistForSelect("502", "text").pipe(
                   map((items) => items.filter((it) => it.value !== "2")),
                 ),
-                codelistId: 502,
+                codelistId: "502",
               }),
             ],
           },
@@ -250,8 +250,11 @@ export class McloudDoctype extends BaseDoctype {
         ]),
         this.addSelect("periodicity", "Periodizität", {
           showSearch: true,
-          options: this.getCodelistForSelectWithEmtpyOption(518, "periodicity"),
-          codelistId: 518,
+          options: this.getCodelistForSelectWithEmtpyOption(
+            "518",
+            "periodicity",
+          ),
+          codelistId: "518",
         }),
       ]),
     ];

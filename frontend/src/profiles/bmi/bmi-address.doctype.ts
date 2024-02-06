@@ -70,12 +70,12 @@ export class BmiAddressDoctype extends OrganisationDoctype {
           className: "flex-1",
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect(4430, "type").pipe(
+          options: this.getCodelistForSelect("4430", "type").pipe(
             map((items) =>
               items.filter((item) => item.value !== "5" && item.value !== "6"),
             ),
           ),
-          codelistId: 4430,
+          codelistId: "4430",
         }),
         this.addInput("connection", "Verbindung", {
           fieldLabel: "Verbindung",
@@ -139,8 +139,8 @@ export class BmiAddressDoctype extends OrganisationDoctype {
               showSearch: true,
               wrappers: ["form-field"],
               className: options.hideAdministrativeArea ? null : "flex-1",
-              options: this.getCodelistForSelect(6200, "country"),
-              codelistId: 6200,
+              options: this.getCodelistForSelect("6200", "country"),
+              codelistId: "6200",
               defaultValue: options?.defaultCountry,
             }),
           ],
