@@ -82,7 +82,7 @@ export interface RepeatDetailListOptions extends Options {
 export interface RepeatListOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
-  codelistId?: number;
+  codelistId?: string;
   asSelect?: boolean;
   showSearch?: boolean;
   fieldGroupClassName?: string; // TODO: move up
@@ -101,14 +101,14 @@ export interface RepeatListOptions extends Options {
 export interface RepeatChipOptions extends Options {
   useDialog?: boolean;
   options?: any[] | Observable<any[]>;
-  codelistId?: number;
+  codelistId?: string;
   restCall?: (http: HttpClient, query: string) => Observable<any[]>;
   labelField?: string;
 }
 
 export interface SelectOptions extends Options {
   options?: Partial<SelectOptionUi>[] | Observable<Partial<SelectOptionUi>[]>;
-  codelistId?: number;
+  codelistId?: string;
   fieldLabel?: string;
   externalLabel?: string;
   showSearch?: boolean;
@@ -165,7 +165,7 @@ export interface AutocompleteOptions extends Options {
   highlightMatches?: boolean;
   hideDeleteButton?: boolean;
   options?: any[] | Observable<any[]>;
-  codelistId?: number;
+  codelistId?: string;
 }
 
 export interface UnitInputOptions extends InputOptions {

@@ -9,13 +9,13 @@
 !{var docInfo = ((DocInfo)map.get("docInfo"));}
 !{page.getData().convertEiaNumbers(docInfo.getCatalogId());}
 
-@template.template-idf(content = @`
-    @template.uvp.shared-general(page = page)
+@template.export.template-idf(content = @`
+    @template.export.uvp.shared-general(page = page)
     <uvpgs>
         @for(UVPNumber uvpNumber : page.getUvpNumbers())
             <uvpg category="${uvpNumber.getCategory()}"
                   type="${uvpNumber.getType()}">${uvpNumber.getUvpg()}</uvpg>
         @endfor
     </uvpgs>
-    @template.uvp.shared-steps(page = page, docInfo = docInfo)
+    @template.export.uvp.shared-steps(page = page, docInfo = docInfo)
 `)

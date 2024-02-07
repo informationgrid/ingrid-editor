@@ -4,6 +4,6 @@
 @param Map<String, Object> map
 
 !{var page = ((IngridModelTransformer)map.get("model"));}
-@template.template-idf(content = @`
-    @template.ingrid.shared-general(page = page)
+@template.export.template-idf(content = @`
+    @template.export.ingrid.shared-general(page = page)
 `, abstract_text = page.getDescription())

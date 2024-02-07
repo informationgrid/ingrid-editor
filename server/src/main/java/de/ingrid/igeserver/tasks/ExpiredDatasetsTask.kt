@@ -210,7 +210,7 @@ class ExpiredDatasetsTask(
                 val output = StringOutput()
 
                 val baseTemplate =
-                    if (ExpiryState.EXPIRED == expiryState) "expired-template.jte" else "will-expire-template.jte"
+                    if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
 
                 // check if profile specific template exists, otherwise use default
                 val template =

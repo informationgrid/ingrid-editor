@@ -27,7 +27,7 @@
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>
                             <gmd:title>
-                                @template.ingrid.anchorOrCharacterString(model = new CharacterStringModel(thesaurus.getName(), thesaurus.getLink()))
+                                @template.export.ingrid.anchorOrCharacterString(model = new CharacterStringModel(thesaurus.getName(), thesaurus.getLink()))
                             </gmd:title>
                             <gmd:date>
                                 <gmd:CI_Date>

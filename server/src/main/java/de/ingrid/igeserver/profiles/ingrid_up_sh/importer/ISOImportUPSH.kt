@@ -33,7 +33,7 @@ class ISOImportUPSH(val codelistHandler: CodelistHandler) : ISOImportProfile {
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset" -> {
                 ImportProfileData(
-                    "ingrid-up-sh/geodataset.jte",
+                    "imports/ingrid-up-sh/geodataset.jte",
                     GeodatasetMapper(data, codelistHandler, catalogId)
                 )
             }

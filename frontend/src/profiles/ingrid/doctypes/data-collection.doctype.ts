@@ -50,8 +50,8 @@ export class DataCollectionDoctype extends IngridShared {
               className: "flex-3",
               wrappers: ["form-field"],
               required: true,
-              options: this.getCodelistForSelect(3535, "title"),
-              codelistId: 3535,
+              options: this.getCodelistForSelect("3535", "title"),
+              codelistId: "3535",
             }),
             this.addDatepickerInline("date", "Datum", {
               className: "flex-1",

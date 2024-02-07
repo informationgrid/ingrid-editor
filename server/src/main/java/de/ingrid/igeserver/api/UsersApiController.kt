@@ -344,6 +344,8 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             val groups = currentCatalog?.let { cat ->
                 dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
             } ?: emptySet()
+            val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
+
             val userInfo = UserInfo(
                 id = dbUser?.id,
                 login = user.login,
@@ -351,7 +353,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 lastName = user.lastName,
                 firstName = user.firstName,
                 email = user.email,
-                assignedCatalogs = dbUser?.catalogs?.toList() ?: emptyList(),
+                assignedCatalogs = assignedCatalogs,
                 role = dbUser?.role?.name,
                 groups = groups,
                 currentCatalog = currentCatalog,

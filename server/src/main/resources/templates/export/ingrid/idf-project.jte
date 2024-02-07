@@ -5,8 +5,8 @@
 @param Map<String, Object> map
 
 !{var page = ((ProjectModelTransformer)map.get("model"));}
-@template.template-idf(content = @`
-    @template.ingrid.shared-general(page = page, additionalCitation = @`
+@template.export.template-idf(content = @`
+    @template.export.ingrid.shared-general(page = page, additionalCitation = @`
         @if(TransformationTools.hasValue(page.getManager()))
         <gmd:citedResponsibleParty>
             <gmd:CI_ResponsibleParty>

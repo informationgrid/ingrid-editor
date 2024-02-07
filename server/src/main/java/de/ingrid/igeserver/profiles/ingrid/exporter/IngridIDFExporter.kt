@@ -89,15 +89,15 @@ class IngridIDFExporter(
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
-            "InGridSpecialisedTask" -> "ingrid/idf-specialisedTask.jte"
-            "InGridGeoDataset" -> "ingrid/idf-geodataset.jte"
-            "InGridPublication" -> "ingrid/idf-literature.jte"
-            "InGridGeoService" -> "ingrid/idf-geoservice.jte"
-            "InGridProject" -> "ingrid/idf-project.jte"
-            "InGridDataCollection" -> "ingrid/idf-dataCollection.jte"
-            "InGridInformationSystem" -> "ingrid/idf-informationSystem.jte"
-            "InGridOrganisationDoc" -> "ingrid/idf-address.jte"
-            "InGridPersonDoc" -> "ingrid/idf-address.jte"
+            "InGridSpecialisedTask" -> "export/ingrid/idf-specialisedTask.jte"
+            "InGridGeoDataset" -> "export/ingrid/idf-geodataset.jte"
+            "InGridPublication" -> "export/ingrid/idf-literature.jte"
+            "InGridGeoService" -> "export/ingrid/idf-geoservice.jte"
+            "InGridProject" -> "export/ingrid/idf-project.jte"
+            "InGridDataCollection" -> "export/ingrid/idf-dataCollection.jte"
+            "InGridInformationSystem" -> "export/ingrid/idf-informationSystem.jte"
+            "InGridOrganisationDoc" -> "export/ingrid/idf-address.jte"
+            "InGridPersonDoc" -> "export/ingrid/idf-address.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }

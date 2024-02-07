@@ -128,7 +128,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   getCodelistForSelectWithEmtpyOption(
-    codelistId: number,
+    codelistId: string,
     field: string,
   ): Observable<SelectOptionUi[]> {
     return this.getCodelistForSelect(codelistId, field).pipe(
@@ -137,13 +137,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 
   getCodelistForSelect(
-    codelistId: number,
+    codelistId: string,
     field: string,
     sort: boolean = true,
   ): Observable<SelectOptionUi[]> {
-    if (field) this.fieldWithCodelistMap.set(field, codelistId + "");
+    if (field) this.fieldWithCodelistMap.set(field, codelistId);
 
-    return this.codelistService.observe(codelistId + "", sort);
+    return this.codelistService.observe(codelistId, sort);
   }
 
   async init(help: string[]): Promise<void> {

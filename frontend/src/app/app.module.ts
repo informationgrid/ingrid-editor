@@ -128,7 +128,7 @@ export function ConfigLoader(
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
-    const commands: any[] = [`/${catalogId}${splittedUrl[0]}`];
+    const commands: any[] = [`/${catalogId}/${splittedUrl[0]}`];
     if (splittedUrl.length > 1) {
       const parameterData = splittedUrl[1].split("=");
       const parameter = {};
@@ -145,11 +145,9 @@ export function ConfigLoader(
     const userInfo = configService.$userInfo.value;
     const catalogId = userInfo.currentCatalog.id;
     const contextPath = configService.getConfiguration().contextPath;
-    const urlPath = document.location.pathname;
-    // FIXME: what about IGE-NG installed behind a context path? check configuration!
+    const urlPath = document.location.pathname.substring(contextPath.length); // remove context path
     // get first part of the path without any parameters separated by ";"
     const rootPath = urlPath
-      .substring(contextPath.length) // remove context path
       .split("/")[0] // split paths
       .split(";")[0]; // split parameters
     if (rootPath !== catalogId) {

@@ -136,7 +136,7 @@ class DocumentService(
     fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
 
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
-    
+
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
 
     fun getWrapperByCatalogAndDocumentUuid(
@@ -812,10 +812,15 @@ class DocumentService(
         return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
-    fun getLastPublishedDocument(catalogId: String, uuid: String, forExport: Boolean = false, resolveLinks: Boolean = true): Document {
+    fun getLastPublishedDocument(
+        catalogId: String,
+        uuid: String,
+        forExport: Boolean = false,
+        resolveLinks: Boolean = true
+    ): Document {
         val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
-        if (doc.isEmpty()) throw NotFoundException.withMissingResource(uuid, null)
-        
+        if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)
+
         val result = doc[0] as Array<*>
         val finalDoc = result[0] as Document
         entityManager.detach(finalDoc)

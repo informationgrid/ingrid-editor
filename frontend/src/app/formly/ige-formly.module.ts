@@ -63,7 +63,10 @@ import { RepeatChipComponent } from "./types/repeat-chip/repeat-chip.component";
 import { MatChipsModule } from "@angular/material/chips";
 import { ChipDialogComponent } from "./types/repeat-chip/chip-dialog/chip-dialog.component";
 import { DateRangeTypeComponent } from "./types/date-range-type/date-range-type.component";
-import { MatDatepickerModule } from "@angular/material/datepicker";
+import {
+  MatDatepickerIntl,
+  MatDatepickerModule,
+} from "@angular/material/datepicker";
 import { MatRadioModule } from "@angular/material/radio";
 import { RepeatDetailListComponent } from "./types/repeat-detail-list/repeat-detail-list.component";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -116,6 +119,7 @@ import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formty
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
 import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
 import { SectionWrapper } from "./wrapper/section-wrapper.component";
+import { IgeDatepickerIntl } from "../shared/ige-datepicker-intl";
 import { UnitInputComponent } from "./types/unit-type/unit-input.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
@@ -303,6 +307,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatDatepickerIntl,
+      useClass: IgeDatepickerIntl,
     },
     {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,

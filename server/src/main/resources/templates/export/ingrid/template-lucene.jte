@@ -59,19 +59,29 @@
     "t01_object.obj_id": "${page.handleContent(page.getModel().getUuid())}",
     "t01_object.id": "${page.handleContent(page.getModel().getUuid())}",
     @if(page.getContact() != null)
+        "t021_communication.comm_type": [
         @for(var entry : ForSupport.of(page.getContact().getContactsComTypeValues()))
-            "t021_communication.comm_type": "${entry.get().getValue()}",
-            "t021_communication.line": "${entry.getIndex() + 1}",
+            "${entry.get().getValue()}"@if (!entry.isLast()),@endif
         @endfor
+        ],
+        "t021_communication.line": [
+        @for(var entry : ForSupport.of(page.getContact().getContactsComTypeValues()))
+            "${entry.getIndex() + 1}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
+        "t021_communication.comm_value": [
         @for(var entry : ForSupport.of(page.getContact().getContactsComConnections()))
-            "t021_communication.comm_value": "${page.handleContent(entry.get())}",
+            "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
         @endfor
+        ],
+        "t021_communication.commtype_key": [
         @for(var entry : ForSupport.of(page.getContact().getContactsComTypeKeys()))
-            "t021_communication.commtype_key": "${entry.get()}",
+            "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
+        ],
         "t021_communication.descr": "",
-        "t02_address.adr_id": "${page.handleContent(page.getContact().getUuid())}",
         "t02_address.adr_id": [
+            "${page.handleContent(page.getContact().getUuid())}",
             @for(var entry : ForSupport.of(page.getPointOfContact()))
                 "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
             @endfor
@@ -153,31 +163,53 @@
         @endfor
         ],
     @endif
-    "refering_service_uuid": "${page.getReferingServiceUuid()}",
+    "refering_service_uuid": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "${page.getReferingServiceUuid(entry.get())}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "t04_search.searchterm": [
     @for(var entry : ForSupport.of(page.getKeywordsAsList()))
         "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "refering.object_reference.obj_uuid": [],
-    "refering.object_reference.obj_class": [],
-    "refering.object_reference.obj_name": [],
-    "refering.object_reference.type": [],
-    "refering.object_reference.version": [],
-
-
+    "refering.object_reference.obj_uuid": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "refering.object_reference.obj_class": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "3"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "refering.object_reference.obj_name": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "${entry.get().getObjectName()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "refering.object_reference.type": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "${entry.get().getObjectType()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "refering.object_reference.version": [
+    @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+        "${entry.get().getServiceVersion()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "t017_url_ref.url_link": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
         "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t017_url_ref.content": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
         "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t017_url_ref.special_ref": [
-    @for(var entry : ForSupport.of(page.getReferences()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
         "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
     @endfor
     ],
@@ -188,22 +220,22 @@
     ],
     "object_reference.obj_name": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-        ""@if (!entry.isLast()),@endif
+        "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.obj_class": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-        ""@if (!entry.isLast()),@endif
+<%--        "${entry.get().getType()}"@if (!entry.isLast()),@endif--%>
     @endfor
     ],
     "object_reference.type": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-        ""@if (!entry.isLast()),@endif
+        "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.version": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-        ""@if (!entry.isLast()),@endif
+<%--        "${entry.get().()}"@if (!entry.isLast()),@endif--%>
     @endfor
     ],
 
@@ -268,7 +300,7 @@
     "object_data_language.data_language_value": [],
     "doi.type": "",
     "t011_obj_geo_symc.symbol_cat": "",
-    "t011_obj_geo.datasource_uuid": "",
+    "t011_obj_geo.datasource_uuid": "${page.getData().getIdentifier()}",
     "t022_adr_adr.adr_to_id": [
     @for(var entry : ForSupport.of(page.getAddressesToUuids()))
         "${entry.get()}"@if (!entry.isLast()),@endif

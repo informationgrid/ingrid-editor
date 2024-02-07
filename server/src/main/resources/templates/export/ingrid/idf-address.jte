@@ -6,11 +6,11 @@
 @param Map<String, Object> map
 
 !{var page = ((AddressModelTransformer)map.get("model"));}
-@template.template-idf(
+@template.export.template-idf(
 idfTag = "idfResponsibleParty",
 idfAdditionalAttributes = @`type="${page.getAddressDocType()}" uuid="${page.getUuid()}"`,
 content = @`
-    @template.ingrid.pointOfContact(
+    @template.export.ingrid.pointOfContact(
     addresses = List.of(page),
     isAddressExport = true,
     )
