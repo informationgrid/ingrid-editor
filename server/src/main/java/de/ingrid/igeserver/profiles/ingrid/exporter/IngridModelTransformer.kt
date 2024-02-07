@@ -301,7 +301,7 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getFreeKeywords(): Thesaurus {
+    open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
         if (data.isOpenData == true && freeKeywords.keywords.none { it.name == "opendata" }) {
             freeKeywords.keywords += listOf(KeywordIso("opendata"))
