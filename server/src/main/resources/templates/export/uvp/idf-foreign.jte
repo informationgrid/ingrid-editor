@@ -7,7 +7,7 @@
 !{var page = ((UVPModel)map.get("model"));}
 !{var docInfo = ((DocInfo)map.get("docInfo"));}
 
-@template.template-idf(content = @`
-    @template.uvp.shared-general(page = page)
-    @template.uvp.shared-steps(page = page, docInfo = docInfo)
+@template.export.template-idf(content = @`
+    @template.export.uvp.shared-general(page = page)
+    @template.export.uvp.shared-steps(page = page, docInfo = docInfo)
 `)

@@ -86,17 +86,17 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
         when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
                 val model = GeoserviceMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geoservice.jte", mapOf("model" to model), output)
+                templateEngine.render("imports/ingrid/geoservice.jte", mapOf("model" to model), output)
             }
 
             "dataset" -> {
                 val model = GeodatasetMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geodataset.jte", mapOf("model" to model), output)
+                templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
             
             "series" -> {
                 val model = GeodatasetMapper(data, codelistService, catalogId)
-                templateEngine.render("ingrid/geodataset.jte", mapOf("model" to model), output)
+                templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
 
             else -> throw ServerException.withReason("Not supported hierarchy level for import: $hierarchyLevel")

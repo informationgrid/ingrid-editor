@@ -21,7 +21,7 @@
     @if(contact.get().isOrganization())
         "organization": "${contact.get().getOrganization()}",
     @elseif(contact.get().getPersonInfo() != null)
-        "salutation": @template.ingrid.partial.key-value(item = contact.get().getPersonInfo().getSalutation()),
+        "salutation": @template.imports.ingrid.partial.key-value(item = contact.get().getPersonInfo().getSalutation()),
         "firstName": "${contact.get().getPersonInfo().getFirstName()}",
         "lastName": "${contact.get().getPersonInfo().getLastName()}",
     @endif
@@ -31,16 +31,16 @@
         @if(address.getCity() != null)"city": "${address.getCity()}",@endif
         @if(address.getPOBox() != null)"po-box": "${address.getPOBox()}",@endif
         @if(address.getStreet() != null)"street": "${address.getStreet()}",@endif
-        "country": @template.ingrid.partial.key-value(item = address.getCountry()),
+        "country": @template.imports.ingrid.partial.key-value(item = address.getCountry()),
         @if(address.getZipCode() != null)"zip-code": "${address.getZipCode()}",@endif
         @if(address.getZipPOBox() != null)"zip-po-box": "${address.getZipPOBox()}",@endif
-        "administrativeArea": @template.ingrid.partial.key-value(item = address.getAdministrativeArea())
+        "administrativeArea": @template.imports.ingrid.partial.key-value(item = address.getAdministrativeArea())
         },
     @endif
     "contact": [
     @for(var communication : ForSupport.of(contact.get().getCommunications()))
         {
-        "type": @template.ingrid.partial.key-value(item = communication.get().getType()),
+        "type": @template.imports.ingrid.partial.key-value(item = communication.get().getType()),
         "connection": "${communication.get().getConnection()}"
         }@if (!communication.isLast()),@endif
     @endfor
@@ -48,7 +48,7 @@
     "positionName": "${contact.get().getPositionName()}",
     "hoursOfService": "${contact.get().getHoursOfService()}"
     },
-    "type": @template.ingrid.partial.key-value(item = contact.get().getType())
+    "type": @template.imports.ingrid.partial.key-value(item = contact.get().getType())
     }@if (!contact.isLast()),@endif
 @endfor
 ],
@@ -64,11 +64,11 @@
     }@if (!image.isLast()),@endif
 @endfor
 ],
-"advProductGroups": @template.ingrid.partial.key-values(list = model.getAdvProductGroups()),
-"themes": @template.ingrid.partial.key-values(list = model.getThemes()),
-"priorityDatasets": @template.ingrid.partial.key-values(list = model.getPriorityDatasets()),
-"openDataCategories": @template.ingrid.partial.key-values(list = model.getOpenDataCategories()),
-"spatialScope": @template.ingrid.partial.key-value(item = model.getSpatialScope()),
+"advProductGroups": @template.imports.ingrid.partial.key-values(list = model.getAdvProductGroups()),
+"themes": @template.imports.ingrid.partial.key-values(list = model.getThemes()),
+"priorityDatasets": @template.imports.ingrid.partial.key-values(list = model.getPriorityDatasets()),
+"openDataCategories": @template.imports.ingrid.partial.key-values(list = model.getOpenDataCategories()),
+"spatialScope": @template.imports.ingrid.partial.key-value(item = model.getSpatialScope()),
 "keywords": {
     "free": [
     @for(var keyword : ForSupport.of(model.getKeywords()))
@@ -98,7 +98,7 @@
     }@if (!ref.isLast()),@endif
 @endfor
 ],
-"spatialSystems": @template.ingrid.partial.key-values(list = model.getSpatialSystems()),
+"spatialSystems": @template.imports.ingrid.partial.key-values(list = model.getSpatialSystems()),
 @if(model.getVerticalExtent() != null)
     "verticalExtent": {
     "minimumValue": ${model.getVerticalExtent().getMin()},
@@ -118,15 +118,15 @@
 @for(var event : ForSupport.of(model.getTemporalEvents()))
     {
         "referenceDate": "${event.get().getDate()}",
-        "referenceDateType": @template.ingrid.partial.key-value(item = event.get().getType())
+        "referenceDateType": @template.imports.ingrid.partial.key-value(item = event.get().getType())
     }@if (!event.isLast()),@endif
 @endfor
 ]
 !{var time = model.getTimeRelatedInfo();}
 @if(time != null)
     ,
-    "resourceDateType": @template.ingrid.partial.key-value(item = time.getType()),
-    "status": @template.ingrid.partial.key-value(item = time.getStatus()),
+    "resourceDateType": @template.imports.ingrid.partial.key-value(item = time.getType()),
+    "status": @template.imports.ingrid.partial.key-value(item = time.getStatus()),
     @if(time.getUntilDate() == null)
         "resourceDate": @if(time.getDate() == null) null @else "${time.getDate()}"@endif,
     @else
@@ -135,40 +135,40 @@
         "end": "${time.getUntilDate()}"
         },
     @endif
-    "resourceDateTypeSince": @template.ingrid.partial.key-value(item = time.getDateTypeSince())
+    "resourceDateTypeSince": @template.imports.ingrid.partial.key-value(item = time.getDateTypeSince())
 @endif
 },
 "maintenanceInformation": {
 !{var interval = model.getMaintenanceInterval();}
-"maintenanceAndUpdateFrequency": @template.ingrid.partial.key-value(item = interval.getInterval()),
+"maintenanceAndUpdateFrequency": @template.imports.ingrid.partial.key-value(item = interval.getInterval()),
 "userDefinedMaintenanceFrequency": {
     @if(interval.getValue() != null)"number": ${interval.getValue()},@endif
-    "unit": @template.ingrid.partial.key-value(item = interval.getUnit())
+    "unit": @template.imports.ingrid.partial.key-value(item = interval.getUnit())
 },
 "description": "${interval.getDescription()}"
 },
 "conformanceResult": [
 @for(var item : ForSupport.of(model.getConformanceResult()))
     {
-    "pass": @template.ingrid.partial.key-value(item = item.get().getPass()),
+    "pass": @template.imports.ingrid.partial.key-value(item = item.get().getPass()),
     "isInspire": ${item.get().isInspire()},
     "explanation": "${item.get().getExplanation()}",
-    "specification": @template.ingrid.partial.key-value(item = item.get().getSpecification()),
+    "specification": @template.imports.ingrid.partial.key-value(item = item.get().getSpecification()),
     "publicationDate": "${item.get().getPublicationDate()}"
     }@if (!item.isLast()),@endif
 @endfor
 ],
 "extraInfo": {
-"legalBasicsDescriptions": @template.ingrid.partial.key-values(list = model.getLegalDescriptions())
+"legalBasicsDescriptions": @template.imports.ingrid.partial.key-values(list = model.getLegalDescriptions())
 },
 "resource": {
 "purpose": "${model.getPurpose()}",
 "specificUsage": "${model.getSpecificUsage()}",
-"accessConstraints": @template.ingrid.partial.key-values(list = model.getAccessConstraints()),
+"accessConstraints": @template.imports.ingrid.partial.key-values(list = model.getAccessConstraints()),
 "useConstraints": [
 @for(var item : ForSupport.of(model.getUseConstraints()))
     {
-    "title": @template.ingrid.partial.key-value(item = item.get().getTitle()),
+    "title": @template.imports.ingrid.partial.key-value(item = item.get().getTitle()),
     "source": "${item.get().getSource()}"
     }@if (!item.isLast()),@endif
 @endfor
@@ -179,7 +179,7 @@
 "format": [
 @for(var format : ForSupport.of(model.getDistributionFormat()))
     {
-    "name": @template.ingrid.partial.key-value(item = format.get().getName()),
+    "name": @template.imports.ingrid.partial.key-value(item = format.get().getName()),
     "version": "${format.get().getVersion()}",
     "compression": "${format.get().getCompression()}",
     "specification": "${format.get().getSpecification()}"
@@ -190,7 +190,7 @@
 "digitalTransferOptions": [
 @for(var option : ForSupport.of(model.getDigitalTransferOptions()))
     {
-    "name": @template.ingrid.partial.key-value(item = option.get().getName()),
+    "name": @template.imports.ingrid.partial.key-value(item = option.get().getName()),
     "transferSize": ${option.get().getTransferSize()},
     "mediumNote": "${option.get().getMediumNote()}"
     }@if (!option.isLast()),@endif
@@ -200,10 +200,10 @@
 "references": [
 @for(var reference : ForSupport.of(model.getReferences()))
     {
-    "type": @template.ingrid.partial.key-value(item = reference.get().getType()),
+    "type": @template.imports.ingrid.partial.key-value(item = reference.get().getType()),
     "title": "${reference.get().getTitle()}",
     "url": "${reference.get().getUrl()}",
-    @if(reference.get().getUrlDataType() != null) "urlDataType": @template.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
+    @if(reference.get().getUrlDataType() != null) "urlDataType": @template.imports.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
     "explanation": "${reference.get().getExplanation()}"
     }@if (!reference.isLast()),@endif
 @endfor

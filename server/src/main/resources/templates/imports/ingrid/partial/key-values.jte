@@ -6,6 +6,6 @@
 
 [
     @for(var item : ForSupport.of(list))
-        @template.ingrid.partial.key-value(item = item.get())@if (!item.isLast()),@endif
+        @template.imports.ingrid.partial.key-value(item = item.get())@if (!item.isLast()),@endif
     @endfor
 ]

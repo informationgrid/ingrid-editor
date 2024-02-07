@@ -3,18 +3,18 @@
 @param GeoserviceMapper model 
 
 {
-    @template.ingrid.base(model = model)
+    @template.imports.ingrid.base(model = model)
     "metadata": {
-        "language": @template.ingrid.partial.key-value(item = model.getLanguage())
+        "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage())
     },
     "service": {
-        "classification": @template.ingrid.partial.key-values(list = model.getServiceCategories()),
-        "type": @template.ingrid.partial.key-value(item = model.getServiceType()),
-        "version": @template.ingrid.partial.key-values(list = model.getServiceVersions()),
+        "classification": @template.imports.ingrid.partial.key-values(list = model.getServiceCategories()),
+        "type": @template.imports.ingrid.partial.key-value(item = model.getServiceType()),
+        "version": @template.imports.ingrid.partial.key-values(list = model.getServiceVersions()),
         "operations": [
         @for(var operation : ForSupport.of(model.getOperations()))
             {
-            "name": @template.ingrid.partial.key-value(item = operation.get().getName()),
+            "name": @template.imports.ingrid.partial.key-value(item = operation.get().getName()),
             "description": "${operation.get().getDescription()}",
             "methodCall": "${operation.get().getMethodCall()}"
             }@if (!operation.isLast()),@endif
@@ -23,9 +23,9 @@
         "resolution": [
         @for(var resolution : ForSupport.of(model.getResolutions()))
             {
-            "denominator": @template.ingrid.partial.value-or-null(item = resolution.get().getDenominator()),
-            "distanceMeter": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceMeter()),
-            "distanceDPI": @template.ingrid.partial.value-or-null(item = resolution.get().getDistanceDPI())
+            "denominator": @template.imports.ingrid.partial.value-or-null(item = resolution.get().getDenominator()),
+            "distanceMeter": @template.imports.ingrid.partial.value-or-null(item = resolution.get().getDistanceMeter()),
+            "distanceDPI": @template.imports.ingrid.partial.value-or-null(item = resolution.get().getDistanceDPI())
             }@if (!resolution.isLast()),@endif
         @endfor
         ],
@@ -47,7 +47,7 @@
             }@if (!resource.isLast()),@endif
         @endfor
         ],
-        "couplingType": @template.ingrid.partial.key-value(item = model.getCouplingType()),
+        "couplingType": @template.imports.ingrid.partial.key-value(item = model.getCouplingType()),
         "hasAccessConstraints": false
     }
 }

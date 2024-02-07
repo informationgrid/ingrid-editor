@@ -271,7 +271,7 @@
             <gmd:referenceSystemIdentifier>
                 <gmd:RS_Identifier>
                     <gmd:code>
-                        @template.ingrid.anchorOrCharacterString(model = spatialSystem)
+                        @template.export.ingrid.anchorOrCharacterString(model = spatialSystem)
                     </gmd:code>
                 </gmd:RS_Identifier>
             </gmd:referenceSystemIdentifier>
@@ -342,7 +342,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.ingrid.pointOfContact(addresses = page.getPointOfContact())
+    @template.export.ingrid.pointOfContact(addresses = page.getPointOfContact())
     @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -397,18 +397,18 @@
             </gmd:MD_Format>
         </gmd:resourceFormat>
     @endif
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getGemetKeywords())
-    @template.ingrid.descriptiveKeywords(thesaurus = page.getInvekosKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getGemetKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInvekosKeywords())
     @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>
@@ -438,7 +438,7 @@
                 </gmd:useConstraints>
                 @for(UseConstraintTemplate useconstraint : page.getUseConstraints() )
                     <gmd:otherConstraints>
-                        @template.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
+                        @template.export.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
                     @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
@@ -464,7 +464,7 @@
                 </gmd:accessConstraints>
                 @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
                     <gmd:otherConstraints>
-                        @template.ingrid.anchorOrCharacterString(model = accessConstraint)
+                        @template.export.ingrid.anchorOrCharacterString(model = accessConstraint)
                     </gmd:otherConstraints>
                 @endfor
             </gmd:MD_LegalConstraints>
@@ -800,7 +800,7 @@ ${contentInfo}
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
+                            @template.export.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
                             @if(page.getOrderInfoContact().isEmpty())
                                 <gmd:CI_ResponsibleParty>
                                     <gmd:role>

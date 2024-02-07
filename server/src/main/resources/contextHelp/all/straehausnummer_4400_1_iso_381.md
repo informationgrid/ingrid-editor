@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
 id: street
-docType: InGridOrganisationDoc
+docType: all
 profile: ingrid
-
-
 
 # title, used as window title
 title: Straße/Hausnummer

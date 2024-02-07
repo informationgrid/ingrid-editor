@@ -2,7 +2,7 @@
 @import gg.jte.support.ForSupport
 @param GeodatasetMapper model
 
-@template.ingrid.geodataset(model = model, contentInfo = @`
+@template.imports.ingrid.geodataset(model = model, contentInfo = @`
     ,
     "geometryContext": [
     @for(var geometryContext : ForSupport.of(model.getGeometryContexts()))
@@ -10,7 +10,7 @@
         "name": "${geometryContext.get().getName()}",
         "dataType": "${geometryContext.get().getDataType()}",
         "description": "${geometryContext.get().getDescription()}",
-        "featureType": @template.ingrid.partial.key-value(item = geometryContext.get().getFeatureType()),
+        "featureType": @template.imports.ingrid.partial.key-value(item = geometryContext.get().getFeatureType()),
         "geometryType": "${geometryContext.get().getGeometryType()}",
         @if(geometryContext.get().getMin() != null) "min": ${geometryContext.get().getMin()},@endif
         @if(geometryContext.get().getMax() != null) "max": ${geometryContext.get().getMax()},@endif

@@ -251,7 +251,7 @@ tasks.withType(KotlinCompile).configureEach {
 }
 
 jte {
-    sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates", "export")
+    sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates")
     contentType = ContentType.Plain
     trimControlStructures = true
     precompile()

@@ -5,8 +5,8 @@
 @param Map<String, Object> map
 
 !{var page = ((InformationSystemModelTransformer)map.get("model"));}
-@template.template-idf(content = @`
-    @template.ingrid.shared-general(page = page)
+@template.export.template-idf(content = @`
+    @template.export.ingrid.shared-general(page = page)
     @if(page.hasDataQualityInfo())
         <gmd:dataQualityInfo>
             <gmd:DQ_DataQuality>
