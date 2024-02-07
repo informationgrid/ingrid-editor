@@ -545,7 +545,7 @@ open class IngridModelTransformer(
     val references = data.references ?: emptyList()
     val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
     val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not() }
-    val getCoupledServicesForGeodataset = getIncomingReferencesProxy().filter { it.refType.key == "3600" }
+    val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServices = references + getCoupledServicesForGeodataset.map {
         Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)
     }
@@ -653,7 +653,7 @@ open class IngridModelTransformer(
             ?: emptyList()
 
     open fun getCrossReferences() =
-        getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy()
+        getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
     fun getCoupledServiceUrlsOrGetCapabilitiesUrl() =
         getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
@@ -663,7 +663,7 @@ open class IngridModelTransformer(
     private fun getCoupledServiceUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
 
-        return getIncomingReferencesProxy()
+        return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
     }
@@ -681,12 +681,13 @@ open class IngridModelTransformer(
             ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
 
-    private fun getIncomingReferencesProxy(): List<CrossReference> {
+    private fun getIncomingReferencesProxy(excludeSubordinate: Boolean = false): List<CrossReference> {
         if (incomingReferencesCache == null) {
-            incomingReferencesCache = getIncomingReferences().filter { !it.isSubordinate }
+            incomingReferencesCache = getIncomingReferences()
         }
 
-        return incomingReferencesCache ?: emptyList()
+        return if (excludeSubordinate) incomingReferencesCache!!.filter { !it.isSubordinate }
+        else incomingReferencesCache ?: emptyList()
     }
 
     private fun getSuperiorReferenceProxy(): SuperiorReference? {
@@ -879,14 +880,6 @@ data class SuperiorReference(
     val objectType: String,
     val description: String?,
     val graphicOverview: String?
-)
-
-data class DocumentReference(
-    val uuid: String,
-    val docTypeAsClass: Int,
-    val title: String,
-    val serviceType: String,
-    val serviceVersion: String
 )
 
 data class GeometryContext(
