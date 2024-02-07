@@ -182,7 +182,8 @@ export abstract class AddressShared extends BaseDoctype {
     const country = this.addSelect("country", null, {
       fieldLabel: "Land",
       showSearch: true,
-      wrappers: ["form-field"],
+      wrappers: ["inline-help", "form-field"],
+      hasInlineContextHelp: true,
       className: options.hideAdministrativeArea ? null : "flex-1",
       options: this.getCodelistForSelect("6200", "country"),
       codelistId: "6200",
@@ -194,6 +195,8 @@ export abstract class AddressShared extends BaseDoctype {
       {
         options: this.getCodelistForSelect("6250", "administrativeArea"),
         codelistId: "6250",
+        wrappers: ["inline-help", "form-field"],
+        hasInlineContextHelp: true,
         required:
           options.requiredField && options.requiredField["administrativeArea"],
       },

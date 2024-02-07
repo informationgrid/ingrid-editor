@@ -78,7 +78,6 @@ export class PersonDoctype extends AddressShared {
             props: {
               externalLabel: "Name",
               required: true,
-              contextHelpId: "name",
             },
             fieldGroup: [
               {
@@ -87,10 +86,14 @@ export class PersonDoctype extends AddressShared {
                   this.addInput("firstName", null, {
                     fieldLabel: "Vorname",
                     className: "flex-1 firstName",
+                    wrappers: ["inline-help", "form-field"],
+                    hasInlineContextHelp: true,
                   }),
                   this.addInput("lastName", null, {
                     fieldLabel: "Nachname",
                     className: "flex-1 lastName",
+                    wrappers: ["inline-help", "form-field"],
+                    hasInlineContextHelp: true,
                     required: true,
                   }),
                 ],

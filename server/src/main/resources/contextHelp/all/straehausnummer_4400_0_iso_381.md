@@ -1,8 +1,7 @@
 ---
 # ID des GUI Elements
 id: street
-profile: ingrid
-docType: InGridPersonDoc
+docType: all
 
 # optional ID der Objektklasse
 #docType: 0

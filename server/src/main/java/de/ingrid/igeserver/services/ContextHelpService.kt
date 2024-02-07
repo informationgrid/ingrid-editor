@@ -56,11 +56,20 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
 
     fun getHelpIDs(profile: String, docType: String): List<String> {
         val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
-        return this.markdownContextHelp.keys
-                .filter { (it.profile == profile || it.profile == parentProfile) && it.docType == docType }
-                .map { it.fieldId }
-                .distinct()
+        return markdownContextHelp.keys
+            .filter { matchProfileAndParentProfile(it, profile, parentProfile, docType) || matchCommonIDs(it) }
+            .map { it.fieldId }
+            .distinct()
     }
+
+    private fun matchCommonIDs(it: MarkdownContextHelpItemKey) = it.profile == "all"
+
+    private fun matchProfileAndParentProfile(
+        it: MarkdownContextHelpItemKey,
+        profile: String,
+        parentProfile: String?,
+        docType: String
+    ) = ((it.profile == profile || it.profile == parentProfile) && it.docType == docType)
 
     private fun getContextHelp(profile: String, docType: String, id: String): MarkdownContextHelpItem? {
         val itemKey = MarkdownContextHelpItemKey(

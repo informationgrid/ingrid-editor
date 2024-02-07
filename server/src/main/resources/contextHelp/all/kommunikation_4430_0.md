@@ -1,11 +1,7 @@
 ---
 # ID des GUI Elements
 id: contact
-docType:
- - InGridPersonDoc
- - InGridOrganisationDoc
-profile: ingrid
-
+docType: all
 
 
 # title, used as window title
