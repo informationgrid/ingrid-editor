@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
@@ -522,7 +523,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    it.transferSize?.value,
+                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("mb")),
                     it.offLine?.mdMedium?.mediumNote?.value
                 )
             } ?: emptyList()
@@ -699,8 +700,13 @@ data class Resolution(
 
 data class DigitalTransferOption(
     val name: KeyValue?,
-    val transferSize: Float?,
+    val transferSize: UnitField?,
     val mediumNote: String?
+)
+
+data class UnitField(
+    val value: String?,
+    val unit: KeyValue?
 )
 
 data class Reference(
@@ -782,11 +788,6 @@ data class PointOfContact(
 data class Communication(
     val type: KeyValue,
     val connection: String
-)
-
-data class KeyValue(
-    val key: String? = null,
-    val value: String? = null,
 )
 
 data class PersonInfo(

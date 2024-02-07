@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -184,7 +184,7 @@ data class UVPModel(
     }
 
 
-    fun getCodelistValue(codelistId: String, entry: KeyValueModel?): String {
+    fun getCodelistValue(codelistId: String, entry: KeyValue?): String {
         if (entry == null) return ""
 
         if (entry.key == null) return entry.value!!

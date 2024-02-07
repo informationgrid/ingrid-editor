@@ -191,7 +191,7 @@
 @for(var option : ForSupport.of(model.getDigitalTransferOptions()))
     {
     "name": @template.imports.ingrid.partial.key-value(item = option.get().getName()),
-    "transferSize": ${option.get().getTransferSize()},
+    "transferSize": @if(option.get().getTransferSize() != null)${option.get().getTransferSize().getValue()} @else null@endif,
     "mediumNote": "${option.get().getMediumNote()}"
     }@if (!option.isLast()),@endif
 @endfor

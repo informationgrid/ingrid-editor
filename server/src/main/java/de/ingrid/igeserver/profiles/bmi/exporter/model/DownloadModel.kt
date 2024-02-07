@@ -20,24 +20,22 @@
 package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.exports.interfaces.dcat.Download
 import de.ingrid.igeserver.exports.interfaces.dcat.LinkType
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.model.KeyValue
 import org.json.simple.parser.JSONParser
-import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DownloadModel(val title: String?,
                          override val link: LinkTypeModel?,
-                         val type: KeyValueModel?,
-                         val format: KeyValueModel?,
+                         val type: KeyValue?,
+                         val format: KeyValue?,
                          val description: String?,
-                         val license: KeyValueModel?,
+                         val license: KeyValue?,
                          val byClause: String?,
                          val modified: String?,
-                         val availability: KeyValueModel?,
-                         val languages: List<KeyValueModel>?
+                         val availability: KeyValue?,
+                         val languages: List<KeyValue>?
     ): Download
     {
     val languageKeys: List<String>?

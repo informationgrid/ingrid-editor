@@ -22,9 +22,9 @@ package de.ingrid.igeserver.profiles.mcloud.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.exporter.model.AddressRefModel
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.exporter.model.TimeSpanModel
+import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
@@ -34,10 +34,10 @@ data class DataModel(
     val addresses: List<AddressRefModel>?,
     val accessRights: String?,
     val distributions: List<DownloadModel>?,
-    val license: KeyValueModel?,
+    val license: KeyValue?,
     @JsonProperty("spatial") val spatials: List<SpatialModel>?,
     val temporal: TimeSpanModel?,
-    val periodicity: KeyValueModel?,
+    val periodicity: KeyValue?,
     val mfundFKZ: String?,
     val mfundProject: String?,
     val keywords: List<String>?

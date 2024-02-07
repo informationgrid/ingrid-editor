@@ -924,12 +924,12 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endif
-            @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
+            @for( de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         @if(digitalTransferOption.getTransferSize() != null)
                         <gmd:transferSize>
-                            <gco:Real>${digitalTransferOption.getTransferSize()}</gco:Real>
+                            <gco:Real>${digitalTransferOption.getTransferSize().getValue()}</gco:Real>
                         </gmd:transferSize>
                         @endif
                         <gmd:offLine>

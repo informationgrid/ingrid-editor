@@ -24,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.model.AddressRefModel
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.RangeModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
@@ -46,7 +46,7 @@ data class DataModel(
     val decisionDate: String?,
     val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
-    val eiaNumbers: List<KeyValueModel>?
+    val eiaNumbers: List<KeyValue>?
 
     ) {
     var uvpNumbers: List<UVPNumber> = emptyList()

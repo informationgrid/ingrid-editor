@@ -130,7 +130,7 @@
     {
       "name": { "key": "900006" },
       "mediumNote": "speicherort",
-      "transferSize": 100
+      "transferSize": { "value": 100, "unit": { "key": "mb" } }
     }
   ],
   "maintenanceInformation": {

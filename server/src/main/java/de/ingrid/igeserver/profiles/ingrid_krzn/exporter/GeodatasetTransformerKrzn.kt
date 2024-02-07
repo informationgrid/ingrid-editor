@@ -20,11 +20,11 @@
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
@@ -49,7 +49,7 @@ class GeodatasetTransformerKrzn(
     override val mapLinkUrl = docData?.getString("mapLink.key")?.let {
         // do not map specific entry where we do not want to show mapUrl
         if (it == "0") return@let null
-        codelists.getCatalogCodelistValue("10500", KeyValueModel(it, null))
+        codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
             ?.replace("{ID}", model.uuid)
     }
 

@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
@@ -35,7 +35,7 @@ import java.util.*
 class AddressModelTransformer(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
-    val relationType: KeyValueModel?,
+    val relationType: KeyValue?,
     val doc: Document,
     val documentService: DocumentService
 ) {
@@ -46,7 +46,7 @@ class AddressModelTransformer(
     private val ancestorAddressesIncludingSelf: MutableList<DocumentData>
 
     init {
-        ancestorAddressesIncludingSelf = getAncestorAddressesIncludingSelf(doc.wrapperId)
+        ancestorAddressesIncludingSelf = if (doc.wrapperId == -1) mutableListOf() else getAncestorAddressesIncludingSelf(doc.wrapperId)
         displayAddress = determineDisplayAddress()
     }
 
@@ -234,7 +234,7 @@ class AddressModelTransformer(
     }
 
     private fun contactType(type: String): String? = displayAddress.data.get("contact")
-        .firstOrNull { it.get("type")?.getString("key") == type }
+        ?.firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
 
 }

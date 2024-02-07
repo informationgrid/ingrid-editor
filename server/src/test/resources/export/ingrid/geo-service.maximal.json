@@ -132,7 +132,11 @@
   ],
   "isInspireIdentified": false,
   "digitalTransferOptions": [
-    { "name": { "key": "1" }, "mediumNote": "archive", "transferSize": 200 }
+    {
+      "name": { "key": "1" },
+      "mediumNote": "archive",
+      "transferSize": { "value": 200, "unit": { "key": "mb" } }
+    }
   ],
   "maintenanceInformation": {
     "description": "erlauterungen",
