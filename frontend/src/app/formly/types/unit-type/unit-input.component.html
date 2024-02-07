@@ -4,7 +4,7 @@
     [formControl]="field.fieldGroup[0].formControl"
 />
 <div matSuffix [matMenuTriggerFor]="suffixMenu" class="suffix-wrapper">
-    {{ $unit() }} <mat-icon>arrow_drop_down</mat-icon>
+    <span>{{ $unit() }}</span> <mat-icon>arrow_drop_down</mat-icon>
 </div>
 <mat-menu #suffixMenu>
     @for (item of props.unitOptions | async; track item) {

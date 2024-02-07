@@ -53,13 +53,16 @@ export class UnitInputComponent
         .subscribe((value: BackendOption) => {
           this.updateUnit(
             options.find((option) => option.value === value?.key) ?? options[0],
+            false,
           );
         });
     });
   }
 
-  updateUnit(item: SelectOptionUi) {
+  updateUnit(item: SelectOptionUi, shouldEmitEvent: boolean = true) {
     this.$unit.set(item.label);
-    this.field.fieldGroup[1].formControl.setValue(item.forBackend());
+    this.field.fieldGroup[1].formControl.setValue(item.forBackend(), {
+      emitEvent: shouldEmitEvent,
+    });
   }
 }
