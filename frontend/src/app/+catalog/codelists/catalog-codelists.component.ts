@@ -92,7 +92,7 @@ export class CatalogCodelistsComponent implements OnInit {
   filteredOptions: Codelist[] = [];
 
   private codelistsValue: Codelist[];
-  private showAllCodelists: boolean = false;
+  showAllCodelists: boolean = true;
 
   constructor(
     private codelistService: CodelistService,

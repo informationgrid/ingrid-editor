@@ -45,7 +45,9 @@
                     }
                 </mat-select>
             </mat-form-field>
-            <mat-slide-toggle (change)="handleCodelistToggle($event)"
+            <mat-slide-toggle
+                [checked]="showAllCodelists"
+                (change)="handleCodelistToggle($event)"
                 >Alle Codelisten anzeigen</mat-slide-toggle
             >
         </div>
