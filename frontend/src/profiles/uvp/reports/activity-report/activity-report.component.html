@@ -124,10 +124,17 @@
                     ></tr>
                 </ng-container>
             </table>
-            <mat-paginator
-                [pageSizeOptions]="[10, 20, 50]"
-                showFirstLastButtons
-            ></mat-paginator>
+            <div class="table-footer">
+                @if (dataSource.data?.length) {
+                    <button mat-flat-button (click)="downloadTable()">
+                        CSV
+                    </button>
+                }
+                <mat-paginator
+                    [pageSizeOptions]="[10, 20, 50]"
+                    showFirstLastButtons
+                ></mat-paginator>
+            </div>
         </ige-card-box>
     </div>
 </page-template-no-header>

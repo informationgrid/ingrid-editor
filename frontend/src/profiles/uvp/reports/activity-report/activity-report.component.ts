@@ -34,6 +34,7 @@ import { DocumentIconModule } from "../../../../app/shared/document-icon/documen
 import { MatMenuModule } from "@angular/material/menu";
 import { DatePipe } from "@angular/common";
 import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
+import { ExportService } from "../../../../app/services/export.service";
 
 @UntilDestroy()
 @Component({
@@ -117,6 +118,7 @@ export class ActivityReportComponent implements AfterViewInit {
 
   constructor(
     private uvpResearchService: UvpResearchService,
+    private exportService: ExportService,
     private router: Router,
   ) {
     this.getReport(null);
@@ -177,5 +179,33 @@ export class ActivityReportComponent implements AfterViewInit {
   openDataset(element) {
     const target = ConfigService.catalogId + "/form";
     this.router.navigate([target, { id: element.dataset_uuid }]);
+  }
+
+  downloadTable() {
+    const rows: string[][] = [];
+    const headerCol = [
+      "Typ",
+      "UUID",
+      "Titel",
+      "Verfahrensführende Behörde UUID",
+      "Verfahrensführende Behörde",
+      "User",
+      "Aktion",
+      "Datum",
+    ];
+    rows.push(headerCol);
+    for (const entry of this.dataSource.filteredData) {
+      rows.push([
+        entry.document_type,
+        entry.dataset_uuid,
+        entry.title,
+        entry.contact_uuid,
+        entry.contact_name,
+        entry.actor,
+        entry.action,
+        entry.time,
+      ]);
+    }
+    this.exportService.exportCsv(rows, { exportName: "bericht" });
   }
 }
