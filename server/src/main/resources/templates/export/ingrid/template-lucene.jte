@@ -225,7 +225,7 @@
     ],
     "object_reference.obj_class": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-<%--        "${entry.get().getType()}"@if (!entry.isLast()),@endif--%>
+        "${entry.get().getUuidRefClass()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.type": [

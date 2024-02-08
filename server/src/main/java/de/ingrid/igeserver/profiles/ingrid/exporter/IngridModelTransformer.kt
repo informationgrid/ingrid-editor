@@ -419,7 +419,7 @@ open class IngridModelTransformer(
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
     }
-    
+
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
     val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
@@ -544,7 +544,16 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
-    val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not() }
+    val referencesWithUuidRefs = references
+        .filter { !it.uuidRef.isNullOrEmpty() }
+        .map { applyDocumentClass(it) }
+
+    private fun applyDocumentClass(it: Reference): Reference {
+        val refClass = getLastPublishedDocument(it.uuidRef!!)?.type
+        it.uuidRefClass = mapDocumentType(refClass!!)
+        return it
+    }
+
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServices = references + getCoupledServicesForGeodataset.map {
         Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)

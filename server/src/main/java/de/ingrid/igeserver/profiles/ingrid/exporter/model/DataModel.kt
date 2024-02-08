@@ -161,6 +161,7 @@ data class Reference(
     val url: String?,
     val uuidRef: String?,
     val urlDataType: KeyValueModel?,
+    var uuidRefClass: String? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
