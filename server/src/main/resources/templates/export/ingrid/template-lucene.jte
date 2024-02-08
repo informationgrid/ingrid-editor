@@ -46,6 +46,26 @@
     "parent.object_node.obj_uuid": "${page.getHierarchyParent()}",
     "t011_obj_serv.coupling_type": "${page.getCouplingType()}",
     "t011_obj_serv.has_atom_download": "${page.isAtomDownload() ? 'Y' : 'N'}",
+    "t011_obj_serv_url.line":  [
+    @for(var entry : ForSupport.of(page.getServiceUrls()))
+        "${entry.getIndex()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t011_obj_serv_url.name": [
+    @for(var entry : ForSupport.of(page.getServiceUrls()))
+        "${entry.get().getName()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t011_obj_serv_url.url": [
+    @for(var entry : ForSupport.of(page.getServiceUrls()))
+        "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t011_obj_serv_url.description":  [
+    @for(var entry : ForSupport.of(page.getServiceUrls()))
+        "${entry.get().getDescription()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     @if(page.isAtomDownload())
     "download_service": "atom",
     @endif
