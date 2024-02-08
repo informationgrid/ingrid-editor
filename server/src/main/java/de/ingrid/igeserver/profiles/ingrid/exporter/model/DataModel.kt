@@ -156,12 +156,14 @@ data class Service(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
     val title: String,
-    val type: KeyValueModel,
+    var type: KeyValueModel,
     val explanation: String?,
     val url: String?,
     val uuidRef: String?,
     val urlDataType: KeyValueModel?,
-    var uuidRefClass: String? = null
+    var uuidRefClass: String? = null,
+    var uuidRefVersion: String? = null,
+    var uuidRefServiceType: KeyValueModel? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

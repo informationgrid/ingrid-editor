@@ -22,7 +22,7 @@ package de.ingrid.igeserver.exporter
 import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.services.CodelistHandler
 
-open class CodelistTransformer constructor(
+open class CodelistTransformer(
     val codelistHandler: CodelistHandler,
     val catalogIdentifier: String,
 ) {

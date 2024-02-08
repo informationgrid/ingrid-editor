@@ -180,7 +180,7 @@
     ],
     "refering.object_reference.obj_class": [
     @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
-        "3"@if (!entry.isLast()),@endif
+        "${entry.get().getObjectType()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "refering.object_reference.obj_name": [
@@ -190,7 +190,7 @@
     ],
     "refering.object_reference.type": [
     @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
-        "${entry.get().getObjectType()}"@if (!entry.isLast()),@endif
+        "${entry.get().getServiceType()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "refering.object_reference.version": [
@@ -230,12 +230,12 @@
     ],
     "object_reference.type": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-        "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
+        "${page.getCodelists().getValue("5100", entry.get().getUuidRefServiceType(), "iso")}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.version": [
     @for(var entry : ForSupport.of(page.getReferencesWithUuidRefs()))
-<%--        "${entry.get().()}"@if (!entry.isLast()),@endif--%>
+        "${entry.get().getUuidRefVersion()}"@if (!entry.isLast()),@endif
     @endfor
     ],
 

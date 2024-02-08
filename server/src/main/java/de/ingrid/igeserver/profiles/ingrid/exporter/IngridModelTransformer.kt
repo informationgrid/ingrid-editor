@@ -546,13 +546,21 @@ open class IngridModelTransformer(
     val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
     val referencesWithUuidRefs = references
         .filter { !it.uuidRef.isNullOrEmpty() }
-        .map { applyDocumentClass(it) }
+        .map { applyRefInfos(it) }
 
-    private fun applyDocumentClass(it: Reference): Reference {
-        val refClass = getLastPublishedDocument(it.uuidRef!!)?.type
-        it.uuidRefClass = mapDocumentType(refClass!!)
+    private fun applyRefInfos(it: Reference): Reference {
+        val refClass = getLastPublishedDocument(it.uuidRef!!) ?: return it
+        it.uuidRefClass = mapDocumentType(refClass.type)
+        val service = refClass.data.get("service")
+        it.uuidRefVersion = getVersion(
+            createKeyValueFromJsonNode(service?.get("version")?.firstOrNull()),
+            service?.getString("type.key")
+        ) ?: ""
+        it.uuidRefServiceType = createKeyValueFromJsonNode(service?.get("type")) 
         return it
     }
+    
+    
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServices = references + getCoupledServicesForGeodataset.map {
