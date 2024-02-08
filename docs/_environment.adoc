@@ -101,6 +101,18 @@
 
 |MAP_TILE_URL
 |
+|https://gdi-niederrhein-geodienste.de/openstreetmap/{z}/{x}/{y}.png
+
+|MAP_ATTRIBUTION
+|
+|`&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors`
+
+|MAP_WMS_URL
+|
+|
+
+|MAP_WMS_LAYERS
+|
 |
 
 |NOMINATIM_URL

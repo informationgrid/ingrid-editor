@@ -85,11 +85,19 @@ export class LeafletService {
     return new LatLngBounds([bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2]);
   }
 
-  private defaultLayer = () =>
-    new TileLayer(this.config.getConfiguration().mapTileUrl, {
-      attribution:
-        '&copy; <a href="https://openstreetmap.de" target="_blank">OpenStreetMap</a> contributors',
-    });
+  private defaultLayer = () => {
+    let conf = this.config.getConfiguration();
+    if (conf.mapWMSUrl?.length > 0 && conf.mapWMSLayers?.length > 0) {
+      return new TileLayer.WMS(conf.mapWMSUrl, {
+        layers: conf.mapWMSLayers,
+        attribution: conf.mapAttribution,
+      });
+    } else {
+      return new TileLayer(conf.mapTileUrl, {
+        attribution: conf.mapAttribution,
+      });
+    }
+  };
 
   constructor(
     private config: ConfigService,

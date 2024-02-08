@@ -23,6 +23,18 @@ if [[ -n "${MAP_TILE_URL}" ]]; then
   sed -i -r "s@mapTileUrl\":.*@mapTileUrl\": \"$MAP_TILE_URL\",@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${MAP_ATTRIBUTION}" ]]; then
+  sed -i -r "s@mapAttribution\":.*@mapAttribution\": \"$MAP_ATTRIBUTION\",@" /app/resources/static/assets/config.json
+fi
+
+if [[ -n "${MAP_WMS_URL}" ]]; then
+  sed -i -r "s@mapWMSUrl\":.*@mapWMSUrl\": \"$MAP_WMS_URL\",@" /app/resources/static/assets/config.json
+fi
+
+if [[ -n "${MAP_WMS_LAYERS}" ]]; then
+  sed -i -r "s@mapWMSLayers\":.*@mapWMSLayers\": \"$MAP_WMS_LAYERS\",@" /app/resources/static/assets/config.json
+fi
+
 if [[ -n "${NOMINATIM_URL}" ]]; then
   sed -i -r "s@nominatimUrl\":.*@nominatimUrl\": \"$NOMINATIM_URL\",@" /app/resources/static/assets/config.json
 fi
