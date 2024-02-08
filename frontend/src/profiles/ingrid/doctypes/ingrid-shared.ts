@@ -76,6 +76,10 @@ export abstract class IngridShared extends BaseDoctype {
   options = {
     dynamicRequired: {
       accessConstraints: "formState.mainModel?.isInspireIdentified",
+      openDataCategories: undefined,
+    },
+    dynamicVisibility: {
+      hideOpenDataCategories: "!formState.mainModel?.isOpenData",
     },
     required: {
       freeKeywords: false,
@@ -240,7 +244,7 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private handleActivateOpenData(field: FormlyFieldConfig) {
+  handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
     const isInspire = field.model.isInspireIdentified;
 
@@ -255,13 +259,13 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
-      return;
+      return of(true);
     }
 
     const message =
       "Wird dieses Auswahl gewählt, so:" +
       ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li></ul> ';
-    this.dialog
+    return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -270,20 +274,27 @@ export abstract class IngridShared extends BaseDoctype {
         },
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction();
-        else field.formControl.setValue(false);
-      });
+      .pipe(
+        map((decision) => {
+          if (decision === "ok") {
+            executeAction();
+          } else {
+            field.formControl.setValue(false);
+          }
+          return decision === "ok";
+        }),
+      );
   }
 
-  private handleDeactivateOpenData(field: FormlyFieldConfig) {
-    const cookieId = "HIDE_OPEN_DATA_INFO";
+  handleDeactivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
+    const cookieId = "HIDE_OPEN_DATA_DEACTIVATE_INFO";
     if (this.cookieService.getCookie(cookieId) === "true") {
       field.options.formState.updateModel();
+      return of(true);
     }
     const message =
       'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
-    this.dialog
+    return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -292,18 +303,22 @@ export abstract class IngridShared extends BaseDoctype {
         },
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision != "ok") field.formControl.setValue(true);
-        return;
-      });
+      .pipe(
+        map((decision) => {
+          if (decision != "ok") {
+            field.formControl.setValue(true);
+          }
+          return decision === "ok";
+        }),
+      );
   }
 
   private handleOpenDataClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
     if (!isChecked) {
-      this.handleDeactivateOpenData(field);
+      this.handleDeactivateOpenData(field).subscribe();
     } else {
-      this.handleActivateOpenData(field);
+      this.handleActivateOpenData(field).subscribe();
     }
   }
 
@@ -467,7 +482,10 @@ export abstract class IngridShared extends BaseDoctype {
           required: true,
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
-          expressions: { hide: "!formState.mainModel?.isOpenData" },
+          expressions: {
+            hide: this.options.dynamicVisibility.hideOpenDataCategories,
+            "props.required": this.options.dynamicRequired.openDataCategories,
+          },
         }),
         options.priorityDataset
           ? this.addRepeatList(
@@ -1431,13 +1449,15 @@ export abstract class IngridShared extends BaseDoctype {
   private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
     const checked = field.formControl.value;
     if (checked) {
-      this.handleActivateInspireIdentified(field);
+      this.handleActivateInspireIdentified(field).subscribe();
     } else {
-      this.handleDeactivateInspireIdentified(field);
+      this.handleDeactivateInspireIdentified(field).subscribe();
     }
   }
 
-  private handleActivateInspireIdentified(field: FormlyFieldConfig) {
+  handleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_INFO";
     const isOpenData = field.model.isOpenData === true;
 
@@ -1461,12 +1481,12 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
-      return;
+      return of(true);
     }
 
     const message = this.inspireChangeMessage;
 
-    this.dialog
+    return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -1475,13 +1495,18 @@ export abstract class IngridShared extends BaseDoctype {
         },
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction();
-        else field.formControl.setValue(false);
-      });
+      .pipe(
+        map((decision) => {
+          if (decision === "ok") executeAction();
+          else field.formControl.setValue(false);
+          return decision === "ok";
+        }),
+      );
   }
 
-  private handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
+  handleDeactivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
     const isOpenData = field.model.isOpenData === true;
     const specificationToRemove = this.isGeoService ? "10" : "12";
@@ -1497,12 +1522,12 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
-      return;
+      return of(true);
     }
 
     const message = this.inspireDeleteMessage;
 
-    this.dialog
+    return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -1511,10 +1536,13 @@ export abstract class IngridShared extends BaseDoctype {
         },
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction();
-        else field.formControl.setValue(true);
-      });
+      .pipe(
+        map((decision) => {
+          if (decision === "ok") executeAction();
+          else field.formControl.setValue(true);
+          return decision === "ok";
+        }),
+      );
   }
 
   private conformityExists(
@@ -1553,7 +1581,9 @@ export abstract class IngridShared extends BaseDoctype {
     model.conformanceResult = conformanceValues;
   }
 
-  private handleIsInspireConformClick(field: FormlyFieldConfig) {
+  private handleIsInspireConformClick(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
     const isConform = field.formControl.value;
 
@@ -1568,10 +1598,10 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
-      return;
+      return of(true);
     }
 
-    this.dialog
+    return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -1580,10 +1610,13 @@ export abstract class IngridShared extends BaseDoctype {
         },
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction();
-        else field.formControl.setValue(!isConform);
-      });
+      .pipe(
+        map((decision) => {
+          if (decision === "ok") executeAction();
+          else field.formControl.setValue(!isConform);
+          return decision === "ok";
+        }),
+      );
   }
 
   /**
