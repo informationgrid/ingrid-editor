@@ -21,11 +21,12 @@ import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime } from "rxjs/operators";
-import { combineLatest, Subscription } from "rxjs";
+import { catchError, debounceTime } from "rxjs/operators";
+import { combineLatest, of, Subscription } from "rxjs";
 import { ConfigService } from "../../services/config/config.service";
+import { SearchResult } from "../../models/search-result.model";
 
 @UntilDestroy()
 @Component({
@@ -42,8 +43,15 @@ export class QuickSearchComponent implements OnInit {
   numDocs: number;
   numAddresses: number;
 
-  query = new UntypedFormControl("");
+  query = new FormControl<string>("");
   searchSub: Subscription;
+
+  private emptySearchResult: SearchResult = {
+    hits: [],
+    totalHits: 0,
+    page: 0,
+    size: 10,
+  };
 
   constructor(
     private documentService: DocumentService,
@@ -67,13 +75,17 @@ export class QuickSearchComponent implements OnInit {
     this.searchSub = combineLatest([
       this.documentService.findInTitleOrUuid(value, 5),
       this.documentService.findInTitleOrUuid(value, 5, true),
-    ]).subscribe((result) => {
-      this.docs = this.highlightResult(result[0].hits, value);
-      this.numDocs = result[0].totalHits;
+    ])
+      .pipe(
+        catchError(() => of([this.emptySearchResult, this.emptySearchResult])),
+      )
+      .subscribe((result) => {
+        this.docs = this.highlightResult(result[0].hits, value);
+        this.numDocs = result[0].totalHits;
 
-      this.addresses = this.highlightResult(result[1].hits, value);
-      this.numAddresses = result[1].totalHits;
-    });
+        this.addresses = this.highlightResult(result[1].hits, value);
+        this.numAddresses = result[1].totalHits;
+      });
   }
 
   openResearchPage(inAddresses?: boolean) {

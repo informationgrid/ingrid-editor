@@ -25,9 +25,9 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
-import { debounceTime, map, startWith } from "rxjs/operators";
+import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -84,7 +84,10 @@ export class TreeHeaderComponent implements OnInit {
     this.searchSub?.unsubscribe();
     this.searchSub = this.db
       .search(value, this.isAddress)
-      .pipe(map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)))
+      .pipe(
+        map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)),
+        catchError(() => of([])),
+      )
       .subscribe((result) => {
         this.searchResult.next(this.filterResult(result));
       });
