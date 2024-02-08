@@ -98,7 +98,7 @@ export class CodelistService {
 
     return sort
       ? CodelistService.sortFavorites(
-          CodelistService.favorites[codelist.id] ?? [],
+          codelist.id,
           items.sort((a, b) => a.label?.localeCompare(b.label)),
         )
       : items;
@@ -283,9 +283,10 @@ export class CodelistService {
   }
 
   static sortFavorites(
-    favorites: string[],
+    codelistId: string,
     sortedItems: SelectOptionUi[],
   ): SelectOptionUi[] {
+    const favorites = CodelistService.favorites[codelistId] ?? [];
     if (favorites.length === 0) return sortedItems;
 
     const favoriteItems = favorites

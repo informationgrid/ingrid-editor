@@ -113,7 +113,10 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             asSelect: true,
             showSearch: true,
-            options: this.getCodelistForSelect("526", "priorityDataset"),
+            options: this.getCodelistForSelect(
+              "526",
+              "spatialRepresentationType",
+            ),
             codelistId: "526",
             expressions: {
               "props.required": "formState.mainModel?.isInspireConform",
