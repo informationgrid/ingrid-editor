@@ -2,12 +2,8 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Benutzer
-                {{
-                    users && users.length !== undefined
-                        ? "(" + users.length + ")"
-                        : ""
-                }}
+                Benutzer (<span data-cy="users-count">{{ users?.length }}</span
+                >)
             </div>
             <mat-toolbar>
                 <mat-toolbar-row>

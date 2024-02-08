@@ -2,7 +2,10 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Gruppen ({{ (groups | async)?.length }})
+                Gruppen (<span data-cy="groups-count">{{
+                    (groups | async)?.length
+                }}</span
+                >)
             </div>
             <mat-toolbar>
                 <mat-toolbar-row>
