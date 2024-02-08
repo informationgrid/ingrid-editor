@@ -101,6 +101,8 @@ describe("CatalogCodelistsComponent", () => {
 
   it("should show only catalog codelist", async () => {
     const select = await loader.getHarness(MatSelectHarness);
+    const codelistSwitch = await loader.getHarness(MatSlideToggleHarness);
+    await codelistSwitch.uncheck();
     await select.open();
     const options = await select.getOptions();
     expect(options.length).toBe(2);
