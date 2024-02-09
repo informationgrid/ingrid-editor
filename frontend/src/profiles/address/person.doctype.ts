@@ -49,7 +49,6 @@ export class PersonDoctype extends AddressShared {
                 fieldGroup: [
                   this.addAutoCompleteInline("salutation", "Anrede", {
                     wrappers: ["inline-help", "form-field"],
-                    hasInlineContextHelp: true,
                     highlightMatches: true,
                     hideDeleteButton: true,
                     placeholder: "",
@@ -59,7 +58,6 @@ export class PersonDoctype extends AddressShared {
                   this.addAutoCompleteInline("academic-title", "Titel", {
                     wrappers: ["inline-help", "form-field"],
                     className: "flex-1 pad-right",
-                    hasInlineContextHelp: true,
                     highlightMatches: true,
                     hideDeleteButton: true,
                     placeholder: "",
@@ -87,13 +85,11 @@ export class PersonDoctype extends AddressShared {
                     fieldLabel: "Vorname",
                     className: "flex-1 firstName",
                     wrappers: ["inline-help", "form-field"],
-                    hasInlineContextHelp: true,
                   }),
                   this.addInput("lastName", null, {
                     fieldLabel: "Nachname",
                     className: "flex-1 lastName",
                     wrappers: ["inline-help", "form-field"],
-                    hasInlineContextHelp: true,
                     required: true,
                   }),
                 ],

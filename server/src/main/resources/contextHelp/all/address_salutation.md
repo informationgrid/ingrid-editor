@@ -3,8 +3,6 @@
 id: salutation
 docType: all
 
-
-
 # title, used as window title
 title: Anrede
 ---

@@ -3,7 +3,6 @@
 id: city
 docType: all
 
-
 # title, used as window title
 title: Ort
 ---

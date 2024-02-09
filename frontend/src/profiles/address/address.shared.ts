@@ -131,7 +131,6 @@ export abstract class AddressShared extends BaseDoctype {
                 this.addInput("street", null, {
                   fieldLabel: "Straße/Hausnummer",
                   className: "width-100",
-                  hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
               ],
@@ -141,13 +140,11 @@ export abstract class AddressShared extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-code", null, {
                   fieldLabel: "PLZ",
-                  hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
                 this.addInput("city", null, {
                   fieldLabel: "Ort",
                   className: "flex-3",
-                  hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
               ],
@@ -157,13 +154,11 @@ export abstract class AddressShared extends BaseDoctype {
               fieldGroup: [
                 this.addInput("zip-po-box", null, {
                   fieldLabel: "PLZ (Postfach)",
-                  hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
                 this.addInput("po-box", null, {
                   fieldLabel: "Postfach",
                   className: "flex-3",
-                  hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
               ],
@@ -183,7 +178,6 @@ export abstract class AddressShared extends BaseDoctype {
       fieldLabel: "Land",
       showSearch: true,
       wrappers: ["inline-help", "form-field"],
-      hasInlineContextHelp: true,
       className: options.hideAdministrativeArea ? null : "flex-1",
       options: this.getCodelistForSelect("6200", "country"),
       codelistId: "6200",
@@ -196,7 +190,6 @@ export abstract class AddressShared extends BaseDoctype {
         options: this.getCodelistForSelect("6250", "administrativeArea"),
         codelistId: "6250",
         wrappers: ["inline-help", "form-field"],
-        hasInlineContextHelp: true,
         required:
           options.requiredField && options.requiredField["administrativeArea"],
       },

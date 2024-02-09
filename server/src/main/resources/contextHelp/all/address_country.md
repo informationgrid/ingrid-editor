@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
 id: country
-
-
-# optional ID der Objektklasse
 docType: all
+
 # title, used as window title
 title: Staat
 ---

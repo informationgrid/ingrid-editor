@@ -1,10 +1,8 @@
 ---
 # ID des GUI Elements
 id: firstName
-
-
-# optional ID der Objektklasse
 docType: all
+
 # title, used as window title
 title: Vorname
 ---

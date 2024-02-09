@@ -3,9 +3,6 @@
 id: academic-title
 docType: all
 
-
-
-
 # title, used as window title
 title: Titel
 ---

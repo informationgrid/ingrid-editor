@@ -3,9 +3,6 @@
 id: zip-code
 docType: all
 
-
-
-
 # title, used as window title
 title: PLZ
 ---
