@@ -143,7 +143,7 @@ open class IngridModelTransformer(
         val titleKey: String?
     )
 
-    val useConstraints = data.resource?.useConstraints?.map { constraint ->
+    open val useConstraints = data.resource?.useConstraints?.map { constraint ->
         if (constraint.title == null) throw ServerException.withReason("Use constraint title is null ${constraint}")
 
         // special case for "Es gelten keine Bedingungen"
@@ -545,7 +545,7 @@ open class IngridModelTransformer(
     }
 
     // information system or Literature
-    val supplementalInformation = data.explanation ?: data.publication?.explanation
+    open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
     // literature
     val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }

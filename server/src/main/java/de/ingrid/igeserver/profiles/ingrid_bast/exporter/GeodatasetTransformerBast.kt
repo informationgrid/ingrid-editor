@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
@@ -29,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
 class GeodatasetTransformerBast(
@@ -60,4 +62,13 @@ class GeodatasetTransformerBast(
         }
     }
 
+    override val supplementalInformation = docData.getString("supplementalInformation")
+
+    override val useConstraints: List<UseConstraintTemplate> =
+        super.useConstraints + if (docData.getString("useConstraintsComments") == null) emptyList()
+        else listOf(
+            UseConstraintTemplate(
+                CharacterStringModel(docData.getStringOrEmpty("useConstraintsComments"), null), null, null, null
+            )
+        )
 }
