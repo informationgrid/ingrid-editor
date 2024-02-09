@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.exporter
 
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.model.KeyValue
 import org.apache.logging.log4j.kotlin.logger
 import java.util.*
 
@@ -61,7 +61,7 @@ class TransformationTools {
 
         // TODO: move to MappingUtils class and refactor to use already present map iso639LanguageMapping
         @kotlin.jvm.JvmStatic
-        fun getLanguageISO639_2Value(language: KeyValueModel): String {
+        fun getLanguageISO639_2Value(language: KeyValue): String {
             if (language.key == null) return language.value
                 ?: throw ServerException.withReason("Could not map document language: $language")
             return when (language.key) {
@@ -99,7 +99,7 @@ class TransformationTools {
         }
 
         @kotlin.jvm.JvmStatic
-        fun getISO3166_1_Alpha_3FromNumericLanguageCode(language: KeyValueModel): String {
+        fun getISO3166_1_Alpha_3FromNumericLanguageCode(language: KeyValue): String {
             if (language.key == null) return language.value
                 ?: throw ServerException.withReason("Could not map document language: $language")
             return when (language.key) {

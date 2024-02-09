@@ -253,14 +253,14 @@
         "name": {
           "key": "14"
         },
-        "transferSize": 1,
+        "transferSize": { "value": 1, "unit": { "key": "mb" } },
         "mediumNote": "2"
       },
       {
         "name": {
           "key": "1"
         },
-        "transferSize": 3,
+        "transferSize": { "value": 3, "unit": { "key": "mb" } },
         "mediumNote": "4"
       }
     ],

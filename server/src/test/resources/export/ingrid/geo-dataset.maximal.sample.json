@@ -440,9 +440,7 @@
       }
     },
     "dataset": {
-      "languages": [
-        "150"
-      ]
+      "languages": ["150"]
     },
     "conformanceResult": [
       {
@@ -501,7 +499,7 @@
         "name": {
           "key": "900006"
         },
-        "transferSize": 12,
+        "transferSize": { "value": 12, "unit": { "key": "mb" } },
         "mediumNote": "Ort"
       }
     ],

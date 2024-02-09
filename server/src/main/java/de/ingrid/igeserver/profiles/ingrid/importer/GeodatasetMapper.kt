@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger

@@ -21,6 +21,7 @@ import { BaseDoctype } from "../../base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import {
   CodelistService,
+  SelectOption,
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
 import { ConformityDialogComponent } from "../dialogs/conformity-dialog.component";
@@ -86,6 +87,7 @@ export abstract class IngridShared extends BaseDoctype {
       useLimitation: false,
       topicCategories: true,
       accessConstraints: false,
+      resourceDateType: false,
     },
   };
 
@@ -99,6 +101,8 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoService: boolean = false;
   isGeoDataset: boolean = false;
   thesaurusTopics: boolean = false;
+
+  defaultKeySpatialScope = null; // Regional
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
@@ -868,6 +872,7 @@ export abstract class IngridShared extends BaseDoctype {
           "Durch die Ressource abgedeckte Zeitspanne",
           [
             this.addSelect("resourceDateType", null, {
+              required: this.options.required.resourceDateType,
               showSearch: true,
               wrappers: ["form-field"],
               options: [
@@ -877,6 +882,7 @@ export abstract class IngridShared extends BaseDoctype {
               ],
             }),
             this.addSelect("resourceDateTypeSince", null, {
+              required: this.options.required.resourceDateType,
               showSearch: true,
               wrappers: ["form-field"],
               options: [
@@ -892,6 +898,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDatepicker("resourceDate", null, {
+              required: this.options.required.resourceDateType,
               placeholder: "TT.MM.JJJJ",
               wrappers: ["form-field"],
               expressions: {
@@ -899,6 +906,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             }),
             this.addDateRange("resourceRange", null, {
+              required: this.options.required.resourceDateType,
               wrappers: [],
               expressions: {
                 hide: "formState.mainModel?.temporal?.resourceDateTypeSince?.key !== 'exactDate'",
@@ -906,7 +914,8 @@ export abstract class IngridShared extends BaseDoctype {
             }),
           ],
           {
-            className: "optional",
+            className: this.options.required.resourceDateType ? "" : "optional",
+            required: this.options.required.resourceDateType,
             contextHelpId: "resourceTime",
           },
         ),
@@ -1255,13 +1264,15 @@ export abstract class IngridShared extends BaseDoctype {
             options: this.getCodelistForSelect("520", "specification"),
             codelistId: "520",
           }),
-          this.addInputInline("transferSize", "Datenvolumen", {
+          this.addUnitInputInline("transferSize", "Datenvolumen", {
             type: "number",
             className: "right-align",
-            wrappers: ["form-field", "addons"],
-            suffix: {
-              text: "MB",
-            },
+            unitOptions: of<SelectOption[]>([
+              new SelectOption("mb", "MB"),
+              new SelectOption("gb", "GB"),
+              new SelectOption("tb", "TB"),
+            ]),
+            fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
           this.addInputInline("mediumNote", "Speicherort"),
         ],
@@ -1464,6 +1475,12 @@ export abstract class IngridShared extends BaseDoctype {
     const executeAction = () => {
       field.model.isInspireConform = true;
 
+      if (this.defaultKeySpatialScope) {
+        field.model.spatialScope = {
+          key: this.defaultKeySpatialScope,
+        };
+      }
+
       if (this.isGeoService) {
         if (isOpenData) {
           field.model.resource.accessConstraints = [{ key: "1" }];
@@ -1471,8 +1488,6 @@ export abstract class IngridShared extends BaseDoctype {
 
         this.addConformanceEntry(field.model, "10", "1");
       } else if (this.isGeoDataset) {
-        field.model.spatialScope = { key: "885989663" }; // Regional
-
         this.addConformanceEntry(field.model, "12", "1");
       }
 

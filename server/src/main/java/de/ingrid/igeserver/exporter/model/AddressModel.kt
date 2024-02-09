@@ -23,9 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
-import de.ingrid.igeserver.services.DocumentData
-import de.ingrid.igeserver.services.DocumentService
-import org.springframework.dao.EmptyResultDataAccessException
+import de.ingrid.igeserver.model.KeyValue
 import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,8 +31,8 @@ data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_id") val id: Int,
     @JsonProperty("_type") val docType: String,
-    val salutation: KeyValueModel?,
-    @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
+    val salutation: KeyValue?,
+    @JsonProperty("academic-title") val academicTitle: KeyValue?,
     val firstName: String?,
     val lastName: String?,
     val organization: String?,
@@ -60,31 +58,31 @@ data class AddressModel(
      *  Addresses that are not published are ignored.
      *  @return List of ancestors from eldest to youngest including self
      */
-/*
-    fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<DocumentData> {
-        if (id == null) return mutableListOf()
-
-        val wrapper = documentService.getWrapperByDocumentId(id)
-        if (wrapper.type == "FOLDER") return mutableListOf()
-
-        val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, wrapper.uuid)
-            DocumentData(wrapper, publishedDoc)
-        } catch (ex: EmptyResultDataAccessException) {
-            // no published document found
-            null
+    /*
+        fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<DocumentData> {
+            if (id == null) return mutableListOf()
+    
+            val wrapper = documentService.getWrapperByDocumentId(id)
+            if (wrapper.type == "FOLDER") return mutableListOf()
+    
+            val convertedDoc = try {
+                val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, wrapper.uuid)
+                DocumentData(wrapper, publishedDoc)
+            } catch (ex: EmptyResultDataAccessException) {
+                // no published document found
+                null
+            }
+    
+            return if (wrapper.parent != null) {
+                val ancestors = getAncestorAddressesIncludingSelf(documentService, wrapper.parent!!.id!!, catalogIdent)
+                // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
+                if ( convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
+                ancestors
+            } else {
+                if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
+            }
         }
-
-        return if (wrapper.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(documentService, wrapper.parent!!.id!!, catalogIdent)
-            // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
-            if ( convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
-            ancestors
-        } else {
-            if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
-        }
-    }
-*/
+    */
 
     /*fun getPublishedChildren(documentService: DocumentService, id: Int?, catalogIdent: String): List<DocumentData> =
         documentService.findChildrenDocs(catalogIdent, id, true).hits*/
@@ -150,7 +148,7 @@ data class AddressModel(
         ?.connection
 }
 
-data class ContactModel(val type: KeyValueModel?, val connection: String?)
+data class ContactModel(val type: KeyValue?, val connection: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Address(
@@ -160,8 +158,8 @@ data class Address(
     val city: String?,
     @JsonProperty("zip-po-box") val zipPoBox: String?,
     @JsonProperty("po-box") val poBox: String?,
-    val administrativeArea: KeyValueModel?,
-    val country: KeyValueModel?
+    val administrativeArea: KeyValue?,
+    val country: KeyValue?
 ) {
     val countryKey = country?.key ?: ""
 

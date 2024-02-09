@@ -69,8 +69,8 @@ export class GeoServiceDoctype extends IngridShared {
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       {
         type: "updateGetCapabilities",
         wrappers: ["panel"],
@@ -256,6 +256,9 @@ export class GeoServiceDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 
   private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
     if (field.parent.model.couplingType?.key === "mixed") return;

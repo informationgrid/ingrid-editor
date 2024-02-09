@@ -10,6 +10,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
+@import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 @import gg.jte.Content
 
 @param IngridModelTransformer page
@@ -821,48 +822,23 @@ ${contentInfo}
                     </gmd:MD_Distributor>
                 </gmd:distributor>
             @endif
-            @for( Reference reference : page.getExternalReferences() )
+            @for( ServiceUrl serviceUrl : page.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:onLine>
-                            <idf:idfOnlineResource>
-                                <gmd:linkage>
-                                    <gmd:URL>${reference.getUrl()}</gmd:URL>
-                                </gmd:linkage>
-                                @if(reference.getUrlDataType() != null)
-                                <gmd:applicationProfile>
-                                    <gco:CharacterString>${page.getCodelists().getValue("1320", reference.getUrlDataType(), "de")}</gco:CharacterString>
-                                </gmd:applicationProfile>
-                                @endif
-                                <gmd:name>
-                                    <gco:CharacterString>${reference.getTitle()}</gco:CharacterString>
-                                </gmd:name>
-                                @if(TransformationTools.hasValue(reference.getExplanation()))
-                                    <gmd:description>
-                                        <gco:CharacterString>${reference.getExplanation()}</gco:CharacterString>
-                                    </gmd:description>
-                                @endif
-                                <gmd:function>
-                                    <gmd:CI_OnLineFunctionCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="${page.getCodelists().getValue("2000", reference.getType(), "iso")}">${page.getCodelists().getValue("2000", reference.getType(), "iso")}</gmd:CI_OnLineFunctionCode>
-                                </gmd:function>
-                                <idf:attachedToField entry-id="${reference.getType().getKey()}"
-                                                     list-id="2000">${page.getCodelists().getValue("2000", reference.getType())}</idf:attachedToField>
-                            </idf:idfOnlineResource>
-                        </gmd:onLine>
-                    </gmd:MD_DigitalTransferOptions>
-                </gmd:transferOptions>
-            @endfor
-            @for( ServiceUrl serviceUrl : page.getServiceUrls() )
-                <gmd:transferOptions>
-                    <gmd:MD_DigitalTransferOptions>
-                        <gmd:onLine>
-                            <idf:idfOnlineResource>
+                            @if(serviceUrl.isIdfResource())
+                                <idf:idfOnlineResource>
+                            @else
+                                <gmd:CI_OnlineResource>
+                            @endif
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
-                                <%-- applicationProfile not used since "Dateiformat" for URL does not exist anymore--%>
+                                @if(serviceUrl.getApplicationProfile() != null)
+                                    <gmd:applicationProfile>
+                                        <gco:CharacterString>${serviceUrl.getApplicationProfile()}</gco:CharacterString>
+                                    </gmd:applicationProfile>
+                                @endif
                                 <gmd:name>
                                     <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
                                 </gmd:name>
@@ -871,66 +847,37 @@ ${contentInfo}
                                         <gco:CharacterString>${serviceUrl.getDescription()}</gco:CharacterString>
                                     </gmd:description>
                                 @endif
-                                <gmd:function>
-                                    <gmd:CI_OnLineFunctionCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
-                                </gmd:function>
-                                <idf:attachedToField entry-id="5066" list-id="2000">Link to Service</idf:attachedToField>
-                            </idf:idfOnlineResource>
+                                @if(serviceUrl.getFunctionValue() != null)
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode
+                                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
+                                                codeListValue="${serviceUrl.getFunctionValue()}">${serviceUrl.getFunctionValue()}</gmd:CI_OnLineFunctionCode>
+                                    </gmd:function>
+                                @endif
+                                @if(serviceUrl.getAttachedToField() != null)
+                                    <idf:attachedToField entry-id="${serviceUrl.getAttachedToField().getEntryId()}" list-id="${serviceUrl.getAttachedToField().getListId()}">${serviceUrl.getAttachedToField().getText()}</idf:attachedToField>
+                                @endif
+                                @if(serviceUrl.isIdfResource())
+                                    </idf:idfOnlineResource>
+                                @else
+                                    </gmd:CI_OnlineResource>
+                                @endif
                         </gmd:onLine>
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
-            @for( ServiceUrl serviceUrl : page.getCoupledServiceUrlsOrGetCapabilitiesUrl() )
-                <gmd:transferOptions>
-                    <gmd:MD_DigitalTransferOptions>
-                        <gmd:onLine>
-                            <idf:idfOnlineResource>
-                                <gmd:linkage>
-                                    <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
-                                </gmd:linkage>
-                                <gmd:name>
-                                    <gco:CharacterString>${serviceUrl.getName()}</gco:CharacterString>
-                                </gmd:name>
-                                <gmd:function>
-                                    <gmd:CI_OnLineFunctionCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
-                                </gmd:function>
-                            </idf:idfOnlineResource>
-                        </gmd:onLine>
-                    </gmd:MD_DigitalTransferOptions>
-                </gmd:transferOptions>
-            @endfor
-            @if(page.isAtomDownload())
-                <gmd:transferOptions>
-                    <gmd:MD_DigitalTransferOptions>
-                        <gmd:onLine>
-                            <gmd:CI_OnlineResource>
-                                <gmd:linkage>
-                                    <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
-                                </gmd:linkage>
-                                <gmd:name>
-                                    <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
-                                </gmd:name>
-                                <gmd:function>
-                                    <gmd:CI_OnLineFunctionCode
-                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
-                                            codeListValue="information">information</gmd:CI_OnLineFunctionCode>
-                                </gmd:function>
-                            </gmd:CI_OnlineResource>
-                        </gmd:onLine>
-                    </gmd:MD_DigitalTransferOptions>
-                </gmd:transferOptions>
-            @endif
             @for( DigitalTransferOption digitalTransferOption : page.getDigitalTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         @if(digitalTransferOption.getTransferSize() != null)
-                        <gmd:transferSize>
-                            <gco:Real>${digitalTransferOption.getTransferSize()}</gco:Real>
-                        </gmd:transferSize>
+                            @if(digitalTransferOption.getTransferSize().getUnit() != null)
+                                <gmd:unitsOfDistribution>
+                                    <gco:CharacterString>${digitalTransferOption.getTransferSize().getUnit().getKey()}</gco:CharacterString>
+                                </gmd:unitsOfDistribution>
+                            @endif
+                            <gmd:transferSize>
+                                <gco:Real>${digitalTransferOption.getTransferSize().getValue()}</gco:Real>
+                            </gmd:transferSize>
                         @endif
                         <gmd:offLine>
                             <gmd:MD_Medium>

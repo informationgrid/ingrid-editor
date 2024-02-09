@@ -1,0 +1,18 @@
+@import "src/variables";
+
+:host {
+  cursor: pointer;
+  display: flex;
+}
+
+.suffix-wrapper {
+  display: flex;
+  margin-left: 5px;
+  margin-right: -8px;
+  color: rgba(0, 0, 0, 0.54);
+
+  &:hover {
+    box-shadow: 0 1px 0 0 $ige-comment-color;
+    color: #000;
+  }
+}

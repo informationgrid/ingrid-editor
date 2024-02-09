@@ -42,7 +42,12 @@ class UPSHProfile(
     isoImport: ISOImport,
     isoImportUPSH: ISOImportUPSH,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
-    override val identifier = "ingrid-up-sh"
+
+    companion object {
+        const val id = "ingrid-up-sh"
+    }
+    
+    override val identifier = id
     override val title = "InGrid Katalog (UP-SH)"
     override val parentProfile = "ingrid"
     

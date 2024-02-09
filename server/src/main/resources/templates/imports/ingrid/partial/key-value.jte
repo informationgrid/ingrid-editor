@@ -1,4 +1,4 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.KeyValue
+@import de.ingrid.igeserver.model.KeyValue
 
 @param KeyValue item
 

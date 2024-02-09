@@ -104,7 +104,7 @@
     {
       "name": { "key": "900005" },
       "mediumNote": "storage-location",
-      "transferSize": 65
+      "transferSize": { "value": 65, "unit": { "key": "mb" } }
     }
   ],
   "maintenanceInformation": {

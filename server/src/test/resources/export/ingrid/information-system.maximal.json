@@ -96,7 +96,11 @@
   "systemEnvironment": "system environm",
   "isInspireIdentified": false,
   "digitalTransferOptions": [
-    { "name": { "key": "17" }, "mediumNote": "where", "transferSize": 34 }
+    {
+      "name": { "key": "17" },
+      "mediumNote": "where",
+      "transferSize": { "value": 34, "unit": { "key": "mb" } }
+    }
   ],
   "maintenanceInformation": {
     "description": "time reference infos",

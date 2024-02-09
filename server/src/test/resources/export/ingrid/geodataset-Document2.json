@@ -465,14 +465,14 @@
         "name": {
           "key": "4"
         },
-        "transferSize": 3,
+        "transferSize": { "value": 3, "unit": { "key": "mb" } },
         "mediumNote": "4"
       },
       {
         "name": {
           "key": "14"
         },
-        "transferSize": 1,
+        "transferSize": { "value": 1, "unit": { "key": "mb" } },
         "mediumNote": "2"
       }
     ],

@@ -279,7 +279,7 @@
         "name": {
           "key": "18"
         },
-        "transferSize": 12,
+        "transferSize": { "value": 12, "unit": { "key": "mb" } },
         "mediumNote": "Ort"
       }
     ],

@@ -88,7 +88,11 @@
   ],
   "parentIdentifier": "ident",
   "digitalTransferOptions": [
-    { "name": { "key": "1" }, "mediumNote": "location", "transferSize": 50 }
+    {
+      "name": { "key": "1" },
+      "mediumNote": "location",
+      "transferSize": { "value": 50, "unit": { "key": "mb" } }
+    }
   ],
   "maintenanceInformation": {
     "description": "information",
