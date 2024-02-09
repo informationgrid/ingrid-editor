@@ -142,7 +142,7 @@ export class DocumentService {
         {
           type: "selectDocuments",
           ignoreFolders: "exceptFolders",
-          selectConditions: "document1.state = 'PUBLISHED' " + currentUser,
+          selectConditions: "document1.state IS NOT NULL " + currentUser,
         },
         "modified",
         "DESC",
