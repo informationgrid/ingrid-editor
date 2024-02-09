@@ -1,0 +1,22 @@
+---
+# ID des GUI Elements
+id: zip-code
+docType: all
+
+# title, used as window title
+title: PLZ
+---
+
+# PLZ
+
+Postleitzahl der Hausadresse (Straße/Hausnummer). Hier ist die Postleitzahl einzugeben, die sich auf die Hausadresse (Straße/Hausnummer) bezieht. Für die Postleitzahl zur Postdresse (Postfach) ist ein eigenes Feld vorgesehen.
+
+## Beispiel:
+
+30169
+
+# ISO Abbildung
+
+Postleitzahl
+
+Domain: 384 (gmd:postalCode)
