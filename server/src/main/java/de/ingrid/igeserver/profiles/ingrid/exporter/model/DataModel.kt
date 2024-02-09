@@ -177,6 +177,17 @@ data class ServiceUrl(
     val name: String,
     val url: String,
     val description: String?,
+    var attachedToField: AttachedField? = null,
+    var applicationProfile: String? = null,
+    var functionValue: String? = null,
+    val isIdfResource: Boolean = true
+) {
+}
+
+data class AttachedField(
+    val listId: String,
+    val entryId: String,
+    val text: String
 )
 
 data class Operation(

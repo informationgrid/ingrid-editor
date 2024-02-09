@@ -552,7 +552,12 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
-    val externalReferences = references.filter { it.uuidRef.isNullOrEmpty() }
+    private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
+        val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
+        val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
+        val functionValue = codelists.getValue("2000", it.type, "iso")
+        ServiceUrl(it.title, it.url ?: "", it.explanation, AttachedField("2000", it.type.key!!, attachedToFieldText), applicationProfile, functionValue)
+    }
     val referencesWithUuidRefs = references.filter { it.uuidRef.isNullOrEmpty().not() }
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
     val referencesWithCoupledServices = references + getCoupledServicesForGeodataset.map {
@@ -560,11 +565,20 @@ open class IngridModelTransformer(
     }
 
     // information system
-    val serviceUrls = data.serviceUrls ?: emptyList()
+    val serviceUrls = data.serviceUrls?.map { 
+        it.attachedToField = AttachedField("2000", "5066", "Link to Service") 
+        it.functionValue = "information"
+        it
+    } ?: emptyList()
 
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
     open val systemEnvironment = data.systemEnvironment
 
+    fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
+    
+    private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload) 
+        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information")) 
+    else emptyList()
 
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
@@ -669,7 +683,7 @@ open class IngridModelTransformer(
     open fun getCrossReferences() =
         getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
-    fun getCoupledServiceUrlsOrGetCapabilitiesUrl() =
+    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() =
         getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
 
     fun getSubordinateReferences() = getIncomingReferencesProxy().filter { it.isSubordinate }
