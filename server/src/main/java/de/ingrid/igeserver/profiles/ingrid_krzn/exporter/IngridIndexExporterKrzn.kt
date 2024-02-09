@@ -47,7 +47,6 @@ class IngridIndexExporterKrzn(
     )
 
     init {
-        // FIXME: multiple profiles will override profileTransformer!!!
         idfExporter.profileTransformer["ingrid-krzn"] = krznProfileTransformer
         luceneExporter.profileTransformer["ingrid-krzn"] = krznProfileTransformer
     }

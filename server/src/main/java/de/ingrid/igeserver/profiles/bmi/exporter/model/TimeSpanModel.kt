@@ -20,10 +20,11 @@
 package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TimeSpanModel(
-    val rangeType: KeyValueModel?,
+    val rangeType: KeyValue?,
     val timeSpanDate: String?,
     val timeSpanRange: RangeModel?){
 

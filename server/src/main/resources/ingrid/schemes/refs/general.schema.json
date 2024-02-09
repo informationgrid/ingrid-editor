@@ -210,7 +210,23 @@
             "type": ["null", "string"]
           },
           "transferSize": {
-            "type": ["null", "number"]
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "value": {
+                    "type": "number"
+                  },
+                  "unit": {
+                    "$ref": "#/definitions/KeyValue"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       }

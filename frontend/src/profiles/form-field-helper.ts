@@ -21,7 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { inject, Signal } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 
@@ -166,6 +166,11 @@ export interface AutocompleteOptions extends Options {
   hideDeleteButton?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: string;
+}
+
+export interface UnitInputOptions extends InputOptions {
+  unitOptions?: Observable<SelectOptionUi[]>;
+  fieldGroup?: any;
 }
 
 export class FormFieldHelper {
@@ -510,6 +515,66 @@ export class FormFieldHelper {
 
   addInputInline(id, label, options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput(id, null, {
+      fieldLabel: label,
+      wrappers: options?.wrappers ?? ["form-field"],
+      ...options,
+    });
+  }
+
+  addUnitInput(id, label, options?: UnitInputOptions): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      id: options?.id,
+      type: "unit-input",
+      className: options?.className,
+      wrappers: options?.wrappers ?? ["panel", "form-field"],
+      props: {
+        type: options?.type,
+        externalLabel: label,
+        label: options?.fieldLabel,
+        required: options?.required,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        appearance: "outline",
+        disabled: options?.disabled,
+        contextHelpId: options?.contextHelpId,
+        addonRight: options?.suffix,
+        addonLeft: options?.prefix,
+        buttonConfig: options?.buttonConfig,
+        min: options?.min,
+        max: options?.max,
+        maxLength: options?.maxLength,
+        hintStart: options?.hintStart,
+        keydown: options?.keydown,
+        animation: options?.animation,
+        placeholder: options?.placeholder,
+        hideInPreview: options?.hideInPreview ?? false,
+        // [attributes] must be defined first for assigning values, e.g. aria-labelledby below.
+        attributes: {},
+        unitOptions: options?.unitOptions,
+      },
+      modelOptions: {
+        updateOn: options?.updateOn ?? "blur",
+      },
+      expressions: {
+        ...expressions,
+        "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
+          toAriaLabelledBy(field),
+      },
+      validation: options?.validation,
+      validators: options?.validators,
+      asyncValidators: options?.asyncValidators,
+      hooks: options?.hooks,
+      fieldGroup: options?.fieldGroup,
+    };
+  }
+
+  addUnitInputInline(
+    id,
+    label,
+    options: UnitInputOptions = {},
+  ): FormlyFieldConfig {
+    return this.addUnitInput(id, null, {
       fieldLabel: label,
       wrappers: options?.wrappers ?? ["form-field"],
       ...options,

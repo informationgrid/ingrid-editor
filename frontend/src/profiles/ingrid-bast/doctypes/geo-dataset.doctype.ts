@@ -17,9 +17,30 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.bmi.exporter.model
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { inject, Injectable } from "@angular/core";
+import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
+import { CommonFieldsBast } from "./common-fields";
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+@Injectable({
+  providedIn: "root",
+})
+export class GeoDatasetDoctypeBast extends GeoDatasetDoctype {
+  common = inject(CommonFieldsBast);
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class KeyValueModel(val key: String?, val value: String?)
+  defaultKeySpatialScope = "-673152846";
+
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    fieldConfig[0].fieldGroup
+      .find((field) => field.props.label === "Allgemeines")
+      .fieldGroup.push(...this.common.getFields());
+
+    fieldConfig[7].fieldGroup[0].fieldGroup.splice(
+      2,
+      0,
+      this.common.getUseConstraintsCommentsFieldConfig(),
+    );
+
+    return fieldConfig;
+  };
+}

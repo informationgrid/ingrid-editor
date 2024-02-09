@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exporter
 
-import de.ingrid.igeserver.exporter.model.KeyValueModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 
 open class CodelistTransformer(
@@ -28,14 +28,14 @@ open class CodelistTransformer(
 ) {
 
 
-    fun getValue(codelistId: String, entry: KeyValueModel?): String? {
+    fun getValue(codelistId: String, entry: KeyValue?): String? {
         return getValue(codelistId, entry, "de")
     }
 
-    fun getCatalogCodelistValue(codelistId: String, entry: KeyValueModel?): String? =
+    fun getCatalogCodelistValue(codelistId: String, entry: KeyValue?): String? =
     if (entry?.key != null) codelistHandler.getCatalogCodelistValue( catalogIdentifier, codelistId, entry.key) else entry?.value
 
-    fun getValue(codelistId: String, entry: KeyValueModel?, field: String): String? =
+    fun getValue(codelistId: String, entry: KeyValue?, field: String): String? =
         if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) else entry?.value
 
 

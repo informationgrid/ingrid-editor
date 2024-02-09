@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class AddressRefModel(val type: KeyValueModel?, val ref: AddressModel?)
+data class AddressRefModel(val type: KeyValue?, val ref: AddressModel?)

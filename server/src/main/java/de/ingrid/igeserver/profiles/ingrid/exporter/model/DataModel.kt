@@ -22,9 +22,9 @@ package de.ingrid.igeserver.profiles.ingrid.exporter.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.exporter.model.AddressRefModel
-import de.ingrid.igeserver.exporter.model.KeyValueModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.model.KeyValue
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 
@@ -47,17 +47,17 @@ data class DataModel(
     val implementationHistory: String?,
     val systemEnvironment: String?,
     val metadata: IngridMetadata,
-    val advProductGroups: List<KeyValueModel>?,
+    val advProductGroups: List<KeyValue>?,
     val alternateTitle: String?,
-    val themes: List<KeyValueModel>?,
+    val themes: List<KeyValue>?,
     val keywords: Keywords?,
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
     val isInspireIdentified: Boolean?,
-    val openDataCategories: List<KeyValueModel>?,
-    val priorityDatasets: List<KeyValueModel>?,
-    val invekosKeywords: List<KeyValueModel>?,
+    val openDataCategories: List<KeyValue>?,
+    val priorityDatasets: List<KeyValue>?,
+    val invekosKeywords: List<KeyValue>?,
     val temporal: Temporal,
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
@@ -65,12 +65,12 @@ data class DataModel(
     val gridSpatialRepresentation: GridSpatialRepresentation?,
     val identifier: String?,
     val graphicOverviews: List<GraphicOverview>?,
-    val spatialRepresentationType: List<KeyValueModel>?,
+    val spatialRepresentationType: List<KeyValue>?,
     val resolution: List<Resolution>?,
-    val topicCategories: List<KeyValueModel>?,
+    val topicCategories: List<KeyValue>?,
     val portrayalCatalogueInfo: PortrayalCatalogueInfo?,
     val featureCatalogueDescription: FeatureCatalogueDescription?,
-    val digitalTransferOptions: List<DigitalTransferOption>?,
+//    val digitalTransferOptions: List<DigitalTransferOption>?,
     val categoryCatalog: List<CategoryCatalog>?,
     val databaseContent: List<DatabaseContent>?,
     val distribution: Distribution?,
@@ -84,14 +84,14 @@ data class DataModel(
     val conformanceResult: List<ConformanceResult>?,
     val lineage: Lineage?,
     val service: Service?,
-    val spatialScope: KeyValueModel?,
-    val subType: KeyValueModel?,
+    val spatialScope: KeyValue?,
+    val subType: KeyValue?,
 )
 
 
 data class VectorSpatialRepresentation(
-    val topologyLevel: KeyValueModel?,
-    val geometricObjectType: KeyValueModel?,
+    val topologyLevel: KeyValue?,
+    val geometricObjectType: KeyValue?,
     val geometricObjectCount: Int?,
 )
 
@@ -105,7 +105,7 @@ data class Publication(
     val explanation: String?,
     val publishedIn: String?,
     val baseDataText: String?,
-    val documentType: KeyValueModel?,
+    val documentType: KeyValue?,
     val publicationDate: String?,
     val publishingHouse: String?,
     val bibliographicData: String?,
@@ -127,7 +127,7 @@ data class DatabaseContent(
 )
 
 data class CategoryCatalog(
-    val title: KeyValueModel?,
+    val title: KeyValue?,
     @JsonDeserialize(using = DateDeserializer::class)
     val date: OffsetDateTime?,
     val edition: String?
@@ -135,16 +135,16 @@ data class CategoryCatalog(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
-    val classification: List<KeyValueModel>?,
-    val type: KeyValueModel?,
-    val version: List<KeyValueModel>?,
+    val classification: List<KeyValue>?,
+    val type: KeyValue?,
+    val version: List<KeyValue>?,
     val operations: List<Operation>?,
     val resolution: List<Resolution>?,
     val systemEnvironment: String?,
     val implementationHistory: String?,
     val explanation: String?,
     val coupledResources: List<CoupledResource>?,
-    val couplingType: KeyValueModel?,
+    val couplingType: KeyValue?,
     val hasAccessConstraints: Boolean? = false,
     val isAtomDownload: Boolean?,
 ) {
@@ -156,14 +156,14 @@ data class Service(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
     val title: String,
-    var type: KeyValueModel,
+    var type: KeyValue,
     val explanation: String?,
     val url: String?,
     val uuidRef: String?,
-    val urlDataType: KeyValueModel?,
+    val urlDataType: KeyValue?,
     var uuidRefClass: String? = null,
     var uuidRefVersion: String? = null,
-    var uuidRefServiceType: KeyValueModel? = null
+    var uuidRefServiceType: KeyValue? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -180,10 +180,21 @@ data class ServiceUrl(
     val name: String,
     val url: String,
     val description: String?,
+    var attachedToField: AttachedField? = null,
+    var applicationProfile: String? = null,
+    var functionValue: String? = null,
+    val isIdfResource: Boolean = true
+) {
+}
+
+data class AttachedField(
+    val listId: String,
+    val entryId: String,
+    val text: String
 )
 
 data class Operation(
-    val name: KeyValueModel?,
+    val name: KeyValue?,
     val description: String?,
     val methodCall: String?,
 )
@@ -210,20 +221,20 @@ data class DataQualityLineage(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineageSource(
-    val descriptions: List<KeyValueModel>?,
+    val descriptions: List<KeyValue>?,
     val processStep: ProcessStep?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ProcessStep(
-    val description: List<KeyValueModel>?,
+    val description: List<KeyValue>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConformanceResult(
-    val pass: KeyValueModel,
+    val pass: KeyValue,
     val isInspire: Boolean?,
-    val specification: KeyValueModel?,
+    val specification: KeyValue?,
 ) {
     val explanation: String? = null
         get() {
@@ -259,7 +270,7 @@ data class CompletenessOmission(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Quality(
     val _type: String,
-    val measureType: KeyValueModel?,
+    val measureType: KeyValue?,
     val value: Number,
     val parameter: String?,
 )
@@ -271,28 +282,21 @@ data class Distribution(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DistributionFormat(
-    val name: KeyValueModel?,
+    val name: KeyValue?,
     val version: String?,
     val compression: String?,
     val specification: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class DigitalTransferOption(
-    val name: KeyValueModel?,
-    val transferSize: Number?,
-    val mediumNote: String?,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class FeatureCatalogueDescription(
     val citation: List<Citation>?,
-    val featureTypes: List<KeyValueModel>?,
+    val featureTypes: List<KeyValue>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Citation(
-    val title: KeyValueModel?,
+    val title: KeyValue?,
     @JsonDeserialize(using = DateDeserializer::class)
     val date: OffsetDateTime?,
     val edition: String?,
@@ -320,11 +324,11 @@ data class Resolution(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GridSpatialRepresentation(
-    val type: KeyValueModel?,
+    val type: KeyValue?,
     val axesDimensionProperties: List<AxisDimensionProperties>,
     val transformationParameterAvailability: Boolean = false,
     val numberOfDimensions: Int?,
-    val cellGeometry: KeyValueModel?,
+    val cellGeometry: KeyValue?,
     val georectified: Georectified?,
     val georeferenceable: Georeferenceable?,
 )
@@ -333,7 +337,7 @@ data class Georectified(
     val checkPointAvailability: Boolean? = false,
     val checkPointDescription: String?,
     val cornerPoints: String?,
-    val pointInPixel: KeyValueModel?,//2100
+    val pointInPixel: KeyValue?,//2100
 )
 
 data class Georeferenceable(
@@ -347,7 +351,7 @@ data class Georeferenceable(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(
-    val name: KeyValueModel,
+    val name: KeyValue,
     val size: Int?,
     val resolution: Double?,
 )
@@ -363,31 +367,31 @@ data class Resource(
     val specificUsage: String?,
     val useLimitation: String?,
     val useConstraints: List<UseConstraint>?,
-    val accessConstraints: List<KeyValueModel>?,
+    val accessConstraints: List<KeyValue>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class UseConstraint(
-    var title: KeyValueModel?,
+    var title: KeyValue?,
     val source: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ExtraInfo(
-    val legalBasicsDescriptions: List<KeyValueModel>?,
+    val legalBasicsDescriptions: List<KeyValue>?,
 )
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridMetadata(
-    val language: KeyValueModel,
-    val characterSet: KeyValueModel?
+    val language: KeyValue,
+    val characterSet: KeyValue?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridSpatial(
     val references: List<SpatialModel>?,
-    val spatialSystems: List<KeyValueModel>?,
+    val spatialSystems: List<KeyValue>?,
     val verticalExtent: VerticalExtent?,
     val description: String?,
 )
@@ -395,19 +399,19 @@ data class IngridSpatial(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Temporal(
     val events: List<DateEvent>?,
-    val status: KeyValueModel?,
-    val resourceDateType: KeyValueModel?,
-    val resourceDateTypeSince: KeyValueModel?,
+    val status: KeyValue?,
+    val resourceDateType: KeyValue?,
+    val resourceDateTypeSince: KeyValue?,
     @JsonDeserialize(using = DateDeserializer::class)
     val resourceDate: OffsetDateTime?,
     val resourceRange: TimeRange?,
-    val timeRefStatus: KeyValueModel?,
+    val timeRefStatus: KeyValue?,
     val maintenanceNote: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MaintenanceInformation(
-    val maintenanceAndUpdateFrequency: KeyValueModel?,
+    val maintenanceAndUpdateFrequency: KeyValue?,
     val userDefinedMaintenanceFrequency: UserDefinedMaintenanceFrequency?,
     val description: String?,
 )
@@ -415,13 +419,13 @@ data class MaintenanceInformation(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class UserDefinedMaintenanceFrequency(
     val number: Int?,
-    val unit: KeyValueModel?
+    val unit: KeyValue?
 )
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
     val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValueModel
+    val referenceDateType: KeyValue
 )
 
 
@@ -434,10 +438,10 @@ data class TimeRange(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class VerticalExtent(
-    val Datum: KeyValueModel?,
+    val Datum: KeyValue?,
     val minimumValue: Float?,
     val maximumValue: Float?,
-    val unitOfMeasure: KeyValueModel?,
+    val unitOfMeasure: KeyValue?,
 )
 
 data class Keywords(

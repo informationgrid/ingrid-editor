@@ -66,7 +66,7 @@ export class ThesaurusReportComponent implements OnInit {
         const report = groupedByThesaurus[key]
           .map(
             (item) =>
-              `${item.value}${
+              `${item.value?.label}${
                 item.alreadyExists ? " (bereits vorhanden)" : ""
               }`,
           )

@@ -50,6 +50,7 @@ export class GeoDatasetDoctype extends IngridShared {
 
   showInspireConform = true;
   isGeoDataset = true;
+  defaultKeySpatialScope = "885989663";
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
@@ -113,7 +114,10 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             asSelect: true,
             showSearch: true,
-            options: this.getCodelistForSelect("526", "priorityDataset"),
+            options: this.getCodelistForSelect(
+              "526",
+              "spatialRepresentationType",
+            ),
             codelistId: "526",
             expressions: {
               "props.required": "formState.mainModel?.isInspireConform",

@@ -120,6 +120,7 @@ import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.p
 import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
 import { SectionWrapper } from "./wrapper/section-wrapper.component";
 import { IgeDatepickerIntl } from "../shared/ige-datepicker-intl";
+import { UnitInputComponent } from "./types/unit-type/unit-input.component";
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
   return () => overlay.scrollStrategies.close();
@@ -193,6 +194,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
           name: "ige-select",
           component: SelectTypeComponent,
+        },
+        {
+          name: "unit-input",
+          component: UnitInputComponent,
         },
         {
           name: "uvpPhases",
@@ -292,6 +297,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     MatPseudoCheckboxModule,
     FieldToAiraLabelledbyPipe,
     SectionWrapper,
+    UnitInputComponent,
   ],
   providers: [
     {

@@ -24,10 +24,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
@@ -37,8 +37,8 @@ import java.time.OffsetDateTime
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
     @JsonProperty("_id") val id: Int,
-    val salutation: KeyValueModel?,
-    @JsonProperty("academic-title") val academicTitle: KeyValueModel?,
+    val salutation: KeyValue?,
+    @JsonProperty("academic-title") val academicTitle: KeyValue?,
     val firstName: String?,
     val lastName: String?,
     val organization: String?,
@@ -132,7 +132,7 @@ data class AddressModel(
         ?.connection
 }
 
-data class ContactModel(val type: KeyValueModel?, val connection: String?){
+data class ContactModel(val type: KeyValue?, val connection: String?){
     val typeLabel: String?
         get() = AddressModel.codeListService?.getCodeListValue("4430", type?.key, "en")
 }
@@ -145,8 +145,8 @@ data class Address(
     val city: String?,
     @JsonProperty("zip-po-box") val zipPoBox: String?,
     @JsonProperty("po-box") val poBox: String?,
-    val administrativeArea: KeyValueModel?,
-    val country: KeyValueModel?
+    val administrativeArea: KeyValue?,
+    val country: KeyValue?
 ) {
     val countryKey = country?.key ?: ""
 
