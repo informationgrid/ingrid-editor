@@ -93,7 +93,10 @@ describe("DashboardComponent", () => {
   it("should show last recent documents", () => {
     const sessionStore = spectator.inject(SessionStore);
     const dataService = spectator.inject<DocumentService>(DocumentService);
-    dataService.findRecent.and.callFake(() => {
+    dataService.findRecentDrafts.and.callFake(() => {
+      sessionStore.update({ latestDocuments: recentDocuments });
+    });
+    dataService.findRecentPublished.and.callFake(() => {
       sessionStore.update({ latestDocuments: recentDocuments });
     });
     // const formService = spectator.inject<FormularService>(FormularService);

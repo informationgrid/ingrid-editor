@@ -131,11 +131,8 @@ export class DocumentService {
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 
-  findRecent(fromCurrentUser: boolean = false): void {
-    let currentUser = fromCurrentUser
-      ? "and document1.modifiedbyuser = " +
-        this.configService.$userInfo.getValue().id
-      : "";
+  findRecentDrafts(fromCurrentUser: boolean = false): void {
+    let currentUser = this.getCurrentUserQuery(fromCurrentUser);
     this.researchService
       .search(
         "",
@@ -157,7 +154,9 @@ export class DocumentService {
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits })),
       )
       .subscribe();
+  }
 
+  findRecentPublished(fromCurrentUser: boolean = false): void {
     // only published
     this.researchService
       .search(
@@ -165,7 +164,9 @@ export class DocumentService {
         {
           type: "selectDocuments",
           ignoreFolders: "exceptFolders",
-          selectConditions: "document1.state = 'PUBLISHED' " + currentUser,
+          selectConditions:
+            "document1.state = 'PUBLISHED' " +
+            this.getCurrentUserQuery(fromCurrentUser),
         },
         "modified",
         "DESC",
@@ -634,7 +635,7 @@ export class DocumentService {
    * Copy a set of documents under a specified destination document.
    * @param srcIDs contains the IDs of the documents to be copied
    * @param dest is the document, where the other docs to be copied will have as their parent
-   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param includeTree if set to tree then the whole tree is being copied instead of just the selected document
    * @param isAddress
    * @returns {Observable<Response>}
    */
@@ -1055,6 +1056,13 @@ export class DocumentService {
       },
       !entity.hasWritePermission,
     );
+  }
+
+  private getCurrentUserQuery(fromCurrentUser: boolean) {
+    return fromCurrentUser
+      ? "and document1.modifiedbyuser = " +
+          this.configService.$userInfo.getValue().id
+      : "";
   }
 
   replaceAddress(source: string, target: string): Observable<any> {

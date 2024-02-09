@@ -30,3 +30,14 @@
     padding: 0;
   }
 }
+
+.wrapper {
+  position: relative;
+
+  mat-slide-toggle {
+    display: flex;
+    position: absolute;
+    top: 6px;
+    right: 0;
+  }
+}

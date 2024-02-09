@@ -46,7 +46,6 @@ export class DashboardComponent implements OnInit {
   oldestExpiredDocs$: Observable<DocumentAbstract[]>;
   chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
-  FromCurrentUser: boolean = false;
 
   constructor(
     configService: ConfigService,
@@ -85,8 +84,9 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchData() {
-    this.docService.findRecent();
-    this.docService.findExpired();
+    this.updateRecent();
+    this.updatePublished();
+    this.updateExpired();
   }
 
   createNewDocument() {
@@ -153,10 +153,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  updateLatestDocumentList(checked: boolean) {
-    this.FromCurrentUser = checked;
+  updateRecent(fromCurrentUser: boolean = false) {
+    this.docService.findRecentDrafts(fromCurrentUser);
+  }
 
-    this.docService.findRecent(this.FromCurrentUser);
-    this.docService.findExpired(this.FromCurrentUser);
+  updatePublished(fromCurrentUser: boolean = false) {
+    this.docService.findRecentPublished(fromCurrentUser);
+  }
+
+  updateExpired(fromCurrentUser: boolean = false) {
+    this.docService.findExpired(fromCurrentUser);
   }
 }

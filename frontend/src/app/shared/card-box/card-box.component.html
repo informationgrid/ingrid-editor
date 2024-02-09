@@ -1,6 +1,15 @@
 <mat-card appearance="outlined" class="no-box-shadow">
     <mat-card-title>
-        <h2>{{ label }}</h2>
+        <div class="wrapper">
+            <h2>
+                {{ label }}
+            </h2>
+            @if (nameOfToggle()) {
+                <mat-slide-toggle (change)="toggle.next($event.checked)">{{
+                    nameOfToggle()
+                }}</mat-slide-toggle>
+            }
+        </div>
     </mat-card-title>
     <mat-card-content>
         <mat-divider aria-hidden="true"></mat-divider>
