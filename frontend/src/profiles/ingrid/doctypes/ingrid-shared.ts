@@ -162,7 +162,9 @@ export abstract class IngridShared extends BaseDoctype {
             },
           ],
           click: (field: FormlyFieldConfig) =>
-            setTimeout(() => this.handleIsInspireConformClick(field)),
+            setTimeout(() =>
+              this.handleIsInspireConformClick(field).subscribe(),
+            ),
         }),
         this.showInVeKoSField
           ? this.addSelect("invekos", "InVeKoS", {
