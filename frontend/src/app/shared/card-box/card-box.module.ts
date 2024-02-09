@@ -23,10 +23,17 @@ import { MatCardModule } from "@angular/material/card";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 @NgModule({
   declarations: [CardBoxComponent],
-  imports: [MatCardModule, MatDividerModule, MatButtonModule, NgIf],
+  imports: [
+    MatCardModule,
+    MatDividerModule,
+    MatButtonModule,
+    NgIf,
+    MatSlideToggle,
+  ],
   exports: [CardBoxComponent],
 })
 export class CardBoxModule {}

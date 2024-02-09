@@ -17,7 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  input,
+  Input,
+  OnInit,
+  Output,
+  signal,
+} from "@angular/core";
 
 @Component({
   selector: "ige-card-box",
@@ -26,10 +34,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 })
 export class CardBoxComponent implements OnInit {
   @Input() label: string;
+  nameOfToggle = input<string>(null);
 
   // button besides label, if provided
   @Input() endBtnTitle: string;
   @Output() endBtnOnClick = new EventEmitter<void>();
+  @Output() toggle = new EventEmitter<boolean>();
 
   constructor() {}
 
