@@ -76,6 +76,7 @@ export class PersonDoctype extends AddressShared {
             props: {
               externalLabel: "Name",
               required: true,
+              contextHelpId: "name",
             },
             fieldGroup: [
               {
