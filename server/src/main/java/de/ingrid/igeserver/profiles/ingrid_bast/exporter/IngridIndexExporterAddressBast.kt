@@ -28,27 +28,21 @@ import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterBast(
+class IngridIndexExporterAddressBast(
     idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-    bastProfileTransformer: BastProfileTransformer
+    documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
-        DocumentCategory.DATA,
+        DocumentCategory.ADDRESS,
         "indexInGridIDFBast",
-        "Ingrid IDF BASt (Elasticsearch)",
-        "Export von Ingrid Dokumenten ins IDF Format für BASt für die Anzeige im Portal ins Elasticsearch-Format.",
+        "Ingrid IDF Address BASt (Elasticsearch)",
+        "Export von Ingrid Adressen ins IDF Format für BASt für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
         listOf("ingrid-bast"),
         false
     )
-
-    init {
-        idfExporter.profileTransformer["ingrid-bast"] = bastProfileTransformer
-        luceneExporter.profileTransformer["ingrid-bast"] = bastProfileTransformer
-    }
 
 }
