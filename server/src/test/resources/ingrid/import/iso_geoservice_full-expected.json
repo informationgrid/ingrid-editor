@@ -289,7 +289,12 @@
       "name": {
         "key": "4"
       },
-      "transferSize": 1.44,
+      "transferSize": {
+        "value": 1.44,
+        "unit": {
+          "key": "mb"
+        }
+      },
       "mediumNote": "Home"
     }
   ],
