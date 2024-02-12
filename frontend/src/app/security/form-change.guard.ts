@@ -24,7 +24,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { firstValueFrom, Observable, of, switchMap } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
@@ -115,7 +115,7 @@ export class FormChangeDeactivateGuard {
     }
   }
 
-  private handleFormHasChanged(target: any) {
+  private handleFormHasChanged(target: any): Observable<boolean> {
     const type = target instanceof FormComponent ? "document" : "address";
     const currentUuid = (<IgeDocument>this.formStateService.getForm().value)
       ._uuid;
@@ -142,10 +142,13 @@ export class FormChangeDeactivateGuard {
       })
       .afterClosed()
       .pipe(
-        tap((response) =>
-          response ? this.handleAction(response, type, currentUuid) : null,
-        ),
-        map((response) => response === "leave" || response === "save"),
+        switchMap(async (response) => {
+          if (response) {
+            await this.handleAction(response, type, currentUuid);
+          }
+          return response;
+        }),
+        map((response): boolean => response === "leave" || response === "save"),
       );
   }
 
@@ -166,10 +169,6 @@ export class FormChangeDeactivateGuard {
           noVisualUpdates: true,
         }),
       );
-      this.documentService.reload$.next({
-        uuid: currentUuid,
-        forAddress: isAddress,
-      });
     } else if (action === "stay") {
       // do nothing
     } else {
