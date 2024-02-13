@@ -281,6 +281,7 @@ export class PublishPlugin extends SaveBase {
           this.handleError(error, data, this.forAddress, "PUBLISH"),
         ),
         tap((response) => {
+          this.documentService.publishState$.next(false);
           if (delay != null) {
             this.documentService.reload$.next({
               uuid: data._uuid,
