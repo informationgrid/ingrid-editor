@@ -698,7 +698,7 @@ export class DocumentService {
     if (confirm) {
       const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-      let destinationTitle;
+      let destinationTitle: string;
       if (dest === null) {
         destinationTitle = this.translocoService.translate(
           isAddress ? "menu.address" : "menu.form",
@@ -800,11 +800,7 @@ export class DocumentService {
     });
   }
 
-  updateBreadcrumb(
-    id: number,
-    query: TreeQuery | AddressTreeQuery,
-    isAddress = false,
-  ): Subscription {
+  updateBreadcrumb(id: number, isAddress = false): Subscription {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.getPath(id)

@@ -39,7 +39,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { PageEvent } from "@angular/material/paginator";
-import { DocEventsService } from "../../../services/event/doc-events.service";
 import { merge } from "rxjs";
 import { ConfigService } from "../../../services/config/config.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -66,11 +65,11 @@ export class ReferencedDocumentsTypeComponent
 
   docs: DocumentAbstract[];
 
-  // TODO-dw: check sql
   private sql = `SELECT document1.*, document_wrapper.category
                  FROM document_wrapper
-                        JOIN document document1 ON document_wrapper.uuid=document1.uuid
-                 WHERE document1.is_latest = true AND document_wrapper.deleted = 0
+                        JOIN document document1 ON document_wrapper.uuid = document1.uuid
+                 WHERE document1.is_latest = true
+                   AND document_wrapper.deleted = 0
                    AND jsonb_path_exists(jsonb_strip_nulls(data), '$.<referenceFieldRaw>')
                    AND EXISTS(SELECT
                               FROM jsonb_array_elements(data -> '<referenceField>') as s
@@ -89,7 +88,6 @@ export class ReferencedDocumentsTypeComponent
     private router: Router,
     private researchService: ResearchService,
     private documentService: DocumentService,
-    private docEvents: DocEventsService,
     private cdr: ChangeDetectorRef,
   ) {
     super();

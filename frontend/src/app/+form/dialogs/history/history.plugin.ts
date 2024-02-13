@@ -249,8 +249,7 @@ export class HistoryPlugin extends Plugin {
     // if current node is not last from stack we go to end of stack
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== this.stack[this.pointer].id) {
-      this.gotoNode(this.stack[this.pointer]);
-      return;
+      return this.gotoNode(this.stack[this.pointer]);
     }
 
     const node = this.stack[this.pointer - 1];
@@ -271,23 +270,15 @@ export class HistoryPlugin extends Plugin {
   }
 
   private async gotoNode(item: DocumentAbstract) {
-    let handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
-      this.documentService,
-      this.dialog,
-      this.forAddress,
-    );
-
-    if (!handled) {
-      return;
-    }
-    this.treeStore.update({
-      explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
-    });
-    this.router.navigate([
+    const navigated = await this.router.navigate([
       ConfigService.catalogId + this.navigatePath,
       { id: item._uuid },
     ]);
+    if (navigated) {
+      this.treeStore.update({
+        explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
+      });
+    }
   }
 
   private handleButtonState() {

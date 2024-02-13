@@ -20,13 +20,9 @@
 import { Component, Input } from "@angular/core";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { BehaviorSubject } from "rxjs";
-import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { FormUtils } from "../../form.utils";
-import { MatDialog } from "@angular/material/dialog";
-import { FormStateService } from "../../form-state.service";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -40,6 +36,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 })
 export class FolderDashboardComponent {
   query: TreeQuery | AddressTreeQuery;
+
   @Input() set isAddress(value: boolean) {
     this.query = value ? this.addressTreeQuery : this.treeQuery;
     this.query.openedDocument$.pipe(untilDestroyed(this)).subscribe((doc) => {
@@ -61,13 +58,10 @@ export class FolderDashboardComponent {
   constructor(
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private configService: ConfigService,
-    private formToolbarService: FormToolbarService,
+    configService: ConfigService,
     private docEvents: DocEventsService,
     private router: Router,
     private docService: DocumentService,
-    private formStateService: FormStateService,
-    private dialog: MatDialog,
   ) {
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
@@ -110,18 +104,9 @@ export class FolderDashboardComponent {
   }
 
   async openDocument(uuid: string) {
-    const handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
-      this.docService,
-      this.dialog,
-      this.isAddress,
-    );
-
-    if (handled) {
-      this.router.navigate([
-        ConfigService.catalogId + (this.isAddress ? "/address" : "/form"),
-        { id: uuid },
-      ]);
-    }
+    await this.router.navigate([
+      ConfigService.catalogId + (this.isAddress ? "/address" : "/form"),
+      { id: uuid },
+    ]);
   }
 }

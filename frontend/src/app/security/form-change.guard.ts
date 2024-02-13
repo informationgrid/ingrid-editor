@@ -33,6 +33,7 @@ import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
 import { ConfigService } from "../services/config/config.service";
 import { PluginService } from "../services/plugin/plugin.service";
+import { FormUtils } from "../+form/form.utils";
 
 @Injectable({
   providedIn: "root",
@@ -55,21 +56,28 @@ export class FormChangeDeactivateGuard {
   //       we could use formOptions.resetModel()
   canDeactivate(
     target: FormComponent | AddressComponent,
-    currentRoute: ActivatedRouteSnapshot,
+    _currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot,
-  ): Observable<boolean> {
+  ): Observable<boolean> | Promise<boolean> {
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
     const stayOnPage = FormChangeDeactivateGuard.pageIsNotLeft(
       currentState.url,
       nextState.url,
     );
-    if (stayOnPage) {
-      return of(true);
-    }
 
     const formHasChanged = this.formStateService.getForm()?.dirty;
+
+    if (stayOnPage) {
+      const type = target instanceof FormComponent ? "document" : "address";
+      return FormUtils.handleDirtyForm(
+        this.formStateService.getForm(),
+        this.documentService,
+        this.dialog,
+        type === "address",
+      );
+    }
 
     if (!formHasChanged) {
       this.handleBehaviourRegistration(currentState, nextState);
