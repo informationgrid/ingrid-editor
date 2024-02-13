@@ -236,6 +236,7 @@ open class IngridModelTransformer(
     open val mdStandardVersion = "2003/Cor.1:2006"
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
+    fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
     val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValue(it, null)) }
@@ -333,7 +334,7 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(name = it.label, link = adaptGemetLinks(it.id)) }
+        keywords = data.keywords?.gemet?.map { KeywordIso(it.label, adaptGemetLinks(it.id), it.alternativeLabel) }
             ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1"
