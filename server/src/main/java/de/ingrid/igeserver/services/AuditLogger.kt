@@ -28,6 +28,7 @@ import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.security.Principal
 import java.time.LocalDate
 
 /**
@@ -70,9 +71,10 @@ class AuditLogger {
         target: String?,
         data: JsonNode? = null,
         logger: String? = null,
-        catalogIdentifier: String? = null
+        catalogIdentifier: String? = null,
+        principal: Principal? = null
     ) {
-        getLogger(logger).info(createLogMessage(category, action, target, data, catalogIdentifier))
+        getLogger(logger).info(createLogMessage(category, action, target, data, catalogIdentifier, principal))
     }
 
     /**
@@ -112,13 +114,14 @@ class AuditLogger {
         action: String,
         target: String?,
         data: JsonNode?,
-        catalogIdentifier: String? = null
+        catalogIdentifier: String? = null,
+        principal: Principal? = userService.getCurrentPrincipal()
     ): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put(RECORD_TYPE, RECORD_TYPE_VALUE)
             put(CATEGORY, category)
             put(ACTION, action)
-            put(ACTOR, userService.getCurrentPrincipal()?.let { userService.getName(it) } ?: "unknown")
+            put(ACTOR, principal?.let { userService.getName(it) } ?: "unknown")
             put(TIME, dateService.now().toString())
             put(TARGET, target)
             replace(DATA, data)

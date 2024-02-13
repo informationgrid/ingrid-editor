@@ -25,7 +25,6 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PostPersistencePayload
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
@@ -56,7 +55,8 @@ class PostDataHistoryLogger(
             target = docId,
             data = documentService.convertToJsonNode(payload.document),
             logger = LOGGER_NAME,
-            catalogIdentifier = payload.catalogIdentifier
+            catalogIdentifier = payload.catalogIdentifier,
+            principal = context.principal
         )
         return payload
     }
