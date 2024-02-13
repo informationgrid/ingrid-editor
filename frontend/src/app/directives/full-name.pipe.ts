@@ -18,10 +18,11 @@
  * limitations under the Licence.
  */
 import { Pipe, PipeTransform } from "@angular/core";
-import { catchError } from "rxjs/operators";
+import { catchError, tap } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { UserDataService } from "../services/user/user-data.service";
 
+const fullNameCache = new Map<number, string>([[null, ""]]);
 @Pipe({
   name: "fullName",
 })
@@ -29,8 +30,11 @@ export class FullNamePipe implements PipeTransform {
   constructor(private userDataService: UserDataService) {}
 
   transform(value: number, args?: any): Observable<string> {
-    return this.userDataService
-      .getUserFullName(value)
-      .pipe(catchError(() => of("Unbekannter Benutzer")));
+    return fullNameCache.has(value)
+      ? of(fullNameCache.get(value))
+      : this.userDataService.getUserFullName(value).pipe(
+          tap((fullName) => fullNameCache.set(value, fullName)),
+          catchError(() => of(`Unbekannter Benutzer (${value})`)),
+        );
   }
 }
