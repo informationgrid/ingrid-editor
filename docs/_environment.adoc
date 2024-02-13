@@ -7,6 +7,10 @@
 |When 'true' then another option is shown to allow overwriting a document on version conflict.
 |true
 
+|APP_HELP_LINK
+|
+|https://metaver-bedienungsanleitung.readthedocs.io
+
 |APP_HOST_URL
 |
 |https://ige-ng.informationgrid.eu
@@ -55,8 +59,16 @@
 |
 |admin
 
+|ELASTIC_REMOTE_HOSTS
+|
+|
+
 |ENABLE_AI
 |
+|false
+
+|INDEX_THROUGH_IBUS
+|Index directy to Elasticsearch or through an iBus 
 |false
 
 |KEYCLOAK_BACKEND_USER
@@ -123,6 +135,10 @@
 |
 |80
 
+|SERVER_CONTEXT_PATH
+|
+|/
+
 |SHOW_ACCESSIBILITY_LINK
 |Show a link to the accessibility page
 |false
@@ -138,6 +154,10 @@
 |VIRUSSCAN_MAIL_RECEIVER
 |
 |
+
+|UPLOAD_EXTERNAL_URL
+|The URL to be used during export for accessing uploaded files
+|/documents/
 
 |VIRUSSCAN_SCHEDULE
 |
