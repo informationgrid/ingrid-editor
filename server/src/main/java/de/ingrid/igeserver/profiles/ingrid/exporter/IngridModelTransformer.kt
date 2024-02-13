@@ -552,11 +552,14 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
-    private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
-        val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
-        val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
-        val functionValue = codelists.getValue("2000", it.type, "iso")
-        ServiceUrl(it.title, it.url ?: "", it.explanation, AttachedField("2000", it.type.key!!, attachedToFieldText), applicationProfile, functionValue)
+    private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.mapNotNull {
+        // if type is free entry ignore
+        if (it.type.key != null) {
+            val functionValue = codelists.getValue("2000", it.type, "iso")
+            val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
+            val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
+            ServiceUrl(it.title, it.url ?: "", it.explanation, AttachedField("2000", it.type.key!!, attachedToFieldText), applicationProfile, functionValue)
+        } else null
     }
     val referencesWithUuidRefs = references
         .filter { !it.uuidRef.isNullOrEmpty() }
