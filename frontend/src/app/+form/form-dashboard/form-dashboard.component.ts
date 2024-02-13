@@ -73,7 +73,7 @@ export class FormDashboardComponent implements OnInit {
       .subscribe(() => {
         this.address
           ? this.docService.findRecentAddresses()
-          : this.docService.findRecent();
+          : this.updateRecentDocs();
       });
   }
 
@@ -81,5 +81,10 @@ export class FormDashboardComponent implements OnInit {
     const target =
       ConfigService.catalogId + (this.address ? "/address" : "/form");
     this.router.navigate([target, { id: uuid }]);
+  }
+
+  private updateRecentDocs() {
+    this.docService.findRecentDrafts();
+    this.docService.findRecentPublished();
   }
 }

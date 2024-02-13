@@ -147,6 +147,10 @@ export class TabSearchComponent implements OnInit {
     });
 
     this.route.params.subscribe((data) => {
+      // if the query came from URL, then reset the filters
+      if (data.q !== undefined) {
+        this.resetSearchField();
+      }
       this.form.setValue({
         type: data.type ?? "selectDocuments",
         query: data.q ?? "",

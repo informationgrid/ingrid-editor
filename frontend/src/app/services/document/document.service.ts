@@ -131,24 +131,32 @@ export class DocumentService {
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 
-  findRecent(): void {
+  findRecentDrafts(fromCurrentUser: boolean = false): void {
+    let currentUser = this.getCurrentUserQuery(fromCurrentUser);
     this.researchService
       .search(
         "",
-        { type: "selectDocuments", ignoreFolders: "exceptFolders" },
+        {
+          type: "selectDocuments",
+          ignoreFolders: "exceptFolders",
+          selectConditions: "document1.state IS NOT NULL " + currentUser,
+        },
         "modified",
         "DESC",
         {
           page: 1,
           pageSize: 10,
         },
+        ["selectConditions"],
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
         tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits })),
       )
       .subscribe();
+  }
 
+  findRecentPublished(fromCurrentUser: boolean = false): void {
     // only published
     this.researchService
       .search(
@@ -156,7 +164,9 @@ export class DocumentService {
         {
           type: "selectDocuments",
           ignoreFolders: "exceptFolders",
-          selectOnlyPublished: "document1.state = 'PUBLISHED'",
+          selectConditions:
+            "document1.state = 'PUBLISHED' " +
+            this.getCurrentUserQuery(fromCurrentUser),
         },
         "modified",
         "DESC",
@@ -164,7 +174,7 @@ export class DocumentService {
           page: 1,
           pageSize: 10,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
@@ -175,10 +185,14 @@ export class DocumentService {
       .subscribe();
   }
 
-  findExpired(): void {
+  findExpired(fromCurrentUser: boolean = false): void {
+    let currentUser = fromCurrentUser
+      ? "and document1.modifiedbyuser = " +
+        this.configService.$userInfo.getValue().id
+      : "";
     const model = {
       ignoreFolders: "exceptFolders",
-      selectOnlyPublished: "document1.state = 'PUBLISHED'",
+      selectConditions: "document1.state = 'PUBLISHED'" + currentUser,
     };
     combineLatest(
       this.catalogService.getExpiryDuration(),
@@ -208,7 +222,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       ),
     )
       .pipe(
@@ -621,7 +635,7 @@ export class DocumentService {
    * Copy a set of documents under a specified destination document.
    * @param srcIDs contains the IDs of the documents to be copied
    * @param dest is the document, where the other docs to be copied will have as their parent
-   * @param includeTree, if set to tree then the whole tree is being copied instead of just the selected document
+   * @param includeTree if set to tree then the whole tree is being copied instead of just the selected document
    * @param isAddress
    * @returns {Observable<Response>}
    */
@@ -684,7 +698,7 @@ export class DocumentService {
     if (confirm) {
       const store = isAddress ? this.addressTreeStore : this.treeStore;
 
-      let destinationTitle;
+      let destinationTitle: string;
       if (dest === null) {
         destinationTitle = this.translocoService.translate(
           isAddress ? "menu.address" : "menu.form",
@@ -786,11 +800,7 @@ export class DocumentService {
     });
   }
 
-  updateBreadcrumb(
-    id: number,
-    query: TreeQuery | AddressTreeQuery,
-    isAddress = false,
-  ): Subscription {
+  updateBreadcrumb(id: number, isAddress = false): Subscription {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.getPath(id)
@@ -1042,6 +1052,13 @@ export class DocumentService {
       },
       !entity.hasWritePermission,
     );
+  }
+
+  private getCurrentUserQuery(fromCurrentUser: boolean) {
+    return fromCurrentUser
+      ? "and document1.modifiedbyuser = " +
+          this.configService.$userInfo.getValue().id
+      : "";
   }
 
   replaceAddress(source: string, target: string): Observable<any> {

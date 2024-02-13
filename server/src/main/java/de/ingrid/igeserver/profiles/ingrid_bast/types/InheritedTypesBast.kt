@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component
 @Component
 class InGridGeoDatasetTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val profiles = arrayOf(BastProfile.id)
+    override val jsonSchema = "/ingrid/schemes/bast/geo-dataset_bast.schema.json"
 }
 
 @Component
@@ -39,6 +40,7 @@ class InGridDataCollectionTypeBast(jdbcTemplate: JdbcTemplate) : InGridDataColle
 @Component
 class InGridGeoServiceTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
     override val profiles = arrayOf(BastProfile.id)
+    override val jsonSchema = "/ingrid/schemes/bast/geo-service_bast.schema.json"
 }
 
 @Component

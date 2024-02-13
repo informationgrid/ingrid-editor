@@ -35,8 +35,6 @@ import { distinctUntilChanged, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { FormUtils } from "../../../+form/form.utils";
-import { FormStateService } from "../../../+form/form-state.service";
 import { firstValueFrom } from "rxjs";
 
 interface Reference {
@@ -80,7 +78,6 @@ export class DocumentReferenceTypeComponent
     private router: Router,
     private docService: DocumentService,
     private tree: TreeQuery,
-    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -93,8 +90,8 @@ export class DocumentReferenceTypeComponent
         distinctUntilChanged((a, b) => {
           if (a.length !== b.length) return false;
           return (
-            JSON.stringify(a.map((item) => item.uuid)) ===
-            JSON.stringify(b.map((item) => item.uuid))
+            JSON.stringify(a.map((item: any) => item.uuid)) ===
+            JSON.stringify(b.map((item: any) => item.uuid))
           );
         }),
       )
@@ -143,18 +140,7 @@ export class DocumentReferenceTypeComponent
     if (item.isExternalRef) {
       window.open((<UrlReference>item).url, "_blank");
     } else {
-      // TODO: check for dirty form
-      const handled = await FormUtils.handleDirtyForm(
-        this.formStateService.getForm(),
-        this.docService,
-        this.dialog,
-        false,
-      );
-
-      if (!handled) {
-        return;
-      }
-      this.router.navigate([
+      return this.router.navigate([
         `${ConfigService.catalogId}/form`,
         { id: (<DocumentReference>item).uuid },
       ]);
@@ -170,7 +156,7 @@ export class DocumentReferenceTypeComponent
   private async buildModel() {
     this.refreshing = true;
     this.myModel = await Promise.all(
-      this.formControl.value.map(async (item) => {
+      this.formControl.value.map(async (item: any) => {
         return item.isExternalRef
           ? this.mapExternalRef(item)
           : this.mapInternalRef(item);
@@ -180,7 +166,7 @@ export class DocumentReferenceTypeComponent
     this.cdr.detectChanges();
   }
 
-  private mapExternalRef(item): UrlReference {
+  private mapExternalRef(item: any): UrlReference {
     return {
       title: item.title ?? item.url,
       url: item.url,
@@ -188,7 +174,7 @@ export class DocumentReferenceTypeComponent
     };
   }
 
-  private async mapInternalRef(item): Promise<DocumentReference> {
+  private async mapInternalRef(item: any): Promise<DocumentReference> {
     const nodeEntity = this.tree.getByUuid(item.uuid);
     if (nodeEntity) {
       return this.mapToDocumentReference(nodeEntity);
@@ -216,7 +202,7 @@ export class DocumentReferenceTypeComponent
 
   private getRefUuids(): string[] {
     return this.formControl.value
-      .filter((item) => item.uuid)
-      .map((item) => item.uuid);
+      .filter((item: any) => item.uuid)
+      .map((item: any) => item.uuid);
   }
 }

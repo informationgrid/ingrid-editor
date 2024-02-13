@@ -375,7 +375,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updateBreadcrumb(id: number) {
-    return this.documentService.updateBreadcrumb(id, this.query, this.address);
+    return this.documentService.updateBreadcrumb(id, this.address);
   }
 
   private handleLoadError(error: HttpErrorResponse, previousDocUuid: string) {

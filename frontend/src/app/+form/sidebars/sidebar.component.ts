@@ -23,9 +23,6 @@ import { TreeStore } from "../../store/tree/tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
-import { FormUtils } from "../form.utils";
-import { MatDialog } from "@angular/material/dialog";
-import { DocumentService } from "../../services/document/document.service";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
 import { TreeQuery } from "../../store/tree/tree.query";
@@ -50,13 +47,10 @@ export class SidebarComponent implements OnInit {
   private treeStore: AddressTreeStore | TreeStore;
   private treeQuery: AddressTreeQuery | TreeQuery;
   private path: "/form" | "/address";
-  private formType: "document" | "address";
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog,
-    private documentService: DocumentService,
     private formStateService: FormStateService,
     private addressTreeStore: AddressTreeStore,
     private docTreeStore: TreeStore,
@@ -69,12 +63,10 @@ export class SidebarComponent implements OnInit {
       this.treeStore = this.addressTreeStore;
       this.treeQuery = this.addressTreeQuery;
       this.path = "/address";
-      this.formType = "address";
     } else {
       this.treeStore = this.docTreeStore;
       this.treeQuery = this.docTreeQuery;
       this.path = "/form";
-      this.formType = "document";
     }
 
     this.setInitialTreeNode();
@@ -124,22 +116,11 @@ export class SidebarComponent implements OnInit {
     // reset scroll position when loading a new document
     this.treeStore.update({ scrollPosition: 0 });
 
-    // TODO: should be handled in form-change.guard.ts, where it's also already used
-    const handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
-      this.documentService,
-      this.dialog,
-      this.address,
-    );
-
-    if (handled) {
-      this.router.navigate([
-        ConfigService.catalogId + this.path,
-        { id: selectedDocUuids[0] },
-      ]);
-    } else {
-      this.activeTreeNode.next(currentId);
-    }
+    const navigated = await this.router.navigate([
+      ConfigService.catalogId + this.path,
+      { id: selectedDocUuids[0] },
+    ]);
+    if (!navigated) this.activeTreeNode.next(currentId);
   }
 
   handleSelection(selectedDocsId: string[]) {

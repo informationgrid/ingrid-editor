@@ -150,7 +150,7 @@
     },
     "resource": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "purpose": {
           "type": "string"

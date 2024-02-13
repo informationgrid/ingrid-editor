@@ -24,7 +24,7 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { firstValueFrom, Observable, of, switchMap } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
@@ -33,6 +33,7 @@ import { FormStateService } from "../+form/form-state.service";
 import { IgeDocument } from "../models/ige-document";
 import { ConfigService } from "../services/config/config.service";
 import { PluginService } from "../services/plugin/plugin.service";
+import { FormUtils } from "../+form/form.utils";
 
 @Injectable({
   providedIn: "root",
@@ -55,21 +56,28 @@ export class FormChangeDeactivateGuard {
   //       we could use formOptions.resetModel()
   canDeactivate(
     target: FormComponent | AddressComponent,
-    currentRoute: ActivatedRouteSnapshot,
+    _currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot,
-  ): Observable<boolean> {
+  ): Observable<boolean> | Promise<boolean> {
     // do not check when we navigate within the current page (loading another document)
     // only check if we actually leave the page
     const stayOnPage = FormChangeDeactivateGuard.pageIsNotLeft(
       currentState.url,
       nextState.url,
     );
-    if (stayOnPage) {
-      return of(true);
-    }
 
     const formHasChanged = this.formStateService.getForm()?.dirty;
+
+    if (stayOnPage) {
+      const type = target instanceof FormComponent ? "document" : "address";
+      return FormUtils.handleDirtyForm(
+        this.formStateService.getForm(),
+        this.documentService,
+        this.dialog,
+        type === "address",
+      );
+    }
 
     if (!formHasChanged) {
       this.handleBehaviourRegistration(currentState, nextState);
@@ -115,7 +123,7 @@ export class FormChangeDeactivateGuard {
     }
   }
 
-  private handleFormHasChanged(target: any) {
+  private handleFormHasChanged(target: any): Observable<boolean> {
     const type = target instanceof FormComponent ? "document" : "address";
     const currentUuid = (<IgeDocument>this.formStateService.getForm().value)
       ._uuid;
@@ -142,10 +150,13 @@ export class FormChangeDeactivateGuard {
       })
       .afterClosed()
       .pipe(
-        tap((response) =>
-          response ? this.handleAction(response, type, currentUuid) : null,
-        ),
-        map((response) => response === "leave" || response === "save"),
+        switchMap(async (response) => {
+          if (response) {
+            await this.handleAction(response, type, currentUuid);
+          }
+          return response;
+        }),
+        map((response): boolean => response === "leave" || response === "save"),
       );
   }
 
@@ -166,10 +177,6 @@ export class FormChangeDeactivateGuard {
           noVisualUpdates: true,
         }),
       );
-      this.documentService.reload$.next({
-        uuid: currentUuid,
-        forAddress: isAddress,
-      });
     } else if (action === "stay") {
       // do nothing
     } else {

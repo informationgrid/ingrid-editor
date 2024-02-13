@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "GeoServiceBast#1.0.0",
+  "$ref": "#/definitions/GeoServiceBast",
+  "definitions": {
+    "GeoServiceBast": {
+      "allOf": [
+        {
+          "$ref": "../geo-service.schema.json#/definitions/GeoService"
+        }
+      ],
+      "properties": {
+        "isAdVCompatible": true,
+        "isOpenData": true,
+        "isInspireIdentified": true,
+        "isInspireConform": true,
+        "subType": true,
+        "identifier": true,
+        "spatialRepresentationType": true,
+        "vectorSpatialRepresentation": true,
+        "topicCategories": true,
+        "description": true,
+        "alternateTitle": true,
+        "parentIdentifier": true,
+        "pointOfContact": true,
+        "advProductGroups": true,
+        "themes": true,
+        "spatial": true,
+        "temporal": true,
+        "resolution": true,
+        "lineage": true,
+        "qualities": true,
+        "portrayalCatalogueInfo": true,
+        "featureCatalogueDescription": true,
+        "extraInfo": true,
+        "metadata": true,
+        "keywords": true,
+        "digitalTransferOptions": true,
+        "distribution": true,
+        "dataset": true,
+        "dataQuality": true,
+        "dataQualityInfo": true,
+        "absoluteExternalPositionalAccuracy": true,
+        "priorityDatasets": true,
+        "invekos": true,
+        "invekosKeywords": true,
+        "spatialScope": true,
+        "maintenanceInformation": true,
+        "references": true,
+        "graphicOverviews": true,
+        "orderInfo": true,
+        "service": true,
+        "conformanceResult": true,
+        "gridSpatialRepresentation": true,
+        "openDataCategories": true,
+        "title": true,
+        "_uuid": true,
+        "_type": true,
+        "projectNumber": {
+          "type": ["null", "string"]
+        },
+        "projectTitle": {
+          "type": ["null", "string"]
+        },
+        "supplementalInformation": {
+          "type": ["null", "string"]
+        },
+        "resource": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "../refs/general.schema.json#/definitions/resource"
+            }
+          ],
+          "properties": {
+            "purpose": true,
+            "accessConstraints": true,
+            "useConstraints": true,
+            "useLimitation": true,
+            "useConstraintsComments": {
+              "type": ["null", "string"]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

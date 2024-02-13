@@ -29,6 +29,11 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
 
+data class JsonErrorEntry(
+    val error: String,
+    val instanceLocation: String
+)
+
 @Component
 class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
@@ -82,7 +87,9 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         }
 
         if (!output.valid) {
-            throw ValidationException.withReason(output.errors)
+            // map to prevent leaking of information about server in absoluteKeywordLocation (#5772)
+            val error = output.errors?.map { JsonErrorEntry(it.error, it.instanceLocation) }
+            throw ValidationException.withReason(error)
         }
 
         return output

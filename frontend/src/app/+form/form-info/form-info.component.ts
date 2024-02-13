@@ -30,19 +30,10 @@ import { TreeQuery } from "../../store/tree/tree.query";
 import { tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
-import { TreeService } from "../sidebars/tree/tree.service";
-import { FormUtils } from "../form.utils";
-import { DocumentService } from "../../services/document/document.service";
-import { MatDialog } from "@angular/material/dialog";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
 import { ConfigService } from "../../services/config/config.service";
-
-export interface StickyHeaderInfo {
-  show: boolean;
-  headerHeight?: number;
-}
 
 @UntilDestroy()
 @Component({
@@ -71,10 +62,7 @@ export class FormInfoComponent implements OnInit {
     private router: Router,
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
-    private treeService: TreeService,
     private cdr: ChangeDetectorRef,
-    private documentService: DocumentService,
-    private dialog: MatDialog,
     private translocoService: TranslocoService,
   ) {}
 
@@ -95,20 +83,12 @@ export class FormInfoComponent implements OnInit {
       )
       .subscribe();
   }
+
   async scrollToTreeNode(nodeId: number) {
-    let handled = await FormUtils.handleDirtyForm(
-      this.form,
-      this.documentService,
-      this.dialog,
-      this.forAddress,
-    );
-    if (handled) {
-      this.treeService.selectTreeNode(this.forAddress, nodeId);
-      const route: any[] = [
-        ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
-      ];
-      if (nodeId) route.push({ id: this.query.getEntity(nodeId)._uuid });
-      this.router.navigate(route);
-    }
+    const route: any[] = [
+      ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
+    ];
+    if (nodeId) route.push({ id: this.query.getEntity(nodeId)._uuid });
+    return this.router.navigate(route);
   }
 }

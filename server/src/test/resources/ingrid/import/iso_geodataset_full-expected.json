@@ -276,7 +276,12 @@
       "name": {
         "key": "4"
       },
-      "transferSize": 700.0,
+      "transferSize": {
+        "value": 700.0,
+        "unit": {
+          "key": "mb"
+        }
+      },
       "mediumNote": "Bunker"
     }
   ],

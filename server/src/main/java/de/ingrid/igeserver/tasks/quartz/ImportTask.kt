@@ -30,6 +30,7 @@ import de.ingrid.igeserver.api.messaging.MessageTarget
 import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.OptimizedImportAnalysis
+import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -124,7 +125,7 @@ class ImportTask(
     private fun prepareErrorMessage(ex: Exception): String {
         var message = ex.message ?: ex.toString()
         if (ex is ValidationException) {
-            val details = ex.data?.get("error") as List<BasicErrorEntry>?
+            val details = ex.data?.get("error") as List<JsonErrorEntry>?
             message += ": " + details
                 ?.filter { it.error != "A subschema had errors" }
                 ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }

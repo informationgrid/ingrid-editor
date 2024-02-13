@@ -55,6 +55,8 @@
 
             <ige-card-box
                 label="{{ t('mostRecent') }}"
+                nameOfToggle="Von mir"
+                (toggle)="updateRecent($event)"
                 data-cy="card-latest-docs"
             >
                 <ige-document-list-item
@@ -67,6 +69,8 @@
             <ige-card-box
                 data-cy="recent-published-docs"
                 label="{{ t('mostRecentPublished') }}"
+                nameOfToggle="Von mir"
+                (toggle)="updatePublished($event)"
             >
                 <ige-document-list-item
                     [docs]="recentPublishedDocs$"
@@ -81,6 +85,8 @@
                         label="{{ t('oldestExpired') }}"
                         endBtnTitle="Zur übersicht"
                         (endBtnOnClick)="goToExpiryPage()"
+                        nameOfToggle="Von mir"
+                        (toggle)="updateExpired($event)"
                     >
                         <ige-document-list-item
                             [docs]="oldestExpiredDocs"

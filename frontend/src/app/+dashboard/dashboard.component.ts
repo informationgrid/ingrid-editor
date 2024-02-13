@@ -41,7 +41,6 @@ export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-
   recentDocs$: Observable<DocumentAbstract[]>;
   recentPublishedDocs$: Observable<DocumentAbstract[]>;
   oldestExpiredDocs$: Observable<DocumentAbstract[]>;
@@ -85,8 +84,9 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchData() {
-    this.docService.findRecent();
-    this.docService.findExpired();
+    this.updateRecent();
+    this.updatePublished();
+    this.updateExpired();
   }
 
   createNewDocument() {
@@ -151,5 +151,17 @@ export class DashboardComponent implements OnInit {
         isFolder: true,
       } as CreateOptions,
     });
+  }
+
+  updateRecent(fromCurrentUser: boolean = false) {
+    this.docService.findRecentDrafts(fromCurrentUser);
+  }
+
+  updatePublished(fromCurrentUser: boolean = false) {
+    this.docService.findRecentPublished(fromCurrentUser);
+  }
+
+  updateExpired(fromCurrentUser: boolean = false) {
+    this.docService.findExpired(fromCurrentUser);
   }
 }
