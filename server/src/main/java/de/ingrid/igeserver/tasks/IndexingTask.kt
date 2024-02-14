@@ -41,10 +41,7 @@ import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.services.CatalogProfile
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.SettingsService
+import de.ingrid.igeserver.services.*
 import de.ingrid.utils.ElasticDocument
 import jakarta.annotation.PostConstruct
 import org.apache.logging.log4j.kotlin.logger
@@ -53,7 +50,6 @@ import org.elasticsearch.common.Strings
 import org.elasticsearch.xcontent.XContentBuilder
 import org.elasticsearch.xcontent.XContentFactory
 import org.springframework.beans.factory.DisposableBean
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.Page
@@ -87,7 +83,6 @@ class IndexingTask(
     private val catalogRepo: CatalogRepository,
     @Value("\${elastic.communication.ibus:true}")
     private val indexThroughIBus: Boolean,
-    private val appProperties: GeneralProperties,
     private val codelistService: CodeListService,
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties
@@ -434,13 +429,11 @@ class IndexingTask(
     }
 
     private fun updateIBusInformation(info: IPlugInfo) {
-        if (indexThroughIBus) {
-            val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
-            indexManager.updateIPlugInformation(
-                plugIdInfo,
-                getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalog, info.category == "address")
-            )
-        }
+        val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
+        indexManager.updateIPlugInformation(
+            plugIdInfo,
+            getIPlugInfo(plugIdInfo, info.newIndex, false, null, null, info.partner, info.provider, info.catalog, info.category == "address")
+        )
     }
 
     @Throws(IOException::class)
@@ -463,7 +456,7 @@ class IndexingTask(
             .field("iPlugName", prepareIPlugName(infoId))
             .field("linkedIndex", indexName)
             .field("linkedType", if (forAddress) "address" else "base")
-            .field("adminUrl", appProperties.host)
+            .field("adminUrl", generalProperties.host)
             .field("lastHeartbeat", Date())
             .field("lastIndexed", Date())
             .field("plugdescription", settingsService.getPlugDescription(partner, provider, plugId, forAddress, catalog.name))

@@ -37,6 +37,7 @@ export const iBusFields: FormlyFieldConfig[] = [
           props: {
             label: "URL",
             appearance: "outline",
+            required: true,
           },
         },
         {
@@ -49,16 +50,19 @@ export const iBusFields: FormlyFieldConfig[] = [
               props: {
                 label: "IP",
                 appearance: "outline",
+                required: true,
               },
             },
             {
               key: "port",
               type: "input",
               className: "flex-1 white-bg port",
+              defaultValue: "9900",
               props: {
                 type: "number",
                 label: "Port",
                 appearance: "outline",
+                required: true,
               },
             },
           ],
@@ -75,6 +79,7 @@ export const iBusFields: FormlyFieldConfig[] = [
             appearance: "outline",
             multiple: true,
             simple: true,
+            required: true,
             options: [
               { value: "internet", label: "Internet" },
               { value: "intranet", label: "Intranet" },
