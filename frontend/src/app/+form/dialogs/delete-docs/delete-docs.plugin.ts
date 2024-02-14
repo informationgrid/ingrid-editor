@@ -26,7 +26,7 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../../services/document/document.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { EventService, IgeEvent } from "../../../services/event/event.service";
 import { filter, take, tap } from "rxjs/operators";
@@ -36,6 +36,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { FormStateService } from "../../form-state.service";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -56,9 +57,9 @@ export class DeleteDocsPlugin extends Plugin {
     private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private router: Router,
-    private route: ActivatedRoute,
     private eventService: EventService,
     private dialog: MatDialog,
+    private formStateService: FormStateService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -154,7 +155,10 @@ export class DeleteDocsPlugin extends Plugin {
     if (parent && parentEntity) {
       commands.push({ id: parentEntity._uuid });
     }
-    this.router.navigate(commands);
+
+    // prevent dirty form check to shown, since the dataset already has been deleted
+    this.formStateService.getForm().markAsPristine();
+    return this.router.navigate(commands);
   }
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
