@@ -61,3 +61,42 @@ const val idfReferences = """
                         </gmd:MD_DigitalTransferOptions>
                     </gmd:transferOptions>
 """
+
+const val addressHierarchy = """
+            <idf:hierarchyParty uuid="bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2">
+                <idf:addressIndividualName>PersonSubOrga, Max, Herr Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:hierarchyParty uuid="7d754425-0200-49f0-8f85-84785021ba98">
+                <idf:addressOrganisationName>Sub-Organization</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+"""
+
+const val addressHierarchyWithPositionNameSet = """
+            <gmd:individualName>
+                <gco:CharacterString>PersonSubOrga, Max, Herr Dr.</gco:CharacterString>
+            </gmd:individualName>
+            <gmd:organisationName>
+                <gco:CharacterString>Wemove Test</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+            </gmd:positionName>
+"""
+
+const val addressHierarchyWithNoPositionNameSet = """
+            <gmd:individualName>
+                <gco:CharacterString>PersonSubOrga, Max, Herr Dr.</gco:CharacterString>
+            </gmd:individualName>
+            <gmd:organisationName>
+                <gco:CharacterString>Wemove Test</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Sub-Organization</gco:CharacterString>
+            </gmd:positionName>
+"""

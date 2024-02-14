@@ -47,11 +47,13 @@ fun mockCatalog(catalogService: CatalogService) {
 }
 
 data class MockDocument(
-    val id: Number? = null,
+    val id: Int? = null,
     val uuid: String,
     val template: String? = null,
     val parent: Int? = null,
     val type: String? = null,
+    val organization: String? = null,
+    val personName: String? = null,
 )
 
 fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentService) {
@@ -63,7 +65,13 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
                 any(),
             )
         } answers {
-            if (document.template != null) convertToDocument(SchemaUtils.getJsonFileContent(document.template))
+            if (document.template != null) convertToDocument(SchemaUtils.getJsonFileContent(document.template)).apply { 
+                wrapperId = document.id
+                uuid = document.uuid
+                data.put("_parent", document.parent)
+                if (document.organization != null) data.put("organization", document.organization)
+                if (document.personName != null) data.put("lastName", document.personName)
+            }
             else throw EmptyResultDataAccessException(1)
         }
         if (document.id != null) {

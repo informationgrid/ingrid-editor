@@ -32,6 +32,7 @@ import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import mockCatalog
@@ -91,8 +92,23 @@ class Address : ShouldSpec() {
                 1652,
                 "fc521f66-0f47-45fb-ae42-b14fc669942e",
                 "/export/ingrid/address.person2.sample.json",
-                1638
-            )
+                1638,
+            ),
+            MockDocument(
+                1650,
+                "7d754425-0200-49f0-8f85-84785021ba98",
+                "/export/ingrid/address.organisation.sample.json",
+                type = "InGridOrganisationDoc",
+                parent = 1638,
+                organization = "Sub-Organization"
+            ),
+            MockDocument(
+                1660,
+                "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2",
+                "/export/ingrid/address.person.sample.json",
+                1650,
+                personName = "PersonSubOrga"
+            ),
         )
 
         val datasets = listOf(
@@ -137,6 +153,30 @@ class Address : ShouldSpec() {
 
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
+        }
+        
+        should("export address hierarchy with position name") {
+            val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
+            val result = exportDocToXML(exporter, doc)
+            
+            result shouldContain addressHierarchy
+            result shouldContain addressHierarchyWithPositionNameSet
+        }
+        
+        should("export address hierarchy with no position name") {
+            val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
+            every {
+                documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
+            } answers {
+                doc.data.put("positionName", null as String?)
+                doc
+            }
+            doc.data.put("positionName", null as String?)
+            
+            val result = exportDocToXML(exporter, doc)
+            
+            result shouldContain addressHierarchy
+            result shouldContain addressHierarchyWithNoPositionNameSet
         }
     }
 }
