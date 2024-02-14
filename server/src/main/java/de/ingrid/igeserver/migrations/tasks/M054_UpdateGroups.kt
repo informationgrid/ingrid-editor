@@ -27,10 +27,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -76,18 +72,7 @@ class M054_UpdateGroups : MigrationBase("0.54") {
             }
     }
 
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken(
-                "Scheduler",
-                "Task",
-                listOf(
-                    SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
-                )
-            )
-        SecurityContextHolder.getContext().authentication = auth
-    }
+
 
 }
 

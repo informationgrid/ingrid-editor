@@ -19,9 +19,11 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
+import org.springframework.stereotype.Service
+
+/*import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -36,12 +38,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Service
-import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.PlatformTransactionManager*/
 
 @Service
+@Deprecated("This migration is too complex and faulty. It was replaced by M080_UpdateInGridLiteratureName")
 class M078_UpdateInGridLiteratureName : MigrationBase("0.78") {
-    val log = logger()
+/*    val log = logger()
 
     @Autowired
     lateinit var entityManager: EntityManager
@@ -57,9 +59,11 @@ class M078_UpdateInGridLiteratureName : MigrationBase("0.78") {
 
     @Autowired
     private lateinit var docWrapper: DocumentWrapperRepository
+*/
     override fun exec() {}
 
-    override fun postExec() {
+    override fun postExec() {}
+/*
         val pageSize = 100
         var page = 1
 
@@ -125,10 +129,5 @@ class M078_UpdateInGridLiteratureName : MigrationBase("0.78") {
                 page++
             } while (queries.size == pageSize)
         }
-    }
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-    }
+    }*/
 }

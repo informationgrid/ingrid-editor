@@ -27,10 +27,6 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -74,14 +70,7 @@ class M046_MigrateUVPNumberField : MigrationBase("0.46") {
         val value = doc.data.get("eiaNumber")
         if (value != null && !value.isNull) {
             doc.data.remove("eiaNumber")
-            doc.data.set<ArrayNode>("eiaNumbers", value);
+            doc.data.set<ArrayNode>("eiaNumbers", value)
         }
     }
-
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
 }
