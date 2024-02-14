@@ -96,7 +96,7 @@ class AddressModelTransformer(
     private fun determinePositionNameFromAncestors(): String {
         if (!displayAddress.data.getString("positionName").isNullOrEmpty()) return displayAddress.data.getStringOrEmpty("positionName")
 
-        val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
+        val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.dropLast(1)
         return ancestorsWithoutEldest
             .filter {
                 it.document.data.getStringOrEmpty("organization").isNotEmpty()
