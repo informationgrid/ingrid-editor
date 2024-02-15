@@ -51,6 +51,7 @@ import { MatSelect } from "@angular/material/select";
 export interface ChooseAddressDialogData {
   address: AddressRef;
   allowedTypes: string[];
+  skipToType: boolean;
 }
 
 export interface ChooseAddressResponse {
@@ -118,6 +119,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
 
     this.updateModel(this.data.address);
+    if (this.data.skipToType && this.typeSelectionEnabled) {
+      this.activeStep = 2;
+    }
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {

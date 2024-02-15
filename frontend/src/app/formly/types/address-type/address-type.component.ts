@@ -39,6 +39,8 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../services/config/config.service";
 import { firstValueFrom } from "rxjs";
+import { DocumentAbstract } from "../../../store/document/document.model";
+import { BackendOption } from "../../../store/codelist/codelist.model";
 
 @UntilDestroy()
 @Component({
@@ -69,19 +71,20 @@ export class AddressTypeComponent
       .subscribe((value) => (this.addresses = value || []));
   }
 
+  async addToAddresses(address: DocumentAbstract, type: BackendOption) {
+    this.getAddressFromBackend(address.id as string).subscribe((address) => {
+      this.addresses.push({
+        type: type,
+        ref: address,
+      });
+      this.removeDuplicates();
+      this.updateFormControl(this.addresses);
+    });
+  }
   async addAddress() {
     (await this.callEditDialog()).subscribe((data: ChooseAddressResponse) => {
       if (!data) return;
-      this.getAddressFromBackend(data.address.id as string).subscribe(
-        (address) => {
-          this.addresses.push({
-            type: data.type,
-            ref: address,
-          });
-          this.removeDuplicates();
-          this.updateFormControl(this.addresses);
-        },
-      );
+      this.addToAddresses(data.address, data.type);
     });
   }
 
@@ -99,6 +102,15 @@ export class AddressTypeComponent
             this.updateFormControl(this.addresses);
           },
         );
+      },
+    );
+  }
+
+  async copyAddress(addressRef: AddressRef) {
+    (await this.callEditDialog(addressRef, true)).subscribe(
+      (data: ChooseAddressResponse) => {
+        if (!data) return;
+        this.addToAddresses(data.address, data.type);
       },
     );
   }
@@ -121,7 +133,10 @@ export class AddressTypeComponent
     this.addresses = unique;
   }
 
-  private async callEditDialog(address?: AddressRef) {
+  private async callEditDialog(
+    address?: AddressRef,
+    skipToType: boolean = false,
+  ) {
     const foundAddresses = (
       await firstValueFrom(
         this.documentService.findInTitleOrUuid("", 1, true, true),
@@ -135,6 +150,7 @@ export class AddressTypeComponent
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,
+            skipToType: skipToType,
           },
           hasBackdrop: true,
           ariaLabel: "Adresse hinzufügen",

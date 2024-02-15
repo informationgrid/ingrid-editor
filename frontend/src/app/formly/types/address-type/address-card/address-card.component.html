@@ -26,10 +26,10 @@
             <mat-menu #linkedAddressMenu="matMenu">
                 <button
                     mat-menu-item
-                    (click)="edit.next()"
+                    (click)="showCopy ? copy.next() : edit.next()"
                     [disabled]="disabled"
                 >
-                    Bearbeiten
+                    {{ showCopy ? "Kopieren" : "Bearbeiten" }}
                 </button>
                 <button
                     mat-menu-item

@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  HostListener,
   Input,
   OnInit,
   Output,
@@ -43,9 +44,11 @@ export interface AddressRef {
 export class AddressCardComponent implements OnInit {
   @Input() address: AddressRef;
   @Input() disabled = false;
+  @Input() canCopy = false;
 
   @Output() remove = new EventEmitter<void>();
   @Output() edit = new EventEmitter<void>();
+  @Output() copy = new EventEmitter<void>();
   @Output() gotoAddress = new EventEmitter<void>();
 
   content: {
@@ -57,6 +60,7 @@ export class AddressCardComponent implements OnInit {
   } = {};
   invalidAddressReference = false;
   stateInfo: string = "";
+  showCopy = false;
 
   constructor(private profileService: ProfileService) {}
 
@@ -118,5 +122,12 @@ export class AddressCardComponent implements OnInit {
       default:
         return "";
     }
+  }
+
+  @HostListener("window: keyup", ["$event"])
+  @HostListener("window: keydown", ["$event"])
+  hotkeys(event: KeyboardEvent) {
+    this.showCopy = event.ctrlKey && this.copy.observed;
+    // this.showCopy = event.ctrlKey && this.canCopy;
   }
 }
