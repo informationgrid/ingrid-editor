@@ -410,18 +410,7 @@
             </gmd:MD_Format>
         </gmd:resourceFormat>
     @endif
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspireKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getServiceTypeKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getFreeKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspirePriorityKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getSpatialScopeKeyword())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getOpendataCategoryKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getAdvCompatibleKeyword())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInspireRelevantKeyword())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getFurtherLegalBasisKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getUmthesKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getGemetKeywords())
-    @template.export.ingrid.descriptiveKeywords(thesaurus = page.getInvekosKeywords())
+    @template.export.ingrid.descriptiveKeywords(thesauri = page.getDescriptiveKeywords())
     @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>

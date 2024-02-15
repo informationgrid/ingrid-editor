@@ -1,8 +1,10 @@
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+@import java.util.List
 
-@param Thesaurus thesaurus
+@param List<Thesaurus> thesauri
+    @for(Thesaurus thesaurus : thesauri)
         <%-- only show template if keywords exist  --%>
         @if(!thesaurus.getKeywords().isEmpty())
         <gmd:descriptiveKeywords>
@@ -52,3 +54,4 @@
             </gmd:MD_Keywords>
         </gmd:descriptiveKeywords>
         @endif
+    @endfor

@@ -101,9 +101,9 @@
         ],
         "t021_communication.descr": "",
         "t02_address.adr_id": [
-            "${page.handleContent(page.getContact().getUuid())}",
+            "${page.handleContent(page.getContact().getUuid())}"
             @for(var entry : ForSupport.of(page.getPointOfContact()))
-                "${entry.get().getUuid()}"@if (!entry.isLast()),@endif
+                ,"${entry.get().getUuid()}"
             @endfor
         ],
         "t02_address.address_key": "",
