@@ -21,7 +21,7 @@ package de.ingrid.igeserver.mail
 
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.configuration.MailProperties
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
@@ -31,14 +31,19 @@ import java.text.MessageFormat
 class EmailServiceImpl(
     val email: JavaMailSender,
     val mailProps: MailProperties,
-    val appSettings: GeneralProperties
+    appSettings: GeneralProperties
 ) {
+    
+    @Value("server.servlet.context-path")
+    private val contextPath: String = "/"
+    
+    private val appUrl: String = appSettings.host + contextPath
 
     fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.body, firstName, lastName, appSettings.host)
+            MessageFormat.format(mailProps.body, firstName, lastName, appUrl)
         )
     }
 
@@ -46,7 +51,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appSettings.host, password, login)
+            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appUrl, password, login)
         )
     }
 
@@ -55,7 +60,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subjectDeleteUser,
-            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appSettings.host, login)
+            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appUrl, login)
         )
     }
 
@@ -63,7 +68,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subjectResetPassword,
-            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appSettings.host, password, login)
+            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appUrl, password, login)
         )
     }
 
