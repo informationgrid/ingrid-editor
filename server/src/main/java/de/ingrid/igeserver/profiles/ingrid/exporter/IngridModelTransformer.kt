@@ -304,13 +304,13 @@ open class IngridModelTransformer(
 
     open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
-        if (data.isOpenData == true && freeKeywords.keywords.none { it.name == "opendata" }) {
-            freeKeywords.keywords += listOf(KeywordIso("opendata"))
+        if (data.isOpenData == true && _freeKeywords.keywords.none { it.name == "opendata" }) {
+            _freeKeywords.keywords += listOf(KeywordIso("opendata"))
         }
-        return freeKeywords
+        return _freeKeywords
     }
 
-    private val freeKeywords = Thesaurus(
+    private val _freeKeywords = Thesaurus(
         keywords = data.keywords?.free?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = null,
         name = null,
@@ -429,6 +429,21 @@ open class IngridModelTransformer(
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
     }
+
+    open fun getDescriptiveKeywords(): List<Thesaurus> = listOf(
+        inspireKeywords,
+        serviceTypeKeywords,
+        getFreeKeywords(),
+        inspirePriorityKeywords,
+        spatialScopeKeyword,
+        opendataCategoryKeywords,
+        advCompatibleKeyword,
+        inspireRelevantKeyword,
+        furtherLegalBasisKeywords,
+        umthesKeywords,
+        gemetKeywords,
+        invekosKeywords,
+    )
 
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
