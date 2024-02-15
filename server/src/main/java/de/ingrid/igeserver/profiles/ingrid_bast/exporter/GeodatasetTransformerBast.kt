@@ -65,10 +65,10 @@ class GeodatasetTransformerBast(
     override val supplementalInformation = docData.getString("supplementalInformation")
 
     override val useConstraints: List<UseConstraintTemplate> =
-        super.useConstraints + if (docData.getString("useConstraintsComments") == null) emptyList()
+        super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
         else listOf(
             UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("useConstraintsComments"), null), null, null, null
+                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null), null, null, null
             )
         )
 }
