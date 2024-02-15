@@ -27,6 +27,10 @@ import { map } from "rxjs/operators";
   providedIn: "root",
 })
 export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
+  selectRepoCodelists = this.selectAll({
+    filterBy: (item) => !item.isCatalog,
+  });
+
   constructor(protected store: CodelistStore) {
     super(store);
   }
