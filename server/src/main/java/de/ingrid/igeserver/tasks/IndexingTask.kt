@@ -122,6 +122,8 @@ class IndexingTask(
         val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident")
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+        // make sure the ingrid_meta index is there
+        indexManager.checkAndCreateInformationIndex()
 
         run indexingLoop@{
             categories.forEach categoryLoop@{ category ->

@@ -22,8 +22,10 @@
             >
                 <ige-address-card
                     (edit)="editAddress(address, i)"
+                    (copy)="copyAddress(address)"
                     (remove)="removeAddress(address)"
                     (gotoAddress)="gotoAddress(address)"
+                    [canCopy]="!props.max || props.max > addresses.length"
                     [disabled]="formControl.disabled"
                     [address]="address"
                 ></ige-address-card>

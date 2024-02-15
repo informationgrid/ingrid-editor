@@ -47,7 +47,7 @@ class UploadVirusScanTask(
     @Scheduled(cron = "\${upload.virusscan.schedule}")
     fun executeVirusscan() {
         val virusScanValidator = uploadSettings.uploadValidatorMap[virusscanValidatorName] ?: return
-        val scanDirs = listOf(uploadSettings.uploadDocsDir, uploadSettings.uploadPartsDir)
+        val scanDirs = listOf(uploadSettings.uploadDocsDir)
         val report = Report()
         val emailServiceReport: EmailService = EmailServiceReport()
         val sendReportEmails = true
