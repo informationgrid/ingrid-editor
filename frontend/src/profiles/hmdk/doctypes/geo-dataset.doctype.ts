@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import {
   ConfirmDialogComponent,
@@ -26,11 +26,13 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { FormControl } from "@angular/forms";
 import { map } from "rxjs/operators";
+import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
+  private tagsService = inject(TagsService);
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     // add "Veröffentlichung gemäß HmbTG" in to "Typ" Checkboxes
     const topGroup = fieldConfig[0].fieldGroup;
@@ -40,7 +42,7 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
     // add "Informationsgegenstand" right after typeGroup
     topGroup.splice(1, 0, this.getInformationHmbTGFieldConfig());
 
-    // at least on "Herausgeber" is required when Dataset is OpenData
+    // at least one "Herausgeber" is required when Dataset is OpenData
     const pointOfContact = topGroup
       .find((field) => field.props.label === "Allgemeines")
       .fieldGroup.find((field) => field.props.externalLabel === "Adressen");
@@ -49,17 +51,34 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
       atLeastOnePublisher: this.atLeastOnePublisher,
     };
 
+    // at least one "Datendownload" is required when HmbTG is activated
+    const references = fieldConfig
+      .find((field) => field.props.label === "Verweise")
+      .fieldGroup.find((field) => field.key === "references");
+    references.validators = {
+      ...references.validators,
+      downloadLinkWhenHmbtg: this.downloadLinkWhenHmbtg,
+    };
+
     return fieldConfig;
   };
 
   atLeastOnePublisher = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
       // equals "Herausgeber"
-      !field.model.isOpenData ||
+      !(field.model.isOpenData || field.model.publicationHmbTG) ||
       (ctrl.value
         ? ctrl.value.some((address) => address.type?.key === "10")
         : false),
     message: "Es muss mindestens einen 'Herausgeber' geben.",
+  };
+
+  downloadLinkWhenHmbtg = {
+    expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+      !field.model.publicationHmbTG ||
+      ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+    message:
+      "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
   };
 
   private getPublicationHmbTGFieldConfig(): FormlyFieldConfig {
@@ -105,7 +124,7 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
   private handleActivateHmbTG(field: FormlyFieldConfig) {
     const cookieId = "HIDE_HMBTG_INFO";
 
-    function executeAction() {
+    function executeAction(that) {
       // if inspire set access constraint "keine" else empty
       field.model.resource.accessConstraints =
         field.model.isInspireIdentified === true ? [{ key: "1" }] : [];
@@ -118,10 +137,14 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
         },
       ];
       field.options.formState.updateModel();
+
+      that.tagsService
+        .updatePublicationType(field.model._id, "internet", false)
+        .subscribe();
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
-      executeAction();
+      executeAction(this);
       return;
     }
 
@@ -151,7 +174,7 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
             .afterClosed()
             .subscribe((decision) => {
               if (decision === "ok") {
-                executeAction();
+                executeAction(this);
               } else {
                 field.formControl.setValue(false);
               }
@@ -217,6 +240,10 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
         // if inspire set access constraint "keine"
         if (field.model.isInspireIdentified)
           field.model.resource.accessConstraints = [{ key: "1" }];
+
+        this.tagsService
+          .updatePublicationType(field.model._id, "internet", false)
+          .subscribe();
 
         return true;
       }),
