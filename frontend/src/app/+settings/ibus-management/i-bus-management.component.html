@@ -33,7 +33,12 @@
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
         <div>
-            <button mat-flat-button color="primary" (click)="save()">
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="save()"
+                [disabled]="form.invalid"
+            >
                 Speichern
             </button>
         </div>

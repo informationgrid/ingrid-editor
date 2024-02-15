@@ -25,10 +25,6 @@ import de.ingrid.igeserver.repository.UserRepository
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -75,12 +71,4 @@ class M047_LowercaseLogins : MigrationBase("0.47") {
             }
         }
     }
-
-
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
 }

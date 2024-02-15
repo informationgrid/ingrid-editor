@@ -28,10 +28,6 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -96,11 +92,4 @@ class M043_MigrateCodelist20003 : MigrationBase("0.43") {
         val index = source.indexOf(value)
         return target.get(index)
     }
-
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Scheduler", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
 }

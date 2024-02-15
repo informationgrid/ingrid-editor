@@ -20,9 +20,11 @@
 package de.ingrid.igeserver.exports.ingrid
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.exports.prettyFormatXml
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.schema.SchemaUtils
 
 fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
@@ -35,6 +37,13 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
 
     val result = exporter.run(doc, "test-catalog") as String
     return prettyFormatXml(result, 4).replace("\r\n", "\n")
+}
+
+fun exportDocToXML(exporter: IgeExporter, doc: Document): String {
+    return (exporter.run(doc, "test-catalog") as String).let {
+        prettyFormatXml(it, 4).replace("\r\n", "\n")
+            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    }.also { println(it) }
 }
 
 fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {

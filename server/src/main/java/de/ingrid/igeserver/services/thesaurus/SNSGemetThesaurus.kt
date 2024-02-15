@@ -20,8 +20,11 @@
 package de.ingrid.igeserver.services.thesaurus
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
 
@@ -29,7 +32,7 @@ import java.net.URLEncoder
 class SNSGemetThesaurus : ThesaurusService() {
 
     override val id = "gemet"
-    
+
     private val searchUrlTemplate = "https://www.eionet.europa.eu/gemet"
 
     override fun search(term: String, options: ThesaurusSearchOptions): List<Keyword> {
@@ -49,7 +52,19 @@ class SNSGemetThesaurus : ThesaurusService() {
     }
 
     private fun mapToKeywordList(json: ArrayNode): List<Keyword> {
-        return json.map { Keyword(it.get("uri").asText(), it.get("preferredLabel").get("string").asText()) }
+        return json.map {
+            // get alternate English name
+            val englishResponse = sendRequest(
+                "GET",
+                "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en"
+            )
+            val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
+            Keyword(
+                it.getStringOrEmpty("uri"),
+                it.getStringOrEmpty("preferredLabel.string"),
+                englishNode.getString("preferredLabel.string")
+            )
+        }
     }
 
     private fun convertSearchMode(searchType: ThesaurusSearchType): Int {

@@ -25,6 +25,7 @@ jgitver {
         pattern = '(\\d+\\.\\d+\\.\\d+)'
         transformations = ['IGNORE']
     }
+    autoIncrementPatch = false
 }
 
 allprojects {

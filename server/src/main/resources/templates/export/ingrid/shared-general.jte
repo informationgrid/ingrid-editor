@@ -93,6 +93,18 @@
 <gmd:metadataStandardVersion>
     <gco:CharacterString>${page.getMdStandardVersion()}</gco:CharacterString>
 </gmd:metadataStandardVersion>
+@if(page.hasEnglishKeywords())
+    <gmd:locale>
+        <gmd:PT_Locale id="eng_utf8">
+            <gmd:languageCode>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng">eng</gmd:LanguageCode>
+            </gmd:languageCode>
+            <gmd:characterEncoding>
+                <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/schemas/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" />
+            </gmd:characterEncoding>
+        </gmd:PT_Locale>
+    </gmd:locale>
+@endif
 @if(page.getGridSpatialRepresentation() != null)
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>

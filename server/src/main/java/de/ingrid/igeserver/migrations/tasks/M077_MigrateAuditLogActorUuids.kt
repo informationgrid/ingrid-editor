@@ -25,10 +25,6 @@ import de.ingrid.igeserver.services.UserManagementService
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -92,11 +88,4 @@ class M077_MigrateAuditLogActorUuids : MigrationBase("0.77") {
             }
         }
     }
-
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Migration", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
 }

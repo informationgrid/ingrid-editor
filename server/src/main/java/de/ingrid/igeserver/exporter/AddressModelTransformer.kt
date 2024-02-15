@@ -96,6 +96,7 @@ class AddressModelTransformer(
     private fun determinePositionNameFromAncestors(): String {
         if (!displayAddress.data.getString("positionName").isNullOrEmpty()) return displayAddress.data.getStringOrEmpty("positionName")
 
+        // remove highest organisation which already is in organisation field
         val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest
             .filter {

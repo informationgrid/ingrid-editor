@@ -8,14 +8,20 @@
         <gmd:descriptiveKeywords>
             <gmd:MD_Keywords>
                 @for( KeywordIso keyword :  thesaurus.getKeywords())
-                <gmd:keyword>
-                    @if(keyword.getLink() != null)
-                        <gmx:Anchor xlink:href="${keyword.getLink()}">${keyword.getName()}</gmx:Anchor>
-                    @else
-                        <gco:CharacterString>${keyword.getName()}</gco:CharacterString>
-                    @endif
-                </gmd:keyword>
-<%--                    TODO  keywordAlternateValue / keywordAlternateValue --%>
+                    <gmd:keyword@if(keyword.getAlternateValue() != null) xsi:type="gmd:PT_FreeText_PropertyType"@endif>
+                        @if(keyword.getLink() != null)
+                            <gmx:Anchor xlink:href="${keyword.getLink()}">${keyword.getName()}</gmx:Anchor>
+                        @else
+                            <gco:CharacterString>${keyword.getName()}</gco:CharacterString>
+                        @endif
+                        @if(keyword.getAlternateValue() != null)
+                            <gmd:PT_FreeText>
+                                <gmd:textGroup>
+                                    <gmd:LocalisedCharacterString locale="#eng_utf8">${keyword.getAlternateValue()}</gmd:LocalisedCharacterString>
+                                </gmd:textGroup>
+                            </gmd:PT_FreeText>
+                        @endif
+                    </gmd:keyword>
                 @endfor
                 @if(thesaurus.getName() != null )
                 @if(thesaurus.getShowType())
