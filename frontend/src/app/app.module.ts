@@ -197,7 +197,7 @@ export function ConfigLoader(
       .load()
       .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
       .then(() => firstValueFrom(translocoService.load("de")))
-      .then(() => console.log("FINISHED APP INIT"))
+      .then(() => console.debug("FINISHED APP INIT"))
       .then(() => redirectToCatalogSpecificRoute(router, dialog))
       .catch((err) => {
         // remove loading spinner and rethrow error

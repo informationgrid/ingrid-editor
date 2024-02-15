@@ -143,8 +143,8 @@ export class SavePlugin extends SaveBase {
 
   private handleValidationOnSave() {
     const numErrors = this._document.querySelectorAll("mat-error");
-    console.log("Num Errors during save: ", numErrors);
     if (numErrors.length > 0) {
+      console.warn("Num Errors during save: ", numErrors);
       this.formToolbarService.setButtonState("toolBtnSave", true);
       throw new IgeError(
         "Es gibt Fehler im Formular. Bitte korrigieren Sie die Eingaben.",
