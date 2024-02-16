@@ -22,27 +22,6 @@ section {
   padding-bottom: 12px;
 }
 
-.cron-explain {
-  padding: 0 40px;
-
-  & > div {
-    display: inline-block;
-    width: 16.5%;
-    //text-align: -webkit-center;
-  }
-}
-
-.star {
-  padding-left: 6px;
-}
-
-.explain {
-  transform: rotate(180deg);
-  white-space: nowrap;
-  margin-bottom: 20px;
-  writing-mode: vertical-rl;
-}
-
 .status {
   position: relative;
 

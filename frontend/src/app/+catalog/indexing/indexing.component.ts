@@ -17,10 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
-import { UntypedFormControl } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -28,12 +35,36 @@ import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
 import { copyToClipboardFn } from "../../services/utils";
+import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+import { IndexingExplanationComponent } from "./indexing-explanation/indexing-explanation.component";
+import { JobHandlerHeaderModule } from "../../shared/job-handler-header/job-handler-header.module";
+import { AsyncPipe } from "@angular/common";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { MatButton } from "@angular/material/button";
+import { MatInput } from "@angular/material/input";
+import { LogResultComponent } from "./log-result/log-result.component";
+import { IndexingFields } from "./indexing-fields";
 
 @UntilDestroy()
 @Component({
   selector: "ige-indexing",
   templateUrl: "./indexing.component.html",
   styleUrls: ["./indexing.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageTemplateModule,
+    IndexingExplanationComponent,
+    JobHandlerHeaderModule,
+    AsyncPipe,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    FormlyModule,
+    MatButton,
+    MatInput,
+    LogResultComponent,
+  ],
 })
 export class IndexingComponent implements OnInit {
   @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
@@ -60,6 +91,7 @@ export class IndexingComponent implements OnInit {
   );
 
   private copyToClipboardFn = copyToClipboardFn();
+  fields: FormlyFieldConfig[] = inject(IndexingFields).fields;
 
   constructor(
     private indexService: IndexService,

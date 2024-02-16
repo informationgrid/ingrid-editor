@@ -17,14 +17,24 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from "@angular/core";
 import { Observable } from "rxjs";
 import { LogResult } from "../index.service";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { MatProgressBar } from "@angular/material/progress-bar";
 
 @Component({
   selector: "ige-log-result",
   templateUrl: "./log-result.component.html",
   styleUrls: ["./log-result.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AsyncPipe, DatePipe, MatProgressBar],
 })
 export class LogResultComponent implements OnInit {
   @Input() data: Observable<LogResult>;

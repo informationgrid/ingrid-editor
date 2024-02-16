@@ -70,6 +70,7 @@ export interface RepeatOptions extends Options {
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
   addButtonTitle?: string;
+  noDrag?: boolean;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -117,6 +118,8 @@ export interface SelectOptions extends Options {
   change?: any;
   hooks?: any;
   resetOnHide?: boolean;
+  multiple?: boolean;
+  simple?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -422,6 +425,7 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
         addButtonTitle: options?.addButtonTitle,
+        noDrag: options?.noDrag,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -609,6 +613,8 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         contextHelpId: options?.contextHelpId,
+        multiple: options?.multiple,
+        simple: options?.simple,
       },
       expressions: expressions,
       hooks: options?.hooks,
