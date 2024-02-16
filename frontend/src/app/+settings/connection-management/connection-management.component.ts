@@ -43,8 +43,8 @@ import { Subscription } from "rxjs";
 
 @Component({
   selector: "ige-ibus-management",
-  templateUrl: "./i-bus-management.component.html",
-  styleUrls: ["./i-bus-management.component.scss"],
+  templateUrl: "./connection-management.component.html",
+  styleUrls: ["./connection-management.component.scss"],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -55,7 +55,7 @@ import { Subscription } from "rxjs";
     ConnectionStateComponent,
   ],
 })
-export class IBusManagementComponent implements OnInit {
+export class ConnectionManagementComponent implements OnInit {
   form = new FormGroup<any>({});
   fields = inject(ConnectionForm).fields;
   model: any;
