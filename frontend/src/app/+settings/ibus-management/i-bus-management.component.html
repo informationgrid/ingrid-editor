@@ -4,31 +4,9 @@
         oder mehreren Katalogen verwendet werden können.
 
         <h4>Verbindungsstatus:</h4>
-        @for (info of connectionStates; track info) {
-            <div class="flex-row align-items-center gap-6">
-                <span>{{ info.id }}:</span>
-                @if (info.connected !== undefined) {
-                    <span class="flex-row"
-                        ><mat-icon
-                            [class.success-color]="info.connected"
-                            [class.error-color]="!info.connected"
-                            [matTooltip]="
-                                info.connected
-                                    ? 'Ok'
-                                    : 'Keine Verbindung zum iBus'
-                            "
-                            >{{
-                                info.connected
-                                    ? "check_circle_outline"
-                                    : "error_outline"
-                            }}</mat-icon
-                        ></span
-                    >
-                } @else {
-                    <mat-spinner diameter="24"></mat-spinner>
-                }
-            </div>
-        }
+        <ige-connection-state
+            [connectionStates]="$connectionStates()"
+        ></ige-connection-state>
     </div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
@@ -37,7 +15,7 @@
                 mat-flat-button
                 color="primary"
                 (click)="save()"
-                [disabled]="form.invalid"
+                [disabled]="!$valid()"
             >
                 Speichern
             </button>
@@ -52,5 +30,6 @@
                 [fields]="fields"
             ></formly-form>
         </div>
+        {{ form.value | json }}
     </div>
 </page-template>

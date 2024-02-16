@@ -475,6 +475,7 @@ export class FormFieldHelper {
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
+      defaultValue: options?.defaultValue,
       props: {
         type: options?.type,
         externalLabel: label,

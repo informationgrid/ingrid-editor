@@ -18,79 +18,61 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormFieldHelper } from "../../../profiles/form-field-helper";
+import { Injectable } from "@angular/core";
 
-export const iBusFields: FormlyFieldConfig[] = [
-  {
-    type: "repeat",
-    key: "ibus",
-    wrappers: [],
-    props: {
-      noDrag: true,
-    },
-    fieldArray: {
-      className: "space-bottom flex-1",
-      fieldGroup: [
+@Injectable({ providedIn: "root" })
+export class ConnectionForm extends FormFieldHelper {
+  fields: FormlyFieldConfig[] = [
+    this.addRepeat("connections", "", {
+      wrappers: [],
+      menuOptions: [
         {
-          key: "url",
-          type: "input",
-          className: "white-bg url",
-          props: {
-            label: "URL",
-            appearance: "outline",
-            required: true,
+          key: "ibus",
+          value: "iBus",
+          fields: {
+            fieldGroup: this.addFields(9900),
           },
         },
         {
-          fieldGroupClassName: "flex-row gap-6",
-          fieldGroup: [
-            {
-              key: "ip",
-              type: "input",
-              className: "flex-1 white-bg ip",
-              props: {
-                label: "IP",
-                appearance: "outline",
-                required: true,
-              },
-            },
-            {
-              key: "port",
-              type: "input",
-              className: "flex-1 white-bg port",
-              defaultValue: "9900",
-              props: {
-                type: "number",
-                label: "Port",
-                appearance: "outline",
-                required: true,
-              },
-            },
-          ],
-        },
-        {
-          key: "publicationTypes",
-          type: "ige-select",
-          defaultValue: ["internet"],
-          className: "white-bg publicationTypes",
-          wrappers: ["form-field"],
-          props: {
-            label: "Veröffentlichungsrecht",
-            placeholder: "",
-            appearance: "outline",
-            multiple: true,
-            simple: true,
-            required: true,
-            options: [
-              { value: "internet", label: "Internet" },
-              { value: "intranet", label: "Intranet" },
-              { value: "amtsintern", label: "amtsintern" },
-            ],
-          },
-          modelOptions: {
-            updateOn: "blur",
+          key: "elastic",
+          value: "Elasticsearch",
+          fields: {
+            fieldGroup: this.addFields(9300),
           },
         },
       ],
-    },
-  },
-];
+    }),
+  ];
+
+  private addFields(port: number) {
+    return [
+      { key: "_type" },
+      this.addInputInline("name", "Name", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+      }),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("ip", "IP", {
+            className: "flex-1 white-bg ip",
+            required: true,
+            updateOn: "change",
+          }),
+          this.addInputInline("port", "Port", {
+            className: "flex-1 white-bg port",
+            required: true,
+            type: "number",
+            defaultValue: port,
+            updateOn: "change",
+          }),
+        ],
+        {
+          fieldGroupClassName: "flex-row gap-6",
+        },
+      ),
+    ];
+  }
+}

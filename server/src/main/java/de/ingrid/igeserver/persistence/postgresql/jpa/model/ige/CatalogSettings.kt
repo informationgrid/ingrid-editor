@@ -50,11 +50,21 @@ data class ExpiredDatasetConfig(
     val repeatExpiry: Boolean = false,
 )
 
+data class ConnectionConfig(
+    val ibus: List<IBusConfig>? = null,
+    val elasticsearch: List<ElasticConfig>? = null
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig(
-    val url: String? = null,
+    val name: String? = null,
     val ip: String = "127.0.0.1",
-    val port: Int = 9200,
-    val publicationTypes: List<String>? = null
+    val port: Int = 9900,
+    @Deprecated("will be stored in catalog") val publicationTypes: List<String>? = null
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ElasticConfig(
+    val ip: String,
+    val port: Int = 9300
 )

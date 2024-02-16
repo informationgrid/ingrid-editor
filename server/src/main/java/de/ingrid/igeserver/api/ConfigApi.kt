@@ -21,7 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -42,14 +42,14 @@ interface ConfigApi {
     fun get(): ResponseEntity<FrontendConfiguration>
 
     @GetMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getIBus(): ResponseEntity<List<IBusConfig>>
+    fun getIBus(): ResponseEntity<ConnectionConfig>
 
     @GetMapping(value = ["/config/ibus/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun isConnected(@PathVariable index: Int): ResponseEntity<Boolean>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setIBus(@Parameter(required = true) @RequestBody config: List<IBusConfig>): ResponseEntity<Unit>
+    fun setIBus(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<Unit>
 
 
     @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])

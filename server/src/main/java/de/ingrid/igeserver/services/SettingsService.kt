@@ -21,11 +21,11 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -41,9 +41,18 @@ class SettingsService(
 
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<IBusConfig>>() {})
     }
+    fun getElasticConfig(): List<ElasticConfig> {
+        val iBusJson = repoSettings.findByKey("elasticsearch")?.value ?: return emptyList()
+
+        return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
+    }
 
     fun setIBusConfig(config: List<IBusConfig>) {
         this.updateItem("ibus", config)
+    }
+
+    fun setElasticConfig(config: List<ElasticConfig>) {
+        this.updateItem("elasticsearch", config)
     }
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {

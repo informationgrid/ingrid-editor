@@ -29,7 +29,6 @@ import de.ingrid.utils.query.IngridQuery
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Profile
 import org.springframework.context.event.EventListener
@@ -49,17 +48,18 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
 
     fun setupConnections() {
         try {
-//            val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
             iBusClient = this.connectIBus(settingsService.getIBusConfig())
-//            this.configure(getPlugDescription(iBusUrls))
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }
     }
 
     fun restartCommunication() {
-        iBusClient?.shutdown()
-        val clientConfig = createClientConfiguration(settingsService.getIBusConfig())
+        val config = settingsService.getIBusConfig()
+        if (config.isEmpty()) return
+
+        if (iBusClient?.cacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
+        val clientConfig = createClientConfiguration(config)
         iBusClient?.start(clientConfig)
         val communication = StartCommunication.create(clientConfig)
         BusClientFactory.createBusClientOverride(communication)
@@ -118,7 +118,7 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
                 val connection = ClientConnection().apply {
                     serverIp = it.ip
                     serverPort = it.port
-                    serverName = it.url
+                    serverName = it.name
                 }
                 addClientConnection(connection)
             }

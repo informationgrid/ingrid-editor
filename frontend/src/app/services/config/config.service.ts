@@ -25,7 +25,7 @@ import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 
@@ -82,6 +82,17 @@ export interface UserInfo {
 export interface CMSPage {
   pageId: string;
   content: string;
+}
+
+export interface Connections {
+  connections: ConnectionInfo[];
+}
+
+export interface ConnectionInfo {
+  _type: "ibus" | "elastic";
+  name: string;
+  ip: string;
+  port: number;
 }
 
 @Injectable({
@@ -191,14 +202,17 @@ export class ConfigService {
     }
   }
 
-  saveIBusConfig(value: any) {
+  saveIBusConfig(value: Connections) {
+    const valueForBackend = this.prepareConnectionsForIBus(value);
     return this.http
-      .put<any>(`${this.config.backendUrl}config/ibus`, value)
+      .put<any>(`${this.config.backendUrl}config/ibus`, valueForBackend)
       .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
   }
 
   getIBusConfig() {
-    return this.http.get<any>(`${this.config.backendUrl}config/ibus`);
+    return this.http
+      .get<any>(`${this.config.backendUrl}config/ibus`)
+      .pipe(map((config) => this.prepareConnectionsForFrontend(config)));
   }
 
   isIBusConnected(index: number) {
@@ -213,5 +227,30 @@ export class ConfigService {
 
   updateCMSPage(content: CMSPage[]) {
     return this.http.put<void>(`${this.config.backendUrl}config/cms`, content);
+  }
+
+  private prepareConnectionsForIBus(value: Connections) {
+    return {
+      ibus: value.connections.filter((item) => item._type === "ibus"),
+      elasticsearch: value.connections.filter(
+        (item) => item._type === "elastic",
+      ),
+    };
+  }
+
+  private prepareConnectionsForFrontend(value: any): Connections {
+    return {
+      connections: [
+        ...this.addType("ibus", value.ibus),
+        ...this.addType("elastic", value.elasticsearch),
+      ],
+    };
+  }
+
+  private addType(type: "ibus" | "elastic", value: any[]) {
+    return (value ?? []).map((item) => {
+      item._type = type;
+      return item;
+    });
   }
 }

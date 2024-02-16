@@ -21,7 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
 import de.ingrid.igeserver.services.IBusService
 import de.ingrid.igeserver.services.SettingsService
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,9 +69,12 @@ class ConfigApiController(
 
     }
 
-    override fun getIBus(): ResponseEntity<List<IBusConfig>> {
+    override fun getIBus(): ResponseEntity<ConnectionConfig> {
         return ResponseEntity.ok().body(
-            settingsService.getIBusConfig()
+            ConnectionConfig(
+                settingsService.getIBusConfig(),
+                settingsService.getElasticConfig(),
+            )
         )
     }
 
@@ -81,12 +84,13 @@ class ConfigApiController(
         )
     }
 
-    override fun setIBus(config: List<IBusConfig>): ResponseEntity<Unit> {
-
-        settingsService.setIBusConfig(config)
-        iBusService?.restartCommunication()
+    override fun setIBus(config: ConnectionConfig): ResponseEntity<Unit> {
+        config.ibus?.let {
+            settingsService.setIBusConfig(it)
+            iBusService?.restartCommunication()
+        }
+        config.elasticsearch?.let {settingsService.setElasticConfig(it)}
         return ResponseEntity.ok().build()
-
     }
 
     override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {

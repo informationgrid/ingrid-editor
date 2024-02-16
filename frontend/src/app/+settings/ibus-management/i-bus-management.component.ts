@@ -17,55 +17,100 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
-import { iBusFields } from "./formly-fields";
-import { ConfigService } from "../../services/config/config.service";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
+import { FormGroup } from "@angular/forms";
+import { ConnectionForm } from "./formly-fields";
+import {
+  ConfigService,
+  ConnectionInfo,
+  Connections,
+} from "../../services/config/config.service";
 import { tap } from "rxjs/operators";
+import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+import { FormlyModule } from "@ngx-formly/core";
+import { JsonPipe } from "@angular/common";
+import { MatButton } from "@angular/material/button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ConnectionStateComponent } from "./connection-state/connection-state.component";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "ige-ibus-management",
   templateUrl: "./i-bus-management.component.html",
   styleUrls: ["./i-bus-management.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageTemplateModule,
+    FormlyModule,
+    JsonPipe,
+    MatButton,
+    ConnectionStateComponent,
+  ],
 })
 export class IBusManagementComponent implements OnInit {
-  form = new UntypedFormGroup({});
-  fields = iBusFields;
+  form = new FormGroup<any>({});
+  fields = inject(ConnectionForm).fields;
   model: any;
-  connectionStates = [];
 
-  constructor(private configService: ConfigService) {}
+  $valid = signal<boolean>(false);
+  $connectionStates = signal<any[]>([]);
+  private connectionSubscriptions: Subscription[];
+
+  constructor(
+    private configService: ConfigService,
+    private cdr: ChangeDetectorRef,
+  ) {
+    this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((state) => {
+      this.$valid.set(state === "VALID");
+    });
+  }
 
   ngOnInit(): void {
     this.configService
       .getIBusConfig()
-      .pipe(tap((config) => this.checkConnectionState(config)))
-      .subscribe((config) => (this.model = { ibus: config }));
+      .pipe(
+        tap((config) => this.checkConnectionState(config.connections)),
+        tap((config) => (this.model = config)),
+      )
+      .subscribe(() => this.cdr.detectChanges());
   }
 
   save() {
-    const config = this.form.value.ibus;
+    const config: Connections = this.form.value;
     this.configService
       .saveIBusConfig(config)
-      .subscribe(() => this.checkConnectionState(config));
+      .subscribe(() => this.checkConnectionState(config.connections));
   }
 
-  private checkConnectionState(configs: any[]) {
-    this.connectionStates = [];
+  private checkConnectionState(configs: ConnectionInfo[]) {
+    this.connectionSubscriptions?.forEach((item) => item.unsubscribe());
 
-    configs.forEach((config, index) => {
-      this.connectionStates.push({
-        id: config.url,
-        connected: undefined,
+    const connectionStates = configs
+      .filter((item) => item._type === "ibus")
+      .map((config) => {
+        return {
+          id: config.name,
+          connected: undefined,
+        };
       });
-    });
+    this.$connectionStates.set(connectionStates);
 
-    configs.forEach((config, index) => {
-      this.configService
+    this.connectionSubscriptions = connectionStates.map((config, index) => {
+      return this.configService
         .isIBusConnected(index)
-        .subscribe(
-          (connected) => (this.connectionStates[index].connected = connected),
-        );
+        .subscribe((connected) => {
+          // in case ibus has been removed during connection check
+          config.connected = connected;
+          this.$connectionStates.set([...connectionStates]);
+        });
     });
   }
 }

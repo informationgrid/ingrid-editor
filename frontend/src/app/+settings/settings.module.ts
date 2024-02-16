@@ -64,7 +64,6 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
     CatalogManagementComponent,
     CatalogAssignmentComponent,
     CatalogDetailComponent,
-    IBusManagementComponent,
     MessagesManagementComponent,
     NewMessageDialogComponent,
   ],
@@ -97,6 +96,7 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
     MatDatepickerModule,
     DragDropModule,
     ContentManagementComponent,
+    IBusManagementComponent,
   ],
 })
 export class SettingsModule {}

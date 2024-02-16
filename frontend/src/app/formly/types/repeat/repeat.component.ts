@@ -20,13 +20,27 @@
 import { Component, OnInit } from "@angular/core";
 import {
   FieldArrayType,
-  FieldArrayTypeConfig,
+  FieldGroupTypeConfig,
+  FieldTypeConfig,
   FormlyFieldConfig,
+  FormlyFieldProps,
 } from "@ngx-formly/core";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { clone, groupByWithIndexReference } from "../../../shared/utils";
 import { startWith, tap } from "rxjs/operators";
+
+export interface RepeatProps extends FormlyFieldProps {
+  menuOptions: {
+    key: string;
+    value: any;
+    fields: FormlyFieldConfig<FieldGroupTypeConfig>;
+  }[];
+  noDrag: boolean;
+  ariaLabel: string;
+  hasExtendedGap: string;
+  addButtonTitle: string;
+}
 
 @UntilDestroy()
 @Component({
@@ -34,10 +48,13 @@ import { startWith, tap } from "rxjs/operators";
   templateUrl: "./repeat.component.html",
   styleUrls: ["./repeat.component.scss"],
 })
-export class RepeatComponent extends FieldArrayType implements OnInit {
+export class RepeatComponent
+  extends FieldArrayType<FieldTypeConfig<RepeatProps>>
+  implements OnInit
+{
   canBeDragged = false;
 
-  groupedFields;
+  groupedFields: any;
   groupedFieldsKeys: string[] = [];
   menuSections: any;
 
@@ -72,7 +89,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     this.createGroupedFields(this.formControl.value);
   }
 
-  onPopulate(field: FieldArrayTypeConfig) {
+  onPopulate(field: FieldTypeConfig<RepeatProps>) {
     if (!field.props.menuOptions) {
       super.onPopulate(field);
       return;
@@ -90,7 +107,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
   }
 
   private getFieldsFromModelType(
-    field: FieldArrayTypeConfig<FormlyFieldConfig["props"]>,
+    field: FieldTypeConfig<RepeatProps>,
     type: string,
   ) {
     return field.props.menuOptions.find((opt) => opt.key === type)?.fields;
@@ -104,7 +121,7 @@ export class RepeatComponent extends FieldArrayType implements OnInit {
     }
   }
 
-  private updateDragState(value) {
+  private updateDragState(value: any) {
     this.canBeDragged =
       this.formControl.enabled &&
       !this.field.props.menuOptions &&
