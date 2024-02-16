@@ -28,6 +28,23 @@ const val projectTitleAndNumberInKeywords = """
                             <gmd:keyword>
                                 <gco:CharacterString>BASt project title</gco:CharacterString>
                             </gmd:keyword>
+                            <gmd:thesaurusName>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>BASt Keywords</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2024-01-01</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:thesaurusName>
                         </gmd:MD_Keywords>
                     </gmd:descriptiveKeywords>
 """
