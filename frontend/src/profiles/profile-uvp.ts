@@ -35,6 +35,7 @@ import { TranslocoService } from "@ngneat/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";
+import { AuthGuard } from "../app/security/auth.guard";
 
 @Component({
   template: "",
@@ -109,6 +110,7 @@ class UVPComponent {
 
   private addUVPReportTab(reportsService: ReportsService) {
     reportsService.addRoute({
+      canActivate: [AuthGuard],
       path: "uvp-bericht",
       loadComponent: () =>
         import("./uvp/reports/uvp-bericht/uvp-bericht.component").then(
@@ -123,6 +125,7 @@ class UVPComponent {
 
   private addUVPUploadCheckReportTab(reportsService: ReportsService) {
     reportsService.addRoute({
+      canActivate: [AuthGuard],
       path: "uvp-upload-check",
       loadComponent: () =>
         import("./uvp/reports/upload-check/upload-check.component").then(

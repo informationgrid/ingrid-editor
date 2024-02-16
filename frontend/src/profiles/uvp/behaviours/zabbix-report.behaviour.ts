@@ -20,6 +20,7 @@
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { Injectable } from "@angular/core";
 import { ReportsService } from "../../../app/+reports/reports.service";
+import { AuthGuard } from "../../../app/security/auth.guard";
 
 @Injectable({ providedIn: "root" })
 export class ZabbixReportBehaviour extends Plugin {
@@ -48,6 +49,7 @@ export class ZabbixReportBehaviour extends Plugin {
 
   private addReportTab() {
     this.reportsService.addRoute({
+      canActivate: [AuthGuard],
       path: this.path,
       loadComponent: () =>
         import("../reports/zabbix-report/zabbix-report.component").then(
