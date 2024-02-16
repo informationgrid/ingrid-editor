@@ -46,9 +46,11 @@
     <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode"
                       codeListValue="${page.getHierarchyLevel()}">${page.getHierarchyLevel()}</gmd:MD_ScopeCode>
 </gmd:hierarchyLevel>
-<gmd:hierarchyLevelName>
-    <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
-</gmd:hierarchyLevelName>
+@if(page.getHierarchyLevelName() != null)
+    <gmd:hierarchyLevelName>
+        <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
+    </gmd:hierarchyLevelName>
+@endif
 <gmd:contact>
     !{var address = page.getContact();}
     @if(address != null)

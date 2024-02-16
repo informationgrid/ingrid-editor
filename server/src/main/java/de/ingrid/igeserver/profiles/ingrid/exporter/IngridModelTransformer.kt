@@ -231,7 +231,7 @@ open class IngridModelTransformer(
 
 
     open val hierarchyLevel = "nonGeographicDataset"
-    open val hierarchyLevelName = "job"
+    open val hierarchyLevelName: String? = "job"
     open val mdStandardName = "ISO19115"
     open val mdStandardVersion = "2003/Cor.1:2006"
     open val identificationType = "gmd:MD_DataIdentification"
