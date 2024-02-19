@@ -17,25 +17,29 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Injectable } from "@angular/core";
+import { IngridShared } from "./ingrid-shared";
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.*
-import org.springframework.stereotype.Service
-import kotlin.reflect.KClass
+@Injectable({
+  providedIn: "root",
+})
+export class SpecialisedTaskDoctype extends IngridShared {
+  id = "InGridSpecialisedTask";
 
-@Service
-class HmdkProfileTransformer : IngridProfileTransformer {
+  label = "Organisationseinheit";
 
-    override fun get(docType: String): KClass<*>? {
-        return when(docType) {
-            "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
-            "InGridGeoService" -> GeoserviceTransformerHmdk::class
-            "InGridPublication" -> LiteratureModelTransformerHmdk::class
-            "InGridProject" -> ProjectModelTransformerHmdk::class
-            "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
-            "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
-            else -> null
-        } 
-    }
+  iconClass = "Fachaufgabe";
 
+  hasOptionalFields = true;
+
+  documentFields = () =>
+    <FormlyFieldConfig[]>[
+      this.addGeneralSection(),
+      this.addKeywordsSection(),
+      this.addSpatialSection(),
+      this.addTimeReferenceSection(),
+      this.addAdditionalInformationSection({ extraInfoLangData: true }),
+      this.addLinksSection(),
+    ];
 }

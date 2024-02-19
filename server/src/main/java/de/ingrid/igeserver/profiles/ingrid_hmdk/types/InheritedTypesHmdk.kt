@@ -27,8 +27,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridGeoDatasetTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val jsonSchema = "/ingrid/schemes/hmdk/geo-dataset_hmdk.schema.json"
-
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
