@@ -33,6 +33,11 @@ export class ProjectDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  constructor() {
+    super();
+    this.options.hide.openData = true;
+  }
+
   documentFields = () =>
     <FormlyFieldConfig[]>[
       this.addGeneralSection(),

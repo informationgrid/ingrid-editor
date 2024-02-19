@@ -60,7 +60,7 @@ export class FormularService {
     private profileQuery: ProfileQuery,
   ) {
     // create profiles after we have logged in
-    console.log("init profiles");
+    console.debug("init profiles");
     this.profileQuery.selectLoading().subscribe((isLoading) => {
       if (!isLoading) {
         this.profileDefinitions = this.profiles.getProfiles();

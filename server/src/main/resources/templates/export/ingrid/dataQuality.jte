@@ -168,7 +168,7 @@
                                 </gmd:date>
                             </gmd:CI_Citation>
                         </gmd:specification>
-                        @if( conformanceResult.getExplanation() != null)
+                        @if(TransformationTools.hasValue(conformanceResult.getExplanation()))
                         <gmd:explanation>
                             <gco:CharacterString>${conformanceResult.getExplanation()}</gco:CharacterString>
                         </gmd:explanation>
@@ -192,7 +192,7 @@
                     <gmd:nameOfMeasure>
                         <gco:CharacterString>${quality.getNameOfMeasure()}</gco:CharacterString>
                     </gmd:nameOfMeasure>
-                    @if( quality.getMeasureIdentification() != null)
+                    @if(TransformationTools.hasValue(quality.getMeasureIdentification()))
                         @if( quality.getMeasureIdentification().equals("missing"))
                             <gmd:measureIdentification gco:nilReason="missing"/>
                         @else
@@ -205,7 +205,7 @@
                             </gmd:measureIdentification>
                         @endif
                     @endif
-                    @if( quality.getMeasureDescription() != null)
+                    @if(TransformationTools.hasValue(quality.getMeasureDescription()))
                     <gmd:measureDescription>
                         <gco:CharacterString>${quality.getMeasureDescription()}</gco:CharacterString>
                     </gmd:measureDescription>
@@ -226,7 +226,7 @@
         @if( page.getHasLineageInformation())
         <gmd:lineage>
             <gmd:LI_Lineage>
-                @if( page.getLineageStatement() != null)
+                @if(TransformationTools.hasValue(page.getLineageStatement()))
                 <gmd:statement>
                     <gco:CharacterString>${page.getLineageStatement()}</gco:CharacterString>
                 </gmd:statement>

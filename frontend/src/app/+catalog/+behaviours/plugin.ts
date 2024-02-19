@@ -37,16 +37,16 @@ export abstract class Plugin {
   hideInAddress = false;
 
   register(): void {
-    console.log("Register Plugin: ", this.name);
+    console.debug("Register Plugin: ", this.name);
     this.isActive = true;
   }
 
   registerForm(): void {
-    console.log("Register Form-Plugin: ", this.name);
+    console.debug("Register Form-Plugin: ", this.name);
   }
 
   unregister(): void {
-    console.log("Unregister Plugin: ", this.name);
+    console.debug("Unregister Plugin: ", this.name);
     this.isActive = false;
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];
@@ -54,7 +54,7 @@ export abstract class Plugin {
 
   unregisterForm(): void {
     if (this.isActive) {
-      console.log("Unregister Form-Plugin: ", this.name);
+      console.debug("Unregister Form-Plugin: ", this.name);
       this.formSubscriptions.forEach((sub) => sub.unsubscribe());
       this.formSubscriptions = [];
     }

@@ -117,7 +117,7 @@ export class ConfigService {
   }
 
   async load(): Promise<Configuration> {
-    console.log("=== ConfigService ===");
+    console.debug("=== ConfigService ===");
 
     let json = await this.dataService.load();
     this.config = { ...this.defaultConfig, ...json };

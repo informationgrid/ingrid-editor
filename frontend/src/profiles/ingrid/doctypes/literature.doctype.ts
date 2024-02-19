@@ -35,7 +35,7 @@ export class LiteratureDoctype extends IngridShared {
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ openData: true }),
+      this.addGeneralSection(),
       this.addKeywordsSection(),
       this.addSection("Fachbezug", [
         this.addGroupSimple("publication", [

@@ -58,7 +58,7 @@ export class SortTreeByTypeBehaviour extends Plugin {
   }
 
   register() {
-    console.log("Register Sort Tree behaviour");
+    console.debug("Register Sort Tree behaviour");
     super.register();
 
     this.treeService.registerTreeSortFunction(this.sortByDocumentType);

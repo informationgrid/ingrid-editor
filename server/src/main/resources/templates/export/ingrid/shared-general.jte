@@ -37,21 +37,19 @@
             codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_CharacterSetCode"
             codeListValue="${page.getMetadataCharacterSet()}" />
 </gmd:characterSet>
-@if(page.getParentIdentifier() != null)
+@if(TransformationTools.hasValue(page.getParentIdentifier()))
     <gmd:parentIdentifier>
         <gco:CharacterString>${page.getParentIdentifier()}</gco:CharacterString>
     </gmd:parentIdentifier>
 @endif
-@if(page.getHierarchyLevel() != null)
-    <gmd:hierarchyLevel>
-        <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode"
-                          codeListValue="${page.getHierarchyLevel()}">${page.getHierarchyLevel()}</gmd:MD_ScopeCode>
-    </gmd:hierarchyLevel>
-    @if(page.getHierarchyLevelName() != null)
-        <gmd:hierarchyLevelName>
-            <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
-        </gmd:hierarchyLevelName>
-    @endif
+<gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode"
+                      codeListValue="${page.getHierarchyLevel()}">${page.getHierarchyLevel()}</gmd:MD_ScopeCode>
+</gmd:hierarchyLevel>
+@if(page.getHierarchyLevelName() != null)
+    <gmd:hierarchyLevelName>
+        <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
+    </gmd:hierarchyLevelName>
 @endif
 <gmd:contact>
     !{var address = page.getContact();}
@@ -835,7 +833,7 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
-                                @if(serviceUrl.getApplicationProfile() != null)
+                                @if(TransformationTools.hasValue(serviceUrl.getApplicationProfile()))
                                     <gmd:applicationProfile>
                                         <gco:CharacterString>${serviceUrl.getApplicationProfile()}</gco:CharacterString>
                                     </gmd:applicationProfile>
@@ -848,7 +846,7 @@ ${contentInfo}
                                         <gco:CharacterString>${serviceUrl.getDescription()}</gco:CharacterString>
                                     </gmd:description>
                                 @endif
-                                @if(serviceUrl.getFunctionValue() != null)
+                                @if(TransformationTools.hasValue(serviceUrl.getFunctionValue()))
                                     <gmd:function>
                                         <gmd:CI_OnLineFunctionCode
                                                 codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode"
@@ -954,6 +952,6 @@ ${contentInfo}
         @endif
     </idf:crossReference>
 @endfor
-@if(page.getMapLinkUrl() != null)
+@if(TransformationTools.hasValue(page.getMapLinkUrl()))
     <idf:mapUrl>${page.getMapLinkUrl()}</idf:mapUrl>
 @endif

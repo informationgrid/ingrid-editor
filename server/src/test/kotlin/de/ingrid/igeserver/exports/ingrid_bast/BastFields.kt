@@ -95,7 +95,9 @@ class BastFields : Geodataset() {
         should("export useConstraintsComments") {
             val context = jacksonObjectMapper().readTree(
                 """{
-                    "useConstraintsComments": "BASt Nutzungshinweise"
+                        "resource": {
+                            "useConstraintsComments": "BASt Nutzungshinweise"
+                        }
                     }""".trimIndent()
             ) as ObjectNode
 

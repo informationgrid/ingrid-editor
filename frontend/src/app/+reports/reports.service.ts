@@ -19,6 +19,7 @@
  */
 import { Injectable } from "@angular/core";
 import { Route, Routes } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
 
 @Injectable({
   providedIn: "root",
@@ -30,6 +31,11 @@ export class ReportsService {
   constructor() {}
 
   addRoute(route: Route) {
+    // add auth guard to route if permission is set and no canActivate is set
+    if (route.data?.permission && !route.canActivate) {
+      route.canActivate = [AuthGuard];
+    }
+
     this.additionalRoutes.push(route);
   }
 

@@ -56,7 +56,7 @@ export class ProfileService {
   }
 
   private static getComponent(ProfilePack) {
-    console.log("Loaded module: ", ProfilePack);
+    console.debug("Loaded module: ", ProfilePack);
     return ProfilePack.getMyComponent() as Type<any>;
   }
 
@@ -111,7 +111,7 @@ export class ProfileService {
   }
 
   registerProfiles(doctypes: Doctype[]) {
-    console.log("Registering profile");
+    console.debug("Registering profile");
     this.doctypes = doctypes;
 
     // TODO: get ContextHelpIDs of all document types at once to improve speed

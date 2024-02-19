@@ -23,7 +23,7 @@ import {
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { finalize, map, tap } from "rxjs/operators";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -37,7 +37,8 @@ import { toSignal } from "@angular/core/rxjs-interop";
 })
 export class CodelistsComponent implements OnInit {
   codelists: Signal<SelectOptionUi[]> = toSignal(
-    this.codelistQuery.selectAll().pipe(
+    this.codelistQuery.selectRepoCodelists.pipe(
+      untilDestroyed(this),
       map((codelists) => this.codelistService.mapToOptions(codelists)),
       map((codelists) =>
         codelists.map((item) => {
