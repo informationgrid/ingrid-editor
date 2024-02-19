@@ -17,42 +17,43 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
+import { ProjectDoctype } from "../../ingrid/doctypes/project.doctype";
+import { SharedHmdk } from "./shared-hmdk";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
-export class ProjectDoctype extends IngridShared {
-  id = "InGridProject";
+export class ProjectDoctypeHMDK extends ProjectDoctype {
+  sharedHmdk = new SharedHmdk(this);
 
-  label = "Projekt";
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    console.log("2uefipavaöklvöwklj");
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+  };
 
-  iconClass = "Projekt";
+  handleActivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleActivateOpenData(
+      field,
+      super.handleActivateOpenData(field),
+    );
+  }
 
-  hasOptionalFields = true;
+  handleDeactivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
+      field,
+      super.handleDeactivateOpenData(field),
+    );
+  }
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
-      this.addGeneralSection(),
-      this.addKeywordsSection(),
-
-      this.addSection("Fachbezug", [
-        this.addTextArea("participants", "Beteiligte", this.id, {
-          className: "optional flex-1",
-        }),
-        this.addTextArea("manager", "Projektleiter", this.id, {
-          className: "optional flex-1",
-        }),
-        this.addTextArea("explanation", "Erläuterungen", this.id, {
-          className: "optional flex-1",
-        }),
-      ]),
-
-      this.addSpatialSection(),
-      this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ extraInfoLangData: true }),
-      this.addAvailabilitySection(),
-      this.addLinksSection(),
-    ];
+  handleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
+      field,
+      super.handleActivateInspireIdentified(field),
+    );
+  }
 }

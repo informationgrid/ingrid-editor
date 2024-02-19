@@ -19,18 +19,17 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
+import { LiteratureDoctype } from "../../ingrid/doctypes/literature.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
-export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
+export class PublicationDoctypeHMDK extends LiteratureDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    "fsefe";
     return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
   };
 

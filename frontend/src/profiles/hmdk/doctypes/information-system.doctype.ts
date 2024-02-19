@@ -17,104 +17,42 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
+import { SharedHmdk } from "./shared-hmdk";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
-export class InformationSystemDoctype extends IngridShared {
-  id = "InGridInformationSystem";
+export class InformationSystemDoctypeHMDK extends InformationSystemDoctype {
+  sharedHmdk = new SharedHmdk(this);
 
-  label = "Anwendung";
-
-  iconClass = "Informationssystem";
-
-  hasOptionalFields = true;
-
-  documentFields = () => {
-    const fields = <FormlyFieldConfig[]>[
-      this.addGeneralSection({
-        inspireRelevant: true,
-        advCompatible: true,
-        openData: true,
-      }),
-      this.addKeywordsSection({
-        advProductGroup: true,
-      }),
-
-      this.addSection("Fachbezug", [
-        this.addSelect("serviceType", "Art des Dienstes", {
-          showSearch: true,
-          options: this.getCodelistForSelect("5300", "serviceType"),
-          codelistId: "5300",
-        }),
-        this.addRepeatList("serviceVersion", "Version", {
-          asAutocomplete: true,
-        }),
-        this.addGroup(
-          null,
-          "Weitere Informationen",
-          [
-            this.addTextAreaInline(
-              "systemEnvironment",
-              "Systemumgebung",
-              this.id,
-              {
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              },
-            ),
-            this.addTextAreaInline(
-              "implementationHistory",
-              "Historie",
-              this.id,
-              {
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              },
-            ),
-          ],
-          { className: "optional" },
-        ),
-        this.addGroup(
-          null,
-          null,
-          [
-            this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-            this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-          ],
-          { className: "optional" },
-        ),
-        this.addRepeat("serviceUrls", "Service-Urls", {
-          className: "optional",
-          fields: [
-            this.addInputInline("name", "Name", { required: true }),
-            this.addInputInline("url", "URL", {
-              required: true,
-              validators: {
-                validation: ["url"],
-              },
-            }),
-            this.addInputInline("description", "Erläuterung"),
-          ],
-        }),
-      ]),
-
-      this.addSpatialSection(),
-      this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ extraInfoLangData: true }),
-      this.addAvailabilitySection(),
-      this.addLinksSection(),
-    ];
-
-    return this.manipulateDocumentFields(fields);
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
   };
+
+  handleActivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleActivateOpenData(
+      field,
+      super.handleActivateOpenData(field),
+    );
+  }
+
+  handleDeactivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
+      field,
+      super.handleDeactivateOpenData(field),
+    );
+  }
+
+  handleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
+      field,
+      super.handleActivateInspireIdentified(field),
+    );
+  }
 }

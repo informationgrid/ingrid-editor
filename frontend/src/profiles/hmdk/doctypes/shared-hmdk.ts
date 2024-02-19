@@ -26,6 +26,8 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Injectable({ providedIn: "root" })
 export class SharedHmdk {
@@ -33,9 +35,12 @@ export class SharedHmdk {
 
   constructor(private doc: IngridShared) {}
 
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+  manipulateDocumentFields = (
+    fieldConfig: FormlyFieldConfig[],
+    typeGroupPostion = 0,
+  ) => {
     // add "Veröffentlichung gemäß HmbTG" in to "Typ" Checkboxes
-    const topGroup = fieldConfig[0].fieldGroup;
+    const topGroup = fieldConfig[typeGroupPostion].fieldGroup;
     const typeGroup = topGroup[0].fieldGroup;
     typeGroup.push(this.getPublicationHmbTGFieldConfig());
 
@@ -228,39 +233,67 @@ export class SharedHmdk {
     }
   }
 
-  hmdkHandleActivateOpenData(field: FormlyFieldConfig) {
-    field.model.publicationHmbTG = true;
-    field.model.resource.useConstraints = [
-      {
-        title: { key: "1" },
-        source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-      },
-    ];
+  hmdkHandleActivateOpenData(
+    field: FormlyFieldConfig,
+    previous: Observable<boolean>,
+  ) {
+    return this.wrap(() => {
+      field.model.publicationHmbTG = true;
+      field.model.resource.useConstraints = [
+        {
+          title: { key: "1" },
+          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+        },
+      ];
 
-    // if inspire set access constraint "keine"
-    if (field.model.isInspireIdentified)
-      field.model.resource.accessConstraints = [{ key: "1" }];
+      // if inspire set access constraint "keine"
+      if (field.model.isInspireIdentified)
+        field.model.resource.accessConstraints = [{ key: "1" }];
 
-    this.tagsService
-      .updatePublicationType(field.model._id, "internet", false)
-      .subscribe();
+      this.tagsService
+        .updatePublicationType(field.model._id, "internet", false)
+        .subscribe();
+    }, previous);
   }
 
-  hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
-    // remove "keine" from access constraints
-    field.model.resource.accessConstraints =
-      field.model.resource.accessConstraints.filter((entry) => entry.key !== 1);
+  hmdkHandleDeactivateOpenData(
+    field: FormlyFieldConfig,
+    previous: Observable<boolean>,
+  ) {
+    return this.wrap(() => {
+      // remove "keine" from access constraints
+      field.model.resource.accessConstraints =
+        field.model.resource.accessConstraints.filter(
+          (entry) => entry.key !== 1,
+        );
 
-    // remove license set when open data was clicked
-    field.model.resource.useConstraints = [];
+      // remove license set when open data was clicked
+      field.model.resource.useConstraints = [];
 
-    // remove all categories
-    field.model.openDataCategories = [];
+      // remove all categories
+      field.model.openDataCategories = [];
+    }, previous);
   }
 
-  hmdkHandleActivateInspireIdentified(field: FormlyFieldConfig) {
-    // if openData is set access constraint "keine"
-    if (field.model.isOpenData)
-      field.model.resource.accessConstraints = [{ key: "1" }];
+  hmdkHandleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+    previous: Observable<boolean>,
+  ) {
+    return this.wrap(() => {
+      // if openData is set access constraint "keine"
+      if (field.model.isOpenData)
+        field.model.resource.accessConstraints = [{ key: "1" }];
+    }, previous);
+  }
+
+  wrap(executeFunction: () => void, previous: Observable<boolean>) {
+    return previous.pipe(
+      map((execute) => {
+        if (execute) {
+          executeFunction();
+        }
+        return execute;
+      }),
+    );
   }
 }

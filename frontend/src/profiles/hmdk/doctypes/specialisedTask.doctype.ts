@@ -17,29 +17,42 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
+import { SpecialisedTaskDoctype } from "../../ingrid/doctypes/specialisedTask.doctype";
+import { SharedHmdk } from "./shared-hmdk";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
-export class SpecialisedTaskDoctype extends IngridShared {
-  id = "InGridSpecialisedTask";
+export class SpecialisedTaskDoctypeHMDK extends SpecialisedTaskDoctype {
+  sharedHmdk = new SharedHmdk(this);
 
-  label = "Organisationseinheit";
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+  };
 
-  iconClass = "Fachaufgabe";
+  handleActivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleActivateOpenData(
+      field,
+      super.handleActivateOpenData(field),
+    );
+  }
 
-  hasOptionalFields = true;
+  handleDeactivateOpenData(field: FormlyFieldConfig) {
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
+      field,
+      super.handleDeactivateOpenData(field),
+    );
+  }
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
-      this.addGeneralSection(),
-      this.addKeywordsSection(),
-      this.addSpatialSection(),
-      this.addTimeReferenceSection(),
-      this.addAdditionalInformationSection({ extraInfoLangData: true }),
-      this.addLinksSection(),
-    ];
+  handleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
+      field,
+      super.handleActivateInspireIdentified(field),
+    );
+  }
 }

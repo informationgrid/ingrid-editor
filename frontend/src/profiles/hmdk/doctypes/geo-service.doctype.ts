@@ -21,7 +21,7 @@ import { Injectable } from "@angular/core";
 import { GeoServiceDoctype } from "../../ingrid/doctypes/geo-service.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { map } from "rxjs/operators";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -30,36 +30,29 @@ export class GeoServiceDoctypeHmdk extends GeoServiceDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig, 1);
   };
 
   handleActivateOpenData(field: FormlyFieldConfig) {
     return this.sharedHmdk.hmdkHandleActivateOpenData(
+      field,
       super.handleActivateOpenData(field),
-    );
-    return super.handleActivateOpenData(field).pipe(
-      map((execute) => {
-        if (execute) this.sharedHmdk.hmdkHandleActivateOpenData(field);
-        return execute;
-      }),
     );
   }
 
   handleDeactivateOpenData(field: FormlyFieldConfig) {
-    return super.handleDeactivateOpenData(field).pipe(
-      map((execute) => {
-        if (execute) this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
-        return execute;
-      }),
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
+      field,
+      super.handleDeactivateOpenData(field),
     );
   }
 
-  handleActivateInspireIdentified(field: FormlyFieldConfig) {
-    return super.handleActivateInspireIdentified(field).pipe(
-      map((execute) => {
-        if (execute) this.sharedHmdk.hmdkHandleActivateInspireIdentified(field);
-        return execute;
-      }),
+  handleActivateInspireIdentified(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
+      field,
+      super.handleActivateInspireIdentified(field),
     );
   }
 }
