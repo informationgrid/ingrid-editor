@@ -33,8 +33,8 @@ export class LiteratureDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
       this.addSection("Fachbezug", [
@@ -138,4 +138,7 @@ export class LiteratureDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 }

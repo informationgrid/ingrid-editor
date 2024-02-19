@@ -140,7 +140,7 @@ export abstract class IngridShared extends BaseDoctype {
                       },
                     )
                   : null,
-                this.options.hide.openData
+                !this.options.hide.openData
                   ? this.addCheckboxInline("isOpenData", "Open Data", {
                       className: "flex-1",
                       click: (field: FormlyFieldConfig) =>

@@ -19,17 +19,40 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
+import { InformationSystemDoctypeHMDK } from "./hmdk/doctypes/information-system.doctype";
+import { SpecialisedTaskDoctypeHMDK } from "./hmdk/doctypes/specialisedTask.doctype";
 import { GeoDatasetDoctypeHMDK } from "./hmdk/doctypes/geo-dataset.doctype";
-import { SharedHmdk } from "./hmdk/doctypes/shared-hmdk";
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { map } from "rxjs/operators";
+import { GeoServiceDoctypeHmdk } from "./hmdk/doctypes/geo-service.doctype";
+import { ProjectDoctypeHMDK } from "./hmdk/doctypes/project.doctype";
+import { DataCollectionDoctypeHMDK } from "./hmdk/doctypes/data-collection.doctype";
+import { PublicationDoctypeHMDK } from "./hmdk/doctypes/publication.doctype";
 
 @Component({
   template: "",
 })
 class InGridHMDKComponent extends InGridComponent {
+  specialisedTask = inject(SpecialisedTaskDoctypeHMDK);
   geoDataset = inject(GeoDatasetDoctypeHMDK);
-  sharedHmdk = inject(SharedHmdk);
+  literature = inject(PublicationDoctypeHMDK);
+  geoService = inject(GeoServiceDoctypeHmdk);
+  project = inject(ProjectDoctypeHMDK);
+  dataCollection = inject(DataCollectionDoctypeHMDK);
+  informationSystem = inject(InformationSystemDoctypeHMDK);
+
+  getDocTypes = () => {
+    return [
+      this.folder,
+      this.specialisedTask,
+      this.geoDataset,
+      this.literature,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+      this.person,
+      this.organisation,
+    ];
+  };
 
   constructor() {
     super();
@@ -47,24 +70,9 @@ class InGridHMDKComponent extends InGridComponent {
       this.dataCollection,
       this.informationSystem,
     ].forEach((docType) => {
-      docType.manipulateDocumentFields =
-        this.sharedHmdk.manipulateDocumentFields;
-
-      const temp = docType.handleActivateOpenData;
-      docType.handleActivateOpenData = (field: FormlyFieldConfig) => {
-        return temp(field).pipe(
-          map((execute) => {
-            if (execute) this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
-            return execute;
-          }),
-        );
-      };
-
       // show open data categories for all doctypes.
-      docType.showOpenDataCategories = "false";
-      docType.requiredOpenDataCategories = "false";
-      docType.dynamicRequiredOpenDataCategories = "false";
-      docType.options.dynamicHide.hideOpenDataCategories = "false";
+      docType.options.dynamicHide.openDataCategories = "false";
+      docType.options.hide.openData = false;
       docType.options.dynamicRequired.openDataCategories =
         "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
     });

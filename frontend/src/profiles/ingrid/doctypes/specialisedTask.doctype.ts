@@ -38,8 +38,8 @@ export class SpecialisedTaskDoctype extends IngridShared {
     this.options.hide.openData = true;
   }
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
       this.addSpatialSection(),
@@ -47,4 +47,7 @@ export class SpecialisedTaskDoctype extends IngridShared {
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 }
