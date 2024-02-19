@@ -19,14 +19,14 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
-import { LiteratureDoctype } from "../../ingrid/doctypes/literature.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { Observable } from "rxjs";
+import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.service";
 
 @Injectable({
   providedIn: "root",
 })
-export class PublicationDoctypeHMDK extends LiteratureDoctype {
+export class PublicationDoctypeHMDK extends PublicationDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {

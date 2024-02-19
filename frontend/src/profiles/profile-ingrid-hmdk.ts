@@ -33,26 +33,11 @@ import { PublicationDoctypeHMDK } from "./hmdk/doctypes/publication.doctype";
 class InGridHMDKComponent extends InGridComponent {
   specialisedTask = inject(SpecialisedTaskDoctypeHMDK);
   geoDataset = inject(GeoDatasetDoctypeHMDK);
-  literature = inject(PublicationDoctypeHMDK);
+  publication = inject(PublicationDoctypeHMDK);
   geoService = inject(GeoServiceDoctypeHmdk);
   project = inject(ProjectDoctypeHMDK);
   dataCollection = inject(DataCollectionDoctypeHMDK);
   informationSystem = inject(InformationSystemDoctypeHMDK);
-
-  getDocTypes = () => {
-    return [
-      this.folder,
-      this.specialisedTask,
-      this.geoDataset,
-      this.literature,
-      this.geoService,
-      this.project,
-      this.dataCollection,
-      this.informationSystem,
-      this.person,
-      this.organisation,
-    ];
-  };
 
   constructor() {
     super();
@@ -64,15 +49,16 @@ class InGridHMDKComponent extends InGridComponent {
     [
       this.specialisedTask,
       this.geoDataset,
-      this.literature,
+      this.publication,
       this.geoService,
       this.project,
       this.dataCollection,
       this.informationSystem,
     ].forEach((docType) => {
-      // show open data categories for all doctypes.
-      docType.options.dynamicHide.openDataCategories = "false";
+      // show open data for all types.
       docType.options.hide.openData = false;
+      // show open data categories for all types.
+      docType.options.dynamicHide.openDataCategories = "false";
       docType.options.dynamicRequired.openDataCategories =
         "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
     });

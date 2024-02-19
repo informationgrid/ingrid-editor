@@ -46,7 +46,7 @@ class InGridInformationSystemTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridInform
 }
 
 @Component
-class InGridLiteratureTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
+class InGridPublicationTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
