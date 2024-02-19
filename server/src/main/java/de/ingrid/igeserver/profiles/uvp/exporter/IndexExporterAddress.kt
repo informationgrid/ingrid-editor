@@ -31,7 +31,6 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -60,8 +59,8 @@ class IndexExporterAddress(
         if (doc.type == "FOLDER") return "{}"
         
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident") ?: ""
-        val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident") ?: ""
+        val partner = codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident") ?: ""
+        val provider = codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident") ?: ""
         val addressType = if (doc.type == "UvpOrganisationDoc") 0 else 1
         val commTypeKeys = getCommTypeKeys(doc)
         val commTypeValues = getCommTypeValues(doc)

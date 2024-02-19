@@ -35,10 +35,15 @@ export interface LogResult extends BaseLogResult {
   progressAddresses: number;
 }
 
-interface IndexConfig {
-  catalogId: string;
+interface IndexCronConfig {
   cronPattern: string;
-  exportFormat: string;
+  exports: IndexExportConfig[];
+}
+
+interface IndexExportConfig {
+  target: string;
+  exporterId: string;
+  tags: string[];
 }
 
 @Injectable({
@@ -48,7 +53,6 @@ export class IndexService {
   private configuration: Configuration;
   private catalog: Catalog;
   lastLog$ = new BehaviorSubject<LogResult>(null);
-  private exportFormat: string;
 
   constructor(
     private http: HttpClient,
@@ -59,26 +63,20 @@ export class IndexService {
   }
 
   start() {
-    return this.http.post(this.configuration.backendUrl + "index", {
-      catalogId: this.catalog.id,
-      format: this.exportFormat,
-    });
+    return this.http.post(this.configuration.backendUrl + "index", null);
   }
 
   setCronPattern(value: string) {
-    return this.http.post(this.configuration.backendUrl + "index/config", {
-      catalogId: this.catalog.id,
+    return this.http.post(this.configuration.backendUrl + "index/config/cron", {
       cronPattern: value,
-      exportFormat: this.exportFormat,
     });
   }
 
-  getIndexConfig(): Observable<IndexConfig> {
-    return this.http
-      .get<IndexConfig>(
-        this.configuration.backendUrl + "index/config/" + this.catalog.id,
-      )
-      .pipe(tap((config) => (this.exportFormat = config.exportFormat)));
+  getIndexConfig(): Observable<IndexCronConfig> {
+    return this.http.get<IndexCronConfig>(
+      this.configuration.backendUrl + "index/config",
+    );
+    // .pipe(tap((config) => (this.exportFormat = config.exportFormat)));
   }
 
   fetchLastLog() {
@@ -92,5 +90,12 @@ export class IndexService {
     return this.http
       .delete(this.configuration.backendUrl + "index/" + this.catalog.id)
       .subscribe();
+  }
+
+  setExportConfig(value: any) {
+    return this.http.post(
+      this.configuration.backendUrl + "index/config/exports",
+      value,
+    );
   }
 }

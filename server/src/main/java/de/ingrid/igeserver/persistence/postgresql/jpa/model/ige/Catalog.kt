@@ -31,7 +31,6 @@ import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
 import java.time.OffsetDateTime
-import java.util.*
 
 @Entity
 @Table(name = "catalog")
@@ -67,7 +66,7 @@ class Catalog {
     var modified: OffsetDateTime? = null
 
     @Type(JsonType::class)
-    var settings: CatalogSettings? = CatalogSettings()
+    var settings: CatalogSettings = CatalogSettings()
 
     @PrePersist
     fun setPersistDate() {

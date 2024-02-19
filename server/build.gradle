@@ -213,6 +213,9 @@ dependencyManagement {
         dependency "commons-collections:commons-collections:3.2.2"
 
     }
+    imports {
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.16.1' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
+    }
 }
 
 group = 'de.ingrid'

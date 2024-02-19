@@ -22,12 +22,10 @@ package de.ingrid.igeserver.index
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.IgeExporter
-import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.model.IndexConfigOptions
+import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.model.ResearchPaging
-import de.ingrid.igeserver.model.ResearchQuery
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
@@ -35,7 +33,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
 import org.jetbrains.kotlin.utils.indexOfFirst
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -53,7 +50,6 @@ class IndexService(
     private val catalogRepo: CatalogRepository,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
-    private val researchService: ResearchService,
     private val entityManager: EntityManager,
     private val settingsService: SettingsService,
     private val generalProperties: GeneralProperties
@@ -94,40 +90,7 @@ class IndexService(
             pagedDocs
         }
     }
-
-    private fun searchAndGetDocuments(
-        catalogId: String,
-        filter: BoolFilter,
-        currentPage: Int = 0
-    ): Pair<Long, List<Document>> {
-        val response = researchService.query(
-            catalogId,
-            ResearchQuery(null, filter, pagination = ResearchPaging(currentPage + 1, generalProperties.indexPageSize))
-        )
-        val docsToIndex = response.hits
-            .map { documentService.getLastPublishedDocument(catalogId, it._uuid!!).apply { wrapperId = it._id } }
-        return Pair(response.totalHits.toLong(), docsToIndex)
-    }
-
-    private fun createConditionsForDocumentsToPublish(
-        catalogId: String,
-        category: String,
-        profile: CatalogProfile,
-        uuid: String? = null
-    ): BoolFilter {
-        val conditions = mutableListOf("category = '$category'", "document1.state = 'PUBLISHED'", "deleted = 0")
-
-        uuid?.let { conditions.add("document_wrapper.uuid = '$it'") }
-
-        // add system specific conditions
-        conditions.addAll(getSystemSpecificConditions())
-
-        // add profile specific conditions
-        conditions.addAll(profile.additionalPublishConditions(catalogId))
-
-        return BoolFilter("AND", conditions, null, null, false)
-    }
-
+    
     private fun getSystemSpecificConditions(): List<String> {
         var publicationTypesPerIBus = settingsService.getIBusConfig().mapNotNull { it.publicationTypes }
 
@@ -149,21 +112,22 @@ class IndexService(
     fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter =
         exportService.getExporter(category, exportFormat)
 
-    fun updateConfig(config: IndexConfigOptions) {
+    fun updateCronConfig(catalogId: String, config: IndexCronOptions) {
+        catalogRepo
+            .findByIdentifier(catalogId)
+            .apply { settings.indexCronPattern = config.cronPattern }
+            .run { catalogRepo.save(this) }
+    }
 
-        val catalog = catalogRepo.findByIdentifier(config.catalogId)
-        if (catalog.settings == null) {
-            catalog.settings = CatalogSettings(config.cronPattern)
-        } else {
-            catalog.settings!!.indexCronPattern = config.cronPattern
-        }
-        catalog.settings!!.exportFormat = config.exportFormat
-        catalogRepo.save(catalog)
-
+    fun updateExporterConfig(catalogId: String, config: List<ExportConfig>) {
+        catalogRepo
+            .findByIdentifier(catalogId)
+            .apply { settings.exports = config }
+            .run { catalogRepo.save(this) }
     }
 
     fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId)
-        .settings?.lastLogSummary
+        .settings.lastLogSummary
 
     fun requestPublishableDocuments(
         catalogId: String,

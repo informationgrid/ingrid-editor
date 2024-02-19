@@ -35,11 +35,10 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.index.DocumentIndexInfo
 import de.ingrid.igeserver.index.IndexService
-import de.ingrid.igeserver.model.IndexConfigOptions
+import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.utils.ElasticDocument
@@ -101,25 +100,26 @@ class IndexingTask(
         indexManager = if (indexThroughIBus) iBusIndexManager else directIndexManager
     }
 
-    fun indexByScheduler(catalogId: String, format: String) {
+    fun indexByScheduler(catalogId: String) {
         Timer("ManualIndexing", true).schedule(0) {
             runAsCatalogAdministrator()
-            startIndexing(catalogId, format)
+            startIndexing(catalogId)
         }
     }
 
     /**
      * Indexing of all published documents into an Elasticsearch index.
      */
-    fun startIndexing(catalogId: String, format: String) {
+    fun startIndexing(catalogId: String) {
         log.info("Starting Task: Indexing for $catalogId")
 
         val message = IndexMessage(catalogId)
         notify.sendMessage(message.apply { this.message = "Start Indexing for catalog: $catalogId" })
         val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val partner = codelistService.getCodeListValue("110", catalog.settings?.config?.partner, "ident")
-        val provider = codelistService.getCodeListValue("111", catalog.settings?.config?.provider, "ident")
+        val format = catalog.settings.exports.map { it.exporterId }.firstOrNull() ?: "???"
+        val partner = codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
+        val provider = codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident")
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         // make sure the ingrid_meta index is there
@@ -274,18 +274,14 @@ class IndexingTask(
     }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
-        catalog.settings?.config?.elasticsearchAlias ?: catalog.identifier
+        catalog.settings.config.elasticsearchAlias ?: catalog.identifier
 
     private fun updateIndexLog(
         catalogId: String,
         message: IndexMessage
     ) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        if (catalog.settings == null) {
-            catalog.settings = CatalogSettings(lastLogSummary = message)
-        } else {
-            catalog.settings?.lastLogSummary = message
-        }
+        catalog.settings.lastLogSummary = message
         catalog.modified = OffsetDateTime.now()
         catalogRepo.save(catalog)
     }
@@ -421,7 +417,6 @@ class IndexingTask(
     }
 
     private fun indexPostPhase(info: IPlugInfo) {
-
         // update central index with iPlug information
         updateIBusInformation(info)
 
@@ -507,7 +502,7 @@ class IndexingTask(
         val trigger = CronTrigger(config.cron)
         return scheduler.schedule({
             runAsCatalogAdministrator()
-            startIndexing(config.catalogId, config.exportFormat)
+            startIndexing(config.catalogId)
         }, trigger)
     }
 
@@ -517,49 +512,38 @@ class IndexingTask(
         SecurityContextHolder.getContext().authentication = auth
     }
 
-    fun updateTaskTrigger(config: IndexConfigOptions) {
+    fun updateTaskTrigger(catalogId: String, config: IndexCronOptions) {
 
-        val schedule = scheduledFutures.find { it.catalogId == config.catalogId }
+        val schedule = scheduledFutures.find { it.catalogId == catalogId }
         schedule?.future?.cancel(false)
         scheduledFutures.remove(schedule)
         if (config.cronPattern.isEmpty()) {
-            log.info("Indexing Task for '${config.catalogId}' disabled")
+            log.info("Indexing Task for '${catalogId}' disabled")
         } else {
-            val indexConfig = IndexConfig(config.catalogId, config.exportFormat, config.cronPattern)
+            val indexConfig = IndexConfig(catalogId, "IGNORE", config.cronPattern)
             val newFuture = addSchedule(indexConfig)
             indexConfig.future = newFuture
             scheduledFutures.add(indexConfig)
-            log.info("Indexing Task for '${config.catalogId}' rescheduled")
+            log.info("Indexing Task for '${catalogId}' rescheduled")
         }
 
     }
 
-    private fun getIndexConfigurations(): List<IndexConfig> {
+    private fun getIndexConfigurations(): List<IndexConfig> =
+        catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
 
-        return catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
-
-    }
-
-    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? {
-
-        val settings = catalog.settings
-        return if (settings?.indexCronPattern == null || settings.exportFormat == null) {
-            null
-        } else {
-            IndexConfig(catalog.identifier, settings.exportFormat!!, settings.indexCronPattern!!)
-        }
-
-    }
+    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? = catalog.settings.indexCronPattern
+        ?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
 
     override fun destroy() {
         executor.shutdownNow()
     }
 
     private fun initScheduler(): TaskScheduler {
-        val scheduler = ThreadPoolTaskScheduler()
-        scheduler.poolSize = 10
-        scheduler.afterPropertiesSet()
-        return scheduler
+        return ThreadPoolTaskScheduler().apply { 
+           poolSize = 10
+           afterPropertiesSet()
+        }
     }
 
     fun cancelIndexing(catalogId: String) {

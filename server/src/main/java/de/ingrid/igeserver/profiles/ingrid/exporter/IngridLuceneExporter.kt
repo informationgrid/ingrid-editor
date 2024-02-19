@@ -172,8 +172,8 @@ class IngridLuceneExporter(
             "map" to mapOf(
                 "model" to transformer,
                 "catalog" to catalog,
-                "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
-                "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
+                "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
             )
         )
 

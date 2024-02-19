@@ -85,8 +85,14 @@
 
         <section>Konfiguration</section>
         <div class="padding section">
-            <formly-form [fields]="fields"></formly-form>
+            <formly-form
+                [fields]="fields"
+                [form]="exportForm"
+                [model]="exportModel"
+            ></formly-form>
         </div>
-        <button mat-flat-button color="primary">Speichern</button>
+        <button mat-flat-button color="primary" (click)="updateExportConfig()">
+            Speichern
+        </button>
     </div>
 </page-template>

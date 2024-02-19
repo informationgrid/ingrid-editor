@@ -19,14 +19,21 @@
  */
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.*
 import de.ingrid.igeserver.api.messaging.IndexMessage
 
 data class CatalogSettings(
     var indexCronPattern: String? = null,
-    var lastLogSummary: IndexMessage? = null,
-    var exportFormat: String? = null,
-    var config: CatalogConfig? = null
+    var lastLogSummary: IndexMessage? = null, // TODO: store summary in Quartz Job
+    @JsonSetter(nulls = Nulls.SKIP)
+    var config: CatalogConfig = CatalogConfig(),
+    var exports: List<ExportConfig> = emptyList()
+)
+
+data class ExportConfig(
+    val target: String,
+    val exporterId: String,
+    val tags: List<String>
 )
 
 // TODO refactor for profile specific settings
@@ -38,7 +45,6 @@ data class CatalogConfig(
     var namespace: String? = null,
     var atomDownloadUrl: String? = null,
     var spatialReference: Any? = null,
-    val ibus: IBusConfig? = IBusConfig(),
     val expiredDatasetConfig: ExpiredDatasetConfig? = null,
     var codelistFavorites: MutableMap<String, List<String>>? = null
 )

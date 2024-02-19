@@ -27,7 +27,11 @@ import {
 } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
-import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
+import {
+  FormGroup,
+  ReactiveFormsModule,
+  UntypedFormControl,
+} from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -78,6 +82,9 @@ export class IndexingComponent implements OnInit {
   indexingIsRunning = false;
   initialized = false;
 
+  exportForm = new FormGroup({});
+  exportModel: any = {};
+
   liveImportMessage: Observable<LogResult> = merge(
     this.indexService.lastLog$,
     this.rxStompService
@@ -110,7 +117,10 @@ export class IndexingComponent implements OnInit {
     this.indexService
       .getIndexConfig()
       .pipe(tap(() => (this.initialized = true)))
-      .subscribe((config) => this.cronField.setValue(config.cronPattern));
+      .subscribe((config) => {
+        this.cronField.setValue(config.cronPattern);
+        this.exportModel = { "catalog-index-config": config.exports };
+      });
 
     this.indexService.fetchLastLog();
 
@@ -170,5 +180,11 @@ export class IndexingComponent implements OnInit {
   cancelIndexing() {
     this.indexingIsRunning = false;
     this.indexService.cancel();
+  }
+
+  updateExportConfig() {
+    this.indexService
+      .setExportConfig(this.exportForm.value["catalog-index-config"])
+      .subscribe(() => this.snackBar.open("Konfiguration gespeichert"));
   }
 }
