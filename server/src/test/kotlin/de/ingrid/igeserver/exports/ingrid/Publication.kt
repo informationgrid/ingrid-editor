@@ -40,7 +40,7 @@ import io.mockk.mockkObject
 import mockCatalog
 import mockCodelists
 
-class Literature : ShouldSpec() {
+class Publication : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
 
@@ -122,13 +122,13 @@ class Literature : ShouldSpec() {
         * address has an organization assigned.
         * */
         should("maximalExport") {
-            var result = exportJsonToXML(exporter, "/export/ingrid/literature.sample.maximal.json")
+            var result = exportJsonToXML(exporter, "/export/ingrid/publication.sample.maximal.json")
             // replace generated UUIDs and windows line endings
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/literature.expected.maximal.idf.xml")
+            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/publication.expected.maximal.idf.xml")
         }
     }
 }

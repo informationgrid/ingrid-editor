@@ -24,7 +24,7 @@ import { IngridPersonDoctype } from "./ingrid/doctypes/ingrid-person.doctype";
 import { IngridOrganisationDoctype } from "./ingrid/doctypes/ingrid-organisation.doctype";
 import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
 import { SpecialisedTaskDoctype } from "./ingrid/doctypes/specialisedTask.doctype";
-import { LiteratureDoctype } from "./ingrid/doctypes/literature.doctype";
+import { PublicationDoctype } from "./ingrid/doctypes/publication-doctype.service";
 import { ProjectDoctype } from "./ingrid/doctypes/project.doctype";
 import { DataCollectionDoctype } from "./ingrid/doctypes/data-collection.doctype";
 import { InformationSystemDoctype } from "./ingrid/doctypes/information-system.doctype";
@@ -63,7 +63,7 @@ export class InGridComponent implements OnInit {
   folder = inject(FolderDoctype);
   specialisedTask = inject(SpecialisedTaskDoctype);
   geoDataset = inject(GeoDatasetDoctype);
-  literature = inject(LiteratureDoctype);
+  publication = inject(PublicationDoctype);
   geoService = inject(GeoServiceDoctype);
   project = inject(ProjectDoctype);
   dataCollection = inject(DataCollectionDoctype);
@@ -79,7 +79,7 @@ export class InGridComponent implements OnInit {
       this.folder,
       this.specialisedTask,
       this.geoDataset,
-      this.literature,
+      this.publication,
       this.geoService,
       this.project,
       this.dataCollection,

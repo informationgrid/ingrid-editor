@@ -560,7 +560,7 @@ open class IngridModelTransformer(
         }
     }
 
-    // information system or Literature
+    // information system or publication
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
     // literature
