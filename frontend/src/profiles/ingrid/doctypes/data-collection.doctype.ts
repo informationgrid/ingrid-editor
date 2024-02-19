@@ -33,9 +33,14 @@ export class DataCollectionDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  constructor() {
+    super();
+    this.options.hide.openData = false;
+  }
+
   documentFields = () =>
     <FormlyFieldConfig[]>[
-      this.addGeneralSection({ openData: true }),
+      this.addGeneralSection(),
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [

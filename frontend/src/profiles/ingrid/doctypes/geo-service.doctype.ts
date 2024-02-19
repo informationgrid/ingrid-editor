@@ -81,7 +81,6 @@ export class GeoServiceDoctype extends IngridShared {
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
-        openData: true,
       }),
       this.addKeywordsSection({
         priorityDataset: true,

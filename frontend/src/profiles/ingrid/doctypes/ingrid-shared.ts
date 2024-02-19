@@ -50,7 +50,6 @@ import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
-  openData?: boolean;
   advCompatible?: boolean;
   thesaurusTopics?: boolean;
 }
@@ -79,8 +78,8 @@ export abstract class IngridShared extends BaseDoctype {
       accessConstraints: "formState.mainModel?.isInspireIdentified",
       openDataCategories: undefined,
     },
-    dynamicVisibility: {
-      hideOpenDataCategories: "!formState.mainModel?.isOpenData",
+    dynamicHide: {
+      openDataCategories: "!formState.mainModel?.isOpenData",
     },
     required: {
       freeKeywords: false,
@@ -88,6 +87,9 @@ export abstract class IngridShared extends BaseDoctype {
       topicCategories: true,
       accessConstraints: false,
       resourceDateType: false,
+    },
+    hide: {
+      openData: false,
     },
   };
 
@@ -100,7 +102,7 @@ export abstract class IngridShared extends BaseDoctype {
   showInspireConform: boolean = false;
   isGeoService: boolean = false;
   isGeoDataset: boolean = false;
-  thesaurusTopics: boolean = false;
+  private thesaurusTopics: boolean = false;
 
   defaultKeySpatialScope = null; // Regional
 
@@ -109,7 +111,9 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addGroupSimple(
       null,
       [
-        options.inspireRelevant || options.advCompatible || options.openData
+        options.inspireRelevant ||
+        options.advCompatible ||
+        !this.options.hide.openData
           ? this.addGroup(
               null,
               "Typ",
@@ -136,7 +140,7 @@ export abstract class IngridShared extends BaseDoctype {
                       },
                     )
                   : null,
-                options.openData
+                this.options.hide.openData
                   ? this.addCheckboxInline("isOpenData", "Open Data", {
                       className: "flex-1",
                       click: (field: FormlyFieldConfig) =>
@@ -489,7 +493,7 @@ export abstract class IngridShared extends BaseDoctype {
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
           expressions: {
-            hide: this.options.dynamicVisibility.hideOpenDataCategories,
+            hide: this.options.dynamicHide.openDataCategories,
             "props.required": this.options.dynamicRequired.openDataCategories,
           },
         }),
@@ -726,6 +730,7 @@ export abstract class IngridShared extends BaseDoctype {
             showSearch: true,
             options: this.getCodelistForSelect("100", "spatialSystems"),
             codelistId: "100",
+            // TODO: required: this.spatialSystemsRequired, // instead of dynamic required
             expressions: {
               "props.required": () => this.isGeoDataset || this.isGeoService,
             },
