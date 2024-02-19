@@ -279,6 +279,7 @@ export class HistoryPlugin extends Plugin {
         explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
       });
     }
+    return navigated;
   }
 
   private handleButtonState() {
@@ -302,7 +303,11 @@ export class HistoryPlugin extends Plugin {
     });
     this.handleButtonState();
   }
-
+  /**
+   * Initializes and opens a mat-menu with clickable list of next nodes in history
+   * @param trigger
+   * @private
+   */
   private handleListNext(trigger?: MatMenuTrigger) {
     const history = this.stack.slice(this.pointer + 1).map((item) => {
       return {
@@ -317,7 +322,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   /**
-   * Initiates and opens a mat-menu with clickable list of previously visited nodes
+   * Initializes and opens a mat-menu with clickable list of previously visited nodes
    * @param trigger
    * @private
    */
@@ -345,25 +350,28 @@ export class HistoryPlugin extends Plugin {
    * @param item
    * @private
    */
-  private handleHistoryPreviousSelect(item: any) {
-    console.log("Index:" + item.data.index);
+  private async handleHistoryPreviousSelect(item: any) {
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== item.data.data.id) {
-      this.pointer = this.pointer - item.data.index - 1;
-      this.ignoreNextPush = true;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
+      const navigated = await this.gotoNode(item.data.data);
+      if (navigated) {
+        this.pointer = this.pointer - item.data.index - 1;
+        this.ignoreNextPush = true;
+        this.handleButtonState();
+      }
       return;
     }
   }
 
-  private handleHistoryNextSelect(item: any) {
+  private async handleHistoryNextSelect(item: any) {
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== item.data.data.id) {
-      this.ignoreNextPush = true;
-      this.pointer = this.pointer + item.data.index + 1;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
+      const navigated = await this.gotoNode(item.data.data);
+      if (navigated) {
+        this.ignoreNextPush = true;
+        this.pointer = this.pointer + item.data.index + 1;
+        this.handleButtonState();
+      }
       return;
     }
   }
