@@ -37,7 +37,7 @@ class InGridKrznComponent extends InGridComponent {
     [
       this.specialisedTask,
       this.geoDataset,
-      this.literature,
+      this.publication,
       this.geoService,
       this.project,
       this.dataCollection,

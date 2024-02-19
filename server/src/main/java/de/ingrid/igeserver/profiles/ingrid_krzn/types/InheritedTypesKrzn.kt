@@ -49,7 +49,7 @@ class InGridInformationSystemTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridInform
 }
 
 @Component
-class InGridLiteratureTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
+class InGridPublicationTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(KrznProfile.id)
 }
 

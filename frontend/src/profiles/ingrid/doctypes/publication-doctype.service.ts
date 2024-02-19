@@ -24,12 +24,12 @@ import { IngridShared } from "./ingrid-shared";
 @Injectable({
   providedIn: "root",
 })
-export class LiteratureDoctype extends IngridShared {
+export class PublicationDoctype extends IngridShared {
   id = "InGridPublication";
 
   label = "Dokument";
 
-  iconClass = "Literatur-Dokument";
+  iconClass = "Publikation-Dokument";
 
   hasOptionalFields = true;
 

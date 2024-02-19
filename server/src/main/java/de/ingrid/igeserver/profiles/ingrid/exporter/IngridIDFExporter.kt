@@ -24,7 +24,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
@@ -91,7 +90,7 @@ class IngridIDFExporter(
         return when (type) {
             "InGridSpecialisedTask" -> "export/ingrid/idf-specialisedTask.jte"
             "InGridGeoDataset" -> "export/ingrid/idf-geodataset.jte"
-            "InGridPublication" -> "export/ingrid/idf-literature.jte"
+            "InGridPublication" -> "export/ingrid/idf-publication.jte"
             "InGridGeoService" -> "export/ingrid/idf-geoservice.jte"
             "InGridProject" -> "export/ingrid/idf-project.jte"
             "InGridDataCollection" -> "export/ingrid/idf-dataCollection.jte"
@@ -107,7 +106,7 @@ class IngridIDFExporter(
     private val mapper = ObjectMapper().registerKotlinModule()
 
     private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
-        var ingridModel: IngridModel? = null
+        val ingridModel: IngridModel?
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
         ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
 
@@ -116,7 +115,7 @@ class IngridIDFExporter(
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridPublication" to LiteratureModelTransformer::class,
+            "InGridPublication" to PublicationModelTransformer::class,
             "InGridGeoService" to GeodataserviceModelTransformer::class,
             "InGridProject" to ProjectModelTransformer::class,
             "InGridDataCollection" to DataCollectionModelTransformer::class,
@@ -155,5 +154,3 @@ private class XMLStringOutput : StringOutput() {
         )
     }
 }
-
-data class DocInfo(val catalogId: String, val uuid: String, val externalUrl: String)

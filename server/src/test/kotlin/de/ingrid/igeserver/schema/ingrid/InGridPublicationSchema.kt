@@ -17,15 +17,27 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.types
+package de.ingrid.igeserver.schema.ingrid
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.stereotype.Component
+import de.ingrid.igeserver.schema.SchemaUtils
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
 
-@Component
-class InGridLiteratureType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
-    override val className = "InGridPublication"
+class InGridPublicationSchema : AnnotationSpec() {
 
-    override val jsonSchema = "/ingrid/schemes/literature.schema.json"
+    private val schema = "/ingrid/schemes/publication.schema.json"
+
+    @Test
+    fun minimal() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/publication.minimal.json")
+        val result = SchemaUtils.validate(json, schema)
+        result.valid shouldBe true
+    }
+
+    @Test
+    fun maximal() {
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/publication.maximal.json")
+        val result = SchemaUtils.validate(json, schema)
+        result.valid shouldBe true
+    }
 }
