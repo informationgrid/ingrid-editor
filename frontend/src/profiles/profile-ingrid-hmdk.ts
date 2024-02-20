@@ -58,7 +58,7 @@ class InGridHMDKComponent extends InGridComponent {
       // show open data for all types.
       docType.options.hide.openData = false;
       // show open data categories for all types.
-      docType.options.dynamicHide.openDataCategories = "false";
+      docType.options.dynamicHide.openDataCategories = undefined;
       docType.options.dynamicRequired.openDataCategories =
         "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
     });
