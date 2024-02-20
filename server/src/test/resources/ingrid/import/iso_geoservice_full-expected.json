@@ -292,7 +292,7 @@
       "transferSize": {
         "value": 1.44,
         "unit": {
-          "key": "mb"
+          "key": "MB"
         }
       },
       "mediumNote": "Home"

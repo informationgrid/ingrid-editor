@@ -135,7 +135,7 @@
     {
       "name": { "key": "1" },
       "mediumNote": "archive",
-      "transferSize": { "value": 200, "unit": { "key": "mb" } }
+      "transferSize": { "value": 200, "unit": { "key": "MB" } }
     }
   ],
   "maintenanceInformation": {

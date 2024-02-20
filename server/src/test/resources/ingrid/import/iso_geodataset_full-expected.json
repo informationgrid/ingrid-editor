@@ -279,7 +279,7 @@
       "transferSize": {
         "value": 700.0,
         "unit": {
-          "key": "mb"
+          "key": "MB"
         }
       },
       "mediumNote": "Bunker"
