@@ -41,10 +41,7 @@ export class SpecialisedTaskDoctypeHMDK extends SpecialisedTaskDoctype {
   }
 
   handleDeactivateOpenData(field: FormlyFieldConfig) {
-    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
-      field,
-      super.handleDeactivateOpenData(field),
-    );
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
   handleActivateInspireIdentified(

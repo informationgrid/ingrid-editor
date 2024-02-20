@@ -26,7 +26,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 
 @Injectable({ providedIn: "root" })
@@ -256,23 +256,21 @@ export class SharedHmdk {
     }, previous);
   }
 
-  hmdkHandleDeactivateOpenData(
-    field: FormlyFieldConfig,
-    previous: Observable<boolean>,
-  ) {
-    return this.wrap(() => {
-      // remove "keine" from access constraints
-      field.model.resource.accessConstraints =
-        field.model.resource.accessConstraints.filter(
-          (entry) => entry.key !== 1,
-        );
+  hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
+    // remove "keine" from access constraints
+    field.model.resource.accessConstraints =
+      field.model.resource.accessConstraints.filter(
+        (entry) => entry.key !== "1",
+      );
 
-      // remove license set when open data was clicked
-      field.model.resource.useConstraints = [];
+    // remove license set when open data was clicked
+    field.model.resource.useConstraints = [];
 
-      // remove all categories
-      field.model.openDataCategories = [];
-    }, previous);
+    // remove all categories
+    field.model.openDataCategories = [];
+
+    setTimeout(() => field.options.formState.updateModel());
+    return of(true);
   }
 
   hmdkHandleActivateInspireIdentified(

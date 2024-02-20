@@ -41,10 +41,7 @@ export class ProjectDoctypeHMDK extends ProjectDoctype {
   }
 
   handleDeactivateOpenData(field: FormlyFieldConfig) {
-    return this.sharedHmdk.hmdkHandleDeactivateOpenData(
-      field,
-      super.handleDeactivateOpenData(field),
-    );
+    return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
   handleActivateInspireIdentified(
