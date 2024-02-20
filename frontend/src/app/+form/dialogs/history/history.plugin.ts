@@ -153,9 +153,9 @@ export class HistoryPlugin extends Plugin {
       this.docEvents
         .onEvent(this.eventIdNext)
         .subscribe(() => this.handleNext()),
-      this.docEvents
-        .onEvent(this.eventIdPrevious)
-        .subscribe(() => this.handlePrevious()),
+      this.docEvents.onEvent(this.eventIdPrevious).subscribe(() => {
+        this.handlePrevious();
+      }),
       this.docEvents
         .onEvent(`${this.eventIdPrevious}_LONGPRESS`)
         .subscribe((event) => {
@@ -213,7 +213,7 @@ export class HistoryPlugin extends Plugin {
     }
   }
 
-  private handleNext() {
+  private async handleNext() {
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
@@ -226,15 +226,17 @@ export class HistoryPlugin extends Plugin {
     // popup.close(this.popupMenu);
 
     const node = this.stack[this.pointer + 1];
-    this.ignoreNextPush = true;
-    if (this.hasNext()) {
-      this.pointer++;
+
+    const navigated = await this.gotoNode(node);
+    if (navigated) {
+      if (this.hasNext()) {
+        this.pointer++;
+      }
     }
-    this.gotoNode(node);
     this.handleButtonState();
   }
 
-  private handlePrevious() {
+  private async handlePrevious() {
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
@@ -253,11 +255,13 @@ export class HistoryPlugin extends Plugin {
     }
 
     const node = this.stack[this.pointer - 1];
-    this.ignoreNextPush = true;
-    if (this.pointer > 0) {
-      this.pointer--;
+
+    const navigated = await this.gotoNode(node);
+    if (navigated) {
+      if (this.pointer > 0) {
+        this.pointer--;
+      }
     }
-    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -275,6 +279,7 @@ export class HistoryPlugin extends Plugin {
       { id: item._uuid },
     ]);
     if (navigated) {
+      this.ignoreNextPush = true;
       this.treeStore.update({
         explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
       });
@@ -303,6 +308,7 @@ export class HistoryPlugin extends Plugin {
     });
     this.handleButtonState();
   }
+
   /**
    * Initializes and opens a mat-menu with clickable list of next nodes in history
    * @param trigger
@@ -318,11 +324,12 @@ export class HistoryPlugin extends Plugin {
     });
 
     this.formToolbarService.updateHiddenMenu("toolBtnNextInHistory", history);
+    this.formToolbarService.activateHiddenMenu("toolBtnNextInHistory");
     trigger.openMenu();
   }
 
   /**
-   * Initializes and opens a mat-menu with clickable list of previously visited nodes
+   * Initializes and opens a mat-menu with clickable list of previously visited nodes upon long press
    * @param trigger
    * @private
    */
@@ -342,6 +349,7 @@ export class HistoryPlugin extends Plugin {
       "toolBtnPreviousInHistory",
       history,
     );
+    this.formToolbarService.activateHiddenMenu("toolBtnPreviousInHistory");
     trigger.openMenu();
   }
 
@@ -356,19 +364,22 @@ export class HistoryPlugin extends Plugin {
       const navigated = await this.gotoNode(item.data.data);
       if (navigated) {
         this.pointer = this.pointer - item.data.index - 1;
-        this.ignoreNextPush = true;
         this.handleButtonState();
       }
       return;
     }
   }
 
+  /**
+   * Handles the selection of a node from next history list
+   * @param item
+   * @private
+   */
   private async handleHistoryNextSelect(item: any) {
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== item.data.data.id) {
       const navigated = await this.gotoNode(item.data.data);
       if (navigated) {
-        this.ignoreNextPush = true;
         this.pointer = this.pointer + item.data.index + 1;
         this.handleButtonState();
       }

@@ -46,6 +46,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
   hiddenMenu?: ToolbarMenuItem[];
+  showHiddenMenu?: boolean;
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -121,14 +122,7 @@ export class FormToolbarService {
     const button: any = document.getElementsByClassName(className)?.item(0);
     if (button) button.click();
   }
-  longPressItemMenu(className: string) {
-    const button: any = document.getElementsByClassName(className)?.item(0);
-    if (button) {
-      button.dispatchEvent(new Event("mousedown"));
-      button.dispatchEvent(new Event("mouseup"));
-      setTimeout(() => {}, 600);
-    }
-  }
+
   /**
    * Set the state of a toolbar button to enabled or disabled.
    * @param id
@@ -159,6 +153,13 @@ export class FormToolbarService {
     const button = <ToolbarItem>this.getButtonById(id);
     if (button) {
       button.hiddenMenu = hiddenMenu;
+    }
+  }
+
+  activateHiddenMenu(id: string) {
+    const button = <ToolbarItem>this.getButtonById(id);
+    if (button) {
+      button.showHiddenMenu = true;
     }
   }
 }

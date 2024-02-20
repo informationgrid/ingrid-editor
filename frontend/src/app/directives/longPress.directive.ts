@@ -46,11 +46,14 @@ export class LongPressDirective {
       this.longPress.emit(event);
       this.longPressHandled = true;
     }, 500);
+    return;
   }
 
-  @HostListener("mouseup")
-  @HostListener("touchend")
+  @HostListener("mouseup", ["$event"])
+  @HostListener("touchend", ["$event"])
   onMouseUp(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
     if (this.longPressTimeout) {
       clearTimeout(this.longPressTimeout);
       if (!this.longPressHandled) this.shortClick.emit(event);
