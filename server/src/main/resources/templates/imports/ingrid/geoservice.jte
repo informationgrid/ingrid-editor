@@ -1,7 +1,8 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
+@import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param GeoserviceMapper model 
-
+@param Content contentInfo = null
 {
     @template.imports.ingrid.base(model = model)
     "metadata": {
@@ -50,4 +51,5 @@
         "couplingType": @template.imports.ingrid.partial.key-value(item = model.getCouplingType()),
         "hasAccessConstraints": false
     }
+    ${contentInfo}
 }
