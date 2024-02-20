@@ -23,7 +23,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
+import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportHMDK
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
@@ -39,7 +41,9 @@ class HmdkProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
+    isoImport: ISOImport,
+    isoImportHMDK: ISOImportHMDK,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -50,6 +54,11 @@ class HmdkProfile(
     override val title = "InGrid Katalog (HMDK)"
     override val parentProfile = "ingrid"
 
+
+
+    init {
+        isoImport.profileMapper = isoImportHMDK
+    }
 //    override val indexExportFormatID = "indexInGridIDFHmdk"
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {

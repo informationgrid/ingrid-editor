@@ -665,7 +665,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
 
-    private fun containsKeyword(value: String): Boolean {
+    protected fun containsKeyword(value: String): Boolean {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
             ?.any { it == value } ?: false
