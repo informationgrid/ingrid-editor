@@ -1275,9 +1275,9 @@ export abstract class IngridShared extends BaseDoctype {
             type: "number",
             className: "right-align",
             unitOptions: of<SelectOption[]>([
-              new SelectOption("mb", "MB"),
-              new SelectOption("gb", "GB"),
-              new SelectOption("tb", "TB"),
+              new SelectOption("MB", "MB"),
+              new SelectOption("GB", "GB"),
+              new SelectOption("TB", "TB"),
             ]),
             fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),

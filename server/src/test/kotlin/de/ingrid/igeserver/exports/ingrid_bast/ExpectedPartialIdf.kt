@@ -53,7 +53,7 @@ const val digitalTransferOptionWithUnit = """
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:unitsOfDistribution>
-                                <gco:CharacterString>gb</gco:CharacterString>
+                                <gco:CharacterString>GB</gco:CharacterString>
                             </gmd:unitsOfDistribution>
                             <gmd:transferSize>
                                 <gco:Real>123.4</gco:Real>

@@ -66,7 +66,7 @@ class BastFields : Geodataset() {
                           "transferSize": {
                             "value": "123.4",
                             "unit": {
-                              "key": "gb"
+                              "key": "GB"
                             }
                           },
                           "mediumNote": "Dachboden"
