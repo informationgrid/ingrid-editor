@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
 import org.springframework.stereotype.Service
@@ -48,10 +49,29 @@ class SettingsService(
     }
 
     fun setIBusConfig(config: List<IBusConfig>) {
+        addIdIfNeeded(config)
         this.updateItem("ibus", config)
     }
 
+    private fun addIdIfNeeded(config: List<WithId>) {
+        val existingIds = config.mapNotNull { it.id }.toMutableSet()
+        config.filter { it.id == null }.forEach { item ->
+            val newId = generateUniqueId(existingIds)
+            item.id = newId
+            existingIds += newId
+        }
+    }
+
+    private fun generateUniqueId(existingIds: Set<Int>): Int {
+        var id: Int
+        do {
+            id = (Math.random() * 1000).toInt()
+        } while (id in existingIds)
+        return id
+    }
+
     fun setElasticConfig(config: List<ElasticConfig>) {
+        addIdIfNeeded(config)
         this.updateItem("elasticsearch", config)
     }
 

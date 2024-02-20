@@ -61,16 +61,22 @@ data class ConnectionConfig(
     val elasticsearch: List<ElasticConfig>? = null
 )
 
+interface WithId {
+    var id: Int?
+}
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class IBusConfig(
+data class IBusConfig (
+    override var id: Int? = null,
     val name: String? = null,
     val ip: String = "127.0.0.1",
-    val port: Int = 9900,
-    @Deprecated("will be stored in catalog") val publicationTypes: List<String>? = null
-)
+    val port: Int = 9900
+): WithId
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ElasticConfig(
+    override var id: Int? = null,
+    val name: String? = null,
     val ip: String,
     val port: Int = 9300
-)
+): WithId

@@ -31,7 +31,7 @@ export class ConnectionForm extends FormFieldHelper {
           key: "ibus",
           value: "iBus",
           fields: {
-            fieldGroup: this.addFields(9900),
+            fieldGroup: [...this.addFields(9900)],
           },
         },
         {
@@ -48,6 +48,7 @@ export class ConnectionForm extends FormFieldHelper {
   private addFields(port: number) {
     return [
       { key: "_type" },
+      { key: "id" },
       this.addInputInline("name", "Name", {
         className: "white-bg url",
         required: true,

@@ -27,22 +27,45 @@ import org.springframework.transaction.PlatformTransactionManager
 
 @Service
 class M081_MigrateCatalogSettings : MigrationBase("0.81") {
-  val log = logger()
+    val log = logger()
 
-  @Autowired lateinit var entityManager: EntityManager
+    @Autowired
+    lateinit var entityManager: EntityManager
 
-  @Autowired private lateinit var transactionManager: PlatformTransactionManager
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
 
-  override fun exec() {}
+    override fun exec() {}
 
-  override fun postExec() {
-    ClosableTransaction(transactionManager).use {
-      entityManager
-          .createNativeQuery("UPDATE catalog SET settings = settings - 'exportFormat'")
-          .executeUpdate()
-      entityManager
-          .createNativeQuery("UPDATE catalog SET settings = settings #- '{config,ibus}'")
-          .executeUpdate()
+    override fun postExec() {
+        ClosableTransaction(transactionManager).use {
+            entityManager
+                .createNativeQuery("UPDATE catalog SET settings = settings - 'exportFormat'")
+                .executeUpdate()
+            entityManager
+                .createNativeQuery("UPDATE catalog SET settings = settings #- '{config,ibus}'")
+                .executeUpdate()
+            entityManager
+                .createNativeQuery(
+                    """
+              UPDATE settings
+              SET value = ((REPLACE(value::TEXT, '"url"', '"name"'))::JSONB)
+              WHERE key = 'ibus';
+          """.trimIndent()
+                )
+                .executeUpdate()
+            entityManager
+                .createNativeQuery(
+                    """
+              UPDATE settings
+              SET value = (
+                 SELECT jsonb_agg(value - 'publicationTypes')
+                 FROM jsonb_array_elements(settings.value) AS elements(value)
+              )
+              WHERE key = 'ibus';
+          """.trimIndent()
+                )
+                .executeUpdate()
+        }
     }
-  }
 }

@@ -1,10 +1,22 @@
 import { FormFieldHelper } from "../../../profiles/form-field-helper";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { SelectOption } from "../../services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../services/codelist/codelist.service";
+import {
+  ConfigService,
+  Connections,
+} from "../../services/config/config.service";
+import { map } from "rxjs/operators";
+import { ExchangeService } from "../../+importExport/exchange.service";
 
 @Injectable({ providedIn: "root" })
 export class IndexingFields extends FormFieldHelper {
+  configService = inject(ConfigService);
+  exchangeService = inject(ExchangeService);
+
   fields: FormlyFieldConfig[] = [
     this.addRepeat("catalog-index-config", "", {
       wrappers: [],
@@ -17,7 +29,10 @@ export class IndexingFields extends FormFieldHelper {
             this.addSelectInline("target", "Ziel", {
               required: true,
               simple: true,
-              options: [new SelectOption("ibus2", "My iBus2")],
+              useFirstValueInitially: true,
+              options: this.configService
+                .getIBusConfig()
+                .pipe(map((configs) => this.mapConnections(configs))),
             }),
             this.addSelectInline("tags", "Veröffentlichungsrecht", {
               defaultValue: ["internet"],
@@ -33,12 +48,39 @@ export class IndexingFields extends FormFieldHelper {
             this.addSelectInline("exporterId", "Exporter", {
               required: true,
               simple: true,
-              options: [new SelectOption("exporter1", "My Exporter")],
+              useFirstValueInitially: true,
+              options: this.exchangeService.getExportTypes().pipe(
+                map((info) => {
+                  return info.map(
+                    (item) => new SelectOption(item.name, item.type),
+                  );
+                }),
+              ),
             }),
           ],
-          { fieldGroupClassName: "flex-row gap-6", className: "flex-1" },
+          {
+            fieldGroupClassName: "flex-row gap-6",
+            className: "flex-1",
+          },
         ),
       ],
+      validators: {
+        uniqueTarget: {
+          expression: (ctrl, field) => {
+            const uniqueTargets = new Set(
+              ctrl.value?.map((item) => item.target) ?? [],
+            );
+            return uniqueTargets.size === ctrl.value.length;
+          },
+          message: "Jedes Ziel darf nur einmal verwendet werden",
+        },
+      },
     }),
   ];
+
+  private mapConnections(configs: Connections): SelectOptionUi[] {
+    return configs.connections.map((item) => {
+      return new SelectOption(item.id.toString(), item.name);
+    });
+  }
 }

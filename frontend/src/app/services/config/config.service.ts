@@ -90,6 +90,7 @@ export interface Connections {
 
 export interface ConnectionInfo {
   _type: "ibus" | "elastic";
+  id: number;
   name: string;
   ip: string;
   port: number;
@@ -205,19 +206,19 @@ export class ConfigService {
   saveIBusConfig(value: Connections) {
     const valueForBackend = this.prepareConnectionsForIBus(value);
     return this.http
-      .put<any>(`${this.config.backendUrl}config/ibus`, valueForBackend)
+      .put<any>(`${this.config.backendUrl}config/connections`, valueForBackend)
       .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
   }
 
   getIBusConfig() {
     return this.http
-      .get<any>(`${this.config.backendUrl}config/ibus`)
+      .get<any>(`${this.config.backendUrl}config/connections`)
       .pipe(map((config) => this.prepareConnectionsForFrontend(config)));
   }
 
   isIBusConnected(index: number) {
     return this.http.get<boolean>(
-      `${this.config.backendUrl}config/ibus/connected/${index}`,
+      `${this.config.backendUrl}config/connections/connected/${index}`,
     );
   }
 

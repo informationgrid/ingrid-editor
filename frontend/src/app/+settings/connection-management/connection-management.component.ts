@@ -35,7 +35,6 @@ import {
 import { tap } from "rxjs/operators";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { FormlyModule } from "@ngx-formly/core";
-import { JsonPipe } from "@angular/common";
 import { MatButton } from "@angular/material/button";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ConnectionStateComponent } from "./connection-state/connection-state.component";
@@ -50,7 +49,6 @@ import { Subscription } from "rxjs";
   imports: [
     PageTemplateModule,
     FormlyModule,
-    JsonPipe,
     MatButton,
     ConnectionStateComponent,
   ],

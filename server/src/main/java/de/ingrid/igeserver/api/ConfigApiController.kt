@@ -69,7 +69,7 @@ class ConfigApiController(
 
     }
 
-    override fun getIBus(): ResponseEntity<ConnectionConfig> {
+    override fun getConnections(): ResponseEntity<ConnectionConfig> {
         return ResponseEntity.ok().body(
             ConnectionConfig(
                 settingsService.getIBusConfig(),
@@ -84,7 +84,7 @@ class ConfigApiController(
         )
     }
 
-    override fun setIBus(config: ConnectionConfig): ResponseEntity<Unit> {
+    override fun setConnections(config: ConnectionConfig): ResponseEntity<Unit> {
         config.ibus?.let {
             settingsService.setIBusConfig(it)
             iBusService?.restartCommunication()

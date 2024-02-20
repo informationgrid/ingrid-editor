@@ -92,7 +92,7 @@ class IndexService(
     }
     
     private fun getSystemSpecificConditions(): List<String> {
-        var publicationTypesPerIBus = settingsService.getIBusConfig().mapNotNull { it.publicationTypes }
+        var publicationTypesPerIBus: List<List<String>> = emptyList()// TODO: settingsService.getIBusConfig().mapNotNull { null /*it.publicationTypes*/ }
 
         // provide at least one empty iBus configuration
         if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())

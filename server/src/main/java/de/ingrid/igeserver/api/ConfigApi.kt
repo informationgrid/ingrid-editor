@@ -41,15 +41,15 @@ interface ConfigApi {
     @GetMapping(value = ["/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun get(): ResponseEntity<FrontendConfiguration>
 
-    @GetMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getIBus(): ResponseEntity<ConnectionConfig>
+    @GetMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getConnections(): ResponseEntity<ConnectionConfig>
 
-    @GetMapping(value = ["/config/ibus/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/config/connections/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun isConnected(@PathVariable index: Int): ResponseEntity<Boolean>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
-    @PutMapping(value = ["/config/ibus"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setIBus(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<Unit>
+    @PutMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun setConnections(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<Unit>
 
 
     @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])
