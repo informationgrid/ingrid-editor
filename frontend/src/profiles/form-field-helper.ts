@@ -21,7 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject, Signal } from "@angular/core";
+import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 
@@ -120,6 +120,7 @@ export interface SelectOptions extends Options {
   resetOnHide?: boolean;
   multiple?: boolean;
   simple?: boolean;
+  useFirstValueInitially?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -615,6 +616,7 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
         multiple: options?.multiple,
         simple: options?.simple,
+        useFirstValueInitially: options?.useFirstValueInitially,
       },
       expressions: expressions,
       hooks: options?.hooks,
