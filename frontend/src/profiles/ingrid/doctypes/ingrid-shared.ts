@@ -1467,7 +1467,10 @@ export abstract class IngridShared extends BaseDoctype {
   private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
     const checked = field.formControl.value;
     if (checked) {
-      this.handleActivateInspireIdentified(field).subscribe();
+      this.handleActivateInspireIdentified(field).subscribe((hasChanged) => {
+        // update model since another field was changed
+        if (hasChanged) field.options.formState.updateModel();
+      });
     } else {
       this.handleDeactivateInspireIdentified(field).subscribe();
     }
@@ -1497,8 +1500,6 @@ export abstract class IngridShared extends BaseDoctype {
       } else if (this.isGeoDataset) {
         this.addConformanceEntry(field.model, "12", "1");
       }
-
-      field.options.formState.updateModel();
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
