@@ -22,11 +22,11 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
-import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.Type
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name="permission_group")
@@ -59,12 +59,12 @@ class Group {
     @Column
     var description: String? = null
 
-    @Type(JsonType::class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name="permissions", columnDefinition="jsonb")
     @JsonProperty("permissions")
     var permissions: PermissionsData? = null
 
-    @Type(JsonType::class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: GroupData? = null
 

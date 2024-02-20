@@ -22,9 +22,9 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
-import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
-import org.hibernate.annotations.Type
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @NoArgs
 @Entity
@@ -38,7 +38,7 @@ class Role {
     @Column(nullable = false)
     var name: String? = null
 
-    @Type(JsonType::class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "permissions", columnDefinition = "jsonb")
     @JsonProperty("permissions")
     var data: PermissionsData? = null

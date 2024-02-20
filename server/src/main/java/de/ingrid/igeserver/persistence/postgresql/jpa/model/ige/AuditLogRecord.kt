@@ -22,9 +22,9 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.persistence.postgresql.model.meta.AuditLogRecordData
-import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
-import org.hibernate.annotations.Type
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name = "audit_log")
@@ -39,7 +39,7 @@ class AuditLogRecord {
     @JsonProperty("_type")
     var type: String? = null
 
-    @Type(JsonType::class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "message", columnDefinition = "jsonb")
     var message: AuditLogRecordData? = null
 

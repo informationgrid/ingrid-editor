@@ -26,10 +26,10 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.utils.SpringContext
-import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
 @Entity
@@ -65,8 +65,9 @@ class Catalog {
     @JsonDeserialize(using = DateDeserializer::class)
     var modified: OffsetDateTime? = null
 
-    @Type(JsonType::class)
+    @JdbcTypeCode(SqlTypes.JSON)
     var settings: CatalogSettings = CatalogSettings()
+        get() = field ?: CatalogSettings() // can actually be null
 
     @PrePersist
     fun setPersistDate() {
