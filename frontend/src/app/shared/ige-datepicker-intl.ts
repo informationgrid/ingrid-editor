@@ -18,7 +18,9 @@
  * limitations under the Licence.
  */
 import { MatDatepickerIntl } from "@angular/material/datepicker";
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class IgeDatepickerIntl extends MatDatepickerIntl {
   openCalendarLabel = "Kalender öffnen";
   closeCalendarLabel = "Kalender schließen";

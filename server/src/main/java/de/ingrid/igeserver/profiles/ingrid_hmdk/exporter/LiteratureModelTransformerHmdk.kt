@@ -20,17 +20,13 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.getBoolean
-import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.mdek.upload.Config
 
 class LiteratureModelTransformerHmdk(
@@ -52,32 +48,6 @@ class LiteratureModelTransformerHmdk(
     doc,
     documentService
 ) {
-
-    private val docData = doc.data
-
-    private val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
-    private val informationHmbTG = docData.get("informationHmbTGKeywords")
-        ?.mapNotNull { it.mapToKeyValue() }
-        ?.map { KeyValue(it.key, codelists.getCatalogCodelistValue("informationsgegenstand", it)) }
-        ?: emptyList()
-
-    override fun getDescriptiveKeywords(): List<Thesaurus> {
-        val keywords = super.getDescriptiveKeywords().toMutableList()
-
-        if (informationHmbTG.isNotEmpty()) {
-            keywords += Thesaurus(
-                keywords = informationHmbTG.map { KeywordIso(it.key) },
-                date = "2013-08-02",
-                name = "HmbTG-Informationsgegenstand",
-                link = "http://www.tc211.org/ISO19139/resources/codeList.xml#MD_KeywordTypeCode",
-                showType = false
-            )
-            keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
-        }
-
-        if (publicationHmbTG)
-            keywords += Thesaurus(keywords = listOf(KeywordIso(name = "hmbtg", link = null)))
-
-        return keywords
-    }
+    override fun getDescriptiveKeywords(): List<Thesaurus> =
+        SharedExport(codelists, doc).amendHMDKDescriptiveKeywords(super.getDescriptiveKeywords())
 }

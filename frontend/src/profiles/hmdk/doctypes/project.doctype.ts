@@ -30,7 +30,6 @@ export class ProjectDoctypeHMDK extends ProjectDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    console.log("2uefipavaöklvöwklj");
     return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
   };
 
