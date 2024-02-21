@@ -143,7 +143,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.1'
+    implementation 'org.postgresql:postgresql:42.7.2'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
 
