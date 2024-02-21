@@ -28,8 +28,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
-import org.elasticsearch.client.transport.NoNodeAvailableException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
@@ -58,7 +56,7 @@ class BmiPublishExport(
                 "BmiAddressDoc" -> indexReferencesBmiDocs(context, docId)
                 else -> return payload
             }
-        } catch (ex: NoNodeAvailableException) {
+        } catch (ex: Exception) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
 

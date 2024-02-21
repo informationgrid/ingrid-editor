@@ -52,7 +52,7 @@ export class IndexingFields extends FormFieldHelper {
               options: this.exchangeService.getExportTypes().pipe(
                 map((info) => {
                   return info.map(
-                    (item) => new SelectOption(item.name, item.type),
+                    (item) => new SelectOption(item.type, item.name),
                   );
                 }),
               ),

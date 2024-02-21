@@ -76,7 +76,6 @@ export class IndexService {
     return this.http.get<IndexCronConfig>(
       this.configuration.backendUrl + "index/config",
     );
-    // .pipe(tap((config) => (this.exportFormat = config.exportFormat)));
   }
 
   fetchLastLog() {

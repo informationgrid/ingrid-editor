@@ -31,10 +31,14 @@ data class CatalogSettings(
 )
 
 data class ExportConfig(
-    val target: String,
+    val target: Int,
     val exporterId: String,
-    val tags: List<String>
+    val tags: List<String>,
 )
+
+enum class ExportTargetEnum {
+    IBUS, ELASTICSEARCH
+}
 
 // TODO refactor for profile specific settings
 @JsonIgnoreProperties(ignoreUnknown = true)

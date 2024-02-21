@@ -42,12 +42,14 @@ import org.springframework.stereotype.Service
 
 data class DocumentIndexInfo(
     val document: Document,
-    val iBusIndex: List<Int>?
+    val targetIndex: List<Int>?,
+    var exporterType: String? = null
 )
 
 @Service
 class IndexService(
     private val catalogRepo: CatalogRepository,
+    private val catalogService: CatalogService,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
     private val entityManager: EntityManager,
@@ -91,8 +93,8 @@ class IndexService(
         }
     }
     
-    private fun getSystemSpecificConditions(): List<String> {
-        var publicationTypesPerIBus: List<List<String>> = emptyList()// TODO: settingsService.getIBusConfig().mapNotNull { null /*it.publicationTypes*/ }
+    private fun getSystemSpecificConditions(catalogId: String): List<String> {
+        var publicationTypesPerIBus: List<List<String>> = catalogService.getCatalogById(catalogId).settings.exports.map {  it.tags }
 
         // provide at least one empty iBus configuration
         if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())
@@ -136,7 +138,7 @@ class IndexService(
         profile: CatalogProfile,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
     ): List<DocumentIndexInfo> {
-        val iBusConditions = getSystemSpecificConditions()
+        val iBusConditions = getSystemSpecificConditions(catalogId)
         val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
         val orderBy = " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
@@ -271,7 +273,7 @@ class IndexService(
     }
 
     fun getNumberOfPublishableDocuments(catalogId: String, category: String, catalogProfile: CatalogProfile): Long {
-        val iBusConditions = getSystemSpecificConditions()
+        val iBusConditions = getSystemSpecificConditions(catalogId)
         val sql = createSqlForPublishedDocuments(catalogProfile, catalogId, iBusConditions, category, null)
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
         val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")

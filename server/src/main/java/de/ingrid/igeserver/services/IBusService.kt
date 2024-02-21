@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ibus & elasticsearch")
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug {
 
     val log = logger()
 
@@ -48,6 +48,7 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
 
     fun setupConnections() {
         try {
+            if (iBusClient?.cacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
             iBusClient = this.connectIBus(settingsService.getIBusConfig())
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
@@ -73,40 +74,11 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
         }
     }
 
-    /*private fun getPlugDescription(urls: List<String>): PlugDescription {
-
-        // partner and provider will be written during indexing
-        return settingsService.getPlugDescription("", "", "unknown", false, catalog.name).apply {
-            urls.forEach { addBusUrl(it) }
-        }
-
-    }*/
-
-    override fun call(p0: IngridCall?): IngridDocument {
-        TODO("Not yet implemented")
-    }
-
-    override fun search(p0: IngridQuery?, p1: Int, p2: Int): IngridHits {
-        TODO("Not yet implemented")
-    }
-
-    override fun getDetails(
-        p0: Array<out IngridHit>?,
-        p1: IngridQuery?,
-        p2: Array<out String>?
-    ): Array<IngridHitDetail> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getDetail(p0: IngridHit?, p1: IngridQuery?, p2: Array<out String>?): IngridHitDetail {
-        TODO("Not yet implemented")
-    }
-
     private fun connectIBus(configs: List<IBusConfig>): BusClient {
         val config = createClientConfiguration(configs)
         val communication = StartCommunication.create(config)
         communication.startup()
-        val busClient = BusClientFactory.createBusClient(communication)
+        val busClient = BusClientFactory.createBusClientOverride(communication)
         busClient.iPlug = this
         return busClient
     }
@@ -124,6 +96,34 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
             }
         }
         return config
+    }
+
+    override fun search(p0: IngridQuery?, p1: Int, p2: Int): IngridHits {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDetail(p0: IngridHit?, p1: IngridQuery?, p2: Array<out String>?): IngridHitDetail {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDetails(
+        p0: Array<out IngridHit>?,
+        p1: IngridQuery?,
+        p2: Array<out String>?
+    ): Array<IngridHitDetail> {
+        TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        TODO("Not yet implemented")
+    }
+
+    override fun call(p0: IngridCall?): IngridDocument {
+        TODO("Not yet implemented")
+    }
+
+    override fun configure(p0: PlugDescription?) {
+        TODO("Not yet implemented")
     }
 
 }

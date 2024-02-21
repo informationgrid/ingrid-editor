@@ -87,7 +87,8 @@ class ConfigApiController(
     override fun setConnections(config: ConnectionConfig): ResponseEntity<Unit> {
         config.ibus?.let {
             settingsService.setIBusConfig(it)
-            iBusService?.restartCommunication()
+            iBusService?.setupConnections()
+//            iBusService?.restartCommunication()
         }
         config.elasticsearch?.let {settingsService.setElasticConfig(it)}
         return ResponseEntity.ok().build()
