@@ -151,7 +151,7 @@ export class ActivityReportComponent implements AfterViewInit {
             contact_uuid: entry.contact_uuid,
             actor: entry.actor,
             action: this.translateAction(entry.action),
-            state: entry.action,
+            deleted: entry.action === "delete",
           };
         });
       });
