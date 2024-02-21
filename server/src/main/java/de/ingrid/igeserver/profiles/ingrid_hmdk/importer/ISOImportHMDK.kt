@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_up_sh.importer
+package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
