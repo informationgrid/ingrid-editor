@@ -147,7 +147,6 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
 
-    implementation 'com.github.fge:json-schema-validator:2.2.6'
     implementation 'de.ingrid:ingrid-codelist-service:7.0.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.14.0'
