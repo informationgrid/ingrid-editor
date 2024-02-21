@@ -46,7 +46,6 @@ export interface ToolbarItem extends DefaultToolbarItem {
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
   hiddenMenu?: ToolbarMenuItem[];
-  showHiddenMenu?: boolean;
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -153,13 +152,6 @@ export class FormToolbarService {
     const button = <ToolbarItem>this.getButtonById(id);
     if (button) {
       button.hiddenMenu = hiddenMenu;
-    }
-  }
-
-  activateHiddenMenu(id: string) {
-    const button = <ToolbarItem>this.getButtonById(id);
-    if (button) {
-      button.showHiddenMenu = true;
     }
   }
 }

@@ -185,7 +185,6 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdPrevious,
         pos: 200,
         active: false,
-        hiddenMenu: [],
       },
       {
         id: "toolBtnNextInHistory",
@@ -194,7 +193,6 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdNext,
         pos: 210,
         active: false,
-        hiddenMenu: [],
       },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
@@ -324,7 +322,6 @@ export class HistoryPlugin extends Plugin {
     });
 
     this.formToolbarService.updateHiddenMenu("toolBtnNextInHistory", history);
-    this.formToolbarService.activateHiddenMenu("toolBtnNextInHistory");
     trigger.openMenu();
   }
 
@@ -349,7 +346,6 @@ export class HistoryPlugin extends Plugin {
       "toolBtnPreviousInHistory",
       history,
     );
-    this.formToolbarService.activateHiddenMenu("toolBtnPreviousInHistory");
     trigger.openMenu();
   }
 

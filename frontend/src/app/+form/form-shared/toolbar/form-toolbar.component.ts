@@ -71,4 +71,12 @@ export class FormToolbarComponent implements OnInit {
   restoreFocus() {
     if (this.currentFocusedEl) this.currentFocusedEl.focus();
   }
+
+  // Set timeout to avoid flash rendering empty hidden menu after selection
+  // https://github.com/angular/components/issues/11929
+  removeHiddenMenu(button) {
+    setTimeout(() => {
+      button.hiddenMenu = null;
+    }, 500);
+  }
 }
