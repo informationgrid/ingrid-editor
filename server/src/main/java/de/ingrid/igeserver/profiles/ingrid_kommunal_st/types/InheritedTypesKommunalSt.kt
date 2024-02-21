@@ -47,7 +47,7 @@ class InGridInformationSystemTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGrid
 }
 
 @Component
-class InGridLiteratureTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
+class InGridPublicationTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(InGridKommunalStProfile.id)
 }
 

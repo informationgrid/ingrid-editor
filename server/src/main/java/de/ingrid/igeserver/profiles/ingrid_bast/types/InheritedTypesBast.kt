@@ -49,7 +49,7 @@ class InGridInformationSystemTypeBast(jdbcTemplate: JdbcTemplate) : InGridInform
 }
 
 @Component
-class InGridLiteratureTypeBast(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
+class InGridPublicationTypeBast(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(BastProfile.id)
 }
 

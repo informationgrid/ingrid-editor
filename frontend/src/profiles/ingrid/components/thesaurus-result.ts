@@ -24,6 +24,7 @@ export interface ThesaurusResult {
     | "Umthes Schlagworte"
     | "Freie Schlagworte";
   value: any;
+  label: string;
   found: boolean;
   alreadyExists?: boolean;
 }

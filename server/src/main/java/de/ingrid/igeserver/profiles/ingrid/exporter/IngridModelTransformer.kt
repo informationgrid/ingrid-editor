@@ -560,7 +560,7 @@ open class IngridModelTransformer(
         }
     }
 
-    // information system or Literature
+    // information system or publication
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
     // literature
@@ -569,7 +569,7 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
-        val functionValue = codelists.getValue("2000", it.type, "iso")
+        val functionValue = codelists.getValue("2000", it.type, "iso") ?: "information"
         val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
         val attachedField = if (it.type.key == null) null else {
             val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""

@@ -26,11 +26,11 @@
                     </gmd:keyword>
                 @endfor
                 @if(thesaurus.getName() != null )
-                @if(thesaurus.getShowType())
-                <gmd:type>
-                    <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-                </gmd:type>
-                @endif
+                    @if(thesaurus.getShowType())
+                        <gmd:type>
+                            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                        </gmd:type>
+                    @endif
                     @if(!thesaurus.getName().isEmpty())
                     <gmd:thesaurusName>
                         <gmd:CI_Citation>

@@ -91,7 +91,7 @@
     {
       "name": { "key": "1" },
       "mediumNote": "location",
-      "transferSize": { "value": 50, "unit": { "key": "mb" } }
+      "transferSize": { "value": 50, "unit": { "key": "MB" } }
     }
   ],
   "maintenanceInformation": {

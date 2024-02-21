@@ -55,11 +55,12 @@ class GeoserviceTransformerBast(
 
     private val docData = doc.data
 
-    override fun getFreeKeywords(): Thesaurus {
-        return super.getFreeKeywords().apply {
-            docData.getString("projectNumber")?.let { keywords = keywords + KeywordIso(it) }
-            docData.getString("projectTitle")?.let { keywords = keywords + KeywordIso(it) }
-        }
+    override fun getDescriptiveKeywords(): List<Thesaurus> {
+        val bastKeywords = Thesaurus("BASt Keywords", "2024-01-01", showType = false, keywords = listOfNotNull(
+            docData.getString("projectNumber")?.let { KeywordIso(it) },
+            docData.getString("projectTitle")?.let { KeywordIso(it) }
+        ))
+        return super.getDescriptiveKeywords() + bastKeywords
     }
 
     override val supplementalInformation = docData.getString("supplementalInformation")

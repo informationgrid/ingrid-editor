@@ -430,7 +430,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:unitsOfDistribution>
-                                <gco:CharacterString>mb</gco:CharacterString>
+                                <gco:CharacterString>MB</gco:CharacterString>
                             </gmd:unitsOfDistribution>
                             <gmd:transferSize>
                                 <gco:Real>12</gco:Real>

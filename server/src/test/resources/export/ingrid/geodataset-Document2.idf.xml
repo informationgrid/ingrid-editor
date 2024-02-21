@@ -744,7 +744,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:unitsOfDistribution>
-                                <gco:CharacterString>mb</gco:CharacterString>
+                                <gco:CharacterString>MB</gco:CharacterString>
                             </gmd:unitsOfDistribution>
                             <gmd:transferSize>
                                 <gco:Real>3</gco:Real>
@@ -764,7 +764,7 @@
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:unitsOfDistribution>
-                                <gco:CharacterString>mb</gco:CharacterString>
+                                <gco:CharacterString>MB</gco:CharacterString>
                             </gmd:unitsOfDistribution>
                             <gmd:transferSize>
                                 <gco:Real>1</gco:Real>

@@ -58,15 +58,14 @@ export class ThesaurusReportComponent implements OnInit {
 
   ngOnInit(): void {
     const groupedByThesaurus = groupBy(this.data, (i) => i.thesaurus);
-    let message: string[] = [];
 
     this.report = Object.keys(groupedByThesaurus)
       .filter((key) => groupedByThesaurus[key].length > 0)
       .map((key) => {
         const report = groupedByThesaurus[key]
           .map(
-            (item) =>
-              `${item.value?.label}${
+            (item: ThesaurusResult) =>
+              `${item.label}${
                 item.alreadyExists ? " (bereits vorhanden)" : ""
               }`,
           )

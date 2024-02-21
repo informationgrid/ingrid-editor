@@ -75,7 +75,7 @@ class M079_MigrateDigitalTransferOptions : MigrationBase("0.79") {
                                     options.set<ObjectNode>("transferSize", jacksonObjectMapper().createObjectNode().apply { 
                                         put("value", transferSize.asDouble())
                                         set<ObjectNode>("unit", jacksonObjectMapper().createObjectNode().apply { 
-                                            put("key", "mb")
+                                            put("key", "MB")
                                         })
                                     })
                                 }

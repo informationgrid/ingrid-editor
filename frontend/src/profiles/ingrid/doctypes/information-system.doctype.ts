@@ -38,7 +38,6 @@ export class InformationSystemDoctype extends IngridShared {
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
-        openData: true,
       }),
       this.addKeywordsSection({
         advProductGroup: true,

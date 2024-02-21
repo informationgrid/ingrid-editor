@@ -348,7 +348,7 @@
         "name": {
           "key": "900009"
         },
-        "transferSize": { "value": 12, "unit": { "key": "mb" } },
+        "transferSize": { "value": 12, "unit": { "key": "MB" } },
         "mediumNote": "Ort"
       }
     ],

@@ -47,7 +47,7 @@ class InGridInformationSystemTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridInform
 }
 
 @Component
-class InGridLiteratureTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridLiteratureType(jdbcTemplate) {
+class InGridPublicationTypeUPSH(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
     override val profiles = arrayOf(UPSHProfile.id)
 }
 

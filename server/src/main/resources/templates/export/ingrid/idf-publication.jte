@@ -1,10 +1,10 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
-@import de.ingrid.igeserver.profiles.ingrid.exporter.LiteratureModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var page = ((LiteratureModelTransformer)map.get("model"));}
+!{var page = ((PublicationModelTransformer)map.get("model"));}
 !{var publication = page.getPublication();}
 @template.export.template-idf(content = @`
     @template.export.ingrid.shared-general(page = page, additionalCitation =  @`

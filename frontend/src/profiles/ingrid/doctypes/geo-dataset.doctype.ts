@@ -59,7 +59,6 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addGeneralSection({
         inspireRelevant: true,
         advCompatible: true,
-        openData: true,
         thesaurusTopics: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
