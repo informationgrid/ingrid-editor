@@ -112,7 +112,7 @@
                             <button
                                 mat-menu-item
                                 (click)="openDataset(element)"
-                                [disabled]="element.state == 'delete'"
+                                [disabled]="element.deleted"
                             >
                                 Vorhaben im Editor öffnen
                             </button>
