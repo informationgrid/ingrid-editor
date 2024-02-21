@@ -46,6 +46,7 @@ export class LongPressDirective {
       this.longPress.emit(event);
       this.longPressHandled = true;
     }, 500);
+    return;
   }
 
   @HostListener("mouseup")
