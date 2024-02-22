@@ -31,7 +31,7 @@ data class CatalogSettings(
 )
 
 data class ExportConfig(
-    val target: Int,
+    val target: String,
     val exporterId: String,
     val tags: List<String>,
 )
@@ -66,12 +66,12 @@ data class ConnectionConfig(
 )
 
 interface WithId {
-    var id: Int?
+    var id: String?
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig (
-    override var id: Int? = null,
+    override var id: String? = null,
     val name: String? = null,
     val ip: String = "127.0.0.1",
     val port: Int = 9900
@@ -79,7 +79,7 @@ data class IBusConfig (
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ElasticConfig(
-    override var id: Int? = null,
+    override var id: String? = null,
     val name: String? = null,
     val ip: String,
     val port: Int = 9300

@@ -54,10 +54,10 @@ class SettingsService(
     }
 
     private fun addIdIfNeeded(config: List<WithId>) {
-        val existingIds = config.mapNotNull { it.id }.toMutableSet()
+        val existingIds = config.mapNotNull { it.id?.toInt() }.toMutableSet()
         config.filter { it.id == null }.forEach { item ->
             val newId = generateUniqueId(existingIds)
-            item.id = newId
+            item.id = newId.toString()
             existingIds += newId
         }
     }
