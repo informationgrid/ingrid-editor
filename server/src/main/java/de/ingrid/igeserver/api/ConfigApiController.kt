@@ -19,11 +19,13 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.index.IBusIndexManager
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
 import de.ingrid.igeserver.services.IBusService
 import de.ingrid.igeserver.services.SettingsService
+import de.ingrid.utils.PlugDescription
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
@@ -33,7 +35,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
-    val settingsService: SettingsService
+    val settingsService: SettingsService,
+    val iBusIndexManager: IBusIndexManager
 ) : ConfigApi {
 
     @Autowired(required = false)
@@ -88,6 +91,7 @@ class ConfigApiController(
         config.ibus?.let {
             settingsService.setIBusConfig(it)
             iBusService?.setupConnections()
+            iBusIndexManager.configure(PlugDescription())
 //            iBusService?.restartCommunication()
         }
         config.elasticsearch?.let {settingsService.setElasticConfig(it)}
