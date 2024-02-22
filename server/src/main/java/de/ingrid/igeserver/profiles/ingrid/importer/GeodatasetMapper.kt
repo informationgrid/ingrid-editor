@@ -398,6 +398,10 @@ class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, cat
                 )
             } ?: emptyList()
     }
+    
+    fun getDatasetURIs(): List<String> {
+        return listOfNotNull(metadata.dataSetURI?.value)
+    }
 
     private fun mapGeometryContextAttributes(attributes: List<FeatureAttribute>?): List<KeyValue> {
         return attributes?.map { attribute ->

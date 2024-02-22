@@ -62,6 +62,12 @@
         },
         "mapLink": {
           "$ref": "../../../general.schema.json#/definitions/KeyValue"
+        },
+        "dataSetURIs": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "additionalProperties": false
