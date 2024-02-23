@@ -72,7 +72,7 @@ interface WithId {
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IBusConfig (
     override var id: String? = null,
-    val name: String? = null,
+    val name: String,
     val ip: String = "127.0.0.1",
     val port: Int = 9900
 ): WithId
@@ -80,7 +80,7 @@ data class IBusConfig (
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ElasticConfig(
     override var id: String? = null,
-    val name: String? = null,
+    val name: String,
     val ip: String,
     val port: Int = 9300
 ): WithId

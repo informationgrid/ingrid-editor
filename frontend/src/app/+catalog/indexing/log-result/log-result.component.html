@@ -11,39 +11,62 @@
                 </div>
             }
         </div>
-        @if (log.progressDocuments != log.numDocuments) {
-            <div>
-                Indizierung von Dokumenten
-                <mat-progress-bar
-                    color="primary"
-                    mode="determinate"
-                    [value]="(log.progressDocuments / log.numDocuments) * 100"
-                ></mat-progress-bar>
-                <div class="progress-hint">
-                    {{ log.progressDocuments }} / {{ log.numDocuments }}
-                </div>
-            </div>
-        } @else {
-            <div>
-                Anzahl Dokumente:
-                <span data-cy="count-documents">{{ log.numDocuments }}</span>
-            </div>
+        @if (log.targets.length === 0) {
+            Es wurde kein Ziel konfiguriert, wohin die Daten indiziert werden
+            sollen.
         }
-        @if (log.progressAddresses != log.numAddresses) {
-            <div style="padding-top: 24px">
-                Indizierung von Adressen
-                <mat-progress-bar
-                    mode="determinate"
-                    [value]="(log.progressAddresses / log.numAddresses) * 100"
-                ></mat-progress-bar>
-                <div class="progress-hint">
-                    {{ log.progressAddresses }} / {{ log.numAddresses }}
-                </div>
-            </div>
-        } @else {
-            <div>
-                Anzahl Adressen:
-                <span data-cy="count-addresses">{{ log.numAddresses }}</span>
+        @for (target of log.targets; track target) {
+            <div class="space-bottom">
+                <div class="target-title">{{ target.name }}</div>
+                @if (target.progressDocuments != target.numDocuments) {
+                    <div>
+                        Indizierung von Dokumenten
+                        <mat-progress-bar
+                            color="primary"
+                            mode="determinate"
+                            [value]="
+                                (target.progressDocuments /
+                                    target.numDocuments) *
+                                100
+                            "
+                        ></mat-progress-bar>
+                        <div class="progress-hint">
+                            {{ target.progressDocuments }} /
+                            {{ target.numDocuments }}
+                        </div>
+                    </div>
+                } @else {
+                    <div>
+                        Anzahl Dokumente:
+                        <span data-cy="count-documents">{{
+                            target.numDocuments
+                        }}</span>
+                    </div>
+                }
+                @if (target.progressAddresses != target.numAddresses) {
+                    <div style="padding-top: 24px">
+                        Indizierung von Adressen
+                        <mat-progress-bar
+                            mode="determinate"
+                            [value]="
+                                (target.progressAddresses /
+                                    target.numAddresses) *
+                                100
+                            "
+                        ></mat-progress-bar>
+                        <div class="progress-hint">
+                            {{ target.progressAddresses }} /
+                            {{ target.numAddresses }}
+                        </div>
+                    </div>
+                } @else {
+                    <div>
+                        Anzahl Adressen:
+                        <span data-cy="count-addresses">{{
+                            target.numAddresses
+                        }}</span>
+                    </div>
+                }
             </div>
         }
         @if (log.errors?.length > 0) {

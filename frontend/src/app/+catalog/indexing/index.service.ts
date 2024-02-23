@@ -29,10 +29,13 @@ import { tap } from "rxjs/operators";
 import { BaseLogResult } from "../../shared/base-log-result";
 
 export interface LogResult extends BaseLogResult {
-  numDocuments: number;
-  numAddresses: number;
-  progressDocuments: number;
-  progressAddresses: number;
+  targets: {
+    name: string;
+    numDocuments: number;
+    numAddresses: number;
+    progressDocuments: number;
+    progressAddresses: number;
+  }[];
 }
 
 interface IndexCronConfig {

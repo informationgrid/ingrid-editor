@@ -25,13 +25,21 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
 data class IndexMessage(
-    val catalogId: String?,
+    val catalogId: String,
+    val targets: MutableList<TargetMessage> = mutableListOf()
+) : Message() {
+    fun getTargetByName(name: String): TargetMessage = targets.find { it.name == name }!!
+}
+
+data class TargetMessage(
+    val name: String,
     var numDocuments: Int = 0,
     var numAddresses: Int = 0,
     var numSkipped: Int = 0,
     var progressDocuments: Int = 0,
     var progressAddresses: Int = 0,
-) : Message()
+    var progress: Int = 0,
+)
 
 @Service
 class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {

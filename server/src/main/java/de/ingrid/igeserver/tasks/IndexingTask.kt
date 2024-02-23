@@ -24,6 +24,7 @@ import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
+import de.ingrid.igeserver.api.messaging.TargetMessage
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
@@ -39,6 +40,7 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
+import org.jetbrains.kotlin.backend.common.push
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.Page
@@ -61,6 +63,7 @@ import java.util.concurrent.ScheduledFuture
 import kotlin.concurrent.schedule
 
 data class ExtendedExporterConfig(
+    val name: String,
     val target: IIndexManager,
     val exporterData: IgeExporter?,
     val exporterAddress: IgeExporter?,
@@ -106,7 +109,7 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         //        val format = catalog.settings.exports.map { it.exporterId }.firstOrNull() ?: "???"
         // TODO: prepare iPlugInfo in separate function (to contain partner, provider and other non
-        // changing things)
+        //       changing things)
         val partner =
             codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
         val provider =
@@ -123,6 +126,7 @@ class IndexingTask(
 
         run indexingLoop@{
             targets.forEach { target ->
+                val targetMessage = TargetMessage(target.name).also { message.targets.push(it)}
                 categories.forEach categoryLoop@{ category ->
                     val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
 
@@ -168,7 +172,7 @@ class IndexingTask(
                             target.tags,
                             catalogProfile
                         )
-                    updateMessageWithDocumentInfo(message, category, totalHits)
+                    updateMessageWithDocumentInfo(targetMessage, category, totalHits)
 
                     try {
                         do {
@@ -265,12 +269,13 @@ class IndexingTask(
                 return@mapNotNull null
             }
 
-            val target =
+            val (name, target) =
                 if (ibus != null) {
-                    IBusIndexer(iBusIndexManager, ibusConfigs.indexOf(ibus))
-                } else ElasticIndexer(elasticConfig.indexOf(elastic))
+                    Pair(ibus.name, IBusIndexer(iBusIndexManager, ibusConfigs.indexOf(ibus)))
+                } else Pair(elastic?.name!!, ElasticIndexer(elasticConfig.indexOf(elastic)))
 
             ExtendedExporterConfig(
+                name,
                 target,
                 getExporterOrNull(DocumentCategory.DATA, config.exporterId),
                 getExporterOrNull(DocumentCategory.ADDRESS, config.exporterId),
@@ -288,7 +293,7 @@ class IndexingTask(
     }
 
     private fun updateMessageWithDocumentInfo(
-        message: IndexMessage,
+        message: TargetMessage,
         category: DocumentCategory,
         totalHits: Long
     ) {
@@ -310,16 +315,19 @@ class IndexingTask(
     ) {
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
+        val targetMessage = message.getTargetByName(target.name)
+        
         docsToPublish.content
             .mapIndexedNotNull { index, doc ->
                 handleCancelation(catalogId, message)
-                sendNotification(
+                updateTargetMessage(
                     category,
-                    message,
+                    targetMessage,
                     index + (page * generalProperties.indexPageSize)
                 )
+                notify.sendMessage(message)
                 log.debug("export ${doc.document.uuid}")
-                val exportedDocs =
+                val exportedDoc =
                     try {
                         val exporter =
                             if (category == DocumentCategory.DATA) target.exporterData
@@ -332,24 +340,23 @@ class IndexingTask(
                         exporter.run(doc.document, catalogId)
                     } catch (ex: Exception) {
                         if (ex is IndexException && ex.errorCode == "FOLDER_WITH_NO_CHILDREN") {
-                            log.debug("Ignore folder with to published datasets: ${ex.message}")
+                            log.debug("Ignore folder with no published datasets: ${ex.message}")
                         } else {
                             val errorMessage =
                                 "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
                             log.error(errorMessage, ex)
                             message.errors.add(errorMessage)
-                            sendNotification(
+                            updateTargetMessage(
                                 category,
-                                message,
+                                targetMessage,
                                 index + (page * generalProperties.indexPageSize)
                             )
                         }
                         null
-                    }
-                Pair(doc, exportedDocs)
+                    } ?: return@mapIndexedNotNull null
+                Pair(doc, exportedDoc)
             }
-            .onEach { pair ->
-                val (docInfo, exportedDoc) = pair
+            .onEach { (docInfo, exportedDoc) ->
                 try {
                     val elasticDocument = convertToElasticDocument(exportedDoc!!)
                     index(target, indexInfo, elasticDocument)
@@ -393,23 +400,19 @@ class IndexingTask(
         }
     }
 
-    private fun sendNotification(category: DocumentCategory, message: IndexMessage, index: Int) {
+    private fun updateTargetMessage(category: DocumentCategory, message: TargetMessage, index: Int) {
         if (category == DocumentCategory.DATA) {
-            notify.sendMessage(
                 message.apply {
                     this.progressDocuments = index + 1
                     this.progress =
                         (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt()
                 }
-            )
         } else {
-            notify.sendMessage(
                 message.apply {
                     this.progressAddresses = index + 1
                     this.progress =
                         (((this.progressAddresses + 0f) / this.numDocuments) * 100).toInt()
                 }
-            )
         }
     }
 
