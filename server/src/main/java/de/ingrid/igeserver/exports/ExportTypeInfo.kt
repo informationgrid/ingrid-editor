@@ -28,6 +28,18 @@ import de.ingrid.igeserver.services.DocumentCategory
  * @param description a description for the exporter
  * @param dataType defines the type of the resulting document (e.g. application/json)
  * @param profiles in which profiles can this exporter be used
+ * @param isPublic will be shown in export process
+ * @param useForPublish will be shown for indexing
  *
  */
-data class ExportTypeInfo(val category: DocumentCategory, val type: String, val name: String, val description: String, val dataType: String, val fileExtension: String, val profiles: List<String>, val isPublic: Boolean = true)
+data class ExportTypeInfo(
+    val category: DocumentCategory,
+    val type: String,
+    val name: String,
+    val description: String,
+    val dataType: String,
+    val fileExtension: String,
+    val profiles: List<String>,
+    val isPublic: Boolean = true,
+    val useForPublish: Boolean = false
+)

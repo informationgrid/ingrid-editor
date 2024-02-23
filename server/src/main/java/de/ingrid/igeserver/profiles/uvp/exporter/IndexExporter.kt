@@ -26,7 +26,6 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,7 +39,8 @@ class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExpo
         "application/json",
         "json",
         listOf("uvp"),
-        false
+        isPublic = false,
+        useForPublish = true
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {

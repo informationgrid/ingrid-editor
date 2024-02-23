@@ -43,7 +43,8 @@ class IngridIndexExporterKrzn(
         "application/json",
         "json",
         listOf("ingrid-krzn"),
-        false
+        isPublic = true,
+        useForPublish = true
     )
 
     init {

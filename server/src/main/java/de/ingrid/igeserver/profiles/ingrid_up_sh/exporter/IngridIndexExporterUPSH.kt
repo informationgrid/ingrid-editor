@@ -43,7 +43,8 @@ class IngridIndexExporterUPSH(
         "application/json",
         "json",
         listOf("ingrid-up-sh"),
-        false
+        isPublic = true,
+        useForPublish = true
     )
 
     init {

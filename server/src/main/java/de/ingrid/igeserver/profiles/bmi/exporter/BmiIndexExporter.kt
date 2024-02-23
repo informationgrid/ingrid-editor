@@ -44,7 +44,8 @@ class BmiIndexExporter : IgeExporter {
                 "Export der Adressen für die weitere Verwendung im  Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("bmi")
+                listOf("bmi"),
+                useForPublish = true
             )
         }
 

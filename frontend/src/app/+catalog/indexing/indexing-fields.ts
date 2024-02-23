@@ -49,11 +49,11 @@ export class IndexingFields extends FormFieldHelper {
               required: true,
               simple: true,
               useFirstValueInitially: true,
-              options: this.exchangeService.getExportTypes().pipe(
+              options: this.exchangeService.getExportTypes(false).pipe(
                 map((info) => {
-                  return info.map(
-                    (item) => new SelectOption(item.type, item.name),
-                  );
+                  return info
+                    .filter((item) => item.useForPublish)
+                    .map((item) => new SelectOption(item.type, item.name));
                 }),
               ),
             }),

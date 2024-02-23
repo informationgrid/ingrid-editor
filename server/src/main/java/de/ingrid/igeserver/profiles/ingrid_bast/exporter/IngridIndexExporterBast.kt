@@ -43,7 +43,8 @@ class IngridIndexExporterBast(
         "application/json",
         "json",
         listOf("ingrid-bast"),
-        false
+        isPublic = true,
+        useForPublish = true
     )
 
     init {
