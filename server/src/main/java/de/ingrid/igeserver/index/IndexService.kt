@@ -32,46 +32,81 @@ import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
-import org.jetbrains.kotlin.utils.indexOfFirst
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 data class DocumentIndexInfo(
     val document: Document,
-    val targetIndex: List<Int>?,
+    @Deprecated("remove since all targets are indexed separately") val targetIndex: List<Int>?,
     var exporterType: String? = null
 )
 
 @Service
 class IndexService(
     private val catalogRepo: CatalogRepository,
-    private val catalogService: CatalogService,
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
     private val entityManager: EntityManager,
-    private val settingsService: SettingsService,
     private val generalProperties: GeneralProperties
 ) {
 
     private val log = logger()
+    
+    companion object {
+        fun getNextIndexName(name: String, uuid: String, uuidName: String): String {
+            val uuidNameFinal = uuidName.lowercase(Locale.getDefault())
+            var isNew = false
+
+            val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
+
+            val delimiterPos: Int = name.lastIndexOf("_")
+            if (delimiterPos == -1) {
+                isNew = true
+            } else {
+                try {
+                    dateFormat.parse(name.substring(delimiterPos + 1))
+                } catch (ex: Exception) {
+                    isNew = true
+                }
+            }
+
+            val date: String = dateFormat.format(Date())
+
+            if (isNew) {
+                if (!name.contains(uuid)) {
+                    return name + "@" + uuidNameFinal + "-" + uuid + "_" + date
+                }
+                return name + "_" + date
+            } else {
+                if (!name.contains(uuid)) {
+                    return name.substring(0, delimiterPos) + "@" + uuidNameFinal + "-" + uuid + "_" + date
+                }
+                return name.substring(0, delimiterPos + 1) + date
+            }
+        }
+    }
 
     fun getSinglePublishedDocument(
         catalogId: String,
         category: String,
+        types: List<String>,
         catalogProfile: CatalogProfile,
         uuid: String
     ): DocumentIndexInfo {
-        val docs = requestPublishableDocuments(catalogId, category, uuid, catalogProfile)
+        val docs = requestPublishableDocuments(catalogId, category, types, uuid, catalogProfile)
         return docs.single()
     }
 
     fun getPublishedDocuments(
         catalogId: String,
         category: String,
+        types: List<String>,
         catalogProfile: CatalogProfile,
         currentPage: Int = 0,
         totalHits: Long
@@ -79,6 +114,7 @@ class IndexService(
         val docs = requestPublishableDocuments(
             catalogId,
             category,
+            types,
             null,
             catalogProfile,
             ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
@@ -93,22 +129,15 @@ class IndexService(
         }
     }
     
-    private fun getSystemSpecificConditions(catalogId: String): List<String> {
-        var publicationTypesPerIBus: List<List<String>> = catalogService.getCatalogById(catalogId).settings.exports.map {  it.tags }
-
-        // provide at least one empty iBus configuration
-        if (publicationTypesPerIBus.isEmpty()) publicationTypesPerIBus = listOf(emptyList())
-
-        return publicationTypesPerIBus.map { types ->
-            var conditions: String = types
-                .filter { it != "internet" }
-                .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
-            if (types.contains("internet") || types.isEmpty()) {
-                if (conditions.isNotEmpty()) conditions += " OR"
-                conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
-            }
-            "($conditions)"
+    private fun getSystemSpecificConditions(types: List<String>): String {
+        var conditions = types
+            .filter { it != "internet" }
+            .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
+        if (types.contains("internet") || types.isEmpty()) {
+            if (conditions.isNotEmpty()) conditions += " OR"
+            conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
         }
+        return "($conditions)"
     }
 
     fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter =
@@ -134,11 +163,12 @@ class IndexService(
     fun requestPublishableDocuments(
         catalogId: String,
         category: String,
+        types: List<String>,
         uuid: String?,
         profile: CatalogProfile,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
     ): List<DocumentIndexInfo> {
-        val iBusConditions = getSystemSpecificConditions(catalogId)
+        val iBusConditions = getSystemSpecificConditions(types)
         val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
         val orderBy = " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
@@ -153,13 +183,12 @@ class IndexService(
             .addScalar("id")
             .addScalar("type")
             .addScalar("parent_id")
-            .addScalar("ibus")
             .setFirstResult((paging.page - 1) * paging.pageSize)
             .setMaxResults(paging.pageSize)
             .resultList as List<Array<out Any?>>
 
         return result.map {
-            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as String)
+            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?)
         }.map {
             // FOLDERS do not have a published version
             val document = if (it.type == "FOLDER") {
@@ -175,7 +204,7 @@ class IndexService(
                         data.put(FIELD_PARENT, parentWrapper.uuid)
                     }
                 },
-                it.ibus.split(",").map { it.toInt() }
+                null
             )
         }
     }
@@ -183,97 +212,26 @@ class IndexService(
     private fun createSqlForPublishedDocuments(
         profile: CatalogProfile,
         catalogId: String,
-        iBusConditions: List<String>,
+        iBusConditions: String,
         category: String,
         uuid: String?
     ): String {
         val profileConditions = profile.additionalPublishConditions(catalogId)
-        val iBusSelector = getConditionsForIBus(iBusConditions)
 
         val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
         var sql = """
-                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id,
-                CASE 
-                    ${iBusSelector.joinToString(" ")}
-                    ELSE '-1' END AS IBUS
+                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
                 WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND (document1.state = 'PUBLISHED' $indexFolders) AND deleted = 0 AND catalog.identifier = ? AND 
-                (${iBusConditions.joinToString(" OR ")})
+                (${iBusConditions})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
         if (profileConditions.isNotEmpty()) sql += " AND (${profileConditions.joinToString(" AND ")})"
         return sql
     }
-
-    /**
-     * For all iBus conditions special SQL conditions are created including information to which iBus the dataset 
-     * is going to be sent. First we get all possible combinations of the conditions and determine the indexes
-     * which iBus is used for a condition. This is especially important when two or more iBus conditions are the
-     * same.
-     */
-    private fun getConditionsForIBus(
-        iBusConditions: List<String>
-    ): List<String> {
-        val iBusSelector = mutableListOf<Pair<Set<Int>, String>>()
-
-        for (i in iBusConditions.size downTo 1) {
-            val combinations = iBusConditions.combinations(i)
-            combinations.forEach { combination ->
-                val indexCombinations = getCombinationOfIndexes(combination, iBusConditions)
-
-                iBusSelector.add(
-                    Pair(
-                        indexCombinations,
-                        "WHEN (" + combination.toSet().joinToString(" AND ") + ") THEN '${
-                            indexCombinations.joinToString(
-                                ","
-                            )
-                        }'"
-                    )
-                )
-            }
-        }
-        
-        // remove redundant selections when two or more iBus conditions are the same
-        return iBusSelector
-            .map { it.first }
-            .toSet()
-            .mapNotNull { a -> iBusSelector.find { it.first == a }?.second }
-    }
-
-    private fun getCombinationOfIndexes(
-        combination: List<String>,
-        iBusConditions: List<String>
-    ) = combination.flatMap { entry ->
-        val indexList = mutableListOf<Int>()
-        var currentIndex = iBusConditions.indexOf(entry)
-        while (currentIndex != -1) {
-            indexList.add(currentIndex)
-            currentIndex = iBusConditions.indexOfFirst(currentIndex + 1) { it == entry }
-        }
-        indexList
-    }.toSet()
-
-    private fun List<String>.combinations(length: Int): List<List<String>> {
-        if (length > size) return emptyList()
-        if (length == 0) return listOf(emptyList())
-
-        val result = mutableListOf<List<String>>()
-
-        for (i in indices) {
-            val element = this[i]
-            val remaining = subList(i + 1, size)
-            val combinations = remaining.combinations(length - 1)
-            for (combination in combinations) {
-                result.add(listOf(element) + combination)
-            }
-        }
-
-        return result
-    }
-
-    fun getNumberOfPublishableDocuments(catalogId: String, category: String, catalogProfile: CatalogProfile): Long {
-        val iBusConditions = getSystemSpecificConditions(catalogId)
+    
+    fun getNumberOfPublishableDocuments(catalogId: String, category: String, types: List<String>, catalogProfile: CatalogProfile): Long {
+        val iBusConditions = getSystemSpecificConditions(types)
         val sql = createSqlForPublishedDocuments(catalogProfile, catalogId, iBusConditions, category, null)
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
         val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")
@@ -289,6 +247,5 @@ data class IndexDocumentResult(
     val uuid: String,
     val wrapperId: Int,
     val type: String,
-    val parentId: Int?,
-    val ibus: String
+    val parentId: Int?
 )

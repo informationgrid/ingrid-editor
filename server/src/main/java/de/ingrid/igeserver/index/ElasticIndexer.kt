@@ -17,49 +17,9 @@ data class ElasticClient(
  * Utility class to manage elasticsearch indices and documents.
  * @author Andre
  */
-@Service
-class ElasticIndexer: IIndexManager {
+class ElasticIndexer(val clientId: Int): IIndexManager {
     private val log = logger()
 
-    companion object {
-
-        fun getNextIndexName(name: String?, uuid: String, uuidName: String): String {
-            var uuidName: String = uuidName
-            if (name == null) {
-                throw RuntimeException("Old index name must not be null!")
-            }
-            uuidName = uuidName.lowercase(Locale.getDefault())
-            var isNew: Boolean = false
-
-            val dateFormat: SimpleDateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
-
-            val delimiterPos: Int = name.lastIndexOf("_")
-            if (delimiterPos == -1) {
-                isNew = true
-            } else {
-                try {
-                    dateFormat.parse(name.substring(delimiterPos + 1))
-                } catch (ex: Exception) {
-                    isNew = true
-                }
-            }
-
-            val date: String = dateFormat.format(Date())
-
-            if (isNew) {
-                if (!name.contains(uuid)) {
-                    return name + "@" + uuidName + "-" + uuid + "_" + date
-                }
-                return name + "_" + date
-            } else {
-                if (!name.contains(uuid)) {
-                    return name.substring(0, delimiterPos) + "@" + uuidName + "-" + uuid + "_" + date
-                }
-                return name.substring(0, delimiterPos + 1) + date
-            }
-        }
-    }
-    
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String): String? {
         TODO("Not yet implemented")
     }

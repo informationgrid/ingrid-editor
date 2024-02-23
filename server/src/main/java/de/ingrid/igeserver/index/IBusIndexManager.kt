@@ -111,12 +111,13 @@ class IBusIndexManager: IConfigurable, IIndexManager {
         sendCallToIBusses(call)
     }
 
-    fun switchAlias(iBusIndex: Int, aliasName: String, oldIndex: String, newIndex: String) {
+    fun switchAlias(iBusIndex: Int, aliasName: String, oldIndex: String?, newIndex: String) {
         val call = prepareCall("switchAlias")
-        val map: MutableMap<String, String> = HashMap()
-        map["aliasName"] = aliasName
-        map["oldIndex"] = oldIndex
-        map["newIndex"] = newIndex
+        val map = mapOf(
+            "aliasName" to aliasName,
+            "oldIndex" to oldIndex,
+            "newIndex" to newIndex
+        )
         call.parameter = map
 
         sendCallToIBus(iBusses!![iBusIndex], call)
@@ -170,6 +171,17 @@ class IBusIndexManager: IConfigurable, IIndexManager {
         sendCallToIBusses(call)
     }
 
+    @Throws(InterruptedException::class, ExecutionException::class)
+    fun updateIPlugInformation(iBusIndex: Int, id: String, info: String) {
+        val call = prepareCall("updateIPlugInformation")
+        val map: MutableMap<String, Any> = HashMap()
+        map["id"] = id
+        map["info"] = info
+        call.parameter = map
+
+        sendCallToIBus(iBusses!![iBusIndex], call)
+    }
+
     override fun flush() {
         val call = prepareCall("flush")
 
@@ -217,6 +229,14 @@ class IBusIndexManager: IConfigurable, IIndexManager {
         call.parameter = indexInfo
 
         val response = sendCallToIBusses(call)
+        return response!!["result"] as Map<String, Any>
+    }
+
+    fun getMapping(iBusIndex: Int, indexInfo: IndexInfo): Map<String, Any> {
+        val call = prepareCall("getMapping")
+        call.parameter = indexInfo
+
+        val response = sendCallToIBus(iBusses!![iBusIndex], call)
         return response!!["result"] as Map<String, Any>
     }
 
