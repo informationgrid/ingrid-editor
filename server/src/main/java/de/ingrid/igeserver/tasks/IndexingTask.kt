@@ -17,8 +17,6 @@
  */
 package de.ingrid.igeserver.tasks
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.ServerException
@@ -27,7 +25,6 @@ import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.api.messaging.TargetMessage
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
-import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
@@ -38,12 +35,10 @@ import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
-import de.ingrid.utils.ElasticDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.backend.common.push
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.context.annotation.Profile
-import org.springframework.data.domain.Page
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.SchedulingConfigurer
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -54,9 +49,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import java.io.IOException
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -117,6 +110,7 @@ class IndexingTask(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
+
         // get all targets we want to export to
         val targets = getExporterConfigForCatalog(catalog)
 
@@ -129,105 +123,18 @@ class IndexingTask(
                 val targetMessage = TargetMessage(target.name).also { message.targets.push(it)}
                 categories.forEach categoryLoop@{ category ->
                     val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
+                    val plugInfo = IPlugInfo(
+                        elasticsearchAlias,
+                        null,
+                        "???",
+                        category.value,
+                        partner,
+                        provider,
+                        catalog
+                    )
 
-                    log.info("Indexing to target '${target}' in category: " + category.value)
-
-                    // pre phase
-                    val (oldIndex, newIndex) = try {
-                        indexPrePhase(
-                            target,
-                            categoryAlias,
-                            catalogProfile,
-                            "IGNORED",
-                            elasticsearchAlias,
-                            category
-                        )
-                    } catch (ex: Exception) {
-                        notify.addAndSendMessageError(
-                            message,
-                            ex,
-                            "Error during Index Pre-Phase: "
-                        )
-                        return@categoryLoop // throw ServerException.withReason("Error in Index
-                        // Pre-Phase +
-                        // ${ex.message}")
-                    }
-
-                    // TODO: configure index name
-                    val indexInfo =
-                        IndexInfo(
-                            newIndex,
-                            if (category == DocumentCategory.ADDRESS) "address" else "base",
-                            categoryAlias,
-                            if (category == DocumentCategory.ADDRESS)
-                                catalogProfile.indexIdField.address
-                            else catalogProfile.indexIdField.document
-                        )
-
-                    var page = -1
-                    val totalHits: Long =
-                        indexService.getNumberOfPublishableDocuments(
-                            catalogId,
-                            category.value,
-                            target.tags,
-                            catalogProfile
-                        )
-                    updateMessageWithDocumentInfo(targetMessage, category, totalHits)
-
-                    try {
-                        do {
-                            page++
-                            val docsToPublish =
-                                indexService.getPublishedDocuments(
-                                    catalogId,
-                                    category.value,
-                                    target.tags,
-                                    catalogProfile,
-                                    page,
-                                    totalHits
-                                )
-                            // isLast function sometimes delivers the next to last page without a
-                            // total
-                            // count, so we
-                            // write our own
-                            val isLast =
-                                (page * generalProperties.indexPageSize +
-                                        docsToPublish.numberOfElements)
-                                    .toLong() == totalHits
-
-                            exportDocuments(
-                                target,
-                                docsToPublish,
-                                catalogId,
-                                message,
-                                category,
-                                page,
-                                indexInfo
-                            )
-                        } while (!isLast)
-
-                        notify.sendMessage(message.apply { this.message = "Post Phase" })
-
-                        // post phase
-                        val plugInfo =
-                            IPlugInfo(
-                                elasticsearchAlias,
-                                oldIndex,
-                                newIndex,
-                                category.value,
-                                partner,
-                                provider,
-                                catalog
-                            )
-                        indexPostPhase(target, plugInfo)
-                        log.debug("Task finished: Indexing for $catalogId")
-                    } catch (ex: IndexException) {
-                        log.info("Indexing was cancelled")
-                        removeOldIndices(target, oldIndex)
-                        return@indexingLoop
-                    } catch (ex: Exception) {
-                        notify.addAndSendMessageError(message, ex, "Error during indexing: ")
-                    }
+                    IndexTargetWorker(target, category, message, catalogProfile, elasticsearchAlias, notify, indexService, catalogId, generalProperties,
+                        plugInfo, catalog, postIndexPipe, settingsService, cancellations, categoryAlias).run()
                 }
             }
         }
@@ -292,89 +199,6 @@ class IndexingTask(
         }
     }
 
-    private fun updateMessageWithDocumentInfo(
-        message: TargetMessage,
-        category: DocumentCategory,
-        totalHits: Long
-    ) {
-        if (category == DocumentCategory.DATA) {
-            message.numDocuments = totalHits.toInt()
-        } else {
-            message.numAddresses = totalHits.toInt()
-        }
-    }
-
-    private fun exportDocuments(
-        target: ExtendedExporterConfig,
-        docsToPublish: Page<DocumentIndexInfo>,
-        catalogId: String,
-        message: IndexMessage,
-        category: DocumentCategory,
-        page: Int,
-        indexInfo: IndexInfo
-    ) {
-        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-
-        val targetMessage = message.getTargetByName(target.name)
-        
-        docsToPublish.content
-            .mapIndexedNotNull { index, doc ->
-                handleCancelation(catalogId, message)
-                updateTargetMessage(
-                    category,
-                    targetMessage,
-                    index + (page * generalProperties.indexPageSize)
-                )
-                notify.sendMessage(message)
-                log.debug("export ${doc.document.uuid}")
-                val exportedDoc =
-                    try {
-                        val exporter =
-                            if (category == DocumentCategory.DATA) target.exporterData
-                            else target.exporterAddress
-                        // an exporter might not exist for a category
-                        if (exporter == null) return@mapIndexedNotNull null
-
-                        doc.exporterType = exporter.typeInfo.type
-
-                        exporter.run(doc.document, catalogId)
-                    } catch (ex: Exception) {
-                        if (ex is IndexException && ex.errorCode == "FOLDER_WITH_NO_CHILDREN") {
-                            log.debug("Ignore folder with no published datasets: ${ex.message}")
-                        } else {
-                            val errorMessage =
-                                "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-                            log.error(errorMessage, ex)
-                            message.errors.add(errorMessage)
-                            updateTargetMessage(
-                                category,
-                                targetMessage,
-                                index + (page * generalProperties.indexPageSize)
-                            )
-                        }
-                        null
-                    } ?: return@mapIndexedNotNull null
-                Pair(doc, exportedDoc)
-            }
-            .onEach { (docInfo, exportedDoc) ->
-                try {
-                    val elasticDocument = convertToElasticDocument(exportedDoc!!)
-                    index(target, indexInfo, elasticDocument)
-                    val simpleContext = SimpleContext(catalogId, profile, docInfo.document.uuid)
-
-                    postIndexPipe.runFilters(
-                        PostIndexPayload(elasticDocument, category.name, docInfo.exporterType!!),
-                        simpleContext
-                    )
-                } catch (ex: Exception) {
-                    val errorMessage =
-                        "Error in PostIndexFilter or during sending to Elasticsearch: '${docInfo.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-                    log.error(errorMessage, ex)
-                    message.errors.add(errorMessage)
-                    notify.sendMessage(message)
-                }
-            }
-    }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
         catalog.settings.config.elasticsearchAlias ?: catalog.identifier
@@ -386,35 +210,7 @@ class IndexingTask(
         catalogRepo.save(catalog)
     }
 
-    private fun handleCancelation(catalogId: String, message: IndexMessage) {
 
-        if (this.cancellations[catalogId] == true) {
-            this.cancellations[catalogId] = false
-            notify.sendMessage(
-                message.apply {
-                    this.endTime = Date()
-                    this.errors.add("Indexing cancelled")
-                }
-            )
-            throw IndexException.wasCancelled()
-        }
-    }
-
-    private fun updateTargetMessage(category: DocumentCategory, message: TargetMessage, index: Int) {
-        if (category == DocumentCategory.DATA) {
-                message.apply {
-                    this.progressDocuments = index + 1
-                    this.progress =
-                        (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt()
-                }
-        } else {
-                message.apply {
-                    this.progressAddresses = index + 1
-                    this.progress =
-                        (((this.progressAddresses + 0f) / this.numDocuments) * 100).toInt()
-                }
-        }
-    }
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
@@ -444,7 +240,7 @@ class IndexingTask(
                 )
 
             // TODO: loop through all configurations!
-            val export = exporter.run(doc.document, catalogId)
+            /*val export = exporter.run(doc.document, catalogId)
             log.debug("Exported document: $export")
             val indexInfo =
                 getOrPrepareIndex(configs[0], catalogProfile, category, format, elasticsearchAlias)
@@ -456,23 +252,11 @@ class IndexingTask(
             )
 
             index(configs[0], indexInfo, elasticDoc)
-            log.info("$catalogId/$docId updated in index: ${indexInfo.getRealIndexName()}")
+            log.info("$catalogId/$docId updated in index: ${indexInfo.getRealIndexName()}")*/
         } catch (ex: NoSuchElementException) {
             log.info(
                 "Document not indexed, probably because of profile specific condition: $catalogId -> $docId"
             )
-        }
-    }
-
-    private fun index(
-        config: ExtendedExporterConfig,
-        indexInfo: IndexInfo,
-        elasticDoc: ElasticDocument
-    ) {
-        if (config.target is IBusIndexManager) {
-            config.target.update(indexInfo, elasticDoc, false)
-        } else {
-            config.target.update(indexInfo, elasticDoc, false)
         }
     }
 
@@ -483,7 +267,7 @@ class IndexingTask(
         format: String,
         elasticsearchAlias: String
     ): IndexInfo {
-        val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
+        /*val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
         var oldIndex = exporter.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
         if (oldIndex == null) {
             val (_, newIndex) =
@@ -497,146 +281,15 @@ class IndexingTask(
                 )
             oldIndex = newIndex
             exporter.target.switchAlias(elasticsearchAlias, null, newIndex)
-        }
+        }*/
 
         return IndexInfo(
-            oldIndex,
+            "???", // TODO: oldIndex,
             if (category == DocumentCategory.ADDRESS) "address" else "base",
             elasticsearchAlias,
             if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
             else catalogProfile.indexIdField.document
         )
-    }
-
-    private fun getIndexIdentifier(elasticsearchAlias: String, category: DocumentCategory) =
-        "${elasticsearchAlias}_${category.value}"
-
-    private fun convertToElasticDocument(doc: Any): ElasticDocument {
-        return jacksonObjectMapper().readValue(doc.toString(), ElasticDocument::class.java)
-    }
-
-    private fun indexPrePhase(
-        exporter: ExtendedExporterConfig,
-        categoryAlias: String,
-        catalogProfile: CatalogProfile,
-        format: String,
-        elasticsearchAlias: String,
-        category: DocumentCategory
-    ): Pair<String?, String> {
-        val newIndex =
-            IndexService.getNextIndexName(
-                categoryAlias,
-                generalProperties.uuid,
-                elasticsearchAlias
-            )
-
-        val oldIndex = exporter.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
-        exporter.target.createIndex(
-            newIndex,
-            if (category == DocumentCategory.ADDRESS) "address" else "base",
-            catalogProfile.getElasticsearchMapping(format),
-            catalogProfile.getElasticsearchSetting(format)
-        )
-        return Pair(oldIndex, newIndex)
-    }
-
-    private fun indexPostPhase(config: ExtendedExporterConfig, info: IPlugInfo) {
-        // update central index with iPlug information
-        updateIBusInformation(config, info)
-
-        // switch alias and delete old index
-        config.target.switchAlias(info.alias, info.oldIndex, info.newIndex)
-        removeOldIndices(config, info.newIndex)
-    }
-
-    private fun updateIBusInformation(config: ExtendedExporterConfig, info: IPlugInfo) {
-        val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
-        config.target.updateIPlugInformation(
-            plugIdInfo,
-            getIPlugInfo(
-                plugIdInfo,
-                info.newIndex,
-                false,
-                null,
-                null,
-                info.partner,
-                info.provider,
-                info.catalog,
-                info.category == "address"
-            )
-        )
-    }
-
-    @Throws(IOException::class)
-    private fun getIPlugInfo(
-        infoId: String,
-        indexName: String,
-        running: Boolean,
-        count: Int?,
-        totalCount: Int?,
-        partner: String?,
-        provider: String?,
-        catalog: Catalog,
-        forAddress: Boolean
-    ): String {
-
-        val plugId = "ige-ng_${catalog.identifier}"
-        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-
-        return jacksonObjectMapper()
-            .createObjectNode()
-            .apply {
-                put("plugId", plugId)
-                put("indexId", infoId)
-                put("iPlugName", prepareIPlugName(infoId))
-                put("linkedIndex", indexName)
-                put("linkedType", if (forAddress) "address" else "base")
-                put("adminUrl", generalProperties.host)
-                put("lastHeartbeat", currentDate)
-                put("lastIndexed", currentDate)
-                set<JsonNode>(
-                    "plugdescription",
-                    jacksonObjectMapper()
-                        .convertValue(
-                            settingsService.getPlugDescription(
-                                partner,
-                                provider,
-                                plugId,
-                                forAddress,
-                                catalog.name
-                            ),
-                            JsonNode::class.java
-                        )
-                )
-                set<JsonNode>(
-                    "indexingState",
-                    jacksonObjectMapper().createObjectNode().apply {
-                        put("numProcessed", count)
-                        put("totalDocs", totalCount)
-                        put("running", running)
-                    }
-                )
-            }
-            .toString()
-    }
-
-    private fun prepareIPlugName(infoId: String): String {
-        val splitted = infoId.split(":")
-        return "IGE-NG (${splitted[1]}:${splitted[2]})"
-    }
-
-    private fun removeOldIndices(config: ExtendedExporterConfig, index: String?) {
-        if (index == null) return
-
-        val delimiterPos = index.lastIndexOf("_")
-        val indexGroup = index.substring(0, delimiterPos + 1)
-
-        val indices: Array<String> = config.target.getIndices(indexGroup)
-        for (indexToDelete in indices) {
-            if (indexToDelete != index) {
-                config.target.deleteIndex(indexToDelete)
-            }
-        }
     }
 
     // check out here:
@@ -742,6 +395,9 @@ class IndexingTask(
             }
         }
     }
+
+    private fun getIndexIdentifier(elasticsearchAlias: String, category: DocumentCategory) =
+        "${elasticsearchAlias}_${category.value}"
 }
 
 data class IndexConfig(
@@ -754,8 +410,8 @@ data class IndexConfig(
 
 data class IPlugInfo(
     val alias: String,
-    val oldIndex: String?,
-    val newIndex: String,
+    var oldIndex: String?,
+    var newIndex: String,
     val category: String,
     val partner: String?,
     val provider: String?,

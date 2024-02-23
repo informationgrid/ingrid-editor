@@ -370,6 +370,7 @@ class IBusIndexManager: IConfigurable, IIndexManager {
         try {
             return iBus.call(call)
         } catch (e: Exception) {
+            // TODO: log error for frontend!
             log.error("Error relaying index message: " + call.method, e)
             return null
         }
