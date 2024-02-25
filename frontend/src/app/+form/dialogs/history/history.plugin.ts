@@ -153,9 +153,9 @@ export class HistoryPlugin extends Plugin {
       this.docEvents
         .onEvent(this.eventIdNext)
         .subscribe(() => this.handleNext()),
-      this.docEvents.onEvent(this.eventIdPrevious).subscribe(() => {
-        this.handlePrevious();
-      }),
+      this.docEvents
+        .onEvent(this.eventIdPrevious)
+        .subscribe(() => this.handlePrevious()),
       this.docEvents
         .onEvent(`${this.eventIdPrevious}_LONGPRESS`)
         .subscribe((event) => {
@@ -185,6 +185,7 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdPrevious,
         pos: 200,
         active: false,
+        hiddenMenu: [],
       },
       {
         id: "toolBtnNextInHistory",
@@ -193,6 +194,7 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdNext,
         pos: 210,
         active: false,
+        hiddenMenu: [],
       },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
@@ -216,6 +218,10 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      return;
+    }
 
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
@@ -224,13 +230,10 @@ export class HistoryPlugin extends Plugin {
     // popup.close(this.popupMenu);
 
     const node = this.stack[this.pointer + 1];
-
-    const navigated = await this.gotoNode(node);
-    if (navigated) {
-      if (this.hasNext()) {
-        this.pointer++;
-      }
+    if (this.hasNext()) {
+      this.pointer++;
     }
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -239,7 +242,10 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
-
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      return;
+    }
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
 
@@ -253,13 +259,10 @@ export class HistoryPlugin extends Plugin {
     }
 
     const node = this.stack[this.pointer - 1];
-
-    const navigated = await this.gotoNode(node);
-    if (navigated) {
-      if (this.pointer > 0) {
-        this.pointer--;
-      }
+    if (this.pointer > 0) {
+      this.pointer--;
     }
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -277,10 +280,10 @@ export class HistoryPlugin extends Plugin {
       { id: item._uuid },
     ]);
     if (navigated) {
-      this.ignoreNextPush = true;
       this.treeStore.update({
         explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
       });
+      this.ignoreNextPush = true;
     }
     return navigated;
   }
@@ -355,13 +358,15 @@ export class HistoryPlugin extends Plugin {
    * @private
    */
   private async handleHistoryPreviousSelect(item: any) {
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      return;
+    }
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== item.data.data.id) {
-      const navigated = await this.gotoNode(item.data.data);
-      if (navigated) {
-        this.pointer = this.pointer - item.data.index - 1;
-        this.handleButtonState();
-      }
+      this.pointer = this.pointer - item.data.index - 1;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
       return;
     }
   }
@@ -372,14 +377,25 @@ export class HistoryPlugin extends Plugin {
    * @private
    */
   private async handleHistoryNextSelect(item: any) {
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      const navigated = await this.gotoNode(item.data.data);
-      if (navigated) {
-        this.pointer = this.pointer + item.data.index + 1;
-        this.handleButtonState();
-      }
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
       return;
     }
+    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    if (currentOpenedDocumentId !== item.data.data.id) {
+      this.pointer = this.pointer + item.data.index + 1;
+      this.gotoNode(item.data.data);
+      this.handleButtonState();
+      return;
+    }
+  }
+
+  private handleDirtyForm() {
+    return FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress,
+    );
   }
 }

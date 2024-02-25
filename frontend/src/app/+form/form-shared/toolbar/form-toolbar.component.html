@@ -6,9 +6,6 @@
                     mat-button
                     long-press
                     class="standard-toolbar-button"
-                    [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
-                    (menuClosed)="removeHiddenMenu(button)"
-                    #hiddenMenuTrigger="matMenuTrigger"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     (longPress)="
                         sendEvent(
@@ -24,9 +21,14 @@
                     <mat-icon
                         class="material-icons-outlined"
                         [svgIcon]="button.matSvgVariable"
-                        >{{ button.matIconVariable }}
-                    </mat-icon>
+                        >{{ button.matIconVariable }}</mat-icon
+                    >
                 </button>
+                <div
+                    mat-button
+                    [matMenuTriggerFor]="hiddenMenu"
+                    #hiddenMenuTrigger="matMenuTrigger"
+                ></div>
             }
             <mat-menu #hiddenMenu="matMenu">
                 @for (
