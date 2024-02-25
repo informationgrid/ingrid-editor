@@ -2,20 +2,18 @@
  * ==================================================
  * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
- * Licensed under the EUPL, Version 1.2 or – as soon they will be
- * approved by the European Commission - subsequent versions of the
- * EUPL (the "Licence");
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European
+ * Commission - subsequent versions of the EUPL (the "Licence");
  *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
+ * You may not use this work except in compliance with the Licence. You may obtain a copy of the
+ * Licence at:
  *
  * https://joinup.ec.europa.eu/software/page/eupl
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence
+ * is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the Licence for the specific language governing permissions and limitations under
+ * the Licence.
  */
 package de.ingrid.igeserver.index
 
@@ -29,6 +27,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import jakarta.persistence.EntityManager
+import java.text.SimpleDateFormat
+import java.util.*
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
@@ -37,14 +37,18 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.text.SimpleDateFormat
-import java.util.*
-
 
 data class DocumentIndexInfo(
     val document: Document,
     @Deprecated("remove since all targets are indexed separately") val targetIndex: List<Int>?,
     var exporterType: String? = null
+)
+
+data class QueryInfo(
+    val catalogId: String,
+    val category: String,
+    val types: List<String>,
+    val catalogProfile: CatalogProfile
 )
 
 @Service
@@ -57,7 +61,7 @@ class IndexService(
 ) {
 
     private val log = logger()
-    
+
     companion object {
         fun getNextIndexName(name: String, uuid: String, uuidName: String): String {
             val uuidNameFinal = uuidName.lowercase(Locale.getDefault())
@@ -85,7 +89,13 @@ class IndexService(
                 return name + "_" + date
             } else {
                 if (!name.contains(uuid)) {
-                    return name.substring(0, delimiterPos) + "@" + uuidNameFinal + "-" + uuid + "_" + date
+                    return name.substring(0, delimiterPos) +
+                        "@" +
+                        uuidNameFinal +
+                        "-" +
+                        uuid +
+                        "_" +
+                        date
                 }
                 return name.substring(0, delimiterPos + 1) + date
             }
@@ -103,39 +113,36 @@ class IndexService(
         return docs.single()
     }
 
-    fun getPublishedDocuments(
-        catalogId: String,
-        category: String,
-        types: List<String>,
-        catalogProfile: CatalogProfile,
-        currentPage: Int = 0,
-        totalHits: Long
-    ): Page<DocumentIndexInfo> {
-        val docs = requestPublishableDocuments(
-            catalogId,
-            category,
-            types,
-            null,
-            catalogProfile,
-            ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
-        )
-        val pagedDocs = PageImpl(docs, Pageable.ofSize(generalProperties.indexPageSize), totalHits)
+    fun getPublishedDocuments(queryInfo: QueryInfo, currentPage: Int = 0): Page<DocumentIndexInfo> {
+        val docs =
+            requestPublishableDocuments(
+                queryInfo.catalogId,
+                queryInfo.category,
+                queryInfo.types,
+                null,
+                queryInfo.catalogProfile,
+                ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
+            )
+        val pagedDocs =
+            PageImpl(docs, Pageable.ofSize(generalProperties.indexPageSize), docs.size.toLong())
 
         return if (pagedDocs.isEmpty) {
-            log.warn("No documents found in category '$category' for indexing")
+            log.warn("No documents found in category '${queryInfo.category}' for indexing")
             Page.empty()
         } else {
             pagedDocs
         }
     }
-    
+
     private fun getSystemSpecificConditions(types: List<String>): String {
-        var conditions = types
-            .filter { it != "internet" }
-            .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
+        var conditions =
+            types
+                .filter { it != "internet" }
+                .joinToString(" OR ") { "'{$it}' && document_wrapper.tags" }
         if (types.contains("internet") || types.isEmpty()) {
             if (conditions.isNotEmpty()) conditions += " OR"
-            conditions += " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
+            conditions +=
+                " document_wrapper.tags is null OR NOT ('{amtsintern}' && document_wrapper.tags OR '{intranet}' && document_wrapper.tags)"
         }
         return "($conditions)"
     }
@@ -157,8 +164,8 @@ class IndexService(
             .run { catalogRepo.save(this) }
     }
 
-    fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId)
-        .settings.lastLogSummary
+    fun getLastLog(catalogId: String): IndexMessage? =
+        catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
 
     fun requestPublishableDocuments(
         catalogId: String,
@@ -170,43 +177,48 @@ class IndexService(
     ): List<DocumentIndexInfo> {
         val iBusConditions = getSystemSpecificConditions(types)
         val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
-        val orderBy = " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
+        val orderBy =
+            " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
         val nativeQuery = entityManager.createNativeQuery(sql + orderBy)
 
         nativeQuery.setParameter(1, catalogId)
 
-        val result = nativeQuery
-            .setHint(AvailableHints.HINT_READ_ONLY, true)
-            .unwrap(NativeQuery::class.java)
-            .addScalar("uuid")
-            .addScalar("id")
-            .addScalar("type")
-            .addScalar("parent_id")
-            .setFirstResult((paging.page - 1) * paging.pageSize)
-            .setMaxResults(paging.pageSize)
-            .resultList as List<Array<out Any?>>
+        val result =
+            nativeQuery
+                .setHint(AvailableHints.HINT_READ_ONLY, true)
+                .unwrap(NativeQuery::class.java)
+                .addScalar("uuid")
+                .addScalar("id")
+                .addScalar("type")
+                .addScalar("parent_id")
+                .setFirstResult((paging.page - 1) * paging.pageSize)
+                .setMaxResults(paging.pageSize)
+                .resultList as List<Array<out Any?>>
 
-        return result.map {
-            IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?)
-        }.map {
-            // FOLDERS do not have a published version
-            val document = if (it.type == "FOLDER") {
-                documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
-            } else {
-                documentService.getLastPublishedDocument(catalogId, it.uuid)
+        return result
+            .map {
+                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?)
             }
-            DocumentIndexInfo(
-                document.apply {
-                    wrapperId = it.wrapperId
-                    if (it.parentId != null) {
-                        val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
-                        data.put(FIELD_PARENT, parentWrapper.uuid)
+            .map {
+                // FOLDERS do not have a published version
+                val document =
+                    if (it.type == "FOLDER") {
+                        documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
+                    } else {
+                        documentService.getLastPublishedDocument(catalogId, it.uuid)
                     }
-                },
-                null
-            )
-        }
+                DocumentIndexInfo(
+                    document.apply {
+                        wrapperId = it.wrapperId
+                        if (it.parentId != null) {
+                            val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
+                            data.put(FIELD_PARENT, parentWrapper.uuid)
+                        }
+                    },
+                    null
+                )
+            }
     }
 
     private fun createSqlForPublishedDocuments(
@@ -219,28 +231,41 @@ class IndexService(
         val profileConditions = profile.additionalPublishConditions(catalogId)
 
         val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
-        var sql = """
+        var sql =
+            """
                 SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
                 WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND (document1.state = 'PUBLISHED' $indexFolders) AND deleted = 0 AND catalog.identifier = ? AND 
                 (${iBusConditions})
-            """.trimIndent()
+            """
+                .trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
-        if (profileConditions.isNotEmpty()) sql += " AND (${profileConditions.joinToString(" AND ")})"
+        if (profileConditions.isNotEmpty())
+            sql += " AND (${profileConditions.joinToString(" AND ")})"
         return sql
     }
-    
-    fun getNumberOfPublishableDocuments(catalogId: String, category: String, types: List<String>, catalogProfile: CatalogProfile): Long {
-        val iBusConditions = getSystemSpecificConditions(types)
-        val sql = createSqlForPublishedDocuments(catalogProfile, catalogId, iBusConditions, category, null)
+
+    fun getNumberOfPublishableDocuments(queryInfo: QueryInfo): Long {
+        val iBusConditions = getSystemSpecificConditions(queryInfo.types)
+        val sql =
+            createSqlForPublishedDocuments(
+                queryInfo.catalogProfile,
+                queryInfo.catalogId,
+                iBusConditions,
+                queryInfo.category,
+                null
+            )
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
         val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")
         val nativeQuery = entityManager.createNativeQuery(countSql)
 
-        nativeQuery.setParameter(1, catalogId)
+        nativeQuery.setParameter(1, queryInfo.catalogId)
 
         return (nativeQuery.singleResult as Number).toLong()
     }
+
+    fun getIndexIdentifier(elasticsearchAlias: String, category: DocumentCategory) =
+        "${elasticsearchAlias}_${category.value}"
 }
 
 data class IndexDocumentResult(

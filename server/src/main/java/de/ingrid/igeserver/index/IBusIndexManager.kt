@@ -130,7 +130,7 @@ class IBusIndexManager: IConfigurable, IIndexManager {
     }
 
     override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {
-        return ("=>" + indexInfo.toIndex) + ":" + indexInfo.toType
+        return ("=>" + indexInfo.toIndex)// TODO: + ":" + indexInfo.toType
     }
 
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument, updateOldIndex: Boolean) {
