@@ -25,11 +25,12 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class IngridIndexExporterAddressKrzn(
-    idfExporter: IngridIDFExporter,
+    @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {

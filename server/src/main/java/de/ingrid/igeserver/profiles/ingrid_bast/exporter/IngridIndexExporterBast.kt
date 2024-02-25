@@ -29,10 +29,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class IngridIndexExporterBast(
-    idfExporter: IngridIDFExporter,
+    idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository,
-    bastProfileTransformer: BastProfileTransformer
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -46,10 +45,5 @@ class IngridIndexExporterBast(
         isPublic = true,
         useForPublish = true
     )
-
-    init {
-        idfExporter.profileTransformer["ingrid-bast"] = bastProfileTransformer
-        luceneExporter.profileTransformer["ingrid-bast"] = bastProfileTransformer
-    }
 
 }

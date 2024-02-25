@@ -29,11 +29,12 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.XMLUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class IngridISOExporter(
-    idfExporter: IngridIDFExporter,
+    @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
