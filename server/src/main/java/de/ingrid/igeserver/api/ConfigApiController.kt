@@ -91,8 +91,6 @@ class ConfigApiController(
         config.ibus?.let {
             settingsService.setIBusConfig(it)
             iBusService?.setupConnections()
-            iBusIndexManager.configure(PlugDescription())
-//            iBusService?.restartCommunication()
         }
         config.elasticsearch?.let {settingsService.setElasticConfig(it)}
         return ResponseEntity.ok().build()

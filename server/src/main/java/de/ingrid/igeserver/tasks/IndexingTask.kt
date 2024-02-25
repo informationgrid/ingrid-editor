@@ -62,7 +62,8 @@ data class ExtendedExporterConfig(
     val target: IIndexManager,
     val exporter: IgeExporter?,
     val tags: List<String>,
-    val category: DocumentCategory
+    val category: DocumentCategory,
+    val indexFieldId: String
 )
 
 @Component
@@ -101,19 +102,12 @@ class IndexingTask(
         notify.sendMessage(
             message.apply { this.message = "Start Indexing for catalog: $catalogId" }
         )
-        
+
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        // TODO: prepare iPlugInfo in separate function (to contain partner, provider and other non
-        //       changing things)
-        val partner =
-            codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
-        val provider =
-            codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident")
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
         // get all targets we want to export to
-        val targets = getExporterConfigForCatalog(catalog)
+        val targets = getExporterConfigForCatalog(catalog, catalogProfile)
 
         // make sure the ingrid_meta index is there
         handleInformationIndex(targets)
@@ -121,35 +115,29 @@ class IndexingTask(
         try {
             run indexingLoop@{
                 targets.forEach { target ->
+                    // same target but different category
                     TargetMessage(target.name).also { message.targets.push(it) }
-                        val plugInfo =
-                            IPlugInfo(
-                                elasticsearchAlias,
-                                null,
-                                "???",
-                                target.category.value,
-                                partner,
-                                provider,
-                                catalog
-                            )
+                    val plugInfo = createIPlugInfo(catalog, target.category)
 
-                        IndexTargetWorker(
-                                target,
-                                message,
-                                catalogProfile,
-                                notify,
-                                indexService,
-                                catalogId,
-                                generalProperties,
-                                plugInfo,
-                                postIndexPipe,
-                                settingsService,
-                                cancellations
-                            )
-                            .run()
+                    IndexTargetWorker(
+                            target,
+                            message,
+                            catalogProfile,
+                            notify,
+                            indexService,
+                            catalogId,
+                            generalProperties,
+                            plugInfo,
+                            postIndexPipe,
+                            settingsService,
+                            cancellations
+                        )
+                        .run()
                 }
             }
-        } catch (ex: IndexException) {}
+        } catch (ex: IndexException) {
+            notify.addAndSendMessageError(message, ex, "Error during indexing: ")
+        }
 
         // make sure to write everything to elasticsearch
         // if another indexing starts right afterwards, then the previous index could still be there
@@ -166,12 +154,32 @@ class IndexingTask(
         // save last indexing information to database for this catalog to get this in frontend
         updateIndexLog(catalogId, message)
     }
+    
+    private fun createIPlugInfo(catalog: Catalog, category: DocumentCategory): IPlugInfo {
+        val partner =
+            codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
+        val provider =
+            codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident")
+
+        return IPlugInfo(
+            getElasticsearchAliasFromCatalog(catalog),
+            null,
+            "???",
+            category.value,
+            partner,
+            provider,
+            catalog
+        )
+    }
 
     private fun handleInformationIndex(configs: List<ExtendedExporterConfig>) {
         configs.forEach { it.target.checkAndCreateInformationIndex() }
     }
 
-    private fun getExporterConfigForCatalog(catalog: Catalog): List<ExtendedExporterConfig> {
+    private fun getExporterConfigForCatalog(
+        catalog: Catalog,
+        catalogProfile: CatalogProfile
+    ): List<ExtendedExporterConfig> {
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
 
@@ -199,7 +207,9 @@ class IndexingTask(
                     target,
                     getExporterOrNull(it, config.exporterId),
                     config.tags,
-                    it
+                    it,
+                    if (it == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
+                    else catalogProfile.indexIdField.document
                 )
             }
         }
@@ -236,9 +246,9 @@ class IndexingTask(
 
         val exporter = indexService.getExporter(category, format)
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val configs = getExporterConfigForCatalog(catalog)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+        val configs = getExporterConfigForCatalog(catalog, catalogProfile)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         try {
             val doc =
@@ -252,7 +262,7 @@ class IndexingTask(
 
             // TODO: loop through all configurations!
             configs.forEach {
-                //IndexTargetWorker()
+                // IndexTargetWorker()
             }
 
             /*val export = exporter.run(doc.document, catalogId)
@@ -382,7 +392,8 @@ class IndexingTask(
 
     fun removeFromIndex(catalogId: String, id: String, category: String) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val configs = getExporterConfigForCatalog(catalog)
+        val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+        val configs = getExporterConfigForCatalog(catalog, catalogProfile)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val enumCategory = DocumentCategory.values().first { it.value == category }
         val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, enumCategory)

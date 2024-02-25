@@ -22,7 +22,7 @@ class IBusIndexer(private val iBusIndexManager: IBusIndexManager, private val cl
     }
 
     override fun checkAndCreateInformationIndex() {
-        return iBusIndexManager.checkAndCreateInformationIndex()
+        return iBusIndexManager.checkAndCreateInformationIndex(clientIndex)
     }
 
     override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {

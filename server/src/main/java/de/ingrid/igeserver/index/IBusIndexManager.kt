@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException
 class IBusIndexManager: IConfigurable, IIndexManager {
     private var iBusses: List<IBus>? = null
 
-    override fun configure(plugDescription: PlugDescription) {
+    final override fun configure(plugDescription: PlugDescription) {
         val busClient = BusClientFactory.getBusClient()
         iBusses = busClient.nonCacheableIBusses
     }
@@ -127,6 +127,12 @@ class IBusIndexManager: IConfigurable, IIndexManager {
         val call = prepareCall("checkAndCreateInformationIndex")
 
         sendCallToIBusses(call)
+    }
+
+    fun checkAndCreateInformationIndex(iBusIndex: Int) {
+        val call = prepareCall("checkAndCreateInformationIndex")
+
+        sendCallToIBus(iBusses!![iBusIndex], call)
     }
 
     override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {

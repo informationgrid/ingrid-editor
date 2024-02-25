@@ -22,8 +22,8 @@ package de.ingrid.igeserver.services
 import de.ingrid.ibus.client.BusClient
 import de.ingrid.ibus.client.BusClientFactory
 import de.ingrid.igeserver.configuration.GeneralProperties
+import de.ingrid.igeserver.index.IBusIndexManager
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.igeserver.services.ibus.HeartBeatPlug
 import de.ingrid.utils.*
 import de.ingrid.utils.query.IngridQuery
 import net.weta.components.communication.configuration.ClientConfiguration
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ibus & elasticsearch")
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties, val iBusIndexManager: IBusIndexManager): IPlug {
 
     val log = logger()
 
@@ -50,6 +50,7 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
         try {
             if (iBusClient?.cacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
             iBusClient = this.connectIBus(settingsService.getIBusConfig())
+            iBusIndexManager.configure(PlugDescription())
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }
