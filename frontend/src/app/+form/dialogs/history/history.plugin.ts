@@ -218,10 +218,9 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
+    this.ignoreNextPush = true;
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) {
-      return;
-    }
+    if (!dirtyFormHandled) return;
 
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
@@ -242,10 +241,10 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
+    this.ignoreNextPush = true;
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) {
-      return;
-    }
+    if (!dirtyFormHandled) return;
+
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
 
@@ -280,10 +279,10 @@ export class HistoryPlugin extends Plugin {
       { id: item._uuid },
     ]);
     if (navigated) {
+      this.ignoreNextPush = true;
       this.treeStore.update({
         explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
       });
-      this.ignoreNextPush = true;
     }
     return navigated;
   }
