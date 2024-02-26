@@ -59,8 +59,8 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
   }
 
   private getGeoLinkFieldConfig(): FormlyFieldConfig {
-    return this.addRepeatList("dataSetURIs", "Geodatenlink", {
-      asAutocomplete: true,
+    return this.addInput("dataSetURI", "Geodatenlink", {
+      wrappers: ["panel", "form-field"],
     });
   }
 }

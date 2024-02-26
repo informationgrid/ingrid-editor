@@ -4,12 +4,5 @@
 
 @template.imports.ingrid.geodataset(model = model, contentInfo = @`
     ,
-    "dataSetURIs": [
-    @for(var datasetURI : ForSupport.of(model.getDatasetURIs()))
-        {
-            "key": null,
-            "value": "${datasetURI.get()}"
-        }@if (!datasetURI.isLast()),@endif
-    @endfor
-    ]
+    "dataSetURI": "${model.getDatasetURI()}"
 `)

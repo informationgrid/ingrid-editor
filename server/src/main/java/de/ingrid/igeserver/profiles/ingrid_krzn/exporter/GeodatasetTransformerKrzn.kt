@@ -53,5 +53,5 @@ class GeodatasetTransformerKrzn(
             ?.replace("{ID}", model.uuid)
     }
 
-    override val datasetUri = docData.get("dataSetURIs")?.get(0)?.get("value")?.asText()
+    override val datasetUri = docData.getString("dataSetURI")
 }
