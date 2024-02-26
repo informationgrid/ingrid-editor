@@ -43,7 +43,7 @@ import java.time.OffsetDateTime
 @Service
 class IngridIndexExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
-    val luceneExporter: IngridLuceneExporter,
+    @Qualifier("ingridLuceneExporter") val luceneExporter: IngridLuceneExporter,
     val documentWrapperRepository: DocumentWrapperRepository
 ) : IgeExporter {
 

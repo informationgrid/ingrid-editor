@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service
 @Service
 class IngridIndexExporterAddress(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
-    luceneExporter: IngridLuceneExporter,
+    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 

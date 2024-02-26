@@ -55,9 +55,6 @@ class IngridIDFExporter(
 
     val log = logger()
 
-    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
-
-
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "ingridIDF",

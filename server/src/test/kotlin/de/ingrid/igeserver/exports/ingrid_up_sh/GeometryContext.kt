@@ -33,7 +33,6 @@ class GeometryContext : Geodataset() {
 
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
-        this.exporter.profileTransformer["ingrid-up-sh"] = UPSHProfileTransformer()
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
             identifier = "ingrid-up-sh"
         }

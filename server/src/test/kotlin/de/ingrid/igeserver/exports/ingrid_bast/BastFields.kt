@@ -24,8 +24,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.Geodataset
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.BastProfileTransformer
-import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.UPSHProfileTransformer
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
@@ -34,7 +32,6 @@ class BastFields : Geodataset() {
 
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
-        this.exporter.profileTransformer["ingrid-bast"] = BastProfileTransformer()
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
             identifier = "ingrid-bast"
         }
