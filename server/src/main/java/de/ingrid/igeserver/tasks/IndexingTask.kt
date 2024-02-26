@@ -238,7 +238,7 @@ class IndexingTask(
         format: String,
         docId: String
     ) {
-        log.info("Export dataset to Elasticsearch: $catalogId/$docId")
+        log.info("Export dataset from catalog '$catalogId': $docId")
 
         runAsCatalogAdministrator()
 
@@ -257,25 +257,27 @@ class IndexingTask(
                     docId
                 )
 
-            configs.forEach {
-                val indexInfo =
-                    getOrPrepareIndex(configs[0], catalogProfile, category, elasticsearchAlias)
-                val plugInfo = createIPlugInfo(catalog, it.category)
-                IndexTargetWorker(
-                        it,
-                        IndexMessage(catalogId),
-                        catalogProfile,
-                        notify,
-                        indexService,
-                        catalogId,
-                        generalProperties,
-                        plugInfo,
-                        postIndexPipe,
-                        settingsService,
-                        cancellations
-                    )
-                    .exportAndIndexSingleDocument(doc.document, indexInfo)
-            }
+            configs
+                .filter { it.category == category }
+                .forEach {
+                    val indexInfo =
+                        getOrPrepareIndex(configs[0], catalogProfile, category, elasticsearchAlias)
+                    val plugInfo = createIPlugInfo(catalog, it.category)
+                    IndexTargetWorker(
+                            it,
+                            IndexMessage(catalogId),
+                            catalogProfile,
+                            notify,
+                            indexService,
+                            catalogId,
+                            generalProperties,
+                            plugInfo,
+                            postIndexPipe,
+                            settingsService,
+                            cancellations
+                        )
+                        .exportAndIndexSingleDocument(doc.document, indexInfo)
+                }
         } catch (ex: NoSuchElementException) {
             log.info(
                 "Document not indexed, probably because of profile specific condition: $catalogId -> $docId"

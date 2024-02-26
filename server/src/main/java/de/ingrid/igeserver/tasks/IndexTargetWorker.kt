@@ -150,9 +150,9 @@ class IndexTargetWorker(
     }
 
     fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo) {
-        log.debug("export ${doc.uuid}")
+        log.debug("export '${doc.uuid}' with exporter '${config.exporter!!.typeInfo.type}' to target '${config.name}'")
         val (exportedDoc, exporterType) =
-            Pair(config.exporter!!.run(doc, catalogId), config.exporter.typeInfo.type)
+            Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
         try {
             val elasticDocument = convertToElasticDocument(exportedDoc)
             index(config, indexInfo, elasticDocument)
