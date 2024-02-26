@@ -220,7 +220,10 @@ export class HistoryPlugin extends Plugin {
     }
     this.ignoreNextPush = true;
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) return;
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
@@ -243,7 +246,10 @@ export class HistoryPlugin extends Plugin {
     }
     this.ignoreNextPush = true;
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) return;
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     // in case of a long press this shall not be executed
     // if (evt.ignore) { return; }
