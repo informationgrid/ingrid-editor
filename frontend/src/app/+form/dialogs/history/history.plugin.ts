@@ -358,17 +358,17 @@ export class HistoryPlugin extends Plugin {
    * @private
    */
   private async handleHistoryPreviousSelect(item: any) {
+    const isCurrentDocument =
+      this.tree.getOpenedDocument()?.id === item.data.data.id;
+    if (isCurrentDocument) return;
+
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) {
-      return;
-    }
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      this.pointer = this.pointer - item.data.index - 1;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
-      return;
-    }
+    if (!dirtyFormHandled) return;
+
+    this.pointer = this.pointer - item.data.index - 1;
+    this.gotoNode(item.data.data);
+    this.handleButtonState();
+    return;
   }
 
   /**
@@ -377,17 +377,17 @@ export class HistoryPlugin extends Plugin {
    * @private
    */
   private async handleHistoryNextSelect(item: any) {
+    const isCurrentDocument =
+      this.tree.getOpenedDocument()?.id === item.data.data.id;
+    if (isCurrentDocument) return;
+
     const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) {
-      return;
-    }
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      this.pointer = this.pointer + item.data.index + 1;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
-      return;
-    }
+    if (!dirtyFormHandled) return;
+
+    this.pointer = this.pointer + item.data.index + 1;
+    this.gotoNode(item.data.data);
+    this.handleButtonState();
+    return;
   }
 
   private handleDirtyForm() {
