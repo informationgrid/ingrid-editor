@@ -49,7 +49,7 @@ class M081_MigrateCatalogSettings : MigrationBase("0.81") {
                 .createNativeQuery(
                     """
               UPDATE settings
-              SET value = ((REPLACE(value::TEXT, '"url"', '"name"'))::JSONB)
+              SET value = ((REPLACE(value\\:\\:TEXT, '"url"', '"name"'))::JSONB)
               WHERE key = 'ibus';
           """.trimIndent()
                 )
