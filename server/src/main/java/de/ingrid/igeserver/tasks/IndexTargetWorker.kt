@@ -15,6 +15,7 @@ import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
@@ -43,7 +44,7 @@ class IndexTargetWorker(
     val log = logger()
     private val categoryAlias = indexService.getIndexIdentifier(plugInfo.alias, config.category)
 
-    fun run() {
+    fun indexAll() {
 
         log.info("Indexing to target '${config.target}' in category: " + config.category.value)
 
@@ -51,13 +52,7 @@ class IndexTargetWorker(
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 
         // TODO: configure index name
-        val indexInfo =
-            IndexInfo(
-                newIndex,
-                categoryAlias,
-                if (config.category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
-                else catalogProfile.indexIdField.document
-            )
+        val indexInfo = IndexInfo(newIndex, categoryAlias, config.indexFieldId)
         val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, catalogProfile)
         val totalHits: Long = indexService.getNumberOfPublishableDocuments(queryInfo)
         val targetMessage = message.getTargetByName(config.name)
@@ -67,11 +62,7 @@ class IndexTargetWorker(
             var page = -1
             do {
                 page++
-                val docsToPublish =
-                    indexService.getPublishedDocuments(
-                        queryInfo,
-                        page
-                    )
+                val docsToPublish = indexService.getPublishedDocuments(queryInfo, page)
 
                 exportDocuments(docsToPublish, indexInfo)
             } while (!checkIfAllIndexed(page, docsToPublish, totalHits))
@@ -142,49 +133,43 @@ class IndexTargetWorker(
         }
     }
 
-    fun exportDocuments(docsToPublish: Page<DocumentIndexInfo>, indexInfo: IndexInfo) {
+    private fun exportDocuments(docsToPublish: Page<DocumentIndexInfo>, indexInfo: IndexInfo) {
         val targetMessage = message.getTargetByName(config.name)
 
-        docsToPublish.content
-            .mapNotNull { doc ->
-                handleCancelation()
-                increaseProgressInTargetMessage(targetMessage)
-                notify.sendMessage(message)
-                log.debug("export ${doc.document.uuid}")
+        docsToPublish.content.forEach { doc ->
+            handleCancelation()
+            increaseProgressInTargetMessage(targetMessage)
+            notify.sendMessage(message)
 
-                val exportedDoc =
-                    try {
-                        val exporter = config.exporter ?: return@mapNotNull null
-                        // an exporter might not exist for a category
-
-                        doc.exporterType = exporter.typeInfo.type
-
-                        exporter.run(doc.document, catalogId)
-                    } catch (ex: Exception) {
-                        handleExportException(ex, doc, targetMessage)
-                    } ?: return@mapNotNull null
-                Pair(doc, exportedDoc)
-            }
-            .onEach { (docInfo, exportedDoc) ->
-                try {
-                    val elasticDocument = convertToElasticDocument(exportedDoc)
-                    index(config, indexInfo, elasticDocument)
-                    val simpleContext =
-                        SimpleContext(catalogId, catalogProfile.identifier, docInfo.document.uuid)
-
-                    postIndexPipe.runFilters(
-                        PostIndexPayload(elasticDocument, config.category.name, docInfo.exporterType!!),
-                        simpleContext
-                    )
-                } catch (ex: Exception) {
-                    handleIndexException(docInfo, ex)
-                }
-            }
+            try {
+                exportAndIndexSingleDocument(doc.document, indexInfo)
+            } catch (ex: Exception) {
+                handleExportException(ex, doc, targetMessage)
+            } ?: return@forEach
+        }
     }
 
-    private fun handleIndexException(docInfo: DocumentIndexInfo, ex: Exception) {
+    fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo) {
+        log.debug("export ${doc.uuid}")
+        val (exportedDoc, exporterType) =
+            Pair(config.exporter!!.run(doc, catalogId), config.exporter.typeInfo.type)
+        try {
+            val elasticDocument = convertToElasticDocument(exportedDoc)
+            index(config, indexInfo, elasticDocument)
+            val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
+
+            postIndexPipe.runFilters(
+                PostIndexPayload(elasticDocument, config.category.name, exporterType),
+                simpleContext
+            )
+        } catch (ex: Exception) {
+            handleIndexException(doc, ex)
+        }
+    }
+
+    private fun handleIndexException(doc: Document, ex: Exception) {
         val errorMessage =
-            "Error in PostIndexFilter or during sending to Elasticsearch: '${docInfo.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
+            "Error in PostIndexFilter or during sending to Elasticsearch: '${doc.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
         log.error(errorMessage, ex)
         message.errors.add(errorMessage)
         notify.sendMessage(message)

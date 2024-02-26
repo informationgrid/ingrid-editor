@@ -22,7 +22,6 @@ import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
-import de.ingrid.igeserver.api.messaging.TargetMessage
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
@@ -38,7 +37,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.SettingsService
 import org.apache.logging.log4j.kotlin.logger
-import org.jetbrains.kotlin.backend.common.push
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.TaskScheduler
@@ -114,24 +112,26 @@ class IndexingTask(
 
         try {
             run indexingLoop@{
-                targets.forEach { target ->
-                    val plugInfo = createIPlugInfo(catalog, target.category)
+                targets
+                    .filter { it.exporter != null }
+                    .forEach { target ->
+                        val plugInfo = createIPlugInfo(catalog, target.category)
 
-                    IndexTargetWorker(
-                            target,
-                            message,
-                            catalogProfile,
-                            notify,
-                            indexService,
-                            catalogId,
-                            generalProperties,
-                            plugInfo,
-                            postIndexPipe,
-                            settingsService,
-                            cancellations
-                        )
-                        .run()
-                }
+                        IndexTargetWorker(
+                                target,
+                                message,
+                                catalogProfile,
+                                notify,
+                                indexService,
+                                catalogId,
+                                generalProperties,
+                                plugInfo,
+                                postIndexPipe,
+                                settingsService,
+                                cancellations
+                            )
+                            .indexAll()
+                    }
             }
         } catch (ex: IndexException) {
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
@@ -152,7 +152,7 @@ class IndexingTask(
         // save last indexing information to database for this catalog to get this in frontend
         updateIndexLog(catalogId, message)
     }
-    
+
     private fun createIPlugInfo(catalog: Catalog, category: DocumentCategory): IPlugInfo {
         val partner =
             codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
@@ -242,7 +242,6 @@ class IndexingTask(
 
         runAsCatalogAdministrator()
 
-        val exporter = indexService.getExporter(category, format)
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
@@ -258,24 +257,25 @@ class IndexingTask(
                     docId
                 )
 
-            // TODO: loop through all configurations!
             configs.forEach {
-                // IndexTargetWorker()
+                val indexInfo =
+                    getOrPrepareIndex(configs[0], catalogProfile, category, elasticsearchAlias)
+                val plugInfo = createIPlugInfo(catalog, it.category)
+                IndexTargetWorker(
+                        it,
+                        IndexMessage(catalogId),
+                        catalogProfile,
+                        notify,
+                        indexService,
+                        catalogId,
+                        generalProperties,
+                        plugInfo,
+                        postIndexPipe,
+                        settingsService,
+                        cancellations
+                    )
+                    .exportAndIndexSingleDocument(doc.document, indexInfo)
             }
-
-            /*val export = exporter.run(doc.document, catalogId)
-            log.debug("Exported document: $export")
-            val indexInfo =
-                getOrPrepareIndex(configs[0], catalogProfile, category, format, elasticsearchAlias)
-
-            val elasticDoc = convertToElasticDocument(export)
-            postIndexPipe.runFilters(
-                PostIndexPayload(elasticDoc, category.name, exporter.typeInfo.type),
-                SimpleContext(catalogId, catalogProfile.identifier, docId)
-            )
-
-            index(configs[0], indexInfo, elasticDoc)
-            log.info("$catalogId/$docId updated in index: ${indexInfo.getRealIndexName()}")*/
         } catch (ex: NoSuchElementException) {
             log.info(
                 "Document not indexed, probably because of profile specific condition: $catalogId -> $docId"
@@ -287,27 +287,24 @@ class IndexingTask(
         exporter: ExtendedExporterConfig,
         catalogProfile: CatalogProfile,
         category: DocumentCategory,
-        format: String,
         elasticsearchAlias: String
     ): IndexInfo {
-        /*val categoryAlias = getIndexIdentifier(elasticsearchAlias, category)
-        var oldIndex = exporter.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
-        if (oldIndex == null) {
-            val (_, newIndex) =
-                indexPrePhase(
-                    exporter,
-                    categoryAlias,
-                    catalogProfile,
-                    format,
-                    elasticsearchAlias,
-                    category
-                )
-            oldIndex = newIndex
-            exporter.target.switchAlias(elasticsearchAlias, null, newIndex)
-        }*/
+        val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, category)
+        var currentIndex =
+            exporter.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
+        if (currentIndex == null) {
+            currentIndex = IndexService.getNextIndexName(categoryAlias, "", elasticsearchAlias)
+            exporter.target.createIndex(
+                currentIndex,
+                if (exporter.category == DocumentCategory.ADDRESS) "address" else "base",
+                catalogProfile.getElasticsearchMapping(""),
+                catalogProfile.getElasticsearchSetting("")
+            )
+            exporter.target.switchAlias(elasticsearchAlias, null, currentIndex)
+        }
 
         return IndexInfo(
-            "???", // TODO: oldIndex,
+            currentIndex,
             elasticsearchAlias,
             if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
             else catalogProfile.indexIdField.document
@@ -393,16 +390,16 @@ class IndexingTask(
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
-        val enumCategory = DocumentCategory.values().first { it.value == category }
+        val enumCategory = DocumentCategory.entries.first { it.value == category }
         val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, enumCategory)
 
         configs.forEach {
             try {
                 val oldIndex =
                     it.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
-                val info = IndexInfo(oldIndex!!, elasticsearchAlias, null)
 
                 if (oldIndex != null && it.target.indexExists(oldIndex)) {
+                    val info = IndexInfo(oldIndex, elasticsearchAlias, null)
                     it.target.delete(info, id, true)
                 }
             } catch (ex: Exception) {

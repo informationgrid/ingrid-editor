@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service
 
 data class DocumentIndexInfo(
     val document: Document,
-    @Deprecated("remove since all targets are indexed separately") val targetIndex: List<Int>?,
     var exporterType: String? = null
 )
 
@@ -215,8 +214,7 @@ class IndexService(
                             val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
                             data.put(FIELD_PARENT, parentWrapper.uuid)
                         }
-                    },
-                    null
+                    }
                 )
             }
     }
