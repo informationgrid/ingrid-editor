@@ -234,6 +234,7 @@ open class IngridModelTransformer(
     open val hierarchyLevelName: String? = "job"
     open val mdStandardName = "ISO19115"
     open val mdStandardVersion = "2003/Cor.1:2006"
+    open val datasetUri: String? = null
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363

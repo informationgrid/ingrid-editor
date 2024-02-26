@@ -40,7 +40,7 @@ data class Metadata(
     var dateStamp: Date,
     val metadataStandardName: CharacterString = CharacterString("ISO19119"),
     val metadataStandardVersion: CharacterString = CharacterString("2005/PDAM 1"),
-    val dataSetURI: String? = null,
+    val dataSetURI: CharacterString? = null,
     val locale: List<String>? = null,
     val spatialRepresentationInfo: List<SpatialRepresentationInfo>? = null,
     val referenceSystemInfo: List<ReferenceSystem>? = null,

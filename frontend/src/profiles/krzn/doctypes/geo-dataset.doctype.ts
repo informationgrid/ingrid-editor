@@ -36,6 +36,11 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
       .find((field) => field.props.label === "Raumbezug")
       .fieldGroup.push(this.getMapLinkFieldConfig());
 
+    // add geo-data link field
+    fieldConfig
+      .find((field) => field.props.label === "Verfügbarkeit")
+      .fieldGroup.splice(2, 0, this.getGeoLinkFieldConfig());
+
     return fieldConfig;
   };
 
@@ -50,6 +55,12 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
       required: true,
       allowNoValue: false,
       options: this.getCodelistForSelect("10500", "mapLink", false),
+    });
+  }
+
+  private getGeoLinkFieldConfig(): FormlyFieldConfig {
+    return this.addInput("dataSetURI", "Geodatenlink", {
+      wrappers: ["panel", "form-field"],
     });
   }
 }

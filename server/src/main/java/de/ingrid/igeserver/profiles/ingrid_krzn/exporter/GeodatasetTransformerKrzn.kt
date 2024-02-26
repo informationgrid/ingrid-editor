@@ -41,28 +41,17 @@ class GeodatasetTransformerKrzn(
     documentService: DocumentService
 ) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService) {
 
-    private val docData = doc?.data
+    private val docData = doc.data
     override val systemEnvironment =
         if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
-        else docData?.getString("environmentDescription")
+        else docData.getString("environmentDescription")
 
-    override val mapLinkUrl = docData?.getString("mapLink.key")?.let {
+    override val mapLinkUrl = docData.getString("mapLink.key")?.let {
         // do not map specific entry where we do not want to show mapUrl
         if (it == "0") return@let null
         codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
             ?.replace("{ID}", model.uuid)
     }
 
-    /*
-        override fun getCrossReferences(): List<CrossReference> {
-            return super.getCrossReferences()
-                .map { ref ->
-                    if (ref.refType.key != "3600") ref 
-                    else {
-                        ref.mapUrl = ref.serviceUrl
-                        ref
-                    }
-                }
-        }
-    */
+    override val datasetUri = docData.getString("dataSetURI")
 }
