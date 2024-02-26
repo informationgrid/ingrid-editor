@@ -115,8 +115,6 @@ class IndexingTask(
         try {
             run indexingLoop@{
                 targets.forEach { target ->
-                    // same target but different category
-                    TargetMessage(target.name).also { message.targets.push(it) }
                     val plugInfo = createIPlugInfo(catalog, target.category)
 
                     IndexTargetWorker(

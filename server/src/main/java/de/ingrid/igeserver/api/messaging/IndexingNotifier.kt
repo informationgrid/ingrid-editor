@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.api.messaging
 
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
+import org.jetbrains.kotlin.backend.common.push
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
@@ -28,7 +28,10 @@ data class IndexMessage(
     val catalogId: String,
     val targets: MutableList<TargetMessage> = mutableListOf()
 ) : Message() {
-    fun getTargetByName(name: String): TargetMessage = targets.find { it.name == name }!!
+    fun getTargetByName(name: String): TargetMessage {
+        val result = targets.find { it.name == name }
+        return result ?: TargetMessage(name).also { targets.push(it) }
+    }
 }
 
 data class TargetMessage(
@@ -54,8 +57,6 @@ class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
     fun addAndSendMessageError(message: IndexMessage, ex: Exception, errorPrefix: String = "") {
         val errorMessage = "${errorPrefix}${ex.message}"
         log.error(errorMessage, ex)
-        sendMessage(message.apply {
-            errors.add(errorMessage)
-        })
+        sendMessage(message.apply { errors.add(errorMessage) })
     }
 }
