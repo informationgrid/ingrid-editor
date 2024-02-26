@@ -29,7 +29,6 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.index.DocumentIndexInfo
-import de.ingrid.igeserver.index.IBusIndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
@@ -132,18 +131,6 @@ class IndexTargetWorker(
         }
     }
 
-    private fun index(
-        config: ExtendedExporterConfig,
-        indexInfo: IndexInfo,
-        elasticDoc: ElasticDocument
-    ) {
-        if (config.target is IBusIndexManager) {
-            config.target.update(indexInfo, elasticDoc, false)
-        } else {
-            config.target.update(indexInfo, elasticDoc, false)
-        }
-    }
-
     private fun updateMessageWithDocumentInfo(message: TargetMessage, totalHits: Long) {
         if (config.category == DocumentCategory.DATA) {
             message.numDocuments = totalHits.toInt()
@@ -172,9 +159,10 @@ class IndexTargetWorker(
         log.debug("export '${doc.uuid}' with exporter '${config.exporter!!.typeInfo.type}' to target '${config.name}'")
         val (exportedDoc, exporterType) =
             Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
+        
         try {
             val elasticDocument = convertToElasticDocument(exportedDoc)
-            index(config, indexInfo, elasticDocument)
+            config.target.update(indexInfo, elasticDocument, false)
             val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
             postIndexPipe.runFilters(

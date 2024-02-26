@@ -21,8 +21,8 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.ibus.client.BusClient
 import de.ingrid.ibus.client.BusClientFactory
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
-import de.ingrid.igeserver.index.IBusIndexManager
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.utils.*
 import de.ingrid.utils.query.IngridQuery
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile("ibus & elasticsearch")
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties, val iBusIndexManager: IBusIndexManager): IPlug {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug {
 
     val log = logger()
 
@@ -48,23 +48,15 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
 
     fun setupConnections() {
         try {
-            if (iBusClient?.cacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
+            if (iBusClient?.nonCacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
             iBusClient = this.connectIBus(settingsService.getIBusConfig())
-            iBusIndexManager.configure(PlugDescription())
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }
     }
-
-    fun restartCommunication() {
-        val config = settingsService.getIBusConfig()
-        if (config.isEmpty()) return
-
-        if (iBusClient?.cacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
-        val clientConfig = createClientConfiguration(config)
-        iBusClient?.start(clientConfig)
-        val communication = StartCommunication.create(clientConfig)
-        BusClientFactory.createBusClientOverride(communication)
+    
+    fun getIBus(index: Int): IBus {
+        return iBusClient?.nonCacheableIBusses?.get(index) ?: throw ServerException.withReason("iBus with index $index not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
     }
     
     fun isConnected(iBusIndex: Int): Boolean {

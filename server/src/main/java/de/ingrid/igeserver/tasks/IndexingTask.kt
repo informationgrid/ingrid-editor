@@ -37,10 +37,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.services.CatalogProfile
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.SettingsService
+import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.context.annotation.Profile
@@ -76,11 +73,11 @@ class IndexingTask(
     private val settingsService: SettingsService,
     private val catalogService: CatalogService,
     private val notify: IndexingNotifier,
-    private val iBusIndexManager: IBusIndexManager,
     private val catalogRepo: CatalogRepository,
     private val codelistService: CodeListService,
     private val postIndexPipe: PostIndexPipe,
-    private val generalProperties: GeneralProperties
+    private val generalProperties: GeneralProperties,
+    private val iBusService: IBusService
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -206,7 +203,7 @@ class IndexingTask(
 
             val (name, target) =
                 if (ibus != null) {
-                    Pair(ibus.name, IBusIndexer(iBusIndexManager, ibusConfigs.indexOf(ibus)))
+                    Pair(ibus.name, IBusIndexer(iBusService.getIBus(ibusConfigs.indexOf(ibus))))
                 } else Pair(elastic?.name!!, ElasticIndexer(elasticConfig.indexOf(elastic)))
 
             categories.map {

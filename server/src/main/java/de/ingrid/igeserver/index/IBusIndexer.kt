@@ -20,12 +20,25 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.utils.ElasticDocument
-import de.ingrid.utils.PlugDescription
+import de.ingrid.utils.*
+import de.ingrid.utils.xml.XMLSerializer
+import org.apache.logging.log4j.kotlin.logger
+import java.io.IOException
 
-class IBusIndexer(private val iBusIndexManager: IBusIndexManager, private val clientIndex: Int): IIndexManager {
+class IBusIndexer(private val iBus: IBus): IIndexManager {
+    val log = logger()
+    
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String): String? {
-        return iBusIndexManager.getIndexNameFromAliasName(clientIndex, indexAlias, partialName)
+        val call = IngridCall()
+        call.method = "getIndexNameFromAliasName"
+        call.target = "__centralIndex__"
+        val map: MutableMap<String, String> = HashMap()
+        map["indexAlias"] = indexAlias
+        map["partialName"] = partialName
+        call.parameter = map
+
+        val response = sendCallToIBus(iBus, call)
+        return response?.getString("result")
     }
 
     override fun createIndex(name: String): Boolean {
@@ -33,23 +46,49 @@ class IBusIndexer(private val iBusIndexManager: IBusIndexManager, private val cl
     }
 
     override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean {
-        return iBusIndexManager.createIndex(clientIndex, name, type, esMapping, esSettings)
+        val call = prepareCall("createIndex")
+        val map: MutableMap<String, String> = HashMap()
+        map["name"] = name
+        map["type"] = type
+        map["esMapping"] = esMapping
+        map["esSettings"] = esSettings
+        call.parameter = map
+
+        val response = sendCallToIBus(iBus, call)
+        return response != null && response.getBoolean("result")
     }
 
     override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String) {
-        return iBusIndexManager.switchAlias(clientIndex, aliasName, oldIndex, newIndex)
+        val call = prepareCall("switchAlias")
+        val map = mapOf(
+            "aliasName" to aliasName,
+            "oldIndex" to oldIndex,
+            "newIndex" to newIndex
+        )
+        call.parameter = map
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun checkAndCreateInformationIndex() {
-        return iBusIndexManager.checkAndCreateInformationIndex(clientIndex)
+        val call = prepareCall("checkAndCreateInformationIndex")
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {
-        return iBusIndexManager.getIndexTypeIdentifier(indexInfo)
+        return ("=>" + indexInfo.toIndex)// TODO: + ":" + indexInfo.toType
     }
 
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument, updateOldIndex: Boolean) {
-        return iBusIndexManager.update(clientIndex, indexinfo, doc, updateOldIndex)
+        val call = prepareCall("update")
+        val map: MutableMap<String, Any> = HashMap()
+        map["indexinfo"] = indexinfo // jacksonObjectMapper().convertValue(indexinfo, Any::class.java)
+        map["doc"] = doc
+        map["updateOldIndex"] = updateOldIndex
+        call.parameter = map
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun updatePlugDescription(plugDescription: PlugDescription) {
@@ -57,37 +96,106 @@ class IBusIndexer(private val iBusIndexManager: IBusIndexManager, private val cl
     }
 
     override fun updateIPlugInformation(id: String, info: String) {
-        return iBusIndexManager.updateIPlugInformation(clientIndex, id, info)
+        val call = prepareCall("updateIPlugInformation")
+        val map: MutableMap<String, Any> = HashMap()
+        map["id"] = id
+        map["info"] = info
+        call.parameter = map
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun flush() {
-        return iBusIndexManager.flush(clientIndex)
+        val call = prepareCall("flush")
+        sendCallToIBus(iBus, call)
     }
 
     override fun deleteIndex(index: String) {
-        return iBusIndexManager.deleteIndex(clientIndex, index)
+        val call = prepareCall("deleteIndex")
+        call.parameter = index
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun getIndices(filter: String): Array<String> {
-        return iBusIndexManager.getIndices(clientIndex, filter) ?: emptyArray()
+        val call = prepareCall("getIndices")
+        call.parameter = filter
+
+        val response = sendCallToIBus(iBus, call)
+        return response?.get("result") as Array<String>? ?: emptyArray()
     }
 
     override fun getMapping(indexInfo: IndexInfo): Map<String, Any> {
-        return iBusIndexManager.getMapping(clientIndex, indexInfo)
+        val call = prepareCall("getMapping")
+        call.parameter = indexInfo
+
+        val response = sendCallToIBus(iBus, call)
+        return response!!["result"] as Map<String, Any>
     }
 
-    override val defaultMapping = iBusIndexManager.defaultMapping
-    override val defaultSettings = iBusIndexManager.defaultSettings
+    override val defaultMapping: String?
+        get() {
+            val mappingStream = javaClass.classLoader.getResourceAsStream("default-mapping.json")
+            try {
+                if (mappingStream != null) {
+                    return XMLSerializer.getContents(mappingStream)
+                }
+            } catch (e: IOException) {
+                log.error("Error getting default mapping for index creation", e)
+            }
+            return null
+        }
+
+    override val defaultSettings: String?
+        get() {
+            val settingsStream = javaClass.classLoader.getResourceAsStream("default-settings.json")
+            try {
+                if (settingsStream != null) {
+                    return XMLSerializer.getContents(settingsStream)
+                }
+            } catch (e: IOException) {
+                log.error("Error getting default mapping for index creation", e)
+            }
+            return null
+        }
 
     override fun updateHearbeatInformation(iPlugIdInfos: Map<String, String>) {
         TODO("Not yet implemented")
     }
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
-        return iBusIndexManager.delete(clientIndex, indexinfo, id, updateOldIndex)
+        val call = prepareCall("deleteDocById")
+        val map: MutableMap<String, Any> = HashMap()
+        map["indexinfo"] = indexinfo
+        map["id"] = id
+        map["updateOldIndex"] = updateOldIndex
+        call.parameter = map
+
+        sendCallToIBus(iBus, call)
     }
 
     override fun indexExists(indexName: String): Boolean {
-        return iBusIndexManager.indexExists(clientIndex, indexName)
+        val call = prepareCall("indexExists")
+        call.parameter = indexName
+
+        val response = sendCallToIBus(iBus, call)
+        return (if (response != null) response["result"] else false) as Boolean
+    }
+
+    private fun prepareCall(method: String): IngridCall {
+        val call = IngridCall()
+        call.target = "__centralIndex__"
+        call.method = method
+        return call
+    }
+
+    private fun sendCallToIBus(iBus: IBus, call: IngridCall): IngridDocument? {
+        try {
+            return iBus.call(call)
+        } catch (e: Exception) {
+            // TODO: log error for frontend!
+            log.error("Error relaying index message: " + call.method, e)
+            return null
+        }
     }
 }
