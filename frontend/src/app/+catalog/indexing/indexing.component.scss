@@ -10,6 +10,11 @@ mat-progress-spinner {
 .section {
   background-color: #ffffff;
   padding: 24px;
+  margin-bottom: 12px;
+
+  &.config {
+    padding-bottom: 2px;
+  }
 }
 
 .button-bar {

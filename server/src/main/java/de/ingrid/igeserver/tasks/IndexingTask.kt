@@ -33,6 +33,9 @@ import de.ingrid.igeserver.index.*
 import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
@@ -183,7 +186,12 @@ class IndexingTask(
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
 
-        return catalog.settings.exports.flatMap { config ->
+        var exportConfigs = catalog.settings.exports
+        if (exportConfigs.isEmpty()) {
+            exportConfigs = getDefaultExporterConfiguration(catalogProfile.indexExportFormatID!!, ibusConfigs, elasticConfig)
+        }
+
+        return exportConfigs.flatMap { config ->
             val ibus = ibusConfigs.find { it.id!! == config.target }
             val elastic = elasticConfig.find { it.id!! == config.target }
             if (ibus == null && elastic == null) {
@@ -213,6 +221,24 @@ class IndexingTask(
                 )
             }
         }
+    }
+
+    /**
+     * The default configuration is to use all configured connections and export with "internet" tag
+     * and first defined exporter for the profile.
+     */
+    private fun getDefaultExporterConfiguration(
+        exportFormatId: String,
+        ibusConfigs: List<IBusConfig>,
+        elasticConfig: List<ElasticConfig>
+    ): List<ExportConfig> {
+        val iBusDefinitions = ibusConfigs.map { 
+            ExportConfig(it.id!!, exportFormatId, listOf("internet"))
+        }
+        val elasticDefinitions = elasticConfig.map { 
+            ExportConfig(it.id!!, exportFormatId, listOf("internet"))
+        }
+        return iBusDefinitions + elasticDefinitions
     }
 
     private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? {
