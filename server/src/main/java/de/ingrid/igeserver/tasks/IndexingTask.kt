@@ -77,7 +77,8 @@ class IndexingTask(
     private val codelistService: CodeListService,
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties,
-    private val iBusService: IBusService
+    private val iBusService: IBusService,
+    private val elasticsearchService: ElasticsearchService,
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -109,10 +110,10 @@ class IndexingTask(
         // get all targets we want to export to
         val targets = getExporterConfigForCatalog(catalog, catalogProfile)
 
-        // make sure the ingrid_meta index is there
-        handleInformationIndex(targets)
-
         try {
+            // make sure the ingrid_meta index is there
+            handleInformationIndex(targets)
+
             run indexingLoop@{
                 targets
                     .filter { it.exporter != null }
@@ -133,15 +134,18 @@ class IndexingTask(
                                 cancellations
                             )
                             .indexAll()
+
+                        // make sure to write everything to elasticsearch
+                        // if another indexing starts right afterwards, then the previous index could still be there
+                        target.target.flush()
                     }
             }
-        } catch (ex: IndexException) {
+        } catch (ex: Exception) {
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
+        } catch (ex: NotImplementedError) {
+            notify.addAndSendMessageError(message, ServerException.withReason("Not Implemented"))
+            
         }
-
-        // make sure to write everything to elasticsearch
-        // if another indexing starts right afterwards, then the previous index could still be there
-        targets.forEach { it.target.flush() }
 
         log.info("Indexing finished")
         notify.sendMessage(
@@ -173,7 +177,10 @@ class IndexingTask(
     }
 
     private fun handleInformationIndex(configs: List<ExtendedExporterConfig>) {
-        configs.forEach { it.target.checkAndCreateInformationIndex() }
+        configs
+            .map { it.target }
+            .toSet()
+            .forEach { it.checkAndCreateInformationIndex() }
     }
 
     private fun getExporterConfigForCatalog(
@@ -204,7 +211,10 @@ class IndexingTask(
             val (name, target) =
                 if (ibus != null) {
                     Pair(ibus.name, IBusIndexer(iBusService.getIBus(ibusConfigs.indexOf(ibus))))
-                } else Pair(elastic?.name!!, ElasticIndexer(elasticConfig.indexOf(elastic)))
+                } else Pair(
+                    elastic?.name!!, 
+                    ElasticIndexer(elasticsearchService.getClient(elasticConfig.indexOf(elastic)))
+                )
 
             categories.map {
                 ExtendedExporterConfig(

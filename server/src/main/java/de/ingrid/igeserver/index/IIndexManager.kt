@@ -39,7 +39,7 @@ interface IIndexManager {
 
     fun getIndexTypeIdentifier(indexInfo: IndexInfo): String
 
-    fun update(indexinfo: IndexInfo, doc: ElasticDocument, updateOldIndex: Boolean)
+    fun update(indexinfo: IndexInfo, doc: ElasticDocument)
 
     @Throws(IOException::class)
     fun updatePlugDescription(plugDescription: PlugDescription)

@@ -11,10 +11,6 @@
                 </div>
             }
         </div>
-        @if (log.targets.length === 0) {
-            Es wurde kein Ziel konfiguriert, wohin die Daten indiziert werden
-            sollen.
-        }
         @for (target of log.targets; track target) {
             <div class="space-bottom">
                 <div class="target-title">{{ target.name }}</div>

@@ -80,12 +80,12 @@ class IBusIndexer(private val iBus: IBus): IIndexManager {
         return ("=>" + indexInfo.toIndex)// TODO: + ":" + indexInfo.toType
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument, updateOldIndex: Boolean) {
+    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
         val call = prepareCall("update")
         val map: MutableMap<String, Any> = HashMap()
         map["indexinfo"] = indexinfo // jacksonObjectMapper().convertValue(indexinfo, Any::class.java)
         map["doc"] = doc
-        map["updateOldIndex"] = updateOldIndex
+        map["updateOldIndex"] = false
         call.parameter = map
 
         sendCallToIBus(iBus, call)

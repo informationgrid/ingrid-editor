@@ -110,18 +110,16 @@ class IndexService(
         catalogProfile: CatalogProfile,
         uuid: String
     ): DocumentIndexInfo {
-        val docs = requestPublishableDocuments(catalogId, category, types, uuid, catalogProfile)
+        val queryInfo = QueryInfo(catalogId, category, types, catalogProfile)
+        val docs = requestPublishableDocuments(queryInfo, uuid)
         return docs.single()
     }
 
     fun getPublishedDocuments(queryInfo: QueryInfo, currentPage: Int = 0): Page<DocumentIndexInfo> {
         val docs =
             requestPublishableDocuments(
-                queryInfo.catalogId,
-                queryInfo.category,
-                queryInfo.types,
+                queryInfo,
                 null,
-                queryInfo.catalogProfile,
                 ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
             )
         val pagedDocs =
@@ -169,21 +167,18 @@ class IndexService(
         catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
 
     fun requestPublishableDocuments(
-        catalogId: String,
-        category: String,
-        types: List<String>,
+        queryInfo: QueryInfo,
         uuid: String?,
-        profile: CatalogProfile,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
     ): List<DocumentIndexInfo> {
-        val iBusConditions = getSystemSpecificConditions(types)
-        val sql = createSqlForPublishedDocuments(profile, catalogId, iBusConditions, category, uuid)
+        val iBusConditions = getSystemSpecificConditions(queryInfo.types)
+        val sql = createSqlForPublishedDocuments(queryInfo.catalogProfile, queryInfo.catalogId, iBusConditions, queryInfo.category, uuid)
         val orderBy =
             " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
         val nativeQuery = entityManager.createNativeQuery(sql + orderBy)
 
-        nativeQuery.setParameter(1, catalogId)
+        nativeQuery.setParameter(1, queryInfo.catalogId)
 
         val result =
             nativeQuery
@@ -205,9 +200,9 @@ class IndexService(
                 // FOLDERS do not have a published version
                 val document =
                     if (it.type == "FOLDER") {
-                        documentService.getDocumentByWrapperId(catalogId, it.wrapperId)
+                        documentService.getDocumentByWrapperId(queryInfo.catalogId, it.wrapperId)
                     } else {
-                        documentService.getLastPublishedDocument(catalogId, it.uuid)
+                        documentService.getLastPublishedDocument(queryInfo.catalogId, it.uuid)
                     }
                 DocumentIndexInfo(
                     document.apply {

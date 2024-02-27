@@ -162,7 +162,7 @@ class IndexTargetWorker(
         
         try {
             val elasticDocument = convertToElasticDocument(exportedDoc)
-            config.target.update(indexInfo, elasticDocument, false)
+            config.target.update(indexInfo, elasticDocument)
             val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
             postIndexPipe.runFilters(

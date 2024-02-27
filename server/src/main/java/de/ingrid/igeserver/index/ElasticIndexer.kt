@@ -18,13 +18,18 @@
  * limitations under the Licence.
  */
 package de.ingrid.igeserver.index
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jillesvangurp.ktsearch.*
+import com.jillesvangurp.searchdsls.querydsl.sort
+import com.jillesvangurp.searchdsls.querydsl.term
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.PlugDescription
+import de.ingrid.utils.xml.XMLSerializer
+import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.stereotype.Service
-import java.text.SimpleDateFormat
+import java.io.IOException
 import java.util.*
 
 data class ElasticClient(
@@ -36,11 +41,34 @@ data class ElasticClient(
  * Utility class to manage elasticsearch indices and documents.
  * @author Andre
  */
-class ElasticIndexer(val clientId: Int): IIndexManager {
+class ElasticIndexer(val elastic: ElasticClient): IIndexManager {
     private val log = logger()
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String): String? {
-        TODO("Not yet implemented")
+        return runBlocking {
+            val aliases = elastic.client.getAliases(indexAlias)
+            aliases.keys.find { it.contains(partialName) }
+        }
+
+        /*val indexToAliasesMap: ImmutableMap<String, List<AliasMetadata>>? =
+        client.admin().indices().getAliases(GetAliasesRequest(indexAlias)).actionGet().aliases
+
+        if (indexToAliasesMap != null && !indexToAliasesMap.isEmpty) {
+            val iterator: Iterator<ObjectCursor<String>> = indexToAliasesMap.keys().iterator()
+            var result: String? = null
+            while (iterator.hasNext()) {
+                val next: String = iterator.next().value
+                if (partialName == null || next.contains(partialName)) {
+                    result = next
+                }
+            }
+
+            return (result)!!
+        } else if (client.admin().indices().prepareExists(indexAlias).execute().actionGet().isExists) {
+            // alias seems to be the index itself
+            return indexAlias
+        }
+        return null*/
     }
 
     override fun createIndex(name: String): Boolean {
@@ -48,23 +76,79 @@ class ElasticIndexer(val clientId: Int): IIndexManager {
     }
 
     override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean {
-        TODO("Not yet implemented")
+        return runBlocking {
+            val response = elastic.client.createIndex(name, """
+                { "mappings": $esMapping, "settings": $esSettings }
+            """.trimIndent())
+            response.acknowledged
+        }
     }
 
     override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String) {
-        TODO("Not yet implemented")
+        // check if alias actually exists
+        // boolean aliasExists = _client.admin().indices().aliasesExist( new GetAliasesRequest( aliasName ) ).actionGet().exists();
+//        if (oldIndex != null) removeFromAlias(aliasName, oldIndex)
+        runBlocking { 
+            elastic.client.updateAliases {
+                if (oldIndex != null) {
+                    remove {
+                        alias = aliasName
+                        index = oldIndex
+                    }
+                }
+                add { 
+                    alias = aliasName
+                    index = newIndex
+                }
+            } 
+        }
+//        val prepareAliases: IndicesAliasesRequestBuilder = client.admin().indices().prepareAliases()
+//        prepareAliases.addAlias(newIndex, aliasName).execute().actionGet()
     }
 
     override fun checkAndCreateInformationIndex() {
-        TODO("Not yet implemented")
+        if (!indexExists("ingrid_meta")) {
+            try {
+                javaClass.classLoader.getResourceAsStream("ingrid-meta-mapping.json").use { ingridMetaMappingStream ->
+                    if (ingridMetaMappingStream == null) {
+                        log.error("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
+                    } else {
+                        // settings are optional
+                        var settings: String? = null
+                        try {
+                            javaClass.getClassLoader().getResourceAsStream("ingrid-meta-settings.json")
+                                .use { ingridMetaSettingsStream ->
+                                    if (ingridMetaSettingsStream != null) {
+                                        settings =
+                                            XMLSerializer.getContents(ingridMetaSettingsStream)
+                                    }
+                                }
+                        } catch (e: IOException) {
+                            log.warn(
+                                "Could not deserialize: ingrid-meta-settings.json, continue without settings.",
+                                e
+                            )
+                        }
+
+                        val mapping: String =
+                            XMLSerializer.getContents(ingridMetaMappingStream)
+                        createIndex("ingrid_meta", "info", mapping, (settings)!!)
+                    }
+                }
+            } catch (e: IOException) {
+                log.error("Could not deserialize: ingrid-meta-mapping.json", e)
+            }
+        }
     }
 
     override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {
         TODO("Not yet implemented")
     }
 
-    override fun update(indexinfo: IndexInfo, doc: ElasticDocument, updateOldIndex: Boolean) {
-        TODO("Not yet implemented")
+    override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
+        runBlocking {
+            elastic.bulkProcessor.index(jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(), indexinfo.getRealIndexName(), doc["uuid"].toString())
+        }
     }
 
     override fun updatePlugDescription(plugDescription: PlugDescription) {
@@ -72,19 +156,99 @@ class ElasticIndexer(val clientId: Int): IIndexManager {
     }
 
     override fun updateIPlugInformation(id: String, info: String) {
-        TODO("Not yet implemented")
+        runBlocking { 
+            val response = elastic.client.search("ingrid_meta") {
+                term("indexId", id)
+                sort { 
+                    add("lastIndexed")
+                }
+            }
+            
+            when (response.hits?.total?.value) {
+                1L -> {
+                    val docId = response.hits?.hits?.get(0)?.id
+                    // add index request to queue to avoid sending of too many requests
+                    elastic.bulkProcessor.index(info, "ingrid_meta", docId)
+                }
+                0L -> {
+                    // create document immediately so that it's available for further requests
+                    elastic.client.indexDocument("ingrid_meta", info)
+                }
+                else -> {
+                    log.warn("There is more than one iPlug information document in the index of: $id")
+                    log.warn("Removing items and adding new one")
+                    val searchHits = response.hits?.hits ?: emptyList()
+                    // delete all hits except the first one
+                    for (i in 1 until searchHits.size) {
+                        elastic.bulkProcessor.delete(searchHits[i].id, "ingrid_meta")
+                    }
+                    flush()
+
+                    // add first hit, which we did not delete
+                    elastic.bulkProcessor.index(info, "ingrid_meta", searchHits[0].id)
+                }
+            }
+        }
+        /*val docId: String
+        val indexRequest: IndexRequest = IndexRequest()
+        indexRequest.index("ingrid_meta")
+
+        // the iPlugDocIdMap can lead to problems if a wrong ID was stored once, then the iBus has to be restarted
+        val response: SearchResponse = client.prepareSearch("ingrid_meta")
+            .setQuery(QueryBuilders.termQuery("indexId", id))
+            .addSort("lastIndexed", SortOrder.DESC) // sort to get most current on top
+            // .setFetchSource( new String[] { "*" }, null )
+            // .setSize(1)
+            .get()
+
+        val hits: SearchHits = response.getHits()
+        val totalHits: Long = hits.getTotalHits().value
+
+        // do update document
+        if (totalHits == 1L) {
+            docId = hits.getAt(0).getId()
+            val updateRequest: UpdateRequest = UpdateRequest("ingrid_meta", docId)
+            // add index request to queue to avoid sending of too many requests
+            _bulkProcessor!!.add(updateRequest.doc(info, XContentType.JSON))
+        } else if (totalHits == 0L) {
+            // create document immediately so that it's available for further requests
+            client.index(indexRequest.source(info, XContentType.JSON)).get().getId()
+        } else {
+            log.warn("There is more than one iPlug information document in the index of: " + id)
+            log.warn("Removing items and adding new one")
+            val searchHits: Array<SearchHit> = hits.getHits()
+            // delete all hits except the first one
+            for (i in 1 until searchHits.size)  {
+                val hit: SearchHit = searchHits.get(i)
+                val deleteRequest: DeleteRequest = DeleteRequest()
+                deleteRequest.index("ingrid_meta").id(hit.getId())
+                _bulkProcessor!!.add(deleteRequest)
+            }
+            flush()
+
+
+            // add first hit, which we did not delete
+            val updateRequest: UpdateRequest = UpdateRequest("ingrid_meta", searchHits.get(0).getId())
+            _bulkProcessor!!.add(updateRequest.doc(info, XContentType.JSON))
+        }*/
     }
 
     override fun flush() {
-        TODO("Not yet implemented")
+        runBlocking { 
+            elastic.bulkProcessor.flush()
+        }
     }
 
     override fun deleteIndex(index: String) {
-        TODO("Not yet implemented")
+        runBlocking { 
+            elastic.client.deleteIndex(index)
+        }
     }
 
     override fun getIndices(filter: String): Array<String> {
-        TODO("Not yet implemented")
+        return runBlocking { 
+            elastic.client.getAliases().keys.toTypedArray()
+        }
     }
 
     override fun getMapping(indexInfo: IndexInfo): Map<String, Any?> {
@@ -105,9 +269,25 @@ class ElasticIndexer(val clientId: Int): IIndexManager {
     }
 
     override fun indexExists(indexName: String): Boolean {
-        TODO("Not yet implemented")
+        return runBlocking { elastic.client.exists(indexName) }
     }
 
+    private fun removeFromAlias(aliasName: String, indexName: String) {
+        runBlocking { 
+            elastic.client.updateAliases {
+                this.remove { 
+                    alias = aliasName
+                    index = indexName
+                }
+            }
+        }
+        /*var indexNameFromAliasName: String? = getIndexNameFromAliasName(aliasName, (index)!!)
+        while (indexNameFromAliasName != null) {
+            val prepareAliases: IndicesAliasesRequestBuilder = client.admin().indices().prepareAliases()
+            prepareAliases.removeAlias(indexNameFromAliasName, aliasName).execute().actionGet()
+            indexNameFromAliasName = getIndexNameFromAliasName(aliasName, (index))
+        }*/
+    }
 } 
 
 /*{

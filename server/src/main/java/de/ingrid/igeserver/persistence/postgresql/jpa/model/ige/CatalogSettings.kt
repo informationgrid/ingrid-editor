@@ -82,5 +82,5 @@ data class ElasticConfig(
     override var id: String? = null,
     val name: String,
     val ip: String,
-    val port: Int = 9300
+    val port: Int = 9200
 ): WithId

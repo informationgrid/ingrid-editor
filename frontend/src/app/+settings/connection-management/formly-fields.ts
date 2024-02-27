@@ -38,7 +38,7 @@ export class ConnectionForm extends FormFieldHelper {
           key: "elastic",
           value: "Elasticsearch",
           fields: {
-            fieldGroup: this.addFields(9300),
+            fieldGroup: this.addFields(9200),
           },
         },
       ],

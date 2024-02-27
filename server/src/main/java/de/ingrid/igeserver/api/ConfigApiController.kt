@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
+import de.ingrid.igeserver.services.ElasticsearchService
 import de.ingrid.igeserver.services.IBusService
 import de.ingrid.igeserver.services.SettingsService
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,11 +34,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
-    val settingsService: SettingsService,
+    val settingsService: SettingsService, 
+    @Autowired(required = false) var iBusService: IBusService? = null,
+    @Autowired(required = false) var elasticsearchService: ElasticsearchService? = null,
 ) : ConfigApi {
-
-    @Autowired(required = false)
-    var iBusService: IBusService? = null
 
     @Value("\${keycloak.auth-server-url-frontend}")
     lateinit var keycloakUrlFrontend: String
@@ -87,7 +87,10 @@ class ConfigApiController(
             settingsService.setIBusConfig(it)
             iBusService?.setupConnections()
         }
-        config.elasticsearch?.let {settingsService.setElasticConfig(it)}
+        config.elasticsearch?.let {
+            settingsService.setElasticConfig(it)
+            elasticsearchService?.setupConnections()
+        }
         return ResponseEntity.ok().build()
     }
 
