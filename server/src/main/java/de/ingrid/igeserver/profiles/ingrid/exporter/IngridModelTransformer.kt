@@ -570,7 +570,8 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
-        val functionValue = codelists.getValue("2000", it.type, "iso") ?: "information"
+        // if type not in codelist, use "information" #6017
+        val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
         val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
         val attachedField = if (it.type.key == null) null else {
             val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
