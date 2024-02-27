@@ -35,7 +35,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ibus & elasticsearch")
+//@Profile("ibus & elasticsearch")
 class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug {
 
     val log = logger()
@@ -49,7 +49,8 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
     fun setupConnections() {
         try {
             if (iBusClient?.nonCacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
-            iBusClient = this.connectIBus(settingsService.getIBusConfig())
+            val iBusConfig = settingsService.getIBusConfig()
+            if (iBusConfig.isNotEmpty()) iBusClient = this.connectIBus(iBusConfig)
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }

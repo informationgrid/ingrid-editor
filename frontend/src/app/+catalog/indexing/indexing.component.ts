@@ -23,6 +23,7 @@ import {
   ElementRef,
   inject,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
@@ -95,6 +96,7 @@ export class IndexingComponent implements OnInit {
 
   private copyToClipboardFn = copyToClipboardFn();
   fields: FormlyFieldConfig[] = inject(IndexingFields).fields;
+  hasNoConnections = signal<boolean>(false);
 
   constructor(
     private indexService: IndexService,
@@ -127,6 +129,10 @@ export class IndexingComponent implements OnInit {
         this.hint = expression.message;
         this.valid = expression.valid;
       });
+
+    this.configService.getIBusConfig().subscribe((config) => {
+      this.hasNoConnections.set(config.connections.length === 0);
+    });
   }
 
   index() {

@@ -274,7 +274,7 @@ class IndexTargetWorker(
         val delimiterPos = index.lastIndexOf("_")
         val indexGroup = index.substring(0, delimiterPos + 1)
 
-        val indices: Array<String> = config.target.getIndices(indexGroup)
+        val indices = config.target.getIndices(indexGroup)
         for (indexToDelete in indices) {
             if (indexToDelete != index) {
                 config.target.deleteIndex(indexToDelete)

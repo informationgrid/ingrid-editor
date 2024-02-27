@@ -20,39 +20,34 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.ServerException
 import de.ingrid.utils.*
-import de.ingrid.utils.xml.XMLSerializer
 import org.apache.logging.log4j.kotlin.logger
-import java.io.IOException
 
 class IBusIndexer(private val iBus: IBus): IIndexManager {
     val log = logger()
-    
-    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String): String? {
+
+    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
         val call = IngridCall()
         call.method = "getIndexNameFromAliasName"
         call.target = "__centralIndex__"
-        val map: MutableMap<String, String> = HashMap()
-        map["indexAlias"] = indexAlias
-        map["partialName"] = partialName
-        call.parameter = map
+        call.parameter = mapOf(
+            "indexAlias" to indexAlias,
+            "partialName" to partialName
+        )
 
         val response = sendCallToIBus(iBus, call)
         return response?.getString("result")
     }
 
-    override fun createIndex(name: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
     override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean {
         val call = prepareCall("createIndex")
-        val map: MutableMap<String, String> = HashMap()
-        map["name"] = name
-        map["type"] = type
-        map["esMapping"] = esMapping
-        map["esSettings"] = esSettings
-        call.parameter = map
+        call.parameter = mapOf(
+            "name" to name,
+            "type" to type,
+            "esMapping" to esMapping,
+            "esSettings" to esSettings
+        )
 
         val response = sendCallToIBus(iBus, call)
         return response != null && response.getBoolean("result")
@@ -76,31 +71,23 @@ class IBusIndexer(private val iBus: IBus): IIndexManager {
         sendCallToIBus(iBus, call)
     }
 
-    override fun getIndexTypeIdentifier(indexInfo: IndexInfo): String {
-        return ("=>" + indexInfo.toIndex)// TODO: + ":" + indexInfo.toType
-    }
-
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
         val call = prepareCall("update")
-        val map: MutableMap<String, Any> = HashMap()
-        map["indexinfo"] = indexinfo // jacksonObjectMapper().convertValue(indexinfo, Any::class.java)
-        map["doc"] = doc
-        map["updateOldIndex"] = false
-        call.parameter = map
+        call.parameter = mapOf(
+            "indexinfo" to indexinfo,
+            "doc" to doc,
+            "updateOldIndex" to false
+        )
 
         sendCallToIBus(iBus, call)
     }
 
-    override fun updatePlugDescription(plugDescription: PlugDescription) {
-        TODO("Not yet implemented")
-    }
-
     override fun updateIPlugInformation(id: String, info: String) {
         val call = prepareCall("updateIPlugInformation")
-        val map: MutableMap<String, Any> = HashMap()
-        map["id"] = id
-        map["info"] = info
-        call.parameter = map
+        call.parameter = mapOf(
+            "id" to id,
+            "info" to info
+        )
 
         sendCallToIBus(iBus, call)
     }
@@ -117,59 +104,27 @@ class IBusIndexer(private val iBus: IBus): IIndexManager {
         sendCallToIBus(iBus, call)
     }
 
-    override fun getIndices(filter: String): Array<String> {
+    override fun getIndices(filter: String): List<String> {
         val call = prepareCall("getIndices")
         call.parameter = filter
 
         val response = sendCallToIBus(iBus, call)
-        return response?.get("result") as Array<String>? ?: emptyArray()
+        @Suppress("UNCHECKED_CAST")
+        return response?.get("result") as List<String>? ?: emptyList()
     }
+    
+    override val defaultMapping: String = IBusIndexer::class.java.getResource("default-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'default-mapping.json'")
+            
 
-    override fun getMapping(indexInfo: IndexInfo): Map<String, Any> {
-        val call = prepareCall("getMapping")
-        call.parameter = indexInfo
-
-        val response = sendCallToIBus(iBus, call)
-        return response!!["result"] as Map<String, Any>
-    }
-
-    override val defaultMapping: String?
-        get() {
-            val mappingStream = javaClass.classLoader.getResourceAsStream("default-mapping.json")
-            try {
-                if (mappingStream != null) {
-                    return XMLSerializer.getContents(mappingStream)
-                }
-            } catch (e: IOException) {
-                log.error("Error getting default mapping for index creation", e)
-            }
-            return null
-        }
-
-    override val defaultSettings: String?
-        get() {
-            val settingsStream = javaClass.classLoader.getResourceAsStream("default-settings.json")
-            try {
-                if (settingsStream != null) {
-                    return XMLSerializer.getContents(settingsStream)
-                }
-            } catch (e: IOException) {
-                log.error("Error getting default mapping for index creation", e)
-            }
-            return null
-        }
-
-    override fun updateHearbeatInformation(iPlugIdInfos: Map<String, String>) {
-        TODO("Not yet implemented")
-    }
+    override val defaultSettings: String = IBusIndexer::class.java.getResource("default-settings.json")?.readText() ?: throw ServerException.withReason("Could not find settings file 'default-settings.json'")
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         val call = prepareCall("deleteDocById")
-        val map: MutableMap<String, Any> = HashMap()
-        map["indexinfo"] = indexinfo
-        map["id"] = id
-        map["updateOldIndex"] = updateOldIndex
-        call.parameter = map
+        call.parameter = mapOf(
+            "indexinfo" to indexinfo,
+            "id" to id,
+            "updateOldIndex" to updateOldIndex
+        )
 
         sendCallToIBus(iBus, call)
     }

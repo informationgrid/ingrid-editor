@@ -18,7 +18,7 @@
                             mat-flat-button
                             color="primary"
                             class="start-index"
-                            [disabled]="!initialized"
+                            [disabled]="!initialized || hasNoConnections()"
                             (click)="index()"
                         >
                             Indizieren
@@ -34,6 +34,14 @@
                     }
                 </div>
             </ige-job-handler-header>
+            @if (hasNoConnections()) {
+                <p>
+                    In der Systemkonfiguration unter "Verbindungen" sind noch
+                    keine definiert. Diese müssen von einem
+                    Katalog-Administrator konfiguriert werden, um eine
+                    Indizierung starten zu können.
+                </p>
+            }
         </ng-container>
     } @else {
         Elasticsearch ist nicht im Backend aktiviert, welches für die

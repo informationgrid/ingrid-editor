@@ -27,12 +27,7 @@ data class IndexInfo(
     var docIdField: String? = null
 ): Serializable {
     private var realIndexName: String? = null
-    fun getRealIndexName(): String? {
-        if (realIndexName == null) {
-            return toIndex
-        }
-        return realIndexName
-    }
+    fun getRealIndexName(): String = realIndexName ?: toIndex
 
     fun setRealIndexName(realIndexName: String?) {
         this.realIndexName = realIndexName
@@ -41,9 +36,6 @@ data class IndexInfo(
     val toAlias = _toAlias
         get() = field ?: toIndex
     
-//    val identifier: String
-//        get() = toIndex + "." + toType
-
     companion object {
         private const val serialVersionUID = -2290409004042430234L
     }
