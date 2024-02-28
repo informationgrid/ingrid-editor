@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 @Service
-class M081_UpdateAuditLogMessages : MigrationBase("0.77") {
+class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
 
     @Autowired
     lateinit var entityManager: EntityManager
