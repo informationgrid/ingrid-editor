@@ -49,6 +49,8 @@ class BmiIndexExporter : IgeExporter {
             )
         }
 
+    override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
+
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")

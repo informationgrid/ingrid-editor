@@ -54,6 +54,8 @@ class IndexExporterAddress(
         false
     )
 
+    override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
+
     @Transactional
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") return "{}"

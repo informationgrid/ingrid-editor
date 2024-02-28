@@ -70,7 +70,7 @@ class IndexTargetWorker(
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 
         val indexInfo = IndexInfo(newIndex, categoryAlias, config.indexFieldId)
-        val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, catalogProfile)
+        val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, config.exporter!!.exportSql(catalogId))
         val totalHits: Long = indexService.getNumberOfPublishableDocuments(queryInfo)
         val targetMessage = message.getTargetByName(config.name)
         updateMessageWithDocumentInfo(targetMessage, totalHits)

@@ -49,7 +49,7 @@ data class QueryInfo(
     val catalogId: String,
     val category: String,
     val types: List<String>,
-    val catalogProfile: CatalogProfile
+    val exporterConditions: String
 )
 
 @Service
@@ -104,13 +104,9 @@ class IndexService(
     }
 
     fun getSinglePublishedDocument(
-        catalogId: String,
-        category: String,
-        types: List<String>,
-        catalogProfile: CatalogProfile,
-        uuid: String
+        queryInfo: QueryInfo,
+        uuid: String,
     ): DocumentIndexInfo {
-        val queryInfo = QueryInfo(catalogId, category, types, catalogProfile)
         val docs = requestPublishableDocuments(queryInfo, uuid)
         return docs.single()
     }
@@ -171,14 +167,13 @@ class IndexService(
         uuid: String?,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
     ): List<DocumentIndexInfo> {
-        val iBusConditions = getSystemSpecificConditions(queryInfo.types)
-        val sql = createSqlForPublishedDocuments(queryInfo.catalogProfile, queryInfo.catalogId, iBusConditions, queryInfo.category, uuid)
+        val sql = createSqlForPublishedDocuments(queryInfo, uuid)
         val orderBy =
             " GROUP BY document_wrapper.uuid, document_wrapper.id ORDER BY document_wrapper.uuid"
 
+        log.debug("SQL for documents to be exported: ${sql + orderBy}")
         val nativeQuery = entityManager.createNativeQuery(sql + orderBy)
-
-        nativeQuery.setParameter(1, queryInfo.catalogId)
+            .setParameter(1, queryInfo.catalogId)
 
         val result =
             nativeQuery
@@ -217,37 +212,26 @@ class IndexService(
     }
 
     private fun createSqlForPublishedDocuments(
-        profile: CatalogProfile,
-        catalogId: String,
-        iBusConditions: String,
-        category: String,
+        queryInfo: QueryInfo,
         uuid: String?
     ): String {
-        val profileConditions = profile.additionalPublishConditions(catalogId)
-
-        val indexFolders = """OR (document1.type = 'FOLDER' AND document1.state = 'DRAFT')"""
+        val iBusConditions = getSystemSpecificConditions(queryInfo.types)
         var sql =
             """
                 SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id
-                FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid, catalog
-                WHERE document_wrapper.catalog_id = catalog.id AND document1.catalog_id = catalog.id AND category = '$category' AND (document1.state = 'PUBLISHED' $indexFolders) AND deleted = 0 AND catalog.identifier = ? AND 
-                (${iBusConditions})
-            """
-                .trimIndent()
+                FROM document_wrapper JOIN document document ON document_wrapper.uuid=document.uuid, catalog
+                WHERE document_wrapper.catalog_id = catalog.id AND document.catalog_id = catalog.id AND 
+                category = '${queryInfo.category}' AND deleted = 0 AND catalog.identifier = ? AND
+                 $iBusConditions AND (${queryInfo.exporterConditions})
+            """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
-        if (profileConditions.isNotEmpty())
-            sql += " AND (${profileConditions.joinToString(" AND ")})"
         return sql
     }
 
     fun getNumberOfPublishableDocuments(queryInfo: QueryInfo): Long {
-        val iBusConditions = getSystemSpecificConditions(queryInfo.types)
         val sql =
             createSqlForPublishedDocuments(
-                queryInfo.catalogProfile,
-                queryInfo.catalogId,
-                iBusConditions,
-                queryInfo.category,
+                queryInfo,
                 null
             )
         val regex = Regex("(.|\\n)*?\\bFROM\\b")

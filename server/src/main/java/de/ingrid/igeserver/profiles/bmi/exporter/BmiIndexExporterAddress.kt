@@ -45,6 +45,8 @@ class BmiIndexExporterAddress : IgeExporter {
             )
         }
 
+    override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
+    
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // do not export addresses
         return "{}"

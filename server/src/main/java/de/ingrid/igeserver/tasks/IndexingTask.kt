@@ -26,7 +26,6 @@ import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
-import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.*
@@ -111,7 +110,7 @@ class IndexingTask(
             // get all targets we want to export to
             val targets = getExporterConfigForCatalog(catalog, catalogProfile)
             
-            setTotalDatasetsToMessage(message, targets, catalogProfile)
+            setTotalDatasetsToMessage(message, targets)
             
             // make sure the ingrid_meta index is there
             handleInformationIndex(targets)
@@ -161,10 +160,10 @@ class IndexingTask(
         updateIndexLog(catalogId, message)
     }
 
-    private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>, catalogProfile: CatalogProfile) {
-        
+    private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>) {
+        val catalogId = message.catalogId
         val counts = targets.map { 
-            val queryInfo = QueryInfo(message.catalogId, it.category.value, it.tags, catalogProfile)
+            val queryInfo = QueryInfo(catalogId, it.category.value, it.tags, it.exporter!!.exportSql(catalogId))
             indexService.getNumberOfPublishableDocuments(queryInfo)
         }
         message.totalDatasets = counts.sum()
@@ -294,20 +293,12 @@ class IndexingTask(
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         try {
-            val doc =
-                indexService.getSinglePublishedDocument(
-                    catalogId,
-                    category.value,
-                    configs[0].tags,
-                    catalogProfile,
-                    docId
-                )
-
             configs
                 .filter { it.category == category }
                 .forEach {
-                    val indexInfo =
-                        getOrPrepareIndex(configs[0], catalogProfile, category, elasticsearchAlias)
+                    val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter!!.exportSql(catalogId))
+                    val doc = indexService.getSinglePublishedDocument(queryInfo, docId)
+                    val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
                     val plugInfo = createIPlugInfo(catalog, it.category)
                     IndexTargetWorker(
                             it,
