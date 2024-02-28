@@ -39,7 +39,7 @@ class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
     private val updateSql = """
         UPDATE audit_log SET
             logger = 'audit.data-history',
-            message = jsonb_set(message, '{cat}', to_jsonb('data-history'::text))            
+            message = jsonb_set(message, '{cat}', to_jsonb(:cat))            
         WHERE 
             message->>'action' = 'unpublish'
     """.trimIndent()
@@ -47,7 +47,9 @@ class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
     override fun exec() {
         setAuthentication()
         ClosableTransaction(transactionManager).use {
-            entityManager.createNativeQuery(updateSql).executeUpdate()
+            entityManager.createNativeQuery(updateSql)
+                .setParameter("cat", "data-history")
+                .executeUpdate()
         }
     }
 
