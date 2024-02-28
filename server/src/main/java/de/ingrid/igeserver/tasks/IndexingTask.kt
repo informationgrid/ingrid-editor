@@ -99,7 +99,7 @@ class IndexingTask(
     fun startIndexing(catalogId: String) {
         log.info("Starting Task: Indexing for $catalogId")
 
-        val message = IndexMessage(catalogId)
+        val message = IndexMessage(catalogId, 0)
         notify.sendMessage(
             message.apply { this.message = "Start Indexing for catalog: $catalogId" }
         )
@@ -107,10 +107,12 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
 
-        // get all targets we want to export to
-        val targets = getExporterConfigForCatalog(catalog, catalogProfile)
-
         try {
+            // get all targets we want to export to
+            val targets = getExporterConfigForCatalog(catalog, catalogProfile)
+            
+            setTotalDatasetsToMessage(message, targets, catalogProfile)
+            
             // make sure the ingrid_meta index is there
             handleInformationIndex(targets)
 
@@ -159,6 +161,15 @@ class IndexingTask(
         updateIndexLog(catalogId, message)
     }
 
+    private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>, catalogProfile: CatalogProfile) {
+        
+        val counts = targets.map { 
+            val queryInfo = QueryInfo(message.catalogId, it.category.value, it.tags, catalogProfile)
+            indexService.getNumberOfPublishableDocuments(queryInfo)
+        }
+        message.totalDatasets = counts.sum()
+    }
+
     private fun createIPlugInfo(catalog: Catalog, category: DocumentCategory): IPlugInfo {
         val partner =
             codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
@@ -202,7 +213,7 @@ class IndexingTask(
                 val msg = "An exporter configuration contains invalid target: ${config.target}"
                 log.error(msg)
                 notify.addAndSendMessageError(
-                    IndexMessage(catalog.identifier),
+                    IndexMessage(catalog.identifier, 0),
                     ServerException.withReason(msg)
                 )
                 return@flatMap emptyList()
@@ -300,7 +311,7 @@ class IndexingTask(
                     val plugInfo = createIPlugInfo(catalog, it.category)
                     IndexTargetWorker(
                             it,
-                            IndexMessage(catalogId),
+                            IndexMessage(catalogId, 1),
                             catalogProfile,
                             notify,
                             indexService,

@@ -69,7 +69,6 @@ class IndexTargetWorker(
         // pre phase
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 
-        // TODO: configure index name
         val indexInfo = IndexInfo(newIndex, categoryAlias, config.indexFieldId)
         val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, catalogProfile)
         val totalHits: Long = indexService.getNumberOfPublishableDocuments(queryInfo)
@@ -297,16 +296,10 @@ class IndexTargetWorker(
     }
 
     private fun increaseProgressInTargetMessage(message: TargetMessage) {
-        if (config.category == DocumentCategory.DATA) {
-            message.apply {
-                this.progressDocuments += 1
-                this.progress = (((this.progressDocuments + 0f) / this.numDocuments) * 100).toInt()
-            }
-        } else {
-            message.apply {
-                this.progressAddresses += 1
-                this.progress = (((this.progressAddresses + 0f) / this.numDocuments) * 100).toInt()
-            }
+        message.apply {
+            if (config.category == DocumentCategory.DATA) this.progressDocuments += 1
+            else this.progressAddresses += 1
         }
+        this.message.increaseProgress()
     }
 }
