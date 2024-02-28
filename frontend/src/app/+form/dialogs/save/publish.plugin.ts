@@ -50,7 +50,6 @@ export class PublishPlugin extends SaveBase {
     "Fügt einen Button zum Veröffentlichen eines Datensatzes hinzu.";
   group = "Toolbar";
   defaultActive = true;
-  hide = true;
 
   eventPublishId = "PUBLISH";
   eventRevertId = "REVERT";
@@ -72,6 +71,15 @@ export class PublishPlugin extends SaveBase {
     sessionStore: SessionStore,
   ) {
     super(sessionStore, messageService);
+    this.fields.push({
+      key: "unpublishDisabled",
+      type: "checkbox",
+      defaultValue: false,
+      props: {
+        label: '"Veröffentlichung zurückziehen" deaktivieren',
+      },
+    });
+
     inject(PluginService).registerPlugin(this);
   }
 
@@ -126,6 +134,37 @@ export class PublishPlugin extends SaveBase {
       pos: 100,
     });
 
+    const publishMenu = [
+      {
+        eventId: this.eventPublishId,
+        label: "Jetzt veröffentlichen",
+        active: true,
+      },
+      {
+        eventId: this.eventPlanPublishId,
+        label: "Veröffentlichung planen",
+        active: true,
+      },
+      {
+        eventId: this.eventRevertId,
+        label: "Auf letzte Veröffentlichung zurücksetzen",
+        active: true,
+      },
+      {
+        eventId: this.eventValidate,
+        label: "Veröffentlichung prüfen",
+        active: true,
+      },
+    ];
+
+    if (this.data?.unpublishDisabled !== true) {
+      publishMenu.push({
+        eventId: this.eventUnpublishId,
+        label: "Veröffentlichung zurückziehen",
+        active: true,
+      });
+    }
+
     this.formToolbarService.addButton({
       id: "toolBtnPublish",
       label: "Veröffentlichen",
@@ -134,33 +173,7 @@ export class PublishPlugin extends SaveBase {
       align: "right",
       active: false,
       isPrimary: true,
-      menu: [
-        {
-          eventId: this.eventPublishId,
-          label: "Jetzt veröffentlichen",
-          active: true,
-        },
-        {
-          eventId: this.eventPlanPublishId,
-          label: "Veröffentlichung planen",
-          active: true,
-        },
-        {
-          eventId: this.eventRevertId,
-          label: "Auf letzte Veröffentlichung zurücksetzen",
-          active: true,
-        },
-        {
-          eventId: this.eventUnpublishId,
-          label: "Veröffentlichung zurückziehen",
-          active: false,
-        },
-        {
-          eventId: this.eventValidate,
-          label: "Veröffentlichung prüfen",
-          active: true,
-        },
-      ],
+      menu: publishMenu,
     });
   }
 
@@ -280,7 +293,7 @@ export class PublishPlugin extends SaveBase {
         catchError((error) =>
           this.handleError(error, data, this.forAddress, "PUBLISH"),
         ),
-        tap((response) => {
+        tap(() => {
           this.documentService.publishState$.next(false);
           if (delay != null) {
             this.documentService.reload$.next({
@@ -319,13 +332,12 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .subscribe((doRevert) => {
         if (doRevert) {
-          this.documentService.revert(doc._id, this.forAddress).subscribe(
-            () => {},
-            (err) => {
+          this.documentService.revert(doc._id, this.forAddress).subscribe({
+            error: (err) => {
               console.log("Error when reverting data", err);
               throw err;
             },
-          );
+          });
         }
       });
   }
