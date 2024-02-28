@@ -105,6 +105,10 @@ export class ActivityReportComponent implements AfterViewInit {
             label: "Veröffentlicht",
           },
           {
+            id: "publish",
+            label: "Veröffentlichung zurückgezogen",
+          },
+          {
             id: "delete",
             label: "Gelöscht",
           },
@@ -135,9 +139,13 @@ export class ActivityReportComponent implements AfterViewInit {
   getReport(formValue) {
     this.startDate = formValue?.timeRef.start?.toISOString();
     this.endDate = formValue?.timeRef.end?.toISOString();
-    const actions = ["create", "update", "publish", "delete"].filter(
-      (action) => formValue?.actionType[action],
-    );
+    const actions = [
+      "create",
+      "update",
+      "publish",
+      "unpublish",
+      "delete",
+    ].filter((action) => formValue?.actionType[action]);
     this.uvpResearchService
       .getActivityReport(this.startDate, this.endDate, actions)
       .subscribe((report) => {
@@ -165,6 +173,8 @@ export class ActivityReportComponent implements AfterViewInit {
         return "Aktualisiert";
       case "publish":
         return "Veröffentlicht";
+      case "unpublish":
+        return "Veröffentlichung zurückgezogen";
       case "delete":
         return "Gelöscht";
       default:
