@@ -46,8 +46,8 @@ class ElasticIndexer(private val elastic: ElasticClient): IIndexManager {
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
         return runBlocking {
-            val aliases = elastic.client.getAliases(indexAlias)
-            aliases.keys.find { partialName == null || it.contains(partialName) }
+            val aliases = try { elastic.client.getAliases(indexAlias) } catch (_: RestException) { null }
+            aliases?.keys?.find { partialName == null || it.contains(partialName) }
         }
     }
 
@@ -147,8 +147,8 @@ class ElasticIndexer(private val elastic: ElasticClient): IIndexManager {
         }
     }
 
-    override val defaultMapping: String = ElasticIndexer::class.java.getResource("ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
-    override val defaultSettings: String = ElasticIndexer::class.java.getResource("ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
+    override val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
+    override val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         runBlocking { 

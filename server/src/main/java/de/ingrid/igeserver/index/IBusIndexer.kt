@@ -113,10 +113,10 @@ class IBusIndexer(private val iBus: IBus): IIndexManager {
         return response?.get("result") as List<String>? ?: emptyList()
     }
     
-    override val defaultMapping: String = IBusIndexer::class.java.getResource("default-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'default-mapping.json'")
+    override val defaultMapping: String = IBusIndexer::class.java.getResource("/default-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'default-mapping.json'")
             
 
-    override val defaultSettings: String = IBusIndexer::class.java.getResource("default-settings.json")?.readText() ?: throw ServerException.withReason("Could not find settings file 'default-settings.json'")
+    override val defaultSettings: String = IBusIndexer::class.java.getResource("/default-settings.json")?.readText() ?: throw ServerException.withReason("Could not find settings file 'default-settings.json'")
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         val call = prepareCall("deleteDocById")
