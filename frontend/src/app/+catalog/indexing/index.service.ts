@@ -66,7 +66,10 @@ export class IndexService {
   }
 
   start() {
-    return this.http.post(this.configuration.backendUrl + "index", null);
+    return this.http.post(
+      this.configuration.backendUrl + "jobs/index?command=start",
+      null,
+    );
   }
 
   setCronPattern(value: string) {
@@ -83,14 +86,14 @@ export class IndexService {
 
   fetchLastLog() {
     return this.http
-      .get<any>(this.configuration.backendUrl + "index/log")
+      .get<any>(`${this.configuration.backendUrl}jobs/index/info`)
       .pipe(tap((response) => this.lastLog$.next(response)))
       .subscribe();
   }
 
   cancel() {
     return this.http
-      .delete(this.configuration.backendUrl + "index/" + this.catalog.id)
+      .post(this.configuration.backendUrl + "jobs/index?command=stop", null)
       .subscribe();
   }
 

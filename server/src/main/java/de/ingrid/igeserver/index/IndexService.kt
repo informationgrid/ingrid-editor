@@ -24,17 +24,23 @@ import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.model.ResearchPaging
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.tasks.IndexConfig
+import de.ingrid.igeserver.tasks.IndexingTask
 import jakarta.persistence.EntityManager
 import java.text.SimpleDateFormat
 import java.util.*
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
+import org.quartz.JobKey
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Lazy
+import org.springframework.context.event.EventListener
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -58,12 +64,15 @@ class IndexService(
     private val exportService: ExportService,
     @Lazy private val documentService: DocumentService,
     private val entityManager: EntityManager,
-    private val generalProperties: GeneralProperties
+    private val generalProperties: GeneralProperties,
+    private val schedulerService: SchedulerService
 ) {
 
     private val log = logger()
 
     companion object {
+        const val jobKey: String = "indexing"
+        
         fun getNextIndexName(name: String, uuid: String, uuidName: String): String {
             val uuidNameFinal = uuidName.lowercase(Locale.getDefault())
             var isNew = false
@@ -102,6 +111,23 @@ class IndexService(
             }
         }
     }
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun onReady() {
+        getIndexConfigurations()
+            .filter { it.cron.isNotEmpty() }
+            .forEach { config ->
+                val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
+                schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
+            }
+    }
+
+    private fun getIndexConfigurations(): List<IndexConfig> =
+        catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
+
+    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
+        catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
+    
 
     fun getSinglePublishedDocument(
         queryInfo: QueryInfo,
@@ -150,6 +176,10 @@ class IndexService(
             .findByIdentifier(catalogId)
             .apply { settings.indexCronPattern = config.cronPattern }
             .run { catalogRepo.save(this) }
+
+
+        val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
+        schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
     }
 
     fun updateExporterConfig(catalogId: String, config: List<ExportConfig>) {

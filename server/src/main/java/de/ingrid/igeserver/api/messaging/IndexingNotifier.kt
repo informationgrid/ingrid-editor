@@ -63,8 +63,8 @@ class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
         msgTemplate.convertAndSend("$WS_MESSAGE_TRANSFER_DESTINATION/${message.catalogId}", message)
     }
 
-    fun addAndSendMessageError(message: IndexMessage, ex: Exception, errorPrefix: String = "") {
-        val errorMessage = "${errorPrefix}${ex.message}"
+    fun addAndSendMessageError(message: IndexMessage, ex: Exception?, errorPrefix: String = "") {
+        val errorMessage = ex?.message?.let { errorPrefix + it } ?: errorPrefix
         log.error(errorMessage, ex)
         sendMessage(message.apply { errors.add(errorMessage) })
     }

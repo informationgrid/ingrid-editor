@@ -31,7 +31,6 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.IIndexManager
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.index.QueryInfo
-import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
@@ -39,24 +38,17 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.tasks.quartz.IgeJob
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.DisposableBean
+import org.quartz.JobExecutionContext
 import org.springframework.context.annotation.Profile
-import org.springframework.scheduling.TaskScheduler
-import org.springframework.scheduling.annotation.SchedulingConfigurer
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
-import org.springframework.scheduling.config.ScheduledTaskRegistrar
-import org.springframework.scheduling.support.CronTrigger
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import java.time.OffsetDateTime
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
-import kotlin.concurrent.schedule
 
 data class ExtendedExporterConfig(
     val target: IIndexManager,
@@ -78,24 +70,21 @@ class IndexingTask(
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties,
     private val connectionService: ConnectionService
-) : SchedulingConfigurer, DisposableBean {
+) : IgeJob() {
 
-    val log = logger()
-    val executor = Executors.newSingleThreadScheduledExecutor()
-    private val scheduler: TaskScheduler = initScheduler()
-    private val scheduledFutures: MutableCollection<IndexConfig> = mutableListOf()
-    private val cancellations = HashMap<String, Boolean>()
+    override val log = logger()
+
     private val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
-    fun indexByScheduler(catalogId: String) {
-        Timer("ManualIndexing", true).schedule(0) {
-            runAsCatalogAdministrator()
-            startIndexing(catalogId)
-        }
+    override fun run(context: JobExecutionContext) {
+        val catalogId = context.mergedJobDataMap.getString("catalogId")
+
+        runAsCatalogAdministrator()
+        startIndexing(context, catalogId)
     }
 
     /** Indexing of all published documents into an Elasticsearch index. */
-    fun startIndexing(catalogId: String) {
+    private fun startIndexing(context: JobExecutionContext, catalogId: String) {
         log.info("Starting Task: Indexing for $catalogId")
 
         val message = IndexMessage(catalogId, 0)
@@ -130,8 +119,7 @@ class IndexingTask(
                             generalProperties,
                             plugInfo,
                             postIndexPipe,
-                            settingsService,
-                            cancellations
+                            settingsService
                         )
                             .indexAll()
 
@@ -156,7 +144,7 @@ class IndexingTask(
         )
 
         // save last indexing information to database for this catalog to get this in frontend
-        updateIndexLog(catalogId, message)
+        finishJob(context, message)
     }
 
     private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>) {
@@ -263,13 +251,6 @@ class IndexingTask(
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
         catalog.settings.config.elasticsearchAlias ?: catalog.identifier
 
-    private fun updateIndexLog(catalogId: String, message: IndexMessage) {
-        val catalog = catalogRepo.findByIdentifier(catalogId)
-        catalog.settings.lastLogSummary = message
-        catalog.modified = OffsetDateTime.now()
-        catalogRepo.save(catalog)
-    }
-
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
         catalogId: String,
@@ -305,7 +286,6 @@ class IndexingTask(
                         plugInfo,
                         postIndexPipe,
                         settingsService,
-                        cancellations
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
                 }
@@ -344,33 +324,6 @@ class IndexingTask(
         )
     }
 
-    // check out here:
-    // https://stackoverflow.com/questions/39152599/interrupt-spring-scheduler-task-before-next-invocation
-    override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
-
-        Timer("IgeTasks", false).schedule(10000) {
-            // get index configurations from all catalogs
-            getIndexConfigurations()
-                .filter { it.cron.isNotEmpty() }
-                .forEach { config ->
-                    val future = addSchedule(config)
-                    config.future = future
-                    scheduledFutures.add(config)
-                }
-        }
-    }
-
-    private fun addSchedule(config: IndexConfig): ScheduledFuture<*>? {
-        val trigger = CronTrigger(config.cron)
-        return scheduler.schedule(
-            {
-                runAsCatalogAdministrator()
-                startIndexing(config.catalogId)
-            },
-            trigger
-        )
-    }
-
     private fun runAsCatalogAdministrator() {
         val auth: Authentication =
             UsernamePasswordAuthenticationToken(
@@ -379,43 +332,6 @@ class IndexingTask(
                 listOf(SimpleGrantedAuthority("cat-admin"))
             )
         SecurityContextHolder.getContext().authentication = auth
-    }
-
-    fun updateTaskTrigger(catalogId: String, config: IndexCronOptions) {
-
-        val schedule = scheduledFutures.find { it.catalogId == catalogId }
-        schedule?.future?.cancel(false)
-        scheduledFutures.remove(schedule)
-        if (config.cronPattern.isEmpty()) {
-            log.info("Indexing Task for '${catalogId}' disabled")
-        } else {
-            val indexConfig = IndexConfig(catalogId, "IGNORE", config.cronPattern)
-            val newFuture = addSchedule(indexConfig)
-            indexConfig.future = newFuture
-            scheduledFutures.add(indexConfig)
-            log.info("Indexing Task for '${catalogId}' rescheduled")
-        }
-    }
-
-    private fun getIndexConfigurations(): List<IndexConfig> =
-        catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
-
-    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
-        catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
-
-    override fun destroy() {
-        executor.shutdownNow()
-    }
-
-    private fun initScheduler(): TaskScheduler {
-        return ThreadPoolTaskScheduler().apply {
-            poolSize = 10
-            afterPropertiesSet()
-        }
-    }
-
-    fun cancelIndexing(catalogId: String) {
-        this.cancellations[catalogId] = true
     }
 
     fun removeFromIndex(catalogId: String, id: String, category: String) {

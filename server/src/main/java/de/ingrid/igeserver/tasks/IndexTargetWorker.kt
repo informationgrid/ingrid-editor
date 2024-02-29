@@ -56,7 +56,6 @@ class IndexTargetWorker(
     private val plugInfo: IPlugInfo,
     private val postIndexPipe: PostIndexPipe,
     private val settingsService: SettingsService,
-    private val cancellations: HashMap<String, Boolean>,
 ) {
 
     val log = logger()
@@ -142,7 +141,7 @@ class IndexTargetWorker(
         val targetMessage = message.getTargetByName(config.target.name)
 
         docsToPublish.content.forEach { doc ->
-            handleCancelation()
+//            handleCancelation()
             increaseProgressInTargetMessage(targetMessage)
             notify.sendMessage(message)
 
@@ -281,19 +280,19 @@ class IndexTargetWorker(
         }
     }
 
-    private fun handleCancelation() {
-
-        if (this.cancellations[catalogId] == true) {
-            this.cancellations[catalogId] = false
-            notify.sendMessage(
-                message.apply {
-                    this.endTime = Date()
-                    this.errors.add("Indexing cancelled")
-                }
-            )
-            throw IndexException.wasCancelled()
-        }
-    }
+//    private fun handleCancelation() {
+//
+//        if (this.cancellations[catalogId] == true) {
+//            this.cancellations[catalogId] = false
+//            notify.sendMessage(
+//                message.apply {
+//                    this.endTime = Date()
+//                    this.errors.add("Indexing cancelled")
+//                }
+//            )
+//            throw IndexException.wasCancelled()
+//        }
+//    }
 
     private fun increaseProgressInTargetMessage(message: TargetMessage) {
         message.apply {
