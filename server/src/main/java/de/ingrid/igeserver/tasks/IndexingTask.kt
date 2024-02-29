@@ -188,6 +188,7 @@ class IndexingTask(
 
     private fun handleInformationIndex(configs: List<ExtendedExporterConfig>) {
         configs
+            .filter { it.exporter != null }
             .map { it.target }
             .toSet()
             .forEach { it.checkAndCreateInformationIndex() }
