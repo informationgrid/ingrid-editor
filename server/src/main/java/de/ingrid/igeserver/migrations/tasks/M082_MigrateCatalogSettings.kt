@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 @Service
-class M081_MigrateCatalogSettings : MigrationBase("0.81") {
+class M082_MigrateCatalogSettings : MigrationBase("0.82") {
     val log = logger()
 
     @Autowired
