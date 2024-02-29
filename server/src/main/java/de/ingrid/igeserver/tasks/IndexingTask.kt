@@ -60,7 +60,7 @@ import kotlin.concurrent.schedule
 
 data class ExtendedExporterConfig(
     val target: IIndexManager,
-    val exporter: IgeExporter?,
+    val exporter: IgeExporter,
     val tags: List<String>,
     val category: DocumentCategory,
     val indexFieldId: String
@@ -117,7 +117,6 @@ class IndexingTask(
 
             run indexingLoop@{
                 targets
-                    .filter { it.exporter != null }
                     .forEach { target ->
                         val plugInfo = createIPlugInfo(catalog, target.category)
 
@@ -163,7 +162,7 @@ class IndexingTask(
     private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>) {
         val catalogId = message.catalogId
         val counts = targets.map {
-            val queryInfo = QueryInfo(catalogId, it.category.value, it.tags, it.exporter!!.exportSql(catalogId))
+            val queryInfo = QueryInfo(catalogId, it.category.value, it.tags, it.exporter.exportSql(catalogId))
             indexService.getNumberOfPublishableDocuments(queryInfo)
         }
         message.totalDatasets = counts.sum()
@@ -188,7 +187,6 @@ class IndexingTask(
 
     private fun handleInformationIndex(configs: List<ExtendedExporterConfig>) {
         configs
-            .filter { it.exporter != null }
             .map { it.target }
             .toSet()
             .forEach { it.checkAndCreateInformationIndex() }
@@ -208,8 +206,6 @@ class IndexingTask(
         }
 
         return exportConfigs.flatMap { config ->
-//            val ibus = ibusConfigs.find { it.id!! == config.target }
-//            val elastic = elasticConfig.find { it.id!! == config.target }
             val connection = settingsService.getConnectionConfig(config.target)
             if (connection == null) {
                 val msg = "An exporter configuration contains invalid target: ${config.target}"
@@ -223,10 +219,12 @@ class IndexingTask(
 
             val target = connectionService.getIndexerForConnection(config.target)
 
-            categories.map {
+            categories.mapNotNull {
+                // skip configs where no exporter is defined
+                val exporter = getExporterOrNull(it, config.exporterId) ?: return@mapNotNull null
                 ExtendedExporterConfig(
                     target,
-                    getExporterOrNull(it, config.exporterId),
+                    exporter,
                     config.tags,
                     it,
                     if (it == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
@@ -292,7 +290,7 @@ class IndexingTask(
             configs
                 .filter { it.category == category }
                 .forEach {
-                    val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter!!.exportSql(catalogId))
+                    val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter.exportSql(catalogId))
                     val doc = indexService.getSinglePublishedDocument(queryInfo, docId)
                     val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
                     val plugInfo = createIPlugInfo(catalog, it.category)
