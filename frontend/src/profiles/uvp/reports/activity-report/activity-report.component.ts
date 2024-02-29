@@ -105,7 +105,7 @@ export class ActivityReportComponent implements AfterViewInit {
             label: "Veröffentlicht",
           },
           {
-            id: "publish",
+            id: "unpublish",
             label: "Veröffentlichung zurückgezogen",
           },
           {

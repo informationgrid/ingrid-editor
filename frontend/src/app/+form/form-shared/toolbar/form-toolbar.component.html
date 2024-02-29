@@ -2,31 +2,35 @@
     <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
         <ng-container *ngFor="let button of buttons_left">
             @if (!button.isSeparator && !button.menu) {
-                <button
-                    mat-button
-                    long-press
-                    class="standard-toolbar-button"
-                    [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
-                    (menuClosed)="removeHiddenMenu(button)"
-                    #hiddenMenuTrigger="matMenuTrigger"
-                    [attr.data-cy]="'toolbar_' + button.eventId"
-                    (longPress)="
-                        sendEvent(
-                            button.eventId + '_LONGPRESS',
-                            hiddenMenuTrigger
-                        )
-                    "
-                    (shortClick)="sendEvent(button.eventId)"
-                    [disabled]="!button.active || isNotReady"
-                    [matTooltip]="button.tooltip"
-                    [attr.aria-label]="button.tooltip"
-                >
-                    <mat-icon
-                        class="material-icons-outlined"
-                        [svgIcon]="button.matSvgVariable"
-                        >{{ button.matIconVariable }}
-                    </mat-icon>
-                </button>
+                <div>
+                    <button
+                        mat-button
+                        long-press
+                        class="standard-toolbar-button"
+                        [attr.data-cy]="'toolbar_' + button.eventId"
+                        (longPress)="
+                            sendEvent(
+                                button.eventId + '_LONGPRESS',
+                                hiddenMenuTrigger
+                            )
+                        "
+                        (shortClick)="sendEvent(button.eventId)"
+                        [disabled]="!button.active || isNotReady"
+                        [matTooltip]="button.tooltip"
+                        [attr.aria-label]="button.tooltip"
+                    >
+                        <mat-icon
+                            class="material-icons-outlined"
+                            [svgIcon]="button.matSvgVariable"
+                            >{{ button.matIconVariable }}
+                        </mat-icon>
+                    </button>
+                    <div
+                        mat-button
+                        [matMenuTriggerFor]="hiddenMenu"
+                        #hiddenMenuTrigger="matMenuTrigger"
+                    ></div>
+                </div>
             }
             <mat-menu #hiddenMenu="matMenu">
                 @for (
