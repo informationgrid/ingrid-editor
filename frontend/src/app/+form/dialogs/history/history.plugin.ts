@@ -153,9 +153,9 @@ export class HistoryPlugin extends Plugin {
       this.docEvents
         .onEvent(this.eventIdNext)
         .subscribe(() => this.handleNext()),
-      this.docEvents.onEvent(this.eventIdPrevious).subscribe(() => {
-        this.handlePrevious();
-      }),
+      this.docEvents
+        .onEvent(this.eventIdPrevious)
+        .subscribe(() => this.handlePrevious()),
       this.docEvents
         .onEvent(`${this.eventIdPrevious}_LONGPRESS`)
         .subscribe((event) => {
@@ -167,10 +167,10 @@ export class HistoryPlugin extends Plugin {
           this.handleListNext(event.data);
         }),
       this.docEvents.onEvent("HISTORY_PREVIOUS_SELECT").subscribe((item) => {
-        this.handleHistoryPreviousSelect(item);
+        this.handleHistorySelect(item, "PREVIOUS");
       }),
       this.docEvents.onEvent("HISTORY_NEXT_SELECT").subscribe((item) => {
-        this.handleHistoryNextSelect(item);
+        this.handleHistorySelect(item, "NEXT");
       }),
     );
   }
@@ -185,6 +185,7 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdPrevious,
         pos: 200,
         active: false,
+        hiddenMenu: [],
       },
       {
         id: "toolBtnNextInHistory",
@@ -193,6 +194,7 @@ export class HistoryPlugin extends Plugin {
         eventId: this.eventIdNext,
         pos: 210,
         active: false,
+        hiddenMenu: [],
       },
     ];
     buttons.forEach((button) => this.formToolbarService.addButton(button));
@@ -216,21 +218,18 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
-
-    // in case of a long press this shall not be executed
-    // if (evt.ignore) { return; }
-
-    // close the popup if it's still open
-    // popup.close(this.popupMenu);
+    this.ignoreNextPush = true;
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     const node = this.stack[this.pointer + 1];
-
-    const navigated = await this.gotoNode(node);
-    if (navigated) {
-      if (this.hasNext()) {
-        this.pointer++;
-      }
+    if (this.hasNext()) {
+      this.pointer++;
     }
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -239,12 +238,12 @@ export class HistoryPlugin extends Plugin {
     if (this.ignoreNextPush) {
       return;
     }
-
-    // in case of a long press this shall not be executed
-    // if (evt.ignore) { return; }
-
-    // close the popup if it's still open
-    // popup.close(this.popupMenu);
+    this.ignoreNextPush = true;
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     // if current node is not last from stack we go to end of stack
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
@@ -253,13 +252,10 @@ export class HistoryPlugin extends Plugin {
     }
 
     const node = this.stack[this.pointer - 1];
-
-    const navigated = await this.gotoNode(node);
-    if (navigated) {
-      if (this.pointer > 0) {
-        this.pointer--;
-      }
+    if (this.pointer > 0) {
+      this.pointer--;
     }
+    this.gotoNode(node);
     this.handleButtonState();
   }
 
@@ -351,35 +347,30 @@ export class HistoryPlugin extends Plugin {
 
   /**
    * Handles the selection of a node from previous history list
-   * @param item
-   * @private
    */
-  private async handleHistoryPreviousSelect(item: any) {
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      const navigated = await this.gotoNode(item.data.data);
-      if (navigated) {
-        this.pointer = this.pointer - item.data.index - 1;
-        this.handleButtonState();
-      }
-      return;
-    }
+  private async handleHistorySelect(item: any, direction: "PREVIOUS" | "NEXT") {
+    const isCurrentDocument =
+      this.tree.getOpenedDocument()?.id === item.data.data.id;
+    if (isCurrentDocument) return;
+
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) return;
+
+    if (direction === "PREVIOUS")
+      this.pointer = this.pointer - item.data.index - 1;
+    else this.pointer = this.pointer + item.data.index + 1;
+
+    this.gotoNode(item.data.data);
+    this.handleButtonState();
+    return;
   }
 
-  /**
-   * Handles the selection of a node from next history list
-   * @param item
-   * @private
-   */
-  private async handleHistoryNextSelect(item: any) {
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      const navigated = await this.gotoNode(item.data.data);
-      if (navigated) {
-        this.pointer = this.pointer + item.data.index + 1;
-        this.handleButtonState();
-      }
-      return;
-    }
+  private handleDirtyForm() {
+    return FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress,
+    );
   }
 }
