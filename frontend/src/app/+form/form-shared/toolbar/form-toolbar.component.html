@@ -7,6 +7,7 @@
                     long-press
                     class="standard-toolbar-button"
                     [matMenuTriggerFor]="button.hiddenMenu ? hiddenMenu : null"
+                    (menuClosed)="removeHiddenMenu(button)"
                     #hiddenMenuTrigger="matMenuTrigger"
                     [attr.data-cy]="'toolbar_' + button.eventId"
                     (longPress)="
@@ -23,8 +24,8 @@
                     <mat-icon
                         class="material-icons-outlined"
                         [svgIcon]="button.matSvgVariable"
-                        >{{ button.matIconVariable }}</mat-icon
-                    >
+                        >{{ button.matIconVariable }}
+                    </mat-icon>
                 </button>
             }
             <mat-menu #hiddenMenu="matMenu">
@@ -64,8 +65,8 @@
                     <mat-icon
                         class="material-icons-outlined"
                         [svgIcon]="button.matSvgVariable"
-                        >{{ button.matIconVariable }}</mat-icon
-                    >
+                        >{{ button.matIconVariable }}
+                    </mat-icon>
                     <mat-icon class="animated" [class.flipIt]="menu[button.id]"
                         >arrow_drop_down
                     </mat-icon>

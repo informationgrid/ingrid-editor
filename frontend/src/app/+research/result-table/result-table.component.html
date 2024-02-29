@@ -1,8 +1,15 @@
 <ng-container *ngIf="columnsMap">
     <div class="result-table-header">
         <div class="result">
-            {{ isLoading ? "Suche" : totalHits + " Ergebnisse gefunden" }}
-            <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+            @if (isLoading) {
+                Suche
+                <mat-spinner [diameter]="24"></mat-spinner>
+            } @else {
+                <span>
+                    <span data-cy="total-hits">{{ totalHits }}</span> Ergebnisse
+                    gefunden
+                </span>
+            }
         </div>
         <div class="result-buttons">
             <ng-container *ngIf="showSaveButton">

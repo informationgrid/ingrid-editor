@@ -735,10 +735,11 @@ public class FileSystemStorage implements Storage {
     public void publishDataset(final String catalog, String datasetID, List<String> referencedFiles) throws IOException{
         var unpublishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.UNPUBLISHED);
         var existingFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
-
+        var archivedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.ARCHIVED);
+        
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
         
-        checkAndLogForMissingFiles(datasetID, referencedFiles, unpublishedFiles, existingFiles);
+        checkAndLogForMissingFiles(datasetID, referencedFiles, unpublishedFiles, existingFiles, archivedFiles);
 
         // move files to trash from published folder which aren't referenced anymore
         existingFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath()))

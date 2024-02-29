@@ -23,7 +23,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
+import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_krzn.importer.ISOImportKRZN
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
@@ -39,7 +41,9 @@ class KrznProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
+    isoImport: ISOImport,
+    isoImportKRZN: ISOImportKRZN,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -51,6 +55,10 @@ class KrznProfile(
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
+    
+    init {
+        isoImport.profileMapper[id] = isoImportKRZN
+    }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)

@@ -52,6 +52,6 @@ class UPSHProfile(
     override val parentProfile = "ingrid"
     
     init {
-        isoImport.profileMapper = isoImportUPSH
+        isoImport.profileMapper[id] = isoImportUPSH
     }
 }

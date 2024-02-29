@@ -836,7 +836,7 @@ class DocumentService(
         return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
     }
 
-    @AuditLog(action = "unpublish", target = "id")
+    @AuditLog(action = "unpublish", target = "id", category = "data-history", logger = "audit.data-history" )
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
         val currentDoc = getDocumentFromCatalog(catalogId, id)
