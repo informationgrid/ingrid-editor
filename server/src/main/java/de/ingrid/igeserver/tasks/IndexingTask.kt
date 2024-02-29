@@ -202,7 +202,8 @@ class IndexingTask(
 
         var exportConfigs = catalog.settings.exports
         if (exportConfigs.isEmpty()) {
-            exportConfigs = getDefaultExporterConfiguration(catalogProfile.indexExportFormatID!!, ibusConfigs, elasticConfig)
+            val defaultExportFormatId = catalogProfile.indexExportFormatID ?: return emptyList()
+            exportConfigs = getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig)
         }
 
         return exportConfigs.flatMap { config ->
