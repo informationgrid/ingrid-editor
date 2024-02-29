@@ -167,10 +167,10 @@ export class HistoryPlugin extends Plugin {
           this.handleListNext(event.data);
         }),
       this.docEvents.onEvent("HISTORY_PREVIOUS_SELECT").subscribe((item) => {
-        this.handleHistoryPreviousSelect(item);
+        this.handleHistorySelect(item, "PREVIOUS");
       }),
       this.docEvents.onEvent("HISTORY_NEXT_SELECT").subscribe((item) => {
-        this.handleHistoryNextSelect(item);
+        this.handleHistorySelect(item, "NEXT");
       }),
     );
   }
@@ -359,10 +359,8 @@ export class HistoryPlugin extends Plugin {
 
   /**
    * Handles the selection of a node from previous history list
-   * @param item
-   * @private
    */
-  private async handleHistoryPreviousSelect(item: any) {
+  private async handleHistorySelect(item: any, direction: "PREVIOUS" | "NEXT") {
     const isCurrentDocument =
       this.tree.getOpenedDocument()?.id === item.data.data.id;
     if (isCurrentDocument) return;
@@ -370,26 +368,10 @@ export class HistoryPlugin extends Plugin {
     const dirtyFormHandled = await this.handleDirtyForm();
     if (!dirtyFormHandled) return;
 
-    this.pointer = this.pointer - item.data.index - 1;
-    this.gotoNode(item.data.data);
-    this.handleButtonState();
-    return;
-  }
+    if (direction === "PREVIOUS")
+      this.pointer = this.pointer - item.data.index - 1;
+    else this.pointer = this.pointer + item.data.index + 1;
 
-  /**
-   * Handles the selection of a node from next history list
-   * @param item
-   * @private
-   */
-  private async handleHistoryNextSelect(item: any) {
-    const isCurrentDocument =
-      this.tree.getOpenedDocument()?.id === item.data.data.id;
-    if (isCurrentDocument) return;
-
-    const dirtyFormHandled = await this.handleDirtyForm();
-    if (!dirtyFormHandled) return;
-
-    this.pointer = this.pointer + item.data.index + 1;
     this.gotoNode(item.data.data);
     this.handleButtonState();
     return;
