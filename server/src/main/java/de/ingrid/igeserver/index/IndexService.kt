@@ -71,7 +71,7 @@ class IndexService(
     private val log = logger()
 
     companion object {
-        const val jobKey: String = "indexing"
+        const val jobKey: String = "index"
         
         fun getNextIndexName(name: String, uuid: String, uuidName: String): String {
             val uuidNameFinal = uuidName.lowercase(Locale.getDefault())

@@ -41,11 +41,7 @@ import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
-import org.springframework.context.annotation.Profile
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
+import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.ScheduledFuture
@@ -59,7 +55,7 @@ data class ExtendedExporterConfig(
 )
 
 @Component
-@Profile("elasticsearch")
+@PersistJobDataAfterExecution
 class IndexingTask(
     private val indexService: IndexService,
     private val settingsService: SettingsService,
@@ -79,7 +75,7 @@ class IndexingTask(
     override fun run(context: JobExecutionContext) {
         val catalogId = context.mergedJobDataMap.getString("catalogId")
 
-        runAsCatalogAdministrator()
+        runAsCatalogAdmin()
         startIndexing(context, catalogId)
     }
 
@@ -108,6 +104,7 @@ class IndexingTask(
                 targets
                     .forEach { target ->
                         val plugInfo = createIPlugInfo(catalog, target.category)
+                        log.info("Running export on thread: ${Thread.currentThread()}")
 
                         IndexTargetWorker(
                             target,
@@ -120,14 +117,15 @@ class IndexingTask(
                             plugInfo,
                             postIndexPipe,
                             settingsService
-                        )
-                            .indexAll()
+                        ).indexAll()
 
                         // make sure to write everything to elasticsearch
                         // if another indexing starts right afterwards, then the previous index could still be there
                         target.target.flush()
                     }
             }
+        } catch (ex: InterruptedException) {
+            notify.addAndSendMessageError(message, null, "Indexing was cancelled")
         } catch (ex: Exception) {
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
         } catch (ex: NotImplementedError) {
@@ -144,6 +142,7 @@ class IndexingTask(
         )
 
         // save last indexing information to database for this catalog to get this in frontend
+        message.report = message.targets
         finishJob(context, message)
     }
 
@@ -260,7 +259,7 @@ class IndexingTask(
     ) {
         log.info("Export dataset from catalog '$catalogId': $docId")
 
-        runAsCatalogAdministrator()
+        runAsCatalogAdmin()
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
@@ -323,17 +322,7 @@ class IndexingTask(
             else catalogProfile.indexIdField.document
         )
     }
-
-    private fun runAsCatalogAdministrator() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken(
-                "Scheduler",
-                "Task",
-                listOf(SimpleGrantedAuthority("cat-admin"))
-            )
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
+    
     fun removeFromIndex(catalogId: String, id: String, category: String) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)

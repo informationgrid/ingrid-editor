@@ -69,7 +69,7 @@ class IndexTargetWorker(
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 
         val indexInfo = IndexInfo(newIndex, categoryAlias, config.indexFieldId)
-        val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, config.exporter!!.exportSql(catalogId))
+        val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, config.exporter.exportSql(catalogId))
         val totalHits: Long = indexService.getNumberOfPublishableDocuments(queryInfo)
         val targetMessage = message.getTargetByName(config.target.name)
         updateMessageWithDocumentInfo(targetMessage, totalHits)
@@ -92,10 +92,10 @@ class IndexTargetWorker(
             // post phase
             indexPostPhase(plugInfo)
             log.debug("Task finished: Indexing for $catalogId")
-        } catch (ex: IndexException) {
+        } catch (ex: InterruptedException) {
             log.info("Indexing was cancelled")
             removeOldIndices(oldIndex)
-            return
+            throw ex
         } catch (ex: Exception) {
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
         }
@@ -141,12 +141,13 @@ class IndexTargetWorker(
         val targetMessage = message.getTargetByName(config.target.name)
 
         docsToPublish.content.forEach { doc ->
-//            handleCancelation()
             increaseProgressInTargetMessage(targetMessage)
             notify.sendMessage(message)
 
             try {
                 exportAndIndexSingleDocument(doc.document, indexInfo)
+            } catch (ex: InterruptedException) {
+                throw ex
             } catch (ex: Exception) {
                 handleExportException(ex, doc, targetMessage)
             } ?: return@forEach
@@ -154,22 +155,18 @@ class IndexTargetWorker(
     }
 
     fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo) {
-        log.debug("export '${doc.uuid}' with exporter '${config.exporter!!.typeInfo.type}' to target '${config.target.name}'")
+        log.debug("export '${doc.uuid}' with exporter '${config.exporter.typeInfo.type}' to target '${config.target.name}'")
         val (exportedDoc, exporterType) =
             Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
         
-        try {
-            val elasticDocument = convertToElasticDocument(exportedDoc)
-            config.target.update(indexInfo, elasticDocument)
-            val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
+        val elasticDocument = convertToElasticDocument(exportedDoc)
+        config.target.update(indexInfo, elasticDocument)
+        val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 
-            postIndexPipe.runFilters(
-                PostIndexPayload(elasticDocument, config.category.name, exporterType),
-                simpleContext
-            )
-        } catch (ex: Exception) {
-            handleIndexException(doc, ex)
-        }
+        postIndexPipe.runFilters(
+            PostIndexPayload(elasticDocument, config.category.name, exporterType),
+            simpleContext
+        )
     }
 
     private fun handleIndexException(doc: Document, ex: Exception) {
