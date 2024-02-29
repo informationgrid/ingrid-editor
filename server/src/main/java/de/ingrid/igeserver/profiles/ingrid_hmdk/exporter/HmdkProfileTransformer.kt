@@ -30,7 +30,7 @@ class HmdkProfileTransformer : IngridProfileTransformer {
         return when(docType) {
             "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
             "InGridGeoService" -> GeoserviceTransformerHmdk::class
-            "InGridPublication" -> LiteratureModelTransformerHmdk::class
+            "InGridPublication" -> PublicationModelTransformerHmdk::class
             "InGridProject" -> ProjectModelTransformerHmdk::class
             "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
             "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class

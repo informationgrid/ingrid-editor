@@ -21,7 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -38,7 +38,7 @@ class DataCollectionModelTransformerHmdk(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : GeodatasetModelTransformer(
+) : DataCollectionModelTransformer(
     model,
     catalogIdentifier,
     codelists,
