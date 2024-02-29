@@ -108,7 +108,7 @@ export class KeywordAnalysis {
 
     // check if exists and add if not
     const topics = formstate.mainModel.topicCategories;
-    const alreadyExists = topics.some((item) => item.key === isoKey);
+    const alreadyExists = topics.some((topic: any) => topic.key === isoKey);
     const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
       "527",
       isoKey,
@@ -122,7 +122,7 @@ export class KeywordAnalysis {
       );
     } else if (doRemove && alreadyExists) {
       formstate.mainModel.topicCategories = topics.filter(
-        (item) => item.key !== isoKey,
+        (topic: any) => topic.key !== isoKey,
       );
       formstate.updateModel();
       this.snack.open(
@@ -178,20 +178,19 @@ export class KeywordAnalysis {
 
   private checkInThemes(item: string): ThesaurusResult {
     const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
-    if (id) {
-      return {
-        thesaurus: "INSPIRE-Themen",
-        found: true,
-        value: { key: id },
-      };
-    }
-    return { thesaurus: "INSPIRE-Themen", found: false, value: item };
+    return {
+      thesaurus: "INSPIRE-Themen",
+      found: id !== undefined,
+      value: id !== undefined ? { key: id } : null,
+      label: item,
+    };
   }
 
   private addFreeKeyword(item: string): ThesaurusResult {
     return {
       found: true,
       value: { label: item },
+      label: item,
       thesaurus: "Freie Schlagworte",
     };
   }
@@ -214,8 +213,9 @@ export class KeywordAnalysis {
         thesaurus: thesaurusName,
         found: true,
         value: response[0],
+        label: response[0].label,
       };
     }
-    return { thesaurus: thesaurusName, found: false, value: item };
+    return { thesaurus: thesaurusName, found: false, value: null, label: item };
   }
 }

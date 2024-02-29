@@ -19,12 +19,12 @@
  */
 package de.ingrid.igeserver.api
 
-import com.google.common.net.HttpHeaders.CONTENT_DISPOSITION
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ExportService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

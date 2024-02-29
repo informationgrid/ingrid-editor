@@ -30,44 +30,39 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
 @Service
-class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
     
-    var profileMapper: ISOImportProfile? = null
+    var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
     override fun run(catalogId: String, data: Any): JsonNode {
-
-        /*val xmlDeserializer = XmlMapper.builder()
-            .defaultUseWrapper(false)
-            .nameForTextElement("innerText")
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .build()
-            .registerKotlinModule()*/
-
+        
         val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
             setDefaultUseWrapper(false)
             setXMLTextElementName("innerText")
         }).registerKotlinModule()
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
         val output = try {
-            convertIsoToJson(catalogId, finalObject)
+            val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
+            convertIsoToJson(catalogId, finalObject, catalogProfileId)
         } catch (ex: Exception) {
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
@@ -77,10 +72,10 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
     }
     
-    fun convertIsoToJson(catalogId: String, data: Metadata): String {
+    fun convertIsoToJson(catalogId: String, data: Metadata, catalogProfileId: String): String {
         val output: TemplateOutput = JsonStringOutput()
         
-        val profileOutput = handleByProfile(catalogId, data)
+        val profileOutput = handleByProfile(catalogId, data, catalogProfileId)
         if (profileOutput != null) return profileOutput
 
         when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
@@ -104,8 +99,8 @@ class ISOImport(val codelistService: CodelistHandler) : IgeImporter {
         return output.toString()
     }
 
-    private fun handleByProfile(catalogId: String, data: Metadata): String? {
-        return profileMapper?.let {
+    private fun handleByProfile(catalogId: String, data: Metadata, profile: String): String? {
+        return profileMapper[profile]?.let {
             it.handle(catalogId, data)?.let {
                 val output: TemplateOutput = JsonStringOutput()
                 templateEngine.render(it.template, it.mapper, output)

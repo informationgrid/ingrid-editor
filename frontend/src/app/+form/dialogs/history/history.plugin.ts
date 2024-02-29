@@ -167,10 +167,10 @@ export class HistoryPlugin extends Plugin {
           this.handleListNext(event.data);
         }),
       this.docEvents.onEvent("HISTORY_PREVIOUS_SELECT").subscribe((item) => {
-        this.handleHistoryPreviousSelect(item);
+        this.handleHistorySelect(item, "PREVIOUS");
       }),
       this.docEvents.onEvent("HISTORY_NEXT_SELECT").subscribe((item) => {
-        this.handleHistoryNextSelect(item);
+        this.handleHistorySelect(item, "NEXT");
       }),
     );
   }
@@ -213,20 +213,19 @@ export class HistoryPlugin extends Plugin {
     }
   }
 
-  private handleNext() {
+  private async handleNext() {
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
     }
-
-    // in case of a long press this shall not be executed
-    // if (evt.ignore) { return; }
-
-    // close the popup if it's still open
-    // popup.close(this.popupMenu);
+    this.ignoreNextPush = true;
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     const node = this.stack[this.pointer + 1];
-    this.ignoreNextPush = true;
     if (this.hasNext()) {
       this.pointer++;
     }
@@ -234,17 +233,17 @@ export class HistoryPlugin extends Plugin {
     this.handleButtonState();
   }
 
-  private handlePrevious() {
+  private async handlePrevious() {
     // prevent too fast clicks
     if (this.ignoreNextPush) {
       return;
     }
-
-    // in case of a long press this shall not be executed
-    // if (evt.ignore) { return; }
-
-    // close the popup if it's still open
-    // popup.close(this.popupMenu);
+    this.ignoreNextPush = true;
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) {
+      this.ignoreNextPush = false;
+      return;
+    }
 
     // if current node is not last from stack we go to end of stack
     const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
@@ -253,7 +252,6 @@ export class HistoryPlugin extends Plugin {
     }
 
     const node = this.stack[this.pointer - 1];
-    this.ignoreNextPush = true;
     if (this.pointer > 0) {
       this.pointer--;
     }
@@ -275,10 +273,12 @@ export class HistoryPlugin extends Plugin {
       { id: item._uuid },
     ]);
     if (navigated) {
+      this.ignoreNextPush = true;
       this.treeStore.update({
         explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
       });
     }
+    return navigated;
   }
 
   private handleButtonState() {
@@ -303,6 +303,11 @@ export class HistoryPlugin extends Plugin {
     this.handleButtonState();
   }
 
+  /**
+   * Initializes and opens a mat-menu with clickable list of next nodes in history
+   * @param trigger
+   * @private
+   */
   private handleListNext(trigger?: MatMenuTrigger) {
     const history = this.stack.slice(this.pointer + 1).map((item) => {
       return {
@@ -317,7 +322,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   /**
-   * Initiates and opens a mat-menu with clickable list of previously visited nodes
+   * Initializes and opens a mat-menu with clickable list of previously visited nodes upon long press
    * @param trigger
    * @private
    */
@@ -342,29 +347,30 @@ export class HistoryPlugin extends Plugin {
 
   /**
    * Handles the selection of a node from previous history list
-   * @param item
-   * @private
    */
-  private handleHistoryPreviousSelect(item: any) {
-    console.log("Index:" + item.data.index);
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
+  private async handleHistorySelect(item: any, direction: "PREVIOUS" | "NEXT") {
+    const isCurrentDocument =
+      this.tree.getOpenedDocument()?.id === item.data.data.id;
+    if (isCurrentDocument) return;
+
+    const dirtyFormHandled = await this.handleDirtyForm();
+    if (!dirtyFormHandled) return;
+
+    if (direction === "PREVIOUS")
       this.pointer = this.pointer - item.data.index - 1;
-      this.ignoreNextPush = true;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
-      return;
-    }
+    else this.pointer = this.pointer + item.data.index + 1;
+
+    this.gotoNode(item.data.data);
+    this.handleButtonState();
+    return;
   }
 
-  private handleHistoryNextSelect(item: any) {
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
-    if (currentOpenedDocumentId !== item.data.data.id) {
-      this.ignoreNextPush = true;
-      this.pointer = this.pointer + item.data.index + 1;
-      this.gotoNode(item.data.data);
-      this.handleButtonState();
-      return;
-    }
+  private handleDirtyForm() {
+    return FormUtils.handleDirtyForm(
+      this.formStateService.getForm(),
+      this.documentService,
+      this.dialog,
+      this.forAddress,
+    );
   }
 }

@@ -21,9 +21,13 @@ package de.ingrid.igeserver.persistence.filter.unpublish
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PostUnpublishPayload
+import de.ingrid.igeserver.persistence.filter.persistence.PostDataHistoryLogger
+import de.ingrid.igeserver.services.AuditLogger
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.IndexingTask
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -32,7 +36,11 @@ import org.springframework.stereotype.Component
  */
 @Component
 @Profile("elasticsearch")
-class PostDefaultDocumentUnpublisher(val indexTask: IndexingTask) :
+class PostDefaultDocumentUnpublisher(
+    var auditLogger: AuditLogger,
+    @Lazy var documentService: DocumentService,
+    val indexTask: IndexingTask
+) :
     Filter<PostUnpublishPayload> {
 
     override val profiles = arrayOf<String>()
@@ -42,6 +50,18 @@ class PostDefaultDocumentUnpublisher(val indexTask: IndexingTask) :
         // remove from index
         this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
 
+        //log in audit-log
+        val docId = payload.document.uuid
+        context.addMessage(Message(this, "Log document data '$docId' after unpublish"))
+        auditLogger.log(
+            category = PostDataHistoryLogger.LOG_CATEGORY,
+            action = payload.action.name.lowercase(),
+            target = docId,
+            data = documentService.convertToJsonNode(payload.document),
+            logger = PostDataHistoryLogger.LOGGER_NAME,
+            catalogIdentifier = payload.catalogIdentifier,
+            principal = context.principal
+        )
         return payload
     }
 

@@ -91,6 +91,11 @@
 <gmd:metadataStandardVersion>
     <gco:CharacterString>${page.getMdStandardVersion()}</gco:CharacterString>
 </gmd:metadataStandardVersion>
+@if(TransformationTools.hasValue(page.getDatasetUri()))
+    <gmd:dataSetURI>
+        <gco:CharacterString>${page.getDatasetUri()}</gco:CharacterString>
+    </gmd:dataSetURI>
+@endif
 @if(page.hasEnglishKeywords())
     <gmd:locale>
         <gmd:PT_Locale id="eng_utf8">

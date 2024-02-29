@@ -523,7 +523,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("mb")),
+                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("MB")),
                     it.offLine?.mdMedium?.mediumNote?.value
                 )
             } ?: emptyList()

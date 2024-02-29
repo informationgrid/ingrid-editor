@@ -240,7 +240,7 @@
         "name": {
           "key": "1"
         },
-        "transferSize": { "value": 12, "unit": { "key": "mb" } },
+        "transferSize": { "value": 12, "unit": { "key": "MB" } },
         "mediumNote": "test"
       }
     ],

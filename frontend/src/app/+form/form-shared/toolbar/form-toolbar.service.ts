@@ -121,14 +121,7 @@ export class FormToolbarService {
     const button: any = document.getElementsByClassName(className)?.item(0);
     if (button) button.click();
   }
-  longPressItemMenu(className: string) {
-    const button: any = document.getElementsByClassName(className)?.item(0);
-    if (button) {
-      button.dispatchEvent(new Event("mousedown"));
-      button.dispatchEvent(new Event("mouseup"));
-      setTimeout(() => {}, 600);
-    }
-  }
+
   /**
    * Set the state of a toolbar button to enabled or disabled.
    * @param id

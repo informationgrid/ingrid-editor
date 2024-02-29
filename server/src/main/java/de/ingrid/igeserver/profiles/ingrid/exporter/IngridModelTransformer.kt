@@ -234,6 +234,7 @@ open class IngridModelTransformer(
     open val hierarchyLevelName: String? = "job"
     open val mdStandardName = "ISO19115"
     open val mdStandardVersion = "2003/Cor.1:2006"
+    open val datasetUri: String? = null
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
@@ -569,7 +570,8 @@ open class IngridModelTransformer(
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
-        val functionValue = codelists.getValue("2000", it.type, "iso")
+        // if type not in codelist, use "information" #6017
+        val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
         val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
         val attachedField = if (it.type.key == null) null else {
             val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
