@@ -42,7 +42,7 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             entityManager
-                .createNativeQuery("UPDATE catalog SET settings = settings - 'exportFormat'")
+                .createNativeQuery("UPDATE catalog SET settings = settings - 'exportFormat' - 'lastLogSummary'")
                 .executeUpdate()
             entityManager
                 .createNativeQuery("UPDATE catalog SET settings = settings #- '{config,ibus}'")
@@ -56,6 +56,8 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
           """.trimIndent()
                 )
                 .executeUpdate()
+            
+            // remove publicationTypes field where it was set
             entityManager
                 .createNativeQuery(
                     """
@@ -64,7 +66,7 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
                  SELECT jsonb_agg(value - 'publicationTypes')
                  FROM jsonb_array_elements(settings.value) AS elements(value)
               )
-              WHERE key = 'ibus';
+              WHERE jsonb_path_exists(value, '$.publicationTypes');
           """.trimIndent()
                 )
                 .executeUpdate()
