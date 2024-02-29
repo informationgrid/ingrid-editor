@@ -35,38 +35,42 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-//@Profile("ibus & elasticsearch")
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug, IConnection {
 
     val log = logger()
 
     private var iBusClient: BusClient? = null
+    
+    private var iBusConfigMap: Map<String, Int> = emptyMap()
 
     // this ensures that the service is started after the migration tasks
     @EventListener(ApplicationReadyEvent::class)
-    fun init() = setupConnections()
+    fun init() = setupConnections()  
 
     fun setupConnections() {
         try {
             if (iBusClient?.nonCacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
             val iBusConfig = settingsService.getIBusConfig()
             if (iBusConfig.isNotEmpty()) iBusClient = this.connectIBus(iBusConfig)
+            iBusConfigMap = iBusConfig.mapIndexed { index, config -> config.id!! to index }.toMap()
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }
     }
     
-    fun getIBus(index: Int): IBus {
-        return iBusClient?.nonCacheableIBusses?.get(index) ?: throw ServerException.withReason("iBus with index $index not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
+    fun getIBus(id: String): IBus {
+        return iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
     }
     
-    fun isConnected(iBusIndex: Int): Boolean {
+    override fun isConnected(id: String): Boolean {
         return try {
-            iBusClient?.nonCacheableIBusses?.get(iBusIndex)?.metadata != null
+            iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
         } catch (e: Exception) {
             false
         }
     }
+
+    override fun containsId(id: String): Boolean = iBusConfigMap[id] != null
 
     private fun connectIBus(configs: List<IBusConfig>): BusClient {
         val config = createClientConfiguration(configs)

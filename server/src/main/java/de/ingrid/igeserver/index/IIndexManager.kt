@@ -24,6 +24,8 @@ import de.ingrid.utils.ElasticDocument
 
 
 interface IIndexManager {
+    val name: String
+    
     fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String?
 
     fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean

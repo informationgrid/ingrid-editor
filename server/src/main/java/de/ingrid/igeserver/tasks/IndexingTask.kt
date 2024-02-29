@@ -28,7 +28,9 @@ import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.exports.IgeExporter
-import de.ingrid.igeserver.index.*
+import de.ingrid.igeserver.index.IIndexManager
+import de.ingrid.igeserver.index.IndexService
+import de.ingrid.igeserver.index.QueryInfo
 import de.ingrid.igeserver.model.IndexCronOptions
 import de.ingrid.igeserver.persistence.filter.PostIndexPipe
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
@@ -57,7 +59,6 @@ import java.util.concurrent.ScheduledFuture
 import kotlin.concurrent.schedule
 
 data class ExtendedExporterConfig(
-    val name: String,
     val target: IIndexManager,
     val exporter: IgeExporter?,
     val tags: List<String>,
@@ -76,8 +77,7 @@ class IndexingTask(
     private val codelistService: CodeListService,
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties,
-    private val iBusService: IBusService,
-    private val elasticsearchService: ElasticsearchService,
+    private val connectionService: ConnectionService
 ) : SchedulingConfigurer, DisposableBean {
 
     val log = logger()
@@ -109,9 +109,9 @@ class IndexingTask(
         try {
             // get all targets we want to export to
             val targets = getExporterConfigForCatalog(catalog, catalogProfile)
-            
+
             setTotalDatasetsToMessage(message, targets)
-            
+
             // make sure the ingrid_meta index is there
             handleInformationIndex(targets)
 
@@ -122,18 +122,18 @@ class IndexingTask(
                         val plugInfo = createIPlugInfo(catalog, target.category)
 
                         IndexTargetWorker(
-                                target,
-                                message,
-                                catalogProfile,
-                                notify,
-                                indexService,
-                                catalogId,
-                                generalProperties,
-                                plugInfo,
-                                postIndexPipe,
-                                settingsService,
-                                cancellations
-                            )
+                            target,
+                            message,
+                            catalogProfile,
+                            notify,
+                            indexService,
+                            catalogId,
+                            generalProperties,
+                            plugInfo,
+                            postIndexPipe,
+                            settingsService,
+                            cancellations
+                        )
                             .indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -145,7 +145,7 @@ class IndexingTask(
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
         } catch (ex: NotImplementedError) {
             notify.addAndSendMessageError(message, ServerException.withReason("Not Implemented"))
-            
+
         }
 
         log.info("Indexing finished")
@@ -162,7 +162,7 @@ class IndexingTask(
 
     private fun setTotalDatasetsToMessage(message: IndexMessage, targets: List<ExtendedExporterConfig>) {
         val catalogId = message.catalogId
-        val counts = targets.map { 
+        val counts = targets.map {
             val queryInfo = QueryInfo(catalogId, it.category.value, it.tags, it.exporter!!.exportSql(catalogId))
             indexService.getNumberOfPublishableDocuments(queryInfo)
         }
@@ -208,9 +208,10 @@ class IndexingTask(
         }
 
         return exportConfigs.flatMap { config ->
-            val ibus = ibusConfigs.find { it.id!! == config.target }
-            val elastic = elasticConfig.find { it.id!! == config.target }
-            if (ibus == null && elastic == null) {
+//            val ibus = ibusConfigs.find { it.id!! == config.target }
+//            val elastic = elasticConfig.find { it.id!! == config.target }
+            val connection = settingsService.getConnectionConfig(config.target)
+            if (connection == null) {
                 val msg = "An exporter configuration contains invalid target: ${config.target}"
                 log.error(msg)
                 notify.addAndSendMessageError(
@@ -220,17 +221,10 @@ class IndexingTask(
                 return@flatMap emptyList()
             }
 
-            val (name, target) =
-                if (ibus != null) {
-                    Pair(ibus.name, IBusIndexer(iBusService.getIBus(ibusConfigs.indexOf(ibus))))
-                } else Pair(
-                    elastic?.name!!, 
-                    ElasticIndexer(elasticsearchService.getClient(elasticConfig.indexOf(elastic)))
-                )
+            val target = connectionService.getIndexerForConnection(config.target)
 
             categories.map {
                 ExtendedExporterConfig(
-                    name,
                     target,
                     getExporterOrNull(it, config.exporterId),
                     config.tags,
@@ -251,10 +245,10 @@ class IndexingTask(
         ibusConfigs: List<IBusConfig>,
         elasticConfig: List<ElasticConfig>
     ): List<ExportConfig> {
-        val iBusDefinitions = ibusConfigs.map { 
+        val iBusDefinitions = ibusConfigs.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
-        val elasticDefinitions = elasticConfig.map { 
+        val elasticDefinitions = elasticConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
         return iBusDefinitions + elasticDefinitions
@@ -303,18 +297,18 @@ class IndexingTask(
                     val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
                     val plugInfo = createIPlugInfo(catalog, it.category)
                     IndexTargetWorker(
-                            it,
-                            IndexMessage(catalogId, 1),
-                            catalogProfile,
-                            notify,
-                            indexService,
-                            catalogId,
-                            generalProperties,
-                            plugInfo,
-                            postIndexPipe,
-                            settingsService,
-                            cancellations
-                        )
+                        it,
+                        IndexMessage(catalogId, 1),
+                        catalogProfile,
+                        notify,
+                        indexService,
+                        catalogId,
+                        generalProperties,
+                        plugInfo,
+                        postIndexPipe,
+                        settingsService,
+                        cancellations
+                    )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
                 }
         } catch (ex: NoSuchElementException) {

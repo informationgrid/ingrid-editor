@@ -48,6 +48,10 @@ class SettingsService(
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
     }
 
+    fun getConnectionConfig(id: String): WithId? {
+        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
+    }
+    
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)
         this.updateItem("ibus", config)

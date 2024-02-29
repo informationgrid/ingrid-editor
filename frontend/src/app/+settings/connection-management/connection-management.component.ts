@@ -37,7 +37,10 @@ import { PageTemplateModule } from "../../shared/page-template/page-template.mod
 import { FormlyModule } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ConnectionStateComponent } from "./connection-state/connection-state.component";
+import {
+  ConnectionStateComponent,
+  ConnectionStateInfo,
+} from "./connection-state/connection-state.component";
 import { Subscription } from "rxjs";
 
 @Component({
@@ -91,19 +94,18 @@ export class ConnectionManagementComponent implements OnInit {
   private checkConnectionState(configs: ConnectionInfo[]) {
     this.connectionSubscriptions?.forEach((item) => item.unsubscribe());
 
-    const connectionStates = configs
-      .filter((item) => item._type === "ibus")
-      .map((config) => {
-        return {
-          id: config.name,
-          connected: undefined,
-        };
-      });
+    const connectionStates: ConnectionStateInfo[] = configs.map((config) => {
+      return {
+        id: config.id + "",
+        label: config.name,
+        connected: undefined,
+      };
+    });
     this.$connectionStates.set(connectionStates);
 
     this.connectionSubscriptions = connectionStates.map((config, index) => {
       return this.configService
-        .isIBusConnected(index)
+        .isConnectionOK(config.id)
         .subscribe((connected) => {
           // in case ibus has been removed during connection check
           config.connected = connected;

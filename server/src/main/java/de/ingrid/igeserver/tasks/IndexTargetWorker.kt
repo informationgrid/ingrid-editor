@@ -72,7 +72,7 @@ class IndexTargetWorker(
         val indexInfo = IndexInfo(newIndex, categoryAlias, config.indexFieldId)
         val queryInfo = QueryInfo(catalogId, config.category.value, config.tags, config.exporter!!.exportSql(catalogId))
         val totalHits: Long = indexService.getNumberOfPublishableDocuments(queryInfo)
-        val targetMessage = message.getTargetByName(config.name)
+        val targetMessage = message.getTargetByName(config.target.name)
         updateMessageWithDocumentInfo(targetMessage, totalHits)
 
         try {
@@ -139,7 +139,7 @@ class IndexTargetWorker(
     }
 
     private fun exportDocuments(docsToPublish: Page<DocumentIndexInfo>, indexInfo: IndexInfo) {
-        val targetMessage = message.getTargetByName(config.name)
+        val targetMessage = message.getTargetByName(config.target.name)
 
         docsToPublish.content.forEach { doc ->
             handleCancelation()
@@ -155,7 +155,7 @@ class IndexTargetWorker(
     }
 
     fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo) {
-        log.debug("export '${doc.uuid}' with exporter '${config.exporter!!.typeInfo.type}' to target '${config.name}'")
+        log.debug("export '${doc.uuid}' with exporter '${config.exporter!!.typeInfo.type}' to target '${config.target.name}'")
         val (exportedDoc, exporterType) =
             Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
         

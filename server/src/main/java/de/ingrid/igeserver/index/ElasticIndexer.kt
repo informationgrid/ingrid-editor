@@ -41,7 +41,7 @@ private const val metaIndex = "ingrid_meta"
  * Utility class to manage elasticsearch indices and documents.
  * @author Andre
  */
-class ElasticIndexer(private val elastic: ElasticClient): IIndexManager {
+class ElasticIndexer(override val name: String, private val elastic: ElasticClient): IIndexManager {
     private val log = logger()
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {

@@ -44,8 +44,8 @@ interface ConfigApi {
     @GetMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getConnections(): ResponseEntity<ConnectionConfig>
 
-    @GetMapping(value = ["/config/connections/connected/{index}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun isConnected(@PathVariable index: Int): ResponseEntity<Boolean>
+    @GetMapping(value = ["/config/connections/connected/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun isConnected(@PathVariable id: String): ResponseEntity<Boolean>
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])

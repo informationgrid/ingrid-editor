@@ -24,6 +24,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 export interface ConnectionStateInfo {
   id: string;
+  label: string;
   connected: boolean;
 }
 

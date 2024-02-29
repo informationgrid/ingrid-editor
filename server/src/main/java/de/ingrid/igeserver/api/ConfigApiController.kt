@@ -22,10 +22,8 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
-import de.ingrid.igeserver.services.ElasticsearchService
-import de.ingrid.igeserver.services.IBusService
+import de.ingrid.igeserver.services.ConnectionService
 import de.ingrid.igeserver.services.SettingsService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,9 +32,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
-    val settingsService: SettingsService, 
-    @Autowired(required = false) var iBusService: IBusService? = null,
-    @Autowired(required = false) var elasticsearchService: ElasticsearchService? = null,
+    val settingsService: SettingsService,
+    val connectionService: ConnectionService
 ) : ConfigApi {
 
     @Value("\${keycloak.auth-server-url-frontend}")
@@ -76,26 +73,23 @@ class ConfigApiController(
         )
     }
 
-    override fun isConnected(index: Int): ResponseEntity<Boolean> {
-        return ResponseEntity.ok().body(
-            iBusService?.isConnected(index)
-        )
+    override fun isConnected(id: String): ResponseEntity<Boolean> {
+        return ResponseEntity.ok().body(connectionService.isConnected(id))
     }
 
     override fun setConnections(config: ConnectionConfig): ResponseEntity<Unit> {
         config.ibus?.let {
             settingsService.setIBusConfig(it)
-            iBusService?.setupConnections()
         }
         config.elasticsearch?.let {
             settingsService.setElasticConfig(it)
-            elasticsearchService?.setupConnections()
         }
+        connectionService.setupConnections()
         return ResponseEntity.ok().build()
     }
 
     override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {
-        val cms = settingsService.getItemAsList<LinkedHashMap<String,String>>("cms")
+        val cms = settingsService.getItemAsList<LinkedHashMap<String, String>>("cms")
         return ResponseEntity.ok(cms)
     }
 

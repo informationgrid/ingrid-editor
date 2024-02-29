@@ -24,7 +24,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.utils.*
 import org.apache.logging.log4j.kotlin.logger
 
-class IBusIndexer(private val iBus: IBus): IIndexManager {
+class IBusIndexer(override val name: String, private val iBus: IBus): IIndexManager {
     val log = logger()
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {

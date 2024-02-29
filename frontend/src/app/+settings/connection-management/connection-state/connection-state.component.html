@@ -1,6 +1,6 @@
 @for (info of connectionStates(); track info) {
     <div class="flex-row align-items-center gap-6">
-        <span>{{ info.id }}:</span>
+        <span>{{ info.label }}:</span>
         @if (info.connected !== undefined) {
             <span class="flex-row"
                 ><mat-icon

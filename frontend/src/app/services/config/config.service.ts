@@ -216,9 +216,9 @@ export class ConfigService {
       .pipe(map((config) => this.prepareConnectionsForFrontend(config)));
   }
 
-  isIBusConnected(index: number) {
+  isConnectionOK(id: string) {
     return this.http.get<boolean>(
-      `${this.config.backendUrl}config/connections/connected/${index}`,
+      `${this.config.backendUrl}config/connections/connected/${id}`,
     );
   }
 
