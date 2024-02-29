@@ -8,7 +8,7 @@
     @if (isActivated) {
         <ng-container main-header>
             <ige-job-handler-header
-                [message]="liveImportMessage | async"
+                [message]="status()"
                 [isRunning]="indexingIsRunning"
                 (showMore)="showMore = $event"
             >
@@ -56,7 +56,7 @@
         </div>
 
         <div #indexContent>
-            <ige-log-result [data]="liveImportMessage"></ige-log-result>
+            <ige-log-result [log]="status()"></ige-log-result>
         </div>
     </div>
 

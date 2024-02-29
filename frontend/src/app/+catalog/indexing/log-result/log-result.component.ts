@@ -20,7 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
+  input,
   OnInit,
 } from "@angular/core";
 import { Observable } from "rxjs";
@@ -37,7 +37,7 @@ import { MatProgressBar } from "@angular/material/progress-bar";
   imports: [AsyncPipe, DatePipe, MatProgressBar],
 })
 export class LogResultComponent implements OnInit {
-  @Input() data: Observable<LogResult>;
+  log = input.required<LogResult>();
 
   constructor() {}
 

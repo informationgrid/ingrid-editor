@@ -1,17 +1,17 @@
-@if (data | async; as log) {
+@if (log()) {
     <div class="log">
         <div class="date-area">
             <div>
-                Startzeit: {{ log.startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                Startzeit: {{ log().startTime | date: "dd.LL.yyyy HH:mm:ss" }}
             </div>
-            @if (log.endTime) {
+            @if (log().endTime) {
                 <div>
                     &nbsp;&nbsp;Endzeit:
-                    {{ log.endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                    {{ log().endTime | date: "dd.LL.yyyy HH:mm:ss" }}
                 </div>
             }
         </div>
-        @for (target of log.targets; track target) {
+        @for (target of log().targets; track target) {
             <div class="space-bottom">
                 <div class="target-title">{{ target.name }}</div>
                 @if (target.progressDocuments != target.numDocuments) {
@@ -65,12 +65,12 @@
                 }
             </div>
         }
-        @if (log.errors?.length > 0) {
+        @if (log().errors?.length > 0) {
             <div>
                 Fehler:
-                <span data-cy="count-errors">{{ log.errors.length }}</span>
+                <span data-cy="count-errors">{{ log().errors.length }}</span>
                 <ul>
-                    @for (error of log.errors; track error) {
+                    @for (error of log().errors; track error) {
                         <li>{{ error }}</li>
                     }
                 </ul>

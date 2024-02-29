@@ -82,21 +82,11 @@ export class IndexingComponent implements OnInit {
   exportForm = new FormGroup({});
   exportModel: any = {};
 
-  liveImportMessage: Observable<LogResult> = merge(
-    this.indexService.lastLog$,
-    this.rxStompService
-      .watch(
-        `/topic/indexStatus/${this.configService.$userInfo.value.currentCatalog.id}`,
-      )
-      .pipe(
-        map((msg) => JSON.parse(msg.body)),
-        tap((data) => (this.indexingIsRunning = !data.endTime)),
-      ),
-  );
+  status = signal<LogResult>(null);
+  hasNoConnections = signal<boolean>(false);
 
   private copyToClipboardFn = copyToClipboardFn();
   fields: FormlyFieldConfig[] = inject(IndexingFields).fields;
-  hasNoConnections = signal<boolean>(false);
 
   constructor(
     private indexService: IndexService,
@@ -113,14 +103,27 @@ export class IndexingComponent implements OnInit {
     }
 
     this.indexService
+      .fetchLastLog()
+      .pipe(tap((data) => this.status.set(data)))
+      .subscribe();
+
+    this.rxStompService
+      .watch(`/topic/indexStatus/${ConfigService.catalogId}`)
+      .pipe(
+        untilDestroyed(this),
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => (this.indexingIsRunning = !data.endTime)),
+        tap((data) => this.status.set(data)),
+      )
+      .subscribe();
+
+    this.indexService
       .getIndexConfig()
       .pipe(tap(() => (this.initialized = true)))
       .subscribe((config) => {
         this.cronField.setValue(config.cronPattern);
         this.exportModel = { "catalog-index-config": config.exports };
       });
-
-    this.indexService.fetchLastLog();
 
     this.cronField.valueChanges
       .pipe(untilDestroyed(this))

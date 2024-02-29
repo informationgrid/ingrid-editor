@@ -23,10 +23,9 @@ import {
   ConfigService,
   Configuration,
 } from "../../services/config/config.service";
-import { Catalog } from "../services/catalog.model";
-import { BehaviorSubject, Observable } from "rxjs";
-import { tap } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { BaseLogResult } from "../../shared/base-log-result";
+import { map } from "rxjs/operators";
 
 export interface LogResult extends BaseLogResult {
   targets: {
@@ -54,15 +53,12 @@ interface IndexExportConfig {
 })
 export class IndexService {
   private configuration: Configuration;
-  private catalog: Catalog;
-  lastLog$ = new BehaviorSubject<LogResult>(null);
 
   constructor(
     private http: HttpClient,
     configService: ConfigService,
   ) {
     this.configuration = configService.getConfiguration();
-    this.catalog = configService.$userInfo.getValue().currentCatalog;
   }
 
   start() {
@@ -87,8 +83,14 @@ export class IndexService {
   fetchLastLog() {
     return this.http
       .get<any>(`${this.configuration.backendUrl}jobs/index/info`)
-      .pipe(tap((response) => this.lastLog$.next(response)))
-      .subscribe();
+      .pipe(
+        map((data) => {
+          return <LogResult>{
+            ...data.info,
+            targets: data.info.report,
+          };
+        }),
+      );
   }
 
   cancel() {
