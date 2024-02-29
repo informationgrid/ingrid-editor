@@ -19,7 +19,9 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
@@ -28,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_hmdk.importer.ISOImportHMDK
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
@@ -44,6 +47,7 @@ class HmdkProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportHMDK: ISOImportHMDK,
+    @JsonIgnore val behaviourService: BehaviourService
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -55,11 +59,21 @@ class HmdkProfile(
     override val parentProfile = "ingrid"
 
 
-
     init {
-        isoImport.profileMapper = isoImportHMDK
+        isoImport.profileMapper[id] = isoImportHMDK
     }
 //    override val indexExportFormatID = "indexInGridIDFHmdk"
+
+    override fun initCatalogQueries(catalogId: String) {
+        val behaviours = listOf("plugin.publish").map {
+            Behaviour().apply {
+                name = it
+                active = true
+                data = mapOf("unpublishDisabled" to true)
+            }
+        }
+        behaviourService.save(catalogId, behaviours)
+    }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -70,6 +84,7 @@ class HmdkProfile(
                 codelistHandler.removeAndAddCodelist(catalogId, codelistInformationsgegenstand)
                 return
             }
+
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelistInformationsgegenstand)
         }
 
@@ -86,8 +101,18 @@ class HmdkProfile(
             data = jacksonObjectMapper().createArrayNode().apply {
                 add(CodelistHandler.toCodelistEntry("hmbtg_01_senatsbeschluss", "Senatsbeschlüsse"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_02_mitteilung_buergerschaft", "Mitteilungen des Senats"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_03_beschluesse_oeffentliche_sitzung", "Öffentliche Beschlüsse"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_04_vertraege_daseinsvorsorge", "Verträge der Daseinsvorsorge"))
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_03_beschluesse_oeffentliche_sitzung",
+                        "Öffentliche Beschlüsse"
+                    )
+                )
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_04_vertraege_daseinsvorsorge",
+                        "Verträge der Daseinsvorsorge"
+                    )
+                )
                 add(CodelistHandler.toCodelistEntry("hmbtg_05_verwaltungsplaene", "Verwaltungspläne"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_06_verwaltungsvorschriften", "Verwaltungsvorschriften"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_07_statistiken", "Statistiken und Tätigkeitsberichte"))
@@ -97,13 +122,38 @@ class HmdkProfile(
                 add(CodelistHandler.toCodelistEntry("hmbtg_11_baumkataster", "Baumkataster"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_12_oeffentliche_plaene", "Öffentliche Pläne"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_13_baugenehmigungen", "Baugenehmigungen"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_14_zuwendungen_subventionen", "Subventionen und Zuwendungen"))
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_14_zuwendungen_subventionen",
+                        "Subventionen und Zuwendungen"
+                    )
+                )
                 add(CodelistHandler.toCodelistEntry("hmbtg_15_unternehmensdaten", "Unternehmensdaten"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_16_vertraege_oeffentl_interesse", "Verträge von öffentl. Interesse"))
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_16_vertraege_oeffentl_interesse",
+                        "Verträge von öffentl. Interesse"
+                    )
+                )
                 add(CodelistHandler.toCodelistEntry("hmbtg_17_dienstanweisungen", "Dienstanweisungen"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_18_vergleichbar", "vergleichbare Informationen von öffentl. Interesse"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_19_andere_veroeffentlichungspflicht", "Veröffentlichungspflicht außerhalb HmbTG"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_20_ohne_veroeffentlichungspflicht", "Ohne gesetzliche Verpflichtung"))
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_18_vergleichbar",
+                        "vergleichbare Informationen von öffentl. Interesse"
+                    )
+                )
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_19_andere_veroeffentlichungspflicht",
+                        "Veröffentlichungspflicht außerhalb HmbTG"
+                    )
+                )
+                add(
+                    CodelistHandler.toCodelistEntry(
+                        "hmbtg_20_ohne_veroeffentlichungspflicht",
+                        "Ohne gesetzliche Verpflichtung"
+                    )
+                )
             }
 
         }
