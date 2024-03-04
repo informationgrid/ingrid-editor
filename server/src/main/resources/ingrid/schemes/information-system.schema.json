@@ -5,7 +5,7 @@
   "definitions": {
     "InformationSystem": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]

@@ -27,36 +27,43 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridGeoDatasetTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val profiles = arrayOf("ingrid-hmdk")
-}
-
-@Component
-class InheritedTypesHmdk(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/geo-dataset_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
 @Component
 class InGridGeoServiceTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/geo-service_hmdk.schema.json"
+    override val profiles = arrayOf("ingrid-hmdk")
+}
+
+@Component
+class InGridDataCollectionTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/data-collection_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
 @Component
 class InGridInformationSystemTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/information-system_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
 @Component
 class InGridPublicationTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/publication_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
 @Component
 class InGridProjectTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/project_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
 @Component
 class InGridSpecialisedTaskTypeHmdk(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/hmdk/specialised-task_hmdk.schema.json"
     override val profiles = arrayOf("ingrid-hmdk")
 }
 
