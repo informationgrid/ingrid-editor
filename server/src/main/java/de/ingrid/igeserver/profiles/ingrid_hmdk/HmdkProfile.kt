@@ -62,7 +62,7 @@ class HmdkProfile(
     init {
         isoImport.profileMapper[id] = isoImportHMDK
     }
-//    override val indexExportFormatID = "indexInGridIDFHmdk"
+    override val indexExportFormatID = "indexInGridIDFHmdk"
 
     override fun initCatalogQueries(catalogId: String) {
         val behaviours = listOf("plugin.publish").map {
