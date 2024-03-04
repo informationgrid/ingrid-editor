@@ -89,7 +89,7 @@ class AddressModelTransformer(
     fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
             AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService)
-        }.reversed()
+        }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
 
