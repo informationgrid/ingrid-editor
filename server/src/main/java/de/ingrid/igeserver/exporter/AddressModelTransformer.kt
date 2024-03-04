@@ -87,7 +87,7 @@ class AddressModelTransformer(
                 codelist,
                 documentService = documentService 
             )
-        }.reversed()
+        }
 
     private fun determineEldestAncestor(): AddressModel? =
         ancestorAddressesIncludingSelf.firstOrNull()
