@@ -181,13 +181,13 @@
                             <gmd:role>
                                 <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="processor"/>
                             </gmd:role>
-                            <idf:hierarchyParty uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
-                                <idf:addressIndividualName>Mustermann, Max, Herr Dr.</idf:addressIndividualName>
-                                <idf:addressType>2</idf:addressType>
-                            </idf:hierarchyParty>
                             <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                                 <idf:addressType>0</idf:addressType>
+                            </idf:hierarchyParty>
+                            <idf:hierarchyParty uuid="14a37ded-4ca5-4677-bfed-3607bed3071d">
+                                <idf:addressIndividualName>Mustermann, Max, Herr Dr.</idf:addressIndividualName>
+                                <idf:addressType>2</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>
@@ -254,13 +254,13 @@
                             <gmd:role>
                                 <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
                             </gmd:role>
-                            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
-                                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
-                                <idf:addressType>2</idf:addressType>
-                            </idf:hierarchyParty>
                             <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
                                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                                 <idf:addressType>0</idf:addressType>
+                            </idf:hierarchyParty>
+                            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
+                                <idf:addressType>2</idf:addressType>
                             </idf:hierarchyParty>
                         </idf:idfResponsibleParty>
                     </gmd:pointOfContact>
