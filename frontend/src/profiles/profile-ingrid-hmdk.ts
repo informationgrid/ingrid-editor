@@ -26,23 +26,14 @@ import { GeoServiceDoctypeHmdk } from "./hmdk/doctypes/geo-service.doctype";
 import { ProjectDoctypeHMDK } from "./hmdk/doctypes/project.doctype";
 import { DataCollectionDoctypeHMDK } from "./hmdk/doctypes/data-collection.doctype";
 import { PublicationDoctypeHMDK } from "./hmdk/doctypes/publication.doctype";
-import {
-  EventData,
-  EventResponder,
-  EventService,
-  IgeEvent,
-  IgeEventResultType,
-} from "../app/services/event/event.service";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../app/dialogs/confirm/confirm-dialog.component";
-import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
-import { DocumentAbstract } from "../app/store/document/document.model";
-import { firstValueFrom } from "rxjs";
-import { ResearchService } from "../app/+research/research.service";
+import { DocEventsService } from "../app/services/event/doc-events.service";
+import { TreeQuery } from "../app/store/tree/tree.query";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { PluginService } from "../app/services/plugin/plugin.service";
+import { ModifyPublishedBehaviour } from "./hmdk/behaviours/modify-published.behaviour";
 
+@UntilDestroy()
 @Component({
   template: "",
 })
@@ -54,56 +45,17 @@ class InGridHMDKComponent extends InGridComponent {
   project = inject(ProjectDoctypeHMDK);
   dataCollection = inject(DataCollectionDoctypeHMDK);
   informationSystem = inject(InformationSystemDoctypeHMDK);
+  modifyPublishedBehaviour = inject(ModifyPublishedBehaviour);
 
-  eventService = inject(EventService);
   dialog = inject(MatDialog);
-  researchService = inject(ResearchService);
+  docEvents = inject(DocEventsService);
+  treeQuery = inject(TreeQuery);
+  pluginService = inject(PluginService);
 
   constructor() {
     super();
-
-    this.eventService
-      .respondToEvent(IgeEvent.DELETE)
-      .subscribe((eventResponder) => this.handleDeleteEvent(eventResponder));
-
     this.modifyFormFieldConfiguration();
-  }
-
-  private async handleDeleteEvent(eventResponder: EventResponder) {
-    let success = false;
-    const docs = eventResponder.data as DocumentAbstract[];
-    const publishedDocs = docs.filter((doc) => doc._state !== "W");
-
-    const publishedHmbTGTitles = await this.getHmbTGDocTitles(publishedDocs);
-    console.log(publishedHmbTGTitles);
-
-    if (publishedHmbTGTitles.length) {
-      this.dialog
-        .open(ConfirmDialogComponent, {
-          data: {
-            title: "Löschen",
-            message:
-              "Folgende Datensätze sind bereits nach dem HmbTG im Hamburger Transparenzportal veröffentlicht und bleiben auch bei der Löschung der Metadatenbeschreibung aus dem HMDK bis zum Ablauf der 10 Jahre im Transparenzportal veröffentlicht.",
-            list: publishedHmbTGTitles,
-          } as ConfirmDialogData,
-        })
-        .afterClosed()
-        .subscribe((handled) => {
-          const responseData = this.buildResponse(handled);
-          eventResponder.eventResponseHandler(responseData);
-        });
-    } else {
-      success = true;
-      const responseData = this.buildResponse(success);
-      eventResponder.eventResponseHandler(responseData);
-    }
-  }
-
-  private buildResponse(isSuccess: boolean): EventData {
-    return {
-      result: isSuccess ? IgeEventResultType.SUCCESS : IgeEventResultType.FAIL,
-      data: isSuccess ? null : "this info comes from profile-ingrid-hmdk.ts",
-    };
+    this.pluginService.registerPlugin(this.modifyPublishedBehaviour);
   }
 
   private modifyFormFieldConfiguration() {
@@ -125,30 +77,6 @@ class InGridHMDKComponent extends InGridComponent {
           "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
       }
     });
-  }
-
-  private async getHmbTGDocTitles(
-    publishedDocs: DocumentAbstract[],
-  ): Promise<String[]> {
-    return firstValueFrom(
-      this.researchService
-        .searchBySQL(this.prepareSQL(publishedDocs.map((d) => d._uuid)))
-        .pipe(map((response) => response.hits.map((doc) => doc.title))),
-    );
-  }
-
-  private prepareSQL(uuids: string[]): string {
-    return `SELECT document1.*, document_wrapper.category
-                 FROM document_wrapper
-                        JOIN document document1 ON document_wrapper.uuid = document1.uuid
-                 WHERE document1.uuid = ANY(('{<uuids>}'))
-                   AND document1.is_latest = true
-                   AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.publicationHmbTG')
-                   AND data->>'publicationHmbTG' = 'true'`.replace(
-      "<uuids>",
-      uuids.join(", "),
-    );
   }
 }
 
