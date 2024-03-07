@@ -38,6 +38,15 @@
           "items": {
             "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "openDataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
         }
       },
       "additionalProperties": false
