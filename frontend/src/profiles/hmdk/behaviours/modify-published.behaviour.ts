@@ -71,6 +71,8 @@ export class ModifyPublishedBehaviour extends Plugin {
   }
 
   private handleUpdate() {
+    // ignore addresses
+    if (this.forAddress) return;
     // if the document is published and if it is published in HmbTG. then show message
     let openedDocument = this.treeQuery.getOpenedDocument();
     if (openedDocument._state !== "P") return;
