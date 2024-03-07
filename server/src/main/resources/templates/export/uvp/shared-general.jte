@@ -15,7 +15,7 @@
     !{var address = page.getPointOfContact();}
     @if(address != null)
         <address id="${address.getUuid()}" type="7">
-            <name>${address.getOrganization() != null ? address.getOrganization(): address.getLastName() + ", " + address.getFirstName()}</name>
+            <name>${address.getOrganization() != null ? address.getOrganization(): address.getIndividualName()}</name>
             <phone>${address.getTelephone()}</phone>
             <fax>${address.getFax()}</fax>
             <street>${address.getStreet()}</street>
