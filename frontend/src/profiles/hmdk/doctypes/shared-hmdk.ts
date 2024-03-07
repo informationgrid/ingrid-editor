@@ -278,8 +278,8 @@ export class SharedHmdk {
     previous: Observable<boolean>,
   ) {
     return this.wrap(() => {
-      // if openData is set access constraint "keine"
-      if (field.model.isOpenData)
+      // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
+      if (field.model.isOpenData || field.model.publicationHmbTG)
         field.model.resource.accessConstraints = [{ key: "1" }];
     }, previous);
   }
