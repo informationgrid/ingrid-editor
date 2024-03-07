@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "SpecializedTaskHmdk#1.0.0",
+  "$ref": "#/definitions/SpecializedTaskHmdk",
+  "definitions": {
+    "SpecializedTaskHmdk": {
+      "allOf": [
+        {
+          "$ref": "../specialised-task.schema.json#/definitions/SpecializedTask"
+        }
+      ],
+      "properties": {
+        "isAdVCompatible": true,
+        "_uuid": true,
+        "_type": true,
+        "title": true,
+        "description": true,
+        "alternateTitle": true,
+        "parentIdentifier": true,
+        "pointOfContact": true,
+        "advProductGroups": true,
+        "themes": true,
+        "spatial":  true,
+        "temporal": true,
+        "dataset":  true,
+        "extraInfo": true,
+        "metadata":  true,
+        "resource": true,
+        "keywords":  true,
+        "maintenanceInformation": true,
+        "references":  true,
+        "graphicOverviews": true,
+        "publicationHmbTG": {
+          "type": ["null", "boolean"]
+        },
+        "informationHmbTG": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

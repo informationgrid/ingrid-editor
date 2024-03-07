@@ -180,7 +180,7 @@ export class CopyCutPastePlugin extends Plugin {
         console.warn("Node information could not be received from store");
         resolve(false);
       } else {
-        console.log(
+        console.debug(
           "Tree does not have node information yet. Waiting 200ms ...",
         );
         setTimeout(

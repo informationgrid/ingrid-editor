@@ -49,11 +49,7 @@ export class TagsService {
   /*
    * We handle the "internet"-type as null-value, which is the default value and to be consistent
    */
-  private updatePublicationType(
-    id: number,
-    newTag: string,
-    forAddress: boolean,
-  ) {
+  updatePublicationType(id: number, newTag: string, forAddress: boolean) {
     const values = ["intranet", "amtsintern", ...this.additionalTags];
     let tagToAdd = [newTag];
     if (newTag === "internet") {

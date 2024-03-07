@@ -26,7 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 
-class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
+open class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
     GeneralMapper(metadata, codeListService, catalogId) {
 
     val log = logger()

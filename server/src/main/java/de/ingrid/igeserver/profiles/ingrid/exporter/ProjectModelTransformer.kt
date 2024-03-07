@@ -26,7 +26,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 
-class ProjectModelTransformer(
+open class ProjectModelTransformer(
     model: IngridModel,
     catalogIdentifier: String,
     codelistTransformer: CodelistTransformer,
