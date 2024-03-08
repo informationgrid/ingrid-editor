@@ -38,8 +38,8 @@ export class DataCollectionDoctype extends IngridShared {
     this.options.hide.openData = false;
   }
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
 
@@ -96,4 +96,7 @@ export class DataCollectionDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 }

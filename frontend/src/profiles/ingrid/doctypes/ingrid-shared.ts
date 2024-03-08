@@ -264,7 +264,6 @@ export abstract class IngridShared extends BaseDoctype {
       } else {
         field.model.resource.accessConstraints = [];
       }
-      field.options.formState.updateModel();
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -298,10 +297,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleDeactivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_DEACTIVATE_INFO";
-    if (this.cookieService.getCookie(cookieId) === "true") {
-      field.options.formState.updateModel();
-      return of(true);
-    }
+    if (this.cookieService.getCookie(cookieId) === "true") return of(true);
+
     const message =
       'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
     return this.dialog
@@ -328,7 +325,10 @@ export abstract class IngridShared extends BaseDoctype {
     if (!isChecked) {
       this.handleDeactivateOpenData(field).subscribe();
     } else {
-      this.handleActivateOpenData(field).subscribe();
+      this.handleActivateOpenData(field).subscribe((hasChanged) => {
+        // update model since another field was changed
+        if (hasChanged) field.options.formState.updateModel();
+      });
     }
   }
 
@@ -1467,7 +1467,10 @@ export abstract class IngridShared extends BaseDoctype {
   private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
     const checked = field.formControl.value;
     if (checked) {
-      this.handleActivateInspireIdentified(field).subscribe();
+      this.handleActivateInspireIdentified(field).subscribe((hasChanged) => {
+        // update model since another field was changed
+        if (hasChanged) field.options.formState.updateModel();
+      });
     } else {
       this.handleDeactivateInspireIdentified(field).subscribe();
     }
@@ -1497,8 +1500,6 @@ export abstract class IngridShared extends BaseDoctype {
       } else if (this.isGeoDataset) {
         this.addConformanceEntry(field.model, "12", "1");
       }
-
-      field.options.formState.updateModel();
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {

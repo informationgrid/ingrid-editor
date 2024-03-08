@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="IgeServer (Keycloak)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="mcloud,elasticsearch,keycloak,test,ingrid,uvp,bmi,ingrid-krzn,ingrid-kommunal-st" />
+    <option name="ACTIVE_PROFILES" value="mcloud,elasticsearch,keycloak,test,ingrid,uvp,bmi,ingrid-krzn,ingrid-kommunal-st,ingrid-up-sh,ingrid-hmdk" />
     <option name="ENABLE_JMX_AGENT" value="false" />
     <envs>
       <env name="KEYCLOAK_BACKEND_USER" value="ige" />

@@ -64,13 +64,13 @@
             <idf:last-modified>
                 <gco:DateTime>2023-07-10T11:11:59.000+02:00</gco:DateTime>
             </idf:last-modified>
-            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
-                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
-                <idf:addressType>2</idf:addressType>
-            </idf:hierarchyParty>
             <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                 <idf:addressType>0</idf:addressType>
+            </idf:hierarchyParty>
+            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
+                <idf:addressType>2</idf:addressType>
             </idf:hierarchyParty>
         </idf:idfResponsibleParty>
     </idf:body>

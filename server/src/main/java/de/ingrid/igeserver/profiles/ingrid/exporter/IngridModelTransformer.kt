@@ -532,7 +532,7 @@ open class IngridModelTransformer(
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl =
-        if (data.service?.type?.key == "2") data.service.operations?.find { it.name?.key == "1" }?.methodCall
+        if (data.service?.type?.key == "2") data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
             ?: "" else ""
 
     fun getCapabilitiesUrlsFromService(): List<String> {
@@ -545,7 +545,7 @@ open class IngridModelTransformer(
                 }
                 .mapNotNull {
                     it.data.get("service").get("operations")
-                        .firstOrNull { it.get("name").get("key").asText() == "1" }?.get("methodCall")?.asText()
+                        .firstOrNull { isCapabilitiesEntry(it) }?.get("methodCall")?.asText()
                 }
         } else emptyList()
 
@@ -734,7 +734,7 @@ open class IngridModelTransformer(
 
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
         return model.data.service?.operations
-            ?.filter { it.name?.key == "1" }
+            ?.filter { isCapabilitiesEntry(it) }
             ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
             ?: emptyList()
     }
@@ -812,7 +812,7 @@ open class IngridModelTransformer(
             serviceType = getServiceType(createKeyValueFromJsonNode(service?.get("type"))),
             serviceOperation =
             getOperationName(createKeyValueFromJsonNode(firstOperation?.get("name"))),
-            serviceUrl = service?.get("operations")?.find { it.getString("name.key") == "1" }?.getString("methodCall"),
+            serviceUrl = service?.get("operations")?.find { isCapabilitiesEntry(it) }?.getString("methodCall"),
             serviceVersion = getVersion(
                 createKeyValueFromJsonNode(service?.get("version")?.firstOrNull()),
                 service?.getString("type.key")
@@ -904,6 +904,13 @@ open class IngridModelTransformer(
         return data.spatial.verticalExtent?.let {
             it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
         } ?: false
+    }
+
+    private fun isCapabilitiesEntry(entry: JsonNode): Boolean {
+        return entry.getString("name.key") == "1" ||entry.getString("name.value") == "GetCapabilities"
+    }
+    private fun isCapabilitiesEntry(op: Operation): Boolean {
+        return op.name?.key == "1" || op.name?.value == "GetCapabilities"
     }
 
     open val mapLinkUrl: String? = null

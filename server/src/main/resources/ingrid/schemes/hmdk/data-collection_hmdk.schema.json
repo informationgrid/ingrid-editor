@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "DataCollectionHmdk#1.0.0",
+  "$ref": "#/definitions/DataCollectionHmdk",
+  "definitions": {
+    "DataCollectionHmdk": {
+      "allOf": [
+        {
+          "$ref": "../data-collection.schema.json#/definitions/DataCollection"
+        }
+      ],
+      "properties": {
+        "isAdVCompatible": true,
+        "isOpenData": true,
+        "_uuid": true,
+        "_type": true,
+        "title": true,
+        "description": true,
+        "alternateTitle": true,
+        "parentIdentifier": true,
+        "pointOfContact": true,
+        "advProductGroups": true,
+        "themes": true,
+        "spatial": true,
+        "temporal": true,
+        "dataset": true,
+        "extraInfo": true,
+        "metadata": true,
+        "resource": true,
+        "keywords": true,
+        "maintenanceInformation": true,
+        "references": true,
+        "graphicOverviews": true,
+        "digitalTransferOptions": true,
+        "categoryCatalog": true,
+        "distribution": true,
+        "databaseContent": true,
+        "explanation": true,
+        "methodText": true,
+        "orderInfo": true,
+        "openDataCategories": true,
+        "publicationHmbTG": {
+          "type": ["null", "boolean"]
+        },
+        "informationHmbTG": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

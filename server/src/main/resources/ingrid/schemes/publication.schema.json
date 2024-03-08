@@ -1,11 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "Literature#1.0.0",
-  "$ref": "#/definitions/Literature",
+  "$id": "Publication#1.0.0",
+  "$ref": "#/definitions/Publication",
   "definitions": {
-    "Literature": {
+    "Publication": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]
@@ -207,7 +207,7 @@
         "metadata",
         "dataset"
       ],
-      "title": "Literature"
+      "title": "Publication"
     }
   }
 }

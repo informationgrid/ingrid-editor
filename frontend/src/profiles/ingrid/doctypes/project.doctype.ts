@@ -38,8 +38,8 @@ export class ProjectDoctype extends IngridShared {
     this.options.hide.openData = true;
   }
 
-  documentFields = () =>
-    <FormlyFieldConfig[]>[
+  documentFields = () => {
+    const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
 
@@ -61,4 +61,7 @@ export class ProjectDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
     ];
+
+    return this.manipulateDocumentFields(fields);
+  };
 }

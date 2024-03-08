@@ -81,9 +81,19 @@ export class DeleteDocsPlugin extends Plugin {
 
     this.formSubscriptions.push(
       this.docEvents.onEvent("DELETE").subscribe(() => {
-        this.eventService
-          .sendEventAndContinueOnSuccess(IgeEvent.DELETE)
-          .subscribe(() => this.showDeleteDialog());
+        // TODO: this strategy is used in several toolbar plugins to prevent too early execution
+        //       when opening page and hitting a toolbar button
+        this.tree
+          .selectActive()
+          .pipe(
+            filter((entity) => entity !== undefined),
+            take(1),
+          )
+          .subscribe((docs) => {
+            this.eventService
+              .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)
+              .subscribe(() => this.showDeleteDialog(docs));
+          });
       }),
 
       this.tree.selectActive().subscribe((data) => {
@@ -103,38 +113,28 @@ export class DeleteDocsPlugin extends Plugin {
     }
   }
 
-  showDeleteDialog() {
-    // TODO: this strategy is used in several toolbar plugins to prevent too early execution
-    //       when opening page and hitting a toolbar button
-    this.tree
-      .selectActive()
-      .pipe(
-        filter((entity) => entity !== undefined),
-        take(1),
-      )
-      .subscribe((docs) => {
-        this.dialog
-          .open(ConfirmDialogComponent, {
-            hasBackdrop: true,
-            data: <ConfirmDialogData>{
-              message: "Möchten Sie wirklich diese Datensätze löschen:",
-              title: "Löschen",
-              list: docs.map((doc) => doc.title),
-              buttons: [
-                { text: "Abbrechen" },
-                {
-                  text: "Löschen",
-                  alignRight: true,
-                  id: "confirm",
-                  emphasize: true,
-                },
-              ],
+  showDeleteDialog(docs: DocumentAbstract[]) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        hasBackdrop: true,
+        data: <ConfirmDialogData>{
+          message: "Möchten Sie wirklich diese Datensätze löschen:",
+          title: "Löschen",
+          list: docs.map((doc) => doc.title),
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Löschen",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
             },
-          })
-          .afterClosed()
-          .pipe(filter((response) => response === "confirm"))
-          .subscribe(() => this.deleteDocs(docs).subscribe());
-      });
+          ],
+        },
+      })
+      .afterClosed()
+      .pipe(filter((response) => response === "confirm"))
+      .subscribe(() => this.deleteDocs(docs).subscribe());
   }
 
   private selectParent(docs: DocumentAbstract[], currentDoc: DocumentAbstract) {

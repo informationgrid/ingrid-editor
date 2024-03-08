@@ -410,7 +410,7 @@ See the following example:
 
 [source,typescript]  
 ----
-  this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE)
+  this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE, data)
             .subscribe(() => this.showDeleteDialog());
 ----
 
