@@ -142,7 +142,7 @@ open class IngridModelTransformer(
             if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
 
         val baseJson = codelists.getData("6500", constraint.title?.key)
-        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty()}\""
+        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty().replace("\"", "\\\\\"")}\""
 
         val json = baseJson?.let {
             if (it.contains(",\"quelle\":\"\"".toRegex()))
