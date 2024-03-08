@@ -48,4 +48,12 @@ class BmwkProfile(
 
     override val indexExportFormatID = "indexInGridIDFBmwk"
 
+    override fun getElasticsearchMapping(format: String): String {
+        return {}.javaClass.getResource("/ingrid/default-mapping.json")?.readText() ?: ""
+    }
+
+    override fun getElasticsearchSetting(format: String): String {
+        return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
+    }
+
 }
