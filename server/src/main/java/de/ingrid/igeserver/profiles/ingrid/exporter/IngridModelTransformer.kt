@@ -278,7 +278,7 @@ open class IngridModelTransformer(
             else -> null
         }
         CharacterStringModel(referenceSystem, epsgLink)
-    }
+    } ?: emptyList()
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle

@@ -29,7 +29,7 @@ import { ReportsService } from "../app/+reports/reports.service";
 @Component({
   template: "",
 })
-class BmiComponent {
+export class BmiComponent {
   constructor(
     service: ProfileService,
     contextHelpService: ContextHelpService,
