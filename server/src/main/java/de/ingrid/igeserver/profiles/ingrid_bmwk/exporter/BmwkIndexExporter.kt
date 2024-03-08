@@ -22,21 +22,29 @@ package de.ingrid.igeserver.profiles.ingrid_bmwk.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.bmi.exporter.BmiIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.utils.getString
+import gg.jte.ContentType
+import gg.jte.TemplateEngine
+import gg.jte.TemplateOutput
+import gg.jte.output.StringOutput
+import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter) : BmiIndexExporter() {
-    
+class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler) : BmiIndexExporter() {
+
     val log = logger()
+
+    val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     override val typeInfo: ExportTypeInfo
         get() {
@@ -61,6 +69,10 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter) : BmiIndex
         val mapper = jacksonObjectMapper()
         val bmiJson = mapper.readValue(bmiExport, JsonNode::class.java)
         val luceneJson = mapper.readValue(ingridExport, ObjectNode::class.java)
+        
+        val bmwkAdditionalIdf = createAdditionalIdf(doc, catalogId)
+        appendToIdf(luceneJson, bmwkAdditionalIdf)
+        println(bmwkAdditionalIdf)
 
         // apply all bmi fields to ingrid lucene document
         bmiJson.fieldNames().forEach {
@@ -71,13 +83,18 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter) : BmiIndex
         return luceneJson.toPrettyString()
     }
 
-    private fun convertBmiToIngridDoc(doc: Document): Document {
-//        return Document().apply { 
-//            type = "InGridSpecialisedTask"
-//            id = doc.id
-//            catalog = doc.catalog
-//        }
+    private fun appendToIdf(json: ObjectNode?, additionalIdf: String) {
+        val updatedIdf = json?.getString("idf")?.replace("</idf:idfMdMetadata>", "$additionalIdf</idf:idfMdMetadata>")
+        json?.put("idf", updatedIdf)
+    }
 
+    private fun createAdditionalIdf(doc: Document, catalogId: String): String {
+        val output: TemplateOutput = XMLStringOutput()
+        templateEngine.render("export/ingrid-bmwk/additional.jte", mapOf("map" to mapOf("model" to BMWKModelTransformer(doc, codelistHandler, catalogId))), output)
+        return output.toString()
+    }
+
+    private fun convertBmiToIngridDoc(doc: Document): Document {
         val mapper = jacksonObjectMapper()
         return doc.apply {
             type = "InGridSpecialisedTask"
@@ -99,8 +116,8 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter) : BmiIndex
 
                     })
                 })
-                set<JsonNode>("metadata", mapper.createObjectNode().apply { 
-                    set<JsonNode>("language", mapper.createObjectNode().apply { 
+                set<JsonNode>("metadata", mapper.createObjectNode().apply {
+                    set<JsonNode>("language", mapper.createObjectNode().apply {
                         put("key", 150)
                     })
                 })
@@ -109,17 +126,15 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter) : BmiIndex
         }
     }
 
-    /*
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
+    private class XMLStringOutput : StringOutput() {
+        override fun writeUserContent(value: String?) {
+            if (value == null) return
+            super.writeUserContent(
+                StringEscapeUtils.escapeXml10(value)
+//                .replace("\n", "&#10;")
+//                .replace("\r", "&#13;")
+//                .replace("\t", "&#9;")
+            )
+        }
     }
-
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-
-        return mapOf(
-            "model" to jacksonObjectMapper().convertValue(json, BmiModel::class.java),
-            "catalogId" to catalogId
-        )
-
-    }*/
 }
