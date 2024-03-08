@@ -49,7 +49,7 @@ interface ConfigApi {
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Settings have been set.")])
     @PutMapping(value = ["/config/connections"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setConnections(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<Unit>
+    fun setConnections(@Parameter(required = true) @RequestBody config: ConnectionConfig): ResponseEntity<ConnectionConfig>
 
 
     @GetMapping(value = ["/config/cms"], produces = [MediaType.APPLICATION_JSON_VALUE])

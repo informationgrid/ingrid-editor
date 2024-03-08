@@ -86,9 +86,10 @@ export class ConnectionManagementComponent implements OnInit {
 
   save() {
     const config: Connections = this.form.value;
-    this.configService
-      .saveIBusConfig(config)
-      .subscribe(() => this.checkConnectionState(config.connections));
+    this.configService.saveConnectionConfig(config).subscribe((response) => {
+      this.form.patchValue({ connections: response });
+      this.checkConnectionState(response);
+    });
   }
 
   private checkConnectionState(configs: ConnectionInfo[]) {

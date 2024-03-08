@@ -19,7 +19,7 @@
  */
 import { Injectable } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
@@ -86,6 +86,11 @@ export interface CMSPage {
 
 export interface Connections {
   connections: ConnectionInfo[];
+}
+
+export interface BackendConnections {
+  ibus: ConnectionInfo[];
+  elasticsearch: ConnectionInfo[];
 }
 
 export interface ConnectionInfo {
@@ -203,11 +208,17 @@ export class ConfigService {
     }
   }
 
-  saveIBusConfig(value: Connections) {
+  saveConnectionConfig(value: Connections): Observable<ConnectionInfo[]> {
     const valueForBackend = this.prepareConnectionsForIBus(value);
     return this.http
-      .put<any>(`${this.config.backendUrl}config/connections`, valueForBackend)
-      .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
+      .put<BackendConnections>(
+        `${this.config.backendUrl}config/connections`,
+        valueForBackend,
+      )
+      .pipe(
+        tap(() => this.snackbar.open("Konfiguration wurde gespeichert")),
+        map((result) => this.prepareConnectionsForFrontend(result).connections),
+      );
   }
 
   getIBusConfig() {
@@ -230,7 +241,7 @@ export class ConfigService {
     return this.http.put<void>(`${this.config.backendUrl}config/cms`, content);
   }
 
-  private prepareConnectionsForIBus(value: Connections) {
+  private prepareConnectionsForIBus(value: Connections): BackendConnections {
     return {
       ibus: value.connections.filter((item) => item._type === "ibus"),
       elasticsearch: value.connections.filter(
@@ -239,7 +250,9 @@ export class ConfigService {
     };
   }
 
-  private prepareConnectionsForFrontend(value: any): Connections {
+  private prepareConnectionsForFrontend(
+    value: BackendConnections,
+  ): Connections {
     return {
       connections: [
         ...this.addType("ibus", value.ibus),

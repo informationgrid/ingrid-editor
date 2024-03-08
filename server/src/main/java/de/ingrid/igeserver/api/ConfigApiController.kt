@@ -77,7 +77,7 @@ class ConfigApiController(
         return ResponseEntity.ok().body(connectionService.isConnected(id))
     }
 
-    override fun setConnections(config: ConnectionConfig): ResponseEntity<Unit> {
+    override fun setConnections(config: ConnectionConfig): ResponseEntity<ConnectionConfig> {
         config.ibus?.let {
             settingsService.setIBusConfig(it)
         }
@@ -85,7 +85,7 @@ class ConfigApiController(
             settingsService.setElasticConfig(it)
         }
         connectionService.setupConnections()
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok().body(config)
     }
 
     override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {
