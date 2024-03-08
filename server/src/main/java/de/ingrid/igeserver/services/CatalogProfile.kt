@@ -31,7 +31,7 @@ interface CatalogProfile {
     val identifier: String
     val title: String
     val description: String?
-    val indexExportFormatID: String?
+    val indexExportFormatID: String
     val parentProfile: String?
         get() = null
 

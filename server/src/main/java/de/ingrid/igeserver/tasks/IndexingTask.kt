@@ -324,22 +324,23 @@ class IndexingTask(
     /**
      * Indexing of a single document into an Elasticsearch index.
      */
-    fun updateDocument(catalogId: String, category: DocumentCategory, format: String, docId: String) {
+    fun updateDocument(catalogId: String, category: DocumentCategory, docId: String) {
         log.info("Export dataset to Elasticsearch: $catalogId/$docId")
 
         runAsCatalogAdministrator()
 
-        val exporter = indexService.getExporter(category, format)
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+        val exportFormatId = catalogProfile.indexExportFormatID
+        val exporter = indexService.getExporter(category, exportFormatId)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 
         try {
             val doc = indexService.getSinglePublishedDocument(catalogId, category.value, catalogProfile, docId)
 
             val export = exporter.run(doc.document, catalogId)
             log.debug("Exported document: $export")
-            val indexInfo = getOrPrepareIndex(catalogProfile, category, format, elasticsearchAlias)
+            val indexInfo = getOrPrepareIndex(catalogProfile, category, exportFormatId, elasticsearchAlias)
 
 
             val elasticDoc = convertToElasticDocument(export)
