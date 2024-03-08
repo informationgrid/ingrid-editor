@@ -21,10 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bmwk.types
 
 import de.ingrid.igeserver.profiles.bmi.types.BmiAddressType
 import de.ingrid.igeserver.profiles.bmi.types.BmiType
-import de.ingrid.igeserver.profiles.ingrid.types.*
-import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
-import de.ingrid.igeserver.profiles.ingrid.types.address.InGridPersonType
-import de.ingrid.igeserver.profiles.ingrid_bast.BmwkProfile
+import de.ingrid.igeserver.profiles.ingrid_bmwk.BmwkProfile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
