@@ -39,7 +39,7 @@ export class CodelistPipe implements PipeTransform {
     lang = "de",
   ): Observable<string> {
     if (!id) return of(value as string);
-    if (value === null) return of("");
+    if (value === null) return of(null);
     const codelist = this.codelistQuery.getEntity(id);
 
     if (!codelist) {
