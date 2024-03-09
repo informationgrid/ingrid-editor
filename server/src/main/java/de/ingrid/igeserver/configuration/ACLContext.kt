@@ -23,7 +23,6 @@ import de.ingrid.igeserver.configuration.acl.CustomPermissionFactory
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionCacheOptimizer
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Bean
@@ -36,26 +35,22 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.jdbc.LookupStrategy
 import org.springframework.security.acls.model.AclService
 import org.springframework.security.acls.model.PermissionGrantingStrategy
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import javax.sql.DataSource
 
 
 @Configuration
 @EnableAutoConfiguration
-class ACLContext {
-
-    @Autowired
-    var dataSource: DataSource? = null
-
-    @Autowired
-    lateinit var cacheManager: CacheManager
+@EnableMethodSecurity
+class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
 
     @Bean
     fun aclCache(): SpringCacheBasedAclCache {
         return SpringCacheBasedAclCache(
-                cacheManager.getCache("aclCache"),
-                permissionGrantingStrategy(),
-                aclAuthorizationStrategy()
+            cacheManager.getCache("aclCache"),
+            permissionGrantingStrategy(),
+            aclAuthorizationStrategy()
         )
     }
 
