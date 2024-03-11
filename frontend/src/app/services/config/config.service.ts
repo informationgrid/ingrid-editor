@@ -221,7 +221,7 @@ export class ConfigService {
       );
   }
 
-  getIBusConfig() {
+  getConnectionsConfig() {
     return this.http
       .get<any>(`${this.config.backendUrl}config/connections`)
       .pipe(map((config) => this.prepareConnectionsForFrontend(config)));

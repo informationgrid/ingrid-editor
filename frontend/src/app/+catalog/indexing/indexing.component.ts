@@ -133,7 +133,7 @@ export class IndexingComponent implements OnInit {
         this.valid = expression.valid;
       });
 
-    this.configService.getIBusConfig().subscribe((config) => {
+    this.configService.getConnectionsConfig().subscribe((config) => {
       this.hasNoConnections.set(config.connections.length === 0);
     });
   }

@@ -91,32 +91,34 @@
             </div>
         </div>
 
-        <section>Konfiguration</section>
-        <div class="padding section config">
-            @if (exportModel?.["catalog-index-config"]?.length === 0) {
-                <p>
-                    Für diesen Katalog gibt es keine spezielle Konfiguration für
-                    den Export. Es wird auf das Standardverhalten
-                    zurückgegriffen. Hierbei werden alle mit "Internet"
-                    markierten Datensätze in alle vorhandenen Verbindungen mit
-                    dem Standard-Exporter des Katalogs indiziert.
-                </p>
-            }
-            <formly-form
-                [fields]="fields"
-                [form]="exportForm"
-                [model]="exportModel"
-            ></formly-form>
-        </div>
-        <div class="flex-row justify-content-end">
-            <button
-                mat-flat-button
-                color="primary"
-                [disabled]="exportForm.invalid"
-                (click)="updateExportConfig()"
-            >
-                Speichern
-            </button>
-        </div>
+        @if (!hasNoConnections()) {
+            <section>Konfiguration</section>
+            <div class="padding section config">
+                @if (exportModel?.["catalog-index-config"]?.length === 0) {
+                    <p>
+                        Für diesen Katalog gibt es keine spezielle Konfiguration
+                        für den Export. Es wird auf das Standardverhalten
+                        zurückgegriffen. Hierbei werden alle mit "Internet"
+                        markierten Datensätze in alle vorhandenen Verbindungen
+                        mit dem Standard-Exporter des Katalogs indiziert.
+                    </p>
+                }
+                <formly-form
+                    [fields]="fields"
+                    [form]="exportForm"
+                    [model]="exportModel"
+                ></formly-form>
+            </div>
+            <div class="flex-row justify-content-end">
+                <button
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="exportForm.invalid"
+                    (click)="updateExportConfig()"
+                >
+                    Speichern
+                </button>
+            </div>
+        }
     </div>
 </page-template>

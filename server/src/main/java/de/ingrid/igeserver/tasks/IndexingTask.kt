@@ -120,7 +120,7 @@ class IndexingTask(
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
-                        // if another indexing starts right afterwards, then the previous index could still be there
+                        // if another indexing starts right afterward, then the previous index could still be there
                         target.target.flush()
                     }
             }
@@ -188,7 +188,7 @@ class IndexingTask(
 
         var exportConfigs = catalog.settings.exports
         if (exportConfigs.isEmpty()) {
-            val defaultExportFormatId = catalogProfile.indexExportFormatID ?: return emptyList()
+            val defaultExportFormatId = catalogProfile.indexExportFormatID
             exportConfigs = getDefaultExporterConfiguration(defaultExportFormatId, ibusConfigs, elasticConfig)
         }
 
@@ -262,7 +262,6 @@ class IndexingTask(
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
-        val exportFormatId = catalogProfile.indexExportFormatID
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 

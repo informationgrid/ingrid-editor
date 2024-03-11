@@ -50,7 +50,7 @@ export class IndexingFields extends FormFieldHelper {
               simple: true,
               useFirstValueInitially: true,
               options: this.configService
-                .getIBusConfig()
+                .getConnectionsConfig()
                 .pipe(map((configs) => this.mapConnections(configs))),
             }),
             this.addSelectInline("tags", "Veröffentlichungsrecht", {

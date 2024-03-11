@@ -76,7 +76,7 @@ export class ConnectionManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.configService
-      .getIBusConfig()
+      .getConnectionsConfig()
       .pipe(
         tap((config) => this.checkConnectionState(config.connections)),
         tap((config) => (this.model = config)),

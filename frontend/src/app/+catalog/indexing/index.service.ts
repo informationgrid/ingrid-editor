@@ -87,7 +87,7 @@ export class IndexService {
         map((data) => {
           return <LogResult>{
             ...data.info,
-            targets: data.info.report,
+            targets: data.info?.report,
           };
         }),
       );
