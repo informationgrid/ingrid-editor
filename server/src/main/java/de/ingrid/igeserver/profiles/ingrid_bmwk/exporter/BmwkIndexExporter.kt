@@ -99,6 +99,9 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         return doc.apply {
             type = "InGridSpecialisedTask"
             data.apply {
+                set<JsonNode>("pointOfContact", get("addresses"))
+                put("alternateTitle", getString("landingPage"))
+                set<JsonNode>("openDataCategories", get("openDataCategories"))
                 val tempSpatial = get("spatial")
                 set<JsonNode>("spatial", mapper.createObjectNode().apply {
                     set<JsonNode>("references", tempSpatial)
