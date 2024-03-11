@@ -29,6 +29,7 @@ import de.ingrid.igeserver.profiles.bmi.exporter.BmiIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
@@ -40,7 +41,8 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler) : BmiIndexExporter() {
+class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler) :
+    BmiIndexExporter() {
 
     val log = logger()
 
@@ -69,7 +71,7 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         val mapper = jacksonObjectMapper()
         val bmiJson = mapper.readValue(bmiExport, JsonNode::class.java)
         val luceneJson = mapper.readValue(ingridExport, ObjectNode::class.java)
-        
+
         val bmwkAdditionalIdf = createAdditionalIdf(doc, catalogId)
         appendToIdf(luceneJson, bmwkAdditionalIdf)
         println(bmwkAdditionalIdf)
@@ -90,7 +92,11 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
 
     private fun createAdditionalIdf(doc: Document, catalogId: String): String {
         val output: TemplateOutput = XMLStringOutput()
-        templateEngine.render("export/ingrid-bmwk/additional.jte", mapOf("map" to mapOf("model" to BMWKModelTransformer(doc, codelistHandler, catalogId))), output)
+        templateEngine.render(
+            "export/ingrid-bmwk/additional.jte",
+            mapOf("map" to mapOf("model" to BMWKModelTransformerAdditional(doc, codelistHandler, catalogId))),
+            output
+        )
         return output.toString()
     }
 
@@ -99,12 +105,14 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         return doc.apply {
             type = "InGridSpecialisedTask"
             data.apply {
-                set<JsonNode>("pointOfContact", get("addresses"))
+                val outer = this
+                set<JsonNode>("pointOfContact", get("addresses").apply {
+                    (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
+                })
                 put("alternateTitle", getString("landingPage"))
                 set<JsonNode>("openDataCategories", get("openDataCategories"))
-                val tempSpatial = get("spatial")
                 set<JsonNode>("spatial", mapper.createObjectNode().apply {
-                    set<JsonNode>("references", tempSpatial)
+                    set<JsonNode>("references", outer.get("spatial"))
                     set<JsonNode>("spatialSystems", null)
                 })
                 val tempKeywords = get("keywords")
@@ -124,7 +132,20 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
                         put("key", 150)
                     })
                 })
-
+                put("isOpenData", true)
+                set<JsonNode>("openDataCategories", get("DCATThemes"))
+                set<JsonNode>("resource", mapper.createObjectNode().apply {
+                    put("purpose", outer.getString("legalBasis"))
+                    put("specificUsage", outer.getString("specificUsage"))
+                })
+                set<JsonNode>("temporal", mapper.createObjectNode().apply { 
+                    set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
+                    set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
+                    set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
+                })
+                set<JsonNode>("maintenanceInformation", mapper.createObjectNode().apply {
+                    set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
+                })
             }
         }
     }

@@ -21,20 +21,11 @@ package de.ingrid.igeserver.profiles.ingrid_bmwk.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
-/*
-class BMWKModelTransformer(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String): IngridModelTransformer(model,
-    catalogId,
-    codelistHandler,
-    config,
-    catalogService,
-    cache,
-    doc,
-    documentService) {
+class BMWKModelTransformerAdditional(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String) {
     fun getDistributions(): List<Distribution> {
         return doc.data.get("distributions")?.map { dist ->
             Distribution(
@@ -65,4 +56,21 @@ class BMWKModelTransformer(val doc: Document, val codelistHandler: CodelistHandl
     private fun mapLanguage(it: JsonNode): String? {
         return codelistHandler.getCatalogCodelistValue(catalogId, "20007", it.getString("key")!!)
     }
-}*/
+}
+
+data class Distribution(
+    val format: String,
+    val accessURL: String,
+    val modified: String,
+    val title: String,
+    val description: String,
+    val license: License?,
+    val byClause: String,
+    val languages: List<String>,
+    val availability: String
+)
+
+data class License(
+    val url: String,
+    val name: String
+)

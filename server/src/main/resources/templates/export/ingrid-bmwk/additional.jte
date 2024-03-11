@@ -1,10 +1,10 @@
-@import de.ingrid.igeserver.profiles.ingrid_bmwk.exporter.BMWKModelTransformer
+@import de.ingrid.igeserver.profiles.ingrid_bmwk.exporter.BMWKModelTransformerAdditional
 @import de.ingrid.igeserver.profiles.ingrid_bmwk.exporter.Distribution
 @import java.util.Map
 
 @param Map<String, Object> map
 
-!{var page = ((BMWKModelTransformer)map.get("model"));}
+!{var page = ((BMWKModelTransformerAdditional)map.get("model"));}
 
 @for(Distribution item : page.getDistributions())
     <idf:distribution>

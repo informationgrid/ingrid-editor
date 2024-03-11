@@ -50,6 +50,13 @@ fun JsonNode.getStringOrEmpty(path: String): String {
     return this.getString(path) ?: ""
 }
 
+fun JsonNode.getPath(path: String): JsonNode? {
+    return path.split(".")
+        .fold<String, JsonNode?>(this) { node, fieldName ->
+            node?.get(fieldName)
+        }
+}
+
 fun JsonNode.mapToKeyValue(): KeyValue? {
     if (this.isNull) return null
     return KeyValue(this.get("key")?.asText(), this.get("value")?.asText())

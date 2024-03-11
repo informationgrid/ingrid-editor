@@ -33,6 +33,8 @@ import { BmiComponent } from "./profile-bmi";
   template: "",
 })
 class InGridBastComponent extends BmiComponent {
+  bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
+
   /*  // geoDataset = inject(GeoDatasetDoctypeBast);
   // geoService = inject(GeoServiceDoctypeBast);
   codelistQuery = inject(CodelistQuery);
