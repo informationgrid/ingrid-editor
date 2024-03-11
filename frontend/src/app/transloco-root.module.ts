@@ -47,9 +47,6 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 
         const sources = [
           this.http.get<Translation>(`${assetsDir}/i18n/${lang}.json`),
-          this.http
-            .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
-            .pipe(catchError(() => of({}))),
         ];
         if (parentProfile) {
           sources.push(
@@ -60,6 +57,11 @@ export class TranslocoHttpLoader implements TranslocoLoader {
               .pipe(catchError(() => of({}))),
           );
         }
+        sources.push(
+          this.http
+            .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
+            .pipe(catchError(() => of({}))),
+        );
         return combineLatest(sources).pipe(
           map((files) => deepMerge(files[0], files[1], files[2])),
         );
