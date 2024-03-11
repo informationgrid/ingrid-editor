@@ -27,7 +27,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -60,8 +59,9 @@ class GroupsApiController(
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        // user is not allowed to delete groups he is a member of
-        if (userBelongsToGroup(principal,id)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        val isCatAdmin = authUtils.isAdmin(principal)
+        // user is not allowed to delete groups he is a member of except for cat admin
+        if (userBelongsToGroup(principal,id) || !isCatAdmin) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         groupService.remove(catalogId, id)
         return ResponseEntity(HttpStatus.OK)
@@ -123,8 +123,15 @@ class GroupsApiController(
 
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        // user is not allowed to edit groups he is a member of
-        if (userBelongsToGroup(principal,group.id!!)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        val isCatAdmin = authUtils.isAdmin(principal)
+        // user is not allowed to edit groups he is a member of except for cat admin
+        if (userBelongsToGroup(principal,group.id!!) && !isCatAdmin) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+
+        // check if user still would have rights to edited group
+        if (!igeAclService.hasRightsForGroup(
+            principal as Authentication,
+            group
+        )) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         val updatedGroup = groupService.update(catalogId, id, group, true)
         return ResponseEntity.ok(updatedGroup)
@@ -148,8 +155,8 @@ class GroupsApiController(
 
     override fun updateManager(principal: Principal, id: Int, userId: String): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        var group = groupService.get(catalogId, id)
-        var newManager = catalogService.getUser(userId)
+        val group = groupService.get(catalogId, id)
+        val newManager = catalogService.getUser(userId)
         if (group != null && newManager != null) {
             group.manager = newManager
             return ResponseEntity.ok(groupService.update(catalogId, id, group, false))
