@@ -254,7 +254,6 @@ class IndexingTask(
     fun updateDocument(
         catalogId: String,
         category: DocumentCategory,
-        format: String,
         docId: String
     ) {
         log.info("Export dataset from catalog '$catalogId': $docId")
@@ -263,6 +262,7 @@ class IndexingTask(
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
+        val exportFormatId = catalogProfile.indexExportFormatID
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
         val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
 

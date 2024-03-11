@@ -88,7 +88,7 @@ class UVPPublishExport(
     private fun indexUvpDoc(context: Context, docId: String, category: DocumentCategory) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, category, "indexUvpIDF", docId)
+        indexingTask.updateDocument(context.catalogId, category, docId)
 
     }
 }

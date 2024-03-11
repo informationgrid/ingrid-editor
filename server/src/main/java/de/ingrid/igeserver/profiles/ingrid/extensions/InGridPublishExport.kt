@@ -93,7 +93,7 @@ class InGridPublishExport(
     private fun indexDoc(context: Context, docId: String, category: DocumentCategory) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, category, "indexInGridIDF", docId)
+        indexingTask.updateDocument(context.catalogId, category, docId)
 
     }
 }

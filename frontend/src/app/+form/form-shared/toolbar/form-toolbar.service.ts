@@ -59,9 +59,6 @@ export class FormToolbarService {
   // event when a new button was added
   toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
-  // events coming from a toolbar button
-  // toolbarEvent$ = new Subject<string>();
-
   private _buttons: Array<ToolbarItem | Separator> = [];
 
   constructor(private docEvents: DocEventsService) {}

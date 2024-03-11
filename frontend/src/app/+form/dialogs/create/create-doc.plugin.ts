@@ -32,6 +32,7 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { take } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable()
@@ -77,6 +78,7 @@ export class CreateDocumentPlugin extends Plugin {
       .selectTranslate(
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       )
+      .pipe(take(1))
       .subscribe((tooltipText) => {
         this.toolbarService.addButton({
           id: "toolBtnNew",

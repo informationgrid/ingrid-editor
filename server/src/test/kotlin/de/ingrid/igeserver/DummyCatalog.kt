@@ -29,7 +29,7 @@ class DummyCatalog : CatalogProfile {
     override var identifier = "DUMMY"
     override val title = "DUMMY Catalog"
     override val description = "This catalog is only used for test purpose"
-    override val indexExportFormatID = null
+    override val indexExportFormatID = ""
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
