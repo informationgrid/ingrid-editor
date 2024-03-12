@@ -31,21 +31,21 @@ export class ConnectionForm extends FormFieldHelper {
           key: "ibus",
           value: "iBus",
           fields: {
-            fieldGroup: [...this.addFields(9900)],
+            fieldGroup: [...this.addFieldsForIBus()],
           },
         },
         {
           key: "elastic",
           value: "Elasticsearch",
           fields: {
-            fieldGroup: this.addFields(9200),
+            fieldGroup: this.addFieldsForElastic(),
           },
         },
       ],
     }),
   ];
 
-  private addFields(port: number) {
+  private addFieldsForIBus() {
     return [
       { key: "_type" },
       { key: "id" },
@@ -66,7 +66,7 @@ export class ConnectionForm extends FormFieldHelper {
             className: "flex-1 white-bg port",
             required: true,
             type: "number",
-            defaultValue: port,
+            defaultValue: 9900,
             updateOn: "change",
           }),
         ],
@@ -74,6 +74,29 @@ export class ConnectionForm extends FormFieldHelper {
           fieldGroupClassName: "flex-row gap-6",
         },
       ),
+    ];
+  }
+  private addFieldsForElastic() {
+    return [
+      { key: "_type" },
+      { key: "id" },
+      this.addInputInline("name", "Name", {
+        className: "white-bg url",
+        required: true,
+        updateOn: "change",
+      }),
+      this.addRepeatListInline("hosts", "Hosts", { asSimpleValues: true }),
+      this.addInputInline("username", "Benutzername", {
+        className: "flex-1 white-bg ip",
+        required: true,
+        updateOn: "change",
+      }),
+      this.addInputInline("password", "Passwort", {
+        className: "flex-1 white-bg port",
+        required: true,
+        type: "number",
+        updateOn: "change",
+      }),
     ];
   }
 }

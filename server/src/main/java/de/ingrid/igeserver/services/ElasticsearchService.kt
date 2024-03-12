@@ -62,7 +62,14 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
     }
 
     private fun createElasticClient(config: ElasticConfig): SearchClient {
-        return SearchClient(KtorRestClient(config.ip, config.port))
+        return SearchClient(
+            KtorRestClient(
+//                https = true,
+                user = config.username,
+                password = config.password,
+                nodes = arrayOf(Node(config.ip, config.port))
+            )
+        )
     }
 
     private val itemCallBack =
