@@ -403,7 +403,7 @@
           "type": "text",
           "store": true
         },
-        "accessURL": {
+        "access_url": {
           "type": "text",
           "store": true
         },
@@ -419,7 +419,7 @@
           "type": "text",
           "store": true
         },
-        "byClause": {
+        "by_clause": {
           "type": "text",
           "store": true
         },

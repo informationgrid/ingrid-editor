@@ -47,9 +47,9 @@
         {
             "format": ["{{ download.format.key }}"],
             {% if download.link.asLink %}
-                "accessURL": "{{ download.link.value }}",
+                "access_url": "{{ download.link.value }}",
             {% else %}
-                "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
+                "access_url": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
             {% endif %}
             {% if download.modified  %}
                 "modified": "{{ download.modified }}",
