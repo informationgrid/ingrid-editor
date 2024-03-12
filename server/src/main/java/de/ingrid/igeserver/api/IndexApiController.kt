@@ -56,8 +56,7 @@ class IndexApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val config = catalogService.getCatalogById(catalogId).run {
             IndexCronOptions(
-                settings.indexCronPattern ?: "",
-                settings.exports
+                settings.indexCronPattern ?: ""
             )
         }
         return ResponseEntity.ok(config)

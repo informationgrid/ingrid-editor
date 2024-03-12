@@ -67,7 +67,10 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
 //                https = true,
                 user = config.username,
                 password = config.password,
-                nodes = arrayOf(Node(config.ip, config.port))
+                nodes = config.hosts.map {
+                    val (name, port) = it.split(":")
+                    Node(name, port.toInt())
+                }.toTypedArray()
             )
         )
     }
@@ -92,8 +95,10 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
     override fun isConnected(id: String): Boolean {
         return runBlocking {
             try {
-                clients[clientConfigMap[id]!!].client.clusterHealth() != null
+                clients[clientConfigMap[id]!!].client.clusterHealth()
+                true
             } catch (e: ConnectException) {
+                log.warn("No connection to at least one Elasticsearch-Node")
                 false
             }
         }

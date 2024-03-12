@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
 import org.glassfish.jaxb.core.v2.schemagen.episode.Klass
@@ -118,11 +119,12 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
     }
 
     fun scheduleByCron(jobKey: JobKey, jobClass: Class<out Job>, catalogId: String, cron: String) {
+        val cronSchedule = getCronSchedule(cron)
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(JobDataMap().apply {
                 put("catalogId", catalogId)
             })
-            .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+            .withSchedule(cronSchedule)
             .build()
 
         if (scheduler.checkExists(jobKey).not()) {
@@ -130,5 +132,17 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
         }
 
         scheduler.scheduleJob(trigger)
+    }
+
+    private fun getCronSchedule(cron: String): CronScheduleBuilder {
+        return try { 
+            CronScheduleBuilder.cronSchedule(cron)
+        } catch (ex: Exception) {
+            // might be in wrong format where last part is * instead of ?
+            if (cron.last() == '*') {
+                val fixedCron = cron.substring(0..cron.length - 2) + "?"
+                CronScheduleBuilder.cronSchedule(fixedCron)
+            } else throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+        }
     }
 }

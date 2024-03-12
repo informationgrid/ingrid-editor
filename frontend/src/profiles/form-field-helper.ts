@@ -69,6 +69,7 @@ export interface RepeatOptions extends Options {
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
+  showBorder?: boolean;
   addButtonTitle?: string;
   noDrag?: boolean;
 }
@@ -137,7 +138,7 @@ export interface CheckboxOptions extends Options {
 }
 
 export interface InputOptions extends Options {
-  type?: "number";
+  type?: "number" | "password";
   fieldLabel?: string;
   disabled?: boolean;
   contextHelpId?: string;
@@ -425,6 +426,7 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
+        showBorder: options?.showBorder,
         addButtonTitle: options?.addButtonTitle,
         noDrag: options?.noDrag,
       },

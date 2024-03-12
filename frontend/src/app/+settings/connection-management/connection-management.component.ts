@@ -104,7 +104,7 @@ export class ConnectionManagementComponent implements OnInit {
     });
     this.$connectionStates.set(connectionStates);
 
-    this.connectionSubscriptions = connectionStates.map((config, index) => {
+    this.connectionSubscriptions = connectionStates.map((config) => {
       return this.configService
         .isConnectionOK(config.id)
         .subscribe((connected) => {

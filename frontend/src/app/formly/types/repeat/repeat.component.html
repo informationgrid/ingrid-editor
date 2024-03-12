@@ -34,6 +34,7 @@
                     class="flex-row"
                     cdkDrag
                     [class.extended-gap]="props.hasExtendedGap"
+                    [class.show-border]="props.showBorder"
                     [cdkDragDisabled]="!canBeDragged"
                 >
                     @if (canBeDragged) {

@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.model
 
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
-
 data class IndexCronOptions(
-    val cronPattern: String,
-    val exports: List<ExportConfig>
+    val cronPattern: String
 )

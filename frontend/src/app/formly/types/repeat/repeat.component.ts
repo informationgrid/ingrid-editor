@@ -38,7 +38,8 @@ export interface RepeatProps extends FormlyFieldProps {
   }[];
   noDrag: boolean;
   ariaLabel: string;
-  hasExtendedGap: string;
+  hasExtendedGap: boolean;
+  showBorder: boolean;
   addButtonTitle: string;
 }
 

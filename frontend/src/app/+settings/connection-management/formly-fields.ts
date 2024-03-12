@@ -20,12 +20,15 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { FormFieldHelper } from "../../../profiles/form-field-helper";
 import { Injectable } from "@angular/core";
+import { FormControl } from "@angular/forms";
 
 @Injectable({ providedIn: "root" })
 export class ConnectionForm extends FormFieldHelper {
   fields: FormlyFieldConfig[] = [
     this.addRepeat("connections", "", {
       wrappers: [],
+      hasExtendedGap: true,
+      showBorder: true,
       menuOptions: [
         {
           key: "ibus",
@@ -85,18 +88,43 @@ export class ConnectionForm extends FormFieldHelper {
         required: true,
         updateOn: "change",
       }),
-      this.addRepeatListInline("hosts", "Hosts", { asSimpleValues: true }),
-      this.addInputInline("username", "Benutzername", {
-        className: "flex-1 white-bg ip",
+      this.addRepeatList("hosts", "Hosts", {
         required: true,
-        updateOn: "change",
+        asSimpleValues: true,
+        hint: "Ein Host besteht aus IP-Adresse und Port, z.B. localhost:9200",
+        validators: {
+          hostAndPort: {
+            expression: (ctrl: FormControl) => {
+              return ctrl.value.every((item) => {
+                const splitted = item.split(":");
+                if (splitted.length === 2 && !isNaN(splitted[1])) return true;
+              });
+            },
+            message: "Der Host muss aus <IP>:<Port> bestehen",
+          },
+        },
       }),
-      this.addInputInline("password", "Passwort", {
-        className: "flex-1 white-bg port",
-        required: true,
-        type: "number",
-        updateOn: "change",
-      }),
+      this.addCheckboxInline("isSecure", "ist abgesichert"),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("username", "Benutzername", {
+            className: "flex-1 white-bg ip",
+            required: true,
+            updateOn: "change",
+          }),
+          this.addInputInline("password", "Passwort", {
+            className: "flex-1 white-bg port",
+            required: true,
+            updateOn: "change",
+            type: "password",
+          }),
+        ],
+        {
+          hideExpression: "!model.isSecure",
+          fieldGroupClassName: "flex-row gap-6",
+        },
+      ),
     ];
   }
 }
