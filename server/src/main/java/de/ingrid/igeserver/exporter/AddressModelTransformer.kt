@@ -65,10 +65,7 @@ class AddressModelTransformer(
 
     fun getIndividualName(): String? = getIndividualName(displayAddress)
 
-    fun getDisplayOrganization(): String? =
-        if (displayAddress.data.getString("organization").isNullOrEmpty()) {
-            determineEldestAncestor()?.document?.data?.getString("organization")
-        } else displayAddress.data.getString("organization")
+    fun getDisplayOrganization(): String? = determineEldestAncestor()?.document?.data?.getString("organization")
     
     fun getOrganization(): String? = displayAddress.data.getString("organization")
 
