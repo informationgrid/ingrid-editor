@@ -25,12 +25,14 @@
     </div>
 
     <div main-content>
-        <div class="scrollable">
-            <formly-form
-                [form]="form"
-                [model]="model"
-                [fields]="fields"
-            ></formly-form>
-        </div>
+        @if (model) {
+            <div class="scrollable">
+                <formly-form
+                    [form]="form"
+                    [model]="model"
+                    [fields]="fields"
+                ></formly-form>
+            </div>
+        }
     </div>
 </page-template>

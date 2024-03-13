@@ -109,7 +109,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
 
         val response = sendCallToIBus(iBus, call)
         @Suppress("UNCHECKED_CAST")
-        return response?.get("result") as List<String>? ?: emptyList()
+        return (response?.get("result") as Array<String>? ?: emptyArray<String>()).toList()
     }
     
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
