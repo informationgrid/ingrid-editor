@@ -55,7 +55,11 @@
         </button>
         <mat-menu #menuOptions="matMenu">
             @for (option of _options; track option) {
-                <button mat-menu-item (click)="add.emit(option.key)">
+                <button
+                    mat-menu-item
+                    (click)="add.emit(option.key)"
+                    [attr.data-cy]="option.key"
+                >
                     {{ option.value }}
                 </button>
             }
