@@ -403,6 +403,10 @@
           "type": "text",
           "store": true
         },
+        "license_name": {
+          "type": "text",
+          "store": true
+        },
         "access_url": {
           "type": "text",
           "store": true
