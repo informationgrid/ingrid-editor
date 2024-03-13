@@ -1274,11 +1274,11 @@ export abstract class IngridShared extends BaseDoctype {
           this.addUnitInputInline("transferSize", "Datenvolumen", {
             type: "number",
             className: "right-align",
-            unitOptions: of<SelectOption[]>([
+            unitOptions: <SelectOption[]>[
               new SelectOption("MB", "MB"),
               new SelectOption("GB", "GB"),
               new SelectOption("TB", "TB"),
-            ]),
+            ],
             fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
           this.addInputInline("mediumNote", "Speicherort"),

@@ -169,7 +169,7 @@ export interface AutocompleteOptions extends Options {
 }
 
 export interface UnitInputOptions extends InputOptions {
-  unitOptions?: Observable<SelectOptionUi[]>;
+  unitOptions?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   fieldGroup?: any;
 }
 
