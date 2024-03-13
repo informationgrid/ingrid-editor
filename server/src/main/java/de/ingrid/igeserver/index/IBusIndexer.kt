@@ -141,6 +141,9 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
     private fun sendCallToIBus(iBus: IBus, call: IngridCall): IngridDocument? {
         try {
             return iBus.call(call)
+        } catch (e: InterruptedException) {
+            // deliver index cancellation up
+            throw e
         } catch (e: Exception) {
             // TODO: log error for frontend!
             log.error("Error relaying index message: " + call.method, e)
