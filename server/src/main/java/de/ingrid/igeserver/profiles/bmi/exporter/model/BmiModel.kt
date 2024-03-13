@@ -80,7 +80,7 @@ data class BmiModel(
         if (data.DCATThemes == null) return emptyList()
         return data.DCATThemes
                 .map { theme -> theme.key }
-            .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
+            .map { "http://publications.europa.eu/resource/authority/data-theme/${codeListService?.getCodeListEntry("6400", it)?.data}" }
     }
 
 
