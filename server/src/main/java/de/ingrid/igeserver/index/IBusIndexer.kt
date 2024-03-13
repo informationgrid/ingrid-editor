@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.igeserver.ServerException
 import de.ingrid.utils.*
 import org.apache.logging.log4j.kotlin.logger
 
@@ -113,11 +112,6 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         return response?.get("result") as List<String>? ?: emptyList()
     }
     
-    override val defaultMapping: String = IBusIndexer::class.java.getResource("/default-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'default-mapping.json'")
-            
-
-    override val defaultSettings: String = IBusIndexer::class.java.getResource("/default-settings.json")?.readText() ?: throw ServerException.withReason("Could not find settings file 'default-settings.json'")
-
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         val call = prepareCall("deleteDocById")
         call.parameter = mapOf(

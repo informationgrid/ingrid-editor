@@ -44,10 +44,6 @@ interface IIndexManager {
 
     fun getIndices(filter: String): List<String>
 
-    val defaultMapping: String?
-
-    val defaultSettings: String?
-
     fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean)
 
     fun indexExists(indexName: String): Boolean
