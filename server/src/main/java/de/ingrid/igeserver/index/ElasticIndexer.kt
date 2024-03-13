@@ -89,7 +89,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
     override fun update(indexinfo: IndexInfo, doc: ElasticDocument) {
         runBlocking {
-            elastic.bulkProcessor.index(jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(), indexinfo.getRealIndexName(), doc["uuid"].toString())
+            elastic.bulkProcessor.index(jacksonObjectMapper().convertValue(doc, JsonNode::class.java).toString(), indexinfo.getRealIndexName(), doc[indexinfo.docIdField].toString())
         }
     }
 
