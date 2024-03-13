@@ -72,6 +72,10 @@ class IndexingTask(
 
     private val categories = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 
+    // This is only needed for iBus connection to make them stop on request
+    // The interrupt exception is ignored in the depth of the ingrid communication unfortunately
+    private val cancellations = HashMap<Long, Boolean>()
+
     override fun run(context: JobExecutionContext) {
         val catalogId = context.mergedJobDataMap.getString("catalogId")
 
@@ -116,7 +120,9 @@ class IndexingTask(
                             generalProperties,
                             plugInfo,
                             postIndexPipe,
-                            settingsService
+                            settingsService,
+                            cancellations,
+                            currentThread!!.id
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -284,6 +290,8 @@ class IndexingTask(
                         plugInfo,
                         postIndexPipe,
                         settingsService,
+                        cancellations,
+                        currentThread!!.id,
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
                 }
@@ -345,6 +353,11 @@ class IndexingTask(
                 )
             }
         }
+    }
+
+    override fun interrupt() {
+        super.interrupt()
+        this.cancellations[currentThread!!.id] = true
     }
 }
 

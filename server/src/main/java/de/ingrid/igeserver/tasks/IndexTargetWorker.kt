@@ -56,6 +56,8 @@ class IndexTargetWorker(
     private val plugInfo: IPlugInfo,
     private val postIndexPipe: PostIndexPipe,
     private val settingsService: SettingsService,
+    private val cancellations: HashMap<Long, Boolean>,
+    private val threadId: Long,
 ) {
 
     val log = logger()
@@ -141,6 +143,7 @@ class IndexTargetWorker(
         val targetMessage = message.getTargetByName(config.target.name)
 
         docsToPublish.content.forEach { doc ->
+            handleExplicitCancellation()
             increaseProgressInTargetMessage(targetMessage)
             notify.sendMessage(message)
 
@@ -151,6 +154,13 @@ class IndexTargetWorker(
             } catch (ex: Exception) {
                 handleExportException(ex, doc, targetMessage)
             } ?: return@forEach
+        }
+    }
+
+    private fun handleExplicitCancellation() {
+        if (this.cancellations[threadId] == true) {
+            this.cancellations.remove(threadId)
+            throw InterruptedException()
         }
     }
 
