@@ -41,7 +41,7 @@ data class DownloadModel(val title: String?,
     val languageKeys: List<String>?
         get() = languages?.map { it.key }?.filterNotNull()
 
-    fun getLicenseData(): Any? {
+    fun getLicenseData(catalogId: String): Any? {
         if(license != null) {
             var jsonString = "{\"id\":\""+license.key+"\",\"name\":\""+license.value+"\"}";
             // either use key or if no key search for value
@@ -53,6 +53,9 @@ data class DownloadModel(val title: String?,
                 } else if(codeListEntry?.getField("de") != null) {
                     jsonString = "{\"id\":\""+license.key+"\",\"name\":\""+codeListEntry.getField("de")+"\"}";
                 }
+            }
+            BmiModel.codelistHandler?.getCatalogCodelistValue(catalogId, "20004", license.key!!)?.let { 
+                jsonString = "{\"id\":\""+license.key+"\",\"name\":\""+it+"\"}";
             }
             return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
         }

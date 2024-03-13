@@ -31,6 +31,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -41,7 +42,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler) :
+class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler, val uploadConfig: Config) :
     BmiIndexExporter() {
 
     val log = logger()
@@ -94,7 +95,7 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(
             "export/ingrid-bmwk/additional.jte",
-            mapOf("map" to mapOf("model" to BMWKModelTransformerAdditional(doc, codelistHandler, catalogId))),
+            mapOf("map" to mapOf("model" to BMWKModelTransformerAdditional(doc, codelistHandler, catalogId, uploadConfig))),
             output
         )
         return output.toString()

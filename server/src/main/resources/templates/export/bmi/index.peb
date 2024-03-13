@@ -56,7 +56,8 @@
             {% endif %}
             "title": "{{ download.title }}",
             "description": "{{ download.description }}",
-            "license": "{{ download.getLicenseData().id }}",
+            "license": "{{ download.getLicenseData(catalogId).id }}",
+            "license_name": "{{ download.getLicenseData(catalogId).name }}",
             "byClause": "{{ download.byClause }}",
             "languages": [
                 {% if not download.languageKeys.isEmpty() %}

@@ -34,35 +34,6 @@ import { BmiComponent } from "./profile-bmi";
 })
 class InGridBastComponent extends BmiComponent {
   bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
-
-  /*  // geoDataset = inject(GeoDatasetDoctypeBast);
-  // geoService = inject(GeoServiceDoctypeBast);
-  codelistQuery = inject(CodelistQuery);
-  codelistStore = inject(CodelistStore);
-  bmi = inject(BmiDoctype);
-  bmiAddress= inject(BmiAddressDoctype);
-
-  constructor() {
-    super();
-
-    this.addNewFields();
-
-    this.modifyFormFieldConfiguration();
-  }
-
-  protected getDocTypes = () => [
-    this.folder,
-    this.bmi,
-    this.bmiAddress,
-  ];
-
-  private addNewFields() {}
-
-  private modifyFormFieldConfiguration() {
-    [this.geoDataset, this.geoService].forEach((docType) => {
-      docType.options.required.resourceDateType = true;
-    });
-  }*/
 }
 
 @NgModule({
