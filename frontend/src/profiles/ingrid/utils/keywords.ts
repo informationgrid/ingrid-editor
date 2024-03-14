@@ -32,7 +32,6 @@ export interface KeywordSectionOptions {
   spatialScope?: boolean;
   thesaurusTopics?: boolean;
   inspireTopics?: boolean;
-  advProductGroup?: boolean;
 }
 
 @Injectable({ providedIn: "root" })

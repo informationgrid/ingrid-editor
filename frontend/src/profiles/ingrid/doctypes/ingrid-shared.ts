@@ -50,7 +50,6 @@ import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
-  advCompatible?: boolean;
   thesaurusTopics?: boolean;
 }
 
@@ -100,6 +99,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   showInVeKoSField: boolean = false;
   showInspireConform: boolean = false;
+  showAdVCompatible: boolean = false;
+  showAdVProductGroup: boolean = false;
   isGeoService: boolean = false;
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
@@ -112,7 +113,7 @@ export abstract class IngridShared extends BaseDoctype {
       null,
       [
         options.inspireRelevant ||
-        options.advCompatible ||
+        this.showAdVCompatible ||
         !this.options.hide.openData
           ? this.addGroup(
               null,
@@ -129,7 +130,7 @@ export abstract class IngridShared extends BaseDoctype {
                       },
                     )
                   : null,
-                options.advCompatible
+                this.showAdVCompatible
                   ? this.addCheckboxInline(
                       "isAdVCompatible",
                       "AdV kompatibel",
@@ -336,7 +337,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection(
       "Verschlagwortung",
       [
-        options.advProductGroup
+        this.showAdVProductGroup
           ? this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
               view: "chip",
               asSelect: true,
