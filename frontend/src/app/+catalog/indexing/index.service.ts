@@ -23,22 +23,29 @@ import {
   ConfigService,
   Configuration,
 } from "../../services/config/config.service";
-import { Catalog } from "../services/catalog.model";
-import { BehaviorSubject, Observable } from "rxjs";
-import { tap } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { BaseLogResult } from "../../shared/base-log-result";
+import { map } from "rxjs/operators";
 
 export interface LogResult extends BaseLogResult {
-  numDocuments: number;
-  numAddresses: number;
-  progressDocuments: number;
-  progressAddresses: number;
+  targets: {
+    name: string;
+    numDocuments: number;
+    numAddresses: number;
+    progressDocuments: number;
+    progressAddresses: number;
+  }[];
 }
 
-interface IndexConfig {
-  catalogId: string;
+interface IndexCronConfig {
   cronPattern: string;
-  exportFormat: string;
+  exports: IndexExportConfig[];
+}
+
+interface IndexExportConfig {
+  target: string;
+  exporterId: string;
+  tags: string[];
 }
 
 @Injectable({
@@ -46,51 +53,56 @@ interface IndexConfig {
 })
 export class IndexService {
   private configuration: Configuration;
-  private catalog: Catalog;
-  lastLog$ = new BehaviorSubject<LogResult>(null);
-  private exportFormat: string;
 
   constructor(
     private http: HttpClient,
     configService: ConfigService,
   ) {
     this.configuration = configService.getConfiguration();
-    this.catalog = configService.$userInfo.getValue().currentCatalog;
   }
 
   start() {
-    return this.http.post(this.configuration.backendUrl + "index", {
-      catalogId: this.catalog.id,
-      format: this.exportFormat,
-    });
+    return this.http.post(
+      this.configuration.backendUrl + "jobs/index?command=start",
+      null,
+    );
   }
 
   setCronPattern(value: string) {
-    return this.http.post(this.configuration.backendUrl + "index/config", {
-      catalogId: this.catalog.id,
+    return this.http.post(this.configuration.backendUrl + "index/config/cron", {
       cronPattern: value,
-      exportFormat: this.exportFormat,
     });
   }
 
-  getIndexConfig(): Observable<IndexConfig> {
-    return this.http
-      .get<IndexConfig>(
-        this.configuration.backendUrl + "index/config/" + this.catalog.id,
-      )
-      .pipe(tap((config) => (this.exportFormat = config.exportFormat)));
+  getIndexConfig(): Observable<IndexCronConfig> {
+    return this.http.get<IndexCronConfig>(
+      this.configuration.backendUrl + "index/config",
+    );
   }
 
   fetchLastLog() {
     return this.http
-      .get<any>(this.configuration.backendUrl + "index/log")
-      .pipe(tap((response) => this.lastLog$.next(response)))
-      .subscribe();
+      .get<any>(`${this.configuration.backendUrl}jobs/index/info`)
+      .pipe(
+        map((data) => {
+          return <LogResult>{
+            ...data.info,
+            targets: data.info?.report,
+          };
+        }),
+      );
   }
 
   cancel() {
     return this.http
-      .delete(this.configuration.backendUrl + "index/" + this.catalog.id)
+      .post(this.configuration.backendUrl + "jobs/index?command=stop", null)
       .subscribe();
+  }
+
+  setExportConfig(value: any) {
+    return this.http.post(
+      this.configuration.backendUrl + "index/config/exports",
+      value,
+    );
   }
 }

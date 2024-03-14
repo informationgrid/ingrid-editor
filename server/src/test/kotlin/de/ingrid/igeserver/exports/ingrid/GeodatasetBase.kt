@@ -40,14 +40,14 @@ import mockCatalog
 import mockCodelists
 
 open class GeodatasetBase : ShouldSpec() {
-    private val documentService = mockk<DocumentService>()
+    protected val documentService = mockk<DocumentService>()
 
     // this bean must be mocked, although it might not be used in this class
     protected val catalogService = mockk<CatalogService>()
 
-    private val codelistHandler = mockk<CodelistHandler>()
+    protected val codelistHandler = mockk<CodelistHandler>()
     private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
-    private val config = mockk<Config>()
+    protected val config = mockk<Config>()
 
     protected lateinit var exporter: IngridIDFExporter
     protected lateinit var indexExporter: IngridIndexExporter

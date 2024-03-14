@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.Job
 import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.model.JobInfo
@@ -33,6 +34,7 @@ import de.ingrid.igeserver.profiles.uvp.tasks.UploadCleanupTask
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
+import de.ingrid.igeserver.tasks.IndexingTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
@@ -203,6 +205,18 @@ class JobsApiController(
         return ResponseEntity.ok(result)
     }
     
+    override fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
+
+        val jobDataMap = JobDataMap().apply {
+            put("catalogId", catalogId)
+        }
+        scheduler.handleJobWithCommand(command, IndexingTask::class.java, jobKey, jobDataMap)
+
+        return ResponseEntity.ok().build()
+    }
+
     private fun getJobIdString(id: String, principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         return "${id}_$userId"

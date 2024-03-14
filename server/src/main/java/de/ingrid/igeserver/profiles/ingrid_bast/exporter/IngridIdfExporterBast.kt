@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,19 +19,27 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridProfileTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.mdek.upload.Config
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
-class BastProfileTransformer : IngridProfileTransformer {
+class IngridIdfExporterBast(
+    codelistHandler: CodelistHandler,
+    config: Config,
+    catalogService: CatalogService,
+    @Lazy documentService: DocumentService
+) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun get(docType: String): KClass<*>? {
-        return when(docType) {
-            "InGridGeoDataset" -> GeodatasetTransformerBast::class
-            "InGridGeoService" -> GeoserviceTransformerBast::class
-            else -> null
-        } 
+    override fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
+        return super.getModelTransormerClasses().toMutableMap().apply {
+            put("InGridGeoDataset", GeodatasetTransformerBast::class)
+            put("InGridGeoService", GeoserviceTransformerBast::class)
+        }
     }
-
 }

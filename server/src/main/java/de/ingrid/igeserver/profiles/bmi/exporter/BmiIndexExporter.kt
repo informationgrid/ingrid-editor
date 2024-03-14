@@ -44,9 +44,12 @@ class BmiIndexExporter : IgeExporter {
                 "Export der Adressen für die weitere Verwendung im  Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("bmi")
+                listOf("bmi"),
+                useForPublish = true
             )
         }
+
+    override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()

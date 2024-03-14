@@ -1,0 +1,23 @@
+@for (info of connectionStates(); track info) {
+    <div class="flex-row align-items-center gap-6">
+        <span>{{ info.label }}:</span>
+        @if (info.connected !== undefined) {
+            <span class="flex-row"
+                ><mat-icon
+                    [class.success-color]="info.connected"
+                    [class.error-color]="!info.connected"
+                    [matTooltip]="
+                        info.connected ? 'Ok' : 'Keine Verbindung zum Ziel'
+                    "
+                    >{{
+                        info.connected
+                            ? "check_circle_outline"
+                            : "error_outline"
+                    }}</mat-icon
+                ></span
+            >
+        } @else {
+            <mat-spinner diameter="24"></mat-spinner>
+        }
+    </div>
+}

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import io.hypersistence.utils.hibernate.type.array.ListArrayType
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*
@@ -87,7 +86,7 @@ class DocumentWrapper {
         return this.parentUuid
     }
 
-    @Type(ListArrayType::class)
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(
             name = "path",
             columnDefinition = "text[]"
@@ -102,10 +101,10 @@ class DocumentWrapper {
     @Column(name = "deleted")
     var deleted = 0
 
-    @Type(ListArrayType::class)
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "tags", columnDefinition = "text[]")
     var tags: List<String> = emptyList()
-        get() = if (field == null) emptyList() else field // field can actually be null if in db table null
+        get() = field ?: emptyList() // field can actually be null if in db table null
 
 
     @Column

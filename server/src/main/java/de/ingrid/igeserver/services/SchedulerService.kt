@@ -19,11 +19,12 @@
  */
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
+import org.glassfish.jaxb.core.v2.schemagen.episode.Klass
 import org.quartz.*
 import org.quartz.Trigger.DEFAULT_PRIORITY
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
@@ -49,18 +50,6 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    fun pause(jobId: String) {
-
-    }
-
-    fun resume(jobId: String) {
-
-    }
-
-    fun cancel(jobId: String) {
-
-    }
-
     fun getJobInfo(jobKey: JobKey): JobDetail {
         return scheduler.getJobDetail(jobKey)
     }
@@ -68,7 +57,6 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
         val detail = JobBuilder.newJob().ofType(jobClass)
             .withIdentity(jobKey)
-//            .withDescription("Checking URLs for reachability")
             .storeDurably()
             .build()
 
@@ -107,6 +95,7 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
                 }
                 start(jobKey, jobDataMap, jobPriority, checkRunning)
             }
+
             JobCommand.stop -> stop(jobKey)
             JobCommand.resume -> TODO()
         }
@@ -127,5 +116,33 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
     fun getJobDetail(id: String, catalogId: String): JobDetail? {
         val jobKey = JobKey.jobKey(id, catalogId)
         return scheduler.getJobDetail(jobKey)
+    }
+
+    fun scheduleByCron(jobKey: JobKey, jobClass: Class<out Job>, catalogId: String, cron: String) {
+        val cronSchedule = getCronSchedule(cron)
+        val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
+            .usingJobData(JobDataMap().apply {
+                put("catalogId", catalogId)
+            })
+            .withSchedule(cronSchedule)
+            .build()
+
+        if (scheduler.checkExists(jobKey).not()) {
+            createJob(jobClass, jobKey)
+        }
+
+        scheduler.scheduleJob(trigger)
+    }
+
+    private fun getCronSchedule(cron: String): CronScheduleBuilder {
+        return try { 
+            CronScheduleBuilder.cronSchedule(cron)
+        } catch (ex: Exception) {
+            // might be in wrong format where last part is * instead of ?
+            if (cron.last() == '*') {
+                val fixedCron = cron.substring(0..cron.length - 2) + "?"
+                CronScheduleBuilder.cronSchedule(fixedCron)
+            } else throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+        }
     }
 }

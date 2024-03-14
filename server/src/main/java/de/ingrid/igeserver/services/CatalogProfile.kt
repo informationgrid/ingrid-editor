@@ -62,9 +62,6 @@ interface CatalogProfile {
     }
 
     @JsonIgnore
-    fun additionalPublishConditions(catalogId: String): List<String> = emptyList()
-
-    @JsonIgnore
     fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {}
 
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,27 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+package de.ingrid.igeserver.services
 
-import { LogResultComponent } from "./log-result.component";
-
-describe("LogResultComponent", () => {
-  let component: LogResultComponent;
-  let fixture: ComponentFixture<LogResultComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [LogResultComponent],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LogResultComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it("should create", () => {
-    expect(component).toBeTruthy();
-  });
-});
+interface IConnection {
+    fun isConnected(id: String): Boolean
+    
+    fun containsId(id: String): Boolean
+}

@@ -44,10 +44,15 @@ abstract class IgeJob : InterruptableJob {
     }
 
     override fun interrupt() {
-        log.info("Task interrupted")
+        log.info("Task interrupted: $currentThread")
         currentThread?.interrupt()
     }
 
+    /**
+     * Write general JobInfo.
+     * Make sure your job is annotated with @PersistJobDataAfterExecution!!!
+     * Otherwise, jobDataMap will not be persisted.
+     */
     protected fun finishJob(
         context: JobExecutionContext,
         jobInfo: Message
@@ -62,13 +67,12 @@ abstract class IgeJob : InterruptableJob {
             put("errors", jacksonObjectMapper().writeValueAsString(jobInfo.errors))
             put("stage", jobInfo.stage)
         }
-
     }
 
-
-    protected fun runAsUser(): Authentication {
+    // TODO: Prevent multiple definitions of authentication
+    protected fun runAsCatalogAdmin(): Authentication {
         val auth: Authentication =
-            UsernamePasswordAuthenticationToken("Importer", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
+            UsernamePasswordAuthenticationToken("System", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
         SecurityContextHolder.getContext().authentication = auth
         return auth
     }

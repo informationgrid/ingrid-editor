@@ -19,13 +19,13 @@
  */
 import { Injectable } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { tap } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 
@@ -82,6 +82,23 @@ export interface UserInfo {
 export interface CMSPage {
   pageId: string;
   content: string;
+}
+
+export interface Connections {
+  connections: ConnectionInfo[];
+}
+
+export interface BackendConnections {
+  ibus: ConnectionInfo[];
+  elasticsearch: ConnectionInfo[];
+}
+
+export interface ConnectionInfo {
+  _type: "ibus" | "elastic";
+  id: number;
+  name: string;
+  ip: string;
+  port: number;
 }
 
 @Injectable({
@@ -191,19 +208,28 @@ export class ConfigService {
     }
   }
 
-  saveIBusConfig(value: any) {
+  saveConnectionConfig(value: Connections): Observable<ConnectionInfo[]> {
+    const valueForBackend = this.prepareConnectionsForIBus(value);
     return this.http
-      .put<any>(`${this.config.backendUrl}config/ibus`, value)
-      .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")));
+      .put<BackendConnections>(
+        `${this.config.backendUrl}config/connections`,
+        valueForBackend,
+      )
+      .pipe(
+        tap(() => this.snackbar.open("Konfiguration wurde gespeichert")),
+        map((result) => this.prepareConnectionsForFrontend(result).connections),
+      );
   }
 
-  getIBusConfig() {
-    return this.http.get<any>(`${this.config.backendUrl}config/ibus`);
+  getConnectionsConfig() {
+    return this.http
+      .get<any>(`${this.config.backendUrl}config/connections`)
+      .pipe(map((config) => this.prepareConnectionsForFrontend(config)));
   }
 
-  isIBusConnected(index: number) {
+  isConnectionOK(id: string) {
     return this.http.get<boolean>(
-      `${this.config.backendUrl}config/ibus/connected/${index}`,
+      `${this.config.backendUrl}config/connections/connected/${id}`,
     );
   }
 
@@ -213,5 +239,32 @@ export class ConfigService {
 
   updateCMSPage(content: CMSPage[]) {
     return this.http.put<void>(`${this.config.backendUrl}config/cms`, content);
+  }
+
+  private prepareConnectionsForIBus(value: Connections): BackendConnections {
+    return {
+      ibus: value.connections.filter((item) => item._type === "ibus"),
+      elasticsearch: value.connections.filter(
+        (item) => item._type === "elastic",
+      ),
+    };
+  }
+
+  private prepareConnectionsForFrontend(
+    value: BackendConnections,
+  ): Connections {
+    return {
+      connections: [
+        ...this.addType("ibus", value.ibus),
+        ...this.addType("elastic", value.elasticsearch),
+      ],
+    };
+  }
+
+  private addType(type: "ibus" | "elastic", value: any[]) {
+    return (value ?? []).map((item) => {
+      item._type = type;
+      return item;
+    });
   }
 }

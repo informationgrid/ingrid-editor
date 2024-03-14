@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,6 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.model
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { MatChip, MatChipListbox } from "@angular/material/chips";
 
-data class IndexConfigOptions(val catalogId: String, val cronPattern: String, val exportFormat: String)
+@Component({
+  selector: "ige-indexing-explanation",
+  standalone: true,
+  imports: [MatChipListbox, MatChip],
+  templateUrl: "./indexing-explanation.component.html",
+  styleUrl: "./indexing-explanation.component.scss",
+})
+export class IndexingExplanationComponent {
+  @Output() cronChange = new EventEmitter<string>();
+}

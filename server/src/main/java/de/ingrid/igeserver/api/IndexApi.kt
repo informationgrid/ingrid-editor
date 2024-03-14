@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.api.messaging.IndexMessage
-import de.ingrid.igeserver.model.IndexConfigOptions
-import de.ingrid.igeserver.model.IndexRequestOptions
+import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -39,35 +39,24 @@ import java.security.Principal
 interface IndexApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @PostMapping(value = ["/index"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun startIndexing(
-            principal: Principal,
-            @Parameter(description = "The catalog ID for which the indexing process should be started", required = true)
-            @RequestBody options: @Valid IndexRequestOptions): ResponseEntity<Void>
-
-    @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @DeleteMapping(value = ["/index/{catalogId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun cancelIndexing(
-            principal: Principal,
-            @Parameter(description = "The catalog ID for which the indexing process should be started", required = true)
-            @PathVariable catalogId: String): ResponseEntity<Void>
-
-    @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @PostMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(value = ["/index/config/cron"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setConfig(
             principal: Principal,
             @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
-            @RequestBody config: @Valid IndexConfigOptions): ResponseEntity<Void>
+            @RequestBody config: @Valid IndexCronOptions): ResponseEntity<Void>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
-    @GetMapping(value = ["/index/config/{catalogId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getConfig(
+    @PostMapping(value = ["/index/config/exports"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun setExportConfig(
             principal: Principal,
-            @Parameter(description = "The catalog ID for which to get the configuration", required = true)
-            @PathVariable catalogId: String): ResponseEntity<IndexConfigOptions>
+            @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
+            @RequestBody config: @Valid List<ExportConfig>): ResponseEntity<Void>
+
+    @Operation
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
+    @GetMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getConfig(principal: Principal): ResponseEntity<IndexCronOptions>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])

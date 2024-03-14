@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component
  * Filter for processing steps after unpublishing.
  */
 @Component
-@Profile("elasticsearch")
 class PostDefaultDocumentUnpublisher(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService,

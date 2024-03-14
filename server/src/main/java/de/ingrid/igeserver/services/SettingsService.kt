@@ -21,11 +21,12 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -41,9 +42,41 @@ class SettingsService(
 
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<IBusConfig>>() {})
     }
+    fun getElasticConfig(): List<ElasticConfig> {
+        val iBusJson = repoSettings.findByKey("elasticsearch")?.value ?: return emptyList()
 
+        return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
+    }
+
+    fun getConnectionConfig(id: String): WithId? {
+        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
+    }
+    
     fun setIBusConfig(config: List<IBusConfig>) {
+        addIdIfNeeded(config)
         this.updateItem("ibus", config)
+    }
+
+    private fun addIdIfNeeded(config: List<WithId>) {
+        val existingIds = config.mapNotNull { it.id?.toInt() }.toMutableSet()
+        config.filter { it.id == null }.forEach { item ->
+            val newId = generateUniqueId(existingIds)
+            item.id = newId.toString()
+            existingIds += newId
+        }
+    }
+
+    private fun generateUniqueId(existingIds: Set<Int>): Int {
+        var id: Int
+        do {
+            id = (Math.random() * 1000).toInt()
+        } while (id in existingIds)
+        return id
+    }
+
+    fun setElasticConfig(config: List<ElasticConfig>) {
+        addIdIfNeeded(config)
+        this.updateItem("elasticsearch", config)
     }
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {

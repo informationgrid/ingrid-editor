@@ -95,6 +95,8 @@ export interface ExportTypeInfo {
   description: string;
   dataType: string;
   fileExtension: string;
+  isPublic: boolean;
+  useForPublish: boolean;
 }
 
 export interface ImportTypeInfo {
@@ -108,7 +110,7 @@ export interface ImportTypeInfo {
 })
 export class ExchangeService {
   private configuration: Configuration;
-  private catalogType: string;
+  private readonly catalogType: string;
 
   lastLog$ = new BehaviorSubject<ImportLog<ImportLogInfo>>(null);
 
@@ -133,33 +135,29 @@ export class ExchangeService {
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
   }
 
-  analyze(file: File): Observable<any> {
-    return this.http.post(this.configuration.backendUrl + "import", file);
-  }
-
   export(options: ExportOptions): Observable<HttpResponse<Blob>> {
-    return this.http.post(this.configuration.backendUrl + "export", options, {
+    return this.http.post(`${this.configuration.backendUrl}export`, options, {
       responseType: "blob",
       observe: "response",
     });
   }
 
-  getExportTypes(): Observable<ExportTypeInfo[]> {
+  getExportTypes(onlyPublic = true): Observable<ExportTypeInfo[]> {
     return this.http.get<ExportTypeInfo[]>(
-      this.configuration.backendUrl + "export?profile=" + this.catalogType,
+      `${this.configuration.backendUrl}export?profile=${this.catalogType}&onlyPublic=${onlyPublic}`,
     );
   }
 
   getImportTypes(): Observable<ImportTypeInfo[]> {
     return this.http.get<ImportTypeInfo[]>(
-      this.configuration.backendUrl + "import?profile=" + this.catalogType,
+      `${this.configuration.backendUrl}import?profile=${this.catalogType}`,
     );
   }
 
   import(options: any) {
     return this.http
       .post(
-        this.configuration.backendUrl + "jobs/import?command=start",
+        `${this.configuration.backendUrl}jobs/import?command=start`,
         options,
       )
       .pipe(
@@ -172,14 +170,14 @@ export class ExchangeService {
 
   fetchLastLog() {
     return this.http
-      .get<any>(this.configuration.backendUrl + "jobs/import/info")
+      .get<any>(`${this.configuration.backendUrl}jobs/import/info`)
       .pipe(tap((response) => this.lastLog$.next(response)))
       .subscribe();
   }
 
   stopJob() {
     return this.http
-      .post(this.configuration.backendUrl + "jobs/import?command=stop", {})
+      .post(`${this.configuration.backendUrl}jobs/import?command=stop`, {})
       .subscribe();
   }
 }

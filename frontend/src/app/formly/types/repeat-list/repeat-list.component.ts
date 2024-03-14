@@ -27,7 +27,14 @@ import {
 } from "@angular/core";
 import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  tap,
+} from "rxjs/operators";
 import {
   BehaviorSubject,
   merge,
@@ -126,6 +133,13 @@ export class RepeatListComponent
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
 
+  private requiredValidator = (): ValidationErrors | null => {
+    return !this.showError ||
+      (this.props.required && this.formControl.value?.length > 0)
+      ? null
+      : { required: "Pflicht!" };
+  };
+
   constructor(
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
@@ -197,7 +211,7 @@ export class RepeatListComponent
     }
 
     this.formControl.statusChanges
-      .pipe(untilDestroyed(this))
+      .pipe(untilDestroyed(this), distinctUntilChanged())
       .subscribe((status) => {
         this.handleRequiredState();
         status === "DISABLED"
@@ -227,6 +241,19 @@ export class RepeatListComponent
         map((value) => this._markSelected(value)),
       );
     }
+
+    // update formControl validation when input has been resetted
+    this.inputControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        filter((value) => value === null || value === ""),
+      )
+      .subscribe(() =>
+        this.formControl.updateValueAndValidity({
+          emitEvent: true,
+          onlySelf: false,
+        }),
+      );
   }
 
   addToList(option: SelectOptionUi) {
@@ -299,19 +326,17 @@ export class RepeatListComponent
 
   private handleRequiredState() {
     if (this.props.required === this.currentStateRequired) return;
-    let requiredValidator = (): ValidationErrors | null => {
-      return !this.showError ||
-        (this.props.required && this.formControl.value?.length > 0)
-        ? null
-        : { required: "Pflicht!" };
-    };
 
-    if (this.props.required) {
-      this.inputControl.addValidators(requiredValidator);
-    } else {
-      this.inputControl.removeValidators(requiredValidator);
+    if (
+      this.props.required &&
+      !this.inputControl.hasValidator(this.requiredValidator)
+    ) {
+      this.inputControl.addValidators(this.requiredValidator);
+      this.inputControl.updateValueAndValidity();
+    } else if (!this.props.required) {
+      this.inputControl.removeValidators(this.requiredValidator);
+      this.inputControl.updateValueAndValidity();
     }
-    this.inputControl.updateValueAndValidity();
   }
 
   private _filter(option: SelectOptionUi | string): SelectOptionUi[] {

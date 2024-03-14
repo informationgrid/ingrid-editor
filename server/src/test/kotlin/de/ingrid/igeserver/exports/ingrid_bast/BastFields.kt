@@ -25,8 +25,7 @@ import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.Geodataset
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.BastProfileTransformer
-import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.UPSHProfileTransformer
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.IngridIdfExporterBast
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
@@ -35,30 +34,40 @@ class BastFields : GeodatasetBase() {
 
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
-        this.exporter.profileTransformer["ingrid-bast"] = BastProfileTransformer()
-        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
-            identifier = "ingrid-bast"
-        }
+        this.exporter =
+            IngridIdfExporterBast(
+                this.codelistHandler,
+                this.config,
+                this.catalogService,
+                this.documentService
+            )
+        every { catalogService.getProfileFromCatalog(any()) } returns
+            DummyCatalog().apply { identifier = "ingrid-bast" }
     }
-
 
     init {
         should("export project title and number to keywords") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                     "projectTitle": "BASt project title",
                     "projectNumber": "BASt project number"
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain projectTitleAndNumberInKeywords
         }
-        
+
         should("export digitalTransferOptions with correct unit") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                     "digitalTransferOptions": [
                         {
                           "name": {
@@ -73,39 +82,48 @@ class BastFields : GeodatasetBase() {
                           "mediumNote": "Dachboden"
                         }
                       ]
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain digitalTransferOptionWithUnit
         }
 
         should("export supplementalInformation") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                     "supplementalInformation": "Bemerkung zur BASt"
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain supplementalInformation
         }
 
         should("export useConstraintsComments") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                         "resource": {
                             "useConstraintsComments": "BASt Nutzungshinweise"
                         }
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain useConstraintsComments
         }
-
     }
 }

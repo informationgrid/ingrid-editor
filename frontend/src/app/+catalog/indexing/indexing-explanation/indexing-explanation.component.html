@@ -1,0 +1,60 @@
+<div>
+    Legen Sie hier fest, in welchen Zeitabständen der Katalog indiziert werden
+    soll. Für die Definition des Intervalls wird ein Cron Ausdruck verwendet.
+</div>
+<p>Ein Cron Ausdruck ist folgendermaßen aufgebaut:</p>
+
+<div class="cron-explain">
+    <div>
+        <div class="explain">Sekunde</div>
+        <div class="star">*</div>
+    </div>
+    <div>
+        <div class="explain">Minute</div>
+        <div class="star">*</div>
+    </div>
+    <div>
+        <div class="explain">Stunde</div>
+        <div class="star">*</div>
+    </div>
+    <div>
+        <div class="explain">Tag des Monats</div>
+        <div class="star">*</div>
+    </div>
+    <div>
+        <div class="explain">Monat</div>
+        <div class="star">*</div>
+    </div>
+    <div>
+        <div class="explain">Tag der Woche</div>
+        <div class="star">*</div>
+    </div>
+</div>
+
+<div>
+    Beispiele:
+    <mat-chip-listbox>
+        <mat-chip (click)="cronChange.emit('0 */30 * * * *')"
+            >Alle 30 Minuten
+        </mat-chip>
+        <mat-chip (click)="cronChange.emit('0 0 3 * * *')"
+            >Täglich um 3 Uhr
+        </mat-chip>
+        <mat-chip (click)="cronChange.emit('0 0 23 * * 6,7')"
+            >23 Uhr am Wochenende
+        </mat-chip>
+        <mat-chip (click)="cronChange.emit('0 0 8,11 * * 1-5')"
+            >Mo-Fr 8 und 11 Uhr
+        </mat-chip>
+    </mat-chip-listbox>
+</div>
+
+<p>
+    Weitere Information über die Verwendung des Cron-Ausdrucks kann hier
+    nachgelesen werden:
+    <a target="_blank" href="https://de.wikipedia.org/wiki/Cron">Link</a>
+</p>
+<p>
+    Der Cron-Ausdruck beinhaltet zusätzlich die Einstellung von Sekunden, um
+    eine genauere Ausführung zu definieren.
+</p>

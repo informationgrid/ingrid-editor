@@ -21,92 +21,62 @@ package de.ingrid.igeserver.services
 
 import de.ingrid.ibus.client.BusClient
 import de.ingrid.ibus.client.BusClientFactory
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.igeserver.services.ibus.HeartBeatPlug
 import de.ingrid.utils.*
 import de.ingrid.utils.query.IngridQuery
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Profile
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("ibus & elasticsearch")
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) : HeartBeatPlug(60000) {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug, IConnection {
 
     val log = logger()
 
     private var iBusClient: BusClient? = null
+    
+    private var iBusConfigMap: Map<String, Int> = emptyMap()
 
     // this ensures that the service is started after the migration tasks
     @EventListener(ApplicationReadyEvent::class)
-    fun init() = setupConnections()
+    fun init() = setupConnections()  
 
     fun setupConnections() {
         try {
-//            val iBusUrls = settingsService.getIBusConfig().map { "${it.ip}:${it.port}" }
-            iBusClient = this.connectIBus(settingsService.getIBusConfig())
-//            this.configure(getPlugDescription(iBusUrls))
+            if (iBusClient?.nonCacheableIBusses?.isEmpty() == false) iBusClient?.shutdown()
+            val iBusConfig = settingsService.getIBusConfig()
+            if (iBusConfig.isNotEmpty()) iBusClient = this.connectIBus(iBusConfig)
+            iBusConfigMap = iBusConfig.mapIndexed { index, config -> config.id!! to index }.toMap()
         } catch (e: Exception) {
             log.error("Could not connect to iBus", e)
         }
     }
-
-    fun restartCommunication() {
-        iBusClient?.shutdown()
-        val clientConfig = createClientConfiguration(settingsService.getIBusConfig())
-        iBusClient?.start(clientConfig)
-        val communication = StartCommunication.create(clientConfig)
-        BusClientFactory.createBusClientOverride(communication)
+    
+    fun getIBus(id: String): IBus {
+        return iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
     }
     
-    fun isConnected(iBusIndex: Int): Boolean {
+    override fun isConnected(id: String): Boolean {
         return try {
-            iBusClient?.nonCacheableIBusses?.get(iBusIndex)?.metadata != null
+            iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
         } catch (e: Exception) {
             false
         }
     }
 
-    /*private fun getPlugDescription(urls: List<String>): PlugDescription {
-
-        // partner and provider will be written during indexing
-        return settingsService.getPlugDescription("", "", "unknown", false, catalog.name).apply {
-            urls.forEach { addBusUrl(it) }
-        }
-
-    }*/
-
-    override fun call(p0: IngridCall?): IngridDocument {
-        TODO("Not yet implemented")
-    }
-
-    override fun search(p0: IngridQuery?, p1: Int, p2: Int): IngridHits {
-        TODO("Not yet implemented")
-    }
-
-    override fun getDetails(
-        p0: Array<out IngridHit>?,
-        p1: IngridQuery?,
-        p2: Array<out String>?
-    ): Array<IngridHitDetail> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getDetail(p0: IngridHit?, p1: IngridQuery?, p2: Array<out String>?): IngridHitDetail {
-        TODO("Not yet implemented")
-    }
+    override fun containsId(id: String): Boolean = iBusConfigMap[id] != null
 
     private fun connectIBus(configs: List<IBusConfig>): BusClient {
         val config = createClientConfiguration(configs)
         val communication = StartCommunication.create(config)
         communication.startup()
-        val busClient = BusClientFactory.createBusClient(communication)
+        val busClient = BusClientFactory.createBusClientOverride(communication)
         busClient.iPlug = this
         return busClient
     }
@@ -118,12 +88,40 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
                 val connection = ClientConnection().apply {
                     serverIp = it.ip
                     serverPort = it.port
-                    serverName = it.url
+                    serverName = it.name
                 }
                 addClientConnection(connection)
             }
         }
         return config
+    }
+
+    override fun search(p0: IngridQuery?, p1: Int, p2: Int): IngridHits {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDetail(p0: IngridHit?, p1: IngridQuery?, p2: Array<out String>?): IngridHitDetail {
+        TODO("Not yet implemented")
+    }
+
+    override fun getDetails(
+        p0: Array<out IngridHit>?,
+        p1: IngridQuery?,
+        p2: Array<out String>?
+    ): Array<IngridHitDetail> {
+        TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        TODO("Not yet implemented")
+    }
+
+    override fun call(p0: IngridCall?): IngridDocument {
+        TODO("Not yet implemented")
+    }
+
+    override fun configure(p0: PlugDescription?) {
+        TODO("Not yet implemented")
     }
 
 }

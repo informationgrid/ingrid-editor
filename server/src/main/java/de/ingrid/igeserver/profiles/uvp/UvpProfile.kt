@@ -152,26 +152,4 @@ class UvpProfile(
         }
 
     }
-
-    override fun additionalPublishConditions(catalogId: String): List<String> {
-        val conditions = mutableListOf<String>()
-
-        var doNotPublishNegativeAssessments = true
-        var publishNegativeAssessmentsOnlyWithSpatialReferences = false
-        var publishNegativeAssessmentsControlledByDataset = false
-
-        behaviourService.get(catalogId, "plugin.publish.negative.assessment")?.let {
-            doNotPublishNegativeAssessments = it.active == null || it.active == false
-            publishNegativeAssessmentsOnlyWithSpatialReferences = it.data?.get("onlyWithSpatial") == true
-            publishNegativeAssessmentsControlledByDataset = it.data?.get("controlledByDataset") == true
-        }
-
-        if (doNotPublishNegativeAssessments) conditions.add("document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc'")
-        if (publishNegativeAssessmentsOnlyWithSpatialReferences) conditions.add("(document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc' OR (jsonb_path_exists(jsonb_strip_nulls(data), '\$.spatial')))")
-        if (publishNegativeAssessmentsControlledByDataset) conditions.add("document_wrapper.tags IS NULL OR NOT ('{negative-assessment-not-publish}' && document_wrapper.tags)")
-        
-        conditions.add("document_wrapper.type != 'FOLDER'")
-        
-        return conditions
-    }
 }

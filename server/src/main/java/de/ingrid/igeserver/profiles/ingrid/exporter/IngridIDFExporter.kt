@@ -42,6 +42,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import kotlin.reflect.KClass
 
 
 @Service
@@ -53,9 +54,6 @@ class IngridIDFExporter(
 ) : IgeExporter {
 
     val log = logger()
-
-    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
-
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -112,6 +110,17 @@ class IngridIDFExporter(
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
+        val transformers = getModelTransormerClasses()
+
+        // TODO: get profile from catalog in export options!?
+        val transformerClass = transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
+        return if(isAddress)
+            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
+        else
+            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
+    }
+
+    fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
         val transformers = mapOf(
             "InGridSpecialisedTask" to IngridModelTransformer::class,
             "InGridGeoDataset" to GeodatasetModelTransformer::class,
@@ -123,14 +132,9 @@ class IngridIDFExporter(
             "InGridOrganisationDoc" to AddressModelTransformer::class,
             "InGridPersonDoc" to AddressModelTransformer::class
         )
-        
-        // TODO: get profile from catalog in export options!?
-        val transformerClass = profileTransformer[profile]?.get(json.type) ?: transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
-        return if(isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
-        else
-            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
+        return transformers
     }
+
 
     private fun getMapFromObject(json: Document, catalogId: String, profile: String): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, profile)

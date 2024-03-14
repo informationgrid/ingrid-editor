@@ -35,6 +35,13 @@ data class ExportOptions(val includeDraft: Boolean, val catalogProfile: String? 
 
 interface IgeExporter {
     val typeInfo: ExportTypeInfo
+    
+    /*
+     * Default export SQL to request published datasets including folders in draft state (since they might be archived!?)
+     */
+    fun exportSql(catalogId: String): String = """
+        (document.state = 'PUBLISHED' OR (document.type = 'FOLDER' AND document.state = 'DRAFT'))
+    """.trimIndent()
 
     fun run(doc: Document, catalogId: String, options: ExportOptions = ExportOptions(false)): Any
     fun toString(exportedObject: Any): String {

@@ -51,7 +51,7 @@ open class GeodatasetModelTransformer(
 
     init {
         if (model.data.identifier != null) {
-            val namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+            val namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
             this.citationURL = if (model.data.identifier.indexOf("/", 1) == -1) {
                 namespace.suffixIfNot("/") + model.data.identifier
             } else {

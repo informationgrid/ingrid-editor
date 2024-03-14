@@ -17,25 +17,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
+package de.ingrid.igeserver.model
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.*
-import org.springframework.stereotype.Service
-import kotlin.reflect.KClass
-
-@Service
-class HmdkProfileTransformer : IngridProfileTransformer {
-
-    override fun get(docType: String): KClass<*>? {
-        return when(docType) {
-            "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
-            "InGridGeoService" -> GeoserviceTransformerHmdk::class
-            "InGridPublication" -> PublicationModelTransformerHmdk::class
-            "InGridProject" -> ProjectModelTransformerHmdk::class
-            "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
-            "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
-            else -> null
-        } 
-    }
-
-}
+data class IndexCronOptions(
+    val cronPattern: String
+)

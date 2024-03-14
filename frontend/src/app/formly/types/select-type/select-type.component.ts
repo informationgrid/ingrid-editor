@@ -107,12 +107,18 @@ export class SelectTypeComponent
         tap((data) => (this.selectOptions = data)),
         tap((data) => (this.filteredOptions = data)),
         tap(() => this.optionsLoaded$.next(true)),
-        tap(() => this.updateSelectField(this.formControl.value)),
+        tap(() => {
+          let value = this.formControl.value;
+          if (!value && this.props.useFirstValueInitially) {
+            this.formControl.setValue(this.filteredOptions[0].key);
+          }
+          this.updateSelectField(value);
+        }),
       )
       .subscribe();
   }
 
-  private updateSelectField(value) {
+  private updateSelectField(value: any) {
     if (!this.props.simple) {
       if (value?.key != null && value?.value != null) {
         this.formControl.setValue({ key: value.key });

@@ -39,6 +39,12 @@ repositories {
         url "https://repo.osgeo.org/repository/release/"
     }
     mavenCentral()
+    maven {
+        url "https://maven.tryformation.com/releases"
+        content {
+            includeGroup("com.jillesvangurp")
+        }
+    }
 }
 
 configurations {
@@ -187,7 +193,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:7.0.0')
+//    implementation('de.ingrid:ingrid-elasticsearch-tools:7.0.0')
+    implementation("com.jillesvangurp:search-client:2.1.22")
+    
     // for javax.annotation-support for elasticsearch-tools
     implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
 
@@ -211,6 +219,9 @@ dependencyManagement {
         dependency "org.yaml:snakeyaml:2.0"
         dependency "commons-collections:commons-collections:3.2.2"
 
+    }
+    imports {
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.16.1' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
     }
 }
 

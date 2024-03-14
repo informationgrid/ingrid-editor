@@ -31,15 +31,12 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
-import org.elasticsearch.client.transport.NoNodeAvailableException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("elasticsearch")
 class InGridPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
@@ -65,7 +62,7 @@ class InGridPublishExport(
                     indexReferencedDocs(context, docId)
                 }
             }
-        } catch (ex: NoNodeAvailableException) {
+        } catch (ex: Exception) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
 

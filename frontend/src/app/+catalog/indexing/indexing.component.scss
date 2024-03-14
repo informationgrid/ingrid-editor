@@ -10,6 +10,11 @@ mat-progress-spinner {
 .section {
   background-color: #ffffff;
   padding: 24px;
+  margin-bottom: 12px;
+
+  &.config {
+    padding-bottom: 2px;
+  }
 }
 
 .button-bar {
@@ -20,27 +25,6 @@ section {
   font-size: 16px;
   font-weight: 500;
   padding-bottom: 12px;
-}
-
-.cron-explain {
-  padding: 0 40px;
-
-  & > div {
-    display: inline-block;
-    width: 16.5%;
-    //text-align: -webkit-center;
-  }
-}
-
-.star {
-  padding-left: 6px;
-}
-
-.explain {
-  transform: rotate(180deg);
-  white-space: nowrap;
-  margin-bottom: 20px;
-  writing-mode: vertical-rl;
 }
 
 .status {

@@ -29,10 +29,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class IngridIndexExporterHmdk(
-    idfExporter: IngridIDFExporter,
-    luceneExporter: IngridLuceneExporter,
+    idfExporter: IngridIdfExporterHmdk,
+    luceneExporter: IngridLuceneExporterHmdk,
     documentWrapperRepository: DocumentWrapperRepository,
-    hmdkProfileTransformer: HmdkProfileTransformer
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -45,10 +44,4 @@ class IngridIndexExporterHmdk(
         listOf("ingrid-hmdk"),
         false
     )
-
-    init {
-        idfExporter.profileTransformer["ingrid-hmdk"] = hmdkProfileTransformer
-        luceneExporter.profileTransformer["ingrid-hmdk"] = hmdkProfileTransformer
-    }
-
 }

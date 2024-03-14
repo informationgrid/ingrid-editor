@@ -21,7 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject, Signal } from "@angular/core";
+import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 
@@ -69,7 +69,9 @@ export interface RepeatOptions extends Options {
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
+  showBorder?: boolean;
   addButtonTitle?: string;
+  noDrag?: boolean;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -117,6 +119,9 @@ export interface SelectOptions extends Options {
   change?: any;
   hooks?: any;
   resetOnHide?: boolean;
+  multiple?: boolean;
+  simple?: boolean;
+  useFirstValueInitially?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -133,7 +138,7 @@ export interface CheckboxOptions extends Options {
 }
 
 export interface InputOptions extends Options {
-  type?: "number";
+  type?: "number" | "password";
   fieldLabel?: string;
   disabled?: boolean;
   contextHelpId?: string;
@@ -421,7 +426,9 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
+        showBorder: options?.showBorder,
         addButtonTitle: options?.addButtonTitle,
+        noDrag: options?.noDrag,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -475,6 +482,7 @@ export class FormFieldHelper {
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
+      defaultValue: options?.defaultValue,
       props: {
         type: options?.type,
         externalLabel: label,
@@ -608,6 +616,9 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         contextHelpId: options?.contextHelpId,
+        multiple: options?.multiple,
+        simple: options?.simple,
+        useFirstValueInitially: options?.useFirstValueInitially,
       },
       expressions: expressions,
       hooks: options?.hooks,

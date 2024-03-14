@@ -20,18 +20,38 @@
 package de.ingrid.igeserver.api.messaging
 
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
+import org.jetbrains.kotlin.backend.common.push
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
 data class IndexMessage(
-    val catalogId: String?,
+    val catalogId: String,
+    var totalDatasets: Long = 0,
+    val targets: MutableList<TargetMessage> = mutableListOf()
+) : Message() {
+    
+    private var indexDatasets: Int = 0
+    
+    fun getTargetByName(name: String): TargetMessage {
+        val result = targets.find { it.name == name }
+        return result ?: TargetMessage(name).also { targets.push(it) }
+    }
+    
+    fun increaseProgress() {
+        indexDatasets++
+        progress = ((indexDatasets.toFloat() / totalDatasets)*100).toInt()
+    }
+}
+
+data class TargetMessage(
+    val name: String,
     var numDocuments: Int = 0,
     var numAddresses: Int = 0,
     var numSkipped: Int = 0,
     var progressDocuments: Int = 0,
     var progressAddresses: Int = 0,
-) : Message()
+    var progress: Int = 0,
+)
 
 @Service
 class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
@@ -43,11 +63,9 @@ class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
         msgTemplate.convertAndSend("$WS_MESSAGE_TRANSFER_DESTINATION/${message.catalogId}", message)
     }
 
-    fun addAndSendMessageError(message: IndexMessage, ex: Exception, errorPrefix: String = "") {
-        val errorMessage = "${errorPrefix}${ex.message}"
+    fun addAndSendMessageError(message: IndexMessage, ex: Exception?, errorPrefix: String = "") {
+        val errorMessage = ex?.message?.let { errorPrefix + it } ?: errorPrefix
         log.error(errorMessage, ex)
-        sendMessage(message.apply {
-            errors.add(errorMessage)
-        })
+        sendMessage(message.apply { errors.add(errorMessage) })
     }
 }

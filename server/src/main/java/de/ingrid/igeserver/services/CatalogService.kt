@@ -429,7 +429,7 @@ class CatalogService(
         catalog.apply {
             if (name != null) this.name = name
             if (description != null) this.description = description
-            settings?.config = config
+            settings.config = config
         }
         catalogRepo.save(catalog)
     }
