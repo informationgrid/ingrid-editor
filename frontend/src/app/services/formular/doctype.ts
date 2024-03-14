@@ -34,6 +34,7 @@ export interface Doctype {
   id: string;
 
   /**
+   * @deprecated label should not be used but translated from the id
    * The label of the document type for easier reading.
    */
   label: string;

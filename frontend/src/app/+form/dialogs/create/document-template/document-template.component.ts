@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { UntypedFormGroup } from "@angular/forms";
@@ -25,6 +32,7 @@ import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { ProfileService } from "../../../../services/profile.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   selector: "ige-document-template",
@@ -36,15 +44,15 @@ export class DocumentTemplateComponent implements OnInit {
   @Input() isFolder = true;
 
   @Output() create = new EventEmitter<void>();
+
+  private translocoService = inject(TranslocoService);
+  private profileQuery = inject(ProfileQuery);
+  private profileService = inject(ProfileService);
+
   documentTypes: DocumentAbstract[];
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null,
   );
-
-  constructor(
-    private profileQuery: ProfileQuery,
-    private profileService: ProfileService,
-  ) {}
 
   ngOnInit(): void {
     if (this.isFolder) {
@@ -79,7 +87,7 @@ export class DocumentTemplateComponent implements OnInit {
       .map((profile) => {
         return {
           id: profile.id,
-          title: profile.label,
+          title: this.translocoService.translate(`docType.${profile.id}`),
           icon: profile.iconClass,
           _type: profile.id,
           _state: "P",

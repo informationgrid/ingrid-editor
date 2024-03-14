@@ -21,9 +21,8 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
-import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
-import { filter, map, take } from "rxjs/operators";
+import { DataCollectionDoctypeBast } from "./ingrid-bast/doctypes/data-collection.doctype";
 
 @Component({
   template: "",
@@ -31,20 +30,13 @@ import { filter, map, take } from "rxjs/operators";
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
   geoService = inject(GeoServiceDoctypeBast);
+  dataCollection = inject(DataCollectionDoctypeBast);
   codelistQuery = inject(CodelistQuery);
-  codelistStore = inject(CodelistStore);
+
+  // codelistStore = inject(CodelistStore);
 
   constructor() {
     super();
-
-    // add BASt-Projektnummer and -title
-    this.addNewFields();
-
-    // TODO: Datenmenge? (vorhandenes oder neues Feld)
-    // TODO: Speicherort
-    // TODO: Bemerkungen
-    // TODO: Nutzungshinweise
-    // TODO: Projekttitel [0..1]
 
     this.modifyFormFieldConfiguration();
   }
@@ -53,11 +45,10 @@ class InGridBastComponent extends InGridComponent {
     this.folder,
     this.geoDataset,
     this.geoService,
+    this.dataCollection,
     this.person,
     this.organisation,
   ];
-
-  private addNewFields() {}
 
   private modifyFormFieldConfiguration() {
     [this.geoDataset, this.geoService].forEach((docType) => {
