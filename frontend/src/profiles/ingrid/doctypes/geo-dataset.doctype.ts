@@ -51,6 +51,7 @@ export class GeoDatasetDoctype extends IngridShared {
   showInspireConform = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
+  showIdentifierCreateButton = true;
   isGeoDataset = true;
   defaultKeySpatialScope = "885989663";
 
@@ -83,7 +84,10 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: this.geodatasetOptions.required.identifier,
-          wrappers: ["panel", "button", "form-field"],
+          wrappers: this.showIdentifierCreateButton
+            ? ["panel", "button", "form-field"]
+            : ["panel", "form-field"],
+          updateOn: "change",
           className: "flex-3 ",
           expressions: {
             "props.hintStart": (field) => {
