@@ -59,6 +59,9 @@
                     : getFromOption(formControl.value)
             }}
         }
+        @case ("unit-inputPrint") {
+            {{ formControl.value?.value }} {{ formControl.value?.unit?.key }}
+        }
         @default {
             <div [innerHTML]="getValueByDefault(formControl.value)"></div>
         }

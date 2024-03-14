@@ -256,6 +256,10 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "previewImagePrint",
           component: PrintTypeComponent,
         },
+        {
+          name: "unit-inputPrint",
+          component: PrintTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
