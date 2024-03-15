@@ -122,7 +122,7 @@ class IndexingTask(
                             postIndexPipe,
                             settingsService,
                             cancellations,
-                            currentThread!!.id
+                            (currentThread ?: Thread.currentThread()).id
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -291,7 +291,7 @@ class IndexingTask(
                         postIndexPipe,
                         settingsService,
                         cancellations,
-                        currentThread!!.id,
+                        (currentThread ?: Thread.currentThread()).id,
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
                 }
