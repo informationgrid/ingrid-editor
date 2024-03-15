@@ -31,6 +31,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
+        config.setPreservePublishOrder(true)
         config.enableSimpleBroker("/topic")
         config.setApplicationDestinationPrefixes("/app")
     }
