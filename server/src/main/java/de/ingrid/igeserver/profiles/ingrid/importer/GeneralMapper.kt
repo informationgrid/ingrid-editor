@@ -484,15 +484,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getDistributionFormat(): List<DistributionFormat> {
         return metadata.distributionInfo?.mdDistribution?.distributionFormat
             ?.map { it.format }
-            ?.map {
+            ?.mapNotNull {
                 val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
                 val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
-                DistributionFormat(
+                val result = DistributionFormat(
                     nameKeyValue,
                     it?.version?.value,
                     it?.fileDecompressionTechnique?.value,
                     it?.specification?.value
                 )
+                if (result.isNull()) null else result
             } ?: emptyList()
     }
 
@@ -722,7 +723,11 @@ data class DistributionFormat(
     val version: String?,
     val compression: String?,
     val specification: String?
-)
+) {
+    fun isNull(): Boolean {
+        return version.isNullOrEmpty() && compression.isNullOrEmpty() && specification.isNullOrEmpty() && name.key.isNullOrEmpty() && name.value.isNullOrEmpty()
+    }
+}
 
 data class MaintenanceInterval(
     val value: Number?,
