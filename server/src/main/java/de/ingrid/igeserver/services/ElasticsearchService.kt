@@ -97,8 +97,8 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
             try {
                 clients[clientConfigMap[id]!!].client.clusterHealth()
                 true
-            } catch (e: ConnectException) {
-                log.warn("No connection to at least one Elasticsearch-Node")
+            } catch (e: Exception) {
+                log.warn("No connection to at least one Elasticsearch-Node: ${e.message}")
                 false
             }
         }
