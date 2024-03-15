@@ -114,12 +114,16 @@ class IndexService(
 
     @EventListener(ApplicationReadyEvent::class)
     fun onReady() {
-        getIndexConfigurations()
-            .filter { it.cron.isNotEmpty() }
-            .forEach { config ->
-                val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
-                schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
-            }
+        try {
+            getIndexConfigurations()
+                .filter { it.cron.isNotEmpty() }
+                .forEach { config ->
+                    val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
+                    schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
+                }
+        } catch (_: Exception) {
+            // ignore any exception during startup
+        }
     }
 
     private fun getIndexConfigurations(): List<IndexConfig> =
@@ -172,11 +176,12 @@ class IndexService(
         exportService.getExporter(category, exportFormat)
 
     fun updateCronConfig(catalogId: String, config: IndexCronOptions) {
-        catalogRepo
-            .findByIdentifier(catalogId)
-            .apply { settings.indexCronPattern = config.cronPattern }
-            .run { catalogRepo.save(this) }
-
+        val catalog = catalogRepo.findByIdentifier(catalogId)
+        val settings = catalog.settings.apply { 
+            indexCronPattern = config.cronPattern
+        }
+        catalog.settings = settings
+        catalogRepo.save(catalog)
 
         val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
