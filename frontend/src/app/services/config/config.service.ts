@@ -19,13 +19,13 @@
  */
 import { Injectable } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { map, tap } from "rxjs/operators";
+import { catchError, map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
 import { CodelistStore } from "../../store/codelist/codelist.store";
 
@@ -224,7 +224,10 @@ export class ConfigService {
   getConnectionsConfig() {
     return this.http
       .get<any>(`${this.config.backendUrl}config/connections`)
-      .pipe(map((config) => this.prepareConnectionsForFrontend(config)));
+      .pipe(
+        catchError((err) => this.handleGetConnectionsError(err)),
+        map((config) => this.prepareConnectionsForFrontend(config)),
+      );
   }
 
   isConnectionOK(id: string) {
@@ -266,5 +269,10 @@ export class ConfigService {
       item._type = type;
       return item;
     });
+  }
+
+  private handleGetConnectionsError(err: any): Observable<BackendConnections> {
+    console.error("Das Laden der Verbindungen ist fehlgeschlagen", err);
+    return of({ ibus: [], elasticsearch: [] });
   }
 }

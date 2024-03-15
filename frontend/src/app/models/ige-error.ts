@@ -29,7 +29,7 @@ export class IgeError {
   unhandledException?: boolean;
   showDetails?: boolean;
 
-  constructor(error?: HttpErrorResponse | string) {
+  constructor(error?: HttpErrorResponse | string, detail?: string) {
     if (error instanceof HttpErrorResponse) {
       if (!error) {
         return;
@@ -39,7 +39,7 @@ export class IgeError {
       this.detail = error.error ? error.error.message : null;
       this.status = error.status;
     } else {
-      this.setMessage(error);
+      this.setMessage(error, detail);
     }
   }
 
