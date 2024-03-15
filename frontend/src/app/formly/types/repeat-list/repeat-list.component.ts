@@ -133,13 +133,6 @@ export class RepeatListComponent
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
 
-  private requiredValidator = (): ValidationErrors | null => {
-    return !this.showError ||
-      (this.props.required && this.formControl.value?.length > 0)
-      ? null
-      : { required: "Pflicht!" };
-  };
-
   constructor(
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
@@ -213,7 +206,6 @@ export class RepeatListComponent
     this.formControl.statusChanges
       .pipe(untilDestroyed(this), distinctUntilChanged())
       .subscribe((status) => {
-        this.handleRequiredState();
         status === "DISABLED"
           ? this.inputControl.disable()
           : this.inputControl.enable();
@@ -241,19 +233,6 @@ export class RepeatListComponent
         map((value) => this._markSelected(value)),
       );
     }
-
-    // update formControl validation when input has been resetted
-    this.inputControl.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        filter((value) => value === null || value === ""),
-      )
-      .subscribe(() =>
-        this.formControl.updateValueAndValidity({
-          emitEvent: true,
-          onlySelf: false,
-        }),
-      );
   }
 
   addToList(option: SelectOptionUi) {
@@ -322,21 +301,6 @@ export class RepeatListComponent
     this.formControl.patchValue([...(this.formControl.value || []), value]);
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
-  }
-
-  private handleRequiredState() {
-    if (this.props.required === this.currentStateRequired) return;
-
-    if (
-      this.props.required &&
-      !this.inputControl.hasValidator(this.requiredValidator)
-    ) {
-      this.inputControl.addValidators(this.requiredValidator);
-      this.inputControl.updateValueAndValidity();
-    } else if (!this.props.required) {
-      this.inputControl.removeValidators(this.requiredValidator);
-      this.inputControl.updateValueAndValidity();
-    }
   }
 
   private _filter(option: SelectOptionUi | string): SelectOptionUi[] {

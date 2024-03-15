@@ -131,6 +131,7 @@
         <mat-select
             [placeholder]="props.placeholder"
             (valueChange)="addToList($event)"
+            [required]="showError && props.required && formControl.invalid"
             [formControl]="inputControl"
             (keydown)="handleKeydown($event)"
             (blur)="inputControl.setValue('')"
@@ -178,6 +179,7 @@
             [placeholder]="props.placeholder"
             matInput
             [formControl]="inputControl"
+            [required]="showError && props.required && formControl.invalid"
             (keydown.enter)="addFreeEntry(inputControl.value)"
             [matAutocomplete]="auto"
             [errorStateMatcher]="matcher"
