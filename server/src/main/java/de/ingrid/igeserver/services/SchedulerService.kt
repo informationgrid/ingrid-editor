@@ -41,10 +41,13 @@ class SchedulerService(factory: SchedulerFactoryBean) {
                 return
             }
         }
+        val triggerKey = TriggerKey(jobKey.name, jobKey.group)
+        if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
+        
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
-            .withIdentity(jobKey.name, jobKey.group)
+            .withIdentity(triggerKey)
             .build()
 
         scheduler.scheduleJob(trigger)
