@@ -51,12 +51,12 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
                 .createNativeQuery(
                     """
               UPDATE settings
-              SET value = (to_jsonb(REPLACE(CAST(value as text), '"url"', '"name"')))
+              SET value = ((REPLACE(CAST(value as text), '"url"', '"name"'))\:\:jsonb)
               WHERE key = 'ibus';
           """.trimIndent()
                 )
                 .executeUpdate()
-            
+
             // remove publicationTypes field where it was set
             entityManager
                 .createNativeQuery(
@@ -67,6 +67,29 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
                  FROM jsonb_array_elements(settings.value) AS elements(value)
               )
               WHERE jsonb_path_exists(value, '$.publicationTypes');
+          """.trimIndent()
+                )
+                .executeUpdate()
+
+            // add id-field to each iBus configuration
+            entityManager
+                .createNativeQuery(
+                    """
+            WITH unnested AS (
+                SELECT id,
+                     jsonb_array_elements(value)                       AS element,
+                     generate_series(0, jsonb_array_length(value) - 1) AS index
+                FROM settings
+                WHERE key = 'ibus'),
+            updated_elements AS (
+                SELECT id,
+                       jsonb_set(element, '{id}', to_jsonb(index\:\:text)) AS updated_element
+                FROM unnested)
+            UPDATE settings
+            SET value=(SELECT jsonb_agg(updated_element) AS updated_data
+                       FROM updated_elements
+                       WHERE settings.id = updated_elements.id) 
+            WHERE key='ibus';
           """.trimIndent()
                 )
                 .executeUpdate()
