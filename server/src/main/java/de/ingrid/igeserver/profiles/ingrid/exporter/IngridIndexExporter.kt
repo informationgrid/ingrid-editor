@@ -57,7 +57,8 @@ class IngridIndexExporter(
         "application/json",
         "json",
         listOf("ingrid"),
-        false
+        isPublic = false,
+        useForPublish = true
     )
 
     private lateinit var xpathUtils: XPathUtils
