@@ -61,18 +61,26 @@
                     <div>{{ selectedCodelist?.description }}</div>
                 </div>
             }
-            <div class="flex-row justify-content-end align-items-end gap-12">
-                <button
-                    mat-flat-button
-                    mat-stroked-button
-                    (click)="resetCodelist()"
+            @if (selectedCodelist?.isCatalog) {
+                <div
+                    class="flex-row justify-content-end align-items-end gap-12"
                 >
-                    Zurücksetzen
-                </button>
-                <button mat-flat-button color="primary" (click)="addCodelist()">
-                    Hinzufügen
-                </button>
-            </div>
+                    <button
+                        mat-flat-button
+                        mat-stroked-button
+                        (click)="resetCodelist()"
+                    >
+                        Zurücksetzen
+                    </button>
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="addCodelist()"
+                    >
+                        Hinzufügen
+                    </button>
+                </div>
+            }
             @if (favorites?.length > 0) {
                 <div class="section-title">Favoriten</div>
                 <div
