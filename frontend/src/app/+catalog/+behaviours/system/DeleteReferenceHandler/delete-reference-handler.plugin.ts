@@ -48,7 +48,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     private tree: AddressTreeQuery,
     private docEventsService: DocEventsService,
     private formMenuService: FormMenuService,
-    private configService: ConfigService,
+    configService: ConfigService,
   ) {
     super();
 
