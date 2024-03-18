@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
@@ -56,7 +57,7 @@ interface IndexApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @GetMapping(value = ["/index/config"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getConfig(principal: Principal): ResponseEntity<IndexCronOptions>
+    fun getConfig(principal: Principal): ResponseEntity<IndexOptions>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.api.messaging.IndexMessage
 import de.ingrid.igeserver.index.IndexService
 import de.ingrid.igeserver.model.IndexCronOptions
+import de.ingrid.igeserver.model.IndexOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.services.CatalogService
 import org.springframework.http.ResponseEntity
@@ -52,11 +53,12 @@ class IndexApiController(
         return ResponseEntity.ok().build()
     }
 
-    override fun getConfig(principal: Principal): ResponseEntity<IndexCronOptions> {
+    override fun getConfig(principal: Principal): ResponseEntity<IndexOptions> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val config = catalogService.getCatalogById(catalogId).run {
-            IndexCronOptions(
-                settings.indexCronPattern ?: ""
+            IndexOptions(
+                settings.indexCronPattern ?: "",
+                settings.exports
             )
         }
         return ResponseEntity.ok(config)
