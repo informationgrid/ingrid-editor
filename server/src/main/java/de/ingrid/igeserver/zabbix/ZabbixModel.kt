@@ -121,7 +121,7 @@ class ZabbixModel {
     )
 
     data class Problem(
-        val eventid: String,
+        var eventid: String,
         val objectid: String,
         val clock: String,
         val docName: String,
@@ -129,5 +129,6 @@ class ZabbixModel {
         val url: String,
         val docUrl: String,
         val docUuid: String,
+        val severity: String,
     )
 }

@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import java.security.Principal
 
 @Tag(name = "Zabbix Report", description = "API to create Zabbix reports")
@@ -39,6 +41,16 @@ interface ZabbixReportApi {
     fun getReport(
         principal: Principal
     ): ResponseEntity<List<ProblemReportItem>>
+
+
+    @Operation
+    @GetMapping(value = ["/{datasetId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun getDatasetReport(
+        principal: Principal,
+        @Parameter(description = "The dataset ID for which the report should be gathered", required = true)
+        @PathVariable datasetId: Int
+    ): ResponseEntity<List<ProblemReportItem>>
 }
 
 data class ProblemReportItem(
@@ -49,4 +61,5 @@ data class ProblemReportItem(
     val url: String,
     val docUrl: String,
     val docUuid: String,
+    val resolved: Boolean
 )

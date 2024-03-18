@@ -125,15 +125,6 @@ class DocumentService(
 
     private var log = logger()
 
-    /**
-     * Get the DocumentWrapper with the given document uuid
-     */
-    @Deprecated(
-        message = "This function can return more than one result if a document is imported in more than one catalog",
-        replaceWith = ReplaceWith("getWrapperByDocumentIdAndCatalog", "catalogId", "uuid")
-    )
-    fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
-
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)

@@ -46,6 +46,7 @@ export class ZabbixProblem {
   url: String;
   docUrl: String;
   docUuid: String;
+  resolved: Boolean;
 }
 
 export class ActivityItem {
@@ -94,6 +95,12 @@ export class UvpResearchService {
   getZabbixReport(): Observable<ZabbixProblem[]> {
     return this.http.get<ZabbixProblem[]>(
       `${this.configuration.backendUrl}uvp/zabbix-report`,
+    );
+  }
+
+  getZabbixSingleReport(id: Number): Observable<ZabbixProblem[]> {
+    return this.http.get<ZabbixProblem[]>(
+      `${this.configuration.backendUrl}uvp/zabbix-report/${id}`,
     );
   }
 

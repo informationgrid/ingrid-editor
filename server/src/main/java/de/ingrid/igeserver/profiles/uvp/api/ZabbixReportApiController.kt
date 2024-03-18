@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.uvp.api
 import de.ingrid.igeserver.configuration.ZabbixProperties
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
@@ -34,24 +35,16 @@ import java.security.Principal
 @Profile("zabbix")
 class ZabbixReportApiController(
     val zabbixService: ZabbixService,
-    val zabbixProperties: ZabbixProperties,
+    zabbixProperties: ZabbixProperties,
     val catalogService: CatalogService,
     val documentService: DocumentService,
 ) : ZabbixReportApi {
+    private final val ZABBIX_BASE_URL = zabbixProperties.apiURL.replace("/api_jsonrpc.php", "")
     override fun getReport(principal: Principal): ResponseEntity<List<ProblemReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         // assumes apiURL is like https://zabbix.example.com/api_jsonrpc.php
-        val zabbixBaseUrl = zabbixProperties.apiURL.replace("/api_jsonrpc.php", "")
-        return zabbixService.getProblems(catalogIdentifier).map { problem ->
-            ProblemReportItem(
-                problemUrl = zabbixBaseUrl + "/tr_events.php?triggerid=${problem.objectid}&eventid=${problem.eventid}",
-                clock = problem.clock,
-                docName = problem.docName,
-                name = problem.name,
-                url = problem.url,
-                docUrl = problem.docUrl,
-                docUuid = problem.docUuid,
-            )
+        return zabbixService.getProblems(catalogIdentifier).map {
+            problemToReportItem(it)
         }.filter {
             // filter out documents that the principal does not have access to
             try {
@@ -62,6 +55,40 @@ class ZabbixReportApiController(
                 false
             }
         }.let { ResponseEntity.ok(it) }
+    }
+
+    override fun getDatasetReport(principal: Principal, datasetId: Int): ResponseEntity<List<ProblemReportItem>> {
+        val uuid = documentService.getWrapperByDocumentId(datasetId).uuid
+        val triggerIds = zabbixService.getTriggerIds(uuid)
+        val problems = triggerIds
+            .mapNotNull {
+                val events = zabbixService.getTriggerEvents(it)
+                val lastEvent = events?.get(0) ?: return@mapNotNull null
+                if(lastEvent.severity != "0") {
+                    // latest event is a problem
+                    problemToReportItem(lastEvent)
+                } else {
+                    // latest event is a resolution, so we need to check the previous event
+                    if (events.size < 2) return@mapNotNull null
+                    val previousEvent = events[1]
+                    problemToReportItem(previousEvent, resolved = true)
+                }
+            }
+        return ResponseEntity.ok(problems)
+    }
+
+
+    fun problemToReportItem(problem: ZabbixModel.Problem, resolved: Boolean=false): ProblemReportItem {
+        return ProblemReportItem(
+            problemUrl = ZABBIX_BASE_URL + "/tr_events.php?triggerid=${problem.objectid}&eventid=${problem.eventid}",
+            clock = problem.clock,
+            docName = problem.docName,
+            name = problem.name,
+            url = problem.url,
+            docUrl = problem.docUrl,
+            docUuid = problem.docUuid,
+            resolved =  resolved
+        )
     }
 
 
