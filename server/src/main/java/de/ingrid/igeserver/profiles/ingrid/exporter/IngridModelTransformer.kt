@@ -590,7 +590,7 @@ open class IngridModelTransformer(
                 ?: emptyList()
 
 
-        atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
+        atomDownloadURL = catalog.settings?.config?.atomDownloadUrl + model.uuid
 
         operations = data.service?.operations?.map {
             DisplayOperation(
