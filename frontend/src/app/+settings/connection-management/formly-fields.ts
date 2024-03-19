@@ -91,6 +91,7 @@ export class ConnectionForm extends FormFieldHelper {
       this.addRepeatList("hosts", "Hosts", {
         required: true,
         asSimpleValues: true,
+        placeholder: "<IP>:<PORT>",
         hint: "Ein Host besteht aus IP-Adresse und Port, z.B. localhost:9200",
         validators: {
           hostAndPort: {
