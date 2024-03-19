@@ -128,7 +128,6 @@ export class RepeatListComponent
   searchSub: Subscription;
   searchResult = new BehaviorSubject<any[]>([]);
   private manualUpdate = new Subject<string>();
-  private currentStateRequired = false;
   type: "simple" | "select" | "autocomplete" | "search" = "simple";
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
@@ -217,13 +216,16 @@ export class RepeatListComponent
           untilDestroyed(this),
           startWith(""),
           debounceTime(300),
+          tap(() => this.formControl.updateValueAndValidity()),
           filter((query) => query?.length > 1),
         )
         .subscribe((query) => this.search(query));
     } else {
       this.filteredOptions = merge(
         this.formControl.valueChanges,
-        this.inputControl.valueChanges,
+        this.inputControl.valueChanges.pipe(
+          tap(() => this.formControl.updateValueAndValidity()),
+        ),
         this.manualUpdate.asObservable(),
       ).pipe(
         untilDestroyed(this),
@@ -232,6 +234,10 @@ export class RepeatListComponent
         map((value) => this._filter(value)),
         map((value) => this._markSelected(value)),
       );
+
+      if (this.type !== "select" && this.type !== "autocomplete") {
+        this.filteredOptions.subscribe();
+      }
     }
   }
 
