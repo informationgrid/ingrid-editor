@@ -134,18 +134,20 @@ export class SharedHmdk {
     const cookieId = "HIDE_HMBTG_INFO";
 
     function executeAction(that) {
-      // if inspire set access constraint "keine" else empty
-      field.model.resource.accessConstraints =
-        field.model.isInspireIdentified === true ? [{ key: "1" }] : [];
+      if (field.model.resource !== undefined) {
+        // if inspire set access constraint "keine" else empty
+        field.model.resource.accessConstraints =
+          field.model.isInspireIdentified === true ? [{ key: "1" }] : [];
 
-      // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
-      field.model.resource.useConstraints = [
-        {
-          title: { key: "1" },
-          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-        },
-      ];
-      field.options.formState.updateModel();
+        // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
+        field.model.resource.useConstraints = [
+          {
+            title: { key: "1" },
+            source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+          },
+        ];
+        field.options.formState.updateModel();
+      }
 
       that.tagsService
         .updatePublicationType(field.model._id, "internet", false)
@@ -239,16 +241,18 @@ export class SharedHmdk {
   ) {
     return this.wrap(() => {
       field.model.publicationHmbTG = true;
-      field.model.resource.useConstraints = [
-        {
-          title: { key: "1" },
-          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-        },
-      ];
+      if (field.model.resource !== undefined) {
+        field.model.resource.useConstraints = [
+          {
+            title: { key: "1" },
+            source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+          },
+        ];
 
-      // if inspire set access constraint "keine"
-      if (field.model.isInspireIdentified)
-        field.model.resource.accessConstraints = [{ key: "1" }];
+        // if inspire set access constraint "keine"
+        if (field.model.isInspireIdentified)
+          field.model.resource.accessConstraints = [{ key: "1" }];
+      }
 
       this.tagsService
         .updatePublicationType(field.model._id, "internet", false)
@@ -257,14 +261,16 @@ export class SharedHmdk {
   }
 
   hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
-    // remove "keine" from access constraints
-    field.model.resource.accessConstraints =
-      field.model.resource.accessConstraints.filter(
-        (entry) => entry.key !== "1",
-      );
+    if (field.model.resource !== undefined) {
+      // remove "keine" from access constraints
+      field.model.resource.accessConstraints =
+        field.model.resource.accessConstraints.filter(
+          (entry) => entry.key !== "1",
+        );
 
-    // remove license set when open data was clicked
-    field.model.resource.useConstraints = [];
+      // remove license set when open data was clicked
+      field.model.resource.useConstraints = [];
+    }
 
     // remove all categories
     field.model.openDataCategories = [];
@@ -279,7 +285,10 @@ export class SharedHmdk {
   ) {
     return this.wrap(() => {
       // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
-      if (field.model.isOpenData || field.model.publicationHmbTG)
+      if (
+        field.model.resource &&
+        (field.model.isOpenData || field.model.publicationHmbTG)
+      )
         field.model.resource.accessConstraints = [{ key: "1" }];
     }, previous);
   }

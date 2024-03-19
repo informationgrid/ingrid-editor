@@ -260,10 +260,12 @@ export abstract class IngridShared extends BaseDoctype {
     const isInspire = field.model.isInspireIdentified;
 
     function executeAction() {
-      if (isInspire) {
-        field.model.resource.accessConstraints = [{ key: "1" }];
-      } else {
-        field.model.resource.accessConstraints = [];
+      if (field.model.resource !== undefined) {
+        if (isInspire) {
+          field.model.resource.accessConstraints = [{ key: "1" }];
+        } else {
+          field.model.resource.accessConstraints = [];
+        }
       }
     }
 
