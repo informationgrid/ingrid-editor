@@ -387,6 +387,19 @@ open class IngridModelTransformer(
         link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
         showType = false
     )
+
+    val opendataCategoryKeywords = Thesaurus(
+        name = "",
+        keywords = data.openDataCategories?.map {
+            KeywordIso(
+                codelists.getData(
+                    "6400",
+                    it.key,
+                )
+            )
+        } ?: emptyList(),
+    )
+
     val invekosKeywords = Thesaurus(
         keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!), link = it.key) }
             ?: emptyList(),
@@ -400,17 +413,6 @@ open class IngridModelTransformer(
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
-    val opendataCategoryKeywords = if (data.isOpenData == true) Thesaurus(
-        name = "",
-        keywords = this.data.openDataCategories?.map {
-            KeywordIso(
-                codelists.getData(
-                    "6400",
-                    it.key,
-                )
-            )
-        } ?: emptyList(),
-    ) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
