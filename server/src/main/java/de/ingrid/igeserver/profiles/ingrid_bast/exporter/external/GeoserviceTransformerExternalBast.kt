@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter
+package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
@@ -33,7 +33,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
-class GeoserviceTransformerBast(
+class GeoserviceTransformerExternalBast(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,

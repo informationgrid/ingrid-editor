@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter
+package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.services.CatalogService
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
-class IngridIdfExporterBast(
+class IngridIdfExporterExternalBast(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
@@ -38,8 +38,8 @@ class IngridIdfExporterBast(
 
     override fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
         return super.getModelTransormerClasses().toMutableMap().apply {
-            put("InGridGeoDataset", GeodatasetTransformerBast::class)
-            put("InGridGeoService", GeoserviceTransformerBast::class)
+            put("InGridGeoDataset", GeodatasetTransformerExternalBast::class)
+            put("InGridGeoService", GeoserviceTransformerExternalBast::class)
         }
     }
 }

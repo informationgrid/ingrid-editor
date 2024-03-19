@@ -52,7 +52,7 @@ class IngridIndexExporter(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         typeId,
-        "Ingrid IDF (Elasticsearch)",
+        "Standard Export Portal (InGrid)",
         "Export von Ingrid Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
