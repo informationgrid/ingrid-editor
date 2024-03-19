@@ -41,6 +41,8 @@ export class IsoViewPlugin extends Plugin {
     "Fügt einen Button hinzu, um sich eine Vorschau des ISO Exports anzeigen zu lassen.";
   defaultActive = false;
 
+  isoExportFormat = "ingridISO";
+
   private treeQuery: TreeQuery | AddressTreeQuery;
 
   constructor(
@@ -91,18 +93,17 @@ export class IsoViewPlugin extends Plugin {
       openedDocSubscription,
     );
   }
-
   private showISODialog() {
     const currentDocument = this.treeQuery.getOpenedDocument();
     const options = {
       id: currentDocument.id as number,
       useDraft: true,
-      exportFormat: "ingridISO",
+      exportFormat: this.isoExportFormat,
     };
     const optionsOnlyPublished = {
       id: currentDocument.id as number,
       useDraft: false,
-      exportFormat: "ingridISO",
+      exportFormat: this.isoExportFormat,
     };
     combineLatest([
       this.exportService.export(options),
@@ -111,7 +112,7 @@ export class IsoViewPlugin extends Plugin {
         : of(null),
     ])
       .pipe(
-        catchError((error) => {
+        catchError(() => {
           throw new Error(
             "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind.",
           );

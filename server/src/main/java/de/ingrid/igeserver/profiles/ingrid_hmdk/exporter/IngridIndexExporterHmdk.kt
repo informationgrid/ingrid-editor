@@ -20,9 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
@@ -42,6 +40,7 @@ class IngridIndexExporterHmdk(
         "application/json",
         "json",
         listOf("ingrid-hmdk"),
-        false
+        isPublic = true,
+        useForPublish = true
     )
 }
