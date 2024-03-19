@@ -236,7 +236,7 @@ data class UVPModel(
             ),
             address.data.getString("firstName"),
             address.data.getString("lastName")
-        ).joinToString(" ")
+        ).filter { it.isNotEmpty() }.joinToString(" ")
     }
 
 }
