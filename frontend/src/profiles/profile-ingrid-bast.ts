@@ -38,6 +38,7 @@ class InGridBastComponent extends InGridComponent {
   constructor() {
     super();
 
+    this.isoView.isoExportFormat = "ingridISOBast";
     this.modifyFormFieldConfiguration();
   }
 
