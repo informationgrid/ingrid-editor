@@ -84,7 +84,7 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
     }
 
     @Bean
-    fun openAPI(@Value("\${SERVERS:}") servers: List<String>): OpenAPI {
+    fun openAPI(@Value("\${SWAGGER_SERVERS:}") servers: List<String>): OpenAPI {
 
         val serverList: MutableList<OpenApiServer> = mutableListOf()
         servers.forEach { pair ->
