@@ -84,14 +84,10 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
     }
 
     @Bean
-    fun openAPI(@Value("\${ADD_SWAGGER_TEST_SERVER:}") serverUrls: List<String>): OpenAPI {
+    fun openAPI(@Value("\${SERVERS:}") servers: List<String>): OpenAPI {
 
-        val serverList = mutableListOf(
-            OpenApiServer().url("http://localhost:8550").description("Local Server"),
-            OpenApiServer().url("https://ige-ng.informationgrid.eu/").description("Test Server")
-        )
-
-        serverUrls.forEach { pair ->
+        val serverList: MutableList<OpenApiServer> = mutableListOf()
+        servers.forEach { pair ->
             val parts = pair.split("::")
             if (parts.size == 2) {
                 val url = parts[0]
