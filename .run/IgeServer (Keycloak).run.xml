@@ -5,6 +5,7 @@
     <envs>
       <env name="KEYCLOAK_BACKEND_USER" value="ige" />
       <env name="KEYCLOAK_BACKEND_USER_PASSWORD" value="ige" />
+      <env name="KEYCLOAK_URL" value="https://keycloak.informationgrid.eu" />
     </envs>
     <module name="ige-ng.server.main" />
     <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
