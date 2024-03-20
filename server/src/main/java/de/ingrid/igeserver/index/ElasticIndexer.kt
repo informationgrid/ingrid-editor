@@ -99,7 +99,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     override fun updateIPlugInformation(id: String, info: String) {
         runBlocking { 
             val response = elastic.client.search(metaIndex) {
-                term("indexId", id)
+                query = term("indexId", id)
                 sort { 
                     add("lastIndexed")
                 }
