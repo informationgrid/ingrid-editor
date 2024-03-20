@@ -116,10 +116,12 @@ To get a list of new versions of our dependencies you can run the following comm
 
 ```shell
 # server
-gradlew :server:dependencyUpdates
+./gradlew :server:dependencyUpdates
+```
 
+```shell
 # frontend
-yarn upgrade-interactive
+cd frontend && yarn upgrade-interactive
 ```
 
 ## Apache Configuration

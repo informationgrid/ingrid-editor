@@ -5,9 +5,9 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '1.9.22'
-    ext.spring_boot_version = '3.2.0'
-    ext.kotest_version = '5.8.0'
-    ext.jte_version = '3.1.6'
+    ext.spring_boot_version = '3.2.3'
+    ext.kotest_version = '5.8.1'
+    ext.jte_version = '3.1.9'
     ext.geotools_version = '28.2'
     ext['log4j2.version'] = '2.22.1'
 }
@@ -122,7 +122,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.44'
+    implementation 'net.pwall.json:json-kotlin-schema:0.47'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
@@ -138,18 +138,18 @@ dependencies {
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
     implementation "io.ktor:ktor-client-java"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.21.0"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
+    implementation "org.commonmark:commonmark:0.22.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.22.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.22.0"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.2'
+    implementation 'org.postgresql:postgresql:42.7.3'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
 
@@ -185,7 +185,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.3' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.9'
+    testImplementation 'io.mockk:mockk:1.13.10'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -221,7 +221,7 @@ dependencyManagement {
 
     }
     imports {
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.16.1' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.17.0' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
     }
 }
 
