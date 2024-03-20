@@ -261,6 +261,7 @@
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_type": "am",
     @endif
     @if("since".equals(page.getResourceDateType()))
         @if(page.isResourceRangeDefined() && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
@@ -268,14 +269,21 @@
         "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
         "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
         "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+        "t01_object.time_type": "von",
         @elseif (page.getData().getTemporal().getResourceDate() != null)
         "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
         "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            @if  ("requestTime".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
+                "t01_object.time_type": "seitX",
+            @else
+                "t01_object.time_type": "seit",
+            @endif
         @endif
     @endif
     @if("till".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_type": "bis",
     @endif
     "object_use_constraint.license_key": [
     @for(var entry : ForSupport.of(page.getUseConstraints()))

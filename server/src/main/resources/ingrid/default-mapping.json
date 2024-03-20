@@ -363,6 +363,14 @@
       "type": "keyword",
       "store": true
     },
+    "t01_object.time_from": {
+      "type": "keyword",
+      "store": true
+    },
+    "t01_object.time_to": {
+      "type": "keyword",
+      "store": true
+    },
     "t0": {
       "type": "keyword",
       "store": true
