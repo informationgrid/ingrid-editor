@@ -343,7 +343,6 @@
     "object_access.restriction_key": "",
     "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
     "t01_object.metadata_time": "",
-    "t01_object.time_to": "",
     "t011_obj_geo_scale.scale": [],
     "t01_object.time_descr": "",
     "object_use.terms_of_use_value": "",
