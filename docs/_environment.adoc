@@ -135,6 +135,10 @@
 |
 |
 
+|SERVERS
+|List of servers (delimiter: "::" and "," ) Example: http://localhost:8550::Local Server,https://ige-ng.informationgrid.eu/::Test Server
+|
+
 |SERVER_PORT
 |
 |80
