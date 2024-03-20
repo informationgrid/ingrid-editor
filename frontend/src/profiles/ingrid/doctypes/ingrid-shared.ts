@@ -1388,9 +1388,6 @@ export abstract class IngridShared extends BaseDoctype {
             className: "flex-3",
             hasInlineContextHelp: true,
             updateOn: "change",
-            validators: {
-              validation: ["url"],
-            },
             expressions: {
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
