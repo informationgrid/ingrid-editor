@@ -22,10 +22,11 @@ package de.ingrid.igeserver.configuration
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
-import io.swagger.v3.oas.annotations.servers.Server
+import io.swagger.v3.oas.models.servers.Server as OpenApiServer
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.security.*
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
@@ -44,11 +45,7 @@ import java.util.*
         version = "v1",
         description = "The IGE-NG provides the following REST-APIs",
         contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com")
-    ),
-    servers = [
-        Server(url = "http://localhost:8550", description = "Local Server"),
-        Server(url = "https://ige-ng.informationgrid.eu/", description = "Test Server")
-    ]
+    )
 )
 @Configuration
 class SwaggerDocumentationConfig : WebMvcConfigurer {
@@ -72,22 +69,33 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
          */
         val basePath = ""
         registry.addResourceHandler("$basePath/swagger-ui.html**")
-                .addResourceLocations("classpath:/")
+            .addResourceLocations("classpath:/")
         registry.addResourceHandler("$basePath/swagger-ui*/**")
             .addResourceLocations("classpath:/META-INF/resources/webjars/")
         registry.addResourceHandler("/**/*")
-                .addResourceLocations("classpath:/static/")
-                .resourceChain(true)
-                .addResolver(object : PathResourceResolver() {
-                    override fun getResource(resourcePath: String, location: Resource): Resource {
-                        val requestedResource = location.createRelative(resourcePath)
-                        return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
-                    }
-                })
+            .addResourceLocations("classpath:/static/")
+            .resourceChain(true)
+            .addResolver(object : PathResourceResolver() {
+                override fun getResource(resourcePath: String, location: Resource): Resource {
+                    val requestedResource = location.createRelative(resourcePath)
+                    return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
+                }
+            })
     }
 
     @Bean
-    fun openAPI(): OpenAPI {
+    fun openAPI(@Value("\${SWAGGER_SERVERS:}") servers: List<String>): OpenAPI {
+
+        val serverList: MutableList<OpenApiServer> = mutableListOf()
+        servers.forEach { pair ->
+            val parts = pair.split("::")
+            if (parts.size == 2) {
+                val url = parts[0]
+                val description = parts[1]
+                serverList.add( OpenApiServer().url(url).description(description) )
+            }
+        }
+
         val oauthSchemeName = "Keycloak Token"
         return OpenAPI()
             .components(
@@ -105,5 +113,6 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                     .addList("bearer-jwt", listOf("read", "write"))
                     .addList(oauthSchemeName, Collections.emptyList())
             )
+            .servers(serverList)
     }
 }
