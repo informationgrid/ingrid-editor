@@ -1,4 +1,3 @@
-@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
@@ -261,17 +260,22 @@
 
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     @endif
     @if("since".equals(page.getResourceDateType()))
         @if(page.isResourceRangeDefined() && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
         "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
         "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+        "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+        "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
         @elseif (page.getData().getTemporal().getResourceDate() != null)
         "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+        "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
         @endif
     @endif
     @if("till".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
     @endif
     "object_use_constraint.license_key": [
     @for(var entry : ForSupport.of(page.getUseConstraints()))
