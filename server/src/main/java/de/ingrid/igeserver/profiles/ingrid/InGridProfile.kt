@@ -60,8 +60,11 @@ class InGridProfile(
 ) : CatalogProfile {
 
     @Autowired
+    @JsonIgnore
     lateinit var entityManager: EntityManager
+    
     @Autowired
+    @JsonIgnore
     private lateinit var transactionManager: PlatformTransactionManager
 
     companion object {
