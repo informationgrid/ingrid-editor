@@ -26,10 +26,9 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { AddressTreeQuery } from "../../../../app/store/address-tree/address-tree.query";
 import { ExchangeService } from "../../../../app/+importExport/exchange.service";
-import { combineLatest, of } from "rxjs";
+import { of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
-import { catchError } from "rxjs/operators";
 
 @UntilDestroy()
 @Injectable({ providedIn: "root" })
@@ -93,6 +92,7 @@ export class IsoViewPlugin extends Plugin {
       openedDocSubscription,
     );
   }
+
   private showISODialog() {
     const currentDocument = this.treeQuery.getOpenedDocument();
     const options = {
@@ -105,28 +105,17 @@ export class IsoViewPlugin extends Plugin {
       useDraft: false,
       exportFormat: this.isoExportFormat,
     };
-    combineLatest([
-      this.exportService.export(options),
-      currentDocument._state === "PW"
-        ? this.exportService.export(optionsOnlyPublished)
-        : of(null),
-    ])
-      .pipe(
-        catchError(() => {
-          throw new Error(
-            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind.",
-          );
-        }),
-      )
-      .subscribe(async ([current, published]) => {
-        this.dialog.open(IsoViewComponent, {
-          data: {
-            uuid: currentDocument._uuid,
-            isoText: await current.body.text(),
-            isoTextPublished: await published?.body.text(),
-          },
-        });
-      });
+
+    this.dialog.open(IsoViewComponent, {
+      data: {
+        uuid: currentDocument._uuid,
+        isoText: this.exportService.export(options),
+        isoTextPublished:
+          currentDocument._state === "PW"
+            ? this.exportService.export(optionsOnlyPublished)
+            : of(null),
+      },
+    });
   }
 
   unregisterForm() {

@@ -18,7 +18,11 @@
  * limitations under the Licence.
  */
 import { Component, inject, Inject, OnInit } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { diffLines } from "diff";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
@@ -27,6 +31,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { ExportService } from "../../../../app/services/export.service";
 import { copyToClipboardFn } from "../../../../app/services/utils";
 import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dialog-template.module";
+import { catchError, tap } from "rxjs/operators";
+import { combineLatest, Observable, of } from "rxjs";
+import { HttpResponse } from "@angular/common/http";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -37,25 +45,46 @@ import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dia
     MatButtonToggleModule,
     MatButtonModule,
     DialogTemplateModule,
+    MatProgressSpinner,
   ],
   standalone: true,
 })
 export class IsoViewComponent implements OnInit {
-  isoText: any;
-  isoTextPublished: any;
+  isoText: string;
+  isoTextPublished: string;
+  isLoading = true;
   compareView = false;
 
   private exportService: ExportService = inject(ExportService);
   private copyToClipboardFn = copyToClipboardFn();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(
+    public dialogRef: MatDialogRef<IsoViewComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
 
   ngOnInit() {
-    this.isoText = this.data.isoText;
-    this.isoTextPublished = this.data.isoTextPublished;
-    if (this.isoTextPublished) {
-      this.calculateDiff();
-    }
+    combineLatest([
+      this.data.isoText as Observable<HttpResponse<Blob>>,
+      (this.data.isoTextPublished as Observable<HttpResponse<Blob>>) ??
+        of(null),
+    ])
+      .pipe(
+        tap(() => (this.isLoading = false)),
+        catchError(() => {
+          this.dialogRef.close();
+          throw new Error(
+            "Probleme beim Erstellen der ISO-Ansicht. Bitte stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind.",
+          );
+        }),
+      )
+      .subscribe(async ([current, published]) => {
+        this.isoText = await current.body.text();
+        this.isoTextPublished = await published?.body.text();
+        if (published) {
+          this.calculateDiff();
+        }
+      });
   }
 
   calculateDiff() {
@@ -80,6 +109,9 @@ export class IsoViewComponent implements OnInit {
   }
 
   download() {
-    this.exportService.exportXml(this.isoText, { exportName: this.data.uuid });
+    if (this.isoText)
+      this.exportService.exportXml(this.isoText, {
+        exportName: this.data.uuid,
+      });
   }
 }

@@ -19,8 +19,12 @@
             </mat-button-toggle-group>
         }
     </ng-container>
-
     <div content id="print-content" class="preview-dialog">
+        @if (isLoading) {
+            <div class="flex-row justify-content-center">
+                <mat-spinner></mat-spinner>
+            </div>
+        }
         <pre [hidden]="compareView">{{ isoText }}</pre>
         <div [hidden]="!compareView" id="diffView"></div>
     </div>
