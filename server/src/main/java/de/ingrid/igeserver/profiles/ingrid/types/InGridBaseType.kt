@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.ingrid.types
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -58,7 +57,10 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
-                AND (data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' OR data->>'parentIdentifier' = '${doc.uuid}')
+                AND (
+                    data->'service'->'coupledResources' @> '[{"uuid": "${doc.uuid}", "isExternalRef": false}]' 
+                    OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' 
+                    OR data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')))
                 )
             """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
