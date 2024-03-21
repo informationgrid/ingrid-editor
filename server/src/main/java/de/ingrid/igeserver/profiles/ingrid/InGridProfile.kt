@@ -29,6 +29,7 @@ import de.ingrid.igeserver.imports.OptimizedImportAnalysis
 import de.ingrid.igeserver.model.FacetGroup
 import de.ingrid.igeserver.model.Operator
 import de.ingrid.igeserver.model.ViewComponent
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
@@ -42,8 +43,11 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.*
+import jakarta.persistence.EntityManager
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 
 @Service
 class InGridProfile(
@@ -54,6 +58,12 @@ class InGridProfile(
     @JsonIgnore val dateService: DateService,
     @JsonIgnore val openDataCategory: OpenDataCategory
 ) : CatalogProfile {
+
+    @Autowired
+    lateinit var entityManager: EntityManager
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
+
     companion object {
         const val id = "ingrid"
     }
@@ -299,6 +309,20 @@ class InGridProfile(
             modified = dateService.now()
         }
         query.save(queryTest)
+    }
+
+    override fun initIndices() {
+        ClosableTransaction(transactionManager).use {
+            entityManager
+                .createNativeQuery(
+                    """
+                    CREATE INDEX IF NOT EXISTS parentIdentGin  ON document USING gin((data -> 'parentIdentifier'));
+                    CREATE INDEX IF NOT EXISTS coupledResourcesGin ON document USING gin((data->'service'->'coupledResources'));
+                    CREATE INDEX IF NOT EXISTS referencesGin ON document USING gin((data->'references'));
+                """.trimIndent()
+                )
+                .executeUpdate()
+        }
     }
 
     override fun getElasticsearchMapping(format: String): String {

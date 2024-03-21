@@ -31,4 +31,6 @@ interface CatalogRepository : JpaRepository<Catalog, Int> {
     fun existsByIdentifier(identifier: String): Boolean
 
     fun findAllByType(type: String): List<Catalog>
+
+    fun existsByType(type: String): Boolean
 }

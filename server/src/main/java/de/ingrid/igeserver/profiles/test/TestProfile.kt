@@ -206,6 +206,9 @@ class TestProfile : CatalogProfile {
         query.save(queryTest)
     }
 
+    override fun initIndices() {
+    }
+
     override fun getElasticsearchMapping(format: String): String {
         return ""
     }

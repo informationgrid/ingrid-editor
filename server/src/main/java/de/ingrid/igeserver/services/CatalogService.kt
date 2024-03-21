@@ -135,6 +135,7 @@ class CatalogService(
         initializeCodelists(catalogId, type)
         initializeQueries(catalogId, type)
         initializeCatalogConfig(catalogId)
+        initializeIndices(type)
     }
 
     private fun initializeCatalogConfig(catalogId: String) =
@@ -146,6 +147,8 @@ class CatalogService(
     }
 
     fun initializeQueries(catalogId: String, type: String) = this.getCatalogProfile(type).initCatalogQueries(catalogId)
+
+    fun initializeIndices(type: String) = this.getCatalogProfile(type).initIndices()
 
     fun getCatalogs(): List<Catalog> = catalogRepo.findAll()
 

@@ -51,6 +51,9 @@ interface CatalogProfile {
     fun initCatalogQueries(catalogId: String)
 
     @JsonIgnore
+    fun initIndices()
+
+    @JsonIgnore
     fun getElasticsearchMapping(format: String): String
 
     @JsonIgnore

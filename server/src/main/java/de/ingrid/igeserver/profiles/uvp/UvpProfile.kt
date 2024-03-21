@@ -127,6 +127,9 @@ class UvpProfile(
         behaviourService.save(catalogId, behaviours)
     }
 
+    override fun initIndices() {
+    }
+
     override fun getElasticsearchMapping(format: String): String {
         return {}.javaClass.getResource("/uvp/default-mapping.json")?.readText() ?: ""
     }
