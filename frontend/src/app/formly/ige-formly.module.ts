@@ -83,6 +83,7 @@ import {
   EmailValidator,
   IpValidator,
   LowercaseValidator,
+  NoSpaceValidator,
   NotEmptyArrayValidator,
   PositiveNumValidator,
   UrlValidator,
@@ -264,6 +265,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
       validators: [
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
+        { name: "no_space", validation: NoSpaceValidator },
         { name: "email", validation: EmailValidator },
         { name: "notEmptyArray", validation: NotEmptyArrayValidator },
         { name: "url", validation: UrlValidator },

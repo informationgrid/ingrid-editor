@@ -70,6 +70,12 @@ export function LowercaseValidator(
     : { lowercase: true };
 }
 
+export function NoSpaceValidator(
+  control: UntypedFormControl,
+): ValidationErrors {
+  return control.value?.indexOf(" ") === -1 ? null : { no_space: true };
+}
+
 export function patternWithMessage(
   pattern: string | RegExp,
   errorField: string,

@@ -43,7 +43,7 @@ export const getNewUserFormFields = (
           },
           // focus: true, // throws expression has changed error
           validators: {
-            validation: ["lowercase"],
+            validation: ["lowercase", "no_space"],
           },
         },
         {
