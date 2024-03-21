@@ -47,6 +47,10 @@ class DummyCatalog : CatalogProfile {
         TODO("Not yet implemented")
     }
 
+    override fun initIndices() {
+        TODO("Not yet implemented")
+    }
+
     override fun getElasticsearchMapping(format: String): String {
         TODO("Not yet implemented")
     }
