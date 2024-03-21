@@ -48,8 +48,7 @@ class SharedExport(
                 keywords = informationHmbTG.map { KeywordIso(it.key) },
                 date = "2013-08-02",
                 name = "HmbTG-Informationsgegenstand",
-                link = "http://www.tc211.org/ISO19139/resources/codeList.xml#MD_KeywordTypeCode",
-                showType = false
+                showType = true
             )
             keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
         }
