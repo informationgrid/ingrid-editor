@@ -24,12 +24,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.external.IngridIdfExporterExternalBast
 import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridIdfExporterBast
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import io.mockk.every
 
-class BastFields : GeodatasetBase() {
+class BastFieldsExternal : GeodatasetBase() {
 
     private val docSamples = mapOf(
         "GeoDataset" to "/export/ingrid/geo-dataset.minimal.sample.json",
@@ -40,74 +42,78 @@ class BastFields : GeodatasetBase() {
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
         this.exporter =
-            IngridIdfExporterBast(
+            IngridIdfExporterExternalBast(
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
                 this.documentService
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog().apply { identifier = "ingrid-bast" }
+            DummyCatalog().apply { identifier = "ingrid-bast" }
     }
 
     init {
         docSamples.forEach { (docType, docSample) ->
-            should("export project title and number to keywords for: $docType") {
+            should("not export project title and number to keywords for: $docType") {
                 val context =
                     jacksonObjectMapper()
                         .readTree(
                             """{
-                            "projectTitle": "BASt project title",
-                            "projectNumber": "BASt project number"
-                            }""".trimIndent()
-                        ) as ObjectNode
-
-                val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain projectTitleAndNumberInKeywords
-            }
-
-
-            should("export digitalTransferOptions with correct unit for: $docType") {
-                val context =
-                    jacksonObjectMapper()
-                        .readTree(
-                            """{
-                            "digitalTransferOptions": [
-                                {
-                                  "name": {
-                                    "key": "15"
-                                  },
-                                  "transferSize": {
-                                    "value": "123.4",
-                                    "unit": {
-                                      "key": "GB"
-                                    }
-                                  },
-                                  "mediumNote": "Dachboden"
-                                }
-                              ]
-                            }""".trimIndent()
+                    "projectTitle": "BASt project title",
+                    "projectNumber": "BASt project number"
+                    }"""
+                                .trimIndent()
                         ) as ObjectNode
 
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain digitalTransferOptionWithUnit
+                result shouldNotContain projectTitleAndNumberInKeywords
             }
 
-            should("export supplementalInformation for: $docType") {
+            should("not export digitalTransferOptions with correct unit for: $docType") {
                 val context =
                     jacksonObjectMapper()
                         .readTree(
                             """{
-                            "supplementalInformation": "Bemerkung zur BASt"
-                            }""".trimIndent()
+                    "digitalTransferOptions": [
+                        {
+                          "name": {
+                            "key": "15"
+                          },
+                          "transferSize": {
+                            "value": "123.4",
+                            "unit": {
+                              "key": "GB"
+                            }
+                          },
+                          "mediumNote": "Dachboden"
+                        }
+                      ]
+                    }"""
+                                .trimIndent()
                         ) as ObjectNode
 
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain supplementalInformation
+                result shouldNotContain digitalTransferOptionWithUnit
+            }
+
+            should("not export supplementalInformation for: $docType") {
+                val context =
+                    jacksonObjectMapper()
+                        .readTree(
+                            """{
+                    "supplementalInformation": "Bemerkung zur BASt"
+                    }"""
+                                .trimIndent()
+                        ) as ObjectNode
+
+                val result =
+                    exportJsonToXML(exporter, docSample, context)
+
+                result shouldNotContain supplementalInformation
             }
 
             should("export useConstraintsComments for: $docType") {
@@ -115,10 +121,11 @@ class BastFields : GeodatasetBase() {
                     jacksonObjectMapper()
                         .readTree(
                             """{
-                            "resource": {
-                                "useConstraintsComments": "BASt Nutzungshinweise"
-                            }
-                        }""".trimIndent()
+                        "resource": {
+                            "useConstraintsComments": "BASt Nutzungshinweise"
+                        }
+                    }"""
+                                .trimIndent()
                         ) as ObjectNode
 
                 val result =
