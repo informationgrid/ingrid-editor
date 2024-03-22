@@ -37,7 +37,6 @@ import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
-import org.keycloak.admin.client.resource.RolesResource
 import org.keycloak.admin.client.resource.UserResource
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
@@ -51,7 +50,10 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
-import java.net.*
+import java.net.InetSocketAddress
+import java.net.ProxySelector
+import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
@@ -64,6 +66,8 @@ import java.util.concurrent.Executors
 @Service
 @Profile("!dev")
 class KeycloakService : UserManagementService {
+    
+    val ROLE_IGE_USER = "ige-user"
 
     companion object {
         // 48h * 60min * 60s => 2 days in seconds
@@ -120,8 +124,10 @@ class KeycloakService : UserManagementService {
     override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
         try {
             initAdminClient().use {
-                val roles = it.realm().roles()
-                return getUsersWithRole(roles, "ige-user").toSet()
+                val realm = it.realm()
+                val usersWithRole = getUsersWithRole(realm).toSet()
+                val userInGroupsWithRole = getUsersInGroupsWithRole(realm).toSet()
+                return usersWithRole + userInGroupsWithRole
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
@@ -143,18 +149,35 @@ class KeycloakService : UserManagementService {
     }
 
     private fun getUsersWithRole(
-        roles: RolesResource,
-        roleName: String,
+        realm: RealmResource,
         ignoreUsers: Set<User> = emptySet()
     ): List<User> {
         return try {
-            val users = roles[roleName].getUserMembers(0, 10000)
+            val roles = realm.roles()
+            val users = roles[ROLE_IGE_USER].getUserMembers(0, 10000)
                 .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
                 .map { user -> mapUser(user) }
-            users.forEach { user -> user.role = roleName }
+            users.forEach { user -> user.role = ROLE_IGE_USER }
             users
         } catch (e: jakarta.ws.rs.NotFoundException) {
-            log.warn("No users found with role '$roleName'")
+            log.warn("No users found with role '$ROLE_IGE_USER'")
+            emptyList()
+        }
+    }
+
+    private fun getUsersInGroupsWithRole(
+        realm: RealmResource,
+        ignoreUsers: Set<User> = emptySet()
+    ): List<User> {
+        return try {
+            val groups = realm.groups()
+
+            realm.roles()[ROLE_IGE_USER].getRoleGroupMembers(0, 1000)
+                .flatMap { groups.group(it.id).members() }
+                .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
+                .map { mapUser(it) }
+        } catch (e: jakarta.ws.rs.NotFoundException) {
+            log.warn("No groups with users found with role '$ROLE_IGE_USER'")
             emptyList()
         }
     }
@@ -215,7 +238,7 @@ class KeycloakService : UserManagementService {
     override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
         try {
             return (client as KeycloakCloseableClient).realm().users()
-                .search("id:$uuid", 1,1)
+                .search("id:$uuid", 1, 1)
                 .first()
         } catch (e: NoSuchElementException) {
             throw NotFoundException.withMissingResource(uuid, "User")
@@ -303,7 +326,7 @@ class KeycloakService : UserManagementService {
             usersResource.get(userId).apply {
                 val roles = it.realm().roles()
                 val userRoles = mutableListOf(
-                    roles.get("ige-user").toRepresentation(),
+                    roles.get(ROLE_IGE_USER).toRepresentation(),
                 )
                 roles().realmLevel().add(userRoles)
 
@@ -459,7 +482,7 @@ class KeycloakService : UserManagementService {
             val roles = client.realm().roles()
             roles().realmLevel().remove(
                 listOf(
-                    roles.get("ige-user").toRepresentation()
+                    roles.get(ROLE_IGE_USER).toRepresentation()
                 )
             )
         }
@@ -467,7 +490,7 @@ class KeycloakService : UserManagementService {
 
     private fun filterRoles(roles: List<String>): List<String> {
         val ignoreRoles =
-            listOf("default-roles-ingrid", "ige-user", "offline_access", "uma_authorization")
+            listOf("default-roles-ingrid", ROLE_IGE_USER, "offline_access", "uma_authorization")
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
@@ -496,8 +519,8 @@ class KeycloakService : UserManagementService {
     }
 
     // reduced char set for more readable passwords (should only be used for one-time passwords)
-    private val letters = listOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
-    private val capitalLetters = listOf('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+    private val letters = ('a'..'z').toList()
+    private val capitalLetters = ('A'..'Z').toList()
     private val digits = ('1'..'9')
     private val specialChars = listOf('!', '#', '$', '%', '*', '+', '=', '.', '?')
     private val allChars = letters + capitalLetters + digits + specialChars
@@ -528,7 +551,7 @@ class KeycloakService : UserManagementService {
             .timeout(Duration.ofSeconds(5))
             .build()
         val http = HttpClient.newBuilder()
-            .apply { 
+            .apply {
                 if (keycloakProxyUrl != null) proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
             }
             .connectTimeout(Duration.ofSeconds(10))
