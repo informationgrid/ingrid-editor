@@ -7,7 +7,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
 @import de.ingrid.igeserver.profiles.ingrid.exporter.DisplayOperation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption

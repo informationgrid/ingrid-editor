@@ -19,9 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
 
+import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.springframework.context.annotation.Lazy
@@ -35,6 +37,16 @@ class IngridIdfExporterBast(
     catalogService: CatalogService,
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
+
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridIDFBast",
+        "Ingrid IDF Bast",
+        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-bast"),
+    )
 
     override fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
         return super.getModelTransormerClasses().toMutableMap().apply {

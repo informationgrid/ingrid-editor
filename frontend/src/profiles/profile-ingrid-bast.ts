@@ -33,11 +33,9 @@ class InGridBastComponent extends InGridComponent {
   dataCollection = inject(DataCollectionDoctypeBast);
   codelistQuery = inject(CodelistQuery);
 
-  // codelistStore = inject(CodelistStore);
-
   constructor() {
     super();
-
+    // this.isoView.isoExportFormat = "ingridISOExternalBast";
     this.isoView.isoExportFormat = "ingridISOBast";
     this.modifyFormFieldConfiguration();
   }

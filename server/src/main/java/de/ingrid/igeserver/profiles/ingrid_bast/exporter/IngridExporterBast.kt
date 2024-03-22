@@ -21,14 +21,15 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.external.IngridIdfExporterExternalBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridIdfExporterBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridLuceneExporterBast
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterExternalBast(
-    idfExporter: IngridIdfExporterExternalBast,
+class IngridExporterBast(
+    idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporterBast,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
@@ -36,9 +37,9 @@ class IngridIndexExporterExternalBast(
     override val typeInfo =
         ExportTypeInfo(
             DocumentCategory.DATA,
-            "indexInGridIDFExternalBast",
-            "Externes Portal (Bast)",
-            "Export von Ingrid Dokumenten ins IDF Format für BASt für die Anzeige im externen Portal.",
+            "indexInGridIDFBast",
+            "Internes Portal (Bast)",
+            "Export von Ingrid Dokumenten ins IDF Format für BASt für die Anzeige im internen Portal.",
             "application/json",
             "json",
             listOf("ingrid-bast"),

@@ -72,7 +72,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service?.isAtomDownload == true
     val atomDownloadURL: String?
-    val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
+    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(it.getString("transferSize.value"), createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit"))),
@@ -627,7 +627,7 @@ open class IngridModelTransformer(
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
-    var pointOfContact: List<AddressModelTransformer>
+    open var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }

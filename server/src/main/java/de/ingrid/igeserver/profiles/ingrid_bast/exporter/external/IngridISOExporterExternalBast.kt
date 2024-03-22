@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
+package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -27,6 +27,9 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.convertStringToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.transformIDFtoIso
 import de.ingrid.igeserver.profiles.ingrid_bast.exporter.IngridExporterBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.IngridExporterExternalBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridIdfExporterBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridLuceneExporterBast
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
@@ -34,16 +37,16 @@ import de.ingrid.utils.xml.XMLUtils
 import org.springframework.stereotype.Service
 
 @Service
-class IngridISOExporterBast(
-    idfExporter: IngridIdfExporterBast,
+class IngridISOExporterExternalBast(
+    idfExporter: IngridIdfExporterExternalBast,
     luceneExporter: IngridLuceneExporterBast,
     documentWrapperRepository: DocumentWrapperRepository
-) : IngridExporterBast(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterExternalBast(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "ingridISOBast",
-        "ISO 19139 Bast",
+        "ingridISOExternalBast",
+        "ISO 19139 External Bast",
         "Export von Bast Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",

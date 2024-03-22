@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter
+package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.ingrid.igeserver.exporter.CodelistTransformer
@@ -26,8 +26,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.GeodatasetTransformerBast
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.GeoserviceTransformerBast
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService

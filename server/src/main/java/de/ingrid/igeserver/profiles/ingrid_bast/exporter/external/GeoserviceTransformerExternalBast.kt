@@ -25,8 +25,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
@@ -55,16 +54,6 @@ class GeoserviceTransformerExternalBast(
 
     private val docData = doc.data
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> {
-        val bastKeywords = Thesaurus("BASt Keywords", "2024-01-01", showType = false, keywords = listOfNotNull(
-            docData.getString("projectNumber")?.let { KeywordIso(it) },
-            docData.getString("projectTitle")?.let { KeywordIso(it) }
-        ))
-        return super.getDescriptiveKeywords() + bastKeywords
-    }
-
-    override val supplementalInformation = docData.getString("supplementalInformation")
-
     override val useConstraints: List<UseConstraintTemplate> =
         super.useConstraints + if (docData.getString("useConstraintsComments") == null) emptyList()
         else listOf(
@@ -72,4 +61,6 @@ class GeoserviceTransformerExternalBast(
                 CharacterStringModel(docData.getStringOrEmpty("useConstraintsComments"), null), null, null, null
             )
         )
+
+    override val digitalTransferOptions = emptyList<DigitalTransferOption>()
 }

@@ -25,8 +25,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
@@ -55,11 +54,21 @@ class GeodatasetTransformerExternalBast(
 
     private val docData = doc.data
 
+    init {
+        pointOfContact = super.pointOfContact.filter { it.relationType?.key != "2" }
+    }
+
     override val useConstraints: List<UseConstraintTemplate> =
         super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
         else listOf(
             UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null), null, null, null
+                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
+                null,
+                null,
+                null
             )
         )
+
+    override val digitalTransferOptions = emptyList<DigitalTransferOption>()
+
 }
