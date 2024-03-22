@@ -221,6 +221,12 @@ open class IngridModelTransformer(
         }.joinToString("\",\"", "[\"", "\"]")
     }
 
+    fun getSpatialReferenceArs(): String {
+        return spatialReferences.mapNotNull {
+            it.ars
+        }.joinToString(",", "[", "]")
+    }
+
     var catalog: Catalog
     var namespace: String
 
