@@ -17,23 +17,23 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
+package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
-class GeoserviceTransformerBast(
+class DataCollectionTransformerExternalBast(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -42,7 +42,7 @@ class GeoserviceTransformerBast(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : GeodataserviceModelTransformer(
+) : DataCollectionModelTransformer(
     model,
     catalogIdentifier,
     codelists,
@@ -55,21 +55,21 @@ class GeoserviceTransformerBast(
 
     private val docData = doc.data
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> {
-        val bastKeywords = Thesaurus("BASt Keywords", "2024-01-01", showType = false, keywords = listOfNotNull(
-            docData.getString("projectNumber")?.let { KeywordIso(it) },
-            docData.getString("projectTitle")?.let { KeywordIso(it) }
-        ))
-        return super.getDescriptiveKeywords() + bastKeywords
+    init {
+        pointOfContact = super.pointOfContact.filter { it.relationType?.key != "2" }
     }
-
-    override val supplementalInformation = docData.getString("supplementalInformation")
 
     override val useConstraints: List<UseConstraintTemplate> =
         super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
         else listOf(
             UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null), null, null, null
+                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
+                null,
+                null,
+                null
             )
         )
+
+    override val digitalTransferOptions = emptyList<DigitalTransferOption>()
+
 }

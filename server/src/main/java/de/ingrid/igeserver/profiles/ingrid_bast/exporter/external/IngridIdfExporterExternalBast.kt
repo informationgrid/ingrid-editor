@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.DataCollectionTransformerBast
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
@@ -52,6 +53,7 @@ class IngridIdfExporterExternalBast(
         return super.getModelTransormerClasses().toMutableMap().apply {
             put("InGridGeoDataset", GeodatasetTransformerExternalBast::class)
             put("InGridGeoService", GeoserviceTransformerExternalBast::class)
+            put("InGridDataCollection", DataCollectionTransformerExternalBast::class)
         }
     }
 }

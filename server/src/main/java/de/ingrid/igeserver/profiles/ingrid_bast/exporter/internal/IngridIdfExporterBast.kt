@@ -52,6 +52,7 @@ class IngridIdfExporterBast(
         return super.getModelTransormerClasses().toMutableMap().apply {
             put("InGridGeoDataset", GeodatasetTransformerBast::class)
             put("InGridGeoService", GeoserviceTransformerBast::class)
+            put("InGridDataCollection", DataCollectionTransformerBast::class)
         }
     }
 }

@@ -54,13 +54,21 @@ class GeoserviceTransformerExternalBast(
 
     private val docData = doc.data
 
+    init {
+        pointOfContact = super.pointOfContact.filter { it.relationType?.key != "2" }
+    }
+
     override val useConstraints: List<UseConstraintTemplate> =
-        super.useConstraints + if (docData.getString("useConstraintsComments") == null) emptyList()
+        super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
         else listOf(
             UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("useConstraintsComments"), null), null, null, null
+                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
+                null,
+                null,
+                null
             )
         )
 
     override val digitalTransferOptions = emptyList<DigitalTransferOption>()
+
 }

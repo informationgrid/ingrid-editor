@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
@@ -33,7 +34,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
-class GeoserviceTransformerBast(
+class DataCollectionTransformerBast(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -42,7 +43,7 @@ class GeoserviceTransformerBast(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : GeodataserviceModelTransformer(
+) : DataCollectionModelTransformer(
     model,
     catalogIdentifier,
     codelists,
