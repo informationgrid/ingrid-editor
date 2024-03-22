@@ -221,11 +221,7 @@ open class IngridModelTransformer(
         }.joinToString("\",\"", "[\"", "\"]")
     }
 
-    fun getSpatialReferenceArs(): String {
-        return spatialReferences.mapNotNull {
-            it.ars
-        }.joinToString(",", "[", "]")
-    }
+    fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
     var catalog: Catalog
     var namespace: String
@@ -636,8 +632,8 @@ open class IngridModelTransformer(
     var contact: AddressModelTransformer?
 
 
-    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
-        formatter.format(Date.from(date.toInstant()))
+    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
+        if (date == null) "" else formatter.format(Date.from(date.toInstant()))
 
 
     private fun getPersonStringFromJson(address: AddressModel): String {

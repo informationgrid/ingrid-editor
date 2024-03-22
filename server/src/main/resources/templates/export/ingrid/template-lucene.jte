@@ -300,7 +300,11 @@
     "wkt_geo": ${wktJson.getFirst()},
     "wkt_geo_text": "${wktJson.getSecond()}",
     @endif
-    "spatial_ref_value.nativekey": ${page.getSpatialReferenceArs()},
+    "spatial_ref_value.nativekey": [
+    @for(var entry : ForSupport.of(page.getSpatialReferenceArs()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
     "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
     "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
