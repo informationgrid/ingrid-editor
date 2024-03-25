@@ -26,6 +26,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
@@ -169,9 +170,8 @@ class DocumentService(
         }
     }
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: Int): DocumentWrapper {
+    fun getWrapperByDocumentIdAndCatalog(id: Int): DocumentWrapper {
         try {
-//            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
             return docWrapperRepo.findById(id).get()
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
@@ -734,7 +734,7 @@ class DocumentService(
         }
 
         if (generalProperties.markInsteadOfDelete) {
-            markDocumentAsDeleted(catalogId, id)
+            markDocumentAsDeleted(id)
         } else {
             // remove all document versions which have the same ID
             docRepo.deleteAllByUuid(docData.document.uuid)
@@ -761,8 +761,8 @@ class DocumentService(
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
 
-    private fun markDocumentAsDeleted(catalogId: String, id: Int) {
-        val markedDoc = getWrapperByDocumentIdAndCatalog(catalogId, id).apply { deleted = 1 }
+    private fun markDocumentAsDeleted(id: Int) {
+        val markedDoc = getWrapperByDocumentIdAndCatalog(id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
 
@@ -1000,6 +1000,53 @@ class DocumentService(
         val docType = getDocumentType(docData.wrapper.type, profile.identifier)
         val prePublishPayload = PrePublishPayload(docType, catalogId, docData.document, docData.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
+    }
+
+    fun updateParent(catalogId: String, wrapperId: Int, newParentId: Int?) {
+        // update ACL parent
+        aclService.updateParent(wrapperId, newParentId)
+
+        // get new parent path
+        val newPath = if (newParentId == null) emptyList() else {
+            getPathFromWrapper(newParentId) + newParentId.toString()
+        }
+
+        // updateWrapper
+        val docData = getDocumentFromCatalog(catalogId, wrapperId)
+        val parent =
+            if (newParentId == null) null else getDocumentFromCatalog(catalogId, newParentId)
+
+        // check parent is published if moved dataset also has been published
+        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
+            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
+                throw ValidationException.withReason(
+                    "Parent must be published, since moved dataset is also published",
+                    errorCode = "PARENT_IS_NOT_PUBLISHED"
+                )
+            }
+        }
+
+        docData.wrapper.parent = parent?.wrapper
+        docData.wrapper.path = newPath
+
+        docWrapperRepo.save(docData.wrapper)
+
+        updatePathForAllChildren(catalogId, newPath, wrapperId)
+    }
+
+    private fun getPathFromWrapper(id: Int) =
+        getWrapperByDocumentIdAndCatalog(id).path
+
+    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
+        findChildrenWrapper(catalogId, id).hits
+            .forEach {
+                it.path = path + id.toString()
+                // FIXME: what about the path of person under an institution???
+                if (it.type == "FOLDER") {
+                    updatePathForAllChildren(catalogId, it.path, it.id!!)
+                }
+                docWrapperRepo.save(it)
+            }
     }
 }
 

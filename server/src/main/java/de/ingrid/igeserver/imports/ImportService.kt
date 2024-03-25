@@ -27,7 +27,6 @@ import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DOCUMENT_STATE
-import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import org.apache.http.entity.ContentType
@@ -277,22 +276,24 @@ class ImportService(
         counter: ImportCounter
     ) {
 
+        var existingWrapper: DocumentWrapper? = null
         handleAddressTitle(ref)
         val exists = try {
-            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
+            existingWrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
         } catch (ex: Exception) {
             false
         }
 
         val publish = options.publish || ref.forcePublish
+        val parentId = if (ref.isAddress) options.parentAddress else options.parentDocument
         if (!exists && !ref.deleted) {
-            val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
-            documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, publish)
+            documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
+            if (existingWrapper?.parent?.id !== parentId) documentService.updateParent(catalogId, ref.wrapperId, parentId)
             if (publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
