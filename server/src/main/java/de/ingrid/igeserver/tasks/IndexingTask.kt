@@ -295,6 +295,8 @@ class IndexingTask(
                         (currentThread ?: Thread.currentThread()).id,
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
+                    
+                    it.target.flush()
                 }
         } catch (ex: NoSuchElementException) {
             log.info(

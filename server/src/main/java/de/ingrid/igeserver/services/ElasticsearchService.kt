@@ -51,7 +51,7 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
                     val client = createElasticClient(it)
                     ElasticClient(
                         client,
-                        client.bulkSession(timeout = 5.seconds, callBack = itemCallBack)
+                        client.bulkSession(timeout = 30.seconds, callBack = itemCallBack)
                     )
                 }
             clientConfigMap =
