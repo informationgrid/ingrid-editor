@@ -30,7 +30,6 @@ class InGridWsvComponent extends InGridComponent {
     //this.isoView.isoExportFormat = "ingridISOBast";
     //this.modifyFormFieldConfiguration();
   }
-
 }
 
 @NgModule({
