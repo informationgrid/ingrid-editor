@@ -34,7 +34,7 @@ class EmailServiceImpl(
     appSettings: GeneralProperties
 ) {
     
-    @Value("server.servlet.context-path")
+    @Value("\${server.servlet.context-path}")
     private val contextPath: String = "/"
     
     private val appUrl: String = appSettings.host + contextPath
