@@ -63,7 +63,7 @@ class InGridPublishExport(
                 }
             }
         } catch (ex: Exception) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+            throw ClientException.withReason("Problem with Elasticsearch communication: ${ex.message}")
         }
 
         return payload

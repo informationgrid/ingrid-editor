@@ -128,7 +128,11 @@ class IndexingTask(
 
                         // make sure to write everything to elasticsearch
                         // if another indexing starts right afterward, then the previous index could still be there
-                        target.target.flush()
+                        try {
+                            target.target.flush()
+                        } catch (ex: ServerException) {
+                            notify.addAndSendMessageError(message, ex, "Error during flush: ")
+                        }
                     }
             }
         } catch (ex: InterruptedException) {

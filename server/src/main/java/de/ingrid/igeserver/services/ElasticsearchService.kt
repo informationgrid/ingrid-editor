@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.services
 
 import com.jillesvangurp.ktsearch.*
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.index.ElasticClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import kotlinx.coroutines.runBlocking
@@ -51,7 +52,7 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
                     val client = createElasticClient(it)
                     ElasticClient(
                         client,
-                        client.bulkSession(timeout = 30.seconds, callBack = itemCallBack)
+                        client.bulkSession(timeout = 30.seconds, callBack = itemCallBack, closeOnRequestError = false)
                     )
                 }
             clientConfigMap =
@@ -78,13 +79,18 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
     private val itemCallBack =
         object : BulkItemCallBack {
             override fun itemFailed(operationType: OperationType, item: BulkResponse.ItemDetails) {
-                log.error("Bulk Item Request Failed: ${operationType.name} failed ${item.id} with ${item.status}")
+                val msg =
+                    "Bulk Item Request Failed: ${operationType.name} failed ${item.id} with ${item.status}: ${item.error.toString()}"
+                log.error(msg)
+                throw ServerException.withReason(msg)
             }
 
             override fun itemOk(operationType: OperationType, item: BulkResponse.ItemDetails) {}
 
             override fun bulkRequestFailed(e: Exception, ops: List<Pair<String, String?>>) {
                 log.error("Bulk Request Failed: ${e.message}")
+                // throw exception again to prevent closing session and handle exception in our code
+                throw e
             }
         }
 
