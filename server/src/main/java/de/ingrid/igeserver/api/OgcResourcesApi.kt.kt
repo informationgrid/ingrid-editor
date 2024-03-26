@@ -1,5 +1,6 @@
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -27,23 +28,7 @@ interface OgcResourcesApi {
         @Parameter(description = "File the should be uploaded.") @RequestParam("file") file: MultipartFile,
         ): ResponseEntity<String>
 
-    @PutMapping("/collections/{collectionId}/items/{recordId}/resources/{resourceId}", consumes = ["multipart/form-data"])
-    @Operation(tags=["OGC/resources"], responses = [], summary = "Update an existing resource", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Resource updated successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
-    fun putResource(
-        @RequestHeader allHeaders: Map<String, String>,
-        principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String,
-        @Parameter(description = "Properties of a file (json object).", required = true) @RequestBody properties: String,
-        @Parameter(description = "File the should be uploaded.") @RequestParam("file") file: MultipartFile?,
-    ): ResponseEntity<String>
-
-    @DeleteMapping("/collections/{collectionId}/items/{recordId}/resources/{resourceId}", consumes = ["multipart/form-data"])
+    @DeleteMapping("/collections/{collectionId}/items/{recordId}/resources")
     @Operation(tags=["OGC/resources"], responses = [], summary = "Delete an existing resource", hidden = false )
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
@@ -54,10 +39,11 @@ interface OgcResourcesApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String
+//        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String
+        @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = true) resourceId: String,
     ): ResponseEntity<String>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/resources/{resourceId}", consumes = ["multipart/form-data"])
+    @GetMapping("/collections/{collectionId}/items/{recordId}/resources")
     @Operation(tags=["OGC/resources"], responses = [], summary = "Get a resource by ID", hidden = false )
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
@@ -68,19 +54,7 @@ interface OgcResourcesApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String
-    ): ResponseEntity<String>
+        @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = false) resourceId: String?,
+    ): ResponseEntity<JsonNode>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/resources", consumes = ["multipart/form-data"])
-    @Operation(tags=["OGC/resources"], responses = [], summary = "Get all resources of an record", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
-    fun getResourcesOfRecord(
-        @RequestHeader allHeaders: Map<String, String>,
-        principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String
-    ): ResponseEntity<String>
 }
