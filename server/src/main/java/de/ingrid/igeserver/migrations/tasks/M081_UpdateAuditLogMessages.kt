@@ -21,6 +21,7 @@ package de.ingrid.igeserver.migrations.tasks
 
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -45,7 +46,7 @@ class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
     """.trimIndent()
 
     override fun exec() {
-        setAuthentication()
+        setAdminAuthentication("Migration", "Task")
         ClosableTransaction(transactionManager).use {
             entityManager.createNativeQuery(updateSql)
                 .setParameter("cat", "data-history")

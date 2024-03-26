@@ -29,6 +29,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.bmi.BmiProfile
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -74,7 +75,7 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
             val docTypesToMigrate = listOf(
                     "BmiDoc"
             )
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
 
             docs
                     .map { it as Document }

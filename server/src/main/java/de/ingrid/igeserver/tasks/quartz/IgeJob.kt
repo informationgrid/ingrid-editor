@@ -25,10 +25,6 @@ import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.quartz.InterruptableJob
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 
 abstract class IgeJob : InterruptableJob {
 
@@ -67,13 +63,5 @@ abstract class IgeJob : InterruptableJob {
             put("errors", jacksonObjectMapper().writeValueAsString(jobInfo.errors))
             put("stage", jobInfo.stage)
         }
-    }
-
-    // TODO: Prevent multiple definitions of authentication
-    protected fun runAsCatalogAdmin(): Authentication {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken("System", "Task", listOf(SimpleGrantedAuthority("cat-admin")))
-        SecurityContextHolder.getContext().authentication = auth
-        return auth
     }
 }

@@ -48,7 +48,7 @@ class UpdateExternalCoupledResourcesTask(
 
     @Scheduled(cron = "\${cron.externalCoupledResources.expression}")
     fun updateExternalCoupledResources(): String {
-        setAdminAuthentication()
+        setAdminAuthentication("UpdateExternalCoupledResources", "Task")
         val summary = mutableMapOf<Int, Summary>()
         val urlCache = mutableMapOf<String, GetRecordUrlAnalysis>()
         getAllExternalCoupledResources().forEach {

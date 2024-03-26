@@ -276,10 +276,9 @@ class ImportService(
         counter: ImportCounter
     ) {
 
-        var existingWrapper: DocumentWrapper? = null
         handleAddressTitle(ref)
         val exists = try {
-            existingWrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
             true
         } catch (ex: Exception) {
             false
@@ -293,7 +292,7 @@ class ImportService(
         } else if (ref.deleted) {
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
-            if (existingWrapper?.parent?.id !== parentId) documentService.updateParent(catalogId, ref.wrapperId, parentId)
+            documentService.updateParent(catalogId, ref.wrapperId, parentId)
             if (publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {

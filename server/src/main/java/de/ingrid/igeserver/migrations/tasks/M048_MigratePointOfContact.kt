@@ -24,6 +24,7 @@ import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,7 +58,7 @@ class M048_MigratePointOfContact : MigrationBase("0.48") {
                 "SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'",
                 Document::class.java
             ).resultList
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
 
             docs.forEach { doc ->
                 try {

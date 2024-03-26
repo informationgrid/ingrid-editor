@@ -39,6 +39,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.tasks.quartz.IgeJob
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
@@ -79,7 +80,7 @@ class IndexingTask(
     override fun run(context: JobExecutionContext) {
         val catalogId = context.mergedJobDataMap.getString("catalogId")
 
-        runAsCatalogAdmin()
+        setAdminAuthentication("Indexing","Task")
         startIndexing(context, catalogId)
     }
 
@@ -264,7 +265,7 @@ class IndexingTask(
     ) {
         log.info("Export dataset from catalog '$catalogId': $docId")
 
-        runAsCatalogAdmin()
+        setAdminAuthentication("Indexing","Task")
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
