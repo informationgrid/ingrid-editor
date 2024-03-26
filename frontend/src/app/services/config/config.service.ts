@@ -85,7 +85,7 @@ export interface CMSPage {
 }
 
 export interface Connections {
-  connections: ConnectionInfo[];
+  connections: (ConnectionInfo | ConnectionInfoElastic)[];
 }
 
 export interface BackendConnections {
@@ -99,6 +99,17 @@ export interface ConnectionInfo {
   name: string;
   ip: string;
   port: number;
+}
+
+export interface ConnectionInfoElastic {
+  _type: "elastic";
+  id: number;
+  name: string;
+  ip: string;
+  port: number;
+  isSecure: boolean;
+  username: string;
+  password: string;
 }
 
 @Injectable({
@@ -259,7 +270,15 @@ export class ConfigService {
     return {
       connections: [
         ...this.addType("ibus", value.ibus),
-        ...this.addType("elastic", value.elasticsearch),
+        ...this.addType(
+          "elastic",
+          value.elasticsearch.map((conn) => {
+            const newConn = <ConnectionInfoElastic>conn;
+            newConn.isSecure =
+              newConn.username?.length > 0 && newConn.password?.length > 0;
+            return newConn;
+          }),
+        ),
       ],
     };
   }
