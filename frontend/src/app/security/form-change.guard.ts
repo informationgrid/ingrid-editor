@@ -168,7 +168,7 @@ export class FormChangeDeactivateGuard {
     const isAddress = type === "address";
 
     if (action === "save") {
-      const form = this.formStateService.getForm()?.value;
+      const form = this.formStateService.getForm()?.getRawValue();
       await firstValueFrom(
         this.documentService.save({
           data: form,

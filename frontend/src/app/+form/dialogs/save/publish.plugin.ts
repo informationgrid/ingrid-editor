@@ -240,7 +240,7 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .subscribe((decision) => {
         if (decision === "confirm") {
-          this.saveWithData(this.getForm().value);
+          this.saveWithData(this.getForm().getRawValue());
         } else if (decision === "plan") {
           this.showPlanPublishingDialog();
         }
@@ -282,7 +282,7 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .pipe(filter((date) => date))
       .subscribe((date) => {
-        this.saveWithData(this.getForm().value, date);
+        this.saveWithData(this.getForm().getRawValue(), date);
       });
   }
 
@@ -307,7 +307,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   revert() {
-    const doc = this.getForm().value;
+    const docId = this.getForm().value._id;
 
     const message =
       "Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?";
@@ -332,7 +332,7 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .subscribe((doRevert) => {
         if (doRevert) {
-          this.documentService.revert(doc._id, this.forAddress).subscribe({
+          this.documentService.revert(docId, this.forAddress).subscribe({
             error: (err) => {
               console.log("Error when reverting data", err);
               throw err;

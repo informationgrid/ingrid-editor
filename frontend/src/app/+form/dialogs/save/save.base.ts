@@ -100,7 +100,7 @@ export abstract class SaveBase extends Plugin {
 
   protected prepareValidationError(error) {
     if (error.error.errorCode === "VALIDATION_ERROR_FIELD") {
-      this.sessionStore.update((state) => {
+      this.sessionStore.update(() => {
         return {
           serverValidationErrors: error.error.data.fields,
         };
@@ -151,7 +151,7 @@ export abstract class SaveBase extends Plugin {
       errorCode: "JSON_SCHEMA",
     }));
 
-    this.sessionStore.update((state) => {
+    this.sessionStore.update(() => {
       return {
         serverValidationErrors: invalidFieldsErrors,
       };
@@ -180,7 +180,7 @@ export abstract class SaveBase extends Plugin {
   }
 
   private getFormDataWithVersionInfo(version: number) {
-    const data = this.getForm()?.value;
+    const data = this.getForm()?.getRawValue();
     data["_version"] = version;
     return data;
   }
