@@ -66,10 +66,8 @@ class OgcResourceService(
         val docResourceInfo = getResourceInfo(document.first, null)
 
         if (docResourceInfo.isArray) (docResourceInfo as ArrayNode).add(newResourceInfo)
-        documentService.updateDocument(principal, collectionId, document.second, document.first)
-        documentService.publishDocument(principal, collectionId, document.second, document.first, null)
-
         storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
+        documentService.publishDocument(principal, collectionId, document.second, document.first, null)
     }
 
     @Transactional
