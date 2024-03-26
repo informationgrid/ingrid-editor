@@ -1404,6 +1404,9 @@ export abstract class IngridShared extends BaseDoctype {
             codelistId: "1320",
             wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
+            expressions: {
+              "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+            },
           }),
         ],
         { fieldGroupClassName: "flex-row gap-12" },
