@@ -25,6 +25,11 @@ import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 
+export interface FieldConfigPosition {
+  fieldConfig: FormlyFieldConfig[];
+  index: number;
+}
+
 export interface Options {
   id?: string;
   wrappers?: string[];
@@ -832,6 +837,26 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
       },
     };
+  }
+
+  findFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    const index = fieldConfig.findIndex((field) => {
+      if (field.key === id) return true;
+    });
+
+    if (index !== -1) return { fieldConfig, index };
+
+    let subFound = null;
+    const anyFound = fieldConfig.some((item) => {
+      subFound = this.findFieldElementWithId(item.fieldGroup, id);
+      return subFound;
+    });
+    return subFound;
   }
 
   private initExpressions(expressions = {}) {
