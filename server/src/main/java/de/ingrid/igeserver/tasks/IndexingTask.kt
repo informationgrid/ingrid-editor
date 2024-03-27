@@ -354,6 +354,7 @@ class IndexingTask(
                     val info = IndexInfo(oldIndex, elasticsearchAlias, null)
                     it.target.delete(info, id, true)
                 }
+                it.target.flush()
             } catch (ex: Exception) {
                 throw NoElasticsearchConnectionException.withReason(
                     ex.message ?: "No connection to Elasticsearch"
