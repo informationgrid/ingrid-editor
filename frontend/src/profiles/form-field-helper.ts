@@ -238,8 +238,7 @@ export class FormFieldHelper {
     return <FormlyFieldConfig>{
       key: id,
       type: "textarea",
-      // className: id,
-      className: (options?.className ?? "flex-1") + ` ${id}`,
+      className: options?.className ?? "flex-1",
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       props: {
