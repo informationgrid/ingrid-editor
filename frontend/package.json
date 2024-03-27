@@ -34,7 +34,7 @@
     "@datorama/akita": "^8.0.1",
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^0.6.0",
-    "@geoman-io/leaflet-geoman-free": "^2.16.0",
+    "@geoman-io/leaflet-geoman-free": "^2.15.0",
     "@ngneat/dirty-check-forms": "^3.0.3",
     "@ngneat/transloco": "6.0.4",
     "@ngneat/until-destroy": "^10.0.0",
