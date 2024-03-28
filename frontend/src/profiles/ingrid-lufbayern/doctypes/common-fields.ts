@@ -9,6 +9,21 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
       wrappers: ["panel", "form-field"],
     });
   }
+  getFeesFieldConfig(): FormlyFieldConfig {
+    return this.addTextArea("fees", "Gebühren", "lfub");
+  }
+  getSupplementFieldConfig(): FormlyFieldConfig {
+    return this.addInput("supplementalInformation", "Interne Bemerkungen", {
+      wrappers: ["panel", "form-field"],
+    });
+  }
+  getUseConstraintsCommentFieldConfig(): FormlyFieldConfig {
+    return this.addTextArea(
+      "useConstraintsComment",
+      "Kommentar (Nutzungsbedingungen)",
+      "lfub",
+    );
+  }
   getInternalKeywordsFieldConfig(): FormlyFieldConfig {
     return this.addRepeatList("internalKeywords", "Interne Schlüsselwörter", {
       view: "chip",

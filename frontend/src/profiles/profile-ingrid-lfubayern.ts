@@ -59,19 +59,34 @@ class InGridLFUBayernComponent extends InGridComponent {
       docType.showAdVProductGroup = false;
 
       docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-        this.addFields(fieldConfig);
+        this.addFields(fieldConfig, docType.id);
         return fieldConfig;
       };
     });
   }
 
-  private addFields(fieldConfig: FormlyFieldConfig[]) {
+  private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
     const f = this.common.findFieldElementWithId(fieldConfig, "pointOfContact");
-    f.fieldConfig.splice(f.index + 1, 0, this.common.getGeodataFieldConfig());
+    this.addAfter(f, this.common.getGeodataFieldConfig());
 
     const f2 = this.common.findFieldElementWithId(fieldConfig, "free");
     this.addAfter(f2, this.common.getInternalKeywordsFieldConfig());
     this.addAfter(f2, this.common.getGeologicalKeywordsFieldConfig());
+
+    if (docType === "InGridGeoDataset") {
+      this.addAfter(f, this.common.getSupplementFieldConfig());
+    }
+
+    if (docType !== "InGridSpecialisedTask") {
+      this.addAfter(
+        this.common.findFieldElementWithId(fieldConfig, "orderInfo"),
+        this.common.getFeesFieldConfig(),
+      );
+      this.addAfter(
+        this.common.findFieldElementWithId(fieldConfig, "useConstraints"),
+        this.common.getUseConstraintsCommentFieldConfig(),
+      );
+    }
   }
 
   private addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
