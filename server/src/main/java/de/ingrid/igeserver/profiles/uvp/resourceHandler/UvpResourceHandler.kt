@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
 import net.pwall.json.schema.output.BasicOutput
+import net.pwall.json.schema.parser.Parser.Companion.isZero
+import org.springframework.web.multipart.MultipartFile
 
 @Profile("ogc-resources-api & uvp")
 @Service
@@ -29,25 +31,20 @@ class UvpResourceHandler(): OgcResourceHandler {
         return "uvp" == profile
     }
 
-    override fun addResource(document: Document, resourceId: String?, resourceInfo: JsonNode, files: List<MultipartFile>): Document {
-        val objectMapper = jacksonObjectMapper()
-        val resourceInfoAsString = objectMapper.writeValueAsString(resourceInfo)
-        val schema = "/uvp/schemes/refs/processing-steps-default.schema.json"
-        PreJsonSchemaValidator().validate(schema, resourceDataAsString)
-
-        val type = resourceInfo.get("type")
+    override fun addResource(document: Document, resourceId: String?, files: List<MultipartFile>): Document {
+        val type = "type"
         if(type == "publicHearing") {
-            val endDate = resourceInfo.get("publicHearingDate").get("end")
-            resourceInfo.get("considerationsDocs").forEach() {
-                val uri = it.get("downloadURL").get("uri")
-                // check if uri does not yet exist in DOCUMENT
-                if (it.get("downloadURL").get("asLink").asBoolean() == true) {
-                    // save resource (with LINK) to DOCUMENT
-                } else {
-                    // check if FILE exists -> save it
-                    // save resource to DOCUMENT
-                }
-            }
+//            val endDate = resourceInfo.get("publicHearingDate").get("end")
+//            resourceInfo.get("considerationsDocs").forEach() {
+//                val uri = it.get("downloadURL").get("uri")
+//                // check if uri does not yet exist in DOCUMENT
+//                if (it.get("downloadURL").get("asLink").asBoolean() == true) {
+//                    // save resource (with LINK) to DOCUMENT
+//                } else {
+//                    // check if FILE exists -> save it
+//                    // save resource to DOCUMENT
+//                }
+//            }
         }
 
         if(type == "decisionOfAdmission") {
@@ -90,13 +87,79 @@ class UvpResourceHandler(): OgcResourceHandler {
 
 
     override fun getResourceDetails(document: Document, resourceId: String?): JsonNode {
-        val allResources = (document.data.get("processingSteps").get(0) as ObjectNode).get("considerationDocs")
+        val allResources = document.data.get("processingSteps")
         return if(resourceId.isNullOrEmpty()) {
             allResources as ArrayNode
         } else {
-            val resourceInfo = allResources.filter { it.get("downloadURL").get("uri").textValue() == resourceId.toString() }
-            resourceInfo[0]
+            val objectMapper = ObjectMapper()
+            val matchedResources: ArrayNode = objectMapper.createArrayNode()
+            allResources.forEach() {
+                val processStep = it
+                val type = processStep.get("type").textValue()
+
+                if(type == "publicHearing") {
+                    val docTypeList: List<String> = listOf("considerationDocs")
+                    docTypeList.forEach() {
+                        val docType = it
+                        val excludedDocTypes = docTypeList.filter { it == docType }
+                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
+                        when (updatedProcessStep) {
+                            is JsonNode -> matchedResources.add(updatedProcessStep)
+                        }
+                    }
+                }
+
+                if(type == "decisionOfAdmission") {
+                    val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
+                    docTypeList.forEach() {
+                        val docType = it
+                        val excludedDocTypes = docTypeList.filter { it == docType }
+                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
+                        when (updatedProcessStep) {
+                            is JsonNode -> matchedResources.add(updatedProcessStep)
+                        }
+                    }
+                }
+
+                if(type == "publicDisclosure") {
+                    val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
+                    docTypeList.forEach() {
+                        val docType = it
+                        val excludedDocTypes = docTypeList.filter { it == docType }
+                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
+                        when (updatedProcessStep) {
+                            is JsonNode -> matchedResources.add(updatedProcessStep)
+                        }
+                    }
+                }
+
+            }
+            return matchedResources as JsonNode
         }
+    }
+
+    private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode, excludedDocTypes: List<String>): JsonNode?  {
+        excludedDocTypes.forEach() {
+            // remove unwanted doc types
+        }
+        val jsonNodeList = processStep.get(docType).filter() {
+            it.get("downloadURL").get("uri").textValue() == resourceId
+        }
+        if (jsonNodeList.size.isZero()) return null
+
+        val jsonNode: JsonNode = convertListToJsonNode(jsonNodeList)
+        (processStep as ObjectNode).replace(docType, jsonNode)
+        return processStep
+    }
+
+    fun convertListToJsonNode(listOfJsonNodes: List<JsonNode>): JsonNode {
+        val objectMapper: ObjectMapper = jacksonObjectMapper()
+        val arrayNode: ArrayNode = objectMapper.createArrayNode()
+
+        listOfJsonNodes.forEach { jsonNode ->
+            arrayNode.add(jsonNode)
+        }
+        return arrayNode
     }
 
 }

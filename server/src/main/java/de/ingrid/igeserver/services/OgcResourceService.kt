@@ -26,22 +26,14 @@ class OgcResourceService(
     ) {
 
     @Transactional
-    fun uploadResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>, properties: String) {
+    fun uploadResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
+        // validate recordId !
         apiValidationService.validateCollection(collectionId)
-        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
-        var document: Document = getDocument(collectionId, recordId)
-        val catalog = catalogService.getCatalogById(collectionId)
-        val profile = catalog.type
-        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-
-
-        val resourceInfos: JsonNode = convertStringToJsonNode(properties)
-
-        resourceInfos.forEach() {
-            val resourceInfo = it
-
-            document = resourceHandler[0].addResource(document, null, properties, files)
-        }
+//        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
+//        var document: Document = getDocument(collectionId, recordId)
+//        val catalog = catalogService.getCatalogById(collectionId)
+//        val profile = catalog.type
+//        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
 
         files.forEach() {
             val file = it
@@ -58,29 +50,25 @@ class OgcResourceService(
             storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
         }
 
-        // check explicitly for links
-        document = resourceHandler[0].addResource(document, null, properties, files)
-
-        documentService.publishDocument(principal, collectionId, docWrapperId, document, null)
+//        documentService.publishDocument(principal, collectionId, docWrapperId, document, null)
     }
 
     @Transactional
     fun deleteResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, resourceId: String) {
+        // validate recordId !
         apiValidationService.validateCollection(collectionId)
         if (storage.exists(collectionId, userID, recordId, resourceId)) {
             storage.deleteUnsavedFile(collectionId, userID,  recordId, resourceId)
         } else {
             throw ValidationException.withReason("File does not exist: $resourceId")
         }
-        val document = getDocument(collectionId, recordId)
-
-        val catalog = catalogService.getCatalogById(collectionId)
-        val profile = catalog.type
-        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-        val updatedDoc = resourceHandler[0].deleteResource(document, resourceId)
-
-        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
-        documentService.publishDocument(principal, collectionId, docWrapperId, updatedDoc, null)
+//        val document = getDocument(collectionId, recordId)
+//        val catalog = catalogService.getCatalogById(collectionId)
+//        val profile = catalog.type
+//        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
+//        val updatedDoc = resourceHandler[0].deleteResource(document, resourceId)
+//        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
+//        documentService.publishDocument(principal, collectionId, docWrapperId, updatedDoc, null)
     }
 
     fun getResource(collectionId: String, recordId: String, resourceId: String?): JsonNode {

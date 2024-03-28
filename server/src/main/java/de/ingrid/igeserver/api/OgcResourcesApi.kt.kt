@@ -24,8 +24,8 @@ interface OgcResourcesApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "Properties of a file (json object).", required = true) @RequestParam properties: String,
-        @Parameter(description = "File the should be uploaded.", required = true) @RequestParam("files") files: List<MultipartFile>,
+//        @Parameter(description = "Properties of a file (json object).", required = true) @RequestPart properties: String,
+        @Parameter(description = "File the should be uploaded.", required = true) @RequestPart files: List<MultipartFile>,
     ): ResponseEntity<String>
 
     @DeleteMapping("/collections/{collectionId}/items/{recordId}/resources")

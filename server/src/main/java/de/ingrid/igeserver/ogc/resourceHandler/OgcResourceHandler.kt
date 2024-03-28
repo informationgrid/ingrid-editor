@@ -17,7 +17,7 @@ interface OgcResourceHandler {
      * @param resourceData is information about a resource
      * @return Document with updated resource info (remove or add resource)
      */
-    fun addResource(document: Document, resourceId: String?, resourceData: String, files: List<MultipartFile>): Document // JsonNode
+    fun addResource(document: Document, resourceId: String?, files: List<MultipartFile>): Document
 
     /**
      * Request information about specific resource and/or all resources of a document.
