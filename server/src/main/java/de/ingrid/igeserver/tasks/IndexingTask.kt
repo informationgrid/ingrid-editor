@@ -345,7 +345,9 @@ class IndexingTask(
         val enumCategory = DocumentCategory.entries.first { it.value == category }
         val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, enumCategory)
 
-        configs.forEach {
+        configs
+            .filter { it.category.value == category }
+            .forEach {
             try {
                 val oldIndex =
                     it.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
