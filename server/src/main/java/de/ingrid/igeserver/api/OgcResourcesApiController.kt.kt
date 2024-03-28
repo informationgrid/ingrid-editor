@@ -24,11 +24,11 @@ class OgcResourcesApiController(
         principal: Authentication,
         collectionId: String,
         recordId: String,
-        properties: String?,
-        file: MultipartFile
+        properties: String,
+        files: List<MultipartFile>
     ): ResponseEntity<String> {
         val userID = principal.name
-        ogcResourceService.uploadResourceWithProperties(principal, userID, collectionId, recordId, file, properties?:"")
+        ogcResourceService.uploadResourceWithProperties(principal, userID, collectionId, recordId, files, properties)
         return ResponseEntity.ok().build()
     }
 

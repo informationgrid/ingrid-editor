@@ -1,6 +1,8 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandlerFactory
@@ -24,32 +26,42 @@ class OgcResourceService(
     ) {
 
     @Transactional
-    fun uploadResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, file: MultipartFile, properties: String) {
+    fun uploadResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>, properties: String) {
         apiValidationService.validateCollection(collectionId)
-
-        val resourceId = file.originalFilename
-        val fileSize = file.size
-
-        try {
-            storage.validate(collectionId, userID, recordId, resourceId, fileSize)
-        } catch (ex: Exception) {
-            throw ValidationException.withReason(ex.message)
-        }
-
-        if (storage.exists(collectionId, userID, recordId, resourceId)) {
-            throw ValidationException.withReason("File already exists: $resourceId")
-        }
-
         val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
-        val document = getDocument(collectionId, recordId)
-
+        var document: Document = getDocument(collectionId, recordId)
         val catalog = catalogService.getCatalogById(collectionId)
         val profile = catalog.type
         val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-        val updatedDoc = resourceHandler[0].addResource(document, resourceId, properties)
 
-        storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
-        documentService.publishDocument(principal, collectionId, docWrapperId, updatedDoc, null)
+
+        val resourceInfos: JsonNode = convertStringToJsonNode(properties)
+
+        resourceInfos.forEach() {
+            val resourceInfo = it
+
+            document = resourceHandler[0].addResource(document, null, properties, files)
+        }
+
+        files.forEach() {
+            val file = it
+            val resourceId = file.originalFilename!!
+            val fileSize = file.size
+            try {
+                storage.validate(collectionId, userID, recordId, resourceId, fileSize)
+            } catch (ex: Exception) {
+                throw ValidationException.withReason(ex.message)
+            }
+            if (storage.exists(collectionId, userID, recordId, resourceId)) {
+                throw ValidationException.withReason("File already exists: $resourceId")
+            }
+            storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
+        }
+
+        // check explicitly for links
+        document = resourceHandler[0].addResource(document, null, properties, files)
+
+        documentService.publishDocument(principal, collectionId, docWrapperId, document, null)
     }
 
     @Transactional
@@ -90,6 +102,11 @@ class OgcResourceService(
         } catch (error: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }
+    }
+
+    private fun convertStringToJsonNode(jsonString: String): JsonNode {
+        val objectMapper: ObjectMapper = jacksonObjectMapper()
+        return objectMapper.readTree(jsonString)
     }
 
 }

@@ -22,11 +22,11 @@ interface OgcResourcesApi {
     fun postResource(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "Properties of a file (json object).") @RequestBody properties: String?,
-        @Parameter(description = "File the should be uploaded.") @RequestParam("file") file: MultipartFile,
-        ): ResponseEntity<String>
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "Properties of a file (json object).", required = true) @RequestParam properties: String,
+        @Parameter(description = "File the should be uploaded.", required = true) @RequestParam("files") files: List<MultipartFile>,
+    ): ResponseEntity<String>
 
     @DeleteMapping("/collections/{collectionId}/items/{recordId}/resources")
     @Operation(tags=["OGC/resources"], responses = [], summary = "Delete an existing resource", hidden = false )
@@ -37,8 +37,8 @@ interface OgcResourcesApi {
     fun deleteResource(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
 //        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String
         @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = true) resourceId: String,
     ): ResponseEntity<String>
@@ -52,8 +52,8 @@ interface OgcResourcesApi {
     fun getResourceById(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier)." , required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
         @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = false) resourceId: String?,
     ): ResponseEntity<JsonNode>
 

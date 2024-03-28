@@ -3,6 +3,7 @@ package de.ingrid.igeserver.ogc.resourceHandler
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
+import org.springframework.web.multipart.MultipartFile
 
 @Profile("ogc-resources-api")
 interface OgcResourceHandler {
@@ -16,7 +17,7 @@ interface OgcResourceHandler {
      * @param resourceData is information about a resource
      * @return Document with updated resource info (remove or add resource)
      */
-    fun addResource(document: Document, resourceId: String, resourceData: String): Document // JsonNode
+    fun addResource(document: Document, resourceId: String?, resourceData: String, files: List<MultipartFile>): Document // JsonNode
 
     /**
      * Request information about specific resource and/or all resources of a document.
