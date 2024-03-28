@@ -32,6 +32,7 @@ import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -80,17 +81,17 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
         when (val hierarchyLevel = data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
-                val model = GeoserviceMapper(data, codelistService, catalogId)
+                val model = GeoserviceMapper(data, codelistService, catalogId, documentService)
                 templateEngine.render("imports/ingrid/geoservice.jte", mapOf("model" to model), output)
             }
 
             "dataset" -> {
-                val model = GeodatasetMapper(data, codelistService, catalogId)
+                val model = GeodatasetMapper(data, codelistService, catalogId, documentService)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
             
             "series" -> {
-                val model = GeodatasetMapper(data, codelistService, catalogId)
+                val model = GeodatasetMapper(data, codelistService, catalogId, documentService)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
 

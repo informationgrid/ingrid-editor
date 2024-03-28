@@ -29,15 +29,17 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
 import java.util.*
+import kotlin.collections.HashMap
 
 
-open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
+open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String, val documentService: DocumentService) {
 
     private val log = logger()
 
@@ -49,6 +51,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
+    
+    private val addressMaps = mutableMapOf<String, String>()
 
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
@@ -71,7 +75,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
-        return (mainContact + additionalContacts).map {
+        return (mainContact + additionalContacts).flatMap {
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
             val organization = it.responsibleParty?.organisationName?.value
             val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
@@ -88,19 +92,46 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 )
             ) else it.responsibleParty?.role!!
 
-            PointOfContact(
-                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
-                if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
-                communications,
-                mapRoleToContactType(role),
-                individualName == null,
-                organization,
-                individualName,
-                addressInfo,
-                positionName,
-                hoursOfService
-            )
+            // add parent organisation if exists
+            var parentAddressUuid: String? = null
+            val parent = if (organization != null && individualName != null) {
+                val parentOrganisation = findParentOrganisation(organization)
+                parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
+                    addressMaps[organization] = newUuid
+                }
+                
+                if (parentOrganisation == null) {
+                    PointOfContact(
+                        parentAddressUuid,
+                        "InGridOrganisationDoc",
+                        communications,
+                        KeyValue(),
+                        true,
+                        organization,
+                        address = addressInfo
+                    )
+                } else null
+            } else null
+            
+            val pointOfContact = PointOfContact(
+                    it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+                    if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
+                    communications,
+                    mapRoleToContactType(role),
+                    individualName == null,
+                    organization,
+                    individualName,
+                    addressInfo,
+                    positionName,
+                    hoursOfService,
+                    parentAddressUuid
+                )
+            listOfNotNull(parent, pointOfContact)
         }
+    }
+
+    private fun findParentOrganisation(name: String): String? {
+        return addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(name)
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {
@@ -787,7 +818,7 @@ data class PointOfContact(
     val address: AddressInfo? = null,
     val positionName: String = "",
     val hoursOfService: String = "",
-
+    val parent: String? = null
     )
 
 data class Communication(

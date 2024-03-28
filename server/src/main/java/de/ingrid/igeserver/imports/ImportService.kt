@@ -21,6 +21,7 @@ package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
@@ -29,6 +30,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.utils.getString
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
@@ -127,12 +129,31 @@ class ImportService(
     }
 
     private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> {
-
         return analysis
+            .map { removeReferencesWithNoType(it) }
             .flatMap { it.references + it }
             .distinctBy { Pair(it.document.uuid, it.forcePublish) }
             .sortedWith(ReferenceComparator)
 
+    }
+
+    /**
+     * References with no types are additional addresses generated from one address, e.g. parent organisation
+     * of a person
+     */
+    private fun removeReferencesWithNoType(analysis: DocumentAnalysis): DocumentAnalysis {
+        val pointOfContact = analysis.document.data.get("pointOfContact") as ArrayNode?
+        val filteredContacts = pointOfContact
+            ?.filterNot { it.getString("type.key").isNullOrEmpty() && it.getString("type.value").isNullOrEmpty() }
+
+        if (pointOfContact?.size() == filteredContacts?.size) return analysis
+        
+        analysis.document.data.set<JsonNode>(
+            "pointOfContact", jacksonObjectMapper().createArrayNode().apply {
+                filteredContacts?.map { add(it) }
+            }
+        )
+        return analysis
     }
 
     private class ReferenceComparator {
@@ -260,7 +281,7 @@ class ImportService(
         analysis.references.forEachIndexed { index, ref ->
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-            handleParent(ref, options)
+            handleParent(ref, options, catalogId)
             importReference(principal, catalogId, ref, options, counter)
         }
 
@@ -296,6 +317,7 @@ class ImportService(
             if (publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
+                // TODO: update does not update wrapper in order to set parent for an address under a new organisation
                 documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
 
                 // special case when document was deleted and had published version
@@ -362,9 +384,13 @@ class ImportService(
             documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
     }
 
-    private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions) {
+    private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions, catalogId: String) {
+        // convert UUID to database ID of wrapper
+        val explicitParent = documentInfo.document.data.getString("parentAsUuid")?.let { 
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it).id
+        }
         when (documentInfo.isAddress) {
-            true -> documentInfo.document.data.put(FIELD_PARENT, options.parentAddress)
+            true -> documentInfo.document.data.put(FIELD_PARENT, explicitParent ?: options.parentAddress)
             false -> documentInfo.document.data.put(FIELD_PARENT, options.parentDocument)
         }
     }
