@@ -50,7 +50,8 @@ class UPSHProfile(
     override val identifier = id
     override val title = "InGrid Katalog (UP-SH)"
     override val parentProfile = "ingrid"
-    
+    override val indexExportFormatID = "indexInGridIDFUPSH"
+
     init {
         isoImport.profileMapper[id] = isoImportUPSH
     }
