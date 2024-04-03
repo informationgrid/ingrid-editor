@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.IOException
 
 @Service
 @Profile("ogc-resources-api")
@@ -60,13 +62,13 @@ class OgcResourceService(
         }
     }
 
-    fun getResource(collectionId: String, recordId: String, resourceId: String?): JsonNode {
+    fun getResource(baseUrl: String, collectionId: String, recordId: String, resourceId: String?): JsonNode {
         apiValidationService.validateCollection(collectionId)
         val document = getDocument(collectionId, recordId)
         val catalog = catalogService.getCatalogById(collectionId)
         val profile = catalog.type
         val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-        return resourceHandler[0].getResourceDetails(document, resourceId)
+        return resourceHandler[0].getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
     }
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
@@ -81,4 +83,21 @@ class OgcResourceService(
         }
     }
 
+
+    fun handleResourceDownload(collectionId: String, recordId: String, resourceId: String, userID: String): StreamingResponseBody {
+        apiValidationService.validateCollection(collectionId)
+
+        // read file
+        val fileStream = StreamingResponseBody { output ->
+            try {
+                this.storage.read(collectionId, userID, recordId, resourceId).use { data ->
+                    IOUtils.copy(data, output)
+                    output.flush()
+                }
+            } catch (ex: IOException) {
+                throw NotFoundException.withMissingResource(resourceId, "file")
+            }
+        }
+        return fileStream
+    }
 }

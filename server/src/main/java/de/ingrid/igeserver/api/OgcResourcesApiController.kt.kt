@@ -9,12 +9,13 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 @RestController
 @Profile("ogc-resources-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcResourcesApiController(
-    private val ogcResourceService: OgcResourceService
+    private val ogcResourceService: OgcResourceService,
 ): OgcResourcesApi {
 
     val log = logger()
@@ -24,7 +25,6 @@ class OgcResourcesApiController(
         principal: Authentication,
         collectionId: String,
         recordId: String,
-//        properties: String,
         files: List<MultipartFile>
     ): ResponseEntity<String> {
         val userID = principal.name
@@ -44,15 +44,30 @@ class OgcResourcesApiController(
         return ResponseEntity.ok().build()
     }
 
-    override fun getResourceById(
+    override fun getResourceInformation(
         allHeaders: Map<String, String>,
         principal: Authentication,
         collectionId: String,
         recordId: String,
         resourceId: String?
     ): ResponseEntity<JsonNode> {
-        val resourceData = ogcResourceService.getResource(collectionId, recordId, resourceId)
-        return ResponseEntity.ok().body(resourceData)
+        val host = allHeaders["host"]?:""
+        val baseUrl = if ( host.contains("localhost") ) "http://$host" else "https://$host"
+
+        val resourceInformation = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId)
+        return ResponseEntity.ok().body(resourceInformation)
+    }
+
+    override fun getResourceDownload(
+        allHeaders: Map<String, String>,
+        principal: Authentication,
+        collectionId: String,
+        recordId: String,
+        resourceId: String
+    ): ResponseEntity<StreamingResponseBody> {
+        val userID = principal.name
+        val fileStream = ogcResourceService.handleResourceDownload(collectionId, recordId, resourceId, userID)
+        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"${resourceId}\"").body(fileStream)
     }
 
 

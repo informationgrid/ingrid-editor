@@ -16,7 +16,7 @@ interface OgcResourceHandler {
      * @param resourceId is URI of a resource (file uri or link uri)
      * @return JsonNode with info about resource & ArrayNode of resources of document
      */
-    fun getResourceDetails(document: Document, resourceId: String?): JsonNode
+    fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode
 
     /**
      * Delete information about specific resource.

@@ -82,13 +82,29 @@ class UvpResourceHandler(): OgcResourceHandler {
     }
 
 
-    override fun getResourceDetails(document: Document, resourceId: String?): JsonNode {
-        val allResources = document.data.get("processingSteps")
+    override fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
+
+        val allResources: JsonNode = document.data.get("processingSteps")
+        allResources.forEach() { resource ->
+            val type = resource.get("type").textValue()
+            if(type == "publicHearing") {
+                resource["considerationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+            }
+            if(type == "decisionOfAdmission") {
+                resource["approvalDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                resource["decisionDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+            }
+            if(type == "publicDisclosure") {
+                resource["furtherDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                resource["applicationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                resource["announcementDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                resource["reportsRecommendationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+            }
+        }
+
         return if(resourceId.isNullOrEmpty()) {
-            allResources as ArrayNode
+            allResources
         } else {
-            val objectMapper = ObjectMapper()
-//            val matchedResources: ArrayNode = objectMapper.createArrayNode()
             val matchedResources = mutableListOf<Any>()
             allResources.forEach() {
                 val processStep = it
@@ -96,12 +112,8 @@ class UvpResourceHandler(): OgcResourceHandler {
 
                 if(type == "publicHearing") {
                     val docTypeList: List<String> = listOf("considerationDocs")
-                    docTypeList.forEach() {
-                        val docType = it
-                        val excludedDocTypes = docTypeList.filter { it != docType }
-                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
-                        when (updatedProcessStep) {
-
+                    docTypeList.forEach() { docType ->
+                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
                             is JsonNode -> {
                                 val requestedInfo = PublicHearing(
                                     type = updatedProcessStep.get("type").textValue(),
@@ -117,9 +129,7 @@ class UvpResourceHandler(): OgcResourceHandler {
                 if(type == "decisionOfAdmission") {
                     val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
                     docTypeList.forEach() { docType ->
-                        val excludedDocTypes = docTypeList.filter { it != docType }
-                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
-                        when (updatedProcessStep) {
+                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
                             is JsonNode -> {
                                 val approvalDocs = updatedProcessStep.get("approvalDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
                                 val decisionDocs = updatedProcessStep.get("decisionDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
@@ -148,11 +158,8 @@ class UvpResourceHandler(): OgcResourceHandler {
 
                 if(type == "publicDisclosure") {
                     val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
-                    docTypeList.forEach() {
-                        val docType = it
-                        val excludedDocTypes = docTypeList.filter { it != docType }
-                        val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
-                        when (updatedProcessStep) {
+                    docTypeList.forEach() { docType ->
+                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
                             is JsonNode -> {
                                 val furtherDocs = updatedProcessStep.get("furtherDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
                                 val applicationDocs = updatedProcessStep.get("applicationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
@@ -209,9 +216,7 @@ class UvpResourceHandler(): OgcResourceHandler {
         }
     }
 
-    private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode, excludedDocTypes: List<String>): JsonNode?  {
-        excludedDocTypes.forEach() {
-        }
+    private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode): JsonNode?  {
         val jsonNodeList = processStep.get(docType).filter() {
             it.get("downloadURL").get("uri").textValue() == resourceId
         }
@@ -225,6 +230,15 @@ class UvpResourceHandler(): OgcResourceHandler {
     fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
         return objectMapper.valueToTree(listOfJsonNodes)
+    }
+
+    fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
+        val resourceId = doc["downloadURL"]["uri"].textValue()
+        val isLink = doc["downloadURL"]["asLink"].asBoolean()
+
+        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/resources/download?uri=$resourceId"
+
+        if (!isLink) (doc["downloadURL"] as ObjectNode).put("url", link)
     }
 
 }

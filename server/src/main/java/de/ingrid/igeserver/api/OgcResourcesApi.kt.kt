@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.MediaType
+import jakarta.ws.rs.core.MediaType as JakartaMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 interface OgcResourcesApi {
 
@@ -24,7 +26,6 @@ interface OgcResourcesApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-//        @Parameter(description = "Properties of a file (json object).", required = true) @RequestPart properties: String,
         @Parameter(description = "File the should be uploaded.", required = true) @RequestPart files: List<MultipartFile>,
     ): ResponseEntity<String>
 
@@ -39,22 +40,35 @@ interface OgcResourcesApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-//        @Parameter(description = "## Resource ID \n\n The Identifier of the resource." , required = true) @PathVariable("resourceId") resourceId: String
         @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = true) resourceId: String,
     ): ResponseEntity<String>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/resources")
-    @Operation(tags=["OGC/resources"], responses = [], summary = "Get a resource by ID", hidden = false )
+    @GetMapping("/collections/{collectionId}/items/{recordId}/resources", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(tags=["OGC/resources"], responses = [], summary = "Get information about resource", hidden = false )
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
         ApiResponse(responseCode = "400", description = "Invalid request")
     ])
-    fun getResourceById(
+    fun getResourceInformation(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = false) resourceId: String?,
+        @Parameter(description = "## Resource ID \n\n The Identifier of a resource. \n\n If no identifier is given, than it returns a list of all resources of a record.") @RequestParam(value = "uri", required = false) resourceId: String?,
     ): ResponseEntity<JsonNode>
+
+    @GetMapping("/collections/{collectionId}/items/{recordId}/resources/download", produces = [JakartaMediaType.APPLICATION_OCTET_STREAM])
+    @Operation(tags=["OGC/resources"], responses = [], summary = "Download resource file", hidden = false )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
+        ApiResponse(responseCode = "400", description = "Invalid request")
+    ])
+    fun getResourceDownload(
+        @RequestHeader allHeaders: Map<String, String>,
+        principal: Authentication,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = true) resourceId: String,
+    ): ResponseEntity<StreamingResponseBody>
 
 }
