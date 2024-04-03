@@ -40,7 +40,7 @@ class OgcResourcesApiController(
         resourceId: String
     ): ResponseEntity<String> {
         val userID = principal.name
-        ogcResourceService.deleteResourceWithProperties(principal, userID, collectionId, recordId, resourceId)
+        ogcResourceService.handleDeleteResource(principal, userID, collectionId, recordId, resourceId)
         return ResponseEntity.ok().build()
     }
 

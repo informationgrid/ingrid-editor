@@ -9,6 +9,8 @@ import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandlerFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
+import de.ingrid.mdek.upload.storage.impl.FileSystemItem
+import de.ingrid.mdek.upload.storage.impl.Scope
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -49,21 +51,15 @@ class OgcResourceService(
     }
 
     @Transactional
-    fun deleteResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, resourceId: String) {
-        // validate recordId !
+    fun handleDeleteResource(principal: Authentication, userID: String, collectionId: String, recordId: String, resourceId: String) {
         apiValidationService.validateCollection(collectionId)
         if (storage.exists(collectionId, userID, recordId, resourceId)) {
-            storage.deleteUnsavedFile(collectionId, userID,  recordId, resourceId)
+            val publishedFiles: List<FileSystemItem> = this.storage.list(collectionId, Scope.PUBLISHED)
+            val fileSystemItem = publishedFiles.filter() { file -> file.file == resourceId && file.path == recordId}
+            storage.delete(collectionId, fileSystemItem[0])
         } else {
             throw ValidationException.withReason("File does not exist: $resourceId")
         }
-//        val document = getDocument(collectionId, recordId)
-//        val catalog = catalogService.getCatalogById(collectionId)
-//        val profile = catalog.type
-//        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-//        val updatedDoc = resourceHandler[0].deleteResource(document, resourceId)
-//        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
-//        documentService.publishDocument(principal, collectionId, docWrapperId, updatedDoc, null)
     }
 
     fun getResource(collectionId: String, recordId: String, resourceId: String?): JsonNode {
