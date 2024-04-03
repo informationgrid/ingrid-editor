@@ -26,17 +26,12 @@ class OgcResourceService(
     ) {
 
     @Transactional
-    fun uploadResourceWithProperties(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
-        // validate recordId !
+    fun handleUploadResource(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
         apiValidationService.validateCollection(collectionId)
-//        val docWrapperId = (getDocWrapper(collectionId, recordId)).id!!
-//        var document: Document = getDocument(collectionId, recordId)
-//        val catalog = catalogService.getCatalogById(collectionId)
-//        val profile = catalog.type
-//        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
+        val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
+        val document = getDocument(collectionId, recordId)
 
-        files.forEach() {
-            val file = it
+        files.forEach() { file ->
             val resourceId = file.originalFilename!!
             val fileSize = file.size
             try {
@@ -49,8 +44,8 @@ class OgcResourceService(
             }
             storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
         }
-
-//        documentService.publishDocument(principal, collectionId, docWrapperId, document, null)
+        documentService.updateDocument(principal, collectionId, docWrapper.id!!, document)
+        documentService.publishDocument(principal, collectionId, docWrapper.id!!, document)
     }
 
     @Transactional
