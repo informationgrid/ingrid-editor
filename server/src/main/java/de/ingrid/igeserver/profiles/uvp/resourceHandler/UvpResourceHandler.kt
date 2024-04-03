@@ -5,16 +5,52 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandler
 import de.ingrid.igeserver.ogc.resourceHandler.ResourceTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
-import net.pwall.json.schema.output.BasicOutput
 import net.pwall.json.schema.parser.Parser.Companion.isZero
-import org.springframework.web.multipart.MultipartFile
+
+data class PublicHearing(
+    val type: String,
+    val considerationDocs: JsonNode,
+    val publicHearingDate: JsonNode
+)
+data class DecisionOfAdmissionDecisionDocs(
+    val type: String,
+    val decisionDate: String,
+    val decisionDocs: List<JsonNode>
+)
+data class DecisionOfAdmissionApprovalDocs(
+    val type: String,
+    val decisionDate: String,
+    val approvalDocs: List<JsonNode>
+)
+data class PublicDisclosureFurtherDocs(
+    val type: String,
+    val disclosureDate: JsonNode,
+    val furtherDocs: List<JsonNode>,
+    val furtherDocsPublishDuringDisclosure: Boolean,
+)
+data class PublicDisclosureApplicationDocs(
+    val type: String,
+    val disclosureDate: JsonNode,
+    val applicationDocs: List<JsonNode>,
+    val applicationDocsPublishDuringDisclosure: Boolean,
+)
+data class PublicDisclosureAnnouncementDocs(
+    val type: String,
+    val disclosureDate: JsonNode,
+    val announcementDocs: List<JsonNode>,
+    val announcementDocsPublishDuringDisclosure: Boolean,
+)
+data class PublicDisclosureReportsRecommendationDocs(
+    val type: String,
+    val disclosureDate: JsonNode,
+    val reportsRecommendationDocs: List<JsonNode>,
+    val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
+)
 
 @Profile("ogc-resources-api & uvp")
 @Service
@@ -31,57 +67,17 @@ class UvpResourceHandler(): OgcResourceHandler {
         return "uvp" == profile
     }
 
-    override fun addResource(document: Document, resourceId: String?, files: List<MultipartFile>): Document {
-        val type = "type"
-        if(type == "publicHearing") {
-//            val endDate = resourceInfo.get("publicHearingDate").get("end")
-//            resourceInfo.get("considerationsDocs").forEach() {
-//                val uri = it.get("downloadURL").get("uri")
-//                // check if uri does not yet exist in DOCUMENT
-//                if (it.get("downloadURL").get("asLink").asBoolean() == true) {
-//                    // save resource (with LINK) to DOCUMENT
-//                } else {
-//                    // check if FILE exists -> save it
-//                    // save resource to DOCUMENT
-//                }
-//            }
-        }
-
-        if(type == "decisionOfAdmission") {
-
-        }
-
-        if(type == "publicDisclosure") {
-
-        }
-
-        return document
-//        val objectMapper: ObjectMapper = jacksonObjectMapper().registerKotlinModule()
-//        val downloadURL: ObjectNode = objectMapper.createObjectNode().apply {
-//            put("uri", resourceId)
-//            put("value", resourceId)
-//            put("asLink", false)
-//        }
-//        val newResourceInfo: ObjectNode = objectMapper.createObjectNode().apply {
-//            put("title", resourceId)
-//            // put("validUntil", "2024-03-27T23:00:00.000Z")
-//            set<ObjectNode>("downloadURL", downloadURL)
-//        }
-//        val docResourceInfo = getResourceDetails(document, null)
-//        if (docResourceInfo.isArray) (docResourceInfo as ArrayNode).add(newResourceInfo)
-//        return document
-    }
-
     override fun deleteResource(document: Document, resourceId: String): Document {
-        val docResourceInfo = getResourceDetails(document, null)
-        val iterator = docResourceInfo.iterator()
-        while (iterator.hasNext()) {
-            val node = iterator.next()
-            val uri = node.get("downloadURL")?.get("uri")?.asText()
-            if (uri == resourceId) {
-                iterator.remove()
-            }
-        }
+        // TODO("Remove information about resource from document")
+//        val docResourceInfo = getResourceDetails(document, null)
+//        val iterator = docResourceInfo.iterator()
+//        while (iterator.hasNext()) {
+//            val node = iterator.next()
+//            val uri = node.get("downloadURL")?.get("uri")?.asText()
+//            if (uri == resourceId) {
+//                iterator.remove()
+//            }
+//        }
         return document
     }
 
@@ -92,7 +88,8 @@ class UvpResourceHandler(): OgcResourceHandler {
             allResources as ArrayNode
         } else {
             val objectMapper = ObjectMapper()
-            val matchedResources: ArrayNode = objectMapper.createArrayNode()
+//            val matchedResources: ArrayNode = objectMapper.createArrayNode()
+            val matchedResources = mutableListOf<Any>()
             allResources.forEach() {
                 val processStep = it
                 val type = processStep.get("type").textValue()
@@ -101,22 +98,50 @@ class UvpResourceHandler(): OgcResourceHandler {
                     val docTypeList: List<String> = listOf("considerationDocs")
                     docTypeList.forEach() {
                         val docType = it
-                        val excludedDocTypes = docTypeList.filter { it == docType }
+                        val excludedDocTypes = docTypeList.filter { it != docType }
                         val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
                         when (updatedProcessStep) {
-                            is JsonNode -> matchedResources.add(updatedProcessStep)
+
+                            is JsonNode -> {
+                                val requestedInfo = PublicHearing(
+                                    type = updatedProcessStep.get("type").textValue(),
+                                    publicHearingDate = updatedProcessStep.get("publicHearingDate"),
+                                    considerationDocs = updatedProcessStep.get("considerationDocs")
+                                )
+                                matchedResources.add(requestedInfo)
+                            }
                         }
                     }
                 }
 
                 if(type == "decisionOfAdmission") {
                     val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
-                    docTypeList.forEach() {
-                        val docType = it
-                        val excludedDocTypes = docTypeList.filter { it == docType }
+                    docTypeList.forEach() { docType ->
+                        val excludedDocTypes = docTypeList.filter { it != docType }
                         val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
                         when (updatedProcessStep) {
-                            is JsonNode -> matchedResources.add(updatedProcessStep)
+                            is JsonNode -> {
+                                val approvalDocs = updatedProcessStep.get("approvalDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val decisionDocs = updatedProcessStep.get("decisionDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+
+                                if (approvalDocs.isNotEmpty()) {
+                                    val requestedInfo = DecisionOfAdmissionApprovalDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        decisionDate = updatedProcessStep.get("decisionDate").textValue(),
+                                        approvalDocs = approvalDocs
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+
+                                if (decisionDocs.isNotEmpty()) {
+                                    val requestedInfo = DecisionOfAdmissionDecisionDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        decisionDate = updatedProcessStep.get("decisionDate").textValue(),
+                                        decisionDocs = decisionDocs
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+                            }
                         }
                     }
                 }
@@ -125,41 +150,81 @@ class UvpResourceHandler(): OgcResourceHandler {
                     val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
                     docTypeList.forEach() {
                         val docType = it
-                        val excludedDocTypes = docTypeList.filter { it == docType }
+                        val excludedDocTypes = docTypeList.filter { it != docType }
                         val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep, excludedDocTypes)
                         when (updatedProcessStep) {
-                            is JsonNode -> matchedResources.add(updatedProcessStep)
+                            is JsonNode -> {
+                                val furtherDocs = updatedProcessStep.get("furtherDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val applicationDocs = updatedProcessStep.get("applicationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val announcementDocs = updatedProcessStep.get("announcementDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+
+                                if (furtherDocs.isNotEmpty()) {
+                                    val requestedInfo = PublicDisclosureFurtherDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                        furtherDocs = furtherDocs,
+                                        furtherDocsPublishDuringDisclosure = updatedProcessStep.get("furtherDocsPublishDuringDisclosure").asBoolean()
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+
+                                if (applicationDocs.isNotEmpty()) {
+                                    val requestedInfo = PublicDisclosureApplicationDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                        applicationDocs = applicationDocs,
+                                        applicationDocsPublishDuringDisclosure = updatedProcessStep.get("applicationDocsPublishDuringDisclosure").asBoolean()
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+
+                                if (announcementDocs.isNotEmpty()) {
+                                    val requestedInfo = PublicDisclosureAnnouncementDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                        announcementDocs = announcementDocs,
+                                        announcementDocsPublishDuringDisclosure = updatedProcessStep.get("announcementDocsPublishDuringDisclosure").asBoolean()
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+
+                                if (reportsRecommendationDocs.isNotEmpty()) {
+                                    val requestedInfo = PublicDisclosureReportsRecommendationDocs(
+                                        type = updatedProcessStep.get("type").textValue(),
+                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                        reportsRecommendationDocs = applicationDocs,
+                                        reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.get("reportsRecommendationDocsPublishDuringDisclosure").asBoolean()
+                                    )
+                                    matchedResources.add(requestedInfo)
+                                }
+
+                            }
                         }
                     }
                 }
 
             }
-            return matchedResources as JsonNode
+            return convertListToJsonNode(matchedResources as List<Any>)
         }
     }
 
     private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode, excludedDocTypes: List<String>): JsonNode?  {
         excludedDocTypes.forEach() {
-            // remove unwanted doc types
         }
         val jsonNodeList = processStep.get(docType).filter() {
             it.get("downloadURL").get("uri").textValue() == resourceId
         }
         if (jsonNodeList.size.isZero()) return null
 
-        val jsonNode: JsonNode = convertListToJsonNode(jsonNodeList)
+        val jsonNode: JsonNode = convertListToJsonNode(jsonNodeList as List<Any>)
         (processStep as ObjectNode).replace(docType, jsonNode)
         return processStep
     }
 
-    fun convertListToJsonNode(listOfJsonNodes: List<JsonNode>): JsonNode {
+    fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
-        val arrayNode: ArrayNode = objectMapper.createArrayNode()
-
-        listOfJsonNodes.forEach { jsonNode ->
-            arrayNode.add(jsonNode)
-        }
-        return arrayNode
+        return objectMapper.valueToTree(listOfJsonNodes)
     }
 
 }
