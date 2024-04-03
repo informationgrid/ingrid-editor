@@ -1,8 +1,6 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandlerFactory
@@ -81,11 +79,6 @@ class OgcResourceService(
         } catch (error: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }
-    }
-
-    private fun convertStringToJsonNode(jsonString: String): JsonNode {
-        val objectMapper: ObjectMapper = jacksonObjectMapper()
-        return objectMapper.readTree(jsonString)
     }
 
 }

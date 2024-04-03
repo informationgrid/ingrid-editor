@@ -11,15 +11,6 @@ interface OgcResourceHandler {
     val typeInfo: ResourceTypeInfo
 
     /**
-     * Execute the resource handler for a given data string.
-     * @param document is Ige Document
-     * @param resourceId is URI of a resource (file uri or link uri)
-     * @param resourceData is information about a resource
-     * @return Document with updated resource info (remove or add resource)
-     */
-    fun addResource(document: Document, resourceId: String?, files: List<MultipartFile>): Document
-
-    /**
      * Request information about specific resource and/or all resources of a document.
      * @param document is Ige Document
      * @param resourceId is URI of a resource (file uri or link uri)
