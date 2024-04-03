@@ -2,7 +2,6 @@ package de.ingrid.igeserver.profiles.uvp.resourceHandler
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandler
@@ -235,9 +234,7 @@ class UvpResourceHandler(): OgcResourceHandler {
     fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
         val resourceId = doc["downloadURL"]["uri"].textValue()
         val isLink = doc["downloadURL"]["asLink"].asBoolean()
-
         val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/resources/download?uri=$resourceId"
-
         if (!isLink) (doc["downloadURL"] as ObjectNode).put("url", link)
     }
 

@@ -1,9 +1,12 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.services.OgcResourceService
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.http.MediaType
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @RequestMapping(path = ["/api/ogc"])
 class OgcResourcesApiController(
     private val ogcResourceService: OgcResourceService,
+    private val ogcHtmlConverterService: OgcHtmlConverterService
 ): OgcResourcesApi {
 
     val log = logger()
@@ -49,13 +53,29 @@ class OgcResourcesApiController(
         principal: Authentication,
         collectionId: String,
         recordId: String,
-        resourceId: String?
-    ): ResponseEntity<JsonNode> {
+        resourceId: String?,
+        format: String?
+    ): ResponseEntity<ByteArray> {
+        val mimeType: String
+
         val host = allHeaders["host"]?:""
         val baseUrl = if ( host.contains("localhost") ) "http://$host" else "https://$host"
 
-        val resourceInformation = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId)
-        return ResponseEntity.ok().body(resourceInformation)
+        val resourceInformation: JsonNode = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId)
+
+        val response: Any = if (format == "html") {
+            mimeType = MediaType.TEXT_HTML_VALUE
+            val infoAsObjectNode = ogcResourceService.prepareForHtmlExport(resourceInformation)
+            ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Resources")
+        } else {
+            mimeType = MediaType.APPLICATION_JSON_VALUE
+            resourceInformation
+        }
+
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add("Content-Type", mimeType)
+
+        return ResponseEntity.ok().headers(responseHeaders).body(response.toString().toByteArray())
     }
 
     override fun getResourceDownload(

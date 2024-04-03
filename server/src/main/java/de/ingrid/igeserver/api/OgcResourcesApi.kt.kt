@@ -1,6 +1,5 @@
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -43,7 +42,7 @@ interface OgcResourcesApi {
         @Parameter(description = "## Resource ID \n\n The Identifier of the resource.") @RequestParam(value = "uri", required = true) resourceId: String,
     ): ResponseEntity<String>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/resources", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/collections/{collectionId}/items/{recordId}/resources", produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
     @Operation(tags=["OGC/resources"], responses = [], summary = "Get information about resource", hidden = false )
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Resource deleted successfully"),
@@ -55,7 +54,9 @@ interface OgcResourcesApi {
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
         @Parameter(description = "## Resource ID \n\n The Identifier of a resource. \n\n If no identifier is given, than it returns a list of all resources of a record.") @RequestParam(value = "uri", required = false) resourceId: String?,
-    ): ResponseEntity<JsonNode>
+        @Parameter(description = "## Format: Response Encoding: \n **Custom Parameter** \n\n ### Supported formats: \n\n• get response in JSON with value `json` (default) \n\n• get response in HTML with value `html`")
+        @RequestParam(value = "f", required = false, defaultValue = "json") format: String?,
+    ): ResponseEntity<ByteArray>
 
     @GetMapping("/collections/{collectionId}/items/{recordId}/resources/download", produces = [JakartaMediaType.APPLICATION_OCTET_STREAM])
     @Operation(tags=["OGC/resources"], responses = [], summary = "Download resource file", hidden = false )

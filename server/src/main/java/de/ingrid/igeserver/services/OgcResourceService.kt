@@ -1,6 +1,9 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandlerFactory
@@ -9,7 +12,13 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.Scope
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import org.apache.commons.io.IOUtils
 import org.springframework.context.annotation.Profile
+import org.springframework.core.io.Resource
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -99,5 +108,13 @@ class OgcResourceService(
             }
         }
         return fileStream
+    }
+
+    fun prepareForHtmlExport(json: JsonNode): ObjectNode {
+        val objectMapper = ObjectMapper()
+        val arrayNode = objectMapper.readTree(json.toString()) as ArrayNode
+        val objectNode = objectMapper.createObjectNode()
+        objectNode.putArray("processingStep").addAll(arrayNode);
+        return objectNode
     }
 }
