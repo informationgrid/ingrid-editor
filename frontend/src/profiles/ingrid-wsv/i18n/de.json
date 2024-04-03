@@ -1,0 +1,10 @@
+{
+  "menu": {
+    "application": "WSV Metadaten",
+    "logo": "assets/profiles/ingrid-wsv/assets/icons/wsv-logo.png"
+  },
+  "dashboard": {
+    "welcome": "Willkommen im WSV Metadaten Editor",
+    "application": "WSV Metadaten"
+  }
+}
