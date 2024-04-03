@@ -42,6 +42,8 @@ class OgcResourceService(
         val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
         val document = getDocument(collectionId, recordId)
 
+        if (! document.isLatest) throw ClientException.withReason("Found unpublished Record. Publish record before uploading any resources.")
+
         files.forEach() { file ->
             val resourceId = file.originalFilename!!
             val fileSize = file.size
