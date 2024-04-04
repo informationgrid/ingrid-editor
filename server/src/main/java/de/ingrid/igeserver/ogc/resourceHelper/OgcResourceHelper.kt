@@ -1,12 +1,11 @@
-package de.ingrid.igeserver.ogc.resourceHandler
+package de.ingrid.igeserver.ogc.resourceHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
-import org.springframework.web.multipart.MultipartFile
 
 @Profile("ogc-resources-api")
-interface OgcResourceHandler {
+interface OgcResourceHelper {
 
     val typeInfo: ResourceTypeInfo
 
@@ -35,8 +34,8 @@ interface OgcResourceHandler {
     fun deleteResource(document: Document, resourceId: String): Document
 
     /**
-     * Check if a given resource can be handled by this resource handler.
-     * This is needed to automatically determine which resource handler can be used.
+     * Check if a given resource can be handled by this resource helper.
+     * This is needed to automatically determine which resource helper can be used.
      *
      * @param profile is the file type
      * @param fileContent is the content of the file as a simple string

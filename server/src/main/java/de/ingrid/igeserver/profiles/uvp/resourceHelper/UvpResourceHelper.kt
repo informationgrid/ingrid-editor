@@ -1,11 +1,11 @@
-package de.ingrid.igeserver.profiles.uvp.resourceHandler
+package de.ingrid.igeserver.profiles.uvp.resourceHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandler
-import de.ingrid.igeserver.ogc.resourceHandler.ResourceTypeInfo
+import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelper
+import de.ingrid.igeserver.ogc.resourceHelper.ResourceTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -53,12 +53,12 @@ data class PublicDisclosureReportsRecommendationDocs(
 
 @Profile("ogc-resources-api & uvp")
 @Service
-class UvpResourceHandler(): OgcResourceHandler {
+class UvpResourceHelper(): OgcResourceHelper {
     override val typeInfo: ResourceTypeInfo
         get() = ResourceTypeInfo(
             "uvp",
             "UVP",
-            "UVP Resource Handler",
+            "UVP Resource Helper",
             emptyList()
         )
 

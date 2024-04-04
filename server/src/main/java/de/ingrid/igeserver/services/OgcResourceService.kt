@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
-import de.ingrid.igeserver.ogc.resourceHandler.OgcResourceHandlerFactory
+import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelperFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
@@ -29,7 +29,7 @@ class OgcResourceService(
     private val catalogService: CatalogService,
     private val documentService: DocumentService,
     private val apiValidationService: ApiValidationService,
-    private val ogcResourceHandlerFactory: OgcResourceHandlerFactory
+    private val ogcResourceHelperFactory: OgcResourceHelperFactory
     ) {
 
     @Transactional
@@ -38,14 +38,14 @@ class OgcResourceService(
         val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
         val document = getDocument(collectionId, recordId)
         val profile = (catalogService.getCatalogProfile(collectionId)).identifier
-        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
+        val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
 
         if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any resources.")
 
         files.forEach() { file ->
             // First: Check if all files a listed in document.
             val resourceId = file.originalFilename!!
-            val resourceExistsInDoc: Boolean = resourceHandler[0].resourceExistsInDoc(document, resourceId)
+            val resourceExistsInDoc: Boolean = resourceHelper.resourceExistsInDoc(document, resourceId)
             resourceExistsInDoc.ifFalse {
                 throw ValidationException.withReason("Failed to save resources. Resource '$resourceId' is not part of record. Update record before uploading any resources.")
             }
@@ -87,8 +87,8 @@ class OgcResourceService(
         val document = getDocument(collectionId, recordId)
         val catalog = catalogService.getCatalogById(collectionId)
         val profile = catalog.type
-        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
-        return resourceHandler[0].getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
+        val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
+        return resourceHelper.getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
     }
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
