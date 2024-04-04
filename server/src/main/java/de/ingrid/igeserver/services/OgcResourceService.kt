@@ -12,14 +12,9 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.Scope
-import jakarta.ws.rs.core.MediaType
-import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
-import org.springframework.core.io.Resource
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -111,8 +106,6 @@ class OgcResourceService(
 
     fun handleResourceDownload(collectionId: String, recordId: String, resourceId: String, userID: String): StreamingResponseBody {
         apiValidationService.validateCollection(collectionId)
-
-        // read file
         val fileStream = StreamingResponseBody { output ->
             try {
                 this.storage.read(collectionId, userID, recordId, resourceId).use { data ->
