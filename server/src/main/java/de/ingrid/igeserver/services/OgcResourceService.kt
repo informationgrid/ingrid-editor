@@ -123,7 +123,7 @@ class OgcResourceService(
         val objectMapper = ObjectMapper()
         val arrayNode = objectMapper.readTree(json.toString()) as ArrayNode
         val objectNode = objectMapper.createObjectNode()
-        objectNode.putArray("processingStep").addAll(arrayNode);
+        objectNode.putArray("item").addAll(arrayNode);
         return objectNode
     }
 }
