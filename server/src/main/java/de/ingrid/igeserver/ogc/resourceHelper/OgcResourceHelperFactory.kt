@@ -35,7 +35,7 @@ class OgcResourceHelperFactory() {
 
     private fun handleEmptyOrMultipleResourceHelper(responsibleImporter: List<OgcResourceHelper>, profile: String) {
         if (responsibleImporter.isEmpty()) {
-            throw ConfigurationException.withReason("No importer found for profile type '$profile'.")
+            throw ConfigurationException.withReason("No resource helper found for profile type '$profile'.")
         } else if (responsibleImporter.size > 1) {
             val importerNames = responsibleImporter.joinToString(",") { it.typeInfo.name }
             throw ConfigurationException.withReason("More than one resource helper found for profile type '$profile': '$importerNames'.")
