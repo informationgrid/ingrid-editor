@@ -26,14 +26,6 @@ interface OgcResourceHelper {
     fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode
 
     /**
-     * Delete information about specific resource.
-     * @param document is Ige Document
-     * @param resourceId is URI of a resource (file uri or link uri)
-     * @return Document without resource (resource with resourceId has been removed)
-     */
-    fun deleteResource(document: Document, resourceId: String): Document
-
-    /**
      * Check if a given resource can be handled by this resource helper.
      * This is needed to automatically determine which resource helper can be used.
      *

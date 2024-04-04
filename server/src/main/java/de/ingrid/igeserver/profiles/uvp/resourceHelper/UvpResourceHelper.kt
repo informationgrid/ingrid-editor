@@ -66,20 +66,6 @@ class UvpResourceHelper(): OgcResourceHelper {
         return "uvp" == profile
     }
 
-    override fun deleteResource(document: Document, resourceId: String): Document {
-        // TODO("Remove information about resource from document")
-//        val docResourceInfo = getResourceDetails(document, null)
-//        val iterator = docResourceInfo.iterator()
-//        while (iterator.hasNext()) {
-//            val node = iterator.next()
-//            val uri = node.get("downloadURL")?.get("uri")?.asText()
-//            if (uri == resourceId) {
-//                iterator.remove()
-//            }
-//        }
-        return document
-    }
-
     override fun resourceExistsInDoc(document: Document, resourceId: String): Boolean {
         val docData: String = document.data.toString()
         val string = "\"$resourceId\","
@@ -232,12 +218,12 @@ class UvpResourceHelper(): OgcResourceHelper {
         return processStep
     }
 
-    fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
+    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
         return objectMapper.valueToTree(listOfJsonNodes)
     }
 
-    fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
+    private fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
         val resourceId = doc["downloadURL"]["uri"].textValue()
         val isLink = doc["downloadURL"]["asLink"].asBoolean()
         val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/resources/download?uri=$resourceId"
