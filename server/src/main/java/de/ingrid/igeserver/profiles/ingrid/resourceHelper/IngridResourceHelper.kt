@@ -10,7 +10,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-resources-api & bmi")
+@Profile("ogc-resources-api & ingrid")
 @Service
 class IngridResourceHelper(): OgcResourceHelper {
 
