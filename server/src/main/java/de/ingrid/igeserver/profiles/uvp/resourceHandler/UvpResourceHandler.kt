@@ -80,6 +80,12 @@ class UvpResourceHandler(): OgcResourceHandler {
         return document
     }
 
+    override fun resourceExistsInDoc(document: Document, resourceId: String): Boolean {
+        val docData: String = document.data.toString()
+        val string = "\"$resourceId\","
+        return docData.contains(string)
+    }
+
 
     override fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
 

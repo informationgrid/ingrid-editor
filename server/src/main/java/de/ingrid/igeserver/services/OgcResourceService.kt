@@ -15,6 +15,7 @@ import de.ingrid.mdek.upload.storage.impl.Scope
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
+import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
@@ -41,10 +42,22 @@ class OgcResourceService(
         apiValidationService.validateCollection(collectionId)
         val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
         val document = getDocument(collectionId, recordId)
+        val profile = (catalogService.getCatalogProfile(collectionId)).identifier
+        val resourceHandler = ogcResourceHandlerFactory.getResourceHandler(profile)
 
-        if (! document.isLatest) throw ClientException.withReason("Found unpublished Record. Publish record before uploading any resources.")
+        if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any resources.")
 
         files.forEach() { file ->
+            // First: Check if all files a listed in document.
+            val resourceId = file.originalFilename!!
+            val resourceExistsInDoc: Boolean = resourceHandler[0].resourceExistsInDoc(document, resourceId)
+            resourceExistsInDoc.ifFalse {
+                throw ValidationException.withReason("Failed to save resources. Resource '$resourceId' is not part of record. Update record before uploading any resources.")
+            }
+        }
+
+        files.forEach() { file ->
+            // Second: If all files are listed in document, save files.
             val resourceId = file.originalFilename!!
             val fileSize = file.size
             try {
@@ -57,6 +70,7 @@ class OgcResourceService(
             }
             storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
         }
+
         documentService.updateDocument(principal, collectionId, docWrapper.id!!, document)
         documentService.publishDocument(principal, collectionId, docWrapper.id!!, document)
     }

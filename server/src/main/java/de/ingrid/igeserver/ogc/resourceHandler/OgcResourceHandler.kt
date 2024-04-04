@@ -11,6 +11,14 @@ interface OgcResourceHandler {
     val typeInfo: ResourceTypeInfo
 
     /**
+     * Check if a resource is listed in document.
+     * @Param document is Ige Document
+     * @param resourceId is URI of resource (file uri or link uri)
+     * @return true if resourceId is listed in document
+     */
+    fun resourceExistsInDoc(document: Document, resourceId: String): Boolean
+
+    /**
      * Request information about specific resource and/or all resources of a document.
      * @param document is Ige Document
      * @param resourceId is URI of a resource (file uri or link uri)
