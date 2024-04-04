@@ -36,6 +36,8 @@ It also disables Keycloak.
 
 | ogc-api | Support for OGC API for Records
 
+| ogc-resources-api | Support for resources handling in context of OGC API (upload, delete, download files and get info about files)
+
 | csw-t | Support for CSW Transactions
 
 |===
