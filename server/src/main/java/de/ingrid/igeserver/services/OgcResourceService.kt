@@ -83,7 +83,7 @@ class OgcResourceService(
             val fileSystemItem = publishedFiles.filter() { file -> file.file == resourceId && file.path == recordId}
             storage.delete(collectionId, fileSystemItem[0])
         } else {
-            throw ValidationException.withReason("File does not exist: $resourceId")
+            throw NotFoundException.withMissingResource(resourceId, "file")
         }
     }
 
