@@ -37,7 +37,7 @@ class OgcResourceService(
         apiValidationService.validateCollection(collectionId)
         val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
         val document = getDocument(collectionId, recordId)
-        val profile = (catalogService.getCatalogProfile(collectionId)).identifier
+        val profile = (catalogService.getCatalogById(collectionId)).type
         val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
 
         if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any resources.")
@@ -85,8 +85,7 @@ class OgcResourceService(
     fun getResource(baseUrl: String, collectionId: String, recordId: String, resourceId: String?): JsonNode {
         apiValidationService.validateCollection(collectionId)
         val document = getDocument(collectionId, recordId)
-        val catalog = catalogService.getCatalogById(collectionId)
-        val profile = catalog.type
+        val profile = (catalogService.getCatalogById(collectionId)).type
         val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
         return resourceHelper.getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
     }
