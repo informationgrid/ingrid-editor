@@ -61,7 +61,7 @@ class IndexTargetWorker(
 ) {
 
     val log = logger()
-    private val categoryAlias = indexService.getIndexIdentifier(plugInfo.alias, config.category)
+    private val categoryAlias = plugInfo.alias
 
     fun indexAll() {
 
@@ -115,9 +115,9 @@ class IndexTargetWorker(
 
     private fun indexPrePhase(): Pair<String?, String>? {
         return try {
-            val newIndex = IndexService.getNextIndexName(categoryAlias, "", plugInfo.alias)
+            val newIndex = IndexService.getNextIndexName(categoryAlias)
 
-            val oldIndex = config.target.getIndexNameFromAliasName(plugInfo.alias, categoryAlias)
+            val oldIndex = config.target.getIndexNameFromAliasName(categoryAlias)
             config.target.createIndex(
                 newIndex,
                 if (config.category == DocumentCategory.ADDRESS) "address" else "base",

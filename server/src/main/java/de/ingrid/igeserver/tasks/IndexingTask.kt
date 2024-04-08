@@ -173,7 +173,7 @@ class IndexingTask(
             codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident")
 
         return IPlugInfo(
-            getElasticsearchAliasFromCatalog(catalog),
+            getElasticsearchAliasFromCatalog(catalog, category),
             null,
             "???",
             category.value,
@@ -258,8 +258,8 @@ class IndexingTask(
         }
     }
 
-    private fun getElasticsearchAliasFromCatalog(catalog: Catalog) =
-        catalog.settings.config.elasticsearchAlias ?: catalog.identifier
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory) =
+        (catalog.settings.config.elasticsearchAlias ?: catalog.identifier) + "_" + category.value
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
@@ -274,7 +274,7 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category)
 
         try {
             configs
@@ -315,11 +315,10 @@ class IndexingTask(
         category: DocumentCategory,
         elasticsearchAlias: String
     ): IndexInfo {
-        val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, category)
         var currentIndex =
-            exporter.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
+            exporter.target.getIndexNameFromAliasName(elasticsearchAlias)
         if (currentIndex == null) {
-            currentIndex = IndexService.getNextIndexName(categoryAlias, "", elasticsearchAlias)
+            currentIndex = IndexService.getNextIndexName(elasticsearchAlias)
             exporter.target.createIndex(
                 currentIndex,
                 if (exporter.category == DocumentCategory.ADDRESS) "address" else "base",
@@ -341,16 +340,14 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog)
         val enumCategory = DocumentCategory.entries.first { it.value == category }
-        val categoryAlias = indexService.getIndexIdentifier(elasticsearchAlias, enumCategory)
+        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, enumCategory)
 
         configs
             .filter { it.category.value == category }
             .forEach {
             try {
-                val oldIndex =
-                    it.target.getIndexNameFromAliasName(elasticsearchAlias, categoryAlias)
+                val oldIndex = it.target.getIndexNameFromAliasName(elasticsearchAlias)
 
                 if (oldIndex != null && it.target.indexExists(oldIndex)) {
                     val info = IndexInfo(oldIndex, elasticsearchAlias, null)
