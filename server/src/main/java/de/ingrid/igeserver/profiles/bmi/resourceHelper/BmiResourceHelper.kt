@@ -7,12 +7,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelper
 import de.ingrid.igeserver.ogc.resourceHelper.ResourceTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.mdek.upload.storage.Storage
+import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Profile("ogc-resources-api & bmi")
 @Service
-class BmiResourceHelper(): OgcResourceHelper {
+class BmiResourceHelper(
+    private val storage: Storage
+): OgcResourceHelper {
 
     override val typeInfo: ResourceTypeInfo
         get() = ResourceTypeInfo(
@@ -26,15 +30,12 @@ class BmiResourceHelper(): OgcResourceHelper {
         return "bmi" == profile
     }
 
-    override fun resourceExistsInDoc(document: Document, resourceId: String): Boolean {
-        val docData: String = document.data.toString()
-        val string = "\"$resourceId\","
-        return docData.contains(string)
-    }
-
-    override fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
+    override fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
         val allResources = document.data["distributions"]
-        allResources.forEach() { resource -> addLinkToResources( baseUrl, collectionId, recordId, resource )}
+
+        if (!baseUrl.isNullOrEmpty()) {
+            allResources.forEach() { resource -> addLinkToResources( baseUrl, collectionId, recordId, resource )}
+        }
 
         return if (resourceId.isNullOrEmpty()) {
             allResources
@@ -42,6 +43,26 @@ class BmiResourceHelper(): OgcResourceHelper {
             val filteredResources = allResources.filter() { it["link"]["uri"].textValue() == resourceId }
             convertListToJsonNode(filteredResources)
         }
+    }
+
+    override fun searchForMissingFiles(
+        resources: JsonNode,
+        collectionId: String,
+        userID: String,
+        recordId: String,
+        resourceId: String?
+    ): List<String> {
+        val missingFiles: MutableList<String> = mutableListOf()
+
+        resources.forEach() { resource ->
+            val currentResourceId = resource["link"]["uri"].textValue()
+            val isLink = resource["link"]["asLink"].asBoolean()
+            isLink.ifFalse {
+                val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+            }
+        }
+        return missingFiles
     }
 
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {

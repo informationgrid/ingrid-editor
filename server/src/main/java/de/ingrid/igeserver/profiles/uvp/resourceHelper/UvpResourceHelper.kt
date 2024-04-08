@@ -7,9 +7,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelper
 import de.ingrid.igeserver.ogc.resourceHelper.ResourceTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import net.pwall.json.schema.parser.Parser.Companion.isZero
+import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 
 data class PublicHearing(
     val type: String,
@@ -53,7 +55,9 @@ data class PublicDisclosureReportsRecommendationDocs(
 
 @Profile("ogc-resources-api & uvp")
 @Service
-class UvpResourceHelper(): OgcResourceHelper {
+class UvpResourceHelper(
+    private val storage: Storage
+): OgcResourceHelper {
     override val typeInfo: ResourceTypeInfo
         get() = ResourceTypeInfo(
             "uvp",
@@ -66,30 +70,27 @@ class UvpResourceHelper(): OgcResourceHelper {
         return "uvp" == profile
     }
 
-    override fun resourceExistsInDoc(document: Document, resourceId: String): Boolean {
-        val docData: String = document.data.toString()
-        val string = "\"$resourceId\","
-        return docData.contains(string)
-    }
+    override fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
 
-
-    override fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
 
         val allResources: JsonNode = document.data.get("processingSteps")
-        allResources.forEach() { resource ->
-            val type = resource.get("type").textValue()
-            if(type == "publicHearing") {
-                resource["considerationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-            }
-            if(type == "decisionOfAdmission") {
-                resource["approvalDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                resource["decisionDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-            }
-            if(type == "publicDisclosure") {
-                resource["furtherDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                resource["applicationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                resource["announcementDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                resource["reportsRecommendationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+
+        if (!baseUrl.isNullOrEmpty()) {
+            allResources.forEach() { resource ->
+                val type = resource.get("type").textValue()
+                if(type == "publicHearing") {
+                    resource["considerationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                }
+                if(type == "decisionOfAdmission") {
+                    resource["approvalDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    resource["decisionDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                }
+                if(type == "publicDisclosure") {
+                    resource["furtherDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    resource["applicationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    resource["announcementDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    resource["reportsRecommendationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                }
             }
         }
 
@@ -205,6 +206,78 @@ class UvpResourceHelper(): OgcResourceHelper {
             }
             return convertListToJsonNode(matchedResources as List<Any>)
         }
+    }
+
+    override fun searchForMissingFiles(resources: JsonNode, collectionId: String, userID: String, recordId: String, resourceId: String?): List<String> {
+        val missingFiles: MutableList<String> = mutableListOf()
+
+        resources.forEach() { resource ->
+            val type = resource.get("type").textValue()
+            if(type == "publicHearing") {
+                resource["considerationDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+            }
+            if(type == "decisionOfAdmission") {
+                resource["approvalDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+                resource["decisionDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+            }
+            if(type == "publicDisclosure") {
+                resource["furtherDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+                resource["applicationDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+                resource["announcementDocs"].forEach() { doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+                resource["reportsRecommendationDocs"].forEach() {doc ->
+                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
+                    isLink.ifFalse {
+                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
+                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                    }
+                }
+            }
+        }
+
+        return missingFiles
     }
 
     private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode): JsonNode?  {

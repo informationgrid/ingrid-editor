@@ -12,8 +12,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.Scope
+import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.apache.commons.io.IOUtils
-import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -45,10 +45,10 @@ class OgcResourceService(
         files.forEach() { file ->
             // First: Check if all files a listed in document.
             val resourceId = file.originalFilename!!
-            val resourceExistsInDoc: Boolean = resourceHelper.resourceExistsInDoc(document, resourceId)
-            resourceExistsInDoc.ifFalse {
-                throw ValidationException.withReason("Failed to save resources. Resource '$resourceId' is not part of record. Update record before uploading any resources.")
-            }
+            val resource = resourceHelper.getResourceDetails(null, document, collectionId, recordId, resourceId)
+            val sizeOfResource = resource.size()
+            if (sizeOfResource.isZero()) throw ValidationException.withReason("Failed to save resources. Resource '$resourceId' is not part of record. Update record before uploading any resources.")
+            if (sizeOfResource > 1) throw ValidationException.withReason("Failed to save resource. Resource '$resourceId' is listed $sizeOfResource times in document.")
         }
 
         files.forEach() { file ->
@@ -82,12 +82,22 @@ class OgcResourceService(
         }
     }
 
-    fun getResource(baseUrl: String, collectionId: String, recordId: String, resourceId: String?): JsonNode {
+    fun getResource(baseUrl: String, collectionId: String, recordId: String, resourceId: String?, userID: String): JsonNode {
         apiValidationService.validateCollection(collectionId)
         val document = getDocument(collectionId, recordId)
         val profile = (catalogService.getCatalogById(collectionId)).type
         val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
-        return resourceHelper.getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
+        val resources = resourceHelper.getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
+
+        if (resources.size() == 0 && !resourceId.isNullOrEmpty()) {
+            // If specific resource with resourceID was not found in DOCUMENT
+            throw NotFoundException.withMissingResource(resourceId, "resource/file")
+        }
+
+        val missingFiles = resourceHelper.searchForMissingFiles(resources, collectionId, userID, recordId, resourceId)
+        if (missingFiles.isNotEmpty()) throw ValidationException.withReason(data = "Following resources are part of document but files are missing: $missingFiles" )
+
+        return resources
     }
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {

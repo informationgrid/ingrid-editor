@@ -56,12 +56,13 @@ class OgcResourcesApiController(
         resourceId: String?,
         format: String?
     ): ResponseEntity<ByteArray> {
+        val userID = principal.name
         val mimeType: String
 
         val host = allHeaders["host"]?:""
         val baseUrl = if ( host.contains("localhost") ) "http://$host" else "https://$host"
 
-        val resourceInformation: JsonNode = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId)
+        val resourceInformation: JsonNode = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId, userID)
 
         val response: Any = if (format == "html") {
             mimeType = MediaType.TEXT_HTML_VALUE

@@ -10,20 +10,23 @@ interface OgcResourceHelper {
     val typeInfo: ResourceTypeInfo
 
     /**
-     * Check if a resource is listed in document.
-     * @Param document is Ige Document
-     * @param resourceId is URI of resource (file uri or link uri)
-     * @return true if resourceId is listed in document
-     */
-    fun resourceExistsInDoc(document: Document, resourceId: String): Boolean
-
-    /**
      * Request information about specific resource and/or all resources of a document.
      * @param document is Ige Document
      * @param resourceId is URI of a resource (file uri or link uri)
      * @return JsonNode with info about resource & ArrayNode of resources of document
      */
-    fun getResourceDetails(baseUrl: String, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode
+    fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode
+
+    /**
+     * Check if files exist AND if resources are listed in document.
+     * @param resources JsonNode with info about resource & ArrayNode of resources of document
+     * @param collectionId is catalog identifier
+     * @param userID is user identifier
+     * @param recordId is document identifier
+     * @param resourceId is URI of a resource (file uri or link uri)
+     * @return List of missing files (URIs).
+     */
+    fun searchForMissingFiles(resources: JsonNode, collectionId: String, userID: String, recordId: String, resourceId: String?): List<String>
 
     /**
      * Check if a given resource can be handled by this resource helper.
