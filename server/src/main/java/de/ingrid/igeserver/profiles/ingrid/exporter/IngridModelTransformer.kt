@@ -124,13 +124,13 @@ open class IngridModelTransformer(
 
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
-    val browseGraphics = generateBrowseGraphics(graphicOverviews)
+    val browseGraphics = generateBrowseGraphics(graphicOverviews, model.uuid)
 
-    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?): List<BrowseGraphic> =
+    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, datasetUuid: String): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
                 if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-                else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+                else "${config.uploadExternalUrl}$catalogIdentifier/${datasetUuid}/${it.fileName.uri}",
                 it.fileDescription
             )
         } ?: emptyList()
@@ -776,7 +776,7 @@ open class IngridModelTransformer(
             objectType = mapDocumentType(doc.type),
             description = doc.data.get("description")?.asText(),
             graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0)))
+                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
         )
     }
@@ -811,7 +811,7 @@ open class IngridModelTransformer(
             refType = refType,
             description = refTrans.data.getString("description"),
             graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(refTrans.data.get("graphicOverviews")?.get(0)))
+                listOfNotNull(convertToGraphicOverview(refTrans.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
             serviceType = getServiceType(createKeyValueFromJsonNode(service?.get("type"))),
             serviceOperation =
