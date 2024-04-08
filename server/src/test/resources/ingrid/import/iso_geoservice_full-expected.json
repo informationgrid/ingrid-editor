@@ -32,6 +32,38 @@
     },
     {
       "ref": {
+        "_uuid": "b05cfe6c-3b90-4ed4-9664-5d7ab5cd7b2d",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Objektbesitzer Institut",
+        "address": {
+          "city": "Nienburg (Weser)",
+          "po-box": "12345",
+          "street": "Brückenstraße 8",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "D-31582",
+          "zip-po-box": "D-31564",
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "besitzer@wemove.com"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": null,
+        "value": ""
+      }
+    },
+    {
+      "ref": {
         "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
         "_type": "InGridPersonDoc",
         "salutation": {
@@ -59,10 +91,94 @@
           }
         ],
         "positionName": "Liegenschaftsbuch (ALB)",
-        "hoursOfService": "Dies sind die Servicezeiten."
+        "hoursOfService": "Dies sind die Servicezeiten.",
+        "parentUuid": "b05cfe6c-3b90-4ed4-9664-5d7ab5cd7b2d"
       },
       "type": {
         "key": "1"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "C",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Adressvererbung Test",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": null,
+        "value": ""
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "B",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Testeinheit",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": "",
+        "parentAsUuid": "C"
+      },
+      "type": {
+        "key": null,
+        "value": ""
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "A",
+        "_type": "InGridOrganisationDoc",
+        "organization": "NI TESTADRESSEN Testeinheit",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": "",
+        "parentAsUuid": "B"
+      },
+      "type": {
+        "key": null,
+        "value": ""
       }
     },
     {
@@ -88,8 +204,9 @@
             "connection": "martin.muster@mu.niedersachsen.de"
           }
         ],
-        "positionName": "Testeinheit, NI TESTADRESSEN\n                            Testeinheit",
-        "hoursOfService": ""
+        "positionName": "",
+        "hoursOfService": "",
+        "parentAsUuid": "A"
       },
       "type": {
         "key": null,
@@ -373,10 +490,10 @@
         "isExternalRef": false
       },
       {
-        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
-        "title": "Extern gekoppelter Datensatz",
         "identifier": "",
         "uuid": "",
+        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
+        "title": "Extern gekoppelter Datensatz",
         "isExternalRef": true
       }
     ],

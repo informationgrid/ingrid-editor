@@ -36,10 +36,14 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
 import java.util.*
-import kotlin.collections.HashMap
 
 
-open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String, val documentService: DocumentService) {
+open class GeneralMapper(
+    val metadata: Metadata,
+    val codeListService: CodelistHandler,
+    val catalogId: String,
+    val documentService: DocumentService
+) {
 
     private val log = logger()
 
@@ -51,7 +55,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
-    
+
     private val addressMaps = mutableMapOf<String, String>()
 
     fun getDescription(): String {
@@ -75,12 +79,12 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
-        return (mainContact + additionalContacts).flatMap {
+        return (mainContact + additionalContacts).flatMap { it ->
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
             val organization = it.responsibleParty?.organisationName?.value
             val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
             val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
-            val positionName = it.responsibleParty?.positionName?.value ?: ""
+            var positionName = it.responsibleParty?.positionName?.value ?: ""
             val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
 
             // if contact is from main element and not a person (with individual name)
@@ -93,40 +97,66 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             ) else it.responsibleParty?.role!!
 
             // add parent organisation if exists
-            var parentAddressUuid: String? = null
-            val parent = if (organization != null && individualName != null) {
+            val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
                 val parentOrganisation = findParentOrganisation(organization)
-                parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
+                val parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
                     addressMaps[organization] = newUuid
                 }
-                
+
                 if (parentOrganisation == null) {
-                    PointOfContact(
-                        parentAddressUuid,
-                        "InGridOrganisationDoc",
-                        communications,
-                        KeyValue(),
-                        true,
-                        organization,
-                        address = addressInfo
+                    mutableListOf(
+                        PointOfContact(
+                            parentAddressUuid,
+                            "InGridOrganisationDoc",
+                            communications,
+                            KeyValue(),
+                            true,
+                            organization,
+                            address = addressInfo
+                        )
                     )
-                } else null
-            } else null
-            
+                } else mutableListOf()
+            } else mutableListOf()
+
+            // if positionName contains a comma-separated list then use them as parent organisations
+            if (positionName.contains(",")) {
+                var lastParentUuid = parents.firstOrNull()?.refUuid
+                val subParents = positionName.split(",").let { positionSplitted ->
+                    positionSplitted.map {
+                        val refUuid = UUID.randomUUID().toString().also { newUuid ->
+                            addressMaps[it] = newUuid
+                        }
+                        PointOfContact(
+                            refUuid,
+                            "InGridOrganisationDoc",
+                            communications,
+                            KeyValue(),
+                            true,
+                            it.trim(),
+                            address = addressInfo,
+                            parent = lastParentUuid
+                        ).also { lastParentUuid = refUuid }
+                    }
+                }
+                parents.addAll(subParents)
+                positionName = ""
+            }
+
             val pointOfContact = PointOfContact(
-                    it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
-                    if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
-                    communications,
-                    mapRoleToContactType(role),
-                    individualName == null,
-                    organization,
-                    individualName,
-                    addressInfo,
-                    positionName,
-                    hoursOfService,
-                    parentAddressUuid
-                )
-            listOfNotNull(parent, pointOfContact)
+                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+                if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
+                communications,
+                mapRoleToContactType(role),
+                individualName == null,
+                organization,
+                individualName,
+                addressInfo,
+                positionName,
+                hoursOfService,
+                parents.lastOrNull()?.refUuid
+            )
+            parents.add(pointOfContact)
+            parents
         }
     }
 
@@ -345,7 +375,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
                 val titleOrArs = geoIdentifierCode?.value
-                
+
                 if (titleOrArs != null) {
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
@@ -410,7 +440,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getLanguage(): KeyValue {
-        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!] ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
+        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!]
+            ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
         return KeyValue(languageKey)
     }
 
@@ -555,7 +586,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("MB")),
+                    if (it.transferSize?.value == null) null else UnitField(
+                        it.transferSize.value.toString(),
+                        KeyValue("MB")
+                    ),
                     it.offLine?.mdMedium?.mediumNote?.value
                 )
             } ?: emptyList()
@@ -584,13 +618,23 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId(
+                            "1320",
+                            applicationValue,
+                            "iso"
+                        )
                         val applicationFinalValue = when {
                             applicationValue == null -> null
                             applicationId == null -> KeyValue(null, applicationValue)
                             else -> KeyValue(applicationId)
                         }
-                        Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
+                        Reference(
+                            keyValue,
+                            resource.linkage.url,
+                            applicationFinalValue,
+                            resource.name?.value,
+                            resource.description?.value
+                        )
                     } ?: emptyList()
             } ?: emptyList()
     }
@@ -819,7 +863,7 @@ data class PointOfContact(
     val positionName: String = "",
     val hoursOfService: String = "",
     val parent: String? = null
-    )
+)
 
 data class Communication(
     val type: KeyValue,

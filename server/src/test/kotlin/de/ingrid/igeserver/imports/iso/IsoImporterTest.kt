@@ -21,8 +21,10 @@ package de.ingrid.igeserver.imports.iso
 
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every
@@ -35,6 +37,8 @@ class IsoImporterTest : AnnotationSpec() {
 
     private val codelistService = mockk<CodelistHandler>()
     private val catalogService = mockk<CatalogService>()
+    private val documentService = mockk<DocumentService>()
+    private val documentRepository = mockk<DocumentRepository>()
 
     @BeforeAll
     fun beforeAll() {
@@ -44,11 +48,13 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+        every { documentService.docRepo } returns documentRepository
+        every { documentRepository.findAddressByOrganisationName(any()) } returns null
     }
 
     @Test
     fun importGeoservice() {
-        val isoImporter = ISOImport(codelistService, catalogService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"))
         println(result.toString())
 
@@ -59,7 +65,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importGeodataset() {
-        val isoImporter = ISOImport(codelistService, catalogService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"))
         println(result.toString())
 
@@ -67,6 +73,17 @@ class IsoImporterTest : AnnotationSpec() {
             getFile("ingrid/import/iso_geodataset_full-expected.json")
         )
     }
+    
+    /*@Test
+    fun importAddressHierarchy() {
+        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val result = isoImporter.run("test", getFile("ingrid/import/e2ed7da0-007a-11e0-be74-0000779eba3a.xml"))
+        println(result.toString())
+
+        result.toPrettyString().shouldEqualJson(
+            getFile("ingrid/import/iso_geodataset_full-expected.json")
+        )
+    }*/
 
     private fun getFile(file: String) =
         String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(file).toURI())))
