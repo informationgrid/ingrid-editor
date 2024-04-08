@@ -73,42 +73,11 @@ class IndexService(
     companion object {
         const val jobKey: String = "index"
         
-        fun getNextIndexName(name: String, uuid: String, uuidName: String): String {
-            val uuidNameFinal = uuidName.lowercase(Locale.getDefault())
-            var isNew = false
-
+        fun getNextIndexName(name: String): String {
             val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
-
-            val delimiterPos: Int = name.lastIndexOf("_")
-            if (delimiterPos == -1) {
-                isNew = true
-            } else {
-                try {
-                    dateFormat.parse(name.substring(delimiterPos + 1))
-                } catch (ex: Exception) {
-                    isNew = true
-                }
-            }
-
             val date: String = dateFormat.format(Date())
 
-            if (isNew) {
-                if (!name.contains(uuid)) {
-                    return name + "@" + uuidNameFinal + "-" + uuid + "_" + date
-                }
-                return name + "_" + date
-            } else {
-                if (!name.contains(uuid)) {
-                    return name.substring(0, delimiterPos) +
-                        "@" +
-                        uuidNameFinal +
-                        "-" +
-                        uuid +
-                        "_" +
-                        date
-                }
-                return name.substring(0, delimiterPos + 1) + date
-            }
+            return name + "_" + date
         }
     }
 
@@ -277,9 +246,6 @@ class IndexService(
 
         return (nativeQuery.singleResult as Number).toLong()
     }
-
-    fun getIndexIdentifier(elasticsearchAlias: String, category: DocumentCategory) =
-        "${elasticsearchAlias}_${category.value}"
 }
 
 data class IndexDocumentResult(

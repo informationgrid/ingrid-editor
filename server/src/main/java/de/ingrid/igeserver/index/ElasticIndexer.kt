@@ -155,7 +155,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
             elastic.bulkProcessor.delete(id, indexinfo.getRealIndexName())
 
             if (updateOldIndex) {
-                val oldIndex: String? = getIndexNameFromAliasName(indexinfo.toAlias!!, null)
+                val oldIndex: String? = getIndexNameFromAliasName(indexinfo.toAlias!!)
                 if (oldIndex != null && oldIndex != indexinfo.getRealIndexName()) {
                     val otherIndexInfo: IndexInfo = indexinfo.copy()
                     otherIndexInfo.setRealIndexName(oldIndex)

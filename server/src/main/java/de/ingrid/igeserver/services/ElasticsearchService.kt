@@ -80,7 +80,7 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
         object : BulkItemCallBack {
             override fun itemFailed(operationType: OperationType, item: BulkResponse.ItemDetails) {
                 val msg =
-                    "Bulk Item Request Failed: ${operationType.name} failed ${item.id} with ${item.status}: ${item.error.toString()}"
+                    "Bulk Item Request Failed: ${operationType.name} failed for ${item.id} in ${item.index} with status ${item.status}: ${item.error.toString()}"
                 log.error(msg)
                 throw ServerException.withReason(msg)
             }
