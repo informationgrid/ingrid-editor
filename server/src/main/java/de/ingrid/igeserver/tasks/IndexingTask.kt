@@ -108,7 +108,7 @@ class IndexingTask(
             run indexingLoop@{
                 targets
                     .forEach { target ->
-                        val plugInfo = createIPlugInfo(catalog, target.category)
+                        val plugInfo = createIPlugInfo(catalog, target)
                         log.info("Running export on thread: ${Thread.currentThread()}")
 
                         IndexTargetWorker(
@@ -166,17 +166,17 @@ class IndexingTask(
         message.totalDatasets = counts.sum()
     }
 
-    private fun createIPlugInfo(catalog: Catalog, category: DocumentCategory): IPlugInfo {
+    private fun createIPlugInfo(catalog: Catalog, exporterConfig: ExtendedExporterConfig): IPlugInfo {
         val partner =
             codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident")
         val provider =
             codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident")
 
         return IPlugInfo(
-            getElasticsearchAliasFromCatalog(catalog, category),
+            getElasticsearchAliasFromCatalog(catalog, exporterConfig.category, exporterConfig.target.name),
             null,
             "???",
-            category.value,
+            exporterConfig.category.value,
             partner,
             provider,
             catalog
@@ -258,8 +258,8 @@ class IndexingTask(
         }
     }
 
-    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory) =
-        (catalog.settings.config.elasticsearchAlias ?: catalog.identifier) + "_" + category.value
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) =
+        "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${exportTarget.lowercase().replace(" ", "")}"
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
@@ -274,16 +274,17 @@ class IndexingTask(
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category)
 
         try {
             configs
                 .filter { it.category == category }
                 .forEach {
+                    // TODO: add alias to exporter config
+                    val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category, it.target.name)
                     val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter.exportSql(catalogId))
                     val doc = indexService.getSinglePublishedDocument(queryInfo, docId)
                     val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
-                    val plugInfo = createIPlugInfo(catalog, it.category)
+                    val plugInfo = createIPlugInfo(catalog, it)
                     IndexTargetWorker(
                         it,
                         IndexMessage(catalogId, 1),
@@ -341,12 +342,12 @@ class IndexingTask(
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
         val enumCategory = DocumentCategory.entries.first { it.value == category }
-        val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, enumCategory)
 
         configs
             .filter { it.category.value == category }
             .forEach {
             try {
+                val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, enumCategory, it.target.name)
                 val oldIndex = it.target.getIndexNameFromAliasName(elasticsearchAlias)
 
                 if (oldIndex != null && it.target.indexExists(oldIndex)) {
