@@ -401,6 +401,7 @@ export class FormFieldHelper {
   }
 
   addRepeatListInline(id, label, options: RepeatListOptions = {}) {
+    if (options.className) options.className = `${options.className} ${id}`;
     return this.addRepeatList(id, null, {
       fieldLabel: label,
       wrappers: [],
