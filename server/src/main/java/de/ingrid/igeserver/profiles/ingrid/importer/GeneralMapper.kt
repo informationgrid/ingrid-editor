@@ -81,7 +81,7 @@ open class GeneralMapper(
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
         return (mainContact + additionalContacts).flatMap { it ->
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
-            val organization = it.responsibleParty?.organisationName?.value
+            var organization = it.responsibleParty?.organisationName?.value
             val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
             val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
             var positionName = it.responsibleParty?.positionName?.value ?: ""
@@ -100,7 +100,7 @@ open class GeneralMapper(
             val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
                 val parentOrganisation = findParentOrganisation(organization)
                 val parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
-                    addressMaps[organization] = newUuid
+                    addressMaps[organization!!] = newUuid
                 }
 
                 if (parentOrganisation == null) {
@@ -117,30 +117,6 @@ open class GeneralMapper(
                     )
                 } else mutableListOf()
             } else mutableListOf()
-
-            // if positionName contains a comma-separated list then use them as parent organisations
-            if (positionName.contains(",")) {
-                var lastParentUuid = parents.firstOrNull()?.refUuid
-                val subParents = positionName.split(",").let { positionSplitted ->
-                    positionSplitted.map {
-                        val refUuid = UUID.randomUUID().toString().also { newUuid ->
-                            addressMaps[it] = newUuid
-                        }
-                        PointOfContact(
-                            refUuid,
-                            "InGridOrganisationDoc",
-                            communications,
-                            KeyValue(),
-                            true,
-                            it.trim(),
-                            address = addressInfo,
-                            parent = lastParentUuid
-                        ).also { lastParentUuid = refUuid }
-                    }
-                }
-                parents.addAll(subParents)
-                positionName = ""
-            }
 
             val pointOfContact = PointOfContact(
                 it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),

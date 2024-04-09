@@ -32,7 +32,7 @@
     },
     {
       "ref": {
-        "_uuid": "b05cfe6c-3b90-4ed4-9664-5d7ab5cd7b2d",
+        "_uuid": "D",
         "_type": "InGridOrganisationDoc",
         "organization": "Objektbesitzer Institut",
         "address": {
@@ -92,7 +92,7 @@
         ],
         "positionName": "Liegenschaftsbuch (ALB)",
         "hoursOfService": "Dies sind die Servicezeiten.",
-        "parentUuid": "b05cfe6c-3b90-4ed4-9664-5d7ab5cd7b2d"
+        "parentAsUuid": "D"
       },
       "type": {
         "key": "1"
@@ -127,62 +127,6 @@
     },
     {
       "ref": {
-        "_uuid": "B",
-        "_type": "InGridOrganisationDoc",
-        "organization": "Testeinheit",
-        "address": {
-          "country": {
-            "key": "276"
-          },
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "martin.muster@mu.niedersachsen.de"
-          }
-        ],
-        "positionName": "",
-        "hoursOfService": "",
-        "parentAsUuid": "C"
-      },
-      "type": {
-        "key": null,
-        "value": ""
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "A",
-        "_type": "InGridOrganisationDoc",
-        "organization": "NI TESTADRESSEN Testeinheit",
-        "address": {
-          "country": {
-            "key": "276"
-          },
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "martin.muster@mu.niedersachsen.de"
-          }
-        ],
-        "positionName": "",
-        "hoursOfService": "",
-        "parentAsUuid": "B"
-      },
-      "type": {
-        "key": null,
-        "value": ""
-      }
-    },
-    {
-      "ref": {
         "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
         "_type": "InGridPersonDoc",
         "salutation": {
@@ -204,9 +148,9 @@
             "connection": "martin.muster@mu.niedersachsen.de"
           }
         ],
-        "positionName": "",
+        "positionName": "Testeinheit, NI TESTADRESSEN Testeinheit",
         "hoursOfService": "",
-        "parentAsUuid": "A"
+        "parentAsUuid": "C"
       },
       "type": {
         "key": null,
