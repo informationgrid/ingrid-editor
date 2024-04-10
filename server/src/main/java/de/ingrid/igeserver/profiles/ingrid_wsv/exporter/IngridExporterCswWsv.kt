@@ -43,7 +43,7 @@ class IngridExporterCswWsv(
         ExportTypeInfo(
             DocumentCategory.DATA,
             "indexInGridIDFCswWsv",
-            "WSV CSW Export (ohne interne Pfade)",
+            "Index ohne Warenkorb (WSV)",
             "Export von Ingrid Dokumenten ins IDF Format für WSV für CSW-Export.",
             "application/json",
             "json",

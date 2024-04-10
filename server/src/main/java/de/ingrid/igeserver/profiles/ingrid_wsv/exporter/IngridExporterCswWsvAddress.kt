@@ -39,12 +39,11 @@ class IngridExporterCswWsvAddress(
         ExportTypeInfo(
             DocumentCategory.ADDRESS,
             "indexInGridIDFCswWsv",
-            "WSV CSW Export (ohne interne Pfade)",
+            "Index ohne Warenkorb (WSV)",
             "Export von Ingrid Dokumenten ins IDF Format für WSV für CSW-Export.",
             "application/json",
             "json",
             listOf("ingrid-wsv"),
-            isPublic = true,
-            useForPublish = true
+            isPublic = true
         )
 }
