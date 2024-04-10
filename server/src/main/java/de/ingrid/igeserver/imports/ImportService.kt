@@ -313,7 +313,8 @@ class ImportService(
         } else if (ref.deleted) {
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
-            documentService.updateParent(catalogId, ref.wrapperId, parentId)
+            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
+            documentService.updateParent(catalogId, ref.wrapperId, finalParentId)
             if (publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
