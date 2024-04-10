@@ -64,6 +64,7 @@ class IsoImporterTest : AnnotationSpec() {
 
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
         changeUuidOfOrganisationTo(result, "Adressvererbung Test", "C")
+        changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
 
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geoservice_full-expected.json")
@@ -75,6 +76,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"))
 
+        changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
+        
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geodataset_full-expected.json")
         )

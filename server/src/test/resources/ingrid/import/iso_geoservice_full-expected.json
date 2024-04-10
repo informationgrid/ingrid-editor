@@ -156,6 +156,19 @@
         "key": null,
         "value": "Meister"
       }
+    },
+    {
+      "ref": {
+        "_uuid": "some_organisation",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Some Organisation",
+        "contact": [],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "5"
+      }
     }
   ],
   "graphicOverviews": [
@@ -239,7 +252,7 @@
   "temporal": {
     "events": [
       {
-        "referenceDate": "2015-03-17T00:00:00.000+01:00",
+        "referenceDate": "2015-03-16T23:00:00Z",
         "referenceDateType": {
           "key": "1"
         }
@@ -277,7 +290,7 @@
         "key": null,
         "value": "Technical Guidance for the implementation of INSPIRE Download Services"
       },
-      "publicationDate": "2013-08-09"
+      "publicationDate": "2013-08-08T22:00:00Z"
     },
     {
       "pass": {
@@ -288,7 +301,7 @@
       "specification": {
         "key": "10"
       },
-      "publicationDate": "2009-10-20"
+      "publicationDate": "2009-10-19T22:00:00Z"
     }
   ],
   "extraInfo": {
