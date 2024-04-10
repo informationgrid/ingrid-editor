@@ -79,7 +79,7 @@ data class Distance(
 data class MDDistance(
     @JacksonXmlProperty(isAttribute = true) val uom: String?
 ) {
-    @JacksonXmlText val value: Int? = null
+    @JacksonXmlText val value: Float? = null
 }
 
 data class MDScale(

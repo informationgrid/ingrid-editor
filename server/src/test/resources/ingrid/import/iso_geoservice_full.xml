@@ -148,8 +148,7 @@
                         <gco:CharacterString>Adressvererbung Test</gco:CharacterString>
                     </gmd:organisationName>
                     <gmd:positionName>
-                        <gco:CharacterString>Testeinheit, NI TESTADRESSEN
-                            Testeinheit</gco:CharacterString>
+                        <gco:CharacterString>Testeinheit, NI TESTADRESSEN Testeinheit</gco:CharacterString>
                     </gmd:positionName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
@@ -593,6 +592,9 @@
                 <gmd:MD_Distributor>
                     <gmd:distributorContact>
                         <gmd:CI_ResponsibleParty>
+                            <gmd:organisationName>
+                                <gco:CharacterString>Some Organisation</gco:CharacterString>
+                            </gmd:organisationName>
                             <gmd:role>
                                 <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor"/>
                             </gmd:role>

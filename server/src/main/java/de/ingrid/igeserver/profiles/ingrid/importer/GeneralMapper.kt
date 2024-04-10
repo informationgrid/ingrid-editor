@@ -29,15 +29,25 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
+open class GeneralMapper(
+    val metadata: Metadata,
+    val codeListService: CodelistHandler,
+    val catalogId: String,
+    val documentService: DocumentService
+) {
 
     private val log = logger()
 
@@ -49,6 +59,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
+
+    private val addressMaps = mutableMapOf<String, String>()
 
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
@@ -71,36 +83,67 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
-        return (mainContact + additionalContacts).map {
-            val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
-            val organization = it.responsibleParty?.organisationName?.value
-            val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
-            val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
-            val positionName = it.responsibleParty?.positionName?.value ?: ""
-            val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
+        val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
+            it.mdDistributor.distributorContact
+        } ?: emptyList()
+        return (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+            val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
+            val organization = contact.responsibleParty?.organisationName?.value
+            val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
+            val addressInfo = getAddressInfo(contact.responsibleParty?.contactInfo?.ciContact?.address?.address)
+            val positionName = contact.responsibleParty?.positionName?.value ?: ""
+            val hoursOfService = contact.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
 
-            // if contact is from main element and not a person (with individual name)
+            // if role is PointOfContact, and it comes from main contact element
             // then it gets special role: pointOfContactMd (key=12)
-            val role = if (individualName == null && mainContact.contains(it)) RoleCode(
-                CodelistAttributes(
-                    "",
-                    "pointOfContactMd"
-                )
-            ) else it.responsibleParty?.role!!
+            val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
+            val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) KeyValue("12")
+            else {
+                mapRoleToContactType(roleIso)
+            }
 
-            PointOfContact(
-                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+            // add parent organisation if exists
+            val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
+                val parentOrganisation = findParentOrganisation(organization)
+                val parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
+                    addressMaps[organization] = newUuid
+                }
+
+                if (parentOrganisation == null) {
+                    mutableListOf(
+                        PointOfContact(
+                            parentAddressUuid,
+                            "InGridOrganisationDoc",
+                            communications,
+                            KeyValue(),
+                            true,
+                            organization,
+                            address = addressInfo
+                        )
+                    )
+                } else mutableListOf()
+            } else mutableListOf()
+
+            val pointOfContact = PointOfContact(
+                contact.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
-                mapRoleToContactType(role),
+                role,
                 individualName == null,
                 organization,
                 individualName,
                 addressInfo,
                 positionName,
-                hoursOfService
+                hoursOfService,
+                parents.lastOrNull()?.refUuid
             )
+            parents.add(pointOfContact)
+            parents
         }
+    }
+
+    private fun findParentOrganisation(name: String): String? {
+        return addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(name)
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {
@@ -188,8 +231,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return if (salutationKey == null) null else KeyValue(salutationKey)
     }
 
-    private fun mapRoleToContactType(role: RoleCode): KeyValue {
-        val value = role.codelist?.codeListValue
+    private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
         return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
@@ -216,7 +258,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.map { codeListService.getCodeListEntryId("6100", it, "de") }
+            ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, "de") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -301,8 +343,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getSpatialSystems(): List<KeyValue> {
         return metadata.referenceSystemInfo
             ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-            ?.map { codeListService.getCodeListEntryId("100", it, "de") }
-            ?.map { KeyValue(it) } ?: emptyList()
+            ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
+            ?: emptyList()
     }
 
     fun getSpatialReferences(): List<SpatialReference> {
@@ -314,7 +356,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
                 val titleOrArs = geoIdentifierCode?.value
-                
+
                 if (titleOrArs != null) {
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
@@ -379,7 +421,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getLanguage(): KeyValue {
-        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!] ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
+        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!]
+            ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
         return KeyValue(languageKey)
     }
 
@@ -403,8 +446,22 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
                 val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "iso")
-                Event(KeyValue(typeKey), it.date?.date?.dateTime ?: "")
+                val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
+                    ?: it.date?.date?.date?.let { parseDate(it) }
+                    ?: ""
+                Event(KeyValue(typeKey), date)
             } ?: emptyList()
+    }
+
+    private fun parseDateTime(value: String): String {
+        return OffsetDateTime.parse(value).toInstant().toString()
+    }
+
+    private fun parseDate(value: String): String {
+        return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toString()
     }
 
     fun getTimeRelatedInfo(): TimeInfo? {
@@ -524,7 +581,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("MB")),
+                    if (it.transferSize?.value == null) null else UnitField(
+                        it.transferSize.value.toString(),
+                        KeyValue("MB")
+                    ),
                     it.offLine?.mdMedium?.mediumNote?.value
                 )
             } ?: emptyList()
@@ -553,13 +613,23 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId(
+                            "1320",
+                            applicationValue,
+                            "iso"
+                        )
                         val applicationFinalValue = when {
                             applicationValue == null -> null
                             applicationId == null -> KeyValue(null, applicationValue)
                             else -> KeyValue(applicationId)
                         }
-                        Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
+                        Reference(
+                            keyValue,
+                            resource.linkage.url,
+                            applicationFinalValue,
+                            resource.name?.value,
+                            resource.description?.value
+                        )
                     } ?: emptyList()
             } ?: emptyList()
     }
@@ -578,7 +648,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue =
                     if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
-                val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
+                val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
+                val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
+                    ?: dateObject?.date?.let { parseDate(it) }
+                    ?: ""
                 ConformanceResult(
                     pass,
                     specificationEntryId != null,
@@ -787,8 +860,8 @@ data class PointOfContact(
     val address: AddressInfo? = null,
     val positionName: String = "",
     val hoursOfService: String = "",
-
-    )
+    val parent: String? = null
+)
 
 data class Communication(
     val type: KeyValue,

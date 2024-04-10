@@ -47,6 +47,7 @@
     ],
     "positionName": "${contact.get().getPositionName()}",
     "hoursOfService": "${contact.get().getHoursOfService()}"
+    @if(contact.get().getParent() != null), "parentAsUuid": "${contact.get().getParent()}"@endif
     },
     "type": @template.imports.ingrid.partial.key-value(item = contact.get().getType())
     }@if (!contact.isLast()),@endif

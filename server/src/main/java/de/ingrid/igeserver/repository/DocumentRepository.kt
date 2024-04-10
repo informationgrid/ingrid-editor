@@ -94,4 +94,9 @@ interface DocumentRepository : JpaRepository<Document, Int> {
                        AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
     """, nativeQuery = true)
     fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
+    
+    @Query("""
+        SELECT doc.uuid FROM document doc WHERE doc.data->>'organisation' = :name
+    """, nativeQuery = true)
+    fun findAddressByOrganisationName(@Param("name") name: String): String?
 }

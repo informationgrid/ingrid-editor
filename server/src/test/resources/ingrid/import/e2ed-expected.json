@@ -62,19 +62,6 @@
       "type": {
         "key": "7"
       }
-    },
-    {
-      "ref": {
-        "_uuid": "some_organisation",
-        "_type": "InGridOrganisationDoc",
-        "organization": "Some Organisation",
-        "contact": [],
-        "positionName": "",
-        "hoursOfService": ""
-      },
-      "type": {
-        "key": "5"
-      }
     }
   ],
   "graphicOverviews": [
@@ -177,7 +164,7 @@
   "temporal": {
     "events": [
       {
-        "referenceDate": "2016-02-29T23:00:00Z",
+        "referenceDate": "2016-03-01T00:00:00.000+01:00",
         "referenceDateType": {
           "key": "1"
         }
@@ -217,7 +204,7 @@
         "key": null,
         "value": "Technical Guidance for the implementation of INSPIRE Download Services"
       },
-      "publicationDate": "2007-03-13T23:00:00Z"
+      "publicationDate": "2007-03-14"
     },
     {
       "pass": {
@@ -228,7 +215,7 @@
       "specification": {
         "key": "10"
       },
-      "publicationDate": "2010-12-07T23:00:00Z"
+      "publicationDate": "2010-12-08"
     }
   ],
   "extraInfo": {
