@@ -24,7 +24,16 @@ val minimalMetadata = """
         <gmd:language>
             <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
         </gmd:language>
-        <gmd:contact></gmd:contact>
+        <gmd:contact>
+            <gmd:CI_ResponsibleParty uuid="e3db6665-5670-4543-85a6-f55ea6a4e7a6">
+                <gmd:organisationName>
+                    <gco:CharacterString>Objektbesitzer Institut</gco:CharacterString>
+                </gmd:organisationName>
+                <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                </gmd:role>
+            </gmd:CI_ResponsibleParty>
+        </gmd:contact>
         <gmd:dateStamp></gmd:dateStamp>
         <gmd:hierarchyLevel>
             <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="service">service</gmd:MD_ScopeCode>
@@ -50,12 +59,42 @@ val expectedParentOrganisation = """
 
 val expectedOrganisationWithPositionName = """
 {
-  "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
+  "_uuid": "febad8bb-626c-4d54-b415-d957adf3b4bb",
   "_type": "InGridOrganisationDoc",
-  "organization": "Objektbesitzer Institut",
+  "organization": "Institution with position name",
   "contact": [],
   "positionName": "Something",
   "hoursOfService": ""
+}""".trimIndent()
+
+val expectedOrganisationAsPointOfContact = """
+{ 
+  "ref": {
+    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
+    "_type": "InGridOrganisationDoc",
+    "organization": "Objektbesitzer Institut",
+    "contact": [],
+    "positionName": "",
+    "hoursOfService": ""
+  },
+  "type": {
+    "key": "7"
+  }    
+}""".trimIndent()
+
+val expectedOrganisationAsPointOfContactMd = """
+{ 
+  "ref": {
+    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
+    "_type": "InGridOrganisationDoc",
+    "organization": "Objektbesitzer Institut",
+    "contact": [],
+    "positionName": "",
+    "hoursOfService": ""
+  },
+  "type": {
+    "key": "12"
+  }    
 }""".trimIndent()
 
 val expectedOrganisationReferat1 = """

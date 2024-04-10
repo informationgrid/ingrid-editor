@@ -77,7 +77,7 @@ class IsoImporterTest : AnnotationSpec() {
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"))
 
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
-        
+
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geodataset_full-expected.json")
         )
@@ -163,7 +163,7 @@ class IsoImporterTest : AnnotationSpec() {
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonUnderOrganisation)
     }
-    
+
     @Test
     fun addressHierarchy4() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
@@ -219,7 +219,7 @@ class IsoImporterTest : AnnotationSpec() {
 
         val result = isoImporter.run("test", data)
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
-        
+
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
     }
 
@@ -229,10 +229,10 @@ class IsoImporterTest : AnnotationSpec() {
 
         val data = addPointOfContact(
             minimalMetadata, """
-            <gmd:pointOfContact>
-                    <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
+                <gmd:pointOfContact>
+                    <gmd:CI_ResponsibleParty uuid="febad8bb-626c-4d54-b415-d957adf3b4bb">
                         <gmd:organisationName>
-                            <gco:CharacterString>Objektbesitzer Institut</gco:CharacterString>
+                            <gco:CharacterString>Institution with position name</gco:CharacterString>
                         </gmd:organisationName>
                         <gmd:positionName>
                             <gco:CharacterString>Something</gco:CharacterString>
@@ -246,7 +246,30 @@ class IsoImporterTest : AnnotationSpec() {
         )
 
         val result = isoImporter.run("test", data)
-        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationWithPositionName)
+        assertPointOfContact(result, "Institution with position name", expectedOrganisationWithPositionName)
+    }
+
+    @Test
+    fun importAddressAsPointOfContactMDAndPointOfContact() {
+        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+
+        val pointOfContact = """
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty uuid="e3db6665-5670-4543-85a6-f55ea6a4e7a6">
+                    <gmd:organisationName>
+                        <gco:CharacterString>Objektbesitzer Institut</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+        """.trimIndent()
+
+        val data = addPointOfContact(minimalMetadata, pointOfContact)
+        val result = isoImporter.run("test", data)
+        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContactMd, true)
+        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact, true, 1)
     }
 
     private fun addPointOfContact(metadata: String, pointOfContact: String): String {
@@ -257,21 +280,37 @@ class IsoImporterTest : AnnotationSpec() {
         return start + pointOfContact + end
     }
 
+    private fun addContact(metadata: String, pointOfContact: String): String {
+        val position = metadata.indexOf("</gmd:contact>")
+        val start = metadata.substring(0, position)
+        val end = metadata.substring(position, metadata.length)
+
+        return start + pointOfContact + end
+    }
+
     private fun getFile(file: String) =
         String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(file).toURI())))
 
-    private fun assertPointOfContact(json: JsonNode, nameOrUuid: String, expected: String) {
+    private fun assertPointOfContact(
+        json: JsonNode,
+        nameOrUuid: String,
+        expected: String,
+        includeType: Boolean = false,
+        index: Int = 0
+    ) {
         val contacts = json.get("pointOfContact") as? ArrayNode ?: throw RuntimeException()
 
-        val contact = contacts.firstNotNullOfOrNull { item ->
+        val contact = contacts.mapNotNull { item ->
             val orgNode = item.getString("ref.organization")
             val uuid = item.getString("ref._uuid")
             if (orgNode == nameOrUuid || uuid == nameOrUuid) {
-                item.get("ref").toPrettyString().replace("\r", "")
+                val result = if (includeType) item else item.get("ref")
+                result.toPrettyString().replace("\r", "")
             } else null
-        } ?: throw RuntimeException("PointOfContact with '$nameOrUuid' not found")
-        
-        contact.shouldEqualJson(expected)
+        }
+        if (contact.size <= index) throw RuntimeException("PointOfContact with '$nameOrUuid' at index $index not found")
+
+        contact[index].shouldEqualJson(expected)
     }
 
     private fun changeUuidOfOrganisationTo(json: JsonNode, name: String, uuid: String) {

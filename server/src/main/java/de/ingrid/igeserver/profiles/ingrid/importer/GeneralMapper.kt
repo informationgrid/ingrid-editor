@@ -24,10 +24,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.Address
-import de.ingrid.igeserver.exports.iso.CIContact
-import de.ingrid.igeserver.exports.iso.Metadata
-import de.ingrid.igeserver.exports.iso.TimePeriod
+import de.ingrid.igeserver.exports.iso.*
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
@@ -89,18 +86,21 @@ open class GeneralMapper(
         val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
             it.mdDistributor.distributorContact
         } ?: emptyList()
-        return (mainContact + additionalContacts + distributors).flatMap {
-            val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
-            val organization = it.responsibleParty?.organisationName?.value
-            val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
-            val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
-            val positionName = it.responsibleParty?.positionName?.value ?: ""
-            val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
+        return (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+            val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
+            val organization = contact.responsibleParty?.organisationName?.value
+            val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
+            val addressInfo = getAddressInfo(contact.responsibleParty?.contactInfo?.ciContact?.address?.address)
+            val positionName = contact.responsibleParty?.positionName?.value ?: ""
+            val hoursOfService = contact.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
 
-            // if contact is from main element and not a person (with individual name)
+            // if role is PointOfContact, and it comes from main contact element
             // then it gets special role: pointOfContactMd (key=12)
-            val role: KeyValue = if (mainContact.contains(it)) KeyValue("12")
-            else mapRoleToContactType(it.responsibleParty?.role?.codelist?.codeListValue!!)
+            val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
+            val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) KeyValue("12")
+            else {
+                mapRoleToContactType(roleIso)
+            }
 
             // add parent organisation if exists
             val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
@@ -125,7 +125,7 @@ open class GeneralMapper(
             } else mutableListOf()
 
             val pointOfContact = PointOfContact(
-                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+                contact.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
                 role,
