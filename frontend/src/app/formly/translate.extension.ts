@@ -45,6 +45,11 @@ export function registerTranslateExtension(transloco: TranslocoService) {
         message: () => transloco.translate("form.validationMessages.no_space"),
       },
       {
+        name: "valid_es_alias",
+        message: () =>
+          transloco.translate("form.validationMessages.valid_es_alias"),
+      },
+      {
         name: "url",
         message: () => transloco.translate("form.validationMessages.url"),
       },

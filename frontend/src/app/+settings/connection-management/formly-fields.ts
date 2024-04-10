@@ -56,6 +56,9 @@ export class ConnectionForm extends FormFieldHelper {
         className: "white-bg url",
         required: true,
         updateOn: "change",
+        validators: {
+          validation: ["valid_es_alias"],
+        },
       }),
       this.addGroupSimple(
         null,
@@ -64,6 +67,9 @@ export class ConnectionForm extends FormFieldHelper {
             className: "flex-1 white-bg ip",
             required: true,
             updateOn: "change",
+            validators: {
+              validation: ["valid_es_alias"],
+            },
           }),
           this.addInputInline("port", "Port", {
             className: "flex-1 white-bg port",
@@ -87,6 +93,9 @@ export class ConnectionForm extends FormFieldHelper {
         className: "white-bg url",
         required: true,
         updateOn: "change",
+        validators: {
+          validation: ["valid_es_alias"],
+        },
       }),
       this.addRepeatList("hosts", "Hosts", {
         required: true,

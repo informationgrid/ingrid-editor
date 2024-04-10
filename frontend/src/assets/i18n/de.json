@@ -126,6 +126,7 @@
       "emailInRepeat": "Dieses Feld muss eine gültige E-Mail Adresse sein",
       "lowercase": "Dieses Feld darf keine Großbuchstaben enthalten",
       "no_space": "Dieses Feld darf keine Leerzeichen enthalten",
+      "valid_es_alias": "Dieses Feld darf keine der folgenden Zeichen enthalten: \\ / * ? \" < > | : # ,",
       "url": "Verwenden Sie bitte eine gültige URL",
       "matDatepickerMin": "Das Datum liegt weiter zurück als erlaubt",
       "matDatepickerMax": "Das Datum ist größer als erlaubt",
