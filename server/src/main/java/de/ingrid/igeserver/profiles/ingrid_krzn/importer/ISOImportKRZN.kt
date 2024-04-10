@@ -24,17 +24,19 @@ import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.ImportProfileData
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportKRZN(val codelistHandler: CodelistHandler) : ISOImportProfile {
+class ISOImportKRZN(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata): ImportProfileData? {
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset" -> {
                 ImportProfileData(
                     "imports/ingrid-krzn/geodataset.jte",
-                    GeodatasetMapper(data, codelistHandler, catalogId)
+                    GeodatasetMapper(data, codelistHandler, catalogId, documentService)
                 )
             }
 

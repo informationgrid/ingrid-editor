@@ -23,9 +23,10 @@ import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 
-class GeodatasetMapperHMDK(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
-    GeodatasetMapper(metadata, codeListService, catalogId) {
+class GeodatasetMapperHMDK(metadata: Metadata, codeListService: CodelistHandler, catalogId: String, documentService: DocumentService) :
+    GeodatasetMapper(metadata, codeListService, catalogId, documentService) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 

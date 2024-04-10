@@ -22,9 +22,10 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 
-open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
-    GeneralMapper(metadata, codeListService, catalogId) {
+open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String, documentService: DocumentService) :
+    GeneralMapper(metadata, codeListService, catalogId, documentService) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 
