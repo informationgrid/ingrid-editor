@@ -24,7 +24,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.exports.iso.Address
+import de.ingrid.igeserver.exports.iso.CIContact
+import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.exports.iso.TimePeriod
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
@@ -35,6 +38,10 @@ import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -79,28 +86,27 @@ open class GeneralMapper(
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
-        return (mainContact + additionalContacts).flatMap { it ->
+        val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
+            it.mdDistributor.distributorContact
+        } ?: emptyList()
+        return (mainContact + additionalContacts + distributors).flatMap {
             val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
-            var organization = it.responsibleParty?.organisationName?.value
+            val organization = it.responsibleParty?.organisationName?.value
             val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
             val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
-            var positionName = it.responsibleParty?.positionName?.value ?: ""
+            val positionName = it.responsibleParty?.positionName?.value ?: ""
             val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
 
             // if contact is from main element and not a person (with individual name)
             // then it gets special role: pointOfContactMd (key=12)
-            val role = if (individualName == null && mainContact.contains(it)) RoleCode(
-                CodelistAttributes(
-                    "",
-                    "pointOfContactMd"
-                )
-            ) else it.responsibleParty?.role!!
+            val role: KeyValue = if (mainContact.contains(it)) KeyValue("12")
+            else mapRoleToContactType(it.responsibleParty?.role?.codelist?.codeListValue!!)
 
             // add parent organisation if exists
             val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
                 val parentOrganisation = findParentOrganisation(organization)
                 val parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
-                    addressMaps[organization!!] = newUuid
+                    addressMaps[organization] = newUuid
                 }
 
                 if (parentOrganisation == null) {
@@ -122,7 +128,7 @@ open class GeneralMapper(
                 it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
-                mapRoleToContactType(role),
+                role,
                 individualName == null,
                 organization,
                 individualName,
@@ -225,8 +231,7 @@ open class GeneralMapper(
         return if (salutationKey == null) null else KeyValue(salutationKey)
     }
 
-    private fun mapRoleToContactType(role: RoleCode): KeyValue {
-        val value = role.codelist?.codeListValue
+    private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
         return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
@@ -253,7 +258,7 @@ open class GeneralMapper(
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.map { codeListService.getCodeListEntryId("6100", it, "de") }
+            ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, "de") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -338,8 +343,8 @@ open class GeneralMapper(
     fun getSpatialSystems(): List<KeyValue> {
         return metadata.referenceSystemInfo
             ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-            ?.map { codeListService.getCodeListEntryId("100", it, "de") }
-            ?.map { KeyValue(it) } ?: emptyList()
+            ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
+            ?: emptyList()
     }
 
     fun getSpatialReferences(): List<SpatialReference> {
@@ -441,8 +446,22 @@ open class GeneralMapper(
         return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
                 val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "iso")
-                Event(KeyValue(typeKey), it.date?.date?.dateTime ?: "")
+                val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
+                    ?: it.date?.date?.date?.let { parseDate(it) }
+                    ?: ""
+                Event(KeyValue(typeKey), date)
             } ?: emptyList()
+    }
+
+    private fun parseDateTime(value: String): String {
+        return OffsetDateTime.parse(value).toInstant().toString()
+    }
+
+    private fun parseDate(value: String): String {
+        return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toString()
     }
 
     fun getTimeRelatedInfo(): TimeInfo? {
@@ -629,7 +648,10 @@ open class GeneralMapper(
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue =
                     if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
-                val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
+                val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
+                val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
+                    ?: dateObject?.date?.let { parseDate(it) }
+                    ?: ""
                 ConformanceResult(
                     pass,
                     specificationEntryId != null,
