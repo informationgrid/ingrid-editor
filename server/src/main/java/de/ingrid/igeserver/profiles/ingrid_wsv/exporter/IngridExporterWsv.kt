@@ -49,7 +49,7 @@ class IngridExporterWsv(
         ExportTypeInfo(
             DocumentCategory.DATA,
             "indexInGridIDFWsv",
-            "Internes Portal (WSV)",
+            "Index mit Warenkkorb (WSV)",
             "Export von Ingrid Dokumenten ins IDF Format für WSV für die Anzeige im internen Portal.",
             "application/json",
             "json",
