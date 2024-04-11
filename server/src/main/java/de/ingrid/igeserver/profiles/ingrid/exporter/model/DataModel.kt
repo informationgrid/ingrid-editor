@@ -25,8 +25,10 @@ import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.model.KeyValue
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
+import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
@@ -244,7 +246,11 @@ data class ConformanceResult(
     val publicationDate: String? = null
         get() {
             return if (field?.contains("Z") == true) {
-                val isoDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(field)
+                val isoDate: Date = try {
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(field)
+                } catch (ex: ParseException) {
+                    Date.from(OffsetDateTime.parse(field).toInstant())
+                }
                 SimpleDateFormat("yyyy-MM-dd").format(isoDate)
             } else field
         }

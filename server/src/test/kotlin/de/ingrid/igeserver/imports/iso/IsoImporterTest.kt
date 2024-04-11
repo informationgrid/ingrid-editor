@@ -54,7 +54,7 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
         every { documentService.docRepo } returns documentRepository
-        every { documentRepository.findAddressByOrganisationName(any()) } returns null
+        every { documentRepository.findAddressByOrganisationName(any()) } returns emptyList()
     }
 
     @Test

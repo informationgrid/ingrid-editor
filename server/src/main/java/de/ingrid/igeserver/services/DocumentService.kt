@@ -1020,7 +1020,7 @@ class DocumentService(
         if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
             if (parent.document.state == DOCUMENT_STATE.DRAFT) {
                 throw ValidationException.withReason(
-                    "Parent must be published, since moved dataset is also published",
+                    "Parent '${parent.document.uuid}' must be published, since moved dataset '${docData.document.uuid}' is also published",
                     errorCode = "PARENT_IS_NOT_PUBLISHED"
                 )
             }

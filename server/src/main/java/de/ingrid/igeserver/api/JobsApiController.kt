@@ -201,7 +201,7 @@ class JobsApiController(
     override fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String> {
         if (updateExternalCoupledResourcesTask == null) throw ServerException.withReason("UpdateExternalCoupledResourcesTask not available")
         
-        val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: ""
+        val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: "No external coupled resources found"
         return ResponseEntity.ok(result)
     }
     

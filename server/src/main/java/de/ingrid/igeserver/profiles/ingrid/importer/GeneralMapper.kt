@@ -103,12 +103,14 @@ open class GeneralMapper(
             }
 
             // add parent organisation if exists
+            var parentAddressUuid: String? = null
             val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
                 val parentOrganisation = findParentOrganisation(organization)
-                val parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
+                parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
                     addressMaps[organization] = newUuid
                 }
 
+                // if the parent address is already present, it's not necessary to be added
                 if (parentOrganisation == null) {
                     mutableListOf(
                         PointOfContact(
@@ -135,7 +137,7 @@ open class GeneralMapper(
                 addressInfo,
                 positionName,
                 hoursOfService,
-                parents.lastOrNull()?.refUuid
+                parentAddressUuid
             )
             parents.add(pointOfContact)
             parents
@@ -143,7 +145,7 @@ open class GeneralMapper(
     }
 
     private fun findParentOrganisation(name: String): String? {
-        return addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(name)
+        return addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(name).firstOrNull()
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {

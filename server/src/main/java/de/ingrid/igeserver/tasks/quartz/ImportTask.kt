@@ -126,10 +126,15 @@ class ImportTask(
     private fun prepareErrorMessage(ex: Exception): String {
         var message = ex.message ?: ex.toString()
         if (ex is ValidationException) {
-            val details = ex.data?.get("error") as List<JsonErrorEntry>?
-            message += ": " + details
-                ?.filter { it.error != "A subschema had errors" }
-                ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            val error = ex.data?.get("error")
+            if (error is String) {
+                message = error
+            } else {
+                val details = error as List<JsonErrorEntry>?
+                message += ": " + details
+                    ?.filter { it.error != "A subschema had errors" }
+                    ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            }
         }
         return message
     }
