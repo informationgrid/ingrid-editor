@@ -334,7 +334,7 @@ class DatasetsApiController(
         principal: Principal,
         parentId: String?,
         isAddress: Boolean
-    ): ResponseEntity<List<JsonNode>> {
+    ): ResponseEntity<List<DocumentInfo>> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isSuperOrCatAdmin = authUtils.isAdmin(principal)
@@ -355,11 +355,27 @@ class DatasetsApiController(
         }
 
         val childDocs = childrenInfo.hits
-            .map { doc ->
-                addMetadataToDocument(doc)
-                documentService.convertToJsonNode(doc.document)
-            }
+            .map { mapToDocumentInfo(it, isAddress) }
         return ResponseEntity.ok(childDocs)
+    }
+
+    private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo {
+        return DocumentInfo(
+            data.wrapper.id!!,
+            data.document.title ?: "???",
+            data.document.uuid,
+            data.document.state.getState(),
+            data.wrapper.countChildren > 0,
+            data.wrapper.parent?.id,
+            data.wrapper.type,
+            data.document.modified!!,
+            data.document.contentmodified!!,
+            data.wrapper.pending_date,
+            data.wrapper.tags.joinToString(","),
+            data.wrapper.hasWritePermission,
+            data.wrapper.hasOnlySubtreeWritePermission,
+            isAddress
+        )
     }
 
     private fun getRootDocsFromGroup(
