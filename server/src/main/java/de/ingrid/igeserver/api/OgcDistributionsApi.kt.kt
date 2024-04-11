@@ -61,20 +61,4 @@ interface OgcDistributionsApi {
         @Parameter(description = "## distribution ID \n\n The Identifier of the distribution.") @RequestParam(value = "uri", required = true) distributionId: String,
     ): ResponseEntity<String>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/distributions", produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
-    @Operation(tags=["OGC/Distributions"], responses = [], summary = "Get information about distribution", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Distribution deleted successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
-    fun getDistributionInformation(
-        @RequestHeader allHeaders: Map<String, String>,
-        principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Distribution ID \n\n The Identifier of a distribution. \n\n If no identifier is given, than it returns a list of all distributions of a record.") @RequestParam(value = "uri", required = false) distributionId: String?,
-        @Parameter(description = "## Format: Response Encoding: \n **Custom Parameter** \n\n ### Supported formats: \n\n• get response in JSON with value `json` (default) \n\n• get response in HTML with value `html`")
-        @RequestParam(value = "f", required = false, defaultValue = "json") format: String?,
-    ): ResponseEntity<ByteArray>
-
 }

@@ -19,10 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelperFactory
@@ -32,14 +28,11 @@ import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.Scope
 import net.pwall.json.schema.parser.Parser.Companion.isZero
-import org.apache.commons.io.IOUtils
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.IOException
 
 @Service
 @Profile("ogc-distributions-api")
@@ -101,23 +94,6 @@ class OgcDistributionsService(
         }
     }
 
-    fun getDistribution(baseUrl: String, collectionId: String, recordId: String, distributionId: String?, userID: String): JsonNode {
-        apiValidationService.validateCollection(collectionId)
-        val document = getDocument(collectionId, recordId)
-        val profile = (catalogService.getCatalogById(collectionId)).type
-        val distributionHelper = (ogcDistributionHelperFactory.getDistributionHelper(profile))[0]
-        val distributions = distributionHelper.getDistributionDetails(baseUrl, document, collectionId, recordId, distributionId)
-
-        if (distributions.size() == 0 && !distributionId.isNullOrEmpty()) {
-            // If specific distribution with distributionID was not found in DOCUMENT
-            throw NotFoundException.withMissingResource(distributionId, "distribution/file")
-        }
-
-        val missingFiles = distributionHelper.searchForMissingFiles(distributions, collectionId, userID, recordId, distributionId)
-        if (missingFiles.isNotEmpty()) throw ValidationException.withReason(data = "Following distributions are part of document but files are missing: $missingFiles" )
-
-        return distributions
-    }
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
         return documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId, false)
@@ -131,11 +107,4 @@ class OgcDistributionsService(
         }
     }
 
-    fun prepareForHtmlExport(json: JsonNode): ObjectNode {
-        val objectMapper = ObjectMapper()
-        val arrayNode = objectMapper.readTree(json.toString()) as ArrayNode
-        val objectNode = objectMapper.createObjectNode()
-        objectNode.putArray("item").addAll(arrayNode);
-        return objectNode
-    }
 }

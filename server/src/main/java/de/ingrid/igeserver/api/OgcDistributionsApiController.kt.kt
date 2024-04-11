@@ -19,26 +19,21 @@
  */
 package de.ingrid.igeserver.api
 
-import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.services.OgcDistributionsService
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.http.MediaType
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 @RestController
 @Profile("ogc-distributions-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcDistributionsApiController(
     private val ogcDistributionsService: OgcDistributionsService,
-    private val ogcHtmlConverterService: OgcHtmlConverterService
 ): OgcDistributionsApi {
 
     val log = logger()
@@ -65,37 +60,6 @@ class OgcDistributionsApiController(
         val userID = principal.name
         ogcDistributionsService.handleDeleteDistribution(principal, userID, collectionId, recordId, distributionId)
         return ResponseEntity.ok().build()
-    }
-
-    override fun getDistributionInformation(
-        allHeaders: Map<String, String>,
-        principal: Authentication,
-        collectionId: String,
-        recordId: String,
-        distributionId: String?,
-        format: String?
-    ): ResponseEntity<ByteArray> {
-        val userID = principal.name
-        val mimeType: String
-
-        val host = allHeaders["host"]?:""
-        val baseUrl = if ( host.contains("localhost") ) "http://$host" else "https://$host"
-
-        val distributionInformation: JsonNode = ogcDistributionsService.getDistribution(baseUrl, collectionId, recordId, distributionId, userID)
-
-        val response: Any = if (format == "html") {
-            mimeType = MediaType.TEXT_HTML_VALUE
-            val infoAsObjectNode = ogcDistributionsService.prepareForHtmlExport(distributionInformation)
-            ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "distributions")
-        } else {
-            mimeType = MediaType.APPLICATION_JSON_VALUE
-            distributionInformation
-        }
-
-        val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", mimeType)
-
-        return ResponseEntity.ok().headers(responseHeaders).body(response.toString().toByteArray())
     }
 
 }
