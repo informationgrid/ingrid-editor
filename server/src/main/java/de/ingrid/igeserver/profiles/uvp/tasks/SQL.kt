@@ -29,6 +29,7 @@ val sqlStepsPublished = """
              document doc,
              jsonb_array_elements(doc.data -> 'processingSteps') elems
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
@@ -43,6 +44,7 @@ val sqlStepsWithDrafts = """
              document doc,
              jsonb_array_elements(doc.data -> 'processingSteps') elems
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
@@ -56,6 +58,7 @@ val sqlNegativeDecisionDocsPublished = """
              document_wrapper dw,
              document doc
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
@@ -70,6 +73,7 @@ val sqlNegativeDecisionDocsWithDraft = """
              document_wrapper dw,
              document doc
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'

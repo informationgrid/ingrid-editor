@@ -87,7 +87,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         SELECT doc.id as docId
                      FROM catalog,
                           document_wrapper dw, document doc
-                     WHERE dw.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
+                     WHERE dw.catalog_id = catalog.id AND doc.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
                        AND dw.uuid = doc.uuid
                        AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
                        AND dw.category = 'data'

@@ -44,6 +44,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
              document doc,
              jsonb_array_elements(doc.data -> 'processingSteps') elems
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
@@ -57,6 +58,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
              document_wrapper dw,
              document doc
         WHERE dw.catalog_id = catalog.id
+          AND doc.catalog_id = catalog.id
           AND catalog.type = 'uvp'
           AND dw.deleted = 0
           AND dw.category = 'data'
