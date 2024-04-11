@@ -48,6 +48,7 @@ import {
   PasteDialogComponent,
   PasteDialogOptions,
 } from "../../+form/dialogs/copy-cut-paste/paste-dialog.component";
+import { IgeError } from "../../models/ige-error";
 
 @UntilDestroy()
 @Component({
@@ -243,7 +244,7 @@ export class ImportComponent implements OnInit {
       });
   }
 
-  handleStepEvent(index: number) {
+  handleStepEvent(index: number, retries = 0) {
     if (index !== 1) return;
     this.datasetsWithNoPermission = [];
 
@@ -259,7 +260,12 @@ export class ImportComponent implements OnInit {
       );
 
     // in case the report has not been ready yet
+    // TODO: find a better solution
     if (this.message.report) action();
-    else setTimeout(() => action(), 100);
+    else if (retries === 3) {
+      throw new IgeError("Report was not ready after 3 retries");
+    } else {
+      setTimeout(() => this.handleStepEvent(index, retries + 1), 500);
+    }
   }
 }
