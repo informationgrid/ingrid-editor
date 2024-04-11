@@ -21,7 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.ogc.OgcHtmlConverterService
-import de.ingrid.igeserver.services.OgcResourceService
+import de.ingrid.igeserver.services.OgcDistributionsService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.context.annotation.Profile
@@ -34,16 +34,16 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 @RestController
-@Profile("ogc-resources-api")
+@Profile("ogc-distributions-api")
 @RequestMapping(path = ["/api/ogc"])
-class OgcResourcesApiController(
-    private val ogcResourceService: OgcResourceService,
+class OgcDistributionsApiController(
+    private val ogcDistributionsService: OgcDistributionsService,
     private val ogcHtmlConverterService: OgcHtmlConverterService
-): OgcResourcesApi {
+): OgcDistributionsApi {
 
     val log = logger()
 
-    override fun postResource(
+    override fun postDistribution(
         allHeaders: Map<String, String>,
         principal: Authentication,
         collectionId: String,
@@ -51,28 +51,28 @@ class OgcResourcesApiController(
         files: List<MultipartFile>
     ): ResponseEntity<String> {
         val userID = principal.name
-        ogcResourceService.handleUploadResource(principal, userID, collectionId, recordId, files)
+        ogcDistributionsService.handleUploadDistribution(principal, userID, collectionId, recordId, files)
         return ResponseEntity.ok().build()
     }
 
-    override fun deleteResource(
+    override fun deleteDistribution(
         allHeaders: Map<String, String>,
         principal: Authentication,
         collectionId: String,
         recordId: String,
-        resourceId: String
+        distributionId: String
     ): ResponseEntity<String> {
         val userID = principal.name
-        ogcResourceService.handleDeleteResource(principal, userID, collectionId, recordId, resourceId)
+        ogcDistributionsService.handleDeleteDistribution(principal, userID, collectionId, recordId, distributionId)
         return ResponseEntity.ok().build()
     }
 
-    override fun getResourceInformation(
+    override fun getDistributionInformation(
         allHeaders: Map<String, String>,
         principal: Authentication,
         collectionId: String,
         recordId: String,
-        resourceId: String?,
+        distributionId: String?,
         format: String?
     ): ResponseEntity<ByteArray> {
         val userID = principal.name
@@ -81,15 +81,15 @@ class OgcResourcesApiController(
         val host = allHeaders["host"]?:""
         val baseUrl = if ( host.contains("localhost") ) "http://$host" else "https://$host"
 
-        val resourceInformation: JsonNode = ogcResourceService.getResource(baseUrl, collectionId, recordId, resourceId, userID)
+        val distributionInformation: JsonNode = ogcDistributionsService.getDistribution(baseUrl, collectionId, recordId, distributionId, userID)
 
         val response: Any = if (format == "html") {
             mimeType = MediaType.TEXT_HTML_VALUE
-            val infoAsObjectNode = ogcResourceService.prepareForHtmlExport(resourceInformation)
-            ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Resources")
+            val infoAsObjectNode = ogcDistributionsService.prepareForHtmlExport(distributionInformation)
+            ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "distributions")
         } else {
             mimeType = MediaType.APPLICATION_JSON_VALUE
-            resourceInformation
+            distributionInformation
         }
 
         val responseHeaders = HttpHeaders()
@@ -98,16 +98,16 @@ class OgcResourcesApiController(
         return ResponseEntity.ok().headers(responseHeaders).body(response.toString().toByteArray())
     }
 
-    override fun getResourceDownload(
+    override fun getDistributionDownload(
         allHeaders: Map<String, String>,
         principal: Authentication,
         collectionId: String,
         recordId: String,
-        resourceId: String
+        distributionId: String
     ): ResponseEntity<StreamingResponseBody> {
         val userID = principal.name
-        val fileStream = ogcResourceService.handleResourceDownload(collectionId, recordId, resourceId, userID)
-        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"${resourceId}\"").body(fileStream)
+        val fileStream = ogcDistributionsService.handleDistributionDownload(collectionId, recordId, distributionId, userID)
+        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"${distributionId}\"").body(fileStream)
     }
 
 

@@ -17,43 +17,43 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.ogc.resourceHelper
+package de.ingrid.igeserver.ogc.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.context.annotation.Profile
 
-@Profile("ogc-resources-api")
-interface OgcResourceHelper {
+@Profile("ogc-distributions-api")
+interface OgcDistributionHelper {
 
-    val typeInfo: ResourceTypeInfo
+    val typeInfo: DistributionTypeInfo
 
     /**
-     * Request information about specific resource and/or all resources of a document.
+     * Request information about specific distribution and/or all distributions of a document.
      * @param document is Ige Document
-     * @param resourceId is URI of a resource (file uri or link uri)
-     * @return JsonNode with info about resource & ArrayNode of resources of document
+     * @param distributionId is URI of a distribution (file uri or link uri)
+     * @return JsonNode with info about distribution & ArrayNode of distributions of document
      */
-    fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode
+    fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode
 
     /**
-     * Check if files exist AND if resources are listed in document.
-     * @param resources JsonNode with info about resource & ArrayNode of resources of document
+     * Check if files exist AND if distributions are listed in document.
+     * @param distributions JsonNode with info about distribution & ArrayNode of distributions of document
      * @param collectionId is catalog identifier
      * @param userID is user identifier
      * @param recordId is document identifier
-     * @param resourceId is URI of a resource (file uri or link uri)
+     * @param distributionId is URI of a distribution (file uri or link uri)
      * @return List of missing files (URIs).
      */
-    fun searchForMissingFiles(resources: JsonNode, collectionId: String, userID: String, recordId: String, resourceId: String?): List<String>
+    fun searchForMissingFiles(distributions: JsonNode, collectionId: String, userID: String, recordId: String, distributionId: String?): List<String>
 
     /**
-     * Check if a given resource can be handled by this resource helper.
-     * This is needed to automatically determine which resource helper can be used.
+     * Check if a given distribution can be handled by this distribution helper.
+     * This is needed to automatically determine which distribution helper can be used.
      *
      * @param profile is the file type
      * @param fileContent is the content of the file as a simple string
-     * @return true if resource can be handled, otherwise false
+     * @return true if distribution can be handled, otherwise false
      */
-    fun canHandleResource(profile: String): Boolean
+    fun canHandleDistribution(profile: String): Boolean
 }

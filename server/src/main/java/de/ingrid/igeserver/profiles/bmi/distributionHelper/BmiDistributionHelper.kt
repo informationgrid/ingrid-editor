@@ -17,68 +17,68 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.bmi.resourceHelper
+package de.ingrid.igeserver.profiles.bmi.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelper
-import de.ingrid.igeserver.ogc.resourceHelper.ResourceTypeInfo
+import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.mdek.upload.storage.Storage
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-resources-api & bmi")
+@Profile("ogc-distributions-api & bmi")
 @Service
-class BmiResourceHelper(
+class BmiDistributionHelper(
     private val storage: Storage
-): OgcResourceHelper {
+): OgcDistributionHelper {
 
-    override val typeInfo: ResourceTypeInfo
-        get() = ResourceTypeInfo(
+    override val typeInfo: DistributionTypeInfo
+        get() = DistributionTypeInfo(
             "bmi",
             "BMI",
-            description = "BMI Resource Helper",
+            description = "BMI distribution Helper",
             emptyList()
         )
 
-    override fun canHandleResource(profile: String): Boolean {
+    override fun canHandleDistribution(profile: String): Boolean {
         return "bmi" == profile
     }
 
-    override fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
-        val allResources = document.data["distributions"]
+    override fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
+        val allDistributions = document.data["distributions"]
 
         if (!baseUrl.isNullOrEmpty()) {
-            allResources.forEach() { resource -> addLinkToResources( baseUrl, collectionId, recordId, resource )}
+            allDistributions.forEach() { distribution -> addLinkToDistributions( baseUrl, collectionId, recordId, distribution )}
         }
 
-        return if (resourceId.isNullOrEmpty()) {
-            allResources
+        return if (distributionId.isNullOrEmpty()) {
+            allDistributions
         } else {
-            val filteredResources = allResources.filter() { it["link"]["uri"].textValue() == resourceId }
-            convertListToJsonNode(filteredResources)
+            val filteredDistributions = allDistributions.filter() { it["link"]["uri"].textValue() == distributionId }
+            convertListToJsonNode(filteredDistributions)
         }
     }
 
     override fun searchForMissingFiles(
-        resources: JsonNode,
+        distributions: JsonNode,
         collectionId: String,
         userID: String,
         recordId: String,
-        resourceId: String?
+        distributionId: String?
     ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        resources.forEach() { resource ->
-            val currentResourceId = resource["link"]["uri"].textValue()
-            val isLink = resource["link"]["asLink"].asBoolean()
+        distributions.forEach() { distribution ->
+            val currentDistributionId = distribution["link"]["uri"].textValue()
+            val isLink = distribution["link"]["asLink"].asBoolean()
             isLink.ifFalse {
-                val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
             }
         }
         return missingFiles
@@ -89,11 +89,11 @@ class BmiResourceHelper(
         return objectMapper.valueToTree(listOfJsonNodes)
     }
 
-    private fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, resource: JsonNode ) {
-        val resourceId = resource["link"]["uri"].textValue()
-        val isLink = resource["link"]["asLink"].asBoolean()
-        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/resources/download?uri=$resourceId"
-        if (!isLink) (resource["link"] as ObjectNode).put("url", link)
+    private fun addLinkToDistributions(baseUrl: String, collectionId: String, recordId: String, distribution: JsonNode ) {
+        val distributionId = distribution["link"]["uri"].textValue()
+        val isLink = distribution["link"]["asLink"].asBoolean()
+        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/distributions/download?uri=$distributionId"
+        if (!isLink) (distribution["link"] as ObjectNode).put("url", link)
     }
 
 }

@@ -17,18 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.ogc.resourceHelper
+package de.ingrid.igeserver.ogc.distributionHelper
 
 import org.springframework.context.annotation.Profile
 
 
 /**
- * @param id the ID of the resource helper
- * @param name the display name of the resource helper
- * @param description a description for the resource helper
- * @param profiles in which profiles can this resource helper be used
+ * @param id the ID of the distribution helper
+ * @param name the display name of the distribution helper
+ * @param description a description for the distribution helper
+ * @param profiles in which profiles can this distribution helper be used
  *
  */
 
-@Profile("ogc-resources-api")
-data class ResourceTypeInfo(val id: String, val name: String, val description: String, val profiles: List<String>)
+@Profile("ogc-distributions-api")
+data class DistributionTypeInfo(val id: String, val name: String, val description: String, val profiles: List<String>)

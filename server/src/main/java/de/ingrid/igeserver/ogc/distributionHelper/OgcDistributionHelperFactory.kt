@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.ogc.resourceHelper
+package de.ingrid.igeserver.ogc.distributionHelper
 
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ConfigurationException
@@ -26,38 +26,38 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-resources-api")
+@Profile("ogc-distributions-api")
 @Service
-class OgcResourceHelperFactory() {
+class OgcDistributionHelperFactory() {
     private val log = logger()
 
     @Autowired
-    private lateinit var resourceHelper: List<OgcResourceHelper>
+    private lateinit var distributionHelper: List<OgcDistributionHelper>
 
-    fun getResourceHelperById(id: String): OgcResourceHelper {
-        return resourceHelper.find { it.typeInfo.id == id } ?: throw NotFoundException.withMissingResource(id, null)
+    fun getDistributionHelperById(id: String): OgcDistributionHelper {
+        return distributionHelper.find { it.typeInfo.id == id } ?: throw NotFoundException.withMissingResource(id, null)
     }
 
-    fun getResourceHelperInfos(): List<ResourceTypeInfo> {
-        return resourceHelper.map { it.typeInfo }
+    fun getDistributionHelperInfos(): List<DistributionTypeInfo> {
+        return distributionHelper.map { it.typeInfo }
     }
 
-    fun getResourceHelper(profile: String): List<OgcResourceHelper> {
+    fun getDistributionHelper(profile: String): List<OgcDistributionHelper> {
 
-        val responsibleResourceHelper = resourceHelper
-            .filter { it.canHandleResource(profile) }
+        val responsibleDistributionHelper = distributionHelper
+            .filter { it.canHandleDistribution(profile) }
 
-        handleEmptyOrMultipleResourceHelper(responsibleResourceHelper, profile)
+        handleEmptyOrMultipleDistributionHelper(responsibleDistributionHelper, profile)
 
-        return responsibleResourceHelper
+        return responsibleDistributionHelper
     }
 
-    private fun handleEmptyOrMultipleResourceHelper(responsibleImporter: List<OgcResourceHelper>, profile: String) {
+    private fun handleEmptyOrMultipleDistributionHelper(responsibleImporter: List<OgcDistributionHelper>, profile: String) {
         if (responsibleImporter.isEmpty()) {
-            throw ConfigurationException.withReason("No resource helper found for profile type '$profile'.")
+            throw ConfigurationException.withReason("No distribution helper found for profile type '$profile'.")
         } else if (responsibleImporter.size > 1) {
             val importerNames = responsibleImporter.joinToString(",") { it.typeInfo.name }
-            throw ConfigurationException.withReason("More than one resource helper found for profile type '$profile': '$importerNames'.")
+            throw ConfigurationException.withReason("More than one distribution helper found for profile type '$profile': '$importerNames'.")
         }
     }
 

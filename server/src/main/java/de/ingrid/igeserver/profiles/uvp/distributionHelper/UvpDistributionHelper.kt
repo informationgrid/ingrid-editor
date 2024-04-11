@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.uvp.resourceHelper
+package de.ingrid.igeserver.profiles.uvp.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelper
-import de.ingrid.igeserver.ogc.resourceHelper.ResourceTypeInfo
+import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.context.annotation.Profile
@@ -72,66 +72,66 @@ data class PublicDisclosureReportsRecommendationDocs(
     val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
 )
 
-@Profile("ogc-resources-api & uvp")
+@Profile("ogc-distributions-api & uvp")
 @Service
-class UvpResourceHelper(
+class UvpDistributionHelper(
     private val storage: Storage
-): OgcResourceHelper {
-    override val typeInfo: ResourceTypeInfo
-        get() = ResourceTypeInfo(
+): OgcDistributionHelper {
+    override val typeInfo: DistributionTypeInfo
+        get() = DistributionTypeInfo(
             "uvp",
             "UVP",
-            "UVP Resource Helper",
+            "UVP Distribution Helper",
             emptyList()
         )
 
-    override fun canHandleResource(profile: String): Boolean {
+    override fun canHandleDistribution(profile: String): Boolean {
         return "uvp" == profile
     }
 
-    override fun getResourceDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, resourceId: String?): JsonNode {
+    override fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
 
 
-        val allResources: JsonNode = document.data.get("processingSteps")
+        val allDistributions: JsonNode = document.data.get("processingSteps")
 
         if (!baseUrl.isNullOrEmpty()) {
-            allResources.forEach() { resource ->
-                val type = resource.get("type").textValue()
+            allDistributions.forEach() { distribution ->
+                val type = distribution.get("type").textValue()
                 if(type == "publicHearing") {
-                    resource["considerationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    distribution["considerationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
                 }
                 if(type == "decisionOfAdmission") {
-                    resource["approvalDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                    resource["decisionDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    distribution["approvalDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
+                    distribution["decisionDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
                 }
                 if(type == "publicDisclosure") {
-                    resource["furtherDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                    resource["applicationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                    resource["announcementDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
-                    resource["reportsRecommendationDocs"].forEach() { doc -> addLinkToResources(baseUrl, collectionId, recordId, doc) }
+                    distribution["furtherDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
+                    distribution["applicationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
+                    distribution["announcementDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
+                    distribution["reportsRecommendationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
                 }
             }
         }
 
-        return if(resourceId.isNullOrEmpty()) {
-            allResources
+        return if(distributionId.isNullOrEmpty()) {
+            allDistributions
         } else {
-            val matchedResources = mutableListOf<Any>()
-            allResources.forEach() {
+            val matchedDistributions = mutableListOf<Any>()
+            allDistributions.forEach() {
                 val processStep = it
                 val type = processStep.get("type").textValue()
 
                 if(type == "publicHearing") {
                     val docTypeList: List<String> = listOf("considerationDocs")
                     docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
+                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
                             is JsonNode -> {
                                 val requestedInfo = PublicHearing(
                                     type = updatedProcessStep.get("type").textValue(),
                                     publicHearingDate = updatedProcessStep.get("publicHearingDate"),
                                     considerationDocs = updatedProcessStep.get("considerationDocs")
                                 )
-                                matchedResources.add(requestedInfo)
+                                matchedDistributions.add(requestedInfo)
                             }
                         }
                     }
@@ -140,10 +140,10 @@ class UvpResourceHelper(
                 if(type == "decisionOfAdmission") {
                     val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
                     docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
+                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
                             is JsonNode -> {
-                                val approvalDocs = updatedProcessStep.get("approvalDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
-                                val decisionDocs = updatedProcessStep.get("decisionDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val approvalDocs = updatedProcessStep.get("approvalDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
+                                val decisionDocs = updatedProcessStep.get("decisionDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
 
                                 if (approvalDocs.isNotEmpty()) {
                                     val requestedInfo = DecisionOfAdmissionApprovalDocs(
@@ -151,7 +151,7 @@ class UvpResourceHelper(
                                         decisionDate = updatedProcessStep.get("decisionDate").textValue(),
                                         approvalDocs = approvalDocs
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
 
                                 if (decisionDocs.isNotEmpty()) {
@@ -160,7 +160,7 @@ class UvpResourceHelper(
                                         decisionDate = updatedProcessStep.get("decisionDate").textValue(),
                                         decisionDocs = decisionDocs
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
                             }
                         }
@@ -170,12 +170,12 @@ class UvpResourceHelper(
                 if(type == "publicDisclosure") {
                     val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
                     docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(resourceId, docType, processStep)) {
+                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
                             is JsonNode -> {
-                                val furtherDocs = updatedProcessStep.get("furtherDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
-                                val applicationDocs = updatedProcessStep.get("applicationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
-                                val announcementDocs = updatedProcessStep.get("announcementDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
-                                val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == resourceId }
+                                val furtherDocs = updatedProcessStep.get("furtherDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
+                                val applicationDocs = updatedProcessStep.get("applicationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
+                                val announcementDocs = updatedProcessStep.get("announcementDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
+                                val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
 
                                 if (furtherDocs.isNotEmpty()) {
                                     val requestedInfo = PublicDisclosureFurtherDocs(
@@ -184,7 +184,7 @@ class UvpResourceHelper(
                                         furtherDocs = furtherDocs,
                                         furtherDocsPublishDuringDisclosure = updatedProcessStep.get("furtherDocsPublishDuringDisclosure").asBoolean()
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
 
                                 if (applicationDocs.isNotEmpty()) {
@@ -194,7 +194,7 @@ class UvpResourceHelper(
                                         applicationDocs = applicationDocs,
                                         applicationDocsPublishDuringDisclosure = updatedProcessStep.get("applicationDocsPublishDuringDisclosure").asBoolean()
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
 
                                 if (announcementDocs.isNotEmpty()) {
@@ -204,7 +204,7 @@ class UvpResourceHelper(
                                         announcementDocs = announcementDocs,
                                         announcementDocsPublishDuringDisclosure = updatedProcessStep.get("announcementDocsPublishDuringDisclosure").asBoolean()
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
 
                                 if (reportsRecommendationDocs.isNotEmpty()) {
@@ -214,7 +214,7 @@ class UvpResourceHelper(
                                         reportsRecommendationDocs = applicationDocs,
                                         reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.get("reportsRecommendationDocsPublishDuringDisclosure").asBoolean()
                                     )
-                                    matchedResources.add(requestedInfo)
+                                    matchedDistributions.add(requestedInfo)
                                 }
 
                             }
@@ -223,74 +223,74 @@ class UvpResourceHelper(
                 }
 
             }
-            return convertListToJsonNode(matchedResources as List<Any>)
+            return convertListToJsonNode(matchedDistributions as List<Any>)
         }
     }
 
-    override fun searchForMissingFiles(resources: JsonNode, collectionId: String, userID: String, recordId: String, resourceId: String?): List<String> {
+    override fun searchForMissingFiles(distributions: JsonNode, collectionId: String, userID: String, recordId: String, distributionId: String?): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        resources.forEach() { resource ->
-            val type = resource.get("type").textValue()
+        distributions.forEach() { distribution ->
+            val type = distribution.get("type").textValue()
             if(type == "publicHearing") {
-                resource["considerationDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["considerationDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
             }
             if(type == "decisionOfAdmission") {
-                resource["approvalDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["approvalDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
-                resource["decisionDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["decisionDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
             }
             if(type == "publicDisclosure") {
-                resource["furtherDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["furtherDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
-                resource["applicationDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["applicationDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
-                resource["announcementDocs"].forEach() { doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["announcementDocs"].forEach() { doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
-                resource["reportsRecommendationDocs"].forEach() {doc ->
-                    val currentResourceId = doc["downloadURL"]["uri"].textValue()
+                distribution["reportsRecommendationDocs"].forEach() {doc ->
+                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
                     val isLink = doc["downloadURL"]["asLink"].asBoolean()
                     isLink.ifFalse {
-                        val resourceExists = storage.exists(collectionId, userID, recordId, currentResourceId)
-                        resourceExists.ifFalse { missingFiles.add(currentResourceId) }
+                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
                     }
                 }
             }
@@ -299,9 +299,9 @@ class UvpResourceHelper(
         return missingFiles
     }
 
-    private fun removeUnwantedInfos(resourceId: String, docType: String, processStep: JsonNode): JsonNode?  {
+    private fun removeUnwantedInfos(distributionId: String, docType: String, processStep: JsonNode): JsonNode?  {
         val jsonNodeList = processStep.get(docType).filter() {
-            it.get("downloadURL").get("uri").textValue() == resourceId
+            it.get("downloadURL").get("uri").textValue() == distributionId
         }
         if (jsonNodeList.size.isZero()) return null
 
@@ -315,10 +315,10 @@ class UvpResourceHelper(
         return objectMapper.valueToTree(listOfJsonNodes)
     }
 
-    private fun addLinkToResources(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
-        val resourceId = doc["downloadURL"]["uri"].textValue()
+    private fun addLinkToDistributions(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
+        val distributionId = doc["downloadURL"]["uri"].textValue()
         val isLink = doc["downloadURL"]["asLink"].asBoolean()
-        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/resources/download?uri=$resourceId"
+        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/distributions/download?uri=$distributionId"
         if (!isLink) (doc["downloadURL"] as ObjectNode).put("url", link)
     }
 

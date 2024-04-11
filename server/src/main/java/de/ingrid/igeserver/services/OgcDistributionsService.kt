@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
-import de.ingrid.igeserver.ogc.resourceHelper.OgcResourceHelperFactory
+import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelperFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
@@ -42,47 +42,47 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException
 
 @Service
-@Profile("ogc-resources-api")
-class OgcResourceService(
+@Profile("ogc-distributions-api")
+class OgcDistributionsService(
     private val storage: Storage,
     private val catalogService: CatalogService,
     private val documentService: DocumentService,
     private val apiValidationService: ApiValidationService,
-    private val ogcResourceHelperFactory: OgcResourceHelperFactory
+    private val ogcDistributionHelperFactory: OgcDistributionHelperFactory
     ) {
 
     @Transactional
-    fun handleUploadResource(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
+    fun handleUploadDistribution(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
         apiValidationService.validateCollection(collectionId)
         val docWrapper: DocumentWrapper = getDocWrapper(collectionId, recordId)
         val document = getDocument(collectionId, recordId)
         val profile = (catalogService.getCatalogById(collectionId)).type
-        val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
+        val distributionHelper = (ogcDistributionHelperFactory.getDistributionHelper(profile))[0]
 
-        if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any resources.")
+        if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any distributions.")
 
         files.forEach() { file ->
             // First: Check if all files a listed in document.
-            val resourceId = file.originalFilename!!
-            val resource = resourceHelper.getResourceDetails(null, document, collectionId, recordId, resourceId)
-            val sizeOfResource = resource.size()
-            if (sizeOfResource.isZero()) throw ValidationException.withReason("Failed to save resources. Resource '$resourceId' is not part of record. Update record before uploading any resources.")
-            if (sizeOfResource > 1) throw ValidationException.withReason("Failed to save resource. Resource '$resourceId' is listed $sizeOfResource times in document.")
+            val distributionId = file.originalFilename!!
+            val distribution = distributionHelper.getDistributionDetails(null, document, collectionId, recordId, distributionId)
+            val sizeOfDistribution = distribution.size()
+            if (sizeOfDistribution.isZero()) throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is not part of record. Update record before uploading any distributions.")
+            if (sizeOfDistribution > 1) throw ValidationException.withReason("Failed to save distribution. Distribution '$distributionId' is listed $sizeOfDistribution times in document.")
         }
 
         files.forEach() { file ->
             // Second: If all files are listed in document, save files.
-            val resourceId = file.originalFilename!!
+            val distributionId = file.originalFilename!!
             val fileSize = file.size
             try {
-                storage.validate(collectionId, userID, recordId, resourceId, fileSize)
+                storage.validate(collectionId, userID, recordId, distributionId, fileSize)
             } catch (ex: Exception) {
                 throw ValidationException.withReason(ex.message)
             }
-            if (storage.exists(collectionId, userID, recordId, resourceId)) {
-                throw ValidationException.withReason("File already exists: $resourceId")
+            if (storage.exists(collectionId, userID, recordId, distributionId)) {
+                throw ValidationException.withReason("File already exists: $distributionId")
             }
-            storage.write(collectionId, userID, recordId, resourceId, file.inputStream, fileSize, false)
+            storage.write(collectionId, userID, recordId, distributionId, file.inputStream, fileSize, false)
         }
 
         documentService.updateDocument(principal, collectionId, docWrapper.id!!, document)
@@ -90,33 +90,33 @@ class OgcResourceService(
     }
 
     @Transactional
-    fun handleDeleteResource(principal: Authentication, userID: String, collectionId: String, recordId: String, resourceId: String) {
+    fun handleDeleteDistribution(principal: Authentication, userID: String, collectionId: String, recordId: String, distributionId: String) {
         apiValidationService.validateCollection(collectionId)
-        if (storage.exists(collectionId, userID, recordId, resourceId)) {
+        if (storage.exists(collectionId, userID, recordId, distributionId)) {
             val publishedFiles: List<FileSystemItem> = this.storage.list(collectionId, Scope.PUBLISHED)
-            val fileSystemItem = publishedFiles.filter() { file -> file.file == resourceId && file.path == recordId}
+            val fileSystemItem = publishedFiles.filter() { file -> file.file == distributionId && file.path == recordId}
             storage.delete(collectionId, fileSystemItem[0])
         } else {
-            throw NotFoundException.withMissingResource(resourceId, "file")
+            throw NotFoundException.withMissingResource(distributionId, "file")
         }
     }
 
-    fun getResource(baseUrl: String, collectionId: String, recordId: String, resourceId: String?, userID: String): JsonNode {
+    fun getDistribution(baseUrl: String, collectionId: String, recordId: String, distributionId: String?, userID: String): JsonNode {
         apiValidationService.validateCollection(collectionId)
         val document = getDocument(collectionId, recordId)
         val profile = (catalogService.getCatalogById(collectionId)).type
-        val resourceHelper = (ogcResourceHelperFactory.getResourceHelper(profile))[0]
-        val resources = resourceHelper.getResourceDetails(baseUrl, document, collectionId, recordId, resourceId)
+        val distributionHelper = (ogcDistributionHelperFactory.getDistributionHelper(profile))[0]
+        val distributions = distributionHelper.getDistributionDetails(baseUrl, document, collectionId, recordId, distributionId)
 
-        if (resources.size() == 0 && !resourceId.isNullOrEmpty()) {
-            // If specific resource with resourceID was not found in DOCUMENT
-            throw NotFoundException.withMissingResource(resourceId, "resource/file")
+        if (distributions.size() == 0 && !distributionId.isNullOrEmpty()) {
+            // If specific distribution with distributionID was not found in DOCUMENT
+            throw NotFoundException.withMissingResource(distributionId, "distribution/file")
         }
 
-        val missingFiles = resourceHelper.searchForMissingFiles(resources, collectionId, userID, recordId, resourceId)
-        if (missingFiles.isNotEmpty()) throw ValidationException.withReason(data = "Following resources are part of document but files are missing: $missingFiles" )
+        val missingFiles = distributionHelper.searchForMissingFiles(distributions, collectionId, userID, recordId, distributionId)
+        if (missingFiles.isNotEmpty()) throw ValidationException.withReason(data = "Following distributions are part of document but files are missing: $missingFiles" )
 
-        return resources
+        return distributions
     }
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
@@ -132,16 +132,16 @@ class OgcResourceService(
     }
 
 
-    fun handleResourceDownload(collectionId: String, recordId: String, resourceId: String, userID: String): StreamingResponseBody {
+    fun handleDistributionDownload(collectionId: String, recordId: String, distributionId: String, userID: String): StreamingResponseBody {
         apiValidationService.validateCollection(collectionId)
         val fileStream = StreamingResponseBody { output ->
             try {
-                this.storage.read(collectionId, userID, recordId, resourceId).use { data ->
+                this.storage.read(collectionId, userID, recordId, distributionId).use { data ->
                     IOUtils.copy(data, output)
                     output.flush()
                 }
             } catch (ex: IOException) {
-                throw NotFoundException.withMissingResource(resourceId, "file")
+                throw NotFoundException.withMissingResource(distributionId, "file")
             }
         }
         return fileStream
