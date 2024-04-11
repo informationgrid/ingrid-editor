@@ -60,7 +60,7 @@ class OgcDistributionsService(
             val distribution = distributionHelper.getDistributionDetails(document, collectionId, recordId, distributionId)
             val sizeOfDistribution = distribution.size()
             if (sizeOfDistribution.isZero()) throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is not part of record. Update record before uploading any distributions.")
-            if (sizeOfDistribution > 1) throw ValidationException.withReason("Failed to save distribution. Distribution '$distributionId' is listed $sizeOfDistribution times in document.")
+            if (sizeOfDistribution > 1) throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is listed $sizeOfDistribution times in document.")
         }
 
         files.forEach() { file ->
