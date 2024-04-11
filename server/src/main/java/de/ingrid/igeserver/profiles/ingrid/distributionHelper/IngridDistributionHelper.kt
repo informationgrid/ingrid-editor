@@ -49,12 +49,8 @@ class IngridDistributionHelper(
         return "ingrid" == profile
     }
 
-    override fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
+    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
         val allDistributions = document.data["graphicOverviews"]
-
-        if (!baseUrl.isNullOrEmpty()) {
-            allDistributions.forEach() { distribution -> addLinkToDistributions( baseUrl, collectionId, recordId, distribution )}
-        }
 
         return if (distributionId.isNullOrEmpty()) {
             allDistributions
@@ -88,13 +84,6 @@ class IngridDistributionHelper(
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
         return objectMapper.valueToTree(listOfJsonNodes)
-    }
-
-    private fun addLinkToDistributions(baseUrl: String, collectionId: String, recordId: String, distribution: JsonNode ) {
-        val distributionId = distribution["fileName"]["uri"].textValue()
-        val isLink = distribution["fileName"]["asLink"].asBoolean()
-        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/distributions/download?uri=$distributionId"
-        if (!isLink) (distribution["fileName"] as ObjectNode).put("url", link)
     }
 
 }

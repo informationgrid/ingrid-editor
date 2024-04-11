@@ -98,17 +98,4 @@ class OgcDistributionsApiController(
         return ResponseEntity.ok().headers(responseHeaders).body(response.toString().toByteArray())
     }
 
-    override fun getDistributionDownload(
-        allHeaders: Map<String, String>,
-        principal: Authentication,
-        collectionId: String,
-        recordId: String,
-        distributionId: String
-    ): ResponseEntity<StreamingResponseBody> {
-        val userID = principal.name
-        val fileStream = ogcDistributionsService.handleDistributionDownload(collectionId, recordId, distributionId, userID)
-        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"${distributionId}\"").body(fileStream)
-    }
-
-
 }

@@ -77,18 +77,4 @@ interface OgcDistributionsApi {
         @RequestParam(value = "f", required = false, defaultValue = "json") format: String?,
     ): ResponseEntity<ByteArray>
 
-    @GetMapping("/collections/{collectionId}/items/{recordId}/distributions/download", produces = [JakartaMediaType.APPLICATION_OCTET_STREAM])
-    @Operation(tags=["OGC/Distributions"], responses = [], summary = "Download distribution file", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Distribution deleted successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
-    fun getDistributionDownload(
-        @RequestHeader allHeaders: Map<String, String>,
-        principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Distribution ID \n\n The Identifier of the distribution.") @RequestParam(value = "uri", required = true) distributionId: String,
-    ): ResponseEntity<StreamingResponseBody>
-
 }

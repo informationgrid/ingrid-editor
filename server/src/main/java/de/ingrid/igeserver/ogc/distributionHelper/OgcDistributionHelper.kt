@@ -34,7 +34,7 @@ interface OgcDistributionHelper {
      * @param distributionId is URI of a distribution (file uri or link uri)
      * @return JsonNode with info about distribution & ArrayNode of distributions of document
      */
-    fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode
+    fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode
 
     /**
      * Check if files exist AND if distributions are listed in document.

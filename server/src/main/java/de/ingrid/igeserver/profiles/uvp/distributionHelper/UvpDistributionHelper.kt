@@ -89,29 +89,8 @@ class UvpDistributionHelper(
         return "uvp" == profile
     }
 
-    override fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
-
-
+    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
         val allDistributions: JsonNode = document.data.get("processingSteps")
-
-        if (!baseUrl.isNullOrEmpty()) {
-            allDistributions.forEach() { distribution ->
-                val type = distribution.get("type").textValue()
-                if(type == "publicHearing") {
-                    distribution["considerationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                }
-                if(type == "decisionOfAdmission") {
-                    distribution["approvalDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                    distribution["decisionDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                }
-                if(type == "publicDisclosure") {
-                    distribution["furtherDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                    distribution["applicationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                    distribution["announcementDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                    distribution["reportsRecommendationDocs"].forEach() { doc -> addLinkToDistributions(baseUrl, collectionId, recordId, doc) }
-                }
-            }
-        }
 
         return if(distributionId.isNullOrEmpty()) {
             allDistributions
@@ -313,13 +292,6 @@ class UvpDistributionHelper(
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
         return objectMapper.valueToTree(listOfJsonNodes)
-    }
-
-    private fun addLinkToDistributions(baseUrl: String, collectionId: String, recordId: String, doc: JsonNode ) {
-        val distributionId = doc["downloadURL"]["uri"].textValue()
-        val isLink = doc["downloadURL"]["asLink"].asBoolean()
-        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/distributions/download?uri=$distributionId"
-        if (!isLink) (doc["downloadURL"] as ObjectNode).put("url", link)
     }
 
 }

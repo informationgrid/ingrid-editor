@@ -49,12 +49,8 @@ class BmiDistributionHelper(
         return "bmi" == profile
     }
 
-    override fun getDistributionDetails(baseUrl: String?, document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
+    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
         val allDistributions = document.data["distributions"]
-
-        if (!baseUrl.isNullOrEmpty()) {
-            allDistributions.forEach() { distribution -> addLinkToDistributions( baseUrl, collectionId, recordId, distribution )}
-        }
 
         return if (distributionId.isNullOrEmpty()) {
             allDistributions
@@ -87,13 +83,6 @@ class BmiDistributionHelper(
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
         val objectMapper: ObjectMapper = jacksonObjectMapper()
         return objectMapper.valueToTree(listOfJsonNodes)
-    }
-
-    private fun addLinkToDistributions(baseUrl: String, collectionId: String, recordId: String, distribution: JsonNode ) {
-        val distributionId = distribution["link"]["uri"].textValue()
-        val isLink = distribution["link"]["asLink"].asBoolean()
-        val link =  "$baseUrl/api/ogc/collections/$collectionId/items/$recordId/distributions/download?uri=$distributionId"
-        if (!isLink) (distribution["link"] as ObjectNode).put("url", link)
     }
 
 }
