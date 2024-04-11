@@ -19,19 +19,19 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
-import { InformationSystemDoctypeHMDK } from "./hmdk/doctypes/information-system.doctype";
-import { SpecialisedTaskDoctypeHMDK } from "./hmdk/doctypes/specialisedTask.doctype";
-import { GeoDatasetDoctypeHMDK } from "./hmdk/doctypes/geo-dataset.doctype";
-import { GeoServiceDoctypeHmdk } from "./hmdk/doctypes/geo-service.doctype";
-import { ProjectDoctypeHMDK } from "./hmdk/doctypes/project.doctype";
-import { DataCollectionDoctypeHMDK } from "./hmdk/doctypes/data-collection.doctype";
-import { PublicationDoctypeHMDK } from "./hmdk/doctypes/publication.doctype";
+import { InformationSystemDoctypeHMDK } from "./ingrid-hmdk/doctypes/information-system.doctype";
+import { SpecialisedTaskDoctypeHMDK } from "./ingrid-hmdk/doctypes/specialisedTask.doctype";
+import { GeoDatasetDoctypeHMDK } from "./ingrid-hmdk/doctypes/geo-dataset.doctype";
+import { GeoServiceDoctypeHmdk } from "./ingrid-hmdk/doctypes/geo-service.doctype";
+import { ProjectDoctypeHMDK } from "./ingrid-hmdk/doctypes/project.doctype";
+import { DataCollectionDoctypeHMDK } from "./ingrid-hmdk/doctypes/data-collection.doctype";
+import { PublicationDoctypeHMDK } from "./ingrid-hmdk/doctypes/publication.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
 import { TreeQuery } from "../app/store/tree/tree.query";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { PluginService } from "../app/services/plugin/plugin.service";
-import { ModifyPublishedBehaviour } from "./hmdk/behaviours/modify-published.behaviour";
+import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-published.behaviour";
 
 @UntilDestroy()
 @Component({
