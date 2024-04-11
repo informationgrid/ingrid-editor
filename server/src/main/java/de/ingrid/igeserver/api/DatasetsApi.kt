@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.services.DocumentInfo
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -138,7 +139,7 @@ interface DatasetsApi {
             value = "address",
             required = false
         ) isAddress: Boolean
-    ): ResponseEntity<List<JsonNode>>
+    ): ResponseEntity<List<DocumentInfo>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
     @ApiResponses(

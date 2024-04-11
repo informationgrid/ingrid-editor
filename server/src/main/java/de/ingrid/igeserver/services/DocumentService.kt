@@ -63,6 +63,23 @@ enum class InitiatorAction {
     DEFAULT, COPY, IMPORT
 }
 
+data class DocumentInfo(
+    val _id: Number,
+    val title: String,
+    val _uuid: String,
+    val _state: String,
+    val _hasChildren: Boolean,
+    val _parent: Number?,
+    val _type: String,
+    val _modified: OffsetDateTime,
+    val _contentModified: OffsetDateTime,
+    val _pendingDate: OffsetDateTime?,
+    val _tags: String,
+    val hasWritePermission: Boolean,
+    val hasOnlySubtreeWritePermission: Boolean,
+    val isAddress: Boolean
+)
+
 @Service
 class DocumentService(
     var docRepo: DocumentRepository,
