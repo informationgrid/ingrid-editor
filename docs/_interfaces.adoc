@@ -216,30 +216,20 @@ Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
 ==== OGC API Customization
 This section provides an overview of custom OGC endpoints.
 
-===== Resources / Files
+===== Distributions (Files)
 [cols="1,2,3"]
 |===
 | Method | Type | Description
 
-| GET | Resource/Resources
-| Get information about resource/resources
+| POST | Distributions
+| Upload multiple distributions (only file upload; no document updates)
 
-Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/resources```
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/distributions```
 
-| GET | Resource
-| Download a resource
+| DELETE | Distributions
+| Delete a distribution (only file deletion; no document updates)
 
-Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/resources/download?uri={fileUri}```
-
-| POST | Resources
-| Upload multiple resources (only file upload; no document updates)
-
-Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
-
-| DELETE | Resource
-| Delete a resource (only file deletion; no document updates)
-
-Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}?uri={fileUri}```
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/distributions?uri={fileUri}```
 
 |===
 
