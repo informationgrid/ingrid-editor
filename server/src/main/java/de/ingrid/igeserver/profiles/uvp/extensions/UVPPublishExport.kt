@@ -74,6 +74,7 @@ class UVPPublishExport(
             WHERE (
                 dw.uuid = d.uuid
                 AND dw.catalog_id = cat.id
+                AND d.catalog_id = cat.id
                 AND cat.identifier = '${context.catalogId}'
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
