@@ -386,13 +386,15 @@ class ImportService(
     }
 
     private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions, catalogId: String) {
+        val documentData = documentInfo.document.data
         // convert UUID to database ID of wrapper
-        val explicitParent = documentInfo.document.data.getString("parentAsUuid")?.let { 
+        val explicitParent = documentData.getString("parentAsUuid")?.let {
+            documentData.remove("parentAsUuid")
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it).id
         }
         when (documentInfo.isAddress) {
-            true -> documentInfo.document.data.put(FIELD_PARENT, explicitParent ?: options.parentAddress)
-            false -> documentInfo.document.data.put(FIELD_PARENT, options.parentDocument)
+            true -> documentData.put(FIELD_PARENT, explicitParent ?: options.parentAddress)
+            false -> documentData.put(FIELD_PARENT, options.parentDocument)
         }
     }
 
