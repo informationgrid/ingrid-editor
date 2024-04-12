@@ -85,6 +85,7 @@ class OgcDistributionsService(
     @Transactional
     fun handleDeleteDistribution(principal: Authentication, userID: String, collectionId: String, recordId: String, distributionId: String) {
         apiValidationService.validateCollection(collectionId)
+        getDocWrapper(collectionId, recordId)
         if (storage.exists(collectionId, userID, recordId, distributionId)) {
             val publishedFiles: List<FileSystemItem> = this.storage.list(collectionId, Scope.PUBLISHED)
             val fileSystemItem = publishedFiles.filter() { file -> file.file == distributionId && file.path == recordId}
@@ -96,7 +97,11 @@ class OgcDistributionsService(
 
 
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
-        return documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId, false)
+        try {
+            return documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId, false)
+        } catch (error: Exception) {
+            throw NotFoundException.withMissingResource(recordId, "Record")
+        }
     }
 
     private fun getDocument(collectionId: String, recordId: String): Document {
