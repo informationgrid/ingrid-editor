@@ -444,6 +444,11 @@
                     <gmd:otherConstraints>
                         @template.export.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
+                    @if(TransformationTools.hasValue(useconstraint.getNote()))
+                        <gmd:otherConstraints>
+                            <gco:CharacterString>Quellenvermerk: ${useconstraint.getNote()}</gco:CharacterString>
+                        </gmd:otherConstraints>
+                    @endif
                     @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
@@ -800,7 +805,7 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
             @endif
-            @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+            @if(page.hasDistributorInfo())
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
@@ -817,9 +822,16 @@ ${contentInfo}
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>
-                                <gmd:orderingInstructions>
-                                    <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
-                                </gmd:orderingInstructions>
+                                @if(TransformationTools.hasValue(page.getData().getFees()))
+                                    <gmd:fees>
+                                        <gco:CharacterString>${page.getData().getFees()}</gco:CharacterString>
+                                    </gmd:fees>
+                                @endif
+                                @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+                                    <gmd:orderingInstructions>
+                                        <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
+                                    </gmd:orderingInstructions>
+                                @endif
                             </gmd:MD_StandardOrderProcess>
                         </gmd:distributionOrderProcess>
                     </gmd:MD_Distributor>

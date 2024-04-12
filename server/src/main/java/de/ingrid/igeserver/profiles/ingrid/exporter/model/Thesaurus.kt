@@ -24,5 +24,7 @@ data class Thesaurus(
     var date: String? = null,
     var link: String? = null,
     var showType: Boolean = true,
-    var keywords: List<KeywordIso> = emptyList()
+    var keywords: List<KeywordIso> = emptyList(),
+    var type: String = "theme",
+    var dateType: String = "publication"
 )

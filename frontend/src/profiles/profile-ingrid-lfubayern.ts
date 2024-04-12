@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, inject, NgModule } from "@angular/core";
-import { InGridComponent } from "./profile-ingrid";
+import { InGridComponent, InGridDoctype } from "./profile-ingrid";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lufbayern/doctypes/common-fields";
@@ -33,6 +33,7 @@ class InGridLFUBayernComponent extends InGridComponent {
 
   constructor() {
     super();
+    this.isoView.isoExportFormat = "ingridISOLfuBayern";
     this.modifyFormFieldConfiguration();
   }
 
@@ -67,17 +68,23 @@ class InGridLFUBayernComponent extends InGridComponent {
 
   private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
     const f = this.common.findFieldElementWithId(fieldConfig, "pointOfContact");
-    this.addAfter(f, this.common.getGeodataFieldConfig());
 
-    const f2 = this.common.findFieldElementWithId(fieldConfig, "free");
-    this.addAfter(f2, this.common.getInternalKeywordsFieldConfig());
-    this.addAfter(f2, this.common.getGeologicalKeywordsFieldConfig());
+    if (
+      docType === InGridDoctype.InGridGeoDataset.toString() ||
+      docType === InGridDoctype.InGridGeoService.toString()
+    ) {
+      this.addAfter(f, this.common.getGeodataFieldConfig());
 
-    if (docType === "InGridGeoDataset") {
+      const f2 = this.common.findFieldElementWithId(fieldConfig, "free");
+      this.addAfter(f2, this.common.getInternalKeywordsFieldConfig());
+      this.addAfter(f2, this.common.getGeologicalKeywordsFieldConfig());
+    }
+
+    if (docType === InGridDoctype.InGridGeoDataset.toString()) {
       this.addAfter(f, this.common.getSupplementFieldConfig());
     }
 
-    if (docType !== "InGridSpecialisedTask") {
+    if (docType !== InGridDoctype.InGridSpecialisedTask.toString()) {
       this.addAfter(
         this.common.findFieldElementWithId(fieldConfig, "orderInfo"),
         this.common.getFeesFieldConfig(),

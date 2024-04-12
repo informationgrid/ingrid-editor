@@ -28,7 +28,7 @@
                 @if(thesaurus.getName() != null )
                     @if(thesaurus.getShowType())
                         <gmd:type>
-                            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+                            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="${thesaurus.getType()}"/>
                         </gmd:type>
                     @endif
                     @if(!thesaurus.getName().isEmpty())
@@ -43,7 +43,7 @@
                                         <gco:Date>${thesaurus.getDate()}</gco:Date>
                                     </gmd:date>
                                     <gmd:dateType>
-                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${thesaurus.getDateType()}">${thesaurus.getDateType()}</gmd:CI_DateTypeCode>
                                     </gmd:dateType>
                                 </gmd:CI_Date>
                             </gmd:date>

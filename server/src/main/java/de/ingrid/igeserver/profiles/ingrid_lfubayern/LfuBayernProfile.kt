@@ -47,6 +47,6 @@ class LfuBayernProfile(
     override val title = "InGrid Katalog (LfU Bayern)"
     override val parentProfile = "ingrid"
 
-//    override val indexExportFormatID = "indexInGridIDFBast"
+    override val indexExportFormatID = "IngridIndexExporterLfub"
 
 }
