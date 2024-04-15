@@ -85,12 +85,22 @@ class InGridLFUBayernComponent extends InGridComponent {
     }
 
     if (docType !== InGridDoctype.InGridSpecialisedTask.toString()) {
+      const useConstraintsElement = this.common.findFieldElementWithId(
+        fieldConfig,
+        "useConstraints",
+      );
+
+      // limit number of use constraints to 1
+      useConstraintsElement.fieldConfig[
+        useConstraintsElement.index
+      ].expressions["props.maxLength"] = "1";
+
       this.addAfter(
         this.common.findFieldElementWithId(fieldConfig, "orderInfo"),
         this.common.getFeesFieldConfig(),
       );
       this.addAfter(
-        this.common.findFieldElementWithId(fieldConfig, "useConstraints"),
+        useConstraintsElement,
         this.common.getUseConstraintsCommentFieldConfig(),
       );
     }
