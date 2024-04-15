@@ -48,6 +48,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
     "props.minLength"?;
+    "props.maxLength"?;
     "props.hintStart"?;
     "props.description"?;
   };
@@ -77,6 +78,7 @@ export interface RepeatOptions extends Options {
   showBorder?: boolean;
   addButtonTitle?: string;
   noDrag?: boolean;
+  maxLength?: number;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -427,6 +429,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
+        maxLength: options?.maxLength,
         menuOptions: options?.menuOptions,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,

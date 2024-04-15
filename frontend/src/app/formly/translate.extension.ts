@@ -61,7 +61,7 @@ export function registerTranslateExtension(transloco: TranslocoService) {
       {
         name: "min",
         message: (error: any, field: FormlyFieldConfig) => {
-          transloco.translate("form.validationMessages.min", {
+          return transloco.translate("form.validationMessages.min", {
             value: field.props.min,
           });
         },
@@ -69,8 +69,16 @@ export function registerTranslateExtension(transloco: TranslocoService) {
       {
         name: "max",
         message: (error: any, field: FormlyFieldConfig) => {
-          transloco.translate("form.validationMessages.max", {
+          return transloco.translate("form.validationMessages.max", {
             value: field.props.max,
+          });
+        },
+      },
+      {
+        name: "maxLength",
+        message: (error: any, field: FormlyFieldConfig) => {
+          return transloco.translate("form.validationMessages.maxLength", {
+            value: field.props.maxLength,
           });
         },
       },
