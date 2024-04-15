@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.transformer
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document

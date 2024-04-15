@@ -446,7 +446,7 @@
                     </gmd:otherConstraints>
                     @if(TransformationTools.hasValue(useconstraint.getNote()))
                         <gmd:otherConstraints>
-                            <gco:CharacterString>Quellenvermerk: ${useconstraint.getNote()}</gco:CharacterString>
+                            <gco:CharacterString>${useconstraint.getNote()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
                     @if(TransformationTools.hasValue(useconstraint.getSource()))

@@ -49,7 +49,11 @@ fun lfubUseConstraints(
     }
 }
 
-fun lfubGetDescriptiveKeywords(superDescriptiveKeywords: List<Thesaurus>, docData: JsonNode): List<Thesaurus> {
+fun lfubGetDescriptiveKeywords(
+    superDescriptiveKeywords: List<Thesaurus>,
+    docData: JsonNode,
+    ignoreInternalKeywords: Boolean = false
+): List<Thesaurus> {
     val lfuInternalKeywords = Thesaurus(
         "LfU Internal Keywords",
         "2024-07-01",
@@ -63,5 +67,6 @@ fun lfubGetDescriptiveKeywords(superDescriptiveKeywords: List<Thesaurus>, docDat
         keywords = docData.get("keywords").get("geologicalKeywords")?.map { KeywordIso(it.asText()) }
             ?: emptyList(),
     )
-    return superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
+    return if (ignoreInternalKeywords) superDescriptiveKeywords + lfugeoKeywords
+    else superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
 }

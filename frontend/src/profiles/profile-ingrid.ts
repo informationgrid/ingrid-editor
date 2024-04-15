@@ -56,13 +56,13 @@ import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 
 export enum InGridDoctype {
-  InGridSpecialisedTask,
-  InGridGeoDataset,
-  InGridPublication,
-  InGridGeoService,
-  InGridProject,
-  InGridDataCollection,
-  InGridInformationSystem,
+  InGridSpecialisedTask = "InGridSpecialisedTask",
+  InGridGeoDataset = "InGridGeoDataset",
+  InGridPublication = "InGridPublication",
+  InGridGeoService = "InGridGeoService",
+  InGridProject = "InGridProject",
+  InGridDataCollection = "InGridDataCollection",
+  InGridInformationSystem = "InGridInformationSystem",
 }
 
 @Component({

@@ -29,7 +29,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.transformer.*
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.*
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
-class IngridIndexExporterLfub(
+class IngridExporterLfub(
     idfExporter: IngridIdfExporterLfub,
     luceneExporter: IngridLuceneExporterLfub,
     documentWrapperRepository: DocumentWrapperRepository,

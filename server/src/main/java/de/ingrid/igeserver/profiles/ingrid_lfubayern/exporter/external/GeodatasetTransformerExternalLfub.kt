@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.transformer
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -32,7 +32,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
-class GeodatasetTransformerLfub(
+class GeodatasetTransformerExternalLfub(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -48,9 +48,8 @@ class GeodatasetTransformerLfub(
     private val docData = doc.data
 
     override val supplementalInformation = docData.getString("supplementalInformation")
-    override val datasetUri = docData.getString("dataSetURI")
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, true)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

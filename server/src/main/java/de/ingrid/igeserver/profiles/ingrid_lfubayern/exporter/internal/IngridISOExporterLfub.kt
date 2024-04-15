@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -26,8 +26,8 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.convertStringToDocument
 import de.ingrid.igeserver.profiles.ingrid.exporter.transformIDFtoIso
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridExporterLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridIdfExporterLfub
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridIndexExporterLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridLuceneExporterLfub
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
@@ -40,7 +40,7 @@ class IngridISOExporterLfub(
     idfExporter: IngridIdfExporterLfub,
     luceneExporter: IngridLuceneExporterLfub,
     documentWrapperRepository: DocumentWrapperRepository
-) : IngridIndexExporterLfub(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterLfub(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

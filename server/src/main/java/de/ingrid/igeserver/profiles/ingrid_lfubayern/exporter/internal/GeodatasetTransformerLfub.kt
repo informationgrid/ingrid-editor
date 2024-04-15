@@ -17,19 +17,22 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.transformer
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetDescriptiveKeywords
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
-class IngridModelTransformerLfub(
+class GeodatasetTransformerLfub(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -38,11 +41,16 @@ class IngridModelTransformerLfub(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : IngridModelTransformer(
+) : GeodatasetModelTransformer(
     model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService
 ) {
 
     private val docData = doc.data
+
+    override val supplementalInformation = docData.getString("supplementalInformation")
+    override val datasetUri = docData.getString("dataSetURI")
+
+    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

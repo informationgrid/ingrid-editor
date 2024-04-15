@@ -26,7 +26,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterAddressLfub(
+class IngridExporterAddressLfub(
     idfExporter: IngridIdfExporterLfub,
     luceneExporter: IngridLuceneExporterLfub,
     documentWrapperRepository: DocumentWrapperRepository
