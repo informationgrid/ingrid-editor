@@ -28,11 +28,11 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
@@ -281,7 +281,7 @@ open class IngridModelTransformer(
             else -> null
         }
         CharacterStringModel(referenceSystem, epsgLink)
-    }
+    } ?: emptyList()
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
@@ -459,8 +459,7 @@ open class IngridModelTransformer(
                 ?: codelists.getValue("6010", it) ?: "",
             "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
         )
-
-    }
+    } ?: emptyList()
 
 
     val contentField: MutableList<String> = mutableListOf()
@@ -626,7 +625,7 @@ open class IngridModelTransformer(
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
-    open var pointOfContact: List<AddressModelTransformer> = emptyList()
+    var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }

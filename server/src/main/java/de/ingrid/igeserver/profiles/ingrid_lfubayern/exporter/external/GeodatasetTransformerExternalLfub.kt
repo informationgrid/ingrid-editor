@@ -29,7 +29,6 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetDescriptive
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
 class GeodatasetTransformerExternalLfub(
@@ -47,9 +46,8 @@ class GeodatasetTransformerExternalLfub(
 
     private val docData = doc.data
 
-    override val supplementalInformation = docData.getString("supplementalInformation")
-
-    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, true)
+    override fun getDescriptiveKeywords(): List<Thesaurus> =
+        lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, true)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

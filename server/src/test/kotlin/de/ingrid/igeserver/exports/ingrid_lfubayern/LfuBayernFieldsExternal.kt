@@ -68,7 +68,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 result shouldNotContain "https://my-dataseturi.com"
             }
             
-            should("export supplementalInformation for GeoDataset, testing: $docType") {
+            should("export no supplementalInformation, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "supplementalInformation": "internal comments"
@@ -76,11 +76,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                if (docType == "GeoDataset") {
-                    result shouldContain supplementalInformation
-                } else {
-                    result shouldNotContain "internal comments"
-                }
+                result shouldNotContain "internal comments"
             }
             
             should("export no 'Interne Schlüsselwörter', testing: $docType") {
@@ -153,7 +149,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                                     {
                                         "title": {
                                             "key": "18"
-                                        }
+                                        },
+                                        "source": "meine Quelle"
                                     }
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
@@ -162,7 +159,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintComments
+                result shouldContain useConstraintCommentsFull
             }
         }
     }

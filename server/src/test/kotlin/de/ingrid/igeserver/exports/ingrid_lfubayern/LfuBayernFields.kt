@@ -152,7 +152,7 @@ class LfuBayernFields : GeodatasetBase() {
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain useConstraintComments
             }
-            
+
             should("export additional use constraints comment with existing constraints, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
@@ -161,7 +161,8 @@ class LfuBayernFields : GeodatasetBase() {
                                     {
                                         "title": {
                                             "key": "18"
-                                        }
+                                        },
+                                        "source": "meine Quelle"
                                     }
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
@@ -170,7 +171,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintComments
+                result shouldContain useConstraintCommentsFull
             }
         }
     }
