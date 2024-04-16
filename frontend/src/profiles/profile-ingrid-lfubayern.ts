@@ -37,71 +37,80 @@ class InGridLFUBayernComponent extends InGridComponent {
     this.modifyFormFieldConfiguration();
   }
 
-  /* protected getDocTypes = () => [
+  protected getDocTypes = () => [
     this.folder,
     this.geoDataset,
     this.geoService,
-    this.dataCollection,
+    this.informationSystem,
     this.person,
     this.organisation,
-  ];*/
+  ];
 
   private modifyFormFieldConfiguration() {
-    [
-      this.specialisedTask,
-      this.geoDataset,
-      this.publication,
-      this.geoService,
-      this.project,
-      this.dataCollection,
-      this.informationSystem,
-    ].forEach((docType) => {
-      docType.showAdVCompatible = false;
-      docType.showAdVProductGroup = false;
+    [this.geoDataset, this.geoService, this.informationSystem].forEach(
+      (docType) => {
+        docType.showAdVCompatible = false;
+        docType.showAdVProductGroup = false;
 
-      docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-        this.addFields(fieldConfig, docType.id);
-        return fieldConfig;
-      };
-    });
+        docType.manipulateDocumentFields = (
+          fieldConfig: FormlyFieldConfig[],
+        ) => {
+          this.addFields(fieldConfig, docType.id);
+          return fieldConfig;
+        };
+      },
+    );
   }
 
   private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
-    const f = this.common.findFieldElementWithId(fieldConfig, "pointOfContact");
+    const pointOfContactPosition = this.common.findFieldElementWithId(
+      fieldConfig,
+      "pointOfContact",
+    );
+    const freeKeywordsPosition = this.common.findFieldElementWithId(
+      fieldConfig,
+      "free",
+    );
+    const orderInfoPosition = this.common.findFieldElementWithId(
+      fieldConfig,
+      "orderInfo",
+    );
+
+    // for all classes
+    this.addAfter(pointOfContactPosition, this.common.getGeodataFieldConfig());
+    this.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
+    const useConstraintsElement = this.common.findFieldElementWithId(
+      fieldConfig,
+      "useConstraints",
+    );
+
+    // limit number of use constraints to 1
+    useConstraintsElement.fieldConfig[useConstraintsElement.index].expressions[
+      "props.maxLength"
+    ] = "1";
+    this.addAfter(
+      useConstraintsElement,
+      this.common.getUseConstraintsCommentFieldConfig(),
+    );
 
     if (
       docType === InGridDoctype.InGridGeoDataset.toString() ||
       docType === InGridDoctype.InGridGeoService.toString()
     ) {
-      this.addAfter(f, this.common.getGeodataFieldConfig());
-
-      const f2 = this.common.findFieldElementWithId(fieldConfig, "free");
-      this.addAfter(f2, this.common.getInternalKeywordsFieldConfig());
-      this.addAfter(f2, this.common.getGeologicalKeywordsFieldConfig());
+      this.addAfter(
+        freeKeywordsPosition,
+        this.common.getInternalKeywordsFieldConfig(),
+      );
     }
 
     if (docType === InGridDoctype.InGridGeoDataset.toString()) {
-      this.addAfter(f, this.common.getSupplementFieldConfig());
-    }
-
-    if (docType !== InGridDoctype.InGridSpecialisedTask.toString()) {
-      const useConstraintsElement = this.common.findFieldElementWithId(
-        fieldConfig,
-        "useConstraints",
-      );
-
-      // limit number of use constraints to 1
-      useConstraintsElement.fieldConfig[
-        useConstraintsElement.index
-      ].expressions["props.maxLength"] = "1";
-
       this.addAfter(
-        this.common.findFieldElementWithId(fieldConfig, "orderInfo"),
-        this.common.getFeesFieldConfig(),
+        pointOfContactPosition,
+        this.common.getSupplementFieldConfig(),
       );
       this.addAfter(
-        useConstraintsElement,
-        this.common.getUseConstraintsCommentFieldConfig(),
+        freeKeywordsPosition,
+        this.common.getGeologicalKeywordsFieldConfig(),
       );
     }
   }

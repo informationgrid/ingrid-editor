@@ -33,12 +33,12 @@ import io.mockk.every
 class LfuBayernFieldsExternal : GeodatasetBase() {
 
     private val docSamples = mapOf(
-        "SpecializedTask" to "/export/ingrid/specialized-task.sample.maximal.json",
+//        "SpecializedTask" to "/export/ingrid/specialized-task.sample.maximal.json",
         "GeoDataset" to "/export/ingrid/geo-dataset.minimal.sample.json",
-        "Publication" to "/export/ingrid/publication.sample.maximal.json",
+//        "Publication" to "/export/ingrid/publication.sample.maximal.json",
         "GeoService" to "/export/ingrid/geo-service.minimal.sample.json",
-        "Project" to "/export/ingrid/project.sample.maximal.json",
-        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
+//        "Project" to "/export/ingrid/project.sample.maximal.json",
+//        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
         "InformationSystem" to "/export/ingrid/information-system.maximal.sample.json"
     )
 

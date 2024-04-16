@@ -33,12 +33,12 @@ import io.mockk.every
 class LfuBayernFields : GeodatasetBase() {
 
     private val docSamples = mapOf(
-        "SpecializedTask" to "/export/ingrid/specialized-task.sample.maximal.json",
+//        "SpecializedTask" to "/export/ingrid/specialized-task.sample.maximal.json",
         "GeoDataset" to "/export/ingrid/geo-dataset.minimal.sample.json",
-        "Publication" to "/export/ingrid/publication.sample.maximal.json",
+//        "Publication" to "/export/ingrid/publication.sample.maximal.json",
         "GeoService" to "/export/ingrid/geo-service.minimal.sample.json",
-        "Project" to "/export/ingrid/project.sample.maximal.json",
-        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
+//        "Project" to "/export/ingrid/project.sample.maximal.json",
+//        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
         "InformationSystem" to "/export/ingrid/information-system.maximal.sample.json"
     )
 
@@ -57,7 +57,7 @@ class LfuBayernFields : GeodatasetBase() {
 
     init {
         docSamples.forEach { (docType, docSample) ->
-            should("export dataSetURI for GeoDataset and GeoService, testing: $docType") {
+            should("export dataSetURI, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "dataSetURI": "https://my-dataseturi.com"
@@ -65,11 +65,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                if (docType == "GeoDataset" || docType == "GeoService") {
-                    result shouldContain dataSetURI
-                } else {
-                    result shouldNotContain "https://my-dataseturi.com"
-                }
+                result shouldContain dataSetURI
             }
             
             should("export supplementalInformation for GeoDataset, testing: $docType") {

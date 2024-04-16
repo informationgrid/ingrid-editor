@@ -17,11 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
@@ -29,7 +29,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 
-class DataCollectionTransformerLfub(
+class InformationSystemTransformerExternalLfub(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -38,7 +38,7 @@ class DataCollectionTransformerLfub(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : DataCollectionModelTransformer(
+) : InformationSystemModelTransformer(
     model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService
 ) {
 

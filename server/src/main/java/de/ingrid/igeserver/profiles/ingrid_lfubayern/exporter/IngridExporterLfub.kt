@@ -29,7 +29,9 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.*
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeodatasetTransformerLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -71,12 +73,8 @@ class IngridIdfExporterLfub(
 
     override fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
         return super.getModelTransormerClasses().toMutableMap().apply {
-            put("InGridSpecialisedTask", IngridModelTransformerLfub::class)
             put("InGridGeoDataset", GeodatasetTransformerLfub::class)
-            put("InGridPublication", PublicationTransformerLfub::class)
             put("InGridGeoService", GeoserviceTransformerLfub::class)
-            put("InGridProject", ProjectTransformerLfub::class)
-            put("InGridDataCollection", DataCollectionTransformerLfub::class)
             put("InGridInformationSystem", InformationSystemTransformerLfub::class)
         }
     }
@@ -127,12 +125,8 @@ class IngridLuceneExporterLfub(
 
     private fun getTransformer(docType: String): KClass<out Any>? {
         return when (docType) {
-            "InGridSpecialisedTask" -> IngridModelTransformerLfub::class
             "InGridGeoDataset" -> GeodatasetTransformerLfub::class
-            "InGridPublication" -> PublicationTransformerLfub::class
             "InGridGeoService" -> GeoserviceTransformerLfub::class
-            "InGridProject" -> ProjectTransformerLfub::class
-            "InGridDataCollection" -> DataCollectionTransformerLfub::class
             "InGridInformationSystem" -> InformationSystemTransformerLfub::class
             else -> null
         }

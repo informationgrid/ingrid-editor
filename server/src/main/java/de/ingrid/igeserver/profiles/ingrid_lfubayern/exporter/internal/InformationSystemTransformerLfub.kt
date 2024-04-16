@@ -27,6 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
 class InformationSystemTransformerLfub(
@@ -43,6 +44,8 @@ class InformationSystemTransformerLfub(
 ) {
 
     private val docData = doc.data
+
+    override val datasetUri = docData.getString("dataSetURI")
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }
