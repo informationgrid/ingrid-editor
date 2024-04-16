@@ -54,13 +54,13 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
         every { documentService.docRepo } returns documentRepository
-        every { documentRepository.findAddressByOrganisationName(any()) } returns emptyList()
+        every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
     }
 
     @Test
     fun importGeoservice() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
-        val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"))
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
         changeUuidOfOrganisationTo(result, "Adressvererbung Test", "C")
@@ -74,7 +74,7 @@ class IsoImporterTest : AnnotationSpec() {
     @Test
     fun importGeodataset() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
-        val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"))
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
 
@@ -102,7 +102,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonSingle)
     }
 
@@ -128,7 +128,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonPositionName)
     }
 
@@ -157,7 +157,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
@@ -189,7 +189,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
         changeUuidOfOrganisationTo(result, "Referat 1", "A")
         changeUuidOfOrganisationTo(result, "Abteilung 3", "B")
@@ -217,7 +217,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
@@ -245,7 +245,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
         )
 
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "Institution with position name", expectedOrganisationWithPositionName)
     }
 
@@ -267,7 +267,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
 
         val data = addPointOfContact(minimalMetadata, pointOfContact)
-        val result = isoImporter.run("test", data)
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContactMd, true)
         assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact, true, 1)
     }

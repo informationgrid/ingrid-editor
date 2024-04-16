@@ -20,10 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 
 import de.ingrid.igeserver.exports.iso.Metadata
-import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImportProfile
-import de.ingrid.igeserver.profiles.ingrid.importer.ImportProfileData
+import de.ingrid.igeserver.profiles.ingrid.importer.*
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
@@ -31,20 +28,22 @@ import org.springframework.stereotype.Service
 
 @Service
 class ISOImportHMDK(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService) : ISOImportProfile {
-    override fun handle(catalogId: String, data: Metadata): ImportProfileData? {
+    override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
+
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
                 ImportProfileData(
                     "imports/ingrid-hmdk/geodataset.jte",
-                    GeodatasetMapper(data, codelistHandler, catalogId, documentService)
+                    GeodatasetMapper(isoData)
                 )
             }
 
             "service" -> {
                 ImportProfileData(
                     "imports/ingrid-hmdk/geoservice.jte",
-                    GeoserviceMapper(data, codelistHandler, catalogId, documentService)
+                    GeoserviceMapper(isoData)
                 )
             }
 

@@ -23,6 +23,7 @@ import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.ImportProfileData
+import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
@@ -30,13 +31,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class ISOImportKRZN(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService) : ISOImportProfile {
-    override fun handle(catalogId: String, data: Metadata): ImportProfileData? {
+    override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
+
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset" -> {
                 ImportProfileData(
                     "imports/ingrid-krzn/geodataset.jte",
-                    GeodatasetMapper(data, codelistHandler, catalogId, documentService)
+                    GeodatasetMapper(isoData)
                 )
             }
 

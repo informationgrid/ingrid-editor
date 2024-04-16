@@ -93,7 +93,8 @@ class ImportService(
     fun prepareImportAnalysis(catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
         val importer = factory.getImporter(type, fileContent)
 
-        val result = importer[0].run(catalogId, fileContent)
+        val addressMap = mutableMapOf<String, String>()
+        val result = importer[0].run(catalogId, fileContent, addressMap)
         return if (result is ArrayNode) {
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
@@ -174,6 +175,7 @@ class ImportService(
     private fun handleZipImport(catalogId: String, file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
         val importers = mutableSetOf<String>()
+        val addressMap = mutableMapOf<String, String>()
 
         extractZip(file.inputStream()) { entry, os ->
             run {
@@ -183,7 +185,7 @@ class ImportService(
                     else -> null
                 }
                 val importer = factory.getImporter(type.toString(), os.toString())
-                val result = importer[0].run(catalogId, os.toString())
+                val result = importer[0].run(catalogId, os.toString(), addressMap)
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
             }

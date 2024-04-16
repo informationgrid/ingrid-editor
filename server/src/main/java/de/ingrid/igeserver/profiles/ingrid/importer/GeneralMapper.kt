@@ -24,7 +24,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.exports.iso.Address
+import de.ingrid.igeserver.exports.iso.CIContact
+import de.ingrid.igeserver.exports.iso.Contact
+import de.ingrid.igeserver.exports.iso.TimePeriod
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
@@ -42,14 +45,14 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-open class GeneralMapper(
-    val metadata: Metadata,
-    val codeListService: CodelistHandler,
-    val catalogId: String,
-    val documentService: DocumentService
-) {
+open class GeneralMapper(val isoData: IsoImportData) {
 
     private val log = logger()
+    
+    val metadata = isoData.data
+    val codeListService: CodelistHandler = isoData.codelistService
+    val catalogId: String= isoData.catalogId
+    val documentService: DocumentService = isoData.documentService
 
     val uuid = metadata.fileIdentifier?.value
     val type =
@@ -60,7 +63,6 @@ open class GeneralMapper(
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
-    private val addressMaps = mutableMapOf<String, String>()
 
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
@@ -105,9 +107,9 @@ open class GeneralMapper(
             // add parent organisation if exists
             var parentAddressUuid: String? = null
             val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
-                val parentOrganisation = findParentOrganisation(organization)
+                val parentOrganisation = findOrganisationUuid(organization)
                 parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
-                    addressMaps[organization] = newUuid
+                    isoData.addressMaps[organization] = newUuid
                 }
 
                 // if the parent address is already present, it's not necessary to be added
@@ -125,9 +127,15 @@ open class GeneralMapper(
                     )
                 } else mutableListOf()
             } else mutableListOf()
+            
+            var uuid = contact.responsibleParty?.uuid
+            if (individualName == null && uuid == null) {
+                uuid = findOrganisationUuid(organization!!) 
+                    ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+            }
 
             val pointOfContact = PointOfContact(
-                contact.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+                uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
                 role,
@@ -144,8 +152,8 @@ open class GeneralMapper(
         }
     }
 
-    private fun findParentOrganisation(name: String): String? {
-        return addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(name).firstOrNull()
+    private fun findOrganisationUuid(name: String): String? {
+        return isoData.addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(catalogId, name).firstOrNull()
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {

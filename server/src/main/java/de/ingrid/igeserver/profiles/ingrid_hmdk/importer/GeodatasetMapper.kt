@@ -19,14 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 
-import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
 
-class GeodatasetMapperHMDK(metadata: Metadata, codeListService: CodelistHandler, catalogId: String, documentService: DocumentService) :
-    GeodatasetMapper(metadata, codeListService, catalogId, documentService) {
+class GeodatasetMapperHMDK(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
@@ -39,7 +36,4 @@ class GeodatasetMapperHMDK(metadata: Metadata, codeListService: CodelistHandler,
     }
 
 
-
-
-
-    }
+}
