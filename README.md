@@ -61,8 +61,6 @@ optimized frontend application:
 
 > ./gradlew -PbuildProfile=prod clean build
 
-**TBD:** create an installer instead
-
 #### Client
 
 For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please

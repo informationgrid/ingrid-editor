@@ -117,7 +117,7 @@
 
 |MAP_TILE_URL
 |
-|https://gdi-niederrhein-geodienste.de/openstreetmap/{z}/{x}/{y}.png
+|https://gdi-niederrhein-geodienste.de/openstreetmap/\{z\}/\{x\}/\{y\}.png
 
 |MAP_ATTRIBUTION
 |
@@ -207,7 +207,22 @@
 
 === System configuration
 
-NOTE: TBD
+Proxy configuration:
+
+In order to communicate through a proxy, you need to set some JVM options:
+
+* http.proxyHost
+* http.proxyPort
+* https.proxyHost
+* https.proxyPort
+* http.nonProxyHosts
+
+In docker these can be set in the following way. As an environment variable you can set `javaOptions` where you list each option prefixed with `-D`. For example:
+
+[source]
+----
+javaOptions: -Dhttp.proxyHost=proxy.demo-system.com -Dhttp.proxyPort=3128 -Dhttps.proxyHost=proxy.demo-system.com -Dhttps.proxyPort=3128
+----
 
 === Catalog specific configuration
 
