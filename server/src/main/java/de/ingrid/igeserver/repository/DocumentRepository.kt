@@ -96,7 +96,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
     
     @Query("""
-        SELECT doc.uuid FROM document_wrapper dw, document doc WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND doc.data->>'organization' = :name
+        SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND cat.identifier = :catalogIdentifier AND doc.data->>'organization' = :name
     """, nativeQuery = true)
-    fun findAddressByOrganisationName(@Param("name") name: String): List<String>
+    fun findAddressByOrganisationName(@Param("catalogIdentifier") catalogIdentifier: String, @Param("name") name: String): List<String>
 }
