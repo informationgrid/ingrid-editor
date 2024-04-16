@@ -121,13 +121,13 @@ const val useConstraintCommentsFull = """
                                 <gco:CharacterString>Andere Freeware Lizenz</gco:CharacterString>
                             </gmd:otherConstraints>
                             <gmd:otherConstraints>
+                                <gco:CharacterString>my comments to use constraints</gco:CharacterString>
+                            </gmd:otherConstraints>
+                            <gmd:otherConstraints>
                                 <gco:CharacterString>Quellenvermerk: meine Quelle</gco:CharacterString>
                             </gmd:otherConstraints>
                             <gmd:otherConstraints>
                                 <gco:CharacterString>{"id":"other-freeware","name":"Andere Freeware Lizenz","url":"","quelle":"meine Quelle"}</gco:CharacterString>
-                            </gmd:otherConstraints>
-                            <gmd:otherConstraints>
-                                <gco:CharacterString>my comments to use constraints</gco:CharacterString>
                             </gmd:otherConstraints>
                         </gmd:MD_LegalConstraints>
                     </gmd:resourceConstraints>

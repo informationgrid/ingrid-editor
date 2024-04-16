@@ -444,6 +444,11 @@
                     <gmd:otherConstraints>
                         @template.export.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
+                    @if(TransformationTools.hasValue(useconstraint.getNote()))
+                        <gmd:otherConstraints>
+                            <gco:CharacterString>${useconstraint.getNote()}</gco:CharacterString>
+                        </gmd:otherConstraints>
+                    @endif
                     @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
@@ -452,11 +457,6 @@
                     @if(TransformationTools.hasValue(useconstraint.getJson()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>${useconstraint.getJson()}</gco:CharacterString>
-                        </gmd:otherConstraints>
-                    @endif
-                    @if(TransformationTools.hasValue(useconstraint.getNote()))
-                        <gmd:otherConstraints>
-                            <gco:CharacterString>${useconstraint.getNote()}</gco:CharacterString>
                         </gmd:otherConstraints>
                     @endif
                 @endfor

@@ -38,6 +38,7 @@ fun lfubUseConstraints(
             get(0).note = docData.getStringOrEmpty("resource.useConstraintsComments")
         }
     } else {
+        // add comment as title, since it's the only otherConstraints then
         listOf(
             UseConstraintTemplate(
                 CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
