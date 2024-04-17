@@ -480,8 +480,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.map {
-
-                val instant = it.extent?.extent?.timeInstant?.timePosition
+                val timeValue = it.extent?.extent?.timeInstant?.timePosition
+                val instant = timeValue?.let { parseDateTime(timeValue) }
                 if (instant != null) {
                     return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
                 }
