@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.exporter.model
+package de.ingrid.igeserver.profiles
 
-data class Thesaurus(
-    var name: String? = null,
-    var date: String? = null,
-    var link: String? = null,
-    var showType: Boolean = true,
-    var keywords: List<KeywordIso> = emptyList(),
-    var type: String = "theme",
-    var dateType: String = "publication"
-)
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
+
+
+@Profile("ingrid-lfubayern")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.ingrid_lfubayern"])
+class InGridLfuBayernConfig

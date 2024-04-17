@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
 @import gg.jte.support.ForSupport
 @param GeneralMapper model 
@@ -171,6 +172,7 @@
     {
     "title": @template.imports.ingrid.partial.key-value(item = item.get().getTitle()),
     "source": "${item.get().getSource()}"
+    @if(TransformationTools.hasValue(item.get().getNote())), "note": "${item.get().getNote()}"@endif
     }@if (!item.isLast()),@endif
 @endfor
 ],

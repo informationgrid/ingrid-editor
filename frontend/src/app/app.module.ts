@@ -256,6 +256,9 @@ export function ConfigLoader(
         { name: "button", component: ButtonWrapperComponent },
         // { name: "animation", component: AnimationWrapperComponent },
       ],
+      validationMessages: [
+        { name: "maxLength", message: "Max length is required" },
+      ],
       // TODO: this animation is too slow especially when there are a lot of tables in form
       //       we need another approach instead of wrapping every field with an animation
       // extensions: [

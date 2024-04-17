@@ -140,7 +140,8 @@ open class IngridModelTransformer(
         val title: CharacterStringModel,
         val source: String?,
         val json: String?,
-        val titleKey: String?
+        val titleKey: String?,
+        var note: String? = null
     )
 
     open val useConstraints = data.resource?.useConstraints?.map { constraint ->
@@ -458,8 +459,7 @@ open class IngridModelTransformer(
                 ?: codelists.getValue("6010", it) ?: "",
             "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
         )
-
-    }
+    } ?: emptyList()
 
 
     val contentField: MutableList<String> = mutableListOf()
@@ -565,9 +565,11 @@ open class IngridModelTransformer(
         }
     }
 
-    // information system or publication
+    // TODO: move to specific doc types
+    // information system or publication 
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
+    // TODO: move to specific doc type
     // literature
     val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
 
@@ -623,7 +625,7 @@ open class IngridModelTransformer(
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
-    open var pointOfContact: List<AddressModelTransformer> = emptyList()
+    var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }
@@ -901,7 +903,11 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || hasDistributorInfo() || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+    }
+    
+    fun hasDistributorInfo(): Boolean {
+        return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
     }
 
     fun hasCompleteVerticalExtent(): Boolean {

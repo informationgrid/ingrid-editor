@@ -131,6 +131,7 @@
       "matDatepickerMin": "Das Datum liegt weiter zurück als erlaubt",
       "matDatepickerMax": "Das Datum ist größer als erlaubt",
       "min": "Der Wert darf nicht kleiner sein als {{value}}",
+      "maxLength": "Die maximale Anzahl der Einträge ist beschränkt auf: {{value}}",
       "max": "Der Wert darf nicht größer sein als {{value}}",
       "commitWithEnter": "Der Inhalt muss noch mit der Eingabetaste bestätigt werden",
       "JSON_SCHEMA": "Es trat ein Fehler bei der JSON-Schema Validierung auf"

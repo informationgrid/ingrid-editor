@@ -25,6 +25,11 @@ import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 
+export interface FieldConfigPosition {
+  fieldConfig: FormlyFieldConfig[];
+  index: number;
+}
+
 export interface Options {
   id?: string;
   wrappers?: string[];
@@ -43,6 +48,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
     "props.minLength"?;
+    "props.maxLength"?;
     "props.hintStart"?;
     "props.description"?;
   };
@@ -72,6 +78,7 @@ export interface RepeatOptions extends Options {
   showBorder?: boolean;
   addButtonTitle?: string;
   noDrag?: boolean;
+  maxLength?: number;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -422,6 +429,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
+        maxLength: options?.maxLength,
         menuOptions: options?.menuOptions,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
@@ -832,6 +840,26 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
       },
     };
+  }
+
+  findFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    const index = fieldConfig.findIndex((field) => {
+      if (field.key === id) return true;
+    });
+
+    if (index !== -1) return { fieldConfig, index };
+
+    let subFound = null;
+    const anyFound = fieldConfig.some((item) => {
+      subFound = this.findFieldElementWithId(item.fieldGroup, id);
+      return subFound;
+    });
+    return subFound;
   }
 
   private initExpressions(expressions = {}) {

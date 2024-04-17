@@ -77,6 +77,7 @@ data class DataModel(
     val databaseContent: List<DatabaseContent>?,
     val distribution: Distribution?,
     val orderInfo: String?,
+    val fees: String?,
     val references: List<Reference>?,
     val serviceUrls: List<ServiceUrl>?,
     val dataQuality: DataQuality?,
@@ -449,6 +450,7 @@ data class VerticalExtent(
     val unitOfMeasure: KeyValue?,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Keywords(
     val free: List<Keyword>?,
     val umthes: List<Keyword>?,

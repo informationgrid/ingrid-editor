@@ -691,28 +691,42 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
         // otherConstraints for use-constraints can have the following order/groups
         // LicenseText
+        // LicenseText, JSON
+        // LicenseText, Note
+        // LicenseText, Note, Source
+        // LicenseText, Note, JSON
         // LicenseText, Source
         // LicenseText, Source, JSON
-        otherConstraints.forEachIndexed { index, value ->
+        // LicenseText, Note, Source, JSON
+        // -----
+        // when JSON exists, then the use constraints is created from "name" and "quelle" and the otherContraint "Note" if available
+        var index = 0
+        var groupStartIndex = 0
+        while (index < otherConstraints.size) {
+            val value = otherConstraints[index]
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
                 val text = node.get("name").asText()
                 val keyValue = convertUserConstraintToKeyValue(text)
-                result.add(UseConstraint(keyValue, node.get("quelle").asText()))
-                return@forEachIndexed
-            }
-
-            if (isSourceNote(value)) {
-                // already handled
-                return@forEachIndexed
+                val note = getUseConstraintNoteWhenJsonExists(otherConstraints, index, groupStartIndex)
+                result.add(UseConstraint(keyValue, node.get("quelle").asText(), note))
+                index++
+                continue
             }
 
             val nextValue = otherConstraints.getOrNull(index + 1)
             val secondNextValue = otherConstraints.getOrNull(index + 2)
+            val thirdNextValue = otherConstraints.getOrNull(index + 3)
 
-            if (isJsonString(nextValue) || isJsonString(secondNextValue)) {
-                // skip item since JSON will be used
-                return@forEachIndexed
+            // when JSON is available skip item since JSON will be used
+            if (isJsonString(nextValue) || isJsonString(secondNextValue) || isJsonString(thirdNextValue)) {
+                groupStartIndex = index
+                index += when {
+                    isJsonString(nextValue) -> 1
+                    isJsonString(secondNextValue) -> 2
+                    else -> 3
+                }
+                continue
             }
 
             if (isSourceNote(nextValue)) {
@@ -722,15 +736,40 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         nextValue?.replace("Quellenvermerk: ", "")
                     )
                 )
-                return@forEachIndexed
+                index += 2
+                continue
+            }
+
+            if (isSourceNote(secondNextValue)) {
+                result.add(
+                    UseConstraint(
+                        convertUserConstraintToKeyValue(value),
+                        secondNextValue?.replace("Quellenvermerk: ", ""),
+                        nextValue
+                    )
+                )
+                index += 3
+                continue
             }
 
             // is last constraint or next one is another one/group
             result.add(UseConstraint(convertUserConstraintToKeyValue(value), null))
-
+            index++
         }
 
         return result
+    }
+
+    private fun getUseConstraintNoteWhenJsonExists(otherConstraints: List<String>, index: Int, groupStartIndex: Int): String? {
+        if (index - 1 <= groupStartIndex) return null
+        val note = otherConstraints.getOrNull(index - 1)
+        if (note != null) {
+            return if (isSourceNote(note)) {
+                if (index - 2 <= groupStartIndex) return null
+                otherConstraints.getOrNull(index - 2)
+            } else note
+        }
+        return null
     }
 
     private fun isSourceNote(value: String?): Boolean {
@@ -759,7 +798,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
 data class UseConstraint(
     val title: KeyValue?,
-    val source: String?
+    val source: String?,
+    val note: String? = null
 )
 
 data class ConformanceResult(
