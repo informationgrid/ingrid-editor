@@ -20,7 +20,9 @@
 package de.ingrid.igeserver.imports.ingrid_lfubayern
 
 import de.ingrid.igeserver.DummyCatalog
+import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -37,6 +39,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     private val codelistService = mockk<CodelistHandler>()
     private val catalogService = mockk<CatalogService>()
     private val documentService = mockk<DocumentService>()
+    private val documentRepository = mockk<DocumentRepository>()
 
     @BeforeAll
     fun beforeAll() {
@@ -46,6 +49,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+        every { documentService.docRepo } returns documentRepository
+        every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
     }
 
     @Test
@@ -54,6 +59,10 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 
+        changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "objektbesitzer_institut")
+        changeUuidOfOrganisationTo(result, "Adressvererbung Test", "adressvererbung_test")
+        changeUuidOfOrganisationTo(result, "Meine Organisation", "meine_organisation")
+        
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geoservice_full_lfuBayern-expected.json")
         )

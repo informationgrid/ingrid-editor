@@ -32,6 +32,38 @@
     },
     {
       "ref": {
+        "_uuid": "objektbesitzer_institut",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Objektbesitzer Institut",
+        "address": {
+          "city": "Nienburg (Weser)",
+          "po-box": "12345",
+          "street": "Brückenstraße 8",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "D-31582",
+          "zip-po-box": "D-31564",
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "besitzer@wemove.com"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": null,
+        "value": ""
+      }
+    },
+    {
+      "ref": {
         "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
         "_type": "InGridPersonDoc",
         "salutation": {
@@ -59,10 +91,38 @@
           }
         ],
         "positionName": "Liegenschaftsbuch (ALB)",
-        "hoursOfService": "Dies sind die Servicezeiten."
+        "hoursOfService": "Dies sind die Servicezeiten.",
+        "parentAsUuid": "objektbesitzer_institut"
       },
       "type": {
         "key": "1"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "adressvererbung_test",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Adressvererbung Test",
+        "address": {
+          "country": {
+            "key": "276"
+          },
+          "administrativeArea": null
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@mu.niedersachsen.de"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": null,
+        "value": ""
       }
     },
     {
@@ -88,12 +148,26 @@
             "connection": "martin.muster@mu.niedersachsen.de"
           }
         ],
-        "positionName": "Testeinheit, NI TESTADRESSEN\n                            Testeinheit",
-        "hoursOfService": ""
+        "positionName": "Testeinheit, NI TESTADRESSEN Testeinheit",
+        "hoursOfService": "",
+        "parentAsUuid": "adressvererbung_test"
       },
       "type": {
         "key": null,
         "value": "Meister"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "meine_organisation",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Meine Organisation",
+        "contact": [],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "5"
       }
     }
   ],
@@ -178,7 +252,7 @@
   "temporal": {
     "events": [
       {
-        "referenceDate": "2015-03-17T00:00:00.000+01:00",
+        "referenceDate": "2015-03-16T23:00:00Z",
         "referenceDateType": {
           "key": "1"
         }
@@ -190,7 +264,7 @@
     "status": {
       "key": "7"
     },
-    "resourceDate": "2023-02-08T00:00:00.000+01:00",
+    "resourceDate": "2023-02-07T23:00:00Z",
     "resourceDateTypeSince": null
   },
   "maintenanceInformation": {
@@ -216,7 +290,7 @@
         "key": null,
         "value": "Technical Guidance for the implementation of INSPIRE Download Services"
       },
-      "publicationDate": "2013-08-09"
+      "publicationDate": "2013-08-08T22:00:00Z"
     },
     {
       "pass": {
@@ -227,7 +301,7 @@
       "specification": {
         "key": "10"
       },
-      "publicationDate": "2009-10-20"
+      "publicationDate": "2009-10-19T22:00:00Z"
     }
   ],
   "extraInfo": {
@@ -373,10 +447,10 @@
         "isExternalRef": false
       },
       {
-        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
-        "title": "Extern gekoppelter Datensatz",
         "identifier": "",
         "uuid": "",
+        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
+        "title": "Extern gekoppelter Datensatz",
         "isExternalRef": true
       }
     ],
