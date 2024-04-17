@@ -695,62 +695,63 @@
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
                              codeListValue="${page.getCouplingType()}" />
     </srv:couplingType>
-@endif
-@if(page.isAtomDownload())
-    <srv:containsOperations>
-        <srv:SV_OperationMetadata>
-            <srv:operationName>
-                <gco:CharacterString>Download</gco:CharacterString>
-            </srv:operationName>
-            <srv:DCP>
-                <srv:DCPList
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices">WebServices</srv:DCPList>
-            </srv:DCP>
-            <srv:connectPoint>
-                <gmd:CI_OnlineResource>
-                    <gmd:linkage>
-                        <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
-                    </gmd:linkage>
-                </gmd:CI_OnlineResource>
-            </srv:connectPoint>
-        </srv:SV_OperationMetadata>
-    </srv:containsOperations>
-@endif
-@if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
-    <srv:containsOperations gco:nilReason="missing" />
-@endif
-@for( DisplayOperation operation : page.getOperations() )
-    <srv:containsOperations>
-        <srv:SV_OperationMetadata>
-            <srv:operationName>
-                <gco:CharacterString>${operation.getName()}</gco:CharacterString>
-            </srv:operationName>
-            <srv:DCP>
-                <srv:DCPList
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices"/>
-            </srv:DCP>
-            @if(TransformationTools.hasValue(operation.getDescription()))
-                <srv:operationDescription>
-                    <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
-                </srv:operationDescription>
-            @endif
-            @if(TransformationTools.hasValue(operation.getMethodCall()))
+
+    @if(page.isAtomDownload())
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>Download</gco:CharacterString>
+                </srv:operationName>
+                <srv:DCP>
+                    <srv:DCPList
+                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                            codeListValue="WebServices">WebServices</srv:DCPList>
+                </srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
-                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                            <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
                         </gmd:linkage>
                     </gmd:CI_OnlineResource>
                 </srv:connectPoint>
-            @endif
-        </srv:SV_OperationMetadata>
-    </srv:containsOperations>
-@endfor
-@for( OperatesOn operatesOn : page.getOperatesOn() )
-    <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" />
-@endfor
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endif
+    @if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
+        <srv:containsOperations gco:nilReason="missing" />
+    @endif
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                <srv:DCP>
+                    <srv:DCPList
+                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                            codeListValue="WebServices"/>
+                </srv:DCP>
+                @if(TransformationTools.hasValue(operation.getDescription()))
+                    <srv:operationDescription>
+                        <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
+                    </srv:operationDescription>
+                @endif
+                @if(TransformationTools.hasValue(operation.getMethodCall()))
+                    <srv:connectPoint>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                            </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                    </srv:connectPoint>
+                @endif
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endfor
+    @for( OperatesOn operatesOn : page.getOperatesOn() )
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" />
+    @endfor
+@endif
 @if(TransformationTools.hasValue(page.getSupplementalInformation()))
     <gmd:supplementalInformation>
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>

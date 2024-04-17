@@ -314,6 +314,7 @@ class ImportService(
             documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
+            // TODO: delete document for real to avoid side effects during recovering
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
             val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
