@@ -709,12 +709,13 @@ class DocumentService(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: Int) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int, deletePermanently: Boolean? = false) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        deleteRecursively(catalogId, id, filterContext)
+        val realDelete = deletePermanently ?: !generalProperties.markInsteadOfDelete
+        deleteRecursively(catalogId, id, filterContext, realDelete)
     }
 
-    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, realDelete: Boolean) {
         // run pre-delete pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
 //        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
@@ -730,12 +731,10 @@ class DocumentService(
         //       it somehow
 
         findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.wrapper.id!!, filterContext)
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, realDelete)
         }
 
-        if (generalProperties.markInsteadOfDelete) {
-            markDocumentAsDeleted(id)
-        } else {
+        if (realDelete) {
             // remove all document versions which have the same ID
             docRepo.deleteAllByUuid(docData.document.uuid)
 
@@ -745,6 +744,8 @@ class DocumentService(
             // remove ACL from document, which works now since reference is by database ID instead of UUID
             // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique
             aclService.removeAclForDocument(id)
+        } else {
+            markDocumentAsDeleted(id)
         }
 
         // remove references in groups

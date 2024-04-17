@@ -314,26 +314,14 @@ class ImportService(
             documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
-            // TODO: delete document for real to avoid side effects during recovering
-            removeDeletedFlag(ref.wrapperId!!)
-            setVersionInfo(catalogId, ref.wrapperId, ref.document)
             val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
-            val updatedVersion = if (publish) {
-                documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
-            } else {
-                // TODO: update does not update wrapper in order to set parent for an address under a new organisation
-                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document).also { 
-                    // special case when document was deleted and had published version
-                    // => after import in draft state, we don't want to see the deleted published version
-                    handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
-                }
-            }
             
-            if (updatedVersion.wrapper.type != ref.document.type) {
-                fixDocumentType(updatedVersion, ref.document.type)
-            }
-            
-            documentService.updateParent(catalogId, ref.wrapperId, finalParentId)
+            // undelete first to completely delete afterwards
+            removeDeletedFlag(ref.wrapperId!!)
+            documentService.deleteDocument(principal, catalogId, ref.wrapperId, true)
+            val newDoc = documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
+           
+            documentService.updateParent(catalogId, newDoc.wrapper.id!!, finalParentId)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
