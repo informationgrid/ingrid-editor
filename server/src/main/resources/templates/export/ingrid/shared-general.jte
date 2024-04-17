@@ -50,37 +50,8 @@
         <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
     </gmd:hierarchyLevelName>
 @endif
-<gmd:contact>
-    !{var address = page.getContact();}
-    @if(address != null)
-        <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
-            <gmd:organisationName>
-                <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
-            </gmd:organisationName>
-            <gmd:contactInfo>
-                <gmd:CI_Contact>
-                    <gmd:address>
-                        <gmd:CI_Address>
-                            <gmd:electronicMailAddress>
-                                <gco:CharacterString>${address.getEmail()}</gco:CharacterString>
-                            </gmd:electronicMailAddress>
-                        </gmd:CI_Address>
-                    </gmd:address>
-                    @if(address.getHoursOfService() != null)
-                        <gmd:hoursOfService>
-                            <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>
-                        </gmd:hoursOfService>
-                    @endif
-                </gmd:CI_Contact>
-            </gmd:contactInfo>
-            <gmd:role>
-                <gmd:CI_RoleCode
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                        codeListValue="pointOfContact" />
-            </gmd:role>
-        </idf:idfResponsibleParty>
-    @endif
-</gmd:contact>
+@template.export.ingrid.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
+@if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
     <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
 </gmd:dateStamp>
@@ -357,7 +328,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.pointOfContact(addresses = page.getPointOfContact())
+    @template.export.ingrid.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
     @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -810,7 +781,7 @@ ${contentInfo}
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.export.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
+                            @template.export.ingrid.addresses(addresses = page.getOrderInfoContact())
                             @if(page.getOrderInfoContact().isEmpty())
                                 <gmd:CI_ResponsibleParty>
                                     <gmd:role>

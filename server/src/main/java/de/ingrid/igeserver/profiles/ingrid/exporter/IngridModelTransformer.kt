@@ -632,6 +632,7 @@ open class IngridModelTransformer(
     }
 
     var contact: AddressModelTransformer?
+    var contacts: List<AddressModelTransformer>
 
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
@@ -661,10 +662,11 @@ open class IngridModelTransformer(
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
                 ?.map { toAddressModelTransformer(it) } ?: emptyList()
-        // TODO: gmd:contact [1..*] is not supported yet only [1..1]
-        contact = data.pointOfContact
-            ?.firstOrNull { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-            ?.let { toAddressModelTransformer(it) }
+        contacts = data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
+            ?.map { toAddressModelTransformer(it) } ?: emptyList()
+        // TODO: gmd:contact [1..*] is not supported everywhere yet only [1..1]
+        contact = contacts.firstOrNull()
+
         orderInfoContact =
             data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
                 ?: emptyList()
@@ -685,7 +687,8 @@ open class IngridModelTransformer(
         AddressModelTransformer(
             catalogIdentifier,
             codelists,
-            it.type,
+            // Map pointOfContactMD type to pointOfContact for ISO Exports
+            if( it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
             getLastPublishedDocument(it.ref?.uuid!!) ?: Document().apply {
                 data = jacksonObjectMapper().createObjectNode()
                 type = "null-address"
