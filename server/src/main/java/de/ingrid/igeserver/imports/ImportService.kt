@@ -28,6 +28,7 @@ import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.getString
@@ -316,16 +317,21 @@ class ImportService(
             removeDeletedFlag(ref.wrapperId!!)
             setVersionInfo(catalogId, ref.wrapperId, ref.document)
             val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
-            if (publish) {
+            val updatedVersion = if (publish) {
                 documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
             } else {
                 // TODO: update does not update wrapper in order to set parent for an address under a new organisation
-                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
-
-                // special case when document was deleted and had published version
-                // => after import in draft state, we don't want to see the deleted published version
-                handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
+                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document).also { 
+                    // special case when document was deleted and had published version
+                    // => after import in draft state, we don't want to see the deleted published version
+                    handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
+                }
             }
+            
+            if (updatedVersion.wrapper.type != ref.document.type) {
+                fixDocumentType(updatedVersion, ref.document.type)
+            }
+            
             documentService.updateParent(catalogId, ref.wrapperId, finalParentId)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
@@ -345,6 +351,13 @@ class ImportService(
         } else {
             counter.skipped++
         }
+    }
+
+    private fun fixDocumentType(data: DocumentData, type: String) {
+        data.document.type = type
+        documentService.docRepo.save(data.document)
+        data.wrapper.type = type
+        documentService.docWrapperRepo.save(data.wrapper)
     }
 
     private fun handleAddressTitle(ref: DocumentAnalysis) {
