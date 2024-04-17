@@ -14,7 +14,8 @@
       "ref": {
         "_uuid": "110C6012-1713-44C0-9A33-4E2C24D06966",
         "_type": "InGridOrganisationDoc",
-        "organization": "",
+        "title": "Meine Organisation",
+        "organization": "Meine Organisation",
         "contact": [
           {
             "type": {
@@ -34,6 +35,7 @@
       "ref": {
         "_uuid": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
         "_type": "InGridOrganisationDoc",
+        "title": "Wemove Test",
         "organization": "Wemove Test",
         "address": {
           "city": "Frankfurt",
@@ -67,6 +69,7 @@
       "ref": {
         "_uuid": "some_organisation",
         "_type": "InGridOrganisationDoc",
+        "title": "Some Organisation",
         "organization": "Some Organisation",
         "contact": [],
         "positionName": "",

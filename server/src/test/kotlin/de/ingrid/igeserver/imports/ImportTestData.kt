@@ -51,6 +51,7 @@ val expectedParentOrganisation = """
 {
   "_uuid": "D",
   "_type": "InGridOrganisationDoc",
+  "title": "Objektbesitzer Institut",
   "organization": "Objektbesitzer Institut",
   "contact": [],
   "positionName": "",
@@ -61,6 +62,7 @@ val expectedOrganisationWithPositionName = """
 {
   "_uuid": "febad8bb-626c-4d54-b415-d957adf3b4bb",
   "_type": "InGridOrganisationDoc",
+  "title": "Institution with position name",
   "organization": "Institution with position name",
   "contact": [],
   "positionName": "Something",
@@ -72,6 +74,7 @@ val expectedOrganisationAsPointOfContact = """
   "ref": {
     "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
     "_type": "InGridOrganisationDoc",
+    "title": "Objektbesitzer Institut",
     "organization": "Objektbesitzer Institut",
     "contact": [],
     "positionName": "",
@@ -87,6 +90,7 @@ val expectedOrganisationAsPointOfContactMd = """
   "ref": {
     "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
     "_type": "InGridOrganisationDoc",
+    "title": "Objektbesitzer Institut",
     "organization": "Objektbesitzer Institut",
     "contact": [],
     "positionName": "",
@@ -101,6 +105,7 @@ val expectedOrganisationReferat1 = """
 {
   "_uuid": "A",
   "_type": "InGridOrganisationDoc",
+  "title": "Referat 1",
   "organization": "Referat 1",
   "contact": [],
   "positionName": "",
@@ -112,6 +117,7 @@ val expectedOrganisationAbteilung3 = """
 {
   "_uuid": "B",
   "_type": "InGridOrganisationDoc",
+  "title": "Abteilung 3",
   "organization": "Abteilung 3",
   "contact": [],
   "positionName": "",
@@ -123,6 +129,7 @@ val expectedPersonSingle = """
 {
   "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
   "_type": "InGridPersonDoc",
+  "title": "Besitzername, Besitzervorname",
   "salutation": {
     "key": "2"
   },
@@ -137,6 +144,7 @@ val expectedPersonPositionName = """
 {
   "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
   "_type": "InGridPersonDoc",
+  "title": "Besitzername, Besitzervorname",
   "salutation": {
     "key": "2"
   },
@@ -151,6 +159,7 @@ val expectedPersonUnderOrganisation = """
 {
   "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
   "_type": "InGridPersonDoc",
+  "title": "Besitzername, Besitzervorname",
   "salutation": {
     "key": "2"
   },
@@ -166,6 +175,7 @@ val expectedPersonUnderOrganisation2 = """
 {
   "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
   "_type": "InGridPersonDoc",
+  "title": "Besitzername, Besitzervorname",
   "salutation": {
     "key": "2"
   },

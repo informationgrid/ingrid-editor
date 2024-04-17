@@ -14,6 +14,7 @@
       "ref": {
         "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
         "_type": "InGridOrganisationDoc",
+        "title": "KST PortalU",
         "organization": "KST PortalU",
         "contact": [
           {
@@ -34,6 +35,7 @@
       "ref": {
         "_uuid": "objektbesitzer_institut",
         "_type": "InGridOrganisationDoc",
+        "title": "Objektbesitzer Institut",
         "organization": "Objektbesitzer Institut",
         "address": {
           "city": "Nienburg (Weser)",
@@ -66,6 +68,7 @@
       "ref": {
         "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
         "_type": "InGridPersonDoc",
+        "title": "Besitzername, Besitzervorname",
         "salutation": {
           "key": "2"
         },
@@ -102,6 +105,7 @@
       "ref": {
         "_uuid": "adressvererbung_test",
         "_type": "InGridOrganisationDoc",
+        "title": "Adressvererbung Test",
         "organization": "Adressvererbung Test",
         "address": {
           "country": {
@@ -129,6 +133,7 @@
       "ref": {
         "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
         "_type": "InGridPersonDoc",
+        "title": "test1, user",
         "salutation": {
           "key": "2"
         },
@@ -161,6 +166,7 @@
       "ref": {
         "_uuid": "meine_organisation",
         "_type": "InGridOrganisationDoc",
+        "title": "Meine Organisation",
         "organization": "Meine Organisation",
         "contact": [],
         "positionName": "",

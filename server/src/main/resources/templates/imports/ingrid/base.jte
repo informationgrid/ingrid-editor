@@ -17,8 +17,9 @@
 @for(var contact : ForSupport.of(model.getPointOfContacts()))
     {
     "ref": {
-    "_uuid": "${contact.get().getRefUuid()}",
-    "_type": "${contact.get().getAddressType()}",
+        "_uuid": "${contact.get().getRefUuid()}",
+        "_type": "${contact.get().getAddressType()}",
+        "title": "${contact.get().getTitle()}",
     @if(contact.get().isOrganization())
         "organization": "${contact.get().getOrganization()}",
     @elseif(contact.get().getPersonInfo() != null)

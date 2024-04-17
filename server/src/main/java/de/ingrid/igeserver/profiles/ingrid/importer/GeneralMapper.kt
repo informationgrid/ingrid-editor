@@ -911,7 +911,12 @@ data class PointOfContact(
     val positionName: String = "",
     val hoursOfService: String = "",
     val parent: String? = null
-)
+) {
+    fun getTitle(): String {
+        return if (personInfo?.lastName != null) "${personInfo?.lastName}, ${personInfo?.firstName}"
+        else organization ?: ""
+    }
+}
 
 data class Communication(
     val type: KeyValue,
