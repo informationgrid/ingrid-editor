@@ -36,14 +36,15 @@ import org.springframework.security.core.Authentication
 
 class ImportServiceTest : ShouldSpec() {
 
-    val notifier = mockk<JobsNotifier>(relaxed = true)
+    private val notifier = mockk<JobsNotifier>(relaxed = true)
     val factory = mockk<ImporterFactory>(relaxed = true)
-    val docService = mockk<DocumentService>(relaxed = true)
-    val principal = mockk<Authentication>(relaxed = true)
+    private val docService = mockk<DocumentService>(relaxed = true)
+    private val principal = mockk<Authentication>(relaxed = true)
 
-    val docEntity = Document().apply {
+    private val docEntity = Document().apply {
         data = jacksonObjectMapper().createObjectNode()
         title = "Test-Dataset"
+        type = ""
     }
 
     val service = ImportService(notifier, factory, docService)
