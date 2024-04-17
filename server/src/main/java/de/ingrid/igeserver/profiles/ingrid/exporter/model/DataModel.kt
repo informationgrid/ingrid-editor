@@ -23,8 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -38,7 +38,7 @@ data class DataModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
-    val spatial: IngridSpatial,
+    val spatial: IngridSpatial = IngridSpatial(null ,null, null, null),
     val vectorSpatialRepresentation: List<VectorSpatialRepresentation>?,
     val explanation: String?,
     val publication: Publication?,
@@ -48,7 +48,7 @@ data class DataModel(
     val participants: String?,
     val implementationHistory: String?,
     val systemEnvironment: String?,
-    val metadata: IngridMetadata,
+    val metadata: IngridMetadata?,
     val advProductGroups: List<KeyValue>?,
     val alternateTitle: String?,
     val themes: List<KeyValue>?,
@@ -60,7 +60,7 @@ data class DataModel(
     val openDataCategories: List<KeyValue>?,
     val priorityDatasets: List<KeyValue>?,
     val invekosKeywords: List<KeyValue>?,
-    val temporal: Temporal,
+    val temporal: Temporal = Temporal(),
     val resource: Resource?,
     val extraInfo: ExtraInfo?,
     val maintenanceInformation: MaintenanceInformation?,
@@ -85,7 +85,7 @@ data class DataModel(
     val absoluteExternalPositionalAccuracy: AbsoluteExternalPositionalAccuracy?,
     val conformanceResult: List<ConformanceResult>?,
     val lineage: Lineage?,
-    val service: Service?,
+    val service: Service = Service(),
     val spatialScope: KeyValue?,
     val subType: KeyValue?,
 )
@@ -137,18 +137,18 @@ data class CategoryCatalog(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
-    val classification: List<KeyValue>?,
-    val type: KeyValue?,
-    val version: List<KeyValue>?,
-    val operations: List<Operation>?,
-    val resolution: List<Resolution>?,
-    val systemEnvironment: String?,
-    val implementationHistory: String?,
-    val explanation: String?,
-    val coupledResources: List<CoupledResource>?,
-    val couplingType: KeyValue?,
+    val classification: List<KeyValue>? = null,
+    val type: KeyValue? = null,
+    val version: List<KeyValue>? = null,
+    val operations: List<Operation>? = null,
+    val resolution: List<Resolution>? = null,
+    val systemEnvironment: String? = null,
+    val implementationHistory: String? = null,
+    val explanation: String? = null,
+    val coupledResources: List<CoupledResource>? = null,
+    val couplingType: KeyValue? = null,
     val hasAccessConstraints: Boolean? = false,
-    val isAtomDownload: Boolean?,
+    val isAtomDownload: Boolean? = null
 ) {
     fun hasAccessConstraintsOrFalse() : Boolean {
         return hasAccessConstraints ?: false
@@ -186,8 +186,7 @@ data class ServiceUrl(
     var applicationProfile: String? = null,
     var functionValue: String? = null,
     val isIdfResource: Boolean = true
-) {
-}
+)
 
 data class AttachedField(
     val listId: String,
@@ -404,15 +403,15 @@ data class IngridSpatial(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Temporal(
-    val events: List<DateEvent>?,
-    val status: KeyValue?,
-    val resourceDateType: KeyValue?,
-    val resourceDateTypeSince: KeyValue?,
+    val events: List<DateEvent>? = null,
+    val status: KeyValue? = null,
+    val resourceDateType: KeyValue? = null,
+    val resourceDateTypeSince: KeyValue? = null,
     @JsonDeserialize(using = DateDeserializer::class)
-    val resourceDate: OffsetDateTime?,
-    val resourceRange: TimeRange?,
-    val timeRefStatus: KeyValue?,
-    val maintenanceNote: String?,
+    val resourceDate: OffsetDateTime? = null,
+    val resourceRange: TimeRange? = null,
+    val timeRefStatus: KeyValue? = null,
+    val maintenanceNote: String? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

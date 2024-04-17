@@ -141,7 +141,9 @@
     @if("3".equals(page.getDocumentType()))
     "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
-    "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    @if(page.getData().getService().getType() != null)
+        "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    @endif
     "t011_obj_serv_version.version_value": [
         @for(var entry : ForSupport.of(page.getServiceTypeVersions()))
             "${entry.get()}"@if (!entry.isLast()),@endif

@@ -28,11 +28,11 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
@@ -70,7 +70,7 @@ open class IngridModelTransformer(
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
     val distributionFormats = data.distribution?.format ?: emptyList()
-    val isAtomDownload = data.service?.isAtomDownload == true
+    val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
     open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
         DigitalTransferOption(
@@ -240,12 +240,12 @@ open class IngridModelTransformer(
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
-    val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
+    val metadataLanguage = if (data.metadata != null ) TransformationTools.getLanguageISO639_2Value(data.metadata.language) else null
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValue(it, null)) }
             ?: emptyList()
 
-    val datasetCharacterSet = codelists.getValue("510", data.metadata.characterSet, "iso")
+    val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso")
     val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
 
 
@@ -280,7 +280,7 @@ open class IngridModelTransformer(
             else -> null
         }
         CharacterStringModel(referenceSystem, epsgLink)
-    }
+    } ?: emptyList()
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
@@ -347,7 +347,7 @@ open class IngridModelTransformer(
         url?.replace("http:", "https:")?.replace("gemet/concept", "gemet/en/concept")
 
     val serviceTypeKeywords = Thesaurus(
-        keywords = data.service?.classification?.map {
+        keywords = data.service.classification?.map {
             KeywordIso(
                 name = codelists.getValue("5200", it, "iso"),
                 link = null
@@ -481,19 +481,19 @@ open class IngridModelTransformer(
     fun getServiceType(type: KeyValue? = null) =
         codelists.getValue(
             if (model.type == "InGridInformationSystem") "5300" else "5100",
-            type ?: data.service?.type,
+            type ?: data.service.type,
             "iso"
         )
 
-    val serviceTypeVersions = data.service?.version?.map { getVersion(it, data.service.type?.key) } ?: emptyList()
-    val couplingType = data.service?.couplingType?.key ?: "loose"
+    val serviceTypeVersions = data.service.version?.map { getVersion(it, data.service.type?.key) } ?: emptyList()
+    val couplingType = data.service.couplingType?.key ?: "loose"
 
     val operations: List<DisplayOperation>
 
     private fun getOperationName(name: KeyValue?): String? {
         if (name == null) return null
 
-        val serviceType = data.service?.type
+        val serviceType = data.service.type
         val codelistId = when (serviceType?.key) {
             "1" -> "5105"
             "2" -> "5110"
@@ -517,7 +517,7 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    fun getOperatesOn() = data.service?.coupledResources?.map {
+    fun getOperatesOn() = data.service.coupledResources?.map {
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
@@ -536,7 +536,7 @@ open class IngridModelTransformer(
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl =
-        if (data.service?.type?.key == "2") data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
+        if (data.service.type?.key == "2") data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
             ?: "" else ""
 
     fun getCapabilitiesUrlsFromService(): List<String> {
@@ -669,7 +669,7 @@ open class IngridModelTransformer(
 
         atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
 
-        operations = data.service?.operations?.map {
+        operations = data.service.operations?.map {
             DisplayOperation(
                 getOperationName(it.name),
                 it.description,
@@ -712,7 +712,7 @@ open class IngridModelTransformer(
     }
 
 
-    private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
+    private fun getCoupledCrossReferences() = model.data.service.coupledResources?.filter { !it.isExternalRef }
         ?.mapNotNull { getCrossReference(it.uuid!!, KeyValue("3600", null)) } ?: emptyList()
 
     private fun getReferencedCrossReferences() =
@@ -737,14 +737,14 @@ open class IngridModelTransformer(
     }
 
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
-        return model.data.service?.operations
+        return model.data.service.operations
             ?.filter { isCapabilitiesEntry(it) }
             ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
             ?: emptyList()
     }
 
     private fun getExternalCoupledResources(): List<ServiceUrl> {
-        return model.data.service?.coupledResources
+        return model.data.service.coupledResources
             ?.filter { it.isExternalRef }
             ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
