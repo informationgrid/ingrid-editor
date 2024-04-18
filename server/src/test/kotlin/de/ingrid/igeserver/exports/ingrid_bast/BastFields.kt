@@ -24,7 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridIdfExporterBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.IngridIdfExporterBast
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every

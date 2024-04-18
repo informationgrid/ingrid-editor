@@ -17,13 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter
+package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -36,62 +36,88 @@ import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
-class IngridExporterExternalBast(
-    idfExporter: IngridIdfExporterExternalBast,
-    luceneExporter: IngridLuceneExporterBast,
+class IngridExporterUPSH(
+    idfExporter: IngridIdfExporterUPSH,
+    luceneExporter: IngridLuceneExporterUPSH,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo =
         ExportTypeInfo(
             DocumentCategory.DATA,
-            "indexInGridIDFExternalBast",
-            "Externes Portal (Bast)",
-            "Export von Ingrid Dokumenten ins IDF Format für BASt für die Anzeige im externen Portal.",
+            "indexInGridIDFUPSH",
+            "Ingrid IDF UP-SH (Elasticsearch)",
+            "Export von Ingrid Dokumenten ins IDF Format für UP-SH für die Anzeige im Portal ins Elasticsearch-Format.",
             "application/json",
             "json",
-            listOf("ingrid-bast"),
+            listOf("ingrid-up-sh"),
             isPublic = true,
             useForPublish = true
         )
 }
 
 @Service
-class IngridIdfExporterExternalBast(
+class IngridIdfExporterUPSH(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override val typeInfo = ExportTypeInfo(
-        DocumentCategory.DATA,
-        "ingridIDFExternalBast",
-        "Ingrid IDF External Bast",
-        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
-        "text/xml",
-        "xml",
-        listOf("ingrid-bast"),
-    )
-
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBastExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getUPSHTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
-class IngridISOExporterExternalBast(
-    idfExporter: IngridIdfExporterExternalBast,
-    luceneExporter: IngridLuceneExporterBast,
+class IngridLuceneExporterUPSH(
+    codelistHandler: CodelistHandler,
+    config: Config,
+    catalogService: CatalogService,
+    @Lazy documentService: DocumentService
+) :
+    IngridLuceneExporter(
+        codelistHandler,
+        config,
+        catalogService,
+        documentService,
+    ) {
+
+    override fun getTransformer(data: TransformerData): Any {
+        return when (data.type) {
+            IngridDocType.DOCUMENT -> {
+                getUPSHTransformer(data.doc.type)
+                    ?.constructors
+                    ?.first()
+                    ?.call(
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
+                        config,
+                        catalogService,
+                        TransformerCache(),
+                        data.doc,
+                        documentService
+                    ) ?: super.getTransformer(data)
+            }
+            else -> super.getTransformer(data)
+        }
+    }
+}
+
+@Service
+class IngridISOExporterUPSH(
+    idfExporter: IngridIdfExporterUPSH,
+    luceneExporter: IngridLuceneExporterUPSH,
     documentWrapperRepository: DocumentWrapperRepository
-) : IngridExporterExternalBast(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterUPSH(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "ingridISOExternalBast",
-        "ISO 19139 External Bast",
-        "Export von Bast Dokumenten in ISO für die Vorschau im Editor.",
+        "ingridISOUPSH",
+        "ISO 19139 UPSH",
+        "Export von UPSH Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-bast")
+        listOf("ingrid-up-sh")
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {

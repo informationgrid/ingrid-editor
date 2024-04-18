@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bast.exporter
+package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -36,49 +36,38 @@ import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
 @Service
-class IngridExporterBast(
-    idfExporter: IngridIdfExporterBast,
-    luceneExporter: IngridLuceneExporterBast,
+class IngridExporterHmdk(
+    idfExporter: IngridIdfExporterHmdk,
+    luceneExporter: IngridLuceneExporterHmdk,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
-    override val typeInfo =
-        ExportTypeInfo(
-            DocumentCategory.DATA,
-            "indexInGridIDFBast",
-            "Internes Portal (Bast)",
-            "Export von Ingrid Dokumenten ins IDF Format für BASt für die Anzeige im internen Portal.",
-            "application/json",
-            "json",
-            listOf("ingrid-bast"),
-            isPublic = true,
-            useForPublish = true
-        )
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "indexInGridIDFHmdk",
+        "Ingrid IDF HMDK (Elasticsearch)",
+        "Export von Ingrid Dokumenten ins IDF Format für HMDK für die Anzeige im Portal ins Elasticsearch-Format.",
+        "application/json",
+        "json",
+        listOf("ingrid-hmdk"),
+        isPublic = true,
+        useForPublish = true
+    )
 }
 
 @Service
-class IngridIdfExporterBast(
+class IngridIdfExporterHmdk(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override val typeInfo = ExportTypeInfo(
-        DocumentCategory.DATA,
-        "ingridIDFBast",
-        "Ingrid IDF Bast",
-        "Export von Ingrid Dokumenten IDF Format für die Anzeige im Portal.",
-        "text/xml",
-        "xml",
-        listOf("ingrid-bast"),
-    )
-
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBastTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
-class IngridLuceneExporterBast(
+class IngridLuceneExporterHmdk(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
@@ -94,7 +83,7 @@ class IngridLuceneExporterBast(
     override fun getTransformer(data: TransformerData): Any {
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
-                getBastTransformer(data.doc.type)
+                getHmdkModelTransformerClass(data.doc.type)
                     ?.constructors
                     ?.first()
                     ?.call(
@@ -108,26 +97,27 @@ class IngridLuceneExporterBast(
                         documentService
                     ) ?: super.getTransformer(data)
             }
+
             else -> super.getTransformer(data)
         }
     }
 }
 
 @Service
-class IngridISOExporterBast(
-    idfExporter: IngridIdfExporterBast,
-    luceneExporter: IngridLuceneExporterBast,
+class IngridISOExporterHmdk(
+    idfExporter: IngridIdfExporterHmdk,
+    luceneExporter: IngridLuceneExporterHmdk,
     documentWrapperRepository: DocumentWrapperRepository
-) : IngridExporterBast(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterHmdk(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "ingridISOBast",
-        "ISO 19139 Bast",
-        "Export von Bast Dokumenten in ISO für die Vorschau im Editor.",
+        "ingridISOHmdk",
+        "ISO 19139 HMDK",
+        "Export von HMDK Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-bast")
+        listOf("ingrid-hmdk")
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {

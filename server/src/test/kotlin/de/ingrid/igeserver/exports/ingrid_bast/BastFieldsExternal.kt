@@ -24,8 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.external.IngridIdfExporterExternalBast
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.IngridIdfExporterBast
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.IngridIdfExporterExternalBast
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -49,7 +48,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 this.documentService
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-            DummyCatalog().apply { identifier = "ingrid-bast" }
+                DummyCatalog().apply { identifier = "ingrid-bast" }
     }
 
     init {

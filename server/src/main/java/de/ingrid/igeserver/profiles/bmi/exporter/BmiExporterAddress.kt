@@ -30,7 +30,7 @@ import org.springframework.http.MediaType
  * ATTENTION: Addresses are not exported. This class can be removed
  */
 //@Service
-class BmiIndexExporterAddress : IgeExporter {
+class BmiExporterAddress : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() {

@@ -24,8 +24,12 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeodatasetTransformerLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import kotlin.reflect.KClass
 
 fun lfubUseConstraints(
     superUseConstraints: List<UseConstraintTemplate>,
@@ -70,4 +74,13 @@ fun lfubGetDescriptiveKeywords(
     )
     return if (ignoreInternalKeywords) superDescriptiveKeywords + lfugeoKeywords
     else superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
+}
+
+fun getLfuBayernTransformer(docType: String): KClass<out Any>? {
+    return when (docType) {
+        "InGridGeoDataset" -> GeodatasetTransformerLfub::class
+        "InGridGeoService" -> GeoserviceTransformerLfub::class
+        "InGridInformationSystem" -> InformationSystemTransformerLfub::class
+        else -> null
+    }
 }

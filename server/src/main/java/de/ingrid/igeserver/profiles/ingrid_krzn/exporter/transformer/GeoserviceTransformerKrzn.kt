@@ -17,19 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
-class DataCollectionModelTransformerHmdk(
+class GeoserviceTransformerKrzn(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -38,7 +39,7 @@ class DataCollectionModelTransformerHmdk(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : DataCollectionModelTransformer(
+) : GeodataserviceModelTransformer(
     model,
     catalogIdentifier,
     codelists,
@@ -48,6 +49,22 @@ class DataCollectionModelTransformerHmdk(
     doc,
     documentService
 ) {
-    override fun getDescriptiveKeywords(): List<Thesaurus> =
-        SharedExport(codelists, doc).amendHMDKDescriptiveKeywords(super.getDescriptiveKeywords())
+
+    private val docData = doc.data
+
+    override val mapLinkUrl = docData.get("service")?.get("coupledResources")
+        ?.filter { !it.get("isExternalRef").asBoolean() }
+        ?.mapNotNull { it.getString("uuid") }
+        ?.joinToString(",")
+        ?.let outer@{ coupledUuids ->
+            coupledUuids.split(",").firstOrNull()?.let { uuid ->
+                getLastPublishedDocument(uuid)?.data?.getString("mapLink.key")?.let {
+                    // do not map specific entry where we do not want to show mapUrl
+                    if (it == "0") return@outer null
+                    codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
+                        ?.replace("{ID}", coupledUuids)
+
+                }
+            }
+        }
 }

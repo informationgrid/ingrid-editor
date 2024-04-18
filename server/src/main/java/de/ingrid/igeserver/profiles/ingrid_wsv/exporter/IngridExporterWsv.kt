@@ -70,7 +70,7 @@ class IngridExporterWsv(
     }
 
     private fun hasSpecialType (doc: Document): Boolean {
-        if(doc.data.get("references") !== null) {
+        if(doc.data.get("references") != null) {
             for(ref in (doc.data.get("references") as ArrayNode).iterator()) {
                 if (SPECIAL_TYPE.contains(ref.get("type")?.get("key")?.textValue())) {
                     return true
@@ -81,10 +81,10 @@ class IngridExporterWsv(
     }
 
     private fun createCart(docId: String): JsonNode {
-        val type : ObjectNode = ObjectNode(JsonNodeFactory.instance)
+        val type = ObjectNode(JsonNodeFactory.instance)
         type.set<TextNode>("key", TextNode.valueOf("9990"))
 
-        val result : ObjectNode = ObjectNode(JsonNodeFactory.instance)
+        val result = ObjectNode(JsonNodeFactory.instance)
         result.set<TextNode>("url", TextNode.valueOf(cartUrl + docId))
         result.set<ObjectNode>("type", type)
         result.set<TextNode>("title", TextNode.valueOf("In den Warenkorb"))

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -26,22 +26,21 @@ import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IngridIndexExporterUPSH(
-    idfExporter: IngridIdfExporterUPSH,
-    luceneExporter: IngridLuceneExporterUPSH,
-    documentWrapperRepository: DocumentWrapperRepository,
+class IngridExporterAddressKrzn(
+    idfExporter: IngridIdfExporterKrzn,
+    luceneExporter: IngridLuceneExporterKrzn,
+    documentWrapperRepository: DocumentWrapperRepository
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo =
         ExportTypeInfo(
-            DocumentCategory.DATA,
-            "indexInGridIDFUPSH",
-            "Ingrid IDF UP-SH (Elasticsearch)",
-            "Export von Ingrid Dokumenten ins IDF Format für UP-SH für die Anzeige im Portal ins Elasticsearch-Format.",
+            DocumentCategory.ADDRESS,
+            "indexInGridIDFKrzn",
+            "Ingrid IDF Address KRZN (Elasticsearch)",
+            "Export von Ingrid Adressen ins IDF Format für KRZN für die Anzeige im Portal ins Elasticsearch-Format.",
             "application/json",
             "json",
-            listOf("ingrid-up-sh"),
-            isPublic = true,
-            useForPublish = true
+            listOf("ingrid-krzn"),
+            false
         )
 }

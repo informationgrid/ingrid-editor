@@ -17,20 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
+package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKeywords
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 
-class GeodatasetTransformerKrzn(
+class GeodatasetTransformerHmdk(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -39,19 +39,16 @@ class GeodatasetTransformerKrzn(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService) {
-
-    private val docData = doc.data
-    override val systemEnvironment =
-        if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
-        else docData.getString("environmentDescription")
-
-    override val mapLinkUrl = docData.getString("mapLink.key")?.let {
-        // do not map specific entry where we do not want to show mapUrl
-        if (it == "0") return@let null
-        codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
-            ?.replace("{ID}", model.uuid)
-    }
-
-    override val datasetUri = docData.getString("dataSetURI")
+) : GeodatasetModelTransformer(
+    model,
+    catalogIdentifier,
+    codelists,
+    config,
+    catalogService,
+    cache,
+    doc,
+    documentService
+) {
+    override fun getDescriptiveKeywords(): List<Thesaurus> =
+        amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 }

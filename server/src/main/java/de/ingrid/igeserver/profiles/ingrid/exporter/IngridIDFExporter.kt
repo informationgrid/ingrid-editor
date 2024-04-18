@@ -110,29 +110,27 @@ class IngridIDFExporter(
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
-        val transformers = getModelTransormerClasses()
+        val transformerClass = getModelTransformerClass(json.type) ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        // TODO: get profile from catalog in export options!?
-        val transformerClass = transformers[json.type] ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
         return if(isAddress)
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
     }
 
-    fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
-        val transformers = mapOf(
-            "InGridSpecialisedTask" to IngridModelTransformer::class,
-            "InGridGeoDataset" to GeodatasetModelTransformer::class,
-            "InGridPublication" to PublicationModelTransformer::class,
-            "InGridGeoService" to GeodataserviceModelTransformer::class,
-            "InGridProject" to ProjectModelTransformer::class,
-            "InGridDataCollection" to DataCollectionModelTransformer::class,
-            "InGridInformationSystem" to InformationSystemModelTransformer::class,
-            "InGridOrganisationDoc" to AddressModelTransformer::class,
-            "InGridPersonDoc" to AddressModelTransformer::class
-        )
-        return transformers
+    fun getModelTransformerClass(docType: String): KClass<out Any>? {
+        return when (docType) {
+            "InGridSpecialisedTask" -> IngridModelTransformer::class
+            "InGridGeoDataset" -> GeodatasetModelTransformer::class
+            "InGridPublication" -> PublicationModelTransformer::class
+            "InGridGeoService" -> GeodataserviceModelTransformer::class
+            "InGridProject" -> ProjectModelTransformer::class
+            "InGridDataCollection" -> DataCollectionModelTransformer::class
+            "InGridInformationSystem" -> InformationSystemModelTransformer::class
+            "InGridOrganisationDoc" -> AddressModelTransformer::class
+            "InGridPersonDoc" -> AddressModelTransformer::class
+            else -> null
+        }
     }
 
 

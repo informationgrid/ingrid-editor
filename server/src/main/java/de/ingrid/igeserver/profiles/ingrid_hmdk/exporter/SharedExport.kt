@@ -19,44 +19,53 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.*
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.mapToKeyValue
+import kotlin.reflect.KClass
 
-class SharedExport(
-    private val codelists: CodelistTransformer,
-    private val doc: Document
-) {
+fun amendHMDKDescriptiveKeywords(
+    docData: JsonNode,
+    codelists: CodelistTransformer,
+    previousKeywords: List<Thesaurus>
+): List<Thesaurus> {
+    val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
+    val informationHmbTG = docData.get("informationHmbTG")
+        ?.mapNotNull { it.mapToKeyValue() }
+        ?.map { KeyValue(it.key, codelists.getCatalogCodelistValue("informationsgegenstand", it)) }
+        ?: emptyList()
 
-    fun amendHMDKDescriptiveKeywords(previousKeywords: List<Thesaurus>): List<Thesaurus> {
-        val docData = doc.data
+    val keywords = previousKeywords.toMutableList()
 
-        val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
-        val informationHmbTG = docData.get("informationHmbTG")
-            ?.mapNotNull { it.mapToKeyValue() }
-            ?.map { KeyValue(it.key, codelists.getCatalogCodelistValue("informationsgegenstand", it)) }
-            ?: emptyList()
-
-        val keywords = previousKeywords.toMutableList()
-
-        if (informationHmbTG.isNotEmpty()) {
-            keywords += Thesaurus(
-                keywords = informationHmbTG.map { KeywordIso(it.key) },
-                date = "2013-08-02",
-                name = "HmbTG-Informationsgegenstand",
-                showType = true
-            )
-            keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
-        }
-
-        if (publicationHmbTG)
-            keywords += Thesaurus(keywords = listOf(KeywordIso(name = "hmbtg", link = null)))
-
-        return keywords
+    if (informationHmbTG.isNotEmpty()) {
+        keywords += Thesaurus(
+            keywords = informationHmbTG.map { KeywordIso(it.key) },
+            date = "2013-08-02",
+            name = "HmbTG-Informationsgegenstand",
+            showType = true
+        )
+        keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
     }
 
+    if (publicationHmbTG)
+        keywords += Thesaurus(keywords = listOf(KeywordIso(name = "hmbtg", link = null)))
+
+    return keywords
+}
+
+fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
+    return when (docType) {
+        "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
+        "InGridGeoService" -> GeoserviceTransformerHmdk::class
+        "InGridPublication" -> PublicationModelTransformerHmdk::class
+        "InGridProject" -> ProjectModelTransformerHmdk::class
+        "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
+        "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
+        else -> null
+    }
 }

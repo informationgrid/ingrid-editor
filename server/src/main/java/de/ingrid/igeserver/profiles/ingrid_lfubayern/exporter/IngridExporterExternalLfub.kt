@@ -19,19 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.GeodatasetTransformerExternalLfub
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.GeoserviceTransformerExternalLfub
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.InformationSystemTransformerExternalLfub
+import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -71,13 +64,8 @@ class IngridIdfExporterExternalLfub(
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun getModelTransormerClasses(): Map<String, KClass<out Any>> {
-        return super.getModelTransormerClasses().toMutableMap().apply {
-            put("InGridGeoDataset", GeodatasetTransformerExternalLfub::class)
-            put("InGridGeoService", GeoserviceTransformerExternalLfub::class)
-            put("InGridInformationSystem", InformationSystemTransformerExternalLfub::class)
-        }
-    }
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernTransformer(docType) ?: super.getModelTransformerClass(docType)
+
 }
 
 @Service
@@ -94,41 +82,48 @@ class IngridLuceneExporterExternalLfub(
         documentService,
     ) {
 
-    override fun getTransformer(
-        type: IngridDocType,
-        catalog: Catalog,
-        codelistTransformer: CodelistTransformer,
-        doc: Document,
-        mapper: ObjectMapper
-    ): Any {
-        return when (type) {
+    override fun getTransformer(data: TransformerData): Any {
+        return when (data.type) {
             IngridDocType.DOCUMENT -> {
-                val otherTransformer = getTransformer(doc.type)
-                otherTransformer
+                getLfuBayernTransformer(data.doc.type)
                     ?.constructors
                     ?.first()
                     ?.call(
-                        mapper.convertValue(doc, IngridModel::class.java),
-                        catalog.identifier,
-                        codelistTransformer,
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
                         config,
                         catalogService,
                         TransformerCache(),
-                        doc,
+                        data.doc,
                         documentService
-                    ) ?: super.getTransformer(type, catalog, codelistTransformer, doc, mapper)
+                    ) ?: super.getTransformer(data)
             }
 
-            else -> super.getTransformer(type, catalog, codelistTransformer, doc, mapper)
+            else -> super.getTransformer(data)
         }
     }
+}
 
-    private fun getTransformer(docType: String): KClass<out Any>? {
-        return when (docType) {
-            "InGridGeoDataset" -> GeodatasetTransformerExternalLfub::class
-            "InGridGeoService" -> GeoserviceTransformerExternalLfub::class
-            "InGridInformationSystem" -> InformationSystemTransformerExternalLfub::class
-            else -> null
-        }
+@Service
+class IngridISOExporterExternalLfub(
+    idfExporter: IngridIdfExporterExternalLfub,
+    luceneExporter: IngridLuceneExporterExternalLfub,
+    documentWrapperRepository: DocumentWrapperRepository
+) : IngridExporterExternalLfub(idfExporter, luceneExporter, documentWrapperRepository) {
+
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridISOLfuExternalBayern",
+        "ISO 19139 LfuBayern",
+        "Export von LfuBayern Dokumenten in ISO für die Vorschau im Editor.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-lfubayern")
+    )
+
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
+        val indexString = super.run(doc, catalogId, options) as String
+        return getISOFromElasticDocumentString(indexString)
     }
 }

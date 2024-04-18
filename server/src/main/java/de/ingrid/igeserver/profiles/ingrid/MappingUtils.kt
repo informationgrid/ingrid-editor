@@ -19,6 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.convertStringToDocument
+import de.ingrid.igeserver.profiles.ingrid.exporter.transformIDFtoIso
+import de.ingrid.utils.ElasticDocument
+import de.ingrid.utils.xml.XMLUtils
+
 val inVeKoSKeywordMapping = mapOf(
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/gsaa" to "GSAA",
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/ecologicalFocusArea" to "Im Umweltinteresse genutzte Fläche",
@@ -59,4 +66,10 @@ val iso639LanguageMapping = mapOf(
     "fry" to "142",
     "nds" to "306"
 )
-    
+
+fun getISOFromElasticDocumentString(elasticString: String): String {
+    val elasticDoc = jacksonObjectMapper().readValue<ElasticDocument>(elasticString)
+    val idfDoc = convertStringToDocument(elasticDoc["idf"] as String)
+    val isoDoc = transformIDFtoIso(idfDoc!!)
+    return XMLUtils.toString(isoDoc)
+}

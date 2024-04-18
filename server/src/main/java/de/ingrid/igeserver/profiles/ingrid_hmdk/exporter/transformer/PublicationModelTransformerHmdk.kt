@@ -17,19 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
+package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer
 
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKeywords
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 
-class InformationSystemModelTransformerHmdk(
+class PublicationModelTransformerHmdk(
     model: IngridModel,
     catalogIdentifier: String,
     codelists: CodelistTransformer,
@@ -38,7 +39,7 @@ class InformationSystemModelTransformerHmdk(
     cache: TransformerCache,
     doc: Document,
     documentService: DocumentService
-) : InformationSystemModelTransformer(
+) : PublicationModelTransformer(
     model,
     catalogIdentifier,
     codelists,
@@ -49,5 +50,5 @@ class InformationSystemModelTransformerHmdk(
     documentService
 ) {
     override fun getDescriptiveKeywords(): List<Thesaurus> =
-        SharedExport(codelists, doc).amendHMDKDescriptiveKeywords(super.getDescriptiveKeywords())
+        amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 }

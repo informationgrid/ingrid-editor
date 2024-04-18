@@ -33,7 +33,7 @@ import java.io.StringWriter
 import java.io.Writer
 
 @Service
-class BmiIndexExporter : IgeExporter {
+class BmiExporter : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() {
