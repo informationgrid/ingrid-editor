@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component
 @Component
 class InGridGeoDatasetTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val profiles = arrayOf(LfuBayernProfile.id)
-//    override val jsonSchema = "/ingrid/schemes/bast/geo-dataset_bast.schema.json"
+    override val jsonSchema = "/ingrid/schemes/lfubayern/geo-dataset_lfubayern.schema.json"
 }
 
 @Component
@@ -40,12 +40,13 @@ class InGridDataCollectionTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridData
 @Component
 class InGridGeoServiceTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
     override val profiles = arrayOf(LfuBayernProfile.id)
-//    override val jsonSchema = "/ingrid/schemes/bast/geo-service_bast.schema.json"
+    override val jsonSchema = "/ingrid/schemes/lfubayern/geo-service_lfubayern.schema.json"
 }
 
 @Component
 class InGridInformationSystemTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
     override val profiles = arrayOf(LfuBayernProfile.id)
+    override val jsonSchema = "/ingrid/schemes/lfubayern/information-system_lfubayern.schema.json"
 }
 
 @Component

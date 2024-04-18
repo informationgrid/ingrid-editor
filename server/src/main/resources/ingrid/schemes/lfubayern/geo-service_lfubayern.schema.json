@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "GeoServiceLfUBayern#1.0.0",
+  "$ref": "#/definitions/GeoServiceLfUBayern",
+  "definitions": {
+    "GeoServiceLfUBayern": {
+      "allOf": [
+        {
+          "$ref": "../geo-service.schema.json#/definitions/GeoService"
+        }
+      ],
+      "properties": {
+        "isAdVCompatible": true,
+        "isOpenData": true,
+        "isInspireIdentified": true,
+        "isInspireConform": true,
+        "subType": true,
+        "identifier": true,
+        "spatialRepresentationType": true,
+        "vectorSpatialRepresentation": true,
+        "topicCategories": true,
+        "description": true,
+        "alternateTitle": true,
+        "parentIdentifier": true,
+        "pointOfContact": true,
+        "advProductGroups": true,
+        "themes": true,
+        "spatial": true,
+        "temporal": true,
+        "resolution": true,
+        "lineage": true,
+        "qualities": true,
+        "portrayalCatalogueInfo": true,
+        "featureCatalogueDescription": true,
+        "extraInfo": true,
+        "metadata": true,
+        "keywords": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "free": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "umthes": {
+              "$ref": "../refs/general.schema.json#/definitions/keywordsThesaurus"
+            },
+            "gemet": {
+              "$ref": "../refs/general.schema.json#/definitions/keywordsThesaurus"
+            },
+            "internalKeywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "digitalTransferOptions": true,
+        "distribution": true,
+        "dataset": true,
+        "dataQuality": true,
+        "dataQualityInfo": true,
+        "absoluteExternalPositionalAccuracy": true,
+        "priorityDatasets": true,
+        "invekos": true,
+        "invekosKeywords": true,
+        "spatialScope": true,
+        "maintenanceInformation": true,
+        "references": true,
+        "graphicOverviews": true,
+        "orderInfo": true,
+        "service": true,
+        "conformanceResult": true,
+        "gridSpatialRepresentation": true,
+        "openDataCategories": true,
+        "title": true,
+        "_uuid": true,
+        "_type": true,
+        "dataSetURI": {
+          "type": ["null", "string"]
+        },
+        "fees": {
+          "type": ["null", "string"]
+        },
+        "resource": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "../refs/general.schema.json#/definitions/resource"
+            }
+          ],
+          "properties": {
+            "purpose": true,
+            "accessConstraints": true,
+            "useConstraints": true,
+            "useLimitation": true,
+            "useConstraintsComments": {
+              "type": ["null", "string"]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

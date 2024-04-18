@@ -449,7 +449,7 @@
     },
     "keywords": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "free": {
           "type": "array",
