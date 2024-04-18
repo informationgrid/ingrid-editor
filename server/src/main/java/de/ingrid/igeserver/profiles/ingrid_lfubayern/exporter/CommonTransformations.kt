@@ -20,7 +20,9 @@
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -57,20 +59,30 @@ fun lfubUseConstraints(
 fun lfubGetDescriptiveKeywords(
     superDescriptiveKeywords: List<Thesaurus>,
     docData: JsonNode,
+    codelistHandler: CodelistTransformer,
     ignoreInternalKeywords: Boolean = false
 ): List<Thesaurus> {
     val lfuInternalKeywords = Thesaurus(
-        "LfU Internal Keywords",
+        "LfU Bayern Internal Keywords",
         "2024-07-01",
-        keywords = docData.get("keywords").get("internalKeywords")?.map { KeywordIso(it.asText()) } ?: emptyList(),
+        keywords = docData.get("keywords").get("internalKeywords")?.map { keyword: JsonNode? ->
+            val value = keyword?.getString("key")
+                ?.let { codelistHandler.getCatalogCodelistValue("20001", KeyValue(it)) }
+                ?: keyword?.getString("value")
+            KeywordIso(value)
+        } ?: emptyList(),
     )
     val lfugeoKeywords = Thesaurus(
-        "LfU Geological Keywords",
+        "LfU Bayern Geological Keywords",
         "2018-08-01",
         type = "stratum",
         dateType = "revision",
-        keywords = docData.get("keywords").get("geologicalKeywords")?.map { KeywordIso(it.asText()) }
-            ?: emptyList(),
+        keywords = docData.get("keywords").get("geologicalKeywords")?.map { keyword: JsonNode? ->
+            val value = keyword?.getString("key")
+                ?.let { codelistHandler.getCatalogCodelistValue("20000", KeyValue(it)) }
+                ?: keyword?.getString("value")
+            KeywordIso(value)
+        } ?: emptyList(),
     )
     return if (ignoreInternalKeywords) superDescriptiveKeywords + lfugeoKeywords
     else superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords

@@ -17,12 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { FormFieldHelper } from "../../form-field-helper";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { CodelistService } from "../../../app/services/codelist/codelist.service";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsLfuBayern extends FormFieldHelper {
+  codelistService = inject(CodelistService);
+
   getGeodataFieldConfig(): FormlyFieldConfig {
     return this.addInput("dataSetURI", "Geodatenlink", {
       wrappers: ["panel", "form-field"],
@@ -46,6 +49,8 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
   getInternalKeywordsFieldConfig(): FormlyFieldConfig {
     return this.addRepeatList("internalKeywords", "Interne Schlüsselwörter", {
       view: "chip",
+      options: this.codelistService.observe("20001"),
+      codelistId: "20001",
     });
   }
   getGeologicalKeywordsFieldConfig(): FormlyFieldConfig {
@@ -54,6 +59,8 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
       "Geologische Schlüsselliste",
       {
         view: "chip",
+        options: this.codelistService.observe("20000"),
+        codelistId: "20000",
       },
     );
   }

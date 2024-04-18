@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -48,5 +50,41 @@ class LfuBayernProfile(
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "IngridIndexExporterLfub"
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        super.initCatalogCodelists(catalogId, codelistId)
+
+        val catalogRef = catalogRepo.findByIdentifier(catalogId)
+
+        val codelist20000 = Codelist().apply {
+            identifier = "20000"
+            catalog = catalogRef
+            name = "Geologische Schlüsselliste"
+            description = ""
+            data = jacksonObjectMapper().createArrayNode().apply {
+//                CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22")
+            }
+        }
+        val codelist20001 = Codelist().apply {
+            identifier = "20001"
+            catalog = catalogRef
+            name = "Interne Schlüsselwörter"
+            description = ""
+            data = jacksonObjectMapper().createArrayNode().apply {
+//                CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22")
+            }
+        }
+
+        when (codelistId) {
+            "20000" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20000)
+            "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+            null -> {
+                codelistHandler.removeAndAddCodelists(
+                    catalogId,
+                    listOf(codelist20000, codelist20001)
+                )
+            }
+        }
+    }
 
 }

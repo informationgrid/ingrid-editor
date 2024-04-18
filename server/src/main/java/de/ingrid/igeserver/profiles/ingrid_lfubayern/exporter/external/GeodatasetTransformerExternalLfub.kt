@@ -47,7 +47,7 @@ class GeodatasetTransformerExternalLfub(
     private val docData = doc.data
 
     override fun getDescriptiveKeywords(): List<Thesaurus> =
-        lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, true)
+        lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists, true)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

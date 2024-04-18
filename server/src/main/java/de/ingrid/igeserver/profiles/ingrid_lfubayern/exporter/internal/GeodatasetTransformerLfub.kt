@@ -50,7 +50,7 @@ class GeodatasetTransformerLfub(
     override val supplementalInformation = docData.getString("supplementalInformation")
     override val datasetUri = docData.getString("dataSetURI")
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }
