@@ -1,7 +1,9 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
+@import gg.jte.Content
 @import gg.jte.support.ForSupport
-@param GeneralMapper model 
+@param GeneralMapper model
+@param Content additionalKeywords = null
 
 "title": "${model.getTitle()}",
 "_uuid": "${model.getUuid()}",
@@ -77,7 +79,7 @@
     @for(var keyword : ForSupport.of(model.getKeywords()))
         { "label": "${keyword.get()}" }@if (!keyword.isLast()),@endif
     @endfor
-    ]
+    ] ${additionalKeywords}
 },
 "spatial": {
 "references": [

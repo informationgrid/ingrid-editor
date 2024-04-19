@@ -46,7 +46,7 @@ const val internalKeywords = """
                             <gmd:thesaurusName>
                                 <gmd:CI_Citation>
                                     <gmd:title>
-                                        <gco:CharacterString>LfU Internal Keywords</gco:CharacterString>
+                                        <gco:CharacterString>LfU Bayern Internal Keywords</gco:CharacterString>
                                     </gmd:title>
                                     <gmd:date>
                                         <gmd:CI_Date>
@@ -79,7 +79,7 @@ const val geologicalKeywords = """
                             <gmd:thesaurusName>
                                 <gmd:CI_Citation>
                                     <gmd:title>
-                                        <gco:CharacterString>LfU Geological Keywords</gco:CharacterString>
+                                        <gco:CharacterString>LfU Bayern Geological Keywords</gco:CharacterString>
                                     </gmd:title>
                                     <gmd:date>
                                         <gmd:CI_Date>

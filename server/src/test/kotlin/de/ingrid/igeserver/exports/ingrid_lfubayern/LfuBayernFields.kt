@@ -51,8 +51,13 @@ class LfuBayernFields : GeodatasetBase() {
                 this.catalogService,
                 this.documentService
             )
-        every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog().apply { identifier = "ingrid-lfubayern" }
+        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
+            identifier = "ingrid-lfubayern"
+        }
+        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
+        every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
+        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"
+        every { codelistHandler.getCatalogCodelistValue(any(), "20001", "2") } returns "intern zwei"
     }
 
     init {
@@ -67,7 +72,7 @@ class LfuBayernFields : GeodatasetBase() {
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain dataSetURI
             }
-            
+
             should("export supplementalInformation for GeoDataset, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
@@ -82,14 +87,14 @@ class LfuBayernFields : GeodatasetBase() {
                     result shouldNotContain "internal comments"
                 }
             }
-            
+
             should("export 'Interne Schlüsselwörter' for GeoDataset and GeoService, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "keywords": {
                                 "internalKeywords": [
-                                    "intern eins",
-                                    "intern zwei"
+                                    {"key": "1"},
+                                    {"key": "2"}
                                 ]
                             }
                         }""".trimIndent()
@@ -103,14 +108,14 @@ class LfuBayernFields : GeodatasetBase() {
                     result shouldNotContain "intern zwei"
                 }
             }
-            
+
             should("export 'Geologische Schlüsselliste' for GeoDataset and GeoService, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "keywords": {
                                 "geologicalKeywords": [
-                                    "geological eins",
-                                    "geological zwei"
+                                    {"key": "1"},
+                                    {"key": "2"}
                                 ]
                             }
                         }""".trimIndent()
@@ -124,7 +129,7 @@ class LfuBayernFields : GeodatasetBase() {
                     result shouldNotContain "geological zwei"
                 }
             }
-            
+
             should("export fees, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{
@@ -135,7 +140,7 @@ class LfuBayernFields : GeodatasetBase() {
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain fees
             }
-            
+
             should("export additional use constraints comment, testing: $docType") {
                 val context = jacksonObjectMapper().readTree(
                     """{

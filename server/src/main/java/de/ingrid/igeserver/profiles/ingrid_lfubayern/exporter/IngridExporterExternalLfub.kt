@@ -64,7 +64,7 @@ class IngridIdfExporterExternalLfub(
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
 }
 
@@ -85,7 +85,7 @@ class IngridLuceneExporterExternalLfub(
     override fun getTransformer(data: TransformerData): Any {
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
-                getLfuBayernTransformer(data.doc.type)
+                getLfuBayernExternalTransformer(data.doc.type)
                     ?.constructors
                     ?.first()
                     ?.call(

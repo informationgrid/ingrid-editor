@@ -26,6 +26,9 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.GeodatasetTransformerExternalLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.GeoserviceTransformerExternalLfub
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.InformationSystemTransformerExternalLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeodatasetTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
@@ -93,6 +96,15 @@ fun getLfuBayernTransformer(docType: String): KClass<out Any>? {
         "InGridGeoDataset" -> GeodatasetTransformerLfub::class
         "InGridGeoService" -> GeoserviceTransformerLfub::class
         "InGridInformationSystem" -> InformationSystemTransformerLfub::class
+        else -> null
+    }
+}
+
+fun getLfuBayernExternalTransformer(docType: String): KClass<out Any>? {
+    return when (docType) {
+        "InGridGeoDataset" -> GeodatasetTransformerExternalLfub::class
+        "InGridGeoService" -> GeoserviceTransformerExternalLfub::class
+        "InGridInformationSystem" -> InformationSystemTransformerExternalLfub::class
         else -> null
     }
 }

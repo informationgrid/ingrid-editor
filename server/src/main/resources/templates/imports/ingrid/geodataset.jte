@@ -3,9 +3,10 @@
 @import gg.jte.support.ForSupport
 @param GeodatasetMapper model
 @param Content contentInfo = null
+@param Content additionalKeywords = null
 
 {
-    @template.imports.ingrid.base(model = model)
+    @template.imports.ingrid.base(model = model, additionalKeywords)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
     "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
