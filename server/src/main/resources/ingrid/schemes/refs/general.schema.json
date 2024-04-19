@@ -186,6 +186,9 @@
           },
           "source": {
             "type": "string"
+          },
+          "note": {
+            "type": ["null", "string"]
           }
         }
       }

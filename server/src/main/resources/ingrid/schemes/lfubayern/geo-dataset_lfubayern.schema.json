@@ -124,6 +124,7 @@
           ],
           "properties": {
             "purpose": true,
+            "specificUsage": true,
             "accessConstraints": true,
             "useConstraints": true,
             "useLimitation": true,
