@@ -24,7 +24,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
-import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportLfUBayern
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler

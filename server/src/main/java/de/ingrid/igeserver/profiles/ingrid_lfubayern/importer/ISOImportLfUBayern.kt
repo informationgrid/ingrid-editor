@@ -17,13 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_up_sh.importer
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.ImportProfileData
 import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
-import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.GeodatasetMapperLfUBayern
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy

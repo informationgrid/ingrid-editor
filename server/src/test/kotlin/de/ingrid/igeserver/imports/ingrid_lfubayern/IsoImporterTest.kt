@@ -23,7 +23,7 @@ import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
-import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportLfUBayern
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.QueryRepository
