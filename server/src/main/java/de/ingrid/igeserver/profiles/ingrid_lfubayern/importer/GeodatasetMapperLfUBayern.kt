@@ -27,7 +27,7 @@ class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoDa
 
     val geolink: String = isoData.data.dataSetURI?.value ?: ""
     val fees: String = isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(0)?.mdStandardOrderProcess?.fees?.value ?: ""
-    val useConstraintComments: String = getUseConstraints()[0].note ?: ""
+    val useConstraintComments: String = if (getUseConstraints().isNotEmpty()) getUseConstraints()[0].note ?: "" else ""
 
     override fun getKeywords(): List<String> {
         return super.getKeywords(listOf("LfU Bayern Geological Keywords", "LfU Bayern Internal Keywords"))
