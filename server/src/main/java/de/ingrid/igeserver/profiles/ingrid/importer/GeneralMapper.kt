@@ -130,7 +130,10 @@ open class GeneralMapper(val isoData: IsoImportData) {
             
             var uuid = contact.responsibleParty?.uuid
             if (individualName == null && uuid == null) {
-                uuid = findOrganisationUuid(organization!!) 
+                // sometimes a distributor was not correctly exported, since only order information was needed,
+                // so we skip this "empty" address
+                if (organization == null) return@flatMapIndexed parents
+                uuid = findOrganisationUuid(organization) 
                     ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
             }
 
@@ -322,7 +325,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val description: String? = null
     )
 
-    fun getKeywords(): List<String> {
+    open fun getKeywords() = getKeywords(emptyList())
+    fun getKeywords(ignoreAdditional: List<String> = emptyList()): List<String> {
         val ignoreThesaurus = listOf(
             "German Environmental Classification - Topic, version 1.0",
             "GEMET - INSPIRE themes, version 1.0",
@@ -331,7 +335,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "Spatial scope",
             "Further legal basis",
             "IACS data"
-        )
+        ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()

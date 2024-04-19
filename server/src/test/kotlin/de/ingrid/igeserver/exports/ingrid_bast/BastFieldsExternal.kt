@@ -48,7 +48,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 this.documentService
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog().apply { identifier = "ingrid-bast" }
+                DummyCatalog("ingrid-bast")
     }
 
     init {

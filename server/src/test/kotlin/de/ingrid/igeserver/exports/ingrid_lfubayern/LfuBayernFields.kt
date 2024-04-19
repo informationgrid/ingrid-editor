@@ -51,9 +51,7 @@ class LfuBayernFields : GeodatasetBase() {
                 this.catalogService,
                 this.documentService
             )
-        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
-            identifier = "ingrid-lfubayern"
-        }
+        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
         every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"

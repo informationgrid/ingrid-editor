@@ -4,6 +4,7 @@
 @import gg.jte.support.ForSupport
 @param GeneralMapper model
 @param Content additionalKeywords = null
+@param Content additionalResource = null
 
 "title": "${model.getTitle()}",
 "_uuid": "${model.getUuid()}",
@@ -179,7 +180,7 @@
     }@if (!item.isLast()),@endif
 @endfor
 ],
-"useLimitation": "${model.getUseLimitation()}"
+"useLimitation": "${model.getUseLimitation()}" ${additionalResource}
 },
 "distribution": {
 "format": [

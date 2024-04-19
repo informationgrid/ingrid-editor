@@ -22,7 +22,9 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
+import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
@@ -38,7 +40,9 @@ class LfuBayernProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
+    isoImport: ISOImport,
+    isoImportLfUBayern: ISOImportLfUBayern,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -50,6 +54,10 @@ class LfuBayernProfile(
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "IngridIndexExporterLfub"
+
+    init {
+        isoImport.profileMapper[id] = isoImportLfUBayern
+    }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         super.initCatalogCodelists(catalogId, codelistId)

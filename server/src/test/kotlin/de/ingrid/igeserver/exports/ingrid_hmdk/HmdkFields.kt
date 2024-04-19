@@ -51,7 +51,7 @@ class HmdkFields : GeodatasetBase() {
                 this.documentService
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog().apply { identifier = "ingrid-hmdk" }
+                DummyCatalog("ingrid-hmdk")
     }
 
     init {

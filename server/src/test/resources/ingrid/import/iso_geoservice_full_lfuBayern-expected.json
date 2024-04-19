@@ -1,27 +1,27 @@
 {
-  "title": "Coupling Service",
-  "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
-  "_parent": "my-specified-parent",
-  "_type": "InGridGeoService",
-  "isInspireIdentified": true,
+  "title": "geodaten",
+  "_uuid": "3fce9549-eb69-43bc-9304-b3d0cde76394",
+  "_parent": null,
+  "_type": "InGridGeoDataset",
+  "isInspireIdentified": false,
   "isAdVCompatible": false,
-  "isOpenData": true,
-  "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
-  "alternateTitle": "Short",
-  "parentIdentifier": "my-specified-parent",
+  "isOpenData": false,
+  "description": "Beschreibung",
+  "alternateTitle": "",
+  "parentIdentifier": "",
   "pointOfContact": [
     {
       "ref": {
-        "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
+        "_uuid": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
         "_type": "InGridOrganisationDoc",
-        "title": "KST PortalU",
-        "organization": "KST PortalU",
+        "title": "Orga1",
+        "organization": "Orga1",
         "contact": [
           {
             "type": {
               "key": "3"
             },
-            "connection": "kst@portalu.de"
+            "connection": "fegeg@ege.fe"
           }
         ],
         "positionName": "",
@@ -33,436 +33,172 @@
     },
     {
       "ref": {
-        "_uuid": "objektbesitzer_institut",
+        "_uuid": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
         "_type": "InGridOrganisationDoc",
-        "title": "Objektbesitzer Institut",
-        "organization": "Objektbesitzer Institut",
-        "address": {
-          "city": "Nienburg (Weser)",
-          "po-box": "12345",
-          "street": "Brückenstraße 8",
-          "country": {
-            "key": "276"
-          },
-          "zip-code": "D-31582",
-          "zip-po-box": "D-31564",
-          "administrativeArea": null
-        },
+        "title": "Orga1",
+        "organization": "Orga1",
         "contact": [
           {
             "type": {
               "key": "3"
             },
-            "connection": "besitzer@wemove.com"
+            "connection": "fegeg@ege.fe"
           }
         ],
         "positionName": "",
         "hoursOfService": ""
       },
       "type": {
-        "key": null,
-        "value": ""
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
-        "_type": "InGridPersonDoc",
-        "title": "Besitzername, Besitzervorname",
-        "salutation": {
-          "key": "2"
-        },
-        "firstName": "Besitzervorname",
-        "lastName": "Besitzername",
-        "address": {
-          "city": "Nienburg (Weser)",
-          "po-box": "12345",
-          "street": "Brückenstraße 8",
-          "country": {
-            "key": "276"
-          },
-          "zip-code": "D-31582",
-          "zip-po-box": "D-31564",
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "besitzer@wemove.com"
-          }
-        ],
-        "positionName": "Liegenschaftsbuch (ALB)",
-        "hoursOfService": "Dies sind die Servicezeiten.",
-        "parentAsUuid": "objektbesitzer_institut"
-      },
-      "type": {
-        "key": "1"
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "adressvererbung_test",
-        "_type": "InGridOrganisationDoc",
-        "title": "Adressvererbung Test",
-        "organization": "Adressvererbung Test",
-        "address": {
-          "country": {
-            "key": "276"
-          },
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "martin.muster@mu.niedersachsen.de"
-          }
-        ],
-        "positionName": "",
-        "hoursOfService": ""
-      },
-      "type": {
-        "key": null,
-        "value": ""
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
-        "_type": "InGridPersonDoc",
-        "title": "test1, user",
-        "salutation": {
-          "key": "2"
-        },
-        "firstName": "user",
-        "lastName": "test1",
-        "address": {
-          "country": {
-            "key": "276"
-          },
-          "administrativeArea": null
-        },
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "martin.muster@mu.niedersachsen.de"
-          }
-        ],
-        "positionName": "Testeinheit, NI TESTADRESSEN Testeinheit",
-        "hoursOfService": "",
-        "parentAsUuid": "adressvererbung_test"
-      },
-      "type": {
-        "key": null,
-        "value": "Meister"
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "meine_organisation",
-        "_type": "InGridOrganisationDoc",
-        "title": "Meine Organisation",
-        "organization": "Meine Organisation",
-        "contact": [],
-        "positionName": "",
-        "hoursOfService": ""
-      },
-      "type": {
-        "key": "5"
+        "key": "7"
       }
     }
   ],
-  "graphicOverviews": [
-    {
-      "fileName": {
-        "asLink": true,
-        "value": "https://mein-bild.de/xxx.png",
-        "uri": "https://mein-bild.de/xxx.png"
-      },
-      "fileDescription": "Bildbeschreibung"
-    }
-  ],
-  "advProductGroups": [
-    {
-      "key": "6"
-    }
-  ],
-  "themes": [
-    {
-      "key": "105"
-    }
-  ],
-  "priorityDatasets": [
-    {
-      "key": "-1023933682"
-    }
-  ],
-  "openDataCategories": [
-    {
-      "key": "6"
-    }
-  ],
-  "spatialScope": {
-    "key": "-673152846"
-  },
+  "graphicOverviews": [],
+  "advProductGroups": [],
+  "themes": [],
+  "priorityDatasets": [],
+  "openDataCategories": [],
+  "spatialScope": null,
   "keywords": {
-    "free": [
-      {
-        "label": "Wasser"
-      },
-      {
-        "label": "Unbekannt"
-      }
-    ]
+    "free": [],
+    "geologicalKeywords": [{ "key": "1" }],
+    "internalKeywords": [{ "key": "2" }]
   },
   "spatial": {
     "references": [
       {
         "type": "free",
-        "title": "Hannover",
-        "value": {
-          "lat1": 52.130035,
-          "lon1": 9.235984,
-          "lat2": 52.678265,
-          "lon2": 10.309714
-        }
-      },
-      {
-        "type": "free",
         "title": "",
-        "ars": "054854700000"
+        "value": {
+          "lat1": 49.510944,
+          "lon1": 9.712217,
+          "lat2": 51.822197,
+          "lon2": 13.841935
+        }
       }
     ],
     "spatialSystems": [
       {
-        "key": "3068"
+        "key": "84"
       }
     ],
-    "verticalExtent": {
-      "minimumValue": 1.0,
-      "maximumValue": 5.0,
-      "unitOfMeasure": {
-        "key": "9001"
-      },
-      "Datum": {
-        "key": "900002"
-      }
-    },
-    "description": "Erläuterung Raumbezug"
+    "description": ""
   },
   "temporal": {
     "events": [
       {
-        "referenceDate": "2015-03-16T23:00:00Z",
+        "referenceDate": "2024-04-01T22:00:00Z",
         "referenceDateType": {
           "key": "1"
         }
       }
     ],
-    "resourceDateType": {
-      "key": "at"
-    },
-    "status": {
-      "key": "7"
-    },
-    "resourceDate": "2023-02-07T23:00:00Z",
+    "resourceDateType": null,
+    "status": null,
+    "resourceDate": null,
     "resourceDateTypeSince": null
   },
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": {
-      "key": "1"
+      "key": null,
+      "value": ""
     },
     "userDefinedMaintenanceFrequency": {
-      "number": 12,
       "unit": {
-        "key": "3"
-      }
-    },
-    "description": "Erläuterung Zeitbezug"
-  },
-  "conformanceResult": [
-    {
-      "pass": {
-        "key": "2"
-      },
-      "isInspire": false,
-      "explanation": "see the referenced specification",
-      "specification": {
         "key": null,
-        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
-      },
-      "publicationDate": "2013-08-08T22:00:00Z"
-    },
-    {
-      "pass": {
-        "key": "1"
-      },
-      "isInspire": true,
-      "explanation": "see the referenced specification",
-      "specification": {
-        "key": "10"
-      },
-      "publicationDate": "2009-10-19T22:00:00Z"
-    }
-  ],
-  "extraInfo": {
-    "legalBasicsDescriptions": [
-      {
-        "key": "38"
+        "value": ""
       }
-    ]
+    },
+    "description": ""
+  },
+  "conformanceResult": [],
+  "extraInfo": {
+    "legalBasicsDescriptions": []
   },
   "resource": {
-    "purpose": "Herstellung!",
-    "specificUsage": "Eignung!",
-    "accessConstraints": [
-      {
-        "key": "1"
-      },
-      {
-        "key": null,
-        "value": "freie Zugriffsbeschränkung"
-      }
-    ],
+    "purpose": "",
+    "specificUsage": "",
+    "accessConstraints": [],
     "useConstraints": [
       {
         "title": {
-          "key": "26"
+          "key": "19"
         },
-        "source": "Quelle 1"
-      },
-      {
-        "title": {
-          "key": "20"
-        },
-        "source": "Quelle 2"
-      },
-      {
-        "title": {
-          "key": "20"
-        },
-        "source": "Quelle vom JSON",
-        "note": "Use constraints note"
+        "source": "meine Quelle",
+        "note": "my comments to use constraints"
       }
     ],
-    "useLimitation": "Es gelten keine Bedingungen"
+    "useLimitation": "",
+    "useConstraintsComments": "my comments to use constraints"
   },
   "distribution": {
-    "format": [
-      {
-        "name": {
-          "key": "26"
-        },
-        "version": "5",
-        "compression": "RAR",
-        "specification": "spec 1"
-      }
-    ]
+    "format": []
   },
-  "digitalTransferOptions": [
-    {
-      "name": {
-        "key": "4"
-      },
-      "transferSize": {
-        "value": 1.44,
-        "unit": {
-          "key": "MB"
-        }
-      },
-      "mediumNote": "Home"
-    }
-  ],
-  "orderInfo": "Bestell",
+  "digitalTransferOptions": [],
+  "orderInfo": "",
   "references": [
-    {
-      "type": {
-        "key": "9999"
-      },
-      "title": "Ein Verweis",
-      "url": "http://my-link",
-      "explanation": "Link Erläuterung"
-    },
     {
       "type": {
         "key": "5304"
       },
-      "title": "Bestell Link",
-      "url": "http://order-me.com",
-      "explanation": "Meine Bestellungen"
-    },
-    {
-      "type": {
-        "key": "5302"
-      },
-      "title": "Dienst \"Coupling Service\" (GetCapabilities)",
-      "url": "https://my-getcapabilities",
+      "title": "Meine Verweis",
+      "url": "http://verweis.de",
       "explanation": ""
     }
   ],
+  "invekosKeywords": [],
+  "subType": {
+    "key": "5"
+  },
   "metadata": {
     "language": {
       "key": "150"
+    },
+    "characterSet": null
+  },
+  "resolution": [],
+  "topicCategories": [
+    {
+      "key": "17"
+    }
+  ],
+  "spatialRepresentationType": [],
+  "lineage": {
+    "statement": "Grundlage"
+  },
+  "identifier": "https://registry.gdi-de.org/id/lfub/9e263e7c-588e-47f1-9dc9-2a7e3b8a2284",
+  "portrayalCatalogueInfo": {
+    "citation": []
+  },
+  "featureCatalogueDescription": {
+    "citation": [],
+    "featureTypes": []
+  },
+  "dataQualityInfo": {
+    "lineage": {
+      "source": {
+        "descriptions": [],
+        "processStep": {
+          "description": []
+        }
+      }
     }
   },
-  "service": {
-    "classification": [
-      {
-        "key": "211"
-      }
-    ],
-    "type": {
-      "key": "3"
-    },
-    "version": [
-      {
-        "key": "1"
-      }
-    ],
-    "operations": [
-      {
-        "name": {
-          "key": "1"
-        },
-        "description": "Eine URL für die getCapabilities",
-        "methodCall": "https://my-getcapabilities"
-      }
-    ],
-    "resolution": [
-      {
-        "denominator": 1213,
-        "distanceMeter": 5435,
-        "distanceDPI": 545
-      }
-    ],
-    "systemEnvironment": "System",
-    "implementationHistory": "Historie",
-    "explanation": "Erläuterung",
-    "coupledResources": [
-      {
-        "uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
-        "isExternalRef": false
-      },
-      {
-        "uuid": "93BBCF92-BD74-47A2-9865-BE59ABC90C57",
-        "isExternalRef": false
-      },
-      {
-        "identifier": "",
-        "uuid": "",
-        "url": "http://192.168.0.229/interface-csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=93BBCF92-BD74-47A2-9865-BE59ABC90C57&iplug=/ingrid-group:iplug-csw-dsc-test&elementSetName=full",
-        "title": "Extern gekoppelter Datensatz",
-        "isExternalRef": true
-      }
-    ],
-    "couplingType": {
-      "key": "tight"
-    },
-    "hasAccessConstraints": false
-  }
+  "dataQuality": {
+    "completenessOmission": {}
+  },
+  "absoluteExternalPositionalAccuracy": {
+    "vertical": null,
+    "horizontal": null,
+    "griddedDataPositionalAccuracy": null
+  },
+  "qualities": [],
+  "dataset": {
+    "languages": ["150"]
+  },
+  "isInspireConform": false,
+  "vectorSpatialRepresentation": [],
+  "fees": "It's for free!",
+  "supplementalInformation": "internal comments",
+  "dataSetURI": "geodatalink info"
 }

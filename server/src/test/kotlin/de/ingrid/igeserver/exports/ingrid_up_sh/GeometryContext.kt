@@ -22,7 +22,6 @@ package de.ingrid.igeserver.exports.ingrid_up_sh
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.exports.ingrid.Geodataset
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
 import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.IngridIdfExporterUPSH
@@ -42,7 +41,7 @@ class GeometryContext : GeodatasetBase() {
                 this.documentService
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-            DummyCatalog().apply { identifier = "ingrid-up-sh" }
+            DummyCatalog("ingrid-up-sh")
     }
 
     init {

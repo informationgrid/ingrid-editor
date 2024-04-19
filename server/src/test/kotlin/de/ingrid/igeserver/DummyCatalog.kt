@@ -25,8 +25,8 @@ import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.stereotype.Service
 
 @Service
-class DummyCatalog : CatalogProfile {
-    override var identifier = "DUMMY"
+class DummyCatalog(override val identifier: String = "DUMMY") : CatalogProfile {
+//    override var identifier = "DUMMY"
     override val title = "DUMMY Catalog"
     override val description = "This catalog is only used for test purpose"
     override val indexExportFormatID = ""

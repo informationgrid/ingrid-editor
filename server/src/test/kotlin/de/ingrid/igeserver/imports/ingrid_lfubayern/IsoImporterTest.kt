@@ -22,9 +22,14 @@ package de.ingrid.igeserver.imports.ingrid_lfubayern
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_up_sh.importer.ISOImportLfUBayern
+import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
@@ -40,6 +45,12 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
     private val documentService = mockk<DocumentService>()
     private val documentRepository = mockk<DocumentRepository>()
+    private val catalogRepository = mockk<CatalogRepository>()
+    private val queryRepository = mockk<QueryRepository>()
+    private val dateService = mockk<DateService>()
+    private val openDataCategory = mockk<OpenDataCategory>()
+    private val isoImport = mockk<ISOImport>()
+    private val isoImportLfUBayern = mockk<ISOImportLfUBayern>()
 
     @BeforeAll
     fun beforeAll() {
@@ -48,7 +59,12 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "3535", "von Drachenfels 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
-        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+        every { codelistService.getCatalogCodelistKey("test", "20000", "geological eins") } returns "1"
+        every { codelistService.getCatalogCodelistKey("test", "20001", "intern zwei") } returns "2"
+        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
+        /*every { catalogService.getProfileFromCatalog(any()) } returns LfuBayernProfile(
+            catalogRepository, codelistService, documentService, queryRepository, dateService, openDataCategory, isoImport, isoImportLfUBayern
+        )*/
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
     }
@@ -56,6 +72,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     @Test
     fun importGeoservice() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 

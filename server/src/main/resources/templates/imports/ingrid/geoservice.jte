@@ -3,8 +3,10 @@
 @import gg.jte.support.ForSupport
 @param GeoserviceMapper model 
 @param Content contentInfo = null
+@param Content additionalKeywords = null
+@param Content additionalResource = null
 {
-    @template.imports.ingrid.base(model = model)
+    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage())
     },
