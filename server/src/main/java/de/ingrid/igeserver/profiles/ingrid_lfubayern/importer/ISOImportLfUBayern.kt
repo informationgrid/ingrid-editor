@@ -38,7 +38,7 @@ class ISOImportLfUBayern(val codelistHandler: CodelistHandler, @Lazy val documen
             "service" -> {
                 ImportProfileData(
                     "imports/ingrid-lfubayern/geoservice.jte",
-                    GeodatasetMapperLfUBayern(isoData)
+                    GeoserviceMapperLfUBayern(isoData)
                 )
             }
                 
