@@ -917,7 +917,9 @@ data class PointOfContact(
     val parent: String? = null
 ) {
     fun getTitle(): String {
-        return if (personInfo?.lastName != null) "${personInfo?.lastName}, ${personInfo?.firstName}"
+        return if (personInfo?.lastName != null) 
+            if (personInfo.firstName.isNullOrEmpty()) personInfo.lastName 
+            else "${personInfo.lastName}, ${personInfo.firstName}"
         else organization ?: ""
     }
 }
