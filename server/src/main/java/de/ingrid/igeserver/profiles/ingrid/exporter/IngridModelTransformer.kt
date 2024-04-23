@@ -499,9 +499,9 @@ open class IngridModelTransformer(
             "2" -> "5110"
             "3" -> "5120"
             "4" -> "5130"
-            else -> null
+            else -> "5110"
         }
-        return (if (codelistId == null) null else codelists.getValue(codelistId, name, "de")) ?: name.value
+        return codelists.getValue(codelistId, name, "de") ?: name.value
     }
 
     private fun getVersion(name: KeyValue?, serviceTypeKey: String?): String? {
