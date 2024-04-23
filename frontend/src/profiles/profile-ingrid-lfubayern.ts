@@ -21,7 +21,7 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent, InGridDoctype } from "./profile-ingrid";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CommonFieldsLfuBayern } from "./ingrid-lufbayern/doctypes/common-fields";
+import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
 import { FieldConfigPosition } from "./form-field-helper";
 
 @Component({
