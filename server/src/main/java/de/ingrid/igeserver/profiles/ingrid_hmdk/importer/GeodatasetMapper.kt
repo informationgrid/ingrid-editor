@@ -27,6 +27,9 @@ class GeodatasetMapperHMDK(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
+    override fun getKeywords(): List<String> =
+        super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it.equals("hmbtg") }
+
 
     fun getInformationHmbTG(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
