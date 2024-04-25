@@ -103,6 +103,11 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
                 val model = GeodatasetMapper(isoData)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
+            
+            "application" -> {
+                val model = ApplicationMapper(isoData)
+                templateEngine.render("imports/ingrid/application.jte", mapOf("model" to model), output)
+            }
 
             else -> throw ServerException.withReason("Not supported hierarchy level for import: $hierarchyLevel")
         }
