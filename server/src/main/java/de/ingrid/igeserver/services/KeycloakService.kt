@@ -360,6 +360,8 @@ class KeycloakService : UserManagementService {
     }
 
     private fun handleReponseErrorsForUser(error: Response) {
+        if (error.status < 400) return
+        
         val extraInfo = if (error.entity is InputStream) {
             (error.entity as InputStream).reader().readText()
         } else null
