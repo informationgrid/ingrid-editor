@@ -31,7 +31,6 @@ import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
 import java.util.*
@@ -105,7 +104,7 @@ class PreDefaultDocumentInitializer(
         payload.document.data.remove(FIELD_PARENT)
 
         val documentType = payload.document.type
-        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id.toString()
+        val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id!!
 
         with(payload.wrapper) {
             catalog = catalogRef

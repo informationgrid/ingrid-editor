@@ -159,7 +159,7 @@ class PostMigrationTask(
 
             if (organization.isNullOrEmpty() || organization == "null") {
                 // free address without organization. no action needed
-                it.wrapper.path = listOf(rootFolderId.toString())
+                it.wrapper.path = listOf(rootFolderId)
                 it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
                 return
             } else {
@@ -179,7 +179,7 @@ class PostMigrationTask(
                 )
                 val parentId = organizationDoc.wrapper.id!!
 
-                it.wrapper.path = listOf(parentId.toString())
+                it.wrapper.path = listOf(parentId)
                 it.wrapper.parent = documentService.docWrapperRepo.findById(parentId).get()
                 // save
                 documentService.aclService.updateParent(it.wrapper.id!!, parentId)
@@ -255,7 +255,7 @@ class PostMigrationTask(
             val newFolderId = createNewFolderFor(doc, title!!)
             val newFolder = documentService.docWrapperRepo.findById(newFolderId).get()
             doc.parent = newFolder
-            doc.path += newFolderId.toString()
+            doc.path += newFolderId
             documentService.docWrapperRepo.saveAndFlush(doc)
             documentService.aclService.updateParent(doc.id!!, newFolderId)
 
@@ -292,7 +292,7 @@ class PostMigrationTask(
         if (children.isEmpty()) return
 
         children.forEach { child ->
-            child.path = child.path.map { if (it == oldId.toString()) newId.toString() else it }
+            child.path = child.path.map { if (it == oldId) newId else it }
             documentService.docWrapperRepo.saveAndFlush(child)
             // recursively update children
             replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
@@ -326,7 +326,7 @@ class PostMigrationTask(
         if (oldPath.isEmpty()) return
         val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
         val pathTitles = reducedPath.map {
-            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it.toInt()).title!!
+            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it).title!!
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
@@ -344,7 +344,7 @@ class PostMigrationTask(
             if (folderWithSameNameAndPath != null) {
                 if (doc == folderWithSameNameAndPath.wrapper) {
                     // already transferred via parent node. only adjust path
-                    doc.path = newPath.map { it.toString() }
+                    doc.path = newPath
                     documentService.docWrapperRepo.saveAndFlush(doc)
                     return
                 } else {
@@ -355,7 +355,7 @@ class PostMigrationTask(
             }
         }
 
-        doc.path = newPath.map { it.toString() }
+        doc.path = newPath
         doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
         // save
         documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
