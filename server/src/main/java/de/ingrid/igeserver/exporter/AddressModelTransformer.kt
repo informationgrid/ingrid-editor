@@ -43,7 +43,7 @@ class AddressModelTransformer(
     var displayAddress: Document
 
     // needs to be set in during init phase
-    private val ancestorAddressesIncludingSelf: MutableList<DocumentData>
+    val ancestorAddressesIncludingSelf: MutableList<DocumentData>
 
     init {
         ancestorAddressesIncludingSelf = if (doc.wrapperId == -1) mutableListOf() else getAncestorAddressesIncludingSelf(doc.wrapperId)
@@ -208,7 +208,7 @@ class AddressModelTransformer(
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
         if (id == null) return mutableListOf()
 
-        val wrapper = documentService.getWrapperByDocumentId(id)
+        val wrapper = documentService.getWrapperById(id)
         if (wrapper.type == "FOLDER") return mutableListOf()
 
         val convertedDoc = try {

@@ -58,7 +58,7 @@ class ZabbixReportApiController(
     }
 
     override fun getDatasetReport(principal: Principal, datasetId: Int): ResponseEntity<List<ProblemReportItem>> {
-        val uuid = documentService.getWrapperByDocumentId(datasetId).uuid
+        val uuid = documentService.getWrapperById(datasetId).uuid
         val triggerIds = zabbixService.getTriggerIds(uuid)
         val problems = triggerIds
             .mapNotNull {

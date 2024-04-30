@@ -81,7 +81,7 @@ data class AddressModel(
     fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
         if (id == null) return mutableListOf()
 
-        val doc = documentService!!.getWrapperByDocumentId(id)
+        val doc = documentService!!.getWrapperById(id)
         val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
         if (publishedDoc == null || publishedDoc.type == "FOLDER") {
             return emptyList<AddressModel>().toMutableList()

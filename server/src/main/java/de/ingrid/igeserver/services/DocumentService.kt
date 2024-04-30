@@ -126,7 +126,7 @@ class DocumentService(
 
     private var log = logger()
 
-    fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
+    fun getWrapperById(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
 

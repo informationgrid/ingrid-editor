@@ -207,7 +207,7 @@ class IndexService(
                     document.apply {
                         wrapperId = it.wrapperId
                         if (it.parentId != null) {
-                            val parentWrapper = documentService.getWrapperByDocumentId(it.parentId)
+                            val parentWrapper = documentService.getWrapperById(it.parentId)
                             data.put(FIELD_PARENT, parentWrapper.uuid)
                         }
                     }
