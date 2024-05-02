@@ -3,7 +3,9 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
 @import gg.jte.support.ForSupport
 @import java.util.Map
+@import gg.jte.Content
 
+@param Content extraFields = null
 @param Map<String, Object> map
 
 !{var page = ((IngridModelTransformer)map.get("model"));}
@@ -373,4 +375,5 @@
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ]
+    ${extraFields}
 }

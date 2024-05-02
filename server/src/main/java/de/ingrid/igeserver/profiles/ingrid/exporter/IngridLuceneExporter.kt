@@ -69,7 +69,7 @@ class IngridLuceneExporter(
         }
     }
 
-    private fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
+    fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
         return when (doc.type) {
             "InGridSpecialisedTask" -> Pair(
                 "export/ingrid/template-lucene.jte",
@@ -123,7 +123,7 @@ class IngridLuceneExporter(
         }
     }
 
-    private fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog): Map<String, Any> {
+    fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog): Map<String, Any> {
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
         val data = TransformerData(type, catalog.identifier, codelistTransformer, doc)

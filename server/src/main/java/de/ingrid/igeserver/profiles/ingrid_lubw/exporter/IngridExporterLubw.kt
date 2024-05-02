@@ -19,21 +19,20 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw.exporter
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.IngridModelTransformerLubw
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
-import de.ingrid.utils.ElasticDocument
-import de.ingrid.utils.xml.XMLUtils
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
@@ -67,7 +66,8 @@ class IngridIdfExporterLubw(
     catalogService: CatalogService,
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLubwModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
+        getLubwModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
@@ -84,24 +84,35 @@ class IngridLuceneExporterLubw(
         documentService,
     ) {
 
+    override fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
+        return when (doc.type) {
+            "InGridSpecialisedTask",
+            "InGridGeoDataset",
+            "InGridPublication",
+            "InGridGeoService",
+            "InGridProject",
+            "InGridDataCollection",
+            "InGridInformationSystem"
+            -> Pair(
+                    "export/ingrid-lubw/template-lucene-lubw.jte",
+                    getMapper(IngridDocType.DOCUMENT, doc, catalog),
+                )
+
+            else -> super.getTemplateForDoctype(doc, catalog)
+        }
+    }
+
     override fun getTransformer(data: TransformerData): Any {
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
-                getLubwModelTransformerClass(data.doc.type)
-                    ?.constructors
-                    ?.first()
-                    ?.call(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService
-                    ) ?: super.getTransformer(data)
+                IngridModelTransformerLubw(
+                    data.mapper.convertValue(data.doc, IngridModel::class.java),
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    config,
+                    catalogService, TransformerCache(), data.doc, documentService
+                )
             }
-
             else -> super.getTransformer(data)
         }
     }
@@ -126,10 +137,7 @@ class IngridISOExporterLubw(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
-        val elasticDoc = jacksonObjectMapper().readValue<ElasticDocument>(indexString)
-        val idfDoc = convertStringToDocument(elasticDoc["idf"] as String)
-        val isoDoc = transformIDFtoIso(idfDoc!!)
-        return XMLUtils.toString(isoDoc)
+        return getISOFromElasticDocumentString(indexString)
     }
 
 }
