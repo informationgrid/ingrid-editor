@@ -290,6 +290,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "autocomplete",
       "datepicker",
       "repeatList",
+      "unit-input",
       // "table",
     ];
     const excludedTypes = ["updateGetCapabilities"];

@@ -26,10 +26,10 @@ import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.IngridDocType
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -51,9 +51,6 @@ class IngridLuceneExporter(
     @Lazy val documentService: DocumentService
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
-
-    var profileTransformer: MutableMap<String, IngridProfileTransformer> = mutableMapOf()
-
 
     fun run(doc: Document, catalogId: String): Any {
         val output: TemplateOutput = JsonStringOutput()
@@ -79,10 +76,26 @@ class IngridLuceneExporter(
                 getMapper(IngridDocType.DOCUMENT, doc, catalog)
             )
 
-            "InGridGeoDataset" -> Pair("export/ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridPublication" -> Pair("export/ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridGeoService" -> Pair("export/ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
-            "InGridProject" -> Pair("export/ingrid/template-lucene.jte", getMapper(IngridDocType.DOCUMENT, doc, catalog))
+            "InGridGeoDataset" -> Pair(
+                "export/ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
+            "InGridPublication" -> Pair(
+                "export/ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
+            "InGridGeoService" -> Pair(
+                "export/ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
+            "InGridProject" -> Pair(
+                "export/ingrid/template-lucene.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog)
+            )
+
             "InGridDataCollection" -> Pair(
                 "export/ingrid/template-lucene.jte",
                 getMapper(IngridDocType.DOCUMENT, doc, catalog)
@@ -110,73 +123,54 @@ class IngridLuceneExporter(
         }
     }
 
-    fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog): Map<String, Any> {
+    private fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog): Map<String, Any> {
 
-        val mapper = ObjectMapper().registerKotlinModule()
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
+        val data = TransformerData(type, catalog.identifier, codelistTransformer, doc)
 
-        val otherTransformer = profileTransformer[catalog.type]?.get(doc.type)
-        val transformer: Any = when (type) {
-            IngridDocType.ADDRESS -> {
-                if (otherTransformer != null) {
-                    otherTransformer.constructors.first().call(
-                        mapper.convertValue(doc, AddressModel::class.java),
-                        catalog.identifier,
-                        codelistTransformer,
-                        doc
-                    )
-                } else {
-                    AddressModelTransformer(
-                        catalog.identifier,
-                        codelistTransformer,
-                        null,
-                        doc,
-                        documentService = documentService
-                    )
-                }
-            }
-
-            IngridDocType.DOCUMENT -> {
-                if (otherTransformer != null) {
-                    otherTransformer.constructors.first().call(
-                        mapper.convertValue(doc, IngridModel::class.java),
-                        catalog.identifier,
-                        codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        doc,
-                        documentService
-                    )
-                } else {
-                    IngridModelTransformer(
-                        mapper.convertValue(doc, IngridModel::class.java),
-                        catalog.identifier,
-                        codelistTransformer,
-                        config,
-                        catalogService, TransformerCache(), doc, documentService
-                    )
-                }
-            }
-
-            IngridDocType.FOLDER -> {
-                FolderModelTransformer(
-                    mapper.convertValue(doc, FolderModel::class.java),
-                    catalog.identifier,
-                    codelistTransformer
-                )
-            }
-        }
+        val transformer: Any = getTransformer(data)
 
         return mapOf(
             "map" to mapOf(
                 "model" to transformer,
                 "catalog" to catalog,
-                "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
-                "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
+                "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
             )
         )
 
+    }
+
+    fun getTransformer(data: TransformerData): Any {
+        return when (data.type) {
+            IngridDocType.ADDRESS -> {
+                AddressModelTransformer(
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    null,
+                    data.doc,
+                    documentService = documentService
+                )
+            }
+
+            IngridDocType.DOCUMENT -> {
+                IngridModelTransformer(
+                    data.mapper.convertValue(data.doc, IngridModel::class.java),
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    config,
+                    catalogService, TransformerCache(), data.doc, documentService
+                )
+            }
+
+            IngridDocType.FOLDER -> {
+                FolderModelTransformer(
+                    data.mapper.convertValue(data.doc, FolderModel::class.java),
+                    data.catalogIdentifier,
+                    data.codelistTransformer
+                )
+            }
+        }
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String {
@@ -196,3 +190,11 @@ class IngridLuceneExporter(
         ADDRESS, DOCUMENT, FOLDER
     }
 }
+
+data class TransformerData(
+    val type: IngridDocType,
+    val catalogIdentifier: String,
+    val codelistTransformer: CodelistTransformer,
+    val doc: Document,
+    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+)

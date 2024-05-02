@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "InformationSystemLfUBayern#1.0.0",
+  "$ref": "#/definitions/InformationSystemLfUBayern",
+  "definitions": {
+    "InformationSystemLfUBayern": {
+      "allOf": [
+        {
+          "$ref": "../information-system.schema.json#/definitions/InformationSystem"
+        }
+      ],
+      "properties": {
+        "isAdVCompatible": true,
+        "isOpenData": true,
+        "isInspireIdentified": true,
+        "_uuid": true,
+        "_type": true,
+        "title": true,
+        "description": true,
+        "alternateTitle": true,
+        "serviceType": true,
+        "serviceUrls": true,
+        "serviceVersion": true,
+        "parentIdentifier": true,
+        "pointOfContact": true,
+        "advProductGroups": true,
+        "themes": true,
+        "spatial": true,
+        "temporal": true,
+        "dataset": true,
+        "extraInfo": true,
+        "metadata": true,
+        "keywords": true,
+        "maintenanceInformation": true,
+        "references": true,
+        "graphicOverviews": true,
+        "digitalTransferOptions": true,
+        "categoryCatalog": true,
+        "databaseContent": true,
+        "explanation": true,
+        "methodText": true,
+        "systemEnvironment": true,
+        "baseDataText": true,
+        "implementationHistory": true,
+        "orderInfo": true,
+        "distribution": true,
+        "openDataCategories": true,
+        "dataSetURI": {
+          "type": ["null", "string"]
+        },
+        "fees": {
+          "type": ["null", "string"]
+        },
+        "resource": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "../refs/general.schema.json#/definitions/resource"
+            }
+          ],
+          "properties": {
+            "purpose": true,
+            "specificUsage": true,
+            "accessConstraints": true,
+            "useConstraints": true,
+            "useLimitation": true,
+            "useConstraintsComments": {
+              "type": ["null", "string"]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

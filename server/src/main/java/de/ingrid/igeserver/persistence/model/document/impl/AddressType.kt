@@ -82,6 +82,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 dw.deleted = 0
                 AND dw.uuid = d.uuid
                 AND d.catalog_id = ${doc.catalog?.id}
+                AND dw.catalog_id = ${doc.catalog?.id}
                 AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING' OR d.state = 'PUBLISHED')
                 AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
             """.trimIndent()

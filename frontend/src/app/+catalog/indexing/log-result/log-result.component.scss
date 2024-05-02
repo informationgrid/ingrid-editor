@@ -6,10 +6,15 @@
   padding-bottom: 24px;
 }
 
-.mat-mdc-progress-bar {
-  margin: 12px 0;
-}
-
 .log {
   font-family: monospace;
+}
+
+.target-title {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+mat-progress-bar {
+  height: 3px;
 }

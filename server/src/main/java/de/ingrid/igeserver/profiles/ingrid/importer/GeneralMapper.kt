@@ -24,31 +24,48 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.exports.iso.Address
+import de.ingrid.igeserver.exports.iso.CIContact
+import de.ingrid.igeserver.exports.iso.Contact
+import de.ingrid.igeserver.exports.iso.TimePeriod
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
 import org.apache.logging.log4j.kotlin.logger
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHandler, val catalogId: String) {
+open class GeneralMapper(val isoData: IsoImportData) {
 
     private val log = logger()
+    
+    val metadata = isoData.data
+    val codeListService: CodelistHandler = isoData.codelistService
+    val catalogId: String= isoData.catalogId
+    val documentService: DocumentService = isoData.documentService
 
     val uuid = metadata.fileIdentifier?.value
-    val type =
-        if (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue == "service") "InGridGeoService" else "InGridGeoDataset"
+    val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        "service" -> "InGridGeoService"
+        "application" -> "InGridInformationSystem"
+        else -> "InGridGeoDataset"
+    }  
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
+
 
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
@@ -71,36 +88,78 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getPointOfContacts(): List<PointOfContact> {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
-        return (mainContact + additionalContacts).map {
-            val individualName = extractPersonInfo(it.responsibleParty?.individualName?.value)
-            val organization = it.responsibleParty?.organisationName?.value
-            val communications = getCommunications(it.responsibleParty?.contactInfo?.ciContact)
-            val addressInfo = getAddressInfo(it.responsibleParty?.contactInfo?.ciContact?.address?.address)
-            val positionName = it.responsibleParty?.positionName?.value ?: ""
-            val hoursOfService = it.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
+        val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
+            it.mdDistributor.distributorContact
+        } ?: emptyList()
+        return (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+            val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
+            val organization = contact.responsibleParty?.organisationName?.value
+            val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
+            val addressInfo = getAddressInfo(contact.responsibleParty?.contactInfo?.ciContact?.address?.address)
+            val positionName = contact.responsibleParty?.positionName?.value ?: ""
+            val hoursOfService = contact.responsibleParty?.contactInfo?.ciContact?.hoursOfService?.value ?: ""
 
-            // if contact is from main element and not a person (with individual name)
+            // if role is PointOfContact, and it comes from main contact element
             // then it gets special role: pointOfContactMd (key=12)
-            val role = if (individualName == null && mainContact.contains(it)) RoleCode(
-                CodelistAttributes(
-                    "",
-                    "pointOfContactMd"
-                )
-            ) else it.responsibleParty?.role!!
+            val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
+            val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) KeyValue("12")
+            else {
+                mapRoleToContactType(roleIso)
+            }
 
-            PointOfContact(
-                it.responsibleParty?.uuid ?: UUID.randomUUID().toString(),
+            // add parent organisation if exists
+            var parentAddressUuid: String? = null
+            val parents: MutableList<PointOfContact> = if (organization != null && individualName != null) {
+                val parentOrganisation = findOrganisationUuid(organization)
+                parentAddressUuid = parentOrganisation ?: UUID.randomUUID().toString().also { newUuid ->
+                    isoData.addressMaps[organization] = newUuid
+                }
+
+                // if the parent address is already present, it's not necessary to be added
+                if (parentOrganisation == null) {
+                    mutableListOf(
+                        PointOfContact(
+                            parentAddressUuid,
+                            "InGridOrganisationDoc",
+                            communications,
+                            KeyValue(),
+                            true,
+                            organization,
+                            address = addressInfo
+                        )
+                    )
+                } else mutableListOf()
+            } else mutableListOf()
+            
+            var uuid = contact.responsibleParty?.uuid
+            if (individualName == null && uuid == null) {
+                // sometimes a distributor was not correctly exported, since only order information was needed,
+                // so we skip this "empty" address
+                if (organization == null) return@flatMapIndexed parents
+                uuid = findOrganisationUuid(organization) 
+                    ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+            }
+
+            val pointOfContact = PointOfContact(
+                uuid ?: UUID.randomUUID().toString(),
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
-                mapRoleToContactType(role),
+                role,
                 individualName == null,
                 organization,
                 individualName,
                 addressInfo,
                 positionName,
-                hoursOfService
+                hoursOfService,
+                parentAddressUuid
             )
+            parents.add(pointOfContact)
+            parents
         }
+    }
+
+    private fun findOrganisationUuid(name: String): String? {
+        return isoData.addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(catalogId, name).firstOrNull()
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {
@@ -188,8 +247,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return if (salutationKey == null) null else KeyValue(salutationKey)
     }
 
-    private fun mapRoleToContactType(role: RoleCode): KeyValue {
-        val value = role.codelist?.codeListValue
+    private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
         return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
     }
@@ -216,7 +274,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.map { codeListService.getCodeListEntryId("6100", it, "de") }
+            ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, "de") }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
@@ -270,7 +328,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         val description: String? = null
     )
 
-    fun getKeywords(): List<String> {
+    open fun getKeywords() = getKeywords(emptyList())
+    fun getKeywords(ignoreAdditional: List<String> = emptyList()): List<String> {
         val ignoreThesaurus = listOf(
             "German Environmental Classification - Topic, version 1.0",
             "GEMET - INSPIRE themes, version 1.0",
@@ -279,7 +338,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
             "Spatial scope",
             "Further legal basis",
             "IACS data"
-        )
+        ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()
@@ -301,8 +360,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getSpatialSystems(): List<KeyValue> {
         return metadata.referenceSystemInfo
             ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-            ?.map { codeListService.getCodeListEntryId("100", it, "de") }
-            ?.map { KeyValue(it) } ?: emptyList()
+            ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
+            ?: emptyList()
     }
 
     fun getSpatialReferences(): List<SpatialReference> {
@@ -314,7 +373,7 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 // handle title
                 val geoIdentifierCode = it.geographicDescription?.geographicIdentifier?.mdIdentifier?.code
                 val titleOrArs = geoIdentifierCode?.value
-                
+
                 if (titleOrArs != null) {
                     val isAnchorAndRegionKey = geoIdentifierCode.isAnchor
                     // ignore regional key definition, which is identified by an anchor element
@@ -379,7 +438,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     }
 
     fun getLanguage(): KeyValue {
-        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!] ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
+        val languageKey = iso639LanguageMapping[metadata.language?.codelist?.codeListValue!!]
+            ?: throw ServerException.withReason("Could not map document language key: ${metadata.language?.codelist?.codeListValue}")
         return KeyValue(languageKey)
     }
 
@@ -403,8 +463,22 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.citation?.citation?.date
             ?.map {
                 val typeKey = codeListService.getCodeListEntryId("502", it.date?.dateType?.code?.codeListValue, "iso")
-                Event(KeyValue(typeKey), it.date?.date?.dateTime ?: "")
+                val date = it.date?.date?.dateTime?.let { parseDateTime(it) }
+                    ?: it.date?.date?.date?.let { parseDate(it) }
+                    ?: ""
+                Event(KeyValue(typeKey), date)
             } ?: emptyList()
+    }
+
+    private fun parseDateTime(value: String): String {
+        return OffsetDateTime.parse(value).toInstant().toString()
+    }
+
+    private fun parseDate(value: String): String {
+        return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toString()
     }
 
     fun getTimeRelatedInfo(): TimeInfo? {
@@ -413,8 +487,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
         return metadata.identificationInfo[0].identificationInfo?.extent
             ?.flatMap { it.extend?.temporalElement ?: emptyList() }
             ?.map {
-
-                val instant = it.extent?.extent?.timeInstant?.timePosition
+                val timeValue = it.extent?.extent?.timeInstant?.timePosition
+                val instant = timeValue?.let { parseDateTime(timeValue) }
                 if (instant != null) {
                     return TimeInfo(instant, KeyValue("at"), KeyValue(statusKey))
                 }
@@ -484,15 +558,16 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
     fun getDistributionFormat(): List<DistributionFormat> {
         return metadata.distributionInfo?.mdDistribution?.distributionFormat
             ?.map { it.format }
-            ?.map {
+            ?.mapNotNull {
                 val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
                 val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
-                DistributionFormat(
+                val result = DistributionFormat(
                     nameKeyValue,
                     it?.version?.value,
                     it?.fileDecompressionTechnique?.value,
                     it?.specification?.value
                 )
+                if (result.isNull()) null else result
             } ?: emptyList()
     }
 
@@ -523,7 +598,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    if (it.transferSize?.value == null) null else UnitField(it.transferSize.value.toString(), KeyValue("MB")),
+                    if (it.transferSize?.value == null) null else UnitField(
+                        it.transferSize.value.toString(),
+                        KeyValue("MB")
+                    ),
                     it.offLine?.mdMedium?.mediumNote?.value
                 )
             } ?: emptyList()
@@ -552,13 +630,23 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId("1320", applicationValue, "iso")
+                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId(
+                            "1320",
+                            applicationValue,
+                            "iso"
+                        )
                         val applicationFinalValue = when {
                             applicationValue == null -> null
                             applicationId == null -> KeyValue(null, applicationValue)
                             else -> KeyValue(applicationId)
                         }
-                        Reference(keyValue, resource.linkage.url, applicationFinalValue, resource.name?.value, resource.description?.value)
+                        Reference(
+                            keyValue,
+                            resource.linkage.url,
+                            applicationFinalValue,
+                            resource.name?.value,
+                            resource.description?.value
+                        )
                     } ?: emptyList()
             } ?: emptyList()
     }
@@ -577,7 +665,10 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                 val specificationEntryId = codeListService.getCodeListEntryId("6005", specification, "iso")
                 val specificationKeyValue =
                     if (specificationEntryId == null) KeyValue(null, specification) else KeyValue(specificationEntryId)
-                val publicationDate = it.specification.citation.date.getOrNull(0)?.date?.date?.date
+                val dateObject = it.specification.citation.date.getOrNull(0)?.date?.date
+                val publicationDate = dateObject?.dateTime?.let { parseDateTime(it) }
+                    ?: dateObject?.date?.let { parseDate(it) }
+                    ?: ""
                 ConformanceResult(
                     pass,
                     specificationEntryId != null,
@@ -607,28 +698,42 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
         // otherConstraints for use-constraints can have the following order/groups
         // LicenseText
+        // LicenseText, JSON
+        // LicenseText, Note
+        // LicenseText, Note, Source
+        // LicenseText, Note, JSON
         // LicenseText, Source
         // LicenseText, Source, JSON
-        otherConstraints.forEachIndexed { index, value ->
+        // LicenseText, Note, Source, JSON
+        // -----
+        // when JSON exists, then the use constraints is created from "name" and "quelle" and the otherContraint "Note" if available
+        var index = 0
+        var groupStartIndex = 0
+        while (index < otherConstraints.size) {
+            val value = otherConstraints[index]
             if (isJsonString(value)) {
                 val node = jacksonObjectMapper().readValue<JsonNode>(value)
                 val text = node.get("name").asText()
                 val keyValue = convertUserConstraintToKeyValue(text)
-                result.add(UseConstraint(keyValue, node.get("quelle").asText()))
-                return@forEachIndexed
-            }
-
-            if (isSourceNote(value)) {
-                // already handled
-                return@forEachIndexed
+                val note = getUseConstraintNoteWhenJsonExists(otherConstraints, index, groupStartIndex)
+                result.add(UseConstraint(keyValue, node.get("quelle").asText(), note))
+                index++
+                continue
             }
 
             val nextValue = otherConstraints.getOrNull(index + 1)
             val secondNextValue = otherConstraints.getOrNull(index + 2)
+            val thirdNextValue = otherConstraints.getOrNull(index + 3)
 
-            if (isJsonString(nextValue) || isJsonString(secondNextValue)) {
-                // skip item since JSON will be used
-                return@forEachIndexed
+            // when JSON is available skip item since JSON will be used
+            if (isJsonString(nextValue) || isJsonString(secondNextValue) || isJsonString(thirdNextValue)) {
+                groupStartIndex = index
+                index += when {
+                    isJsonString(nextValue) -> 1
+                    isJsonString(secondNextValue) -> 2
+                    else -> 3
+                }
+                continue
             }
 
             if (isSourceNote(nextValue)) {
@@ -638,15 +743,40 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
                         nextValue?.replace("Quellenvermerk: ", "")
                     )
                 )
-                return@forEachIndexed
+                index += 2
+                continue
+            }
+
+            if (isSourceNote(secondNextValue)) {
+                result.add(
+                    UseConstraint(
+                        convertUserConstraintToKeyValue(value),
+                        secondNextValue?.replace("Quellenvermerk: ", ""),
+                        nextValue
+                    )
+                )
+                index += 3
+                continue
             }
 
             // is last constraint or next one is another one/group
             result.add(UseConstraint(convertUserConstraintToKeyValue(value), null))
-
+            index++
         }
 
         return result
+    }
+
+    private fun getUseConstraintNoteWhenJsonExists(otherConstraints: List<String>, index: Int, groupStartIndex: Int): String? {
+        if (index - 1 <= groupStartIndex) return null
+        val note = otherConstraints.getOrNull(index - 1)
+        if (note != null) {
+            return if (isSourceNote(note)) {
+                if (index - 2 <= groupStartIndex) return null
+                otherConstraints.getOrNull(index - 2)
+            } else note
+        }
+        return null
     }
 
     private fun isSourceNote(value: String?): Boolean {
@@ -675,7 +805,8 @@ open class GeneralMapper(val metadata: Metadata, val codeListService: CodelistHa
 
 data class UseConstraint(
     val title: KeyValue?,
-    val source: String?
+    val source: String?,
+    val note: String? = null
 )
 
 data class ConformanceResult(
@@ -722,7 +853,11 @@ data class DistributionFormat(
     val version: String?,
     val compression: String?,
     val specification: String?
-)
+) {
+    fun isNull(): Boolean {
+        return version.isNullOrEmpty() && compression.isNullOrEmpty() && specification.isNullOrEmpty() && name.key.isNullOrEmpty() && name.value.isNullOrEmpty()
+    }
+}
 
 data class MaintenanceInterval(
     val value: Number?,
@@ -782,8 +917,15 @@ data class PointOfContact(
     val address: AddressInfo? = null,
     val positionName: String = "",
     val hoursOfService: String = "",
-
-    )
+    val parent: String? = null
+) {
+    fun getTitle(): String {
+        return if (personInfo?.lastName != null) 
+            if (personInfo.firstName.isNullOrEmpty()) personInfo.lastName 
+            else "${personInfo.lastName}, ${personInfo.firstName}"
+        else organization ?: ""
+    }
+}
 
 data class Communication(
     val type: KeyValue,

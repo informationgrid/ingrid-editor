@@ -35,7 +35,7 @@ class InternalImporter : IgeImporter {
 
     private val mapperService = MapperService()
 
-    override fun run(catalogId: String, data: Any): JsonNode {
+    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val json = mapperService.getJsonNode((data as String))
         val version = json.get("_version").asText()
 

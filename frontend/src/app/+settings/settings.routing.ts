@@ -23,10 +23,10 @@ import { GeneralSettingsComponent } from "./general-settings/general-settings.co
 import { CodelistsComponent } from "./codelists/codelists.component";
 import { CatalogManagementComponent } from "./catalog-management/catalog-management.component";
 import { AuthGuard } from "../security/auth.guard";
-import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 import { ContentManagementComponent } from "./content-management/content-management.component";
+import { ConnectionManagementComponent } from "./connection-management/connection-management.component";
 
 export const settingsRoutes: Routes = [
   {
@@ -66,11 +66,11 @@ export const settingsRoutes: Routes = [
         },
       },
       {
-        path: "ibus",
-        component: IBusManagementComponent,
+        path: "connections",
+        component: ConnectionManagementComponent,
         canActivate: [AuthGuard],
         data: {
-          title: "iBus-Verwaltung",
+          title: "Verbindungen",
           permission: "manage_ibus",
         },
       },

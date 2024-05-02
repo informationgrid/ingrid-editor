@@ -180,6 +180,7 @@ class ZabbixService(
         url = getTag(item, "url"),
         docUrl = getTag(item, "document url"),
         docUuid = getTag(item, "id"),
+        severity = item.get("severity").asText(),
     )
 
 
@@ -297,6 +298,51 @@ class ZabbixService(
                 throw ServerException.withReason(json.get("error").get("data")?.asText() ?: "Request Error occurred")
         }
         return json
+    }
+
+    fun getTriggerEvents(triggerId: String): List<ZabbixModel.Problem>? {
+        val jsonEventsGet =
+            """
+                {
+                    "jsonrpc": "$JSONRPC",
+                    "method": "event.get",
+                    "params": {
+                        "selectTags": "extend",
+                        "output": "extend",
+                        "objectids": "$triggerId",
+                        "sortfield": ["clock", "eventid"],
+                        "sortorder": "DESC",
+                        "limit": 10
+                    },
+                    "auth": "$apiKey",
+                    "id": 1
+                }
+            """.trimIndent()
+        val response = requestApi(jsonEventsGet)
+        if (resultArrayIsEmpty(response)) {
+            log.debug("No problems found for trigger $triggerId")
+            return null
+        } else {
+            return response.get("result").map { getProblem(it) }
+        }
+    }
+
+    fun getTriggerIds(uuid: String): List<String> {
+        val jsonTriggerGet =
+            """
+                {
+                    "jsonrpc": "$JSONRPC",
+                    "method": "trigger.get",
+                    "params": {
+                        "output": [],
+                        "tags":[{"tag":"id","value":"$uuid","operator":"1"}]
+                    },
+                    "auth": "$apiKey",
+                    "id": 1
+                }
+            """.trimIndent()
+        val results = requestApi(jsonTriggerGet).get("result") as ArrayNode
+        return results.mapNotNull { it.get("triggerid")?.asText() }
     }
 
 }

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.migrations.tasks
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.UserManagementService
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -54,7 +55,7 @@ class M077_MigrateAuditLogActorUuids : MigrationBase("0.77") {
     """.trimIndent()
 
     override fun exec() {
-        setAuthentication()
+        setAdminAuthentication("Migration", "Task")
         ClosableTransaction(transactionManager).use {
             val keycloakUuids = entityManager.createNativeQuery(uuidSql).resultList
 

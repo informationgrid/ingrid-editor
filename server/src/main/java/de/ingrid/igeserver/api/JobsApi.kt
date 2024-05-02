@@ -136,5 +136,11 @@ interface JobsApi {
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String>
+
+    @PostMapping(
+        value = ["/jobs/index"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit>
 }
 

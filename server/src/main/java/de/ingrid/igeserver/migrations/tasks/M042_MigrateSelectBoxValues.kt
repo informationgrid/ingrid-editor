@@ -28,6 +28,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,7 +57,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc, Catalog cat").resultList
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
 
             docs.forEach { doc ->
                 doc as Document

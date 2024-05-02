@@ -355,6 +355,9 @@ class MCloudProfile(
     override fun initCatalogQueries(catalogId: String) {
     }
 
+    override fun initIndices() {
+    }
+
     override fun getElasticsearchMapping(format: String): String {
         return {}.javaClass.getResource("/mcloud/default-mapping.json")?.readText() ?: ""
     }

@@ -31,7 +31,7 @@ interface CatalogProfile {
     val identifier: String
     val title: String
     val description: String?
-    val indexExportFormatID: String?
+    val indexExportFormatID: String
     val parentProfile: String?
         get() = null
 
@@ -51,6 +51,9 @@ interface CatalogProfile {
     fun initCatalogQueries(catalogId: String)
 
     @JsonIgnore
+    fun initIndices()
+
+    @JsonIgnore
     fun getElasticsearchMapping(format: String): String
 
     @JsonIgnore
@@ -60,9 +63,6 @@ interface CatalogProfile {
     fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         return permissions
     }
-
-    @JsonIgnore
-    fun additionalPublishConditions(catalogId: String): List<String> = emptyList()
 
     @JsonIgnore
     fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {}

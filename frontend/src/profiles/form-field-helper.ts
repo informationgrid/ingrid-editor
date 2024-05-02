@@ -21,9 +21,14 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject, Signal } from "@angular/core";
+import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
+
+export interface FieldConfigPosition {
+  fieldConfig: FormlyFieldConfig[];
+  index: number;
+}
 
 export interface Options {
   id?: string;
@@ -43,6 +48,7 @@ export interface Options {
     "props.required"?;
     "props.disabled"?;
     "props.minLength"?;
+    "props.maxLength"?;
     "props.hintStart"?;
     "props.description"?;
   };
@@ -69,7 +75,10 @@ export interface RepeatOptions extends Options {
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   // if true, the gap between repeats will be extended.
   hasExtendedGap?: boolean;
+  showBorder?: boolean;
   addButtonTitle?: string;
+  noDrag?: boolean;
+  maxLength?: number;
 }
 
 export interface RepeatDetailListOptions extends Options {
@@ -117,6 +126,9 @@ export interface SelectOptions extends Options {
   change?: any;
   hooks?: any;
   resetOnHide?: boolean;
+  multiple?: boolean;
+  simple?: boolean;
+  useFirstValueInitially?: boolean;
 }
 
 export interface TableOptions extends Options {
@@ -133,7 +145,7 @@ export interface CheckboxOptions extends Options {
 }
 
 export interface InputOptions extends Options {
-  type?: "number";
+  type?: "number" | "password";
   fieldLabel?: string;
   disabled?: boolean;
   contextHelpId?: string;
@@ -169,7 +181,7 @@ export interface AutocompleteOptions extends Options {
 }
 
 export interface UnitInputOptions extends InputOptions {
-  unitOptions?: Observable<SelectOptionUi[]>;
+  unitOptions?: SelectOptionUi[] | Observable<SelectOptionUi[]>;
   fieldGroup?: any;
 }
 
@@ -233,8 +245,7 @@ export class FormFieldHelper {
     return <FormlyFieldConfig>{
       key: id,
       type: "textarea",
-      // className: id,
-      className: (options?.className ?? "flex-1") + ` ${id}`,
+      className: options?.className ?? "flex-1",
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       props: {
@@ -397,6 +408,7 @@ export class FormFieldHelper {
   }
 
   addRepeatListInline(id, label, options: RepeatListOptions = {}) {
+    if (options.className) options.className = `${options.className} ${id}`;
     return this.addRepeatList(id, null, {
       fieldLabel: label,
       wrappers: [],
@@ -417,11 +429,14 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         minLength: options?.required ? 1 : undefined,
+        maxLength: options?.maxLength,
         menuOptions: options?.menuOptions,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
         hasExtendedGap: options?.hasExtendedGap,
+        showBorder: options?.showBorder,
         addButtonTitle: options?.addButtonTitle,
+        noDrag: options?.noDrag,
       },
       fieldArray: {
         fieldGroupClassName: options?.fieldGroupClassName ?? "flex-row",
@@ -475,6 +490,7 @@ export class FormFieldHelper {
       type: "input",
       className: options?.className ?? "flex-1",
       wrappers: options?.wrappers ?? ["form-field"],
+      defaultValue: options?.defaultValue,
       props: {
         type: options?.type,
         externalLabel: label,
@@ -608,6 +624,9 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         change: options?.change,
         contextHelpId: options?.contextHelpId,
+        multiple: options?.multiple,
+        simple: options?.simple,
+        useFirstValueInitially: options?.useFirstValueInitially,
       },
       expressions: expressions,
       hooks: options?.hooks,
@@ -821,6 +840,26 @@ export class FormFieldHelper {
         contextHelpId: options?.contextHelpId,
       },
     };
+  }
+
+  findFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    const index = fieldConfig.findIndex((field) => {
+      if (field.key === id) return true;
+    });
+
+    if (index !== -1) return { fieldConfig, index };
+
+    let subFound = null;
+    const anyFound = fieldConfig.some((item) => {
+      subFound = this.findFieldElementWithId(item.fieldGroup, id);
+      return subFound;
+    });
+    return subFound;
   }
 
   private initExpressions(expressions = {}) {

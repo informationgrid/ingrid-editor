@@ -32,16 +32,15 @@ export class InformationSystemDoctype extends IngridShared {
   iconClass = "Informationssystem";
 
   hasOptionalFields = true;
+  showAdVCompatible = true;
+  showAdVProductGroup = true;
 
   documentFields = () => {
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
         inspireRelevant: true,
-        advCompatible: true,
       }),
-      this.addKeywordsSection({
-        advProductGroup: true,
-      }),
+      this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
         this.addSelect("serviceType", "Art des Dienstes", {

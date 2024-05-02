@@ -22,10 +22,9 @@ package de.ingrid.igeserver.exports.ingrid_up_sh
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.exports.ingrid.Geodataset
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
-import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.UPSHProfileTransformer
+import de.ingrid.igeserver.profiles.ingrid_up_sh.exporter.IngridIdfExporterUPSH
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
@@ -34,17 +33,23 @@ class GeometryContext : GeodatasetBase() {
 
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
-        this.exporter.profileTransformer["ingrid-up-sh"] = UPSHProfileTransformer()
-        every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog().apply {
-            identifier = "ingrid-up-sh"
-        }
+        this.exporter =
+            IngridIdfExporterUPSH(
+                this.codelistHandler,
+                this.config,
+                this.catalogService,
+                this.documentService
+            )
+        every { catalogService.getProfileFromCatalog(any()) } returns
+            DummyCatalog("ingrid-up-sh")
     }
-
 
     init {
         should("export geometry context of type 'other'") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                     "geometryContext": [{
                         "name": "test-name",
                         "dataType": "test-datatype",
@@ -67,17 +72,21 @@ class GeometryContext : GeodatasetBase() {
                             }
                         ]
                       }]
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain geometryContextOther
         }
 
         should("export geometry context of type 'nominal'") {
-            val context = jacksonObjectMapper().readTree(
-                """{
+            val context =
+                jacksonObjectMapper()
+                    .readTree(
+                        """{
                     "geometryContext": [{
                         "name": "test-name",
                         "dataType": "test-datatype",
@@ -100,10 +109,12 @@ class GeometryContext : GeodatasetBase() {
                             }
                         ]
                       }]
-                    }""".trimIndent()
-            ) as ObjectNode
+                    }"""
+                            .trimIndent()
+                    ) as ObjectNode
 
-            val result = exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
+            val result =
+                exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
             result shouldContain geometryContextNominal
         }

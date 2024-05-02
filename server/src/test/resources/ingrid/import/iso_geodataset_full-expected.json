@@ -14,7 +14,8 @@
       "ref": {
         "_uuid": "110C6012-1713-44C0-9A33-4E2C24D06966",
         "_type": "InGridOrganisationDoc",
-        "organization": "",
+        "title": "Meine Organisation",
+        "organization": "Meine Organisation",
         "contact": [
           {
             "type": {
@@ -34,6 +35,7 @@
       "ref": {
         "_uuid": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
         "_type": "InGridOrganisationDoc",
+        "title": "Wemove Test",
         "organization": "Wemove Test",
         "address": {
           "city": "Frankfurt",
@@ -61,6 +63,20 @@
       },
       "type": {
         "key": "7"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "some_organisation",
+        "_type": "InGridOrganisationDoc",
+        "title": "Some Organisation",
+        "organization": "Some Organisation",
+        "contact": [],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "5"
       }
     }
   ],
@@ -164,7 +180,7 @@
   "temporal": {
     "events": [
       {
-        "referenceDate": "2016-03-01T00:00:00.000+01:00",
+        "referenceDate": "2016-02-29T23:00:00Z",
         "referenceDateType": {
           "key": "1"
         }
@@ -204,7 +220,7 @@
         "key": null,
         "value": "Technical Guidance for the implementation of INSPIRE Download Services"
       },
-      "publicationDate": "2007-03-14"
+      "publicationDate": "2007-03-13T23:00:00Z"
     },
     {
       "pass": {
@@ -215,7 +231,7 @@
       "specification": {
         "key": "10"
       },
-      "publicationDate": "2010-12-08"
+      "publicationDate": "2010-12-07T23:00:00Z"
     }
   ],
   "extraInfo": {

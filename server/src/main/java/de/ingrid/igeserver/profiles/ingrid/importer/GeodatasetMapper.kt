@@ -23,11 +23,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.iso.*
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
-import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 
-open class GeodatasetMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
-    GeneralMapper(metadata, codeListService, catalogId) {
+open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo

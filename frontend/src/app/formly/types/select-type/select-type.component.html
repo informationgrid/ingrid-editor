@@ -45,9 +45,11 @@
             @if (item.key === "_SEPARATOR_") {
                 <mat-divider class="space-bottom"></mat-divider>
             } @else {
-                <mat-option [value]="item" [disabled]="$any(item).disabled">{{
-                    item.value
-                }}</mat-option>
+                <mat-option
+                    [value]="props.simple ? item.key : item"
+                    [disabled]="$any(item).disabled"
+                    >{{ item.value }}</mat-option
+                >
             }
         }
     }

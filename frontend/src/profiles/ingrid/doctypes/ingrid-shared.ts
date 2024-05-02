@@ -50,7 +50,6 @@ import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
-  advCompatible?: boolean;
   thesaurusTopics?: boolean;
 }
 
@@ -100,6 +99,8 @@ export abstract class IngridShared extends BaseDoctype {
 
   showInVeKoSField: boolean = false;
   showInspireConform: boolean = false;
+  showAdVCompatible: boolean = false;
+  showAdVProductGroup: boolean = false;
   isGeoService: boolean = false;
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
@@ -112,7 +113,7 @@ export abstract class IngridShared extends BaseDoctype {
       null,
       [
         options.inspireRelevant ||
-        options.advCompatible ||
+        this.showAdVCompatible ||
         !this.options.hide.openData
           ? this.addGroup(
               null,
@@ -129,7 +130,7 @@ export abstract class IngridShared extends BaseDoctype {
                       },
                     )
                   : null,
-                options.advCompatible
+                this.showAdVCompatible
                   ? this.addCheckboxInline(
                       "isAdVCompatible",
                       "AdV kompatibel",
@@ -259,10 +260,12 @@ export abstract class IngridShared extends BaseDoctype {
     const isInspire = field.model.isInspireIdentified;
 
     function executeAction() {
-      if (isInspire) {
-        field.model.resource.accessConstraints = [{ key: "1" }];
-      } else {
-        field.model.resource.accessConstraints = [];
+      if (field.model.resource !== undefined) {
+        if (isInspire) {
+          field.model.resource.accessConstraints = [{ key: "1" }];
+        } else {
+          field.model.resource.accessConstraints = [];
+        }
       }
     }
 
@@ -336,7 +339,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection(
       "Verschlagwortung",
       [
-        options.advProductGroup
+        this.showAdVProductGroup
           ? this.addRepeatList("advProductGroups", "AdV-Produktgruppe", {
               view: "chip",
               asSelect: true,
@@ -1274,11 +1277,11 @@ export abstract class IngridShared extends BaseDoctype {
           this.addUnitInputInline("transferSize", "Datenvolumen", {
             type: "number",
             className: "right-align",
-            unitOptions: of<SelectOption[]>([
+            unitOptions: <SelectOption[]>[
               new SelectOption("MB", "MB"),
               new SelectOption("GB", "GB"),
               new SelectOption("TB", "TB"),
-            ]),
+            ],
             fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
           this.addInputInline("mediumNote", "Speicherort"),
@@ -1385,9 +1388,6 @@ export abstract class IngridShared extends BaseDoctype {
             className: "flex-3",
             hasInlineContextHelp: true,
             updateOn: "change",
-            validators: {
-              validation: ["url"],
-            },
             expressions: {
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
@@ -1404,6 +1404,9 @@ export abstract class IngridShared extends BaseDoctype {
             codelistId: "1320",
             wrappers: ["inline-help", "form-field"],
             hasInlineContextHelp: true,
+            expressions: {
+              "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+            },
           }),
         ],
         { fieldGroupClassName: "flex-row gap-12" },

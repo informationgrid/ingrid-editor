@@ -62,7 +62,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {
         // TODO: option to export addresses too?
-        val doc = documentService.getWrapperByDocumentIdAndCatalog(catalogId, options.id)
+        val doc = documentService.getWrapperByDocumentIdAndCatalog(options.id)
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
 
         return if (doc.type == "FOLDER") {

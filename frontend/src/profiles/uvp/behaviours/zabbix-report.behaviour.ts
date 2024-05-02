@@ -21,6 +21,13 @@ import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { Injectable } from "@angular/core";
 import { ReportsService } from "../../../app/+reports/reports.service";
 import { AuthGuard } from "../../../app/security/auth.guard";
+import { DocEventsService } from "../../../app/services/event/doc-events.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ConfigService } from "../../../app/services/config/config.service";
+import { FormMenuService } from "../../../app/+form/form-menu.service";
+import { TreeQuery } from "../../../app/store/tree/tree.query";
+import { DocumentAbstract } from "../../../app/store/document/document.model";
+import { ZabbixReportDialogComponent } from "../reports/zabbix-report-dialog/zabbix-report-dialog.component";
 
 @Injectable({ providedIn: "root" })
 export class ZabbixReportBehaviour extends Plugin {
@@ -32,19 +39,65 @@ export class ZabbixReportBehaviour extends Plugin {
   group = "UVP";
 
   path = "uvp-monitoring";
+  isPrivileged: boolean;
+  private menuItemId = "show-zabbix-report";
+  private eventName = "SHOW_ZABBIX_REPORT";
 
-  constructor(private reportsService: ReportsService) {
+  constructor(
+    private reportsService: ReportsService,
+    private docEvents: DocEventsService,
+    private dialog: MatDialog,
+    private docEventsService: DocEventsService,
+    configService: ConfigService,
+    private formMenuService: FormMenuService,
+    private documentTreeQuery: TreeQuery,
+  ) {
     super();
+
+    let role = configService.$userInfo.getValue().role;
+    this.isPrivileged =
+      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   register() {
     this.addReportTab();
+
+    if (this.isPrivileged) {
+      const onEvent = this.docEvents
+        .onEvent(this.eventName)
+        .subscribe((event) => {
+          this.showDialog(event.data.id);
+        });
+      this.subscriptions.push(onEvent);
+
+      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
+        (doc) => this.updateZabbixReportButton(doc),
+      );
+
+      this.subscriptions.push(onDocLoad);
+    }
     super.register();
   }
 
   unregister() {
+    this.formMenuService.removeMenuItem("dataset", this.menuItemId);
     this.removeReportTab();
     super.unregister();
+  }
+
+  private updateZabbixReportButton(doc: DocumentAbstract) {
+    const button = {
+      title: "Monitoring",
+      name: this.menuItemId,
+      action: () =>
+        this.docEventsService.sendEvent({
+          type: this.eventName,
+          data: { id: doc.id },
+        }),
+    };
+    // refresh menu item
+    this.formMenuService.removeMenuItem("dataset", this.menuItemId);
+    this.formMenuService.addMenuItem("dataset", button);
   }
 
   private addReportTab() {
@@ -60,6 +113,19 @@ export class ZabbixReportBehaviour extends Plugin {
         permission: "manage_users",
       },
     });
+  }
+
+  private showDialog(id: number) {
+    this.dialog
+      .open(ZabbixReportDialogComponent, {
+        width: "780px",
+        data: {
+          id: id,
+        },
+        delayFocusTrap: true,
+      })
+      .afterClosed()
+      .subscribe();
   }
 
   private removeReportTab() {

@@ -337,7 +337,7 @@ export class GetCapabilitiesService {
             key: value.state.key,
             value: value.state.value,
           };
-    const country = !value.country.key ? null : { key: value.country.key };
+    const country = !value.country?.key ? null : { key: value.country.key };
 
     const address: IgeDocument = {
       _uuid: value.uuid,

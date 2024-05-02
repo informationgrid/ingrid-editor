@@ -61,8 +61,6 @@ optimized frontend application:
 
 > ./gradlew -PbuildProfile=prod clean build
 
-**TBD:** create an installer instead
-
 #### Client
 
 For the client just run `npm start` in the frontend directory. When developing for Internet Explorer please
@@ -116,10 +114,12 @@ To get a list of new versions of our dependencies you can run the following comm
 
 ```shell
 # server
-gradlew :server:dependencyUpdates
+./gradlew :server:dependencyUpdates
+```
 
+```shell
 # frontend
-yarn upgrade-interactive
+cd frontend && yarn upgrade-interactive
 ```
 
 ## Apache Configuration

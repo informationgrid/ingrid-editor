@@ -2,8 +2,17 @@
 
 @include mat.list-density(0);
 
-::ng-deep .mdc-list-item.mdc-list-item--with-two-lines {
-  height: auto;
+::ng-deep {
+  .mat-mdc-list-item {
+    height: auto !important;
+  }
+
+  .mdc-list-item__primary-text::before,
+  .mdc-list-item__content::after {
+    content: "";
+    height: 10px !important;
+    display: block !important;
+  }
 }
 
 mat-spinner {

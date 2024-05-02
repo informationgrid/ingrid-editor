@@ -87,11 +87,16 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         SELECT doc.id as docId
                      FROM catalog,
                           document_wrapper dw, document doc
-                     WHERE dw.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
+                     WHERE dw.catalog_id = catalog.id AND doc.catalog_id = catalog.id AND catalog.identifier = :catalogIdent AND dw.deleted = 0
                        AND dw.uuid = doc.uuid
                        AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
                        AND dw.category = 'data'
                        AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
     """, nativeQuery = true)
     fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
+    
+    @Query("""
+        SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND cat.identifier = :catalogIdentifier AND doc.data->>'organization' = :name
+    """, nativeQuery = true)
+    fun findAddressByOrganisationName(@Param("catalogIdentifier") catalogIdentifier: String, @Param("name") name: String): List<String>
 }

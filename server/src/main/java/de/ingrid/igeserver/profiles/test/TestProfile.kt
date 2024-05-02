@@ -66,7 +66,7 @@ class TestProfile : CatalogProfile {
     override val identifier = "test"
     override val title = "Test Katalog"
     override val description = null
-    override val indexExportFormatID = null
+    override val indexExportFormatID = ""
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
@@ -204,6 +204,9 @@ class TestProfile : CatalogProfile {
             modified = dateService.now()
         }
         query.save(queryTest)
+    }
+
+    override fun initIndices() {
     }
 
     override fun getElasticsearchMapping(format: String): String {

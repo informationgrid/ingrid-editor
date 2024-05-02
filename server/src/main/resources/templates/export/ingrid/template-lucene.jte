@@ -1,4 +1,3 @@
-@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
@@ -142,7 +141,9 @@
     @if("3".equals(page.getDocumentType()))
     "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
-    "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    @if(page.getData().getService().getType() != null)
+        "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
+    @endif
     "t011_obj_serv_version.version_value": [
         @for(var entry : ForSupport.of(page.getServiceTypeVersions()))
             "${entry.get()}"@if (!entry.isLast()),@endif
@@ -261,17 +262,32 @@
 
     @if("at".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t0": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_type": "am",
     @endif
     @if("since".equals(page.getResourceDateType()))
         @if(page.isResourceRangeDefined() && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
-        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
-        "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+            @if(page.getData().getTemporal().getResourceRange() != null)
+                "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+                "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+                "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+                "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+            @endif
+            "t01_object.time_type": "von",
         @elseif (page.getData().getTemporal().getResourceDate() != null)
-        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            @if(page.getData().getTemporal().getResourceDateTypeSince() != null && "requestTime".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
+                "t01_object.time_type": "seitX",
+            @else
+                "t01_object.time_type": "seit",
+            @endif
         @endif
     @endif
     @if("till".equals(page.getResourceDateType()) && (page.getData().getTemporal().getResourceDate() != null))
     "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+    "t01_object.time_type": "bis",
     @endif
     "object_use_constraint.license_key": [
     @for(var entry : ForSupport.of(page.getUseConstraints()))
@@ -288,6 +304,20 @@
     "wkt_geo": ${wktJson.getFirst()},
     "wkt_geo_text": "${wktJson.getSecond()}",
     @endif
+    "spatial_ref_value.nativekey": [
+    @for(var entry : ForSupport.of(page.getSpatialReferenceArs()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "areaid": [
+    @for(var entry : ForSupport.of(page.getSpatialReferenceArs()))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
+    "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
+    "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
+    "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",
@@ -296,7 +326,6 @@
     "t0113_dataset_reference.reference_date": "",
     "t011_obj_geo_symc.symbol_date": "",
     "t0110_avail_format.line": [],
-    "spatial_ref_value.nativekey": [],
     "object_conformity.degree_key": "",
     "t017_url_ref.line": "",
     "t011_obj_geo_spatial_rep.type": [],
@@ -311,9 +340,7 @@
     "t0110_avail_format.file_decompression_technique": [],
     "spatial_ref_value.name_value": [],
     "object_use_constraint.line": [],
-    "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
     "t01_object.metadata_standard_version": "",
-    "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
     "t01_object.dataset_usage": "",
     "t0114_env_topic.line": [],
     "spatial_system.line": [],
@@ -327,11 +354,8 @@
     @endfor
     ],
     "t011_obj_geo.vector_topology_level": "",
-    "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
     "object_access.restriction_key": "",
-    "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
     "t01_object.metadata_time": "",
-    "t01_object.time_to": "",
     "t011_obj_geo_scale.scale": [],
     "t01_object.time_descr": "",
     "object_use.terms_of_use_value": "",

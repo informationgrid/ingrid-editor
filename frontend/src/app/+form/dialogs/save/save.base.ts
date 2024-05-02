@@ -53,12 +53,21 @@ export abstract class SaveBase extends Plugin {
     address: boolean,
     saveType: "PUBLISH" | "SAVE",
   ): Observable<void> {
+    let errorText = error?.error?.errorText;
     if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-      console.error(error?.error?.errorText);
+      console.error(errorText);
+      if (
+        errorText?.indexOf(
+          "No connection to Elasticsearch: RequestIsWrong 401",
+        ) !== -1
+      ) {
+        errorText =
+          "Keine Verbindung zu Elasticsearch (ungültige Zugangsdaten)";
+      }
       this.messageService.sendError(
         `Der Datensatz wurde erfolgreich in der Datenbank ${
           saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
-        }, jedoch trat ein Problem danach auf: ` + error?.error?.errorText,
+        }, jedoch trat ein Problem danach auf: ` + errorText,
       );
       this.loadDocument(data._id, address);
     } else if (error?.error?.errorCode === "VERSION_CONFLICT") {
@@ -82,7 +91,7 @@ export abstract class SaveBase extends Plugin {
       this.messageService.sendError(
         `Der Datensatz wurde nicht erfolgreich ${
           saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
-        }` + (error?.error?.errorText ?? ""),
+        }` + (errorText ?? ""),
       );
       throw error;
     }
@@ -91,7 +100,7 @@ export abstract class SaveBase extends Plugin {
 
   protected prepareValidationError(error) {
     if (error.error.errorCode === "VALIDATION_ERROR_FIELD") {
-      this.sessionStore.update((state) => {
+      this.sessionStore.update(() => {
         return {
           serverValidationErrors: error.error.data.fields,
         };
@@ -142,7 +151,7 @@ export abstract class SaveBase extends Plugin {
       errorCode: "JSON_SCHEMA",
     }));
 
-    this.sessionStore.update((state) => {
+    this.sessionStore.update(() => {
       return {
         serverValidationErrors: invalidFieldsErrors,
       };
@@ -171,7 +180,7 @@ export abstract class SaveBase extends Plugin {
   }
 
   private getFormDataWithVersionInfo(version: number) {
-    const data = this.getForm()?.value;
+    const data = this.getForm()?.getRawValue();
     data["_version"] = version;
     return data;
   }

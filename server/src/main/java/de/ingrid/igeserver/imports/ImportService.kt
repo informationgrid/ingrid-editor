@@ -21,15 +21,17 @@ package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DOCUMENT_STATE
-import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.utils.getString
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
@@ -92,7 +94,8 @@ class ImportService(
     fun prepareImportAnalysis(catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
         val importer = factory.getImporter(type, fileContent)
 
-        val result = importer[0].run(catalogId, fileContent)
+        val addressMap = mutableMapOf<String, String>()
+        val result = importer[0].run(catalogId, fileContent, addressMap)
         return if (result is ArrayNode) {
             // if more than one result from an importer then expect multiple versions of a dataset (first one published, second draft)
             prepareForImport(
@@ -128,12 +131,31 @@ class ImportService(
     }
 
     private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> {
-
         return analysis
+            .map { removeReferencesWithNoType(it) }
             .flatMap { it.references + it }
             .distinctBy { Pair(it.document.uuid, it.forcePublish) }
             .sortedWith(ReferenceComparator)
 
+    }
+
+    /**
+     * References with no types are additional addresses generated from one address, e.g. parent organisation
+     * of a person
+     */
+    private fun removeReferencesWithNoType(analysis: DocumentAnalysis): DocumentAnalysis {
+        val pointOfContact = analysis.document.data.get("pointOfContact") as ArrayNode?
+        val filteredContacts = pointOfContact
+            ?.filterNot { it.getString("type.key").isNullOrEmpty() && it.getString("type.value").isNullOrEmpty() }
+
+        if (pointOfContact?.size() == filteredContacts?.size) return analysis
+        
+        analysis.document.data.set<JsonNode>(
+            "pointOfContact", jacksonObjectMapper().createArrayNode().apply {
+                filteredContacts?.map { add(it) }
+            }
+        )
+        return analysis
     }
 
     private class ReferenceComparator {
@@ -154,6 +176,7 @@ class ImportService(
     private fun handleZipImport(catalogId: String, file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
         val importers = mutableSetOf<String>()
+        val addressMap = mutableMapOf<String, String>()
 
         extractZip(file.inputStream()) { entry, os ->
             run {
@@ -163,7 +186,7 @@ class ImportService(
                     else -> null
                 }
                 val importer = factory.getImporter(type.toString(), os.toString())
-                val result = importer[0].run(catalogId, os.toString())
+                val result = importer[0].run(catalogId, os.toString(), addressMap)
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
             }
@@ -261,7 +284,7 @@ class ImportService(
         analysis.references.forEachIndexed { index, ref ->
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-            handleParent(ref, options)
+            handleParent(ref, options, catalogId)
             importReference(principal, catalogId, ref, options, counter)
         }
 
@@ -286,26 +309,24 @@ class ImportService(
         }
 
         val publish = options.publish || ref.forcePublish
+        val parentId = if (ref.isAddress) options.parentAddress else options.parentDocument
         if (!exists && !ref.deleted) {
-            val parent = if (ref.isAddress) options.parentAddress else options.parentDocument
-            documentService.createDocument(principal, catalogId, ref.document, parent, ref.isAddress, publish)
+            documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
+            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
+            
+            // undelete first to completely delete afterwards
             removeDeletedFlag(ref.wrapperId!!)
-            setVersionInfo(catalogId, ref.wrapperId, ref.document)
-            if (publish) {
-                documentService.publishDocument(principal, catalogId, ref.wrapperId, ref.document)
-            } else {
-                documentService.updateDocument(principal, catalogId, ref.wrapperId, ref.document)
-
-                // special case when document was deleted and had published version
-                // => after import in draft state, we don't want to see the deleted published version
-                handleDeletedPublishedVersion(catalogId, ref.document.uuid, ref.wrapperId)
-            }
+            documentService.deleteDocument(principal, catalogId, ref.wrapperId, true)
+            val newDoc = documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
+           
+            documentService.updateParent(catalogId, newDoc.wrapper.id!!, finalParentId)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
+            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
             val wrapperId = ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
             setVersionInfo(catalogId, wrapperId, ref.document)
             if (publish) {
@@ -313,11 +334,19 @@ class ImportService(
             } else {
                 documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
+            documentService.updateParent(catalogId, wrapperId, finalParentId)
 
             counter.overwritten++
         } else {
             counter.skipped++
         }
+    }
+
+    private fun fixDocumentType(data: DocumentData, type: String) {
+        data.document.type = type
+        documentService.docRepo.save(data.document)
+        data.wrapper.type = type
+        documentService.docWrapperRepo.save(data.wrapper)
     }
 
     private fun handleAddressTitle(ref: DocumentAnalysis) {
@@ -362,10 +391,16 @@ class ImportService(
             documentService.getDocumentFromCatalog(catalogId, wrapperId).document.version
     }
 
-    private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions) {
+    private fun handleParent(documentInfo: DocumentAnalysis, options: ImportOptions, catalogId: String) {
+        val documentData = documentInfo.document.data
+        // convert UUID to database ID of wrapper
+        val explicitParent = documentData.getString("parentAsUuid")?.let {
+            documentData.remove("parentAsUuid")
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it).id
+        }
         when (documentInfo.isAddress) {
-            true -> documentInfo.document.data.put(FIELD_PARENT, options.parentAddress)
-            false -> documentInfo.document.data.put(FIELD_PARENT, options.parentDocument)
+            true -> documentData.put(FIELD_PARENT, explicitParent ?: options.parentAddress)
+            false -> documentData.put(FIELD_PARENT, options.parentDocument)
         }
     }
 

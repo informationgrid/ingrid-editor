@@ -55,6 +55,16 @@ import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.m
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 
+export enum InGridDoctype {
+  InGridSpecialisedTask = "InGridSpecialisedTask",
+  InGridGeoDataset = "InGridGeoDataset",
+  InGridPublication = "InGridPublication",
+  InGridGeoService = "InGridGeoService",
+  InGridProject = "InGridProject",
+  InGridDataCollection = "InGridDataCollection",
+  InGridInformationSystem = "InGridInformationSystem",
+}
+
 @Component({
   template: "",
 })
@@ -73,6 +83,8 @@ export class InGridComponent implements OnInit {
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
+
+  // docTypesEnum: InGridDoctype
 
   protected getDocTypes = () => {
     return [

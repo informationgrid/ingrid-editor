@@ -43,6 +43,7 @@ services:
       - http.cors.allow-origin=*
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
+      #- ELASTIC_PASSWORD=admin
       - xpack.monitoring.enabled=false
       - xpack.ml.enabled=false
     restart: unless-stopped

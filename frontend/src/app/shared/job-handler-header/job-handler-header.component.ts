@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { LogResult } from "../../+catalog/indexing/index.service";
 
 @Component({
   selector: "ige-job-handler-header",
@@ -25,7 +26,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
   styleUrls: ["./job-handler-header.component.scss"],
 })
 export class JobHandlerHeaderComponent {
-  @Input() message;
+  @Input() message: LogResult;
   @Input() isRunning: boolean;
   @Input() set showMoreForce(value: boolean) {
     this.showMoreInternal = value;

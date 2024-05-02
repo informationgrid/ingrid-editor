@@ -28,6 +28,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.UserManagementService
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.StringOutput
@@ -36,10 +37,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import java.time.OffsetDateTime
@@ -73,12 +70,12 @@ class ExpiredDatasetsTask(
         catalogService.getCatalogs().forEach {
             sendExpiryEmails(it)
         }
-        getAuthentication()
+        setAdminAuthentication("ExpiredDatasets", "Task")
     }
 
     private fun sendExpiryEmails(catalog: Catalog) {
-        val config = catalog.settings?.config?.expiredDatasetConfig ?: return
-        if (!config.emailEnabled) return;
+        val config = catalog.settings.config.expiredDatasetConfig ?: return
+        if (!config.emailEnabled) return
 
         val repeatExpiryCheck = config.repeatExpiry
         val expiryDuration = config.expiryDuration ?: -1
@@ -271,22 +268,6 @@ class ExpiredDatasetsTask(
             }
         }
     }
-
-
-    private fun getAuthentication(): Authentication {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken(
-                "Scheduler",
-                "Task",
-                listOf(
-                    SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
-                )
-            )
-        SecurityContextHolder.getContext().authentication = auth
-        return auth
-    }
-
 }
 
 data class ExpiredDataset(

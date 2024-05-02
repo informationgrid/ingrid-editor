@@ -4,10 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '1.9.22'
-    ext.spring_boot_version = '3.2.0'
-    ext.kotest_version = '5.8.0'
-    ext.jte_version = '3.1.6'
+    ext.kotlin_version = '1.9.23'
+    ext.spring_boot_version = '3.2.4'
+    ext.kotest_version = '5.8.1'
+    ext.jte_version = '3.1.9'
     ext.geotools_version = '28.2'
     ext['log4j2.version'] = '2.22.1'
 }
@@ -23,12 +23,12 @@ plugins {
     id "io.spring.dependency-management" version "1.1.4"
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'com.google.cloud.tools.jib' version '3.4.1'
     id "com.gorylenko.gradle-git-properties" version "2.4.1"
     id 'io.kotest' version '0.4.11'
-    id "com.github.ben-manes.versions" version "0.50.0"
+    id "com.github.ben-manes.versions" version "0.51.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.3.2.Final"
+    id "org.hibernate.orm" version "6.4.4.Final"
 }
 
 repositories {
@@ -39,6 +39,12 @@ repositories {
         url "https://repo.osgeo.org/repository/release/"
     }
     mavenCentral()
+    maven {
+        url "https://maven.tryformation.com/releases"
+        content {
+            includeGroup("com.jillesvangurp")
+        }
+    }
 }
 
 configurations {
@@ -116,13 +122,13 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.44'
+    implementation 'net.pwall.json:json-kotlin-schema:0.47'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:22.0.4'
+    implementation 'org.keycloak:keycloak-admin-client:24.0.1'
     
     // OpenAI
     // import Kotlin API client BOM
@@ -132,18 +138,18 @@ dependencies {
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
     implementation "io.ktor:ktor-client-java"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.21.0"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.21.0"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.21.0"
+    implementation "org.commonmark:commonmark:0.22.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.22.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.22.0"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.2'
+    implementation 'org.postgresql:postgresql:42.7.3'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
 
@@ -179,7 +185,7 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.3' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.9'
+    testImplementation 'io.mockk:mockk:1.13.10'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -187,7 +193,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // iBus communication
-    implementation('de.ingrid:ingrid-elasticsearch-tools:7.0.0')
+//    implementation('de.ingrid:ingrid-elasticsearch-tools:7.0.0')
+    implementation("com.jillesvangurp:search-client:2.1.22")
+    
     // for javax.annotation-support for elasticsearch-tools
     implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
 
@@ -211,6 +219,9 @@ dependencyManagement {
         dependency "org.yaml:snakeyaml:2.0"
         dependency "commons-collections:commons-collections:3.2.2"
 
+    }
+    imports {
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.17.0' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
     }
 }
 

@@ -25,11 +25,11 @@ import de.ingrid.igeserver.services.IndexIdFieldConfig
 import org.springframework.stereotype.Service
 
 @Service
-class DummyCatalog : CatalogProfile {
-    override var identifier = "DUMMY"
+class DummyCatalog(override val identifier: String = "DUMMY") : CatalogProfile {
+//    override var identifier = "DUMMY"
     override val title = "DUMMY Catalog"
     override val description = "This catalog is only used for test purpose"
-    override val indexExportFormatID = null
+    override val indexExportFormatID = ""
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
@@ -44,6 +44,10 @@ class DummyCatalog : CatalogProfile {
     }
 
     override fun initCatalogQueries(catalogId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun initIndices() {
         TODO("Not yet implemented")
     }
 

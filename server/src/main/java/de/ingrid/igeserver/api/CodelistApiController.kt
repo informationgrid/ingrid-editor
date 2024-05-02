@@ -21,8 +21,6 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -96,15 +94,8 @@ class CodelistApiController : CodelistApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
         
-        // make sure config is initialized
-        catalog.settings?.config ?: catalog.settings?.let { it.config = CatalogConfig() } ?: catalog.also {
-            it.settings = CatalogSettings().apply {
-                config = CatalogConfig()
-            }
-        }
-        
-        val currentFavorites = catalog.settings!!.config!!.codelistFavorites
-            ?: mutableMapOf<String, List<String>>().also { catalog.settings!!.config!!.codelistFavorites = it }
+        val currentFavorites = catalog.settings.config.codelistFavorites
+            ?: mutableMapOf<String, List<String>>().also { catalog.settings.config.codelistFavorites = it }
 
         if (favorites.isNullOrEmpty()) {
             currentFavorites.remove(id)

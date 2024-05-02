@@ -49,10 +49,12 @@ export class LongPressDirective {
     return;
   }
 
-  @HostListener("mouseup")
-  @HostListener("touchend")
+  @HostListener("mouseup", ["$event"])
+  @HostListener("touchend", ["$event"])
   onMouseUp(event: Event) {
-    if (this.longPressTimeout) {
+    // if right click
+    if (event["button"] === 2) event.preventDefault();
+    else if (this.longPressTimeout) {
       clearTimeout(this.longPressTimeout);
       if (!this.longPressHandled) this.shortClick.emit(event);
     }

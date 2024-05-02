@@ -31,13 +31,15 @@ import java.text.MessageFormat
 class EmailServiceImpl(
     val email: JavaMailSender,
     val mailProps: MailProperties,
-    appSettings: GeneralProperties
+    val appSettings: GeneralProperties
 ) {
     
-    @Value("server.servlet.context-path")
-    private val contextPath: String = "/"
+    @Value("\${server.servlet.context-path}")
+    private lateinit var contextPath: String
     
-    private val appUrl: String = appSettings.host + contextPath
+    private val appUrl: String  get() {
+        return appSettings.host + contextPath
+    }
 
     fun sendWelcomeEmail(to: String, firstName: String, lastName: String) {
         sendEmail(

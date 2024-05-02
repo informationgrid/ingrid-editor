@@ -1,0 +1,38 @@
+<page-template label="Verbindungen">
+    <div left-side>
+        Auf dieser Seite können Sie verschiedene iBusse oder
+        Elasticsearch-Instanzen hinzufügen, die in einem oder mehreren Katalogen
+        verwendet werden können.
+
+        <h4>Verbindungsstatus:</h4>
+        <ige-connection-state
+            [connectionStates]="$connectionStates()"
+        ></ige-connection-state>
+    </div>
+
+    <div main-header class="flex-col justify-content-start align-items-stretch">
+        <div>
+            <button
+                mat-flat-button
+                color="primary"
+                data-cy="btn-save-connections"
+                (click)="save()"
+                [disabled]="!$valid()"
+            >
+                Speichern
+            </button>
+        </div>
+    </div>
+
+    <div main-content>
+        @if (model) {
+            <div class="scrollable">
+                <formly-form
+                    [form]="form"
+                    [model]="model"
+                    [fields]="fields"
+                ></formly-form>
+            </div>
+        }
+    </div>
+</page-template>

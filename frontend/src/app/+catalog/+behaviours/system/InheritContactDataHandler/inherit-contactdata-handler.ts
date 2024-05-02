@@ -40,7 +40,7 @@ export class InheritContactDataHandler extends Plugin {
   id = "plugin.inherit.contact.data.handler";
   name = "Kontaktangaben der übergeordneten Adresse übernehmen";
   description =
-    "Für Personen und Organisationen, die einer anderen Organisation untergeordnet sind, können die Adressdaten geerbt werden.";
+    "Für Personen und Organisationen, die einer anderen Organisation untergeordnet sind, können die Kontakt- und Adressdaten geerbt werden.";
   group = "Adressen";
   defaultActive = true;
   forAddress = true;

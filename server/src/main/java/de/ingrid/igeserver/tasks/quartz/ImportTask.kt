@@ -34,11 +34,10 @@ import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import net.pwall.json.schema.output.BasicErrorEntry
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
@@ -70,7 +69,8 @@ class ImportTask(
         try {
             notifier.sendMessage(notificationType, message.apply { this.message = "Started Import-Task" })
 
-            val principal = runAsUser()
+            val principal = setAdminAuthentication("Import", "Task")
+
 
             val report = when (stage) {
                 Stage.ANALYZE -> {
@@ -82,8 +82,8 @@ class ImportTask(
                             profile.additionalImportAnalysis(info.catalogId, it, message)
                         }
                         .also {
-                            System.gc()    
-                            Files.delete(Path.of(info.importFile)) 
+                            System.gc()
+                            Files.delete(Path.of(info.importFile))
                         }
                 }
 
@@ -110,7 +110,8 @@ class ImportTask(
         } catch (ex: Exception) {
             val errorMessage = prepareErrorMessage(ex)
             message.apply {
-                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors = mutableListOf(errorMessage)
+                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors =
+                mutableListOf(errorMessage)
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
@@ -125,10 +126,15 @@ class ImportTask(
     private fun prepareErrorMessage(ex: Exception): String {
         var message = ex.message ?: ex.toString()
         if (ex is ValidationException) {
-            val details = ex.data?.get("error") as List<JsonErrorEntry>?
-            message += ": " + details
-                ?.filter { it.error != "A subschema had errors" }
-                ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            val error = ex.data?.get("error")
+            if (error is String) {
+                message = error
+            } else {
+                val details = error as List<JsonErrorEntry>?
+                message += ": " + details
+                    ?.filter { it.error != "A subschema had errors" }
+                    ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            }
         }
         return message
     }
@@ -164,7 +170,8 @@ class ImportTask(
             val profile = getString("profile")
             val catalogId: String = getString("catalogId")
             val importFile: String? = getString("importFile")
-            val infos: MutableList<String> = getString("infos")?.let { jacksonObjectMapper().readValue(it) } ?: mutableListOf()
+            val infos: MutableList<String> =
+                getString("infos")?.let { jacksonObjectMapper().readValue(it) } ?: mutableListOf()
             val report: OptimizedImportAnalysis? = getString("report")?.let { jacksonObjectMapper().readValue(it) }
             val options: ImportOptions? = getString("options")?.let { jacksonObjectMapper().readValue(it) }
 

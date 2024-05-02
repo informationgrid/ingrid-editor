@@ -28,15 +28,11 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
-import org.elasticsearch.client.transport.NoNodeAvailableException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-@Profile("elasticsearch")
 class UVPPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
@@ -59,7 +55,7 @@ class UVPPublishExport(
                 indexUvpDoc(context, docId, DocumentCategory.ADDRESS)
                 indexReferencedUvpDocs(context, docId)
             }
-        } catch (ex: NoNodeAvailableException) {
+        } catch (ex: Exception) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
 
@@ -78,6 +74,7 @@ class UVPPublishExport(
             WHERE (
                 dw.uuid = d.uuid
                 AND dw.catalog_id = cat.id
+                AND d.catalog_id = cat.id
                 AND cat.identifier = '${context.catalogId}'
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
@@ -92,7 +89,7 @@ class UVPPublishExport(
     private fun indexUvpDoc(context: Context, docId: String, category: DocumentCategory) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, category, "indexUvpIDF", docId)
+        indexingTask.updateDocument(context.catalogId, category, docId)
 
     }
 }

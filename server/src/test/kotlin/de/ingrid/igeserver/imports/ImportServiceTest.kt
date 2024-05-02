@@ -36,14 +36,15 @@ import org.springframework.security.core.Authentication
 
 class ImportServiceTest : ShouldSpec() {
 
-    val notifier = mockk<JobsNotifier>(relaxed = true)
+    private val notifier = mockk<JobsNotifier>(relaxed = true)
     val factory = mockk<ImporterFactory>(relaxed = true)
-    val docService = mockk<DocumentService>(relaxed = true)
-    val principal = mockk<Authentication>(relaxed = true)
+    private val docService = mockk<DocumentService>(relaxed = true)
+    private val principal = mockk<Authentication>(relaxed = true)
 
-    val docEntity = Document().apply {
+    private val docEntity = Document().apply {
         data = jacksonObjectMapper().createObjectNode()
         title = "Test-Dataset"
+        type = ""
     }
 
     val service = ImportService(notifier, factory, docService)
@@ -63,7 +64,7 @@ class ImportServiceTest : ShouldSpec() {
 
         should("Count documents") {
             every { docService.getWrapperByCatalogAndDocumentUuid(any(), any()) } throws Exception()
-            
+
             val options = ImportOptions()
             val doc = DocumentAnalysis(docEntity, 1, false, false, false)
             val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())
@@ -74,7 +75,7 @@ class ImportServiceTest : ShouldSpec() {
 
         should("Count addresses") {
             every { docService.getWrapperByCatalogAndDocumentUuid(any(), any()) } throws Exception()
-            
+
             val options = ImportOptions()
             val doc = DocumentAnalysis(docEntity, 1, true, false, false)
             val analysis = OptimizedImportAnalysis(emptyList(), listOf(doc), 0, 0, emptyList(), emptyList())
@@ -117,10 +118,8 @@ class ImportServiceTest : ShouldSpec() {
             val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
 
             result shouldBe ImportCounter(1, 0, 0, 0)
-            verify(exactly = 1) { docService.recoverDocument(any()) }
-            verify(exactly = 1) { docService.updateDocument(any(), any(), any(), any()) }
-            // save published -> archived and draft-and-published -> draft (edge case) 
-            verify(exactly = 2) { docService.docRepo.save(any()) }
+            verify(exactly = 1) { docService.deleteDocument(any(), any(), any(), true) }
+            verify(exactly = 1) { docService.createDocument(any(), any(), any<Document>(), any(), any(), any(), any()) }
         }
 
         should("Count addresses when they have been deleted before") {

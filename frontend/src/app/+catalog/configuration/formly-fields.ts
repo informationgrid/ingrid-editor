@@ -79,6 +79,9 @@ export const fields = (codelistService: CodelistService) =>
         externalLabel: "Elasticsearch Alias",
         appearance: "outline",
       },
+      validators: {
+        validation: ["valid_es_alias"],
+      },
     },
     {
       key: "namespace",

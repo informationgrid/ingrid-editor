@@ -19,11 +19,6 @@
  */
 package de.ingrid.igeserver.migrations
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
-
 enum class VersionCompare {
     SAME, LOWER, HIGHER
 }
@@ -58,17 +53,5 @@ abstract class MigrationBase(val versionString: String) : MigrationStrategy {
             result == 0 -> VersionCompare.SAME
             else -> VersionCompare.HIGHER
         }
-    }
-
-    protected open fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken(
-                "Migration", "Task",
-                listOf(
-                    SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
-                )
-            )
-        SecurityContextHolder.getContext().authentication = auth
     }
 }

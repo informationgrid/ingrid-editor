@@ -20,7 +20,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
-import { map, tap } from "rxjs/operators";
+import { filter, map, switchMap } from "rxjs/operators";
 import { TreeNode } from "../../../../../store/tree/tree-node.model";
 import { Observable } from "rxjs";
 import {
@@ -41,7 +41,7 @@ export interface ReplaceAddressDialogData {
 export class ReplaceAddressDialogComponent implements OnInit {
   page = 0;
   selectedAddress: string[];
-  private source: string;
+  private readonly source: string;
   showInfo = true;
   disableTreeNode = (node: TreeNode) =>
     node._uuid === this.source || node.state === "W";
@@ -57,21 +57,21 @@ export class ReplaceAddressDialogComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  replaceAddress(reaffirm: boolean = true) {
-    if (reaffirm === true) {
-      this.openConfirmReplaceAddressDialog().subscribe((confirmed) => {
-        if (confirmed) {
-          this.replaceAddress(false);
-        } else {
-          return;
-        }
+  replaceAddress() {
+    this.openConfirmReplaceAddressDialog()
+      .pipe(
+        filter((confirmed) => confirmed),
+        switchMap(() =>
+          this.documentService.replaceAddress(
+            this.source,
+            this.selectedAddress[0],
+          ),
+        ),
+      )
+      .subscribe(() => {
+        this.reloadAddress();
+        this.page++;
       });
-    } else {
-      this.documentService
-        .replaceAddress(this.source, this.selectedAddress[0])
-        .pipe(tap(() => this.reloadAddress()))
-        .subscribe(() => this.page++);
-    }
   }
 
   openConfirmReplaceAddressDialog(): Observable<boolean> {

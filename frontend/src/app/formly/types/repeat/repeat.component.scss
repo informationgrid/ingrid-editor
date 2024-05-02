@@ -2,7 +2,7 @@
 
 .section-title {
   margin: 10px 0;
-  font-weight: normal;
+  //font-weight: normal;
 }
 
 .close {
@@ -35,4 +35,11 @@ ige-add-button {
 ige-form-error {
   display: block;
   padding-bottom: 24px;
+}
+
+.show-border formly-field {
+  border: 1px solid #00000012;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
 }

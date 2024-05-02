@@ -1,9 +1,21 @@
-<input matInput type="number" [formControl]="field.fieldGroup[0].formControl" />
-<div matSuffix [matMenuTriggerFor]="suffixMenu" class="suffix-wrapper">
-    <span>{{ $unit() }}</span> <mat-icon>arrow_drop_down</mat-icon>
+<input
+    matInput
+    type="number"
+    [formControl]="$any(field.fieldGroup[0].formControl)"
+/>
+<div
+    matSuffix
+    [matMenuTriggerFor]="!disabled && suffixMenu"
+    class="suffix-wrapper"
+    [class.disabled]="disabled"
+>
+    <span>{{ $unit() }}</span>
+    @if (!disabled) {
+        <mat-icon>arrow_drop_down</mat-icon>
+    }
 </div>
 <mat-menu #suffixMenu>
-    @for (item of props.unitOptions | async; track item) {
+    @for (item of $options(); track item) {
         <button mat-menu-item (click)="updateUnit(item)">
             {{ item.label }}
         </button>

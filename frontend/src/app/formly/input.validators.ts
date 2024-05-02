@@ -70,6 +70,22 @@ export function LowercaseValidator(
     : { lowercase: true };
 }
 
+export function NoSpaceValidator(
+  control: UntypedFormControl,
+): ValidationErrors {
+  return control.value?.indexOf(" ") === -1 ? null : { no_space: true };
+}
+
+const forbiddenESCharsRegExp = new RegExp(/^[^,/*?"<>|:#\\]+$/);
+
+export function ElasticsearchAliasValidator(
+  control: UntypedFormControl,
+): ValidationErrors {
+  return !control.value || forbiddenESCharsRegExp.test(control.value?.trim())
+    ? null
+    : { valid_es_alias: true };
+}
+
 export function patternWithMessage(
   pattern: string | RegExp,
   errorField: string,

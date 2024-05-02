@@ -125,6 +125,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.view = viewType;
     this.result.type = viewType;
     this.titleInput.enable();
+    if (viewType !== "wkt") this.result.wkt = undefined;
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();

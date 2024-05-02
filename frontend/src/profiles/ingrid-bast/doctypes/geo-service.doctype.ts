@@ -30,6 +30,8 @@ export class GeoServiceDoctypeBast extends GeoServiceDoctype {
   common = inject(CommonFieldsBast);
 
   defaultKeySpatialScope = "-673152846";
+  showAdVCompatible = false;
+  showAdVProductGroup = false;
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     fieldConfig[1].fieldGroup

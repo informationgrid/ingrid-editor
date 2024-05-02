@@ -32,7 +32,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.mdek.upload.storage.Storage
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -228,7 +227,7 @@ class DatasetsApiController(
 
     private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): JsonNode {
 
-        val wrapper = documentService.getWrapperByDocumentIdAndCatalog(catalogId, id)
+        val wrapper = documentService.getWrapperByDocumentIdAndCatalog(id)
 
         val doc = documentService.getDocumentByWrapperId(catalogId, id)
 
@@ -320,47 +319,7 @@ class DatasetsApiController(
         }
         validateCopyOperation(catalogId, id, options.destId)
 
-        // update ACL parent
-        documentService.aclService.updateParent(id, options.destId)
-
-        // get new parent path
-        val newPath = if (options.destId == null) emptyList() else {
-            getPathFromWrapper(catalogId, options.destId) + options.destId.toString()
-        }
-
-        // updateWrapper
-        val docData = documentService.getDocumentFromCatalog(catalogId, id)
-        val parent =
-            if (options.destId == null) null else documentService.getDocumentFromCatalog(catalogId, options.destId)
-
-        // check parent is published if moved dataset also has been published
-        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
-            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
-                throw ValidationException.withReason(
-                    "Parent must be published, since moved dataset is also published",
-                    errorCode = "PARENT_IS_NOT_PUBLISHED"
-                )
-            }
-        }
-
-        docData.wrapper.parent = parent?.wrapper
-        docData.wrapper.path = newPath
-
-        docWrapperRepo.save(docData.wrapper)
-
-        updatePathForAllChildren(catalogId, newPath, id)
-    }
-
-    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
-        documentService.findChildrenWrapper(catalogId, id).hits
-            .forEach {
-                it.path = path + id.toString()
-                // FIXME: what about the path of person under an institution???
-                if (it.type == "FOLDER") {
-                    updatePathForAllChildren(catalogId, it.path, it.id!!)
-                }
-                docWrapperRepo.save(it)
-            }
+        documentService.updateParent(catalogId, id, options.destId)
     }
 
     private fun validateCopyOperation(catalogId: String, sourceId: Int, destinationId: Int?) {
@@ -535,8 +494,5 @@ class DatasetsApiController(
     }
 
     data class PathResponse(val id: Int, val title: String, val permission: PermissionInfo? = null)
-
-    private fun getPathFromWrapper(catalogId: String, id: Int) =
-        documentService.getWrapperByDocumentIdAndCatalog(catalogId, id).path
 
 }

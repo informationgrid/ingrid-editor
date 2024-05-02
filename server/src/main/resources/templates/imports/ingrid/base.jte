@@ -1,6 +1,10 @@
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
+@import gg.jte.Content
 @import gg.jte.support.ForSupport
-@param GeneralMapper model 
+@param GeneralMapper model
+@param Content additionalKeywords = null
+@param Content additionalResource = null
 
 "title": "${model.getTitle()}",
 "_uuid": "${model.getUuid()}",
@@ -16,8 +20,9 @@
 @for(var contact : ForSupport.of(model.getPointOfContacts()))
     {
     "ref": {
-    "_uuid": "${contact.get().getRefUuid()}",
-    "_type": "${contact.get().getAddressType()}",
+        "_uuid": "${contact.get().getRefUuid()}",
+        "_type": "${contact.get().getAddressType()}",
+        "title": "${contact.get().getTitle()}",
     @if(contact.get().isOrganization())
         "organization": "${contact.get().getOrganization()}",
     @elseif(contact.get().getPersonInfo() != null)
@@ -47,6 +52,7 @@
     ],
     "positionName": "${contact.get().getPositionName()}",
     "hoursOfService": "${contact.get().getHoursOfService()}"
+    @if(contact.get().getParent() != null), "parentAsUuid": "${contact.get().getParent()}"@endif
     },
     "type": @template.imports.ingrid.partial.key-value(item = contact.get().getType())
     }@if (!contact.isLast()),@endif
@@ -66,15 +72,19 @@
 ],
 "advProductGroups": @template.imports.ingrid.partial.key-values(list = model.getAdvProductGroups()),
 "themes": @template.imports.ingrid.partial.key-values(list = model.getThemes()),
-"priorityDatasets": @template.imports.ingrid.partial.key-values(list = model.getPriorityDatasets()),
+@if(!model.getPriorityDatasets().isEmpty())
+    "priorityDatasets": @template.imports.ingrid.partial.key-values(list = model.getPriorityDatasets()),
+@endif
 "openDataCategories": @template.imports.ingrid.partial.key-values(list = model.getOpenDataCategories()),
-"spatialScope": @template.imports.ingrid.partial.key-value(item = model.getSpatialScope()),
+@if(model.getSpatialScope() != null)
+    "spatialScope": @template.imports.ingrid.partial.key-value(item = model.getSpatialScope()),
+@endif
 "keywords": {
     "free": [
     @for(var keyword : ForSupport.of(model.getKeywords()))
         { "label": "${keyword.get()}" }@if (!keyword.isLast()),@endif
     @endfor
-    ]
+    ] ${additionalKeywords}
 },
 "spatial": {
 "references": [
@@ -147,17 +157,19 @@
 },
 "description": "${interval.getDescription()}"
 },
-"conformanceResult": [
-@for(var item : ForSupport.of(model.getConformanceResult()))
-    {
-    "pass": @template.imports.ingrid.partial.key-value(item = item.get().getPass()),
-    "isInspire": ${item.get().isInspire()},
-    "explanation": "${item.get().getExplanation()}",
-    "specification": @template.imports.ingrid.partial.key-value(item = item.get().getSpecification()),
-    "publicationDate": "${item.get().getPublicationDate()}"
-    }@if (!item.isLast()),@endif
-@endfor
-],
+@if(!model.getConformanceResult().isEmpty())
+    "conformanceResult": [
+    @for(var item : ForSupport.of(model.getConformanceResult()))
+        {
+        "pass": @template.imports.ingrid.partial.key-value(item = item.get().getPass()),
+        "isInspire": ${item.get().isInspire()},
+        "explanation": "${item.get().getExplanation()}",
+        "specification": @template.imports.ingrid.partial.key-value(item = item.get().getSpecification()),
+        "publicationDate": "${item.get().getPublicationDate()}"
+        }@if (!item.isLast()),@endif
+    @endfor
+    ],
+@endif
 "extraInfo": {
 "legalBasicsDescriptions": @template.imports.ingrid.partial.key-values(list = model.getLegalDescriptions())
 },
@@ -170,10 +182,11 @@
     {
     "title": @template.imports.ingrid.partial.key-value(item = item.get().getTitle()),
     "source": "${item.get().getSource()}"
+    @if(TransformationTools.hasValue(item.get().getNote())), "note": "${item.get().getNote()}"@endif
     }@if (!item.isLast()),@endif
 @endfor
 ],
-"useLimitation": "${model.getUseLimitation()}"
+"useLimitation": "${model.getUseLimitation()}" ${additionalResource}
 },
 "distribution": {
 "format": [

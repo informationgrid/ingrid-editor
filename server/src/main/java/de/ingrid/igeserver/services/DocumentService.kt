@@ -26,6 +26,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.PostSaveException
 import de.ingrid.igeserver.extension.pipe.Context
@@ -125,15 +126,6 @@ class DocumentService(
 
     private var log = logger()
 
-    /**
-     * Get the DocumentWrapper with the given document uuid
-     */
-    @Deprecated(
-        message = "This function can return more than one result if a document is imported in more than one catalog",
-        replaceWith = ReplaceWith("getWrapperByDocumentIdAndCatalog", "catalogId", "uuid")
-    )
-    fun getWrapperByDocumentId(id: String): DocumentWrapper = docWrapperRepo.findById(id.toInt()).get()
-
     fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
@@ -178,9 +170,8 @@ class DocumentService(
         }
     }
 
-    fun getWrapperByDocumentIdAndCatalog(catalogIdentifier: String?, id: Int): DocumentWrapper {
+    fun getWrapperByDocumentIdAndCatalog(id: Int): DocumentWrapper {
         try {
-//            return docWrapperRepo.findByIdAndCatalog_Identifier(id, catalogIdentifier)
             return docWrapperRepo.findById(id).get()
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
@@ -718,12 +709,13 @@ class DocumentService(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: Int) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int, deletePermanently: Boolean? = false) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        deleteRecursively(catalogId, id, filterContext)
+        val realDelete = deletePermanently ?: !generalProperties.markInsteadOfDelete
+        deleteRecursively(catalogId, id, filterContext, realDelete)
     }
 
-    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, realDelete: Boolean) {
         // run pre-delete pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
 //        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
@@ -739,12 +731,10 @@ class DocumentService(
         //       it somehow
 
         findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.wrapper.id!!, filterContext)
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, realDelete)
         }
 
-        if (generalProperties.markInsteadOfDelete) {
-            markDocumentAsDeleted(catalogId, id)
-        } else {
+        if (realDelete) {
             // remove all document versions which have the same ID
             docRepo.deleteAllByUuid(docData.document.uuid)
 
@@ -754,6 +744,8 @@ class DocumentService(
             // remove ACL from document, which works now since reference is by database ID instead of UUID
             // since it can happen that the same UUID exists in multiple catalogs, the ACL for a UUID could not be unique
             aclService.removeAclForDocument(id)
+        } else {
+            markDocumentAsDeleted(id)
         }
 
         // remove references in groups
@@ -770,8 +762,8 @@ class DocumentService(
         postPersistencePipe.runFilters(postDeletePayload as PostPersistencePayload, filterContext)
     }
 
-    private fun markDocumentAsDeleted(catalogId: String, id: Int) {
-        val markedDoc = getWrapperByDocumentIdAndCatalog(catalogId, id).apply { deleted = 1 }
+    private fun markDocumentAsDeleted(id: Int) {
+        val markedDoc = getWrapperByDocumentIdAndCatalog(id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
 
@@ -1009,6 +1001,53 @@ class DocumentService(
         val docType = getDocumentType(docData.wrapper.type, profile.identifier)
         val prePublishPayload = PrePublishPayload(docType, catalogId, docData.document, docData.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
+    }
+
+    fun updateParent(catalogId: String, wrapperId: Int, newParentId: Int?) {
+        // update ACL parent
+        aclService.updateParent(wrapperId, newParentId)
+
+        // get new parent path
+        val newPath = if (newParentId == null) emptyList() else {
+            getPathFromWrapper(newParentId) + newParentId.toString()
+        }
+
+        // updateWrapper
+        val docData = getDocumentFromCatalog(catalogId, wrapperId)
+        val parent =
+            if (newParentId == null) null else getDocumentFromCatalog(catalogId, newParentId)
+
+        // check parent is published if moved dataset also has been published
+        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
+            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
+                throw ValidationException.withReason(
+                    "Parent '${parent.document.uuid}' must be published, since moved dataset '${docData.document.uuid}' is also published",
+                    errorCode = "PARENT_IS_NOT_PUBLISHED"
+                )
+            }
+        }
+
+        docData.wrapper.parent = parent?.wrapper
+        docData.wrapper.path = newPath
+
+        docWrapperRepo.save(docData.wrapper)
+
+        updatePathForAllChildren(catalogId, newPath, wrapperId)
+    }
+
+    private fun getPathFromWrapper(id: Int) =
+        getWrapperByDocumentIdAndCatalog(id).path
+
+    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
+        findChildrenWrapper(catalogId, id).hits
+            .forEach {
+                it.path = path + id.toString()
+                // FIXME: what about the path of person under an institution???
+                if (it.type == "FOLDER") {
+                    updatePathForAllChildren(catalogId, it.path, it.id!!)
+                }
+                docWrapperRepo.save(it)
+            }
     }
 }
 

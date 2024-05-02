@@ -19,12 +19,9 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer
 
-import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.services.CodelistHandler
 
-open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler, catalogId: String) :
-    GeneralMapper(metadata, codeListService, catalogId) {
+open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 
@@ -57,7 +54,7 @@ open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler
 
     private fun getOperationName(value: String?): KeyValue? {
         if (value == null) return null
-        
+
         val serviceType = getServiceType()
         val codelistId = when (serviceType.key) {
             "1" -> "5105"
@@ -81,9 +78,9 @@ open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler
 
         val beginOfExtra = description.indexOf("Systemumgebung:")
         if (beginOfExtra == -1) return ""
-        
+
         val endIndex = description.indexOf(";", beginOfExtra)
-        return if (endIndex == -1) { 
+        return if (endIndex == -1) {
             description.substring(beginOfExtra + 15).trim()
         } else {
             description.substring(beginOfExtra + 15, endIndex).trim()
@@ -95,12 +92,12 @@ open class GeoserviceMapper(metadata: Metadata, codeListService: CodelistHandler
 
         val beginOfExtra = description.indexOf("Erläuterung zum Fachbezug:")
         if (beginOfExtra == -1) return ""
-        
+
         val end = description.indexOf(";", beginOfExtra)
         return if (end == -1) {
-            description.substring(beginOfExtra + 26 ).trim()
+            description.substring(beginOfExtra + 26).trim()
         } else {
-            description.substring(beginOfExtra + 26, end ).trim()
+            description.substring(beginOfExtra + 26, end).trim()
         }
     }
 

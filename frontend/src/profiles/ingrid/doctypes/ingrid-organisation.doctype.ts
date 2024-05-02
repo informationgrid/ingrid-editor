@@ -32,7 +32,6 @@ export class IngridOrganisationDoctype extends OrganisationDoctype {
     this.addressType = "organization";
     this.options = {
       defaultCountry: { key: "276" },
-      inheritAddress: false,
       requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
     };

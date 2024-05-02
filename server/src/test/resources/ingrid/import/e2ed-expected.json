@@ -1,0 +1,540 @@
+{
+  "title": "Bebauungsplan Barmbek-Nord 18",
+  "_uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
+  "_parent": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
+  "_type": "InGridGeoDataset",
+  "isInspireIdentified": true,
+  "isAdVCompatible": true,
+  "isOpenData": true,
+  "description": "siehe Originalplan",
+  "alternateTitle": "Short",
+  "parentIdentifier": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
+  "pointOfContact": [
+    {
+      "ref": {
+        "_uuid": "110C6012-1713-44C0-9A33-4E2C24D06966",
+        "_type": "InGridOrganisationDoc",
+        "organization": "",
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "you@wemove.com"
+          }
+        ],
+        "positionName": "",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "12"
+      }
+    },
+    {
+      "ref": {
+        "_uuid": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
+        "_type": "InGridOrganisationDoc",
+        "organization": "Wemove Test",
+        "address": {
+          "city": "Frankfurt",
+          "po-box": "123",
+          "street": "Hanauer Landstr. 52",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "60314",
+          "zip-po-box": "P123",
+          "administrativeArea": {
+            "key": "7"
+          }
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "test@wemove.com"
+          }
+        ],
+        "positionName": "Notizen MMMM",
+        "hoursOfService": ""
+      },
+      "type": {
+        "key": "7"
+      }
+    }
+  ],
+  "graphicOverviews": [
+    {
+      "fileName": {
+        "asLink": true,
+        "value": "https://mein-bild.de/xxx.png",
+        "uri": "https://mein-bild.de/xxx.png"
+      },
+      "fileDescription": "Bildbeschreibung"
+    }
+  ],
+  "advProductGroups": [
+    {
+      "key": "6"
+    },
+    {
+      "key": "12"
+    }
+  ],
+  "themes": [
+    {
+      "key": "105"
+    }
+  ],
+  "priorityDatasets": [
+    {
+      "key": "-1023933682"
+    }
+  ],
+  "invekosKeywords": [],
+  "openDataCategories": [
+    {
+      "key": "6"
+    }
+  ],
+  "spatialScope": {
+    "key": "-673152846"
+  },
+  "keywords": {
+    "free": [
+      {
+        "label": "Wasser"
+      },
+      {
+        "label": "Unbekannt"
+      }
+    ]
+  },
+  "spatial": {
+    "references": [
+      {
+        "type": "wkt",
+        "title": "",
+        "wkt": "POLYGON ((36 11, 46 46, 16 41, 11 21, 36 11), (21 31, 36 36, 31 21, 21 31))"
+      },
+      {
+        "type": "free",
+        "title": "Hamburg",
+        "value": {
+          "lat1": 53.394985,
+          "lon1": 8.420551,
+          "lat2": 53.964153,
+          "lon2": 10.326304
+        }
+      },
+      {
+        "type": "free",
+        "title": "Frankfurt am Main",
+        "value": {
+          "lat1": 50.015156,
+          "lon1": 8.473561,
+          "lat2": 50.226444,
+          "lon2": 8.801178
+        }
+      },
+      {
+        "type": "free",
+        "title": "",
+        "ars": "054352000000"
+      }
+    ],
+    "spatialSystems": [
+      {
+        "key": "3068"
+      }
+    ],
+    "verticalExtent": {
+      "minimumValue": 1.0,
+      "maximumValue": 6.0,
+      "unitOfMeasure": {
+        "key": "9001"
+      },
+      "Datum": {
+        "key": "900002"
+      }
+    },
+    "description": "Erläuterungen Raumbezug"
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2016-03-01T00:00:00.000+01:00",
+        "referenceDateType": {
+          "key": "1"
+        }
+      }
+    ],
+    "resourceDateType": {
+      "key": "since"
+    },
+    "status": {
+      "key": "7"
+    },
+    "resourceDate": "2016-03-01T00:00:00.000+01:00",
+    "resourceDateTypeSince": {
+      "key": "requestTime"
+    }
+  },
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": {
+      "key": "1"
+    },
+    "userDefinedMaintenanceFrequency": {
+      "number": 6,
+      "unit": {
+        "key": "3"
+      }
+    },
+    "description": "Erläuterungen Zeitbezug"
+  },
+  "conformanceResult": [
+    {
+      "pass": {
+        "key": "2"
+      },
+      "isInspire": false,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": null,
+        "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+      },
+      "publicationDate": "2007-03-14"
+    },
+    {
+      "pass": {
+        "key": "1"
+      },
+      "isInspire": true,
+      "explanation": "see the referenced specification",
+      "specification": {
+        "key": "10"
+      },
+      "publicationDate": "2010-12-08"
+    }
+  ],
+  "extraInfo": {
+    "legalBasicsDescriptions": [
+      {
+        "key": "38"
+      }
+    ]
+  },
+  "resource": {
+    "purpose": "Herstellung",
+    "specificUsage": "Eignung",
+    "accessConstraints": [
+      {
+        "key": "1"
+      }
+    ],
+    "useConstraints": [
+      {
+        "title": {
+          "key": "20"
+        },
+        "source": "Quelle 2"
+      }
+    ],
+    "useLimitation": "Datenlizenz Deutschland - Namensnennung - Version 2.0; <a href=\"https://www.govdata.de/dl-de/by-2-0\">https://www.govdata.de/dl-de/by-2-0</a>; dl-de-by-2.0; Namensnennung: \"Freie und Hansestadt Hamburg, Bezirksamt Nord, Fachamt Stadt- und Landschaftsplanung\""
+  },
+  "distribution": {
+    "format": [
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "",
+        "compression": "",
+        "specification": ""
+      },
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "4.1",
+        "compression": "ZIP",
+        "specification": "Spec 1"
+      },
+      {
+        "name": {
+          "key": "26"
+        },
+        "version": "3.0",
+        "compression": "",
+        "specification": ""
+      }
+    ]
+  },
+  "digitalTransferOptions": [
+    {
+      "name": {
+        "key": "4"
+      },
+      "transferSize": {
+        "value": 700.0,
+        "unit": {
+          "key": "MB"
+        }
+      },
+      "mediumNote": "Bunker"
+    }
+  ],
+  "orderInfo": "Bestell",
+  "references": [
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Bekanntmachung im HmbGVBl als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "URL zu weiteren Informationen über den Datensatz",
+      "url": "http://www.hamburg.de/bebauungsplaene-online.de",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Begründung des Bebauungsplans als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    },
+    {
+      "type": {
+        "key": "9999"
+      },
+      "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
+      "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
+      "explanation": ""
+    }
+  ],
+  "subType": {
+    "key": "5"
+  },
+  "metadata": {
+    "language": {
+      "key": "150"
+    },
+    "characterSet": {
+      "key": "19"
+    }
+  },
+  "resolution": [
+    {
+      "denominator": 1000,
+      "distanceMeter": 100,
+      "distanceDPI": 300
+    }
+  ],
+  "topicCategories": [
+    {
+      "key": "4"
+    }
+  ],
+  "spatialRepresentationType": [
+    {
+      "key": "1"
+    },
+    {
+      "key": "2"
+    }
+  ],
+  "lineage": {
+    "statement": "vergl. eGovernment Vorhaben \"PLIS\""
+  },
+  "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
+  "portrayalCatalogueInfo": {
+    "citation": [
+      {
+        "title": {
+          "key": "1"
+        },
+        "date": "2023-02-07T00:00:00.000+01:00",
+        "edition": "1.0"
+      }
+    ]
+  },
+  "featureCatalogueDescription": {
+    "citation": [
+      {
+        "title": {
+          "key": "1"
+        },
+        "date": "2023-02-03T00:00:00.000+01:00",
+        "edition": "2.1"
+      }
+    ],
+    "featureTypes": [
+      {
+        "key": null,
+        "value": "Meine Sachdaten"
+      }
+    ]
+  },
+  "dataQualityInfo": {
+    "lineage": {
+      "source": {
+        "descriptions": [
+          {
+            "key": null,
+            "value": "Meine Datengrundlage"
+          }
+        ],
+        "processStep": {
+          "description": [
+            {
+              "key": null,
+              "value": "Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "dataQuality": {
+    "completenessOmission": {
+      "measResult": 23
+    }
+  },
+  "absoluteExternalPositionalAccuracy": {
+    "vertical": 66,
+    "horizontal": 654,
+    "griddedDataPositionalAccuracy": 43
+  },
+  "qualities": [
+    {
+      "_type": "completenessComission",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 43,
+      "parameter": "343"
+    },
+    {
+      "_type": "conceptualConsistency",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 343,
+      "parameter": "545"
+    },
+    {
+      "_type": "domainConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 45,
+      "parameter": "533"
+    },
+    {
+      "_type": "formatConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 54,
+      "parameter": "577"
+    },
+    {
+      "_type": "topologicalConsistency",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 64,
+      "parameter": "31"
+    },
+    {
+      "_type": "temporalConsistency",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 5,
+      "parameter": "6"
+    },
+    {
+      "_type": "thematicClassificationCorrectness",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 7,
+      "parameter": "87"
+    },
+    {
+      "_type": "nonQuantitativeAttributeAccuracy",
+      "measureType": {
+        "key": "2"
+      },
+      "value": 64,
+      "parameter": "87"
+    },
+    {
+      "_type": "quantitativeAttributeAccuracy",
+      "measureType": {
+        "key": "1"
+      },
+      "value": 44,
+      "parameter": "77"
+    },
+    {
+      "_type": "relativeInternalPositionalAccuracy",
+      "measureType": {
+        "key": "3"
+      },
+      "value": 64,
+      "parameter": "Param 1"
+    }
+  ],
+  "dataset": {
+    "languages": ["150", "134"]
+  },
+  "isInspireConform": false,
+  "vectorSpatialRepresentation": [
+    {
+      "topologyLevel": {
+        "key": "4"
+      },
+      "geometricObjectType": {
+        "key": "5"
+      },
+      "geometricObjectCount": 8
+    }
+  ],
+  "gridSpatialRepresentation": {
+    "type": {
+      "key": "rectified"
+    },
+    "axesDimensionProperties": [
+      {
+        "name": {
+          "key": "6"
+        },
+        "size": 6,
+        "resolution": 3
+      }
+    ],
+    "transformationParameterAvailability": true,
+    "numberOfDimensions": 3,
+    "cellGeometry": {
+      "key": "2"
+    },
+    "georectified": {
+      "checkPointAvailability": true,
+      "checkPointDescription": "ctrl description",
+      "cornerPoints": "2",
+      "pointInPixel": {
+        "key": "2"
+      }
+    }
+  }
+}

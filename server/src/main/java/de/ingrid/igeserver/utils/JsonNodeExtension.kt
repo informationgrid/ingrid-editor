@@ -59,5 +59,5 @@ fun JsonNode.getPath(path: String): JsonNode? {
 
 fun JsonNode.mapToKeyValue(): KeyValue? {
     if (this.isNull) return null
-    return KeyValue(this.get("key")?.asText(), this.get("value")?.asText())
+    return KeyValue(this.getString("key"), this.getString("value"))
 }

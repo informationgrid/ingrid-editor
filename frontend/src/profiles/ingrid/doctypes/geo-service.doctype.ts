@@ -41,6 +41,9 @@ export class GeoServiceDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  showAdVCompatible = true;
+  showAdVProductGroup = true;
+
   geoServiceOptions = {
     required: {
       operations: false,
@@ -80,13 +83,11 @@ export class GeoServiceDoctype extends IngridShared {
       },
       this.addGeneralSection({
         inspireRelevant: true,
-        advCompatible: true,
       }),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,
         inspireTopics: true,
-        advProductGroup: true,
       }),
 
       this.addSection("Fachbezug", [

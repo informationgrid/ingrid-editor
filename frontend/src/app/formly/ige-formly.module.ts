@@ -80,9 +80,11 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
 import { UploadModule } from "../shared/upload/upload.module";
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import {
+  ElasticsearchAliasValidator,
   EmailValidator,
   IpValidator,
   LowercaseValidator,
+  NoSpaceValidator,
   NotEmptyArrayValidator,
   PositiveNumValidator,
   UrlValidator,
@@ -256,10 +258,16 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           name: "previewImagePrint",
           component: PrintTypeComponent,
         },
+        {
+          name: "unit-inputPrint",
+          component: PrintTypeComponent,
+        },
       ],
       validators: [
         { name: "ip", validation: IpValidator },
         { name: "lowercase", validation: LowercaseValidator },
+        { name: "no_space", validation: NoSpaceValidator },
+        { name: "valid_es_alias", validation: ElasticsearchAliasValidator },
         { name: "email", validation: EmailValidator },
         { name: "notEmptyArray", validation: NotEmptyArrayValidator },
         { name: "url", validation: UrlValidator },

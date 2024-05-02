@@ -1,0 +1,10 @@
+{
+  "menu": {
+    "application": "Hamburger Metadaten",
+    "logo": "assets/profiles/ingrid-hmdk/assets/icons/hmdk-logo.svg"
+  },
+  "dashboard": {
+    "welcome": "Willkommen im Hamburger Metadaten Editor",
+    "application": "HMDK"
+  }
+}

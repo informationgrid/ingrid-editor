@@ -75,7 +75,7 @@ open class GeodataserviceModelTransformer(
     init {
         if (model.data.identifier != null) {
             this.citationURL =
-                (if (catalog.settings?.config?.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier" else catalog.settings?.config?.namespace!!).suffixIfNot(
+                (if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier" else catalog.settings.config.namespace!!).suffixIfNot(
                     "/"
                 ) + model.data.identifier
         }

@@ -32,7 +32,6 @@ export class IngridPersonDoctype extends PersonDoctype {
     this.addressType = "person";
     this.options = {
       defaultCountry: { key: "276" },
-      inheritAddress: false,
       requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
     };

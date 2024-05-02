@@ -5,11 +5,7 @@
     !formControl.hasError("required")
 ) {
     <ige-form-error [ariaLabel]="props?.ariaLabel">
-        @for (error of formControl.errors | keyvalue; track error) {
-            <div>
-                {{ error.value.message }}
-            </div>
-        }
+        <formly-validation-message [field]="field"></formly-validation-message>
     </ige-form-error>
 }
 
@@ -34,6 +30,7 @@
                     class="flex-row"
                     cdkDrag
                     [class.extended-gap]="props.hasExtendedGap"
+                    [class.show-border]="props.showBorder"
                     [cdkDragDisabled]="!canBeDragged"
                 >
                     @if (canBeDragged) {
@@ -69,8 +66,11 @@
         </div>
     }
 </div>
-
-@if (!formState.disabled && formControl.enabled) {
+@if (
+    !formState.disabled &&
+    formControl.enabled &&
+    (!props.maxLength || props.maxLength > model?.length)
+) {
     <ige-add-button
         data-cy="btn-add"
         (add)="addItem($event)"

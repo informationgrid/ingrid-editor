@@ -53,6 +53,7 @@ import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler
 import { SharedPipesModule } from "../directives/shared-pipes.module";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelist-presenter.component";
+import { IndexingExplanationComponent } from "./indexing/indexing-explanation/indexing-explanation.component";
 
 @NgModule({
   imports: [
@@ -85,13 +86,14 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
     SharedPipesModule,
     NgxMatSelectSearchModule,
     CatalogCodelistsComponent,
+    IndexingExplanationComponent,
+    IndexingComponent,
+    LogResultComponent,
   ],
   providers: [CatalogService],
   declarations: [
     CatalogSettingsComponent,
-    IndexingComponent,
     UpdateCodelistComponent,
-    LogResultComponent,
     ConfigurationComponent,
   ],
   exports: [RouterModule],

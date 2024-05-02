@@ -25,10 +25,31 @@
                     <gmd:organisationName>
                         <gco:CharacterString>Wemove Test</gco:CharacterString>
                     </gmd:organisationName>
+                    <gmd:positionName>
+                        <gco:CharacterString>Positionsname</gco:CharacterString>
+                    </gmd:positionName>
                     <gmd:contactInfo>
                         <gmd:CI_Contact>
                             <gmd:address>
                                 <gmd:CI_Address>
+                                    <gmd:deliveryPoint>
+                                        <gco:CharacterString>Postbox 123, P123 Frankfurt</gco:CharacterString>
+                                    </gmd:deliveryPoint>
+                                    <gmd:deliveryPoint>
+                                        <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
+                                    </gmd:deliveryPoint>
+                                    <gmd:city>
+                                        <gco:CharacterString>Frankfurt</gco:CharacterString>
+                                    </gmd:city>
+                                    <gmd:administrativeArea>
+                                        <gco:CharacterString>Hessen</gco:CharacterString>
+                                    </gmd:administrativeArea>
+                                    <gmd:postalCode>
+                                        <gco:CharacterString>60</gco:CharacterString>
+                                    </gmd:postalCode>
+                                    <gmd:country>
+                                        <gco:CharacterString>DEU</gco:CharacterString>
+                                    </gmd:country>
                                     <gmd:electronicMailAddress>
                                         <gco:CharacterString>test@wemove.com</gco:CharacterString>
                                     </gmd:electronicMailAddress>
@@ -39,6 +60,10 @@
                     <gmd:role>
                         <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
                     </gmd:role>
+                    <idf:hierarchyParty uuid="9931a418-a159-4d6e-9b94-f041e3957b24">
+                        <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                        <idf:addressType>0</idf:addressType>
+                    </idf:hierarchyParty>
                 </idf:idfResponsibleParty>
             </gmd:contact>
             <gmd:dateStamp>

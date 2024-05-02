@@ -25,11 +25,9 @@ import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -59,7 +57,7 @@ class CatalogApiController(
     override fun getCatalogConfig(principal: Principal): ResponseEntity<CatalogConfigRequest> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
-        val config = catalog.settings?.config ?: CatalogConfig()
+        val config = catalog.settings.config
 
         val response = CatalogConfigRequest(catalog.name, catalog.description, config)
         return ResponseEntity.ok(response)

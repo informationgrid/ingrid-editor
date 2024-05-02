@@ -33,7 +33,6 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276" },
-      inheritAddress: false,
     };
   }
 }

@@ -232,11 +232,11 @@ data class UVPModel(
             ),
             getCodelistValue(
                 "4305",
-                address.data.get("academicTitle")?.mapToKeyValue()
+                address.data.get("academic-title")?.mapToKeyValue()
             ),
             address.data.getString("firstName"),
             address.data.getString("lastName")
-        ).joinToString(" ")
+        ).filter { it.isNotEmpty() }.joinToString(" ")
     }
 
 }

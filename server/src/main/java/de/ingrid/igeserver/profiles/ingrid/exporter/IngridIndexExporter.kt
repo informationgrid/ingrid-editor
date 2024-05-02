@@ -35,14 +35,15 @@ import de.ingrid.utils.xml.IgcProfileNamespaceContext
 import de.ingrid.utils.xml.XMLUtils
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.commons.codec.digest.DigestUtils
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.w3c.dom.Node
 import java.time.OffsetDateTime
 
 @Service
 class IngridIndexExporter(
-    val idfExporter: IngridIDFExporter,
-    val luceneExporter: IngridLuceneExporter,
+    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+    @Qualifier("ingridLuceneExporter") val luceneExporter: IngridLuceneExporter,
     val documentWrapperRepository: DocumentWrapperRepository
 ) : IgeExporter {
 
@@ -51,12 +52,13 @@ class IngridIndexExporter(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         typeId,
-        "Ingrid IDF (Elasticsearch)",
+        "Standard Export Portal (InGrid)",
         "Export von Ingrid Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
         listOf("ingrid"),
-        false
+        isPublic = false,
+        useForPublish = true
     )
 
     private lateinit var xpathUtils: XPathUtils

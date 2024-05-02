@@ -22,7 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.importer
 import de.ingrid.igeserver.exports.iso.Metadata
 
 interface ISOImportProfile {
-    fun handle(catalogId: String, data: Metadata): ImportProfileData?
+    fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData?
 }
 
 data class ImportProfileData(

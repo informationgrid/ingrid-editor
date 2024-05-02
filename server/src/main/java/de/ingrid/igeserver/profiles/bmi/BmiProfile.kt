@@ -420,6 +420,9 @@ class BmiProfile(
     override fun initCatalogQueries(catalogId: String) {
     }
 
+    override fun initIndices() {
+    }
+
     override fun getElasticsearchMapping(format: String): String {
         return {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
     }
@@ -476,13 +479,5 @@ class BmiProfile(
                     && !permission.equals(Permissions.manage_ibus.name))
             }
         }
-    }
-
-    override fun additionalPublishConditions(catalogId: String): List<String> {
-        val conditions = mutableListOf<String>()
-
-        conditions.add("document_wrapper.type != 'FOLDER'")
-
-        return conditions
     }
 }

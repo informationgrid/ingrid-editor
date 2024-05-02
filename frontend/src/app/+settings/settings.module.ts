@@ -43,7 +43,6 @@ import { AddButtonModule } from "../shared/add-button/add-button.module";
 import { NewCatalogDialogModule } from "./catalog-management/new-catalog/new-catalog-dialog.module";
 import { MatMenuModule } from "@angular/material/menu";
 import { PageTemplateModule } from "../shared/page-template/page-template.module";
-import { IBusManagementComponent } from "./ibus-management/i-bus-management.component";
 import { FormlyModule } from "@ngx-formly/core";
 import { IgeFormlyModule } from "../formly/ige-formly.module";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
@@ -55,6 +54,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignment.component";
 import { ContentManagementComponent } from "./content-management/content-management.component";
 import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelist-presenter.component";
+import { ConnectionManagementComponent } from "./connection-management/connection-management.component";
 
 @NgModule({
   declarations: [
@@ -64,7 +64,6 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
     CatalogManagementComponent,
     CatalogAssignmentComponent,
     CatalogDetailComponent,
-    IBusManagementComponent,
     MessagesManagementComponent,
     NewMessageDialogComponent,
   ],
@@ -97,6 +96,7 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
     MatDatepickerModule,
     DragDropModule,
     ContentManagementComponent,
+    ConnectionManagementComponent,
   ],
 })
 export class SettingsModule {}

@@ -97,9 +97,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
 
         // user login must be lowercase
-        if (user.login != user.login.lowercase()) {
-            throw ClientException.withReason("user.login must be lowercase")
-        }
+        validateLoginName(user)
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
@@ -139,6 +137,14 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         user.id = createdUser.id
         return ResponseEntity.ok(user)
+    }
+
+    private fun validateLoginName(user: User) {
+        if (user.login != user.login.lowercase()) {
+            throw ClientException.withReason("user.login must be lowercase")
+        } else if (user.login.contains(" ")) {
+            throw ClientException.withReason("user.login must not have spaces")
+        }
     }
 
     @Transactional(noRollbackFor = [MailException::class])

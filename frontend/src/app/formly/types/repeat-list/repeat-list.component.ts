@@ -27,7 +27,14 @@ import {
 } from "@angular/core";
 import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
-import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  tap,
+} from "rxjs/operators";
 import {
   BehaviorSubject,
   merge,
@@ -121,7 +128,6 @@ export class RepeatListComponent
   searchSub: Subscription;
   searchResult = new BehaviorSubject<any[]>([]);
   private manualUpdate = new Subject<string>();
-  private currentStateRequired = false;
   type: "simple" | "select" | "autocomplete" | "search" = "simple";
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
@@ -197,9 +203,8 @@ export class RepeatListComponent
     }
 
     this.formControl.statusChanges
-      .pipe(untilDestroyed(this))
+      .pipe(untilDestroyed(this), distinctUntilChanged())
       .subscribe((status) => {
-        this.handleRequiredState();
         status === "DISABLED"
           ? this.inputControl.disable()
           : this.inputControl.enable();
@@ -211,13 +216,16 @@ export class RepeatListComponent
           untilDestroyed(this),
           startWith(""),
           debounceTime(300),
+          tap(() => this.formControl.updateValueAndValidity()),
           filter((query) => query?.length > 1),
         )
         .subscribe((query) => this.search(query));
     } else {
       this.filteredOptions = merge(
         this.formControl.valueChanges,
-        this.inputControl.valueChanges,
+        this.inputControl.valueChanges.pipe(
+          tap(() => this.formControl.updateValueAndValidity()),
+        ),
         this.manualUpdate.asObservable(),
       ).pipe(
         untilDestroyed(this),
@@ -226,6 +234,10 @@ export class RepeatListComponent
         map((value) => this._filter(value)),
         map((value) => this._markSelected(value)),
       );
+
+      if (this.type !== "select" && this.type !== "autocomplete") {
+        this.filteredOptions.subscribe();
+      }
     }
   }
 
@@ -295,23 +307,6 @@ export class RepeatListComponent
     this.formControl.patchValue([...(this.formControl.value || []), value]);
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
-  }
-
-  private handleRequiredState() {
-    if (this.props.required === this.currentStateRequired) return;
-    let requiredValidator = (): ValidationErrors | null => {
-      return !this.showError ||
-        (this.props.required && this.formControl.value?.length > 0)
-        ? null
-        : { required: "Pflicht!" };
-    };
-
-    if (this.props.required) {
-      this.inputControl.addValidators(requiredValidator);
-    } else {
-      this.inputControl.removeValidators(requiredValidator);
-    }
-    this.inputControl.updateValueAndValidity();
   }
 
   private _filter(option: SelectOptionUi | string): SelectOptionUi[] {

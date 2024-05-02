@@ -31,7 +31,6 @@ export interface AddressOptions {
   defaultCountry: BackendOption;
   hideCountryAndAdministrativeArea: boolean;
   hideAdministrativeArea: boolean;
-  inheritAddress: boolean;
   positionNameAndHoursOfService: boolean;
   requiredField: any;
 }
@@ -107,23 +106,6 @@ export abstract class AddressShared extends BaseDoctype {
       "Anschrift",
       [
         {
-          key: "inheritAddress",
-          type: "toggle",
-          defaultValue: options.inheritAddress,
-          props: {
-            label: "Anschrift aus übergeordneter Adresse übernehmen",
-          },
-          hideExpression: (_, formState) =>
-            !options.inheritAddress ||
-            !formState.mainModel?._parent ||
-            formState.parentIsFolder,
-        },
-        {
-          hideExpression: (model, formState) =>
-            options.inheritAddress &&
-            formState.mainModel?._parent &&
-            !formState.parentIsFolder &&
-            model.inheritAddress,
           fieldGroup: [
             {
               fieldGroupClassName: "flex-row",

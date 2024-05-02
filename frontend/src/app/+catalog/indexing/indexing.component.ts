@@ -17,10 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+} from "@angular/core";
 import { IndexService, LogResult } from "./index.service";
 import cronstrue from "cronstrue/i18n";
-import { UntypedFormControl } from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -28,17 +36,41 @@ import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
 import { copyToClipboardFn } from "../../services/utils";
+import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+import { IndexingExplanationComponent } from "./indexing-explanation/indexing-explanation.component";
+import { JobHandlerHeaderModule } from "../../shared/job-handler-header/job-handler-header.module";
+import { AsyncPipe } from "@angular/common";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { MatButton } from "@angular/material/button";
+import { MatInput } from "@angular/material/input";
+import { LogResultComponent } from "./log-result/log-result.component";
+import { IndexingFields } from "./indexing-fields";
 
 @UntilDestroy()
 @Component({
   selector: "ige-indexing",
   templateUrl: "./indexing.component.html",
   styleUrls: ["./indexing.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageTemplateModule,
+    IndexingExplanationComponent,
+    JobHandlerHeaderModule,
+    AsyncPipe,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    FormlyModule,
+    MatButton,
+    MatInput,
+    LogResultComponent,
+  ],
 })
 export class IndexingComponent implements OnInit {
   @ViewChild("indexContent") indexContent: ElementRef<HTMLElement>;
 
-  cronField = new UntypedFormControl();
+  cronField = new FormControl<string>("");
 
   hint: string;
   valid = true;
@@ -47,19 +79,14 @@ export class IndexingComponent implements OnInit {
   indexingIsRunning = false;
   initialized = false;
 
-  liveImportMessage: Observable<LogResult> = merge(
-    this.indexService.lastLog$,
-    this.rxStompService
-      .watch(
-        `/topic/indexStatus/${this.configService.$userInfo.value.currentCatalog.id}`,
-      )
-      .pipe(
-        map((msg) => JSON.parse(msg.body)),
-        tap((data) => (this.indexingIsRunning = !data.endTime)),
-      ),
-  );
+  exportForm = new FormGroup({});
+  exportModel: any = {};
+
+  status = signal<LogResult>(null);
+  hasNoConnections = signal<boolean>(false);
 
   private copyToClipboardFn = copyToClipboardFn();
+  fields: FormlyFieldConfig[] = inject(IndexingFields).fields;
 
   constructor(
     private indexService: IndexService,
@@ -76,11 +103,27 @@ export class IndexingComponent implements OnInit {
     }
 
     this.indexService
+      .fetchLastLog()
+      .pipe(tap((data) => this.status.set(data)))
+      .subscribe();
+
+    this.rxStompService
+      .watch(`/topic/indexStatus/${ConfigService.catalogId}`)
+      .pipe(
+        untilDestroyed(this),
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => (this.indexingIsRunning = !data.endTime)),
+        tap((data) => this.status.set(data)),
+      )
+      .subscribe();
+
+    this.indexService
       .getIndexConfig()
       .pipe(tap(() => (this.initialized = true)))
-      .subscribe((config) => this.cronField.setValue(config.cronPattern));
-
-    this.indexService.fetchLastLog();
+      .subscribe((config) => {
+        this.cronField.setValue(config.cronPattern);
+        this.exportModel = { "catalog-index-config": config.exports };
+      });
 
     this.cronField.valueChanges
       .pipe(untilDestroyed(this))
@@ -89,6 +132,10 @@ export class IndexingComponent implements OnInit {
         this.hint = expression.message;
         this.valid = expression.valid;
       });
+
+    this.configService.getConnectionsConfig().subscribe((config) => {
+      this.hasNoConnections.set(config.connections.length === 0);
+    });
   }
 
   index() {
@@ -138,5 +185,11 @@ export class IndexingComponent implements OnInit {
   cancelIndexing() {
     this.indexingIsRunning = false;
     this.indexService.cancel();
+  }
+
+  updateExportConfig() {
+    this.indexService
+      .setExportConfig(this.exportForm.value["catalog-index-config"])
+      .subscribe(() => this.snackBar.open("Konfiguration gespeichert"));
   }
 }

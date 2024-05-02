@@ -21,10 +21,9 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.CMSPage
 import de.ingrid.igeserver.model.FrontendConfiguration
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.igeserver.services.IBusService
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ConnectionConfig
+import de.ingrid.igeserver.services.ConnectionService
 import de.ingrid.igeserver.services.SettingsService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,11 +32,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
-    val settingsService: SettingsService
+    val settingsService: SettingsService,
+    val connectionService: ConnectionService
 ) : ConfigApi {
-
-    @Autowired(required = false)
-    var iBusService: IBusService? = null
 
     @Value("\${keycloak.auth-server-url-frontend}")
     lateinit var keycloakUrlFrontend: String
@@ -56,7 +53,6 @@ class ConfigApiController(
 
 
     override fun get(): ResponseEntity<FrontendConfiguration> {
-
         return ResponseEntity.ok().body(
             FrontendConfiguration(
                 keycloakUrl = keycloakUrlFrontend,
@@ -66,31 +62,34 @@ class ConfigApiController(
                 supportEmail = supportEmail
             )
         )
-
     }
 
-    override fun getIBus(): ResponseEntity<List<IBusConfig>> {
+    override fun getConnections(): ResponseEntity<ConnectionConfig> {
         return ResponseEntity.ok().body(
-            settingsService.getIBusConfig()
+            ConnectionConfig(
+                settingsService.getIBusConfig(),
+                settingsService.getElasticConfig(),
+            )
         )
     }
 
-    override fun isConnected(index: Int): ResponseEntity<Boolean> {
-        return ResponseEntity.ok().body(
-            iBusService?.isConnected(index)
-        )
+    override fun isConnected(id: String): ResponseEntity<Boolean> {
+        return ResponseEntity.ok().body(connectionService.isConnected(id))
     }
 
-    override fun setIBus(config: List<IBusConfig>): ResponseEntity<Unit> {
-
-        settingsService.setIBusConfig(config)
-        iBusService?.restartCommunication()
-        return ResponseEntity.ok().build()
-
+    override fun setConnections(config: ConnectionConfig): ResponseEntity<ConnectionConfig> {
+        config.ibus?.let {
+            settingsService.setIBusConfig(it)
+        }
+        config.elasticsearch?.let {
+            settingsService.setElasticConfig(it)
+        }
+        connectionService.setupConnections()
+        return ResponseEntity.ok().body(config)
     }
 
     override fun getCMSPages(): ResponseEntity<List<LinkedHashMap<String, String>>> {
-        val cms = settingsService.getItemAsList<LinkedHashMap<String,String>>("cms")
+        val cms = settingsService.getItemAsList<LinkedHashMap<String, String>>("cms")
         return ResponseEntity.ok(cms)
     }
 

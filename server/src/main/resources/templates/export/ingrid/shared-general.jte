@@ -7,7 +7,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.BrowseGraphic
 @import de.ingrid.igeserver.profiles.ingrid.exporter.DisplayOperation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
@@ -51,37 +50,8 @@
         <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
     </gmd:hierarchyLevelName>
 @endif
-<gmd:contact>
-    !{var address = page.getContact();}
-    @if(address != null)
-        <idf:idfResponsibleParty type="${address.getAddressDocType()}" uuid="${address.getUuid()}">
-            <gmd:organisationName>
-                <gco:CharacterString>${address.getDisplayOrganization()}</gco:CharacterString>
-            </gmd:organisationName>
-            <gmd:contactInfo>
-                <gmd:CI_Contact>
-                    <gmd:address>
-                        <gmd:CI_Address>
-                            <gmd:electronicMailAddress>
-                                <gco:CharacterString>${address.getEmail()}</gco:CharacterString>
-                            </gmd:electronicMailAddress>
-                        </gmd:CI_Address>
-                    </gmd:address>
-                    @if(address.getHoursOfService() != null)
-                        <gmd:hoursOfService>
-                            <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>
-                        </gmd:hoursOfService>
-                    @endif
-                </gmd:CI_Contact>
-            </gmd:contactInfo>
-            <gmd:role>
-                <gmd:CI_RoleCode
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                        codeListValue="pointOfContact" />
-            </gmd:role>
-        </idf:idfResponsibleParty>
-    @endif
-</gmd:contact>
+@template.export.ingrid.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
+@if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
     <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
 </gmd:dateStamp>
@@ -358,7 +328,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.pointOfContact(addresses = page.getPointOfContact())
+    @template.export.ingrid.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
     @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -445,6 +415,11 @@
                     <gmd:otherConstraints>
                         @template.export.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
+                    @if(TransformationTools.hasValue(useconstraint.getNote()))
+                        <gmd:otherConstraints>
+                            <gco:CharacterString>${useconstraint.getNote()}</gco:CharacterString>
+                        </gmd:otherConstraints>
+                    @endif
                     @if(TransformationTools.hasValue(useconstraint.getSource()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>Quellenvermerk: ${useconstraint.getSource()}</gco:CharacterString>
@@ -696,62 +671,63 @@
         <srv:SV_CouplingType codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#SV_CouplingType"
                              codeListValue="${page.getCouplingType()}" />
     </srv:couplingType>
-@endif
-@if(page.isAtomDownload())
-    <srv:containsOperations>
-        <srv:SV_OperationMetadata>
-            <srv:operationName>
-                <gco:CharacterString>Download</gco:CharacterString>
-            </srv:operationName>
-            <srv:DCP>
-                <srv:DCPList
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices">WebServices</srv:DCPList>
-            </srv:DCP>
-            <srv:connectPoint>
-                <gmd:CI_OnlineResource>
-                    <gmd:linkage>
-                        <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
-                    </gmd:linkage>
-                </gmd:CI_OnlineResource>
-            </srv:connectPoint>
-        </srv:SV_OperationMetadata>
-    </srv:containsOperations>
-@endif
-@if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
-    <srv:containsOperations gco:nilReason="missing" />
-@endif
-@for( DisplayOperation operation : page.getOperations() )
-    <srv:containsOperations>
-        <srv:SV_OperationMetadata>
-            <srv:operationName>
-                <gco:CharacterString>${operation.getName()}</gco:CharacterString>
-            </srv:operationName>
-            <srv:DCP>
-                <srv:DCPList
-                        codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
-                        codeListValue="WebServices"/>
-            </srv:DCP>
-            @if(TransformationTools.hasValue(operation.getDescription()))
-                <srv:operationDescription>
-                    <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
-                </srv:operationDescription>
-            @endif
-            @if(TransformationTools.hasValue(operation.getMethodCall()))
+
+    @if(page.isAtomDownload())
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>Download</gco:CharacterString>
+                </srv:operationName>
+                <srv:DCP>
+                    <srv:DCPList
+                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                            codeListValue="WebServices">WebServices</srv:DCPList>
+                </srv:DCP>
                 <srv:connectPoint>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
-                            <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                            <gmd:URL>${page.getAtomDownloadURL()}</gmd:URL>
                         </gmd:linkage>
                     </gmd:CI_OnlineResource>
                 </srv:connectPoint>
-            @endif
-        </srv:SV_OperationMetadata>
-    </srv:containsOperations>
-@endfor
-@for( OperatesOn operatesOn : page.getOperatesOn() )
-    <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" />
-@endfor
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endif
+    @if( page.getOperations().isEmpty() && page.getData().getService() != null && !page.isAtomDownload() )
+        <srv:containsOperations gco:nilReason="missing" />
+    @endif
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:containsOperations>
+            <srv:SV_OperationMetadata>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                <srv:DCP>
+                    <srv:DCPList
+                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CSW_DCPCodeType"
+                            codeListValue="WebServices"/>
+                </srv:DCP>
+                @if(TransformationTools.hasValue(operation.getDescription()))
+                    <srv:operationDescription>
+                        <gco:CharacterString>${operation.getDescription()}</gco:CharacterString>
+                    </srv:operationDescription>
+                @endif
+                @if(TransformationTools.hasValue(operation.getMethodCall()))
+                    <srv:connectPoint>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>${operation.getMethodCall()}</gmd:URL>
+                            </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                    </srv:connectPoint>
+                @endif
+            </srv:SV_OperationMetadata>
+        </srv:containsOperations>
+    @endfor
+    @for( OperatesOn operatesOn : page.getOperatesOn() )
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" />
+    @endfor
+@endif
 @if(TransformationTools.hasValue(page.getSupplementalInformation()))
     <gmd:supplementalInformation>
         <gco:CharacterString>${page.getSupplementalInformation()}</gco:CharacterString>
@@ -801,11 +777,11 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
             @endif
-            @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+            @if(page.hasDistributorInfo())
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.export.ingrid.pointOfContact(addresses = page.getOrderInfoContact(), asPointOfContact = false)
+                            @template.export.ingrid.addresses(addresses = page.getOrderInfoContact())
                             @if(page.getOrderInfoContact().isEmpty())
                                 <gmd:CI_ResponsibleParty>
                                     <gmd:role>
@@ -818,9 +794,16 @@ ${contentInfo}
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>
-                                <gmd:orderingInstructions>
-                                    <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
-                                </gmd:orderingInstructions>
+                                @if(TransformationTools.hasValue(page.getData().getFees()))
+                                    <gmd:fees>
+                                        <gco:CharacterString>${page.getData().getFees()}</gco:CharacterString>
+                                    </gmd:fees>
+                                @endif
+                                @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+                                    <gmd:orderingInstructions>
+                                        <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
+                                    </gmd:orderingInstructions>
+                                @endif
                             </gmd:MD_StandardOrderProcess>
                         </gmd:distributionOrderProcess>
                     </gmd:MD_Distributor>

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.migrations.tasks
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.repository.UserRepository
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,7 +52,7 @@ class M047_LowercaseLogins : MigrationBase("0.47") {
 
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
 
             val allUsers = userRepo.findAll()
 

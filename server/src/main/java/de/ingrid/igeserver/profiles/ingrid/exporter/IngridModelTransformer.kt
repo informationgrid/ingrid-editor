@@ -28,11 +28,11 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.services.CatalogService
@@ -70,9 +70,9 @@ open class IngridModelTransformer(
     val purpose = data.resource?.purpose
     val status = codelists.getValue("523", data.temporal.status, "iso")
     val distributionFormats = data.distribution?.format ?: emptyList()
-    val isAtomDownload = data.service?.isAtomDownload == true
+    val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
+    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(it.getString("transferSize.value"), createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit"))),
@@ -124,13 +124,13 @@ open class IngridModelTransformer(
 
     val graphicOverviews = data.graphicOverviews ?: emptyList()
 
-    val browseGraphics = generateBrowseGraphics(graphicOverviews)
+    val browseGraphics = generateBrowseGraphics(graphicOverviews, model.uuid)
 
-    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?): List<BrowseGraphic> =
+    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, datasetUuid: String): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
                 if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-                else "${config.uploadExternalUrl}$catalogIdentifier/${model.uuid}/${it.fileName.uri}",
+                else "${config.uploadExternalUrl}$catalogIdentifier/${datasetUuid}/${it.fileName.uri}",
                 it.fileDescription
             )
         } ?: emptyList()
@@ -140,7 +140,8 @@ open class IngridModelTransformer(
         val title: CharacterStringModel,
         val source: String?,
         val json: String?,
-        val titleKey: String?
+        val titleKey: String?,
+        var note: String? = null
     )
 
     open val useConstraints = data.resource?.useConstraints?.map { constraint ->
@@ -221,6 +222,8 @@ open class IngridModelTransformer(
         }.joinToString("\",\"", "[\"", "\"]")
     }
 
+    fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
+
     var catalog: Catalog
     var namespace: String
 
@@ -238,12 +241,12 @@ open class IngridModelTransformer(
     open val identificationType = "gmd:MD_DataIdentification"
     open val extentType = "gmd:extent"
     fun hasEnglishKeywords() = gemetKeywords.keywords.any { it.alternateValue != null } // see issue #363
-    val metadataLanguage = TransformationTools.getLanguageISO639_2Value(data.metadata.language)
+    val metadataLanguage = if (data.metadata != null ) TransformationTools.getLanguageISO639_2Value(data.metadata.language) else null
     val dataLanguages =
         data.dataset?.languages?.map { TransformationTools.getLanguageISO639_2Value(KeyValue(it, null)) }
             ?: emptyList()
 
-    val datasetCharacterSet = codelists.getValue("510", data.metadata.characterSet, "iso")
+    val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso")
     val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
 
 
@@ -345,7 +348,7 @@ open class IngridModelTransformer(
         url?.replace("http:", "https:")?.replace("gemet/concept", "gemet/en/concept")
 
     val serviceTypeKeywords = Thesaurus(
-        keywords = data.service?.classification?.map {
+        keywords = data.service.classification?.map {
             KeywordIso(
                 name = codelists.getValue("5200", it, "iso"),
                 link = null
@@ -387,6 +390,19 @@ open class IngridModelTransformer(
         link = "http://inspire.ec.europa.eu/metadata-codelist/SpatialScope",
         showType = false
     )
+
+    val opendataCategoryKeywords = Thesaurus(
+        name = "",
+        keywords = data.openDataCategories?.map {
+            KeywordIso(
+                codelists.getData(
+                    "6400",
+                    it.key,
+                )
+            )
+        } ?: emptyList(),
+    )
+
     val invekosKeywords = Thesaurus(
         keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!), link = it.key) }
             ?: emptyList(),
@@ -400,17 +416,6 @@ open class IngridModelTransformer(
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
-    val opendataCategoryKeywords = if (data.isOpenData == true) Thesaurus(
-        name = "",
-        keywords = this.data.openDataCategories?.map {
-            KeywordIso(
-                codelists.getData(
-                    "6400",
-                    it.key,
-                )
-            )
-        } ?: emptyList(),
-    ) else Thesaurus()
     val inspireRelevantKeyword =
         if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
@@ -454,8 +459,7 @@ open class IngridModelTransformer(
                 ?: codelists.getValue("6010", it) ?: "",
             "(?<=\\\"url\\\":\\\")[^\\\"]*".toRegex().find(codelists.getData("6010", it.key) ?: "")?.value
         )
-
-    }
+    } ?: emptyList()
 
 
     val contentField: MutableList<String> = mutableListOf()
@@ -477,27 +481,27 @@ open class IngridModelTransformer(
     fun getServiceType(type: KeyValue? = null) =
         codelists.getValue(
             if (model.type == "InGridInformationSystem") "5300" else "5100",
-            type ?: data.service?.type,
+            type ?: data.service.type,
             "iso"
         )
 
-    val serviceTypeVersions = data.service?.version?.map { getVersion(it, data.service.type?.key) } ?: emptyList()
-    val couplingType = data.service?.couplingType?.key ?: "loose"
+    val serviceTypeVersions = data.service.version?.map { getVersion(it, data.service.type?.key) } ?: emptyList()
+    val couplingType = data.service.couplingType?.key ?: "loose"
 
     val operations: List<DisplayOperation>
 
     private fun getOperationName(name: KeyValue?): String? {
         if (name == null) return null
 
-        val serviceType = data.service?.type
+        val serviceType = data.service.type
         val codelistId = when (serviceType?.key) {
             "1" -> "5105"
             "2" -> "5110"
             "3" -> "5120"
             "4" -> "5130"
-            else -> null
+            else -> "5110"
         }
-        return (if (codelistId == null) null else codelists.getValue(codelistId, name, "de")) ?: name.value
+        return codelists.getValue(codelistId, name, "de") ?: name.value
     }
 
     private fun getVersion(name: KeyValue?, serviceTypeKey: String?): String? {
@@ -513,7 +517,7 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    fun getOperatesOn() = data.service?.coupledResources?.map {
+    fun getOperatesOn() = data.service.coupledResources?.map {
         if (it.isExternalRef) {
             OperatesOn(it.uuid, it.identifier)
         } else {
@@ -532,7 +536,7 @@ open class IngridModelTransformer(
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl =
-        if (data.service?.type?.key == "2") data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
+        if (data.service.type?.key == "2") data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
             ?: "" else ""
 
     fun getCapabilitiesUrlsFromService(): List<String> {
@@ -561,9 +565,11 @@ open class IngridModelTransformer(
         }
     }
 
-    // information system or publication
+    // TODO: move to specific doc types
+    // information system or publication 
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
+    // TODO: move to specific doc type
     // literature
     val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
 
@@ -619,17 +625,18 @@ open class IngridModelTransformer(
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
-    var pointOfContact: List<AddressModelTransformer>
+    var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }
     }
 
     var contact: AddressModelTransformer?
+    var contacts: List<AddressModelTransformer>
 
 
-    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
-        formatter.format(Date.from(date.toInstant()))
+    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
+        if (date == null) "" else formatter.format(Date.from(date.toInstant()))
 
 
     private fun getPersonStringFromJson(address: AddressModel): String {
@@ -649,23 +656,24 @@ open class IngridModelTransformer(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.namespace = catalog.settings?.config?.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
         this.citationURL =
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
                 ?.map { toAddressModelTransformer(it) } ?: emptyList()
-        // TODO: gmd:contact [1..*] is not supported yet only [1..1]
-        contact = data.pointOfContact
-            ?.firstOrNull { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-            ?.let { toAddressModelTransformer(it) }
+        contacts = data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
+            ?.map { toAddressModelTransformer(it) } ?: emptyList()
+        // TODO: gmd:contact [1..*] is not supported everywhere yet only [1..1]
+        contact = contacts.firstOrNull()
+
         orderInfoContact =
             data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
                 ?: emptyList()
 
-        atomDownloadURL = catalog.settings?.config?.atomDownloadUrl?.suffixIfNot("/") + model.uuid
+        atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
 
-        operations = data.service?.operations?.map {
+        operations = data.service.operations?.map {
             DisplayOperation(
                 getOperationName(it.name),
                 it.description,
@@ -679,7 +687,8 @@ open class IngridModelTransformer(
         AddressModelTransformer(
             catalogIdentifier,
             codelists,
-            it.type,
+            // Map pointOfContactMD type to pointOfContact for ISO Exports
+            if( it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
             getLastPublishedDocument(it.ref?.uuid!!) ?: Document().apply {
                 data = jacksonObjectMapper().createObjectNode()
                 type = "null-address"
@@ -708,7 +717,7 @@ open class IngridModelTransformer(
     }
 
 
-    private fun getCoupledCrossReferences() = model.data.service?.coupledResources?.filter { !it.isExternalRef }
+    private fun getCoupledCrossReferences() = model.data.service.coupledResources?.filter { !it.isExternalRef }
         ?.mapNotNull { getCrossReference(it.uuid!!, KeyValue("3600", null)) } ?: emptyList()
 
     private fun getReferencedCrossReferences() =
@@ -733,14 +742,14 @@ open class IngridModelTransformer(
     }
 
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
-        return model.data.service?.operations
+        return model.data.service.operations
             ?.filter { isCapabilitiesEntry(it) }
             ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
             ?: emptyList()
     }
 
     private fun getExternalCoupledResources(): List<ServiceUrl> {
-        return model.data.service?.coupledResources
+        return model.data.service.coupledResources
             ?.filter { it.isExternalRef }
             ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
     }
@@ -772,7 +781,7 @@ open class IngridModelTransformer(
             objectType = mapDocumentType(doc.type),
             description = doc.data.get("description")?.asText(),
             graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0)))
+                listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
         )
     }
@@ -807,7 +816,7 @@ open class IngridModelTransformer(
             refType = refType,
             description = refTrans.data.getString("description"),
             graphicOverview = generateBrowseGraphics(
-                listOfNotNull(convertToGraphicOverview(refTrans.data.get("graphicOverviews")?.get(0)))
+                listOfNotNull(convertToGraphicOverview(refTrans.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
             serviceType = getServiceType(createKeyValueFromJsonNode(service?.get("type"))),
             serviceOperation =
@@ -897,7 +906,11 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || data.orderInfo != null || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || hasDistributorInfo() || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+    }
+    
+    fun hasDistributorInfo(): Boolean {
+        return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
     }
 
     fun hasCompleteVerticalExtent(): Boolean {

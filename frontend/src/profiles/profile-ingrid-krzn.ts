@@ -30,6 +30,7 @@ class InGridKrznComponent extends InGridComponent {
   constructor() {
     super();
 
+    this.isoView.isoExportFormat = "ingridISOKrzn";
     this.modifyFormFieldConfiguration();
   }
 

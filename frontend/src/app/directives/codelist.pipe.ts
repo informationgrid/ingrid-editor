@@ -39,7 +39,7 @@ export class CodelistPipe implements PipeTransform {
     lang = "de",
   ): Observable<string> {
     if (!id) return of(value as string);
-    if (value === null) return of("");
+    if (value === null) return of(null);
     const codelist = this.codelistQuery.getEntity(id);
 
     if (!codelist) {
@@ -72,11 +72,7 @@ export class CodelistPipe implements PipeTransform {
       (item) => item.id === codelistValue,
     );
     if (entries.length === 1) {
-      let fields = entries[0].fields;
-      // TODO: Refactor as it is too soon to set the default value for the DE field
-      const hasDE = fields["de"];
-      if (!hasDE) return { ...fields, de: fields["name"] };
-      return fields;
+      return entries[0].fields;
     } else {
       console.log(
         `Codelist entry ${codelistValue} not found for codelist ${id}`,

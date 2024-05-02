@@ -41,6 +41,15 @@ export function registerTranslateExtension(transloco: TranslocoService) {
         message: () => transloco.translate("form.validationMessages.lowercase"),
       },
       {
+        name: "no_space",
+        message: () => transloco.translate("form.validationMessages.no_space"),
+      },
+      {
+        name: "valid_es_alias",
+        message: () =>
+          transloco.translate("form.validationMessages.valid_es_alias"),
+      },
+      {
         name: "url",
         message: () => transloco.translate("form.validationMessages.url"),
       },
@@ -57,7 +66,7 @@ export function registerTranslateExtension(transloco: TranslocoService) {
       {
         name: "min",
         message: (error: any, field: FormlyFieldConfig) => {
-          transloco.translate("form.validationMessages.min", {
+          return transloco.translate("form.validationMessages.min", {
             value: field.props.min,
           });
         },
@@ -65,8 +74,16 @@ export function registerTranslateExtension(transloco: TranslocoService) {
       {
         name: "max",
         message: (error: any, field: FormlyFieldConfig) => {
-          transloco.translate("form.validationMessages.max", {
+          return transloco.translate("form.validationMessages.max", {
             value: field.props.max,
+          });
+        },
+      },
+      {
+        name: "maxLength",
+        message: (error: any, field: FormlyFieldConfig) => {
+          return transloco.translate("form.validationMessages.maxLength", {
+            value: field.props.maxLength,
           });
         },
       },

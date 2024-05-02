@@ -44,7 +44,8 @@ class PortalExporter : IgeExporter {
                 "Export der Adressen für die weitere Verwendung im Liferay Portal und Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("mcloud")
+                listOf("mcloud"),
+                useForPublish = true
             )
         }
 

@@ -20,7 +20,10 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.*
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.NullNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
@@ -28,13 +31,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
@@ -61,7 +62,7 @@ class PostMigrationTask(
         val catalogs = getCatalogsForPostMigration()
         if (catalogs.isEmpty()) return
 
-        setAuthentication()
+        setAdminAuthentication("Postmigration", "Task")
 
         catalogs.forEach { catalog ->
             log.info("Execute post migration for catalog: $catalog")
@@ -467,18 +468,4 @@ class PostMigrationTask(
             )
             .executeUpdate()
     }
-
-    private fun setAuthentication() {
-        val auth: Authentication =
-            UsernamePasswordAuthenticationToken(
-                "System",
-                "Task",
-                listOf(
-                    SimpleGrantedAuthority("cat-admin"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
-                )
-            )
-        SecurityContextHolder.getContext().authentication = auth
-    }
-
 }

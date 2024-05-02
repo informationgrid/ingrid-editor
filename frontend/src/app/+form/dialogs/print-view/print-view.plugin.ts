@@ -35,6 +35,7 @@ import { combineLatest, of } from "rxjs";
 import { clone, JsonDiffMerge } from "../../../shared/utils";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Injectable()
@@ -76,7 +77,7 @@ export class PrintViewPlugin extends Plugin {
         active: false,
       },
     ];
-    buttons.forEach((button, index) => this.toolbarService.addButton(button));
+    buttons.forEach((button) => this.toolbarService.addButton(button));
 
     this.treeQuery = this.forAddress
       ? this.addressTreeQuery
@@ -108,7 +109,7 @@ export class PrintViewPlugin extends Plugin {
         ? this.documentDataService.loadPublished(openedDocument._uuid, true)
         : of(null),
     ]).subscribe(([current, published]) => {
-      let fields;
+      let fields: FormlyFieldConfig[];
       let fieldsPublished = null;
       if (published !== null) {
         const diff = JsonDiffMerge.jsonDiff(current, published, {});

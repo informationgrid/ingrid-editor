@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component
  * Filter for processing steps after removing the document.
  */
 @Component
-@Profile("elasticsearch")
 class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDeletePayload> {
 
     private val log = logger()

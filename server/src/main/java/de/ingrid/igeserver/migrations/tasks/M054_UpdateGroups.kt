@@ -25,6 +25,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -53,7 +54,7 @@ class M054_UpdateGroups : MigrationBase("0.54") {
 
         ClosableTransaction(transactionManager).use {
             try {
-                setAuthentication()
+                setAdminAuthentication("Migration", "Task")
                 catalogService.getCatalogs().forEach { catalog: Catalog ->
                     log.info("Update Catalog: " + catalog.name)
                     saveAllGroupsOfCatalog(catalog.identifier)

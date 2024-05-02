@@ -33,8 +33,8 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+//import org.joda.time.DateTime;
+//import org.joda.time.Duration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.*;
@@ -42,6 +42,9 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -49,6 +52,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 /**
  * FileSystemStorage manages files in the server file system
@@ -648,7 +653,7 @@ public class FileSystemStorage implements Storage {
         if(this.trashRetentionTime > 0) {
             try (Stream<Path> stream = Files.walk(trashPath)) {
                 final List<Path> oldFiles = stream
-                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardHours(this.trashRetentionTime)).getMillis())
+                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < OffsetDateTime.now().minusHours(this.trashRetentionTime).toInstant().toEpochMilli())
                         .collect(Collectors.toList());
                 for (final Path oldFile : oldFiles) {
                     Files.delete(oldFile);
@@ -661,7 +666,7 @@ public class FileSystemStorage implements Storage {
         if(this.unsavedRetentionTime > 0) {
             try (Stream<Path> stream = Files.walk(unsavedPath)) {
                 final List<Path> oldFiles = stream
-                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < DateTime.now().minus(Duration.standardHours(this.unsavedRetentionTime)).getMillis())
+                        .filter(p -> !p.toFile().isDirectory() && p.toFile().lastModified() < OffsetDateTime.now().minusHours(this.unsavedRetentionTime).toInstant().toEpochMilli())
                         .collect(Collectors.toList());
                 for (final Path oldFile : oldFiles) {
                     Files.delete(oldFile);

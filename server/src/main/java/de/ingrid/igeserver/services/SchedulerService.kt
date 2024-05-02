@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.services
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.*
 import org.quartz.Trigger.DEFAULT_PRIORITY
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
 @Service
-class SchedulerService(val factory: SchedulerFactoryBean) {
+class SchedulerService(factory: SchedulerFactoryBean) {
     val log = logger()
 
     private val scheduler = factory.scheduler
@@ -41,24 +41,16 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
                 return
             }
         }
+        val triggerKey = TriggerKey(jobKey.name, jobKey.group)
+        if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
+        
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
+            .withIdentity(triggerKey)
             .build()
 
         scheduler.scheduleJob(trigger)
-    }
-
-    fun pause(jobId: String) {
-
-    }
-
-    fun resume(jobId: String) {
-
-    }
-
-    fun cancel(jobId: String) {
-
     }
 
     fun getJobInfo(jobKey: JobKey): JobDetail {
@@ -68,21 +60,10 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
         val detail = JobBuilder.newJob().ofType(jobClass)
             .withIdentity(jobKey)
-//            .withDescription("Checking URLs for reachability")
             .storeDurably()
             .build()
 
         scheduler.addJob(detail, true)
-
-
-        /*val trigger = TriggerBuilder.newTrigger().forJob("Qrtz_URLChecker")
-            .withIdentity("Qrtz_URLCheckerTrigger")
-            .withDescription("Trigger for running URL Checker")
-            .withSchedule(SimpleScheduleBuilder.simpleSchedule().repeatForever().withIntervalInSeconds(5).withRepeatCount(3))
-            .build()
-
-        scheduler.scheduleJob(detail, trigger)
-        scheduler.start()*/
     }
 
     fun getJobKeyFromId(id: String, catalogId: String): JobKey {
@@ -107,6 +88,7 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
                 }
                 start(jobKey, jobDataMap, jobPriority, checkRunning)
             }
+
             JobCommand.stop -> stop(jobKey)
             JobCommand.resume -> TODO()
         }
@@ -127,5 +109,37 @@ class SchedulerService(val factory: SchedulerFactoryBean) {
     fun getJobDetail(id: String, catalogId: String): JobDetail? {
         val jobKey = JobKey.jobKey(id, catalogId)
         return scheduler.getJobDetail(jobKey)
+    }
+
+    fun scheduleByCron(jobKey: JobKey, jobClass: Class<out Job>, catalogId: String, cron: String) {
+        val triggerKey = TriggerKey(jobKey.name, jobKey.group)
+        if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
+
+        if (cron.isEmpty()) return
+
+        val cronSchedule = getCronSchedule(cron)
+        val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
+            .usingJobData(JobDataMap().apply {
+                put("catalogId", catalogId)
+            })
+            .withSchedule(cronSchedule)
+            .withIdentity(triggerKey)
+            .build()
+
+        if (!scheduler.checkExists(jobKey)) createJob(jobClass, jobKey)
+
+        scheduler.scheduleJob(trigger)
+    }
+
+    private fun getCronSchedule(cron: String): CronScheduleBuilder {
+        return try {
+            CronScheduleBuilder.cronSchedule(cron)
+        } catch (ex: Exception) {
+            // might be in wrong format where last part is * instead of ?
+            if (cron.last() == '*') {
+                val fixedCron = cron.substring(0..cron.length - 2) + "?"
+                CronScheduleBuilder.cronSchedule(fixedCron)
+            } else throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+        }
     }
 }

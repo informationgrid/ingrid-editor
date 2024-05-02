@@ -25,6 +25,7 @@ import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,7 +54,7 @@ class M079_MigrateDigitalTransferOptions : MigrationBase("0.79") {
         var page = 1
 
         ClosableTransaction(transactionManager).use {
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
             log.info("Start migration of DigitalTransferOptions")
             do {
                 log.info("Handling page $page")

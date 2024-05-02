@@ -39,7 +39,7 @@ data class AddressModel(
     val title: String?,
     val contact: List<ContactModel> = emptyList(),
     val hideAddress: Boolean?,
-    var address: Address = Address(false, "", "", "", "", "", null, null),
+    var address: Address = Address("", "", "", "", "", null, null),
     var positionName: String?,
     var hoursOfService: String?,
     @JsonDeserialize(using = DateDeserializer::class)
@@ -50,93 +50,6 @@ data class AddressModel(
     @JsonProperty("_contentModified") val contentmodified: OffsetDateTime,
     @JsonProperty("_parent") val parent: Int?,
 ) {
-
-    /**
-     *  Get all ancestors of address including itself.
-     *  Addresses with the flag hideAddress are ignored,
-     *  but only if they have a parent themselves.
-     *  Addresses that are not published are ignored.
-     *  @return List of ancestors from eldest to youngest including self
-     */
-    /*
-        fun getAncestorAddressesIncludingSelf(documentService: DocumentService, id: Int?, catalogIdent: String): MutableList<DocumentData> {
-            if (id == null) return mutableListOf()
-    
-            val wrapper = documentService.getWrapperByDocumentId(id)
-            if (wrapper.type == "FOLDER") return mutableListOf()
-    
-            val convertedDoc = try {
-                val publishedDoc = documentService.getLastPublishedDocument(catalogIdent, wrapper.uuid)
-                DocumentData(wrapper, publishedDoc)
-            } catch (ex: EmptyResultDataAccessException) {
-                // no published document found
-                null
-            }
-    
-            return if (wrapper.parent != null) {
-                val ancestors = getAncestorAddressesIncludingSelf(documentService, wrapper.parent!!.id!!, catalogIdent)
-                // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
-                if ( convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) convertedDoc?.let { ancestors.add(it) }
-                ancestors
-            } else {
-                if (convertedDoc  != null) mutableListOf(convertedDoc) else mutableListOf()
-            }
-        }
-    */
-
-    /*fun getPublishedChildren(documentService: DocumentService, id: Int?, catalogIdent: String): List<DocumentData> =
-        documentService.findChildrenDocs(catalogIdent, id, true).hits*/
-
-
-    /*private fun addInternalFields(document: Document, wrapper: DocumentWrapper): Document {
-
-        val visibleAddress = document.data.apply {
-            put("_id", wrapper.id)
-            put("_type", wrapper.type)
-            put("_uuid", document.uuid)
-            put("_created", document.created.toString())
-            put("_modified", document.modified.toString())
-            put("_contentModified", document.contentmodified.toString())
-            put("_parent", wrapper.parent?.id)
-            put("title", document.title)
-        }
-
-        return visibleAddress
-    }*/
-
-    /*
-        private fun getAddressInformationFromParent(parentId: Int?): Address {
-            val emptyAddress = Address(false, "", "", "", "", "", null, null)
-            if (parentId == null) return emptyAddress
-
-            val parentAddress = documentService?.getWrapperByDocumentId(parentId) ?: return emptyAddress
-            if (parentAddress.type == "FOLDER") {
-                throw ServerException.withReason("Folder not allowed as parent of inherited address")
-            }
-
-            val jsonParentAddress = parentAddress.published?.data?.get("address") ?: return emptyAddress
-            val parent = jacksonObjectMapper().readValue(jsonParentAddress.toString(), Address::class.java)
-
-            return try {
-                if (parent.inheritAddress && parentAddress.parent?.id != null)
-                    getAddressInformationFromParent(parentAddress.parent?.id)
-                else parent
-            } catch(ex: ServerException) {
-                // parent probably was a folder and inherited field accidentally was set to true
-                parent
-            }
-
-        }
-    */
-
-    /*    @JsonProperty("_parent")
-        private fun setParent(value: Int?) {
-            if (value != null) {
-                val parentAddress = documentService?.getWrapperByDocumentId(value)
-                parentUuid = parentAddress?.uuid
-                parentName = parentAddress?.published?.title
-            }
-        }*/
 
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")
@@ -152,7 +65,6 @@ data class ContactModel(val type: KeyValue?, val connection: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Address(
-    val inheritAddress: Boolean = false,
     val street: String?,
     @JsonProperty("zip-code") val zipCode: String?,
     val city: String?,

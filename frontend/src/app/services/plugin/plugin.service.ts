@@ -39,8 +39,6 @@ export class PluginService {
 
   initWithAddress: boolean = null;
 
-  registeredForms: { [x: string]: boolean } = {};
-
   constructor(private configService: ConfigService) {
     this.backendBehaviourStates = configService.$userInfo.value.plugins;
 
@@ -68,19 +66,8 @@ export class PluginService {
         this.initWithAddress !== null &&
         (!this.initWithAddress || !plugin.hideInAddress)
       ) {
-        this.registerForm(plugin);
+        plugin.registerForm();
       }
-    }
-  }
-
-  private registerForm(plugin: Plugin) {
-    const alreadyRegistered = this.registeredForms[plugin.id] === true;
-
-    if (!alreadyRegistered) {
-      this.registeredForms[plugin.id] = true;
-      plugin.registerForm();
-    } else {
-      console.warn(`Already registered form-plugin: ${plugin.id} => Skipping`);
     }
   }
 
@@ -90,18 +77,13 @@ export class PluginService {
     this.plugins
       .filter((p) => p.isActive)
       .filter((p) => !forAddress || !p.hideInAddress)
-      .forEach((p) => this.registerForm(p));
+      .forEach((p) => p.registerForm());
 
     this.initWithAddress = forAddress;
   }
 
   private unregisterFormPlugins() {
-    return this.plugins.forEach((plugin) => this.unregisterForm(plugin));
-  }
-
-  private unregisterForm(plugin: Plugin) {
-    this.registeredForms[plugin.id] = false;
-    plugin.unregisterForm();
+    return this.plugins.forEach((plugin) => plugin.unregisterForm());
   }
 
   applyActiveStates(behaviours: Plugin[]) {

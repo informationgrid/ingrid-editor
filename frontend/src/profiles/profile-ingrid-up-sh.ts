@@ -26,6 +26,11 @@ import { GeoDatasetDoctypeUPSH } from "./ingrid-up-sh/doctypes/geo-dataset.docty
 })
 class InGridUPSHComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeUPSH);
+
+  constructor() {
+    super();
+    this.isoView.isoExportFormat = "ingridISOUPSH";
+  }
 }
 
 @NgModule({

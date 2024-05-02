@@ -85,6 +85,7 @@ class ZabbixServiceTest : ShouldSpec() {
                                 "objectid": "objectid",
                                 "clock": "1701598217",
                                 "name": "Dokument: Name",
+                                "severity": "4",
                                 "tags": [
                                 {"tag": "document name","value": "doc_name"},
                                 {"tag": "document url","value": "doc.url"},
@@ -98,6 +99,7 @@ class ZabbixServiceTest : ShouldSpec() {
                                 "objectid": "objectid2",
                                 "clock": "1701598000",
                                 "name": "Dokument: Name2",
+                                "severity": "4",
                                 "tags": [
                                 {"tag": "document name","value": "doc_name2"},
                                 {"tag": "document url","value": "doc.url2"},

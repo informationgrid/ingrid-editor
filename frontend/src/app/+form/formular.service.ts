@@ -21,17 +21,12 @@ import { Injectable } from "@angular/core";
 import { DocumentAbstract } from "../store/document/document.model";
 import { Doctype } from "../services/formular/doctype";
 import { ProfileService } from "../services/profile.service";
-import { TreeQuery } from "../store/tree/tree.query";
 import { TreeStore } from "../store/tree/tree.store";
 import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ProfileQuery } from "../store/profile/profile.query";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
-import { DocEventsService } from "../services/event/doc-events.service";
-import { ConfigService } from "../services/config/config.service";
-import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
-import { FormularMenuItem } from "./form-menu.service";
 
 @Injectable({
   providedIn: "root",
@@ -46,15 +41,8 @@ export class FormularService {
   sections$ = new BehaviorSubject<string[]>([]);
   private profileSections: string[] = [];
 
-  private datasetsOptions: FormularMenuItem[] = [];
-  private addressOptions: FormularMenuItem[] = [];
-
   constructor(
     private profiles: ProfileService,
-    private configService: ConfigService,
-    private docEventsService: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private treeStore: TreeStore,
     private sessionStore: SessionStore,
     private profileQuery: ProfileQuery,
@@ -83,11 +71,6 @@ export class FormularService {
     } else {
       throw new Error("Document type not found: " + profile);
     }
-  }
-
-  private isUserPrivileged() {
-    const role = this.configService.$userInfo.value.role;
-    return role === "ige-super-admin" || role === "cat-admin";
   }
 
   private getProfile(id: string): Doctype {

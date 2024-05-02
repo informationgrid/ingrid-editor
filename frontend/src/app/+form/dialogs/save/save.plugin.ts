@@ -79,7 +79,7 @@ export class SavePlugin extends SaveBase {
     const toolbarEventSubscription = this.docEvents
       .onEvent("SAVE")
       .subscribe(() => {
-        const form: IgeDocument = this.getForm()?.value;
+        const form: IgeDocument = this.getForm()?.getRawValue();
         if (form) {
           this.formToolbarService.setButtonState("toolBtnSave", false);
           this.saveWithData(form);

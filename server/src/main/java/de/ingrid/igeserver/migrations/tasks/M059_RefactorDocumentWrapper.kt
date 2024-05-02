@@ -22,6 +22,7 @@ package de.ingrid.igeserver.migrations.tasks
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,7 +46,7 @@ class M059_RefactorDocumentWrapper : MigrationBase("0.59") {
         ClosableTransaction(transactionManager).use {
             val wrappers: MutableList<Any?> = entityManager.createNativeQuery(allWrapper).resultList
 
-            setAuthentication()
+            setAdminAuthentication("Migration", "Task")
 
             wrappers.forEach { wrapper ->
                 try {
